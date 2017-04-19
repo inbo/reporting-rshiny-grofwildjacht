@@ -24,6 +24,10 @@ shinyUI(
         tags$br(),
         tags$br(),
         
+        downloadButton(outputId = "exportResults", label = "Rapport"),
+        
+        tags$br(),
+        tags$br(),
         
         wellPanel(
             fluidRow(
@@ -56,13 +60,7 @@ shinyUI(
                 downloadButton("downloadPlotTime", "Download")
             )
         ),
-		tags$br(),
-		fluidRow(
-			downloadButton(
-				outputId = "exportResults", 
-				label = "Export results", 
-			)
-		),
+        
         tags$br()
     
     

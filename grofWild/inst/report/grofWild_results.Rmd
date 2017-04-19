@@ -1,5 +1,5 @@
 ---
-title: "Grof Wild results"
+title: "Grof Wild in Vlaanderen: Rapport"
 author: "OpenAnalytics"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 output: 
@@ -14,102 +14,110 @@ output:
 
 ```{r optionsChunks, echo = FALSE, message = FALSE, warning=FALSE}
 
-	## Chunk with options for knitr. This chunk should not be modified.
+## Chunk with options for knitr. This chunk should not be modified.
 
-	knitr::opts_chunk$set(
-		eval = TRUE,
-		echo = FALSE, 
-		message = FALSE,
-		cache = FALSE,
-		warning = FALSE,
-		error = FALSE,
-		comment = "#",
-	  	tidy = FALSE,
-		collapse = TRUE,
-		results = "asis",
-		fig.align = "center")
-	
-	options(warn = 1, width = 200)
-	
+knitr::opts_chunk$set(
+    eval = TRUE,
+    echo = FALSE, 
+    message = FALSE,
+    cache = FALSE,
+    warning = FALSE,
+    error = FALSE,
+    comment = "#",
+    tidy = FALSE,
+    collapse = TRUE,
+    results = "asis",
+    fig.align = "center")
+
+options(warn = 1, width = 200)
+
 ```
 
 ```{r saveInputParameters}
 
-	# for reproducibility/debugging, save parameters from the Shiny app
-	save(params, file = "params.RData")
+# for reproducibility/debugging, save parameters from the Shiny app
+save(params, file = "params.RData")
 
 ```
 
-# Resultaat van de applicatie
+# Resultaten uit de Applicatie
 
-## Map 
+## Kaart
 
-De volgende map bestaat de aantal per `r input$spatialLevel` voor de jaar(en)
-`r toString(params$times)`.
+De volgende kaart toont het geobserveerde aantal van de diersoort
+`r input$showSpecies` per 
+`r ifelse(input$spatialLevel == "provinces", "provincie", "gemeente")` voor
+`r ifelse(length(input$showTime) > 1, paste("de jaren", input$showTime[1], "t.e.m", input$showTime[2]), 
+    paste("het jaar", input$showTime))`).
 
 ```{r map}
 
-	library(leaflet)
-	params$map
-	
+library(leaflet)
+params$map
+
 ```	
 
-## Geobserveerd aantal per jaar per regio
+## Geobserveerd aantal per regio pver totale periode
 
 ```{r textSpatialEntity}
 
-	textSpatialEntity <- ifelse(
-		is.null(params$regions), 
-		paste("alle", params$spatialLevel), 
-		paste0("de ", params$spatialLevel, ": ", toString(params$regions)))
+if(input$spatialLevel == "provinces")
+  regio <- "provincies" else
+  regio <- "gemeenten"
+
+textSpatialEntity <- ifelse(
+    is.null(params$regions), 
+    paste("alle", params$spatialLevel), 
+    paste0("de ", params$spatialLevel, ": ", toString(params$regions)))
 
 ```
 
-De volgende visualize bevat de geobserveerd aantal voor de specie
-`r params$specie` en `r textSpatialEntity`.
+De volgende figuur toont het geobserveerd aantal voor de diersoort
+`r input$showSpecies` en `r textSpatialEntity`.
 
 ```{r profile}
 
-	params$interactiveTime$print('chart2', include_assets = TRUE)
+if (!is.null(input$showRegion))
+  params$interactiveTime$print('chart2', include_assets = TRUE)
 
 ```
 
-# Extra visualizaties
+# Resultaten op Basis van Huidig Rapport
 
 ```{r includeImageWrapper}
 
-	includeImageWrapper <- function(x)
-		cat('<img style="float: right;" src="', getPathFigure(x), 
-			'" width="400">\n', sep = "")
+includeImageWrapper <- function(x)
+  cat('<img style="float: right;" src="', getPathFigure(x), 
+      '" width="400">\n', sep = "")
 
 ```
 
-## Aantal per jaar en regio
+## Aantal everzwijnen per provincie en per jaar
 
 ```{r comparePreviousNewVisualization-graph1, out.width = '50%'}
 
-	library(grofWild)
-	
-	# previous visualization
-	library(knitr)
-	includeImageWrapper("graph1.png")
+library(grofWild)
+
+# previous visualization
+library(knitr)
+includeImageWrapper("graph1.png")
 #	include_graphics(getPathFigure("graph1.png")) # cannot specify the size
-	
-	# new visualization with plotly
-	library(plotly)
-	createPlot1(height = 300)
+
+# new visualization with plotly
+library(plotly)
+createPlot1(height = 300)
 
 ```
 
-## Aantal gemeenten per aantal specie
+## Aantal everzwijnen per gemeente en per jaar
 
 ```{r comparePreviousNewVisualization-graph2, out.width = '50%'}
-	
-	# previous visualization
-	includeImageWrapper("graph2.png")
 
-	# new visualization with plotly
-	createPlot2(height = 300)
+# previous visualization
+includeImageWrapper("graph2.png")
+
+# new visualization with plotly
+createPlot2(height = 300)
 
 ```
 
@@ -117,11 +125,11 @@ De volgende visualize bevat de geobserveerd aantal voor de specie
 
 ```{r comparePreviousNewVisualization-graph3, out.width = '50%', out.height = '10%'}
 
-	# previous visualization
-	includeImageWrapper("graph3.png")
+# previous visualization
+includeImageWrapper("graph3.png")
 
-	# new visualization with plotly
-	createPlot3(height = 300)
+# new visualization with plotly
+createPlot3(height = 300)
 
 ```
 
@@ -131,7 +139,7 @@ De volgende visualize bevat de geobserveerd aantal voor de specie
 ## Used software
 
 ```{r usedSoftware}
-		
-	printSessionInfoMarkdown()
-	
+
+printSessionInfoMarkdown()
+
 ```

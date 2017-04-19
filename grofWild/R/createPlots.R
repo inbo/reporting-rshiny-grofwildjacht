@@ -30,7 +30,8 @@ createPlot1 <- function(width = NULL, height = NULL) {
           type = "scatter", mode = "lines+markers",
 		  width = width, height = height) %>% 
       layout(xaxis = list(title = "Jaar"), 
-          yaxis = list(title = "Aantal everzwijnen (afschot en valwild)"))  
+          yaxis = list(title = "Aantal everzwijnen (afschot en valwild)"),
+          margin = list(b = 120))  
   
 }
 
@@ -128,6 +129,7 @@ createPlot2 <- function(width = NULL, height = NULL) {
 		  width = width, height = height) %>%
       layout(xaxis = list(title = "Jaar"), 
           yaxis = list(title = "Aantal everzwijnen"),
+          margin = list(b = 120),
           annotations = list(
               list(xref = "paper", yref = "paper", 
                   xanchor = "left", yanchor = "bottom",
@@ -207,6 +209,7 @@ createPlot3 <- function(year = 2014, width = NULL, height = NULL) {
           name = paste0("Huidig (", as.character(year), ")"), 
           line = list(color='rgb(100,0,0)'), showlegend = TRUE) %>%
       layout(xaxis = list(title = "Maand"), 
-          yaxis = list(title = "Percentage jaarlijks afschot"))
+          yaxis = list(title = "Percentage jaarlijks afschot"),
+          margin = list(b = 150))
     
 }

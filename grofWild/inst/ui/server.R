@@ -1,5 +1,6 @@
 library(leaflet)
 library(rCharts)
+library(plyr)
 library(grofWild)
 
 `%then%` <- shiny:::`%OR%`
@@ -101,7 +102,7 @@ shinyServer(function(input, output, session) {
                 fluidRow(
                     column(4, 
                         # TODO allow for multiple species and times
-                        selectInput("showSpecies", "Species",
+                        selectInput("showSpecies", "Diersoort",
                             choices = sort(levels(results$plotData()$specie)), 
                             selected = sort(levels(results$plotData()$specie))[1]
                         )
@@ -127,7 +128,7 @@ shinyServer(function(input, output, session) {
                 fluidRow(
                     column(4, selectInput("popupVariables", "Extra variabelen in popup",
                             choices = {
-                              vars <- names(results$plotData()); vars[vars != "counts"]
+                              vars <- names(results$plotData()); vars[!vars %in% c("counts", "year")]
                             }, multiple = TRUE)
                     ),
                     column(4, selectInput("legendPlacement", "Legende",
@@ -381,7 +382,7 @@ shinyServer(function(input, output, session) {
                             domain = domain), 
                         values = results$subsetPlotData()$counts,
                         opacity = 0.8,
-                        title = "Legend",
+                        title = "Legende",
                         layerId = "legend"
                     )                      
                     
@@ -536,6 +537,8 @@ shinyServer(function(input, output, session) {
                   opacity = 0.8, group = "provinceLines")
               
             }
+            
+            newMap
             
           })
       

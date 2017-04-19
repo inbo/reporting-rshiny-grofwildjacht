@@ -70,7 +70,7 @@ provinces <- c(rep("Antwerpen", 70),
     rep("West-Vlaanderen", 64)
     )
 
-data$Province <- sample( provinces, nrow(data))
+data$Province <- sample(provinces, nrow(data))
     
 
 # plot

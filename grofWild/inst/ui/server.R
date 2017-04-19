@@ -66,30 +66,25 @@ shinyServer(function(input, output, session) {
       # Select subset of the data
       results$subsetPlotData <- reactive({
             
-            validate(need(results$plotData(), "Geen data beschikbaar"))
+            validate(need(results$plotData(), "Geen data beschikbaar"),
+                need(input$showTime, "Gelieve tijdstip(pen) te selecteren"))
             
-#            if (is.null(input$showTime))
-#              selectedTime <- timePoints[1] else
-#              selectedTime <- as.numeric(input$showTime)
-#            
-#            if (is.null(input$showSpecies))
-#              selectedSpecies <- levels(results$plotData()$specie)[1] else
-#              selectedSpecies <- input$showSpecies
+            if (length(input$showTime) > 1)
+              chosenTimes <- input$showTime[1]:input$showTime[2] else
+              chosenTimes <- input$showTime
             
-#            entitiesNaam <- results$shapeData()$NAAM
+            # TODO take sum if several years
             countsDataSpecieYear <- subset(
                 results$plotData(), 
-                specie == input$showSpecies & year == input$showTime)
-#            counts <- countsDataSpecieYear[
-#                match(entitiesNaam, countsDataSpecieYear$NAAM), "counts"]
-#            counts[is.na(counts)] <- 0
-#            
-#            plotData <- data.frame(
-#                space = entitiesNaam,
-            ##                gemiddelde = round(rnorm(n = nObs, mean = 0.3, sd = 0.2), 2),
-#                counts = counts,
-#                time = input$showTime
-#            )
+                specie == input$showSpecies & year %in% chosenTimes)
+            
+            if (length(input$showTime) > 1) {
+              
+              countsDataSpecieYear <- ddply(countsDataSpecieYear, .(NAAM, specie),
+                  summarize, counts = sum(counts))
+              
+            }
+            
             
             return(countsDataSpecieYear)
             
@@ -109,16 +104,16 @@ shinyServer(function(input, output, session) {
                         selectInput("showSpecies", "Species",
                             choices = sort(levels(results$plotData()$specie)), 
                             selected = sort(levels(results$plotData()$specie))[1]
-						)
+                        )
                     ),
                     column(4, 
-                        sliderInput("showTime", "Tijdstip", 
-                            value = min(timePoints),
+                        sliderInput("showTime", "Tijdstip(pen)", 
+                            value = c(min(timePoints), max(timePoints)),
                             min = min(timePoints),
                             max =  max(timePoints),
                             step = 1,
-							sep = "")
-
+                            sep = "")
+                    
                     ),
                     column(4, 
                         selectInput("showRegion", "Regio('s)",
@@ -132,12 +127,15 @@ shinyServer(function(input, output, session) {
                 fluidRow(
                     column(4, selectInput("popupVariables", "Extra variabelen in popup",
                             choices = {
-								vars <- names(results$plotData()); vars[vars != "counts"]
-							}, multiple = TRUE)
+                              vars <- names(results$plotData()); vars[vars != "counts"]
+                            }, multiple = TRUE)
                     ),
-                    column(4, selectInput("legendPlacement", "Legende plaatsing",
-                            choices = c("<none>" = "none", "topright", "bottomright", 
-                                "bottomleft", "topleft"))
+                    column(4, selectInput("legendPlacement", "Legende",
+                            choices = c("<none>" = "none", 
+                                "Bovenaan rechts" = "topright", 
+                                "Onderaan rechts" = "bottomright", 
+                                "Bovenaan links" = "topleft",
+                                "Onderaan links" = "bottomleft"))
                     )
                 ),
                 
@@ -189,14 +187,14 @@ shinyServer(function(input, output, session) {
       results$textPopup <- reactive({
             
             validate(need(results$shapeData(), "Geen data beschikbaar"),
-                need(results$plotData(), "Geen data beschikbaar"))
+                need(results$subsetPlotData(), "Geen data beschikbaar"))
             
             extraVariables <- ""
             
             
             if (!is.null(input$popupVariables)) {
               
-              validate(need(input$popupVariables %in% names(results$plotData()), 
+              validate(need(input$popupVariables %in% names(results$subsetPlotData()), 
                       "Deze variabelen zijn niet beschikbaar in de data"))
               
               for (iName in input$popupVariables) {
@@ -210,11 +208,11 @@ shinyServer(function(input, output, session) {
             }
             
             regionNames <- results$shapeData()$NAAM
-            titleText <- paste("Geobserveerd aantal in ")            
+            titleText <- "Geobserveerd aantal in "            
             
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
-                "<strong>", titleText, input$showTime, "</strong>: ", 
+                "<strong>", titleText, paste(input$showTime, collapse = "-"), "</strong>: ", 
                 round(results$subsetPlotData()$counts, 2),
                 "<br>", extraVariables
             )
@@ -355,7 +353,7 @@ shinyServer(function(input, output, session) {
               
               if (input$legendPlacement != "none"){
                 
-                validate(need(input$showTime, "Gelieve een tijdstip te selecteren"))
+                validate(need(input$showTime, "Gelieve tijdstip(pen) te selecteren"))
                 
                 proxy %>% addLegend(position = input$legendPlacement,
                     pal = colorNumeric(palette = input$colorPalette, 
@@ -368,7 +366,7 @@ shinyServer(function(input, output, session) {
                 
                 if (!is.null(input$legendPlacement)) {
                   
-                  domain <- range(results$plotData()$count, na.rm = TRUE)	
+                  domain <- range(results$subsetPlotData()$counts, na.rm = TRUE)	
                   
                   proxy <- leafletProxy("showMap", data = results$shapeData())
                   
@@ -381,7 +379,7 @@ shinyServer(function(input, output, session) {
                     proxy %>% addLegend(position = input$legendPlacement,
                         pal = colorNumeric(palette = input$colorPalette, 
                             domain = domain), 
-                        values = results$plotData()$count, #results$shapeData()$LENGTE,
+                        values = results$subsetPlotData()$counts,
                         opacity = 0.8,
                         title = "Legend",
                         layerId = "legend"
@@ -426,7 +424,7 @@ shinyServer(function(input, output, session) {
       
       
       # Interactive time plot
-		results$interactiveTime <- reactive({
+      results$interactiveTime <- reactive({
             
             validate(need(results$plotData(), "Geen data beschikbaar"),
                 need(input$showRegion, "Gelieve regio('s) te selecteren"))
@@ -471,8 +469,8 @@ shinyServer(function(input, output, session) {
 #            return(plotTime)
             
           })
-		  
-	  output$interactiveTime <- renderChart2({results$interactiveTime()})
+      
+      output$interactiveTime <- renderChart2({results$interactiveTime()})
       
       output$downloadPlotTime <- downloadHandler("plotTijd.html",
           content = function(file) {
@@ -483,12 +481,7 @@ shinyServer(function(input, output, session) {
       
       output$titleInteractivePlot <- renderUI({
             
-            if (is.null(input$showTime))
-              selectedTime <- timePoints[1] else 
-              selectedTime <- input$showTime
-            
-            
-            h4("Geobserveerd aantal in", selectedTime)
+            h4("Geobserveerd aantal in", paste(input$showTime, collapse = "-"))
             
           })
       
@@ -497,7 +490,8 @@ shinyServer(function(input, output, session) {
       results$finalMap <- reactive({
             
             validate(need(results$shapeData(), "Geen data beschikbaar"),
-                need(results$subsetPlotData(), "Geen data beschikbaar"))
+                need(results$subsetPlotData(), "Geen data beschikbaar"),
+                need(input$spatialLevel, "Loading..."))
             
             domain <- range(results$subsetPlotData()$counts, na.rm = TRUE)
             
@@ -533,7 +527,15 @@ shinyServer(function(input, output, session) {
                 fillOpacity = 0.8,
                 layerId = results$shapeData()$NAAM,
                 group = "region"
-            ) 
+            )
+            
+            if (input$spatialLevel == "communes") {  
+              
+              newMap <- addPolylines(newMap,
+                  data = provinceData, color = "black", weight = 3,
+                  opacity = 0.8, group = "provinceLines")
+              
+            }
             
           })
       
@@ -547,74 +549,74 @@ shinyServer(function(input, output, session) {
             
           }
       )
-	  
-	  # export the results as an html report
-	  output$exportResults <- downloadHandler(
-			  
-			filename = 'grofWild_results.html',
-			 
-			content = function(file) {
-				  
-			# extract parameters
-			params <- list(
-					
-				# input parameters
-				spatialLevel = input$spatialLevel,
-				specie = input$showSpecies,
-				times = input$showTime,
-				regions = input$showRegion,
-					
-				# map
-				map = results$finalMap(),
-					
-				# profile plot
-				interactiveTime = results$interactiveTime()
-		
-			)
-			
+      
+      # export the results as an html report
+      output$exportResults <- downloadHandler(
+          
+          filename = 'grofWild_results.html',
+          
+          content = function(file) {
+            
+            # extract parameters
+            params <- list(
+                
+                # input parameters
+                spatialLevel = input$spatialLevel,
+                specie = input$showSpecies,
+                times = input$showTime,
+                regions = input$showRegion,
+                
+                # map
+                map = results$finalMap(),
+                
+                # profile plot
+                interactiveTime = results$interactiveTime()
+            
+            )
+            
 #			message("params: ", str(params))
-			  
-			# get path template report
-			pathReport <- grofWild::getPathReport()
-			pathCss <- grofWild::getPathCss()
-			  
-			# get report name
-			reportName <- basename(pathReport)
-			  
-			# create temporary files in temp
-			tmpDir <- tempdir()
-			dir.create(tmpDir, recursive = TRUE)
+            
+            # get path template report
+            pathReport <- grofWild::getPathReport()
+            pathCss <- grofWild::getPathCss()
+            
+            # get report name
+            reportName <- basename(pathReport)
+            
+            # create temporary files in temp
+            tmpDir <- tempdir()
+            dir.create(tmpDir, recursive = TRUE)
 #			message("File", pathReport, "copied to", tmpDir)
-			  
-			# copy start template in working directory
-			file.copy(from = pathReport, to = tmpDir, overwrite = TRUE)
-			file.copy(from = pathCss, to = tmpDir, overwrite = TRUE)
-			  
-			# run report
-			library(rmarkdown)
-			potentialErrorMessage <- try(
-			res <- rmarkdown::render(
-			  file.path(tmpDir, reportName), params = params
-			  )
-			 , silent = TRUE)
-			  
-	 		# print message
-			if(inherits(potentialErrorMessage, "try-error"))
-				message("Error during exporting results:", potentialErrorMessage)
-			  
-			# return the report file
-			pathHtmlReport <- file.path(tmpDir, sub("Rmd", "html", reportName))
-			file.copy(pathHtmlReport, file)
-			  
-			message("The html report is available at:", pathHtmlReport)
-			  
-			  # clean directory
+            
+            # copy start template in working directory
+            file.copy(from = pathReport, to = tmpDir, overwrite = TRUE)
+            file.copy(from = pathCss, to = tmpDir, overwrite = TRUE)
+            
+            # run report
+            library(rmarkdown)
+            potentialErrorMessage <- try(
+                res <- rmarkdown::render(
+                    file.path(tmpDir, reportName), params = params
+                )
+                , silent = TRUE)
+            
+            # print message
+            if(inherits(potentialErrorMessage, "try-error"))
+              message("Error during exporting results:", potentialErrorMessage)
+            
+            # return the report file
+            pathHtmlReport <- file.path(tmpDir, sub("Rmd", "html", reportName))
+            file.copy(pathHtmlReport, file)
+            
+            message("The html report is available at:", pathHtmlReport)
+            
+            # clean directory
 #			unlink(tmpDir)
-			  
-		  }, 
-		  
-		  contentType = "text/html"
-	  
-	  )
+            
+          }, 
+          
+          contentType = "text/html"
+      
+      )
       
     })

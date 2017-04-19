@@ -29,7 +29,6 @@ shinyServer(function(input, output, session) {
       results <- reactiveValues()
       
       # Read shape data for provinces or communes
-      # Data are downloaded from:http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#
       results$shapeData <- reactive({
             
             dataDir <- system.file("extdata", package = "grofWild")
@@ -62,7 +61,7 @@ shinyServer(function(input, output, session) {
       # Select subset of the data
       results$subsetPlotData <- reactive({
             
-            validate(need(results$plotData(), "No plot data available"))
+            validate(need(results$plotData(), "Geen data beschikbaar"))
             
             if (is.null(input$showTime))
               selectedTime <- timePoints[1] else
@@ -86,41 +85,37 @@ shinyServer(function(input, output, session) {
       # User input for controlling the map
       output$controlMap <- renderUI({
             
-            if (is.null(input$doMap))
-              return(NULL)
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$plotData(), "Geen data beschikbaar"))
             
-            if (input$doMap > 0) {
-              
-              wellPanel(
-                  
-                  fluidRow(
-                      column(3, selectInput("showVariable", "Statistiek",
-                              choices = c("gemiddelde", "variantie"))
-                      ),
-                      column(3, selectInput("showTime", "op tijdstip", 
-                              choices = timePoints)
-                      ),
-                      column(3, selectInput("showRegion", "voor regio('s)",
-                              choices = levels(results$shapeData()$NAAM), 
-                              multiple = TRUE))
-                  ),
-                  
-                  fluidRow(
-                      column(3, selectInput("popupVariables", "Extra variabelen in popup",
-                              choices = names(results$plotData()), multiple = TRUE)
-                      ),
-                      column(3, selectInput("legendPlacement", "Legende plaatsing",
-                              choices = c("<none>" = "none", "topright", "bottomright", 
-                                  "bottomleft", "topleft"))
-                      )
-                  ),
-                  
-                  actionLink("providerTiles", label = "Voeg landkaart toe",
-                      icon = icon("globe"))
-              
-              )
-              
-            }
+            
+            list(
+                fluidRow(
+                    column(4, selectInput("showVariable", "Statistiek",
+                            choices = c("gemiddelde", "variantie"))
+                    ),
+                    column(4, selectInput("showTime", "op tijdstip", 
+                            choices = timePoints)
+                    ),
+                    column(4, selectInput("showRegion", "voor regio('s)",
+                            choices = results$shapeData()$NAAM, 
+                            multiple = TRUE))
+                ),
+                
+                fluidRow(
+                    column(4, selectInput("popupVariables", "Extra variabelen in popup",
+                            choices = names(results$plotData()), multiple = TRUE)
+                    ),
+                    column(4, selectInput("legendPlacement", "Legende plaatsing",
+                            choices = c("<none>" = "none", "topright", "bottomright", 
+                                "bottomleft", "topleft"))
+                    )
+                ),
+                
+                actionLink("providerTiles", label = "Voeg landkaart toe",
+                    icon = icon("globe"))
+            
+            )
             
           })
       
@@ -154,12 +149,8 @@ shinyServer(function(input, output, session) {
       # Define text to be shown in the pop-ups
       results$textPopup <- reactive({
             
-            if (is.null(input$doMap))
-              return(NULL)
-            
-            if (input$doMap == 0)
-              return(NULL)
-            
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$plotData(), "Geen data beschikbaar"))
             
             extraVariables <- ""
             selectedTime <- input$showTime
@@ -180,7 +171,6 @@ shinyServer(function(input, output, session) {
               
             }
             
-            
             regionNames <- results$shapeData()$NAAM
             titleText <- paste("Geobserveerd", input$showVariable, "in ")            
             
@@ -197,17 +187,14 @@ shinyServer(function(input, output, session) {
           })
       
       
-          # Create basics of the map to be shown
-      results$showMap <- reactive({
+      # Send map to the UI
+      output$showMap <- renderLeaflet({
             
-            if (is.null(input$doMap))
-              return(NULL)
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$subsetPlotData(), "Geen data beschikbaar"),
+                need(input$showVariable, "Gelieve 'Statistiek' te selecteren"))
             
-            if (input$doMap == 0)
-              return(NULL)
-            
-            
-            domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
+            domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
             
             palette <- colorNumeric(palette = input$colorPalette, 
                 domain = domain)
@@ -218,20 +205,10 @@ shinyServer(function(input, output, session) {
                 addPolygons(
                     weight = 1, 
                     color = "white",
-                    fillColor = ~ palette(results$shapeData()$LENGTE),
+                    fillColor = ~ palette(results$subsetPlotData()[, input$showVariable]),
                     fillOpacity = 0.8,
-                    layerId = levels(results$shapeData()$NAAM)
+                    layerId = results$shapeData()$NAAM
                 ) 
-            
-          })
-      
-      # Send map to the UI
-      output$showMap <- renderLeaflet({
-            
-            validate(need(input$doMap, "Gelieve op de knop 'Toon figuren' te drukken") %then%
-                    need(input$doMap > 0, "Gelieve op de knop 'Toon figuren' te drukken"))
-            
-            results$showMap()
             
           })
       
@@ -239,30 +216,27 @@ shinyServer(function(input, output, session) {
       # Plot polygons
       observe({
             
-            if (!is.null(input$doMap)) {
-              
-              if (input$doMap != 0) {
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$subsetPlotData(), "Geen data beschikbaar"),
+                need(input$showVariable, "Gelieve 'Statistiek' te selecteren"))
+            
+            domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
+            
+            palette <- colorNumeric(palette = input$colorPalette, 
+                domain = domain)
+            
+            leafletProxy("showMap", data = results$shapeData()) %>%
                 
-                domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
+                clearShapes() %>%
                 
-                palette <- colorNumeric(palette = input$colorPalette, 
-                      domain = domain)
-                  
-                  leafletProxy("showMap", data = results$shapeData()) %>%
-                      
-                      clearShapes() %>%
-                      
-                      addPolygons(
-                          weight = 1,
-                          color = "white",
-                          fillColor = ~ palette(results$shapeData()$LENGTE),
-                          fillOpacity = 0.8,
-                          layerId = levels(results$shapeData()$NAAM),
-                          group = "region"
-                      ) 
-                
-              }
-            }
+                addPolygons(
+                    weight = 1,
+                    color = "white",
+                    fillColor = ~ palette(results$subsetPlotData()[, input$showVariable]),
+                    fillOpacity = 0.8,
+                    layerId = results$shapeData()$NAAM,
+                    group = "region"
+                ) 
             
           })
       
@@ -270,24 +244,20 @@ shinyServer(function(input, output, session) {
       # Plot thick border for selected regions
       observe({
             
-            if (!is.null(input$doMap)) {
+            if (!is.null(input$showRegion)) {
               
-              if (input$doMap != 0) {
-                
-                if (!is.null(input$showRegion)) {
+              validate(need(results$shapeData(), "Geen data beschikbaar"))
+              
+              selectedPolygons <- subset(results$shapeData(), 
+                  results$shapeData()$NAAM %in% input$showRegion)
+              
+              leafletProxy("showMap", data = results$shapeData()) %>%
                   
-                  selectedPolygons <- subset(results$shapeData(), 
-                      results$shapeData()$NAAM %in% input$showRegion)
+                  clearGroup(group = "regionLines") %>%
                   
-                  leafletProxy("showMap", data = results$shapeData()) %>%
-                      
-                      clearGroup(group = "regionLines") %>%
-                      
-                      addPolylines(data = selectedPolygons, color = "white", weight = 5,
-                          group = "regionLines")
-                  
-                }
-              }
+                  addPolylines(data = selectedPolygons, color = "white", weight = 5,
+                      group = "regionLines")
+              
             }
             
           })
@@ -296,26 +266,22 @@ shinyServer(function(input, output, session) {
       # Add world map
       observe({
             
-            if (!is.null(input$doMap)) {
+            validate(need(results$shapeData(), "Geen data beschikbaar"))
+            
+            proxy <- leafletProxy("showMap", data = results$shapeData())
+            
+            if (!is.null(input$providerTiles) & !is.null(proxy)){
               
-              if (input$doMap != 0) {
+              if (input$providerTiles %% 2 == 1){
                 
-                proxy <- leafletProxy("showMap", data = results$shapeData())
+                proxy %>% addProviderTiles("Hydda.Full")
                 
-                if (!is.null(input$providerTiles) & !is.null(proxy)){
-                  
-                  if (input$providerTiles %% 2 == 1){
-                    
-                    proxy %>% addProviderTiles("Hydda.Full")
-                    
-                  } else {
-                    
-                    proxy %>% clearTiles()
-                    
-                  }
-                  
-                }
+              } else {
+                
+                proxy %>% clearTiles()
+                
               }
+              
             }
             
           })
@@ -324,35 +290,32 @@ shinyServer(function(input, output, session) {
       # Add legend
       observe({
             
-            if (!is.null(input$doMap)) {
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$subsetPlotData(), "Geen data beschikbaar"))
+            
+            if (!is.null(input$legendPlacement)) {
               
-              if (input$doMap != 0) {
+              domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
+              
+              proxy <- leafletProxy("showMap", data = results$shapeData())
+              
+              proxy %>% removeControl(layerId = "legend")
+              
+              if (input$legendPlacement != "none"){
                 
-                if (!is.null(input$legendPlacement)) {
-                  
-                  domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
-                 
-                    proxy <- leafletProxy("showMap", data = results$shapeData())
-                    
-                    proxy %>% removeControl(layerId = "legend")
-                    
-                    if (input$legendPlacement != "none"){
-                      
-                      validate(need(input$showTime, "Gelieve een tijdstip te selecteren"))
-                      
-                      proxy %>% addLegend(position = input$legendPlacement,
-                          pal = colorNumeric(palette = input$colorPalette, 
-                              domain = domain), 
-                          values = results$shapeData()$LENGTE,
-                          opacity = 0.8,
-                          title = "Legend",
-                          layerId = "legend"
-                      )                      
-                    
-                  }
-                  
-                }
+                validate(need(input$showTime, "Gelieve een tijdstip te selecteren"))
+                
+                proxy %>% addLegend(position = input$legendPlacement,
+                    pal = colorNumeric(palette = input$colorPalette, 
+                        domain = domain), 
+                    values = results$subsetPlotData()[, input$showVariable],
+                    opacity = 0.8,
+                    title = "Legend",
+                    layerId = "legend"
+                )                      
+                
               }
+              
             }
             
           })
@@ -361,28 +324,25 @@ shinyServer(function(input, output, session) {
       # Add popups
       observe({
             
-            if(!is.null(input$doMap)){
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$textPopup(), "Geen data beschikbaar"))
+            
+            currentMap <- leafletProxy("showMap", data = results$shapeData()) 
+            currentMap %>% clearPopups()
+            
+            event <- input$showMap_shape_click
+            
+            if(!is.null(event)){
               
-              if(input$doMap != 0){
-                
-                currentMap <- leafletProxy("showMap", data = results$shapeData()) 
-                currentMap %>% clearPopups()
-                
-                event <- input$showMap_shape_click
-                
-                if(!is.null(event)){
-                  
-                  textSelected <- results$textPopup()[results$shapeData()$NAAM == event$id]
-                  
-                  isolate({
-                        
-                        currentMap %>% 
-                            addPopups(event$lng, event$lat, popup = textSelected)
-                        
-                      }) 
-                  
-                }
-              }
+              textSelected <- results$textPopup()[results$shapeData()$NAAM == event$id]
+              
+              isolate({
+                    
+                    currentMap %>% 
+                        addPopups(event$lng, event$lat, popup = textSelected)
+                    
+                  }) 
+              
             }
             
           })
@@ -391,24 +351,23 @@ shinyServer(function(input, output, session) {
       # Interactive time plot
       output$interactiveTime <- renderChart2({
             
-            validate(need(input$doMap, "") %then%
-                    need(input$doMap > 0, "") %then%
-                    need(input$showRegion, "Gelieve regio('s) te selecteren"))
+            validate(need(results$plotData(), "Geen data beschikbaar"),
+                need(input$showRegion, "Gelieve regio('s) te selecteren"))
             
-            plotPredictions <- Highcharts$new()
+            plotTime <- Highcharts$new()
             
-            plotPredictions$xAxis(categories = timePoints, 
+            plotTime$xAxis(categories = timePoints, 
                 labels = list(rotation = -45, align = 'right'))
-#      plotPredictions$yAxis(min = 0, max = 1)
-#      plotPredictions$chart(width = 600)
+#            plotPredictions$yAxis(min = 0, max = 1)
+#            plotPredictions$chart(width = 600)
             
-            plotPredictions$title(text = paste("Geobserveerd", input$showVariable))
+            plotTime$title(text = paste("Geobserveerd", input$showVariable))
             
             currentData <- results$plotData()
             currentData$y <- currentData[, input$showVariable]      
             
             
-            plotPredictions$series(
+            plotTime$series(
                 lapply(input$showRegion, function(iArea) {
                       
                       list(name = iArea, data = toJSONArray2(currentData[
@@ -422,16 +381,16 @@ shinyServer(function(input, output, session) {
               textTooltip <- paste("<b> {point.spatialUnit} </b> <br> <br>",
                   paste0(input$popupVariables, ": {point.", input$popupVariables, "}",
                       collapse = "<br>")) 
-              plotPredictions$tooltip(useHTML = TRUE, pointFormat = textTooltip)
+              plotTime$tooltip(useHTML = TRUE, pointFormat = textTooltip)
               
             }
             
-            plotPredictions$save(file.path(tempdir(), "plotTijd.html"),
+            plotTime$save(file.path(tempdir(), "plotTijd.html"),
                 standalone = TRUE)
             
-            plotPredictions
+            plotTime
             
-            return(plotPredictions)
+            return(plotTime)
             
           })
       
@@ -445,59 +404,21 @@ shinyServer(function(input, output, session) {
       
       output$titleInteractivePlot <- renderUI({
             
-            if (is.null(input$doMap))
-              return(NULL)
+            if (is.null(input$showTime))
+              selectedTime <- timePoints[1] else 
+              selectedTime <- input$showTime
             
-            if (input$doMap > 0) {
-              
-              if (is.null(input$showTime)) {
-                
-                selectedTime <- timePoints[1]
-                
-              } else {
-                
-                selectedTime <- input$showTime
-                
-              }
-              
-              if (is.null(input$showVariable)) {
-                
-                selectedVariable <- "gemiddelde"
-                
-              } else {
-                
-                selectedVariable <- input$showVariable
-                
-              }
-              
-              if (is.na(selectedVariable))
-                startTitle <- "Geobserveerd gemiddelde" else 
-                startTitle <- paste("Geobserveerd", input$showVariable)
-              
-              h4(startTitle, "in", selectedTime)
-              
-            }
             
-          })
-      
-      
-      output$downloadPlots <- renderUI({
+            if (is.null(input$showVariable))
+              selectedVariable <- "gemiddelde" else 
+              selectedVariable <- input$showVariable
             
-            if (is.null(input$doMap))
-              return(NULL)
             
-            if (input$doMap > 0) {
-              
-              fluidRow(
-                  column(6, 
-                      downloadButton("downloadPlotSpace", "Download")
-                  ),
-                  column(6, 
-                      downloadButton("downloadPlotTime", "Download")
-                  )
-              )
-              
-            }
+            if (is.na(selectedVariable))
+              startTitle <- "Geobserveerd gemiddelde" else 
+              startTitle <- paste("Geobserveerd", input$showVariable)
+            
+            h4(startTitle, "in", selectedTime)
             
           })
       
@@ -505,42 +426,45 @@ shinyServer(function(input, output, session) {
       # Create final map
       results$finalMap <- reactive({
             
-            domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
+            validate(need(results$shapeData(), "Geen data beschikbaar"),
+                need(results$subsetPlotData(), "Geen data beschikbaar"))
+            
+            domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
             
             palette <- colorNumeric(palette = input$colorPalette, 
-                  domain = domain)      
+                domain = domain)      
+            
+            newMap <- leaflet(results$shapeData())
+            
+            if (input$providerTiles %% 2 == 1) {
               
-              newMap <- leaflet(results$shapeData())
+              newMap <- addProviderTiles(newMap, "Hydda.Full")
               
-              if (input$providerTiles %% 2 == 1) {
-                
-                newMap <- addProviderTiles(newMap, "Hydda.Full")
-                
-              } 
+            } 
+            
+            if (input$legendPlacement != "none") { 
               
-              if (input$legendPlacement != "none") { 
-                
-                newMap <- addLegend(newMap,
-                    position = input$legendPlacement,
-                    pal = colorNumeric(palette = input$colorPalette, 
-                        domain = domain), 
-                    values = results$shapeData()$LENGTE,
-                    opacity = 0.8,
-                    title = "Legend",
-                    layerId = "legend"
-                )
-                
-              }
+              newMap <- addLegend(newMap,
+                  position = input$legendPlacement,
+                  pal = colorNumeric(palette = input$colorPalette, 
+                      domain = domain), 
+                  values = results$subsetPlotData()[, input$showVariable],
+                  opacity = 0.8,
+                  title = "Legend",
+                  layerId = "legend"
+              )
               
-              newMap <- addPolygons(newMap,
-                  weight = 1,
-                  color = "white",
-                  fillColor = ~ palette(results$shapeData()$LENGTE),
-                  fillOpacity = 0.8,
-                  layerId = results$shapeData()$NAAM,
-                  group = "region"
-              ) 
-                        
+            }
+            
+            newMap <- addPolygons(newMap,
+                weight = 1,
+                color = "white",
+                fillColor = ~ palette(results$subsetPlotData()[, input$showVariable]),
+                fillOpacity = 0.8,
+                layerId = results$shapeData()$NAAM,
+                group = "region"
+            ) 
+            
           })
       
       output$downloadPlotSpace <- downloadHandler("plotRuimte.png",

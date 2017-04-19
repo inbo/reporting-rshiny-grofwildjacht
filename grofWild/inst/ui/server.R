@@ -1,9 +1,17 @@
 library(leaflet)
 library(rCharts)
+library(grofWild)
 
 `%then%` <- shiny:::`%OR%`
 
 timePoints <- 2002:2003 # TODO data until 2014 according to their report
+
+dataDir <- system.file("extdata", package = "grofWild")
+
+# extract the 'countsData' object from the package
+load(file.path(dataDir, "countsData.RData"))
+
+timePoints <- sort(unique(countsData$commune$year))
 
 shinyServer(function(input, output, session) {
       
@@ -32,26 +40,42 @@ shinyServer(function(input, output, session) {
       # Data are downloaded from:http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#
       results$shapeData <- reactive({
             
-            dataDir <- system.file("extdata", package = "grofWild")
-            
             if (input$spatialLevel == "provinces")
               readShapeData(zipFile = file.path(dataDir, "provinces.zip")) else
               readShapeData(zipFile = file.path(dataDir, "communes.zip"))
             
           })
-      
+  
+ 	   results$countsData <- reactive({
+			countsData 
+			switch(input$spatialLevel,
+				'provinces' = countsData$province,
+				'communes' = countsData$commune
+			)
+		})
       
       # TODO Create data for plotting in the maps
       results$plotData <- reactive({
             
             nObs <- length(row.names(results$shapeData()@data))
             
-            plotData <- data.frame(space = results$shapeData()$NAAM,
-                gemiddelde = round(rnorm(n = nObs, mean = 0.3, sd = 0.2), 2))
+			entitiesNaam <- results$shapeData()$NAAM
+			countsDataSpecieYear <- subset(
+				results$countsData(), 
+				specie == input$showSpecie & year == input$showTime)
+			counts <- countsDataSpecieYear[
+				match(entitiesNaam, countsDataSpecieYear$NAAM), "counts"]
+			counts[is.na(counts)] <- 0
+			
+            plotData <- data.frame(
+				space = entitiesNaam,
+#                gemiddelde = round(rnorm(n = nObs, mean = 0.3, sd = 0.2), 2),
+				counts = counts,
+				time = input$showTime
+			)
             
-            plotData <- rbind(plotData, plotData)
-            plotData$time <- c(rep(2002, nObs), rep(2003, nObs))
-            
+#            plotData <- rbind(plotData, plotData)
+#            plotData$time <- c(rep(2002, nObs), rep(2003, nObs))
             
             return(plotData)
             
@@ -68,14 +92,12 @@ shinyServer(function(input, output, session) {
               selectedTime <- timePoints[1] else
               selectedTime <- as.numeric(input$showTime)
             
+#            if (is.null(input$showVariable))
+#              selectedVariable <- "gemiddelde" else
+#              selectedVariable <- input$showVariable
             
-            if (is.null(input$showVariable))
-              selectedVariable <- "gemiddelde" else
-              selectedVariable <- input$showVariable
-            
-            
-            subsetData <- results$plotData()[results$plotData()$time == selectedTime, ]
-            returnData <- subsetData[, c("time", "space", selectedVariable)]
+#            subsetData <- results$plotData()[results$plotData()$time == selectedTime, ]
+            returnData <- results$plotData()[, c("time", "space", "count")] #selectedVariable
             
             
             return(returnData)
@@ -97,12 +119,21 @@ shinyServer(function(input, output, session) {
                       column(3, selectInput("showVariable", "Statistiek",
                               choices = c("gemiddelde", "variantie"))
                       ),
-                      column(3, selectInput("showTime", "op tijdstip", 
-                              choices = timePoints)
+                      column(3, 
+#							selectInput("showTime", "op tijdstip", choices = timePoints)
+						numericInput("showTime", "op tijdstip", 
+							value = min(timePoints),
+							min = min(timePoints),
+							max =  max(timePoints),
+							step = 1)
                       ),
                       column(3, selectInput("showRegion", "voor regio('s)",
                               choices = levels(results$shapeData()$NAAM), 
-                              multiple = TRUE))
+                              multiple = TRUE)
+			  			),
+						column(3, selectInput("showSpecie", "voor specie('s)",
+							choices = levels(results$countsData()$specie), 
+							multiple = TRUE))
                   ),
                   
                   fluidRow(
@@ -243,7 +274,8 @@ shinyServer(function(input, output, session) {
               
               if (input$doMap != 0) {
                 
-                domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
+                domain <- range(results$plotData()$count, na.rm = TRUE)
+#				range(results$shapeData()$LENGTE, na.rm = TRUE)
                 
                 palette <- colorNumeric(palette = input$colorPalette, 
                       domain = domain)
@@ -330,7 +362,8 @@ shinyServer(function(input, output, session) {
                 
                 if (!is.null(input$legendPlacement)) {
                   
-                  domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
+#                  domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
+					domain <- range(results$plotData()$count, na.rm = TRUE)	
                  
                     proxy <- leafletProxy("showMap", data = results$shapeData())
                     
@@ -343,7 +376,7 @@ shinyServer(function(input, output, session) {
                       proxy %>% addLegend(position = input$legendPlacement,
                           pal = colorNumeric(palette = input$colorPalette, 
                               domain = domain), 
-                          values = results$shapeData()$LENGTE,
+                          values = results$plotData()$count, #results$shapeData()$LENGTE,
                           opacity = 0.8,
                           title = "Legend",
                           layerId = "legend"

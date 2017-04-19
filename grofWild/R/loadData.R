@@ -5,6 +5,7 @@
 #' @return a SpatialPolygonsDataFrame object, with polygons and data as provided
 #' in the zipFile
 #' @importFrom maptools readShapePoly
+#' @importFrom sp CRS spTransform
 #' @export
 readShapeData <- function(zipFile, id = NULL) {
   
@@ -17,7 +18,7 @@ readShapeData <- function(zipFile, id = NULL) {
   if (length(allShapeFiles) == 0)
     stop("Unzipped folder contains no files. Please make sure that the files are not in a subfolder.")
   shapeData <- readShapePoly(allShapeFiles, IDvar = id, proj4string = CRS("+init=epsg:31370"))
-  shapeData <- spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
+  shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
   
   return(shapeData)
   

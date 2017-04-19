@@ -4,7 +4,7 @@ library(grofWild)
 
 `%then%` <- shiny:::`%OR%`
 
-timePoints <- 2002:2003 # TODO data until 2014 according to their report
+#timePoints <- 2002:2003 # TODO data until 2014 according to their report
 
 dataDir <- system.file("extdata", package = "grofWild")
 
@@ -111,11 +111,14 @@ shinyServer(function(input, output, session) {
                             selected = levels(results$plotData()$specie)[1])
                     ),
                     column(4, 
-                        numericInput("showTime", "Tijdstip", 
+                        sliderInput("showTime", "Tijdstip", 
                             value = min(timePoints),
                             min = min(timePoints),
                             max =  max(timePoints),
-                            step = 1)
+                            step = 1,
+#							format="###0",
+							sep = "")
+
                     ),
                     column(4, 
                         selectInput("showRegion", "Regio('s)",

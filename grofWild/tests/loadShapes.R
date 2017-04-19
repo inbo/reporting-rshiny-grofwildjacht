@@ -1,10 +1,13 @@
-dataDir <- system.file("extdata", package = "grofWild")
 
+library(grofWild)
+library(leaflet)
+library(sp)
+
+dataDir <- system.file("extdata", package = "grofWild")
 
 provinceData <- readShapeData(zipFile = file.path(dataDir, "provinces.zip"))
 plot(provinceData)
 provinceData@data
-
 
 leaflet(provinceData) %>%  
     addPolygons(

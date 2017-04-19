@@ -6,6 +6,7 @@
 #' in the zipFile
 #' @importFrom maptools readShapePoly
 #' @importFrom sp CRS spTransform
+#' @importFrom utils unzip
 #' @export
 readShapeData <- function(zipFile, id = NULL) {
   

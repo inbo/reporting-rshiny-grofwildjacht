@@ -1,0 +1,143 @@
+---
+title: "Grof Wild results"
+author: "OpenAnalytics"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  rmarkdown::html_document:
+    css: custom.css
+    toc: true
+    toc_depth: 4
+    number_sections: true
+    toc_float:
+      collapsed: true
+---
+
+```{r optionsChunks, echo = FALSE, message = FALSE, warning=FALSE}
+
+	## Chunk with options for knitr. This chunk should not be modified.
+
+	knitr::opts_chunk$set(
+		eval = TRUE,
+		echo = FALSE, 
+		message = FALSE,
+		cache = FALSE,
+		warning = FALSE,
+		error = FALSE,
+		comment = "#",
+	  	tidy = FALSE,
+		collapse = TRUE,
+		results = "asis",
+		fig.align = "center")
+	
+	options(warn = 1, width = 200)
+	
+```
+
+```{r saveInputParameters}
+
+	# for reproducibility/debugging, save parameters from the Shiny app
+	save(params, file = "params.RData")
+
+```
+
+# Map 
+
+De volgende map bestaat de aantal per `r input$spatialLevel` voor de jaar(en)
+`r toString(params$times)`.
+
+```{r map}
+
+	library(leaflet)
+	params$map
+	
+```	
+
+# Geobserveerd aantal per jaar per regio
+
+```{r textSpatialEntity}
+
+	textSpatialEntity <- ifelse(
+		is.null(params$regions), 
+		paste("alle", params$spatialLevel), 
+		paste0("de ", params$spatialLevel, ": ", toString(params$regions)))
+
+```
+
+De volgende visualize bevat de geobserveerd aantal voor de specie
+`r params$specie` en `r textSpatialEntity`.
+
+```{r profile}
+
+	params$interactiveTime$print('chart2', include_assets = TRUE)
+
+```
+
+# Extra visualizaties
+
+```{r includeImageWrapper}
+
+	includeImageWrapper <- function(x)
+		cat('<img style="float: right;" src="', getPathFigure(x), 
+			'" width="400">\n', sep = "")
+
+```
+
+## Aantal per jaar en regio
+
+```{r comparePreviousNewVisualization-graph1, out.width = '50%'}
+
+	library(grofWild)
+	
+	# previous visualization
+	library(knitr)
+	includeImageWrapper("graph1.png")
+#	include_graphics(getPathFigure("graph1.png")) # cannot specify the size
+	
+	# new visualization with plotly
+	library(plotly)
+	set.seed(100)
+	d <- diamonds[sample(nrow(diamonds), 1000), ]
+	plot_ly(d, x = ~carat, y = ~price, color = ~carat,
+		size = ~carat, text = ~paste("Clarity: ", clarity),
+		height = 350)
+
+```
+
+## Aantal gemeenten per aantal specie
+
+```{r comparePreviousNewVisualization-graph2, out.width = '50%'}
+	
+	# previous visualization
+	includeImageWrapper("graph2.png")
+
+	# new visualization with plotly
+	plot_ly(d, x = ~carat, y = ~price, color = ~carat,
+		size = ~carat, text = ~paste("Clarity: ", clarity),
+		height = 350)
+
+```
+
+## Percentage jaarlijks afschot per maand
+
+```{r comparePreviousNewVisualization-graph3, out.width = '50%', out.height = '20%'}
+
+	# previous visualization
+	includeImageWrapper("graph3.png")
+
+	# new visualization with plotly
+	plot_ly(d, x = ~carat, y = ~price, color = ~carat,
+		size = ~carat, text = ~paste("Clarity: ", clarity),
+		height = 350)
+
+```
+
+
+# Appendix
+
+## Used software
+
+```{r usedSoftware}
+		
+	printSessionInfoMarkdown()
+	
+```

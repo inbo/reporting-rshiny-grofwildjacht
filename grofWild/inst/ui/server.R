@@ -107,8 +107,9 @@ shinyServer(function(input, output, session) {
                     column(4, 
                         # TODO allow for multiple species and times
                         selectInput("showSpecies", "Species",
-                            choices = levels(results$plotData()$specie), 
-                            selected = levels(results$plotData()$specie)[1])
+                            choices = sort(levels(results$plotData()$specie)), 
+                            selected = sort(levels(results$plotData()$specie))[1]
+						)
                     ),
                     column(4, 
                         sliderInput("showTime", "Tijdstip", 
@@ -116,13 +117,12 @@ shinyServer(function(input, output, session) {
                             min = min(timePoints),
                             max =  max(timePoints),
                             step = 1,
-#							format="###0",
 							sep = "")
 
                     ),
                     column(4, 
                         selectInput("showRegion", "Regio('s)",
-                            choices = results$shapeData()$NAAM,
+                            choices = sort(results$shapeData()$NAAM),
                             multiple = TRUE)
 #                        checkboxInput("selectAll", "Selecteer alles", value = TRUE)
                     )
@@ -131,7 +131,9 @@ shinyServer(function(input, output, session) {
                 
                 fluidRow(
                     column(4, selectInput("popupVariables", "Extra variabelen in popup",
-                            choices = names(results$plotData()), multiple = TRUE)
+                            choices = {
+								vars <- names(results$plotData()); vars[vars != "counts"]
+							}, multiple = TRUE)
                     ),
                     column(4, selectInput("legendPlacement", "Legende plaatsing",
                             choices = c("<none>" = "none", "topright", "bottomright", 
@@ -424,7 +426,7 @@ shinyServer(function(input, output, session) {
       
       
       # Interactive time plot
-      output$interactiveTime <- renderChart2({
+		results$interactiveTime <- reactive({
             
             validate(need(results$plotData(), "Geen data beschikbaar"),
                 need(input$showRegion, "Gelieve regio('s) te selecteren"))
@@ -466,10 +468,11 @@ shinyServer(function(input, output, session) {
             
             plotTime
             
-            return(plotTime)
+#            return(plotTime)
             
           })
-      
+		  
+	  output$interactiveTime <- renderChart2({results$interactiveTime()})
       
       output$downloadPlotTime <- downloadHandler("plotTijd.html",
           content = function(file) {
@@ -544,5 +547,74 @@ shinyServer(function(input, output, session) {
             
           }
       )
+	  
+	  # export the results as an html report
+	  output$exportResults <- downloadHandler(
+			  
+			filename = 'grofWild_results.html',
+			 
+			content = function(file) {
+				  
+			# extract parameters
+			params <- list(
+					
+				# input parameters
+				spatialLevel = input$spatialLevel,
+				specie = input$showSpecies,
+				times = input$showTime,
+				regions = input$showRegion,
+					
+				# map
+				map = results$finalMap(),
+					
+				# profile plot
+				interactiveTime = results$interactiveTime()
+		
+			)
+			
+#			message("params: ", str(params))
+			  
+			# get path template report
+			pathReport <- grofWild::getPathReport()
+			pathCss <- grofWild::getPathCss()
+			  
+			# get report name
+			reportName <- basename(pathReport)
+			  
+			# create temporary files in temp
+			tmpDir <- tempdir()
+			dir.create(tmpDir, recursive = TRUE)
+#			message("File", pathReport, "copied to", tmpDir)
+			  
+			# copy start template in working directory
+			file.copy(from = pathReport, to = tmpDir, overwrite = TRUE)
+			file.copy(from = pathCss, to = tmpDir, overwrite = TRUE)
+			  
+			# run report
+			library(rmarkdown)
+			potentialErrorMessage <- try(
+			res <- rmarkdown::render(
+			  file.path(tmpDir, reportName), params = params
+			  )
+			 , silent = TRUE)
+			  
+	 		# print message
+			if(inherits(potentialErrorMessage, "try-error"))
+				message("Error during exporting results:", potentialErrorMessage)
+			  
+			# return the report file
+			pathHtmlReport <- file.path(tmpDir, sub("Rmd", "html", reportName))
+			file.copy(pathHtmlReport, file)
+			  
+			message("The html report is available at:", pathHtmlReport)
+			  
+			  # clean directory
+#			unlink(tmpDir)
+			  
+		  }, 
+		  
+		  contentType = "text/html"
+	  
+	  )
       
     })

@@ -10,5 +10,5 @@ Date: 2017-04-18
 Imports:
     shiny, maptools, sp, plotly, plyr
 Suggests:
-	leaflet, RColorBrewer, rCharts, htmlwidgets, webshot, rgdal, rgeos, rmarkdown, knitr
+	leaflet, RColorBrewer, rCharts, htmlwidgets, webshot, rgdal, rgeos, rmarkdown, knitr, oaPlots, oaColors
 RoxygenNote: 6.0.1

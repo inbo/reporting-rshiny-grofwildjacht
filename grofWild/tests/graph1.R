@@ -44,6 +44,7 @@ dev.off()
 
 
 # plotly
+library(plotly)
 plotData <- reshape(data = data, varying = list(as.character(2006:2014)), 
     v.names = "aantal", ids = rownames(data), direction = "long")
 plotData$time <- as.character(2006:2014)[plotData$time]

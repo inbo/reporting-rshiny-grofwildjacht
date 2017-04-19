@@ -40,7 +40,9 @@ output:
 
 ```
 
-# Map 
+# Resultaat van de applicatie
+
+## Map 
 
 De volgende map bestaat de aantal per `r input$spatialLevel` voor de jaar(en)
 `r toString(params$times)`.
@@ -52,7 +54,7 @@ De volgende map bestaat de aantal per `r input$spatialLevel` voor de jaar(en)
 	
 ```	
 
-# Geobserveerd aantal per jaar per regio
+## Geobserveerd aantal per jaar per regio
 
 ```{r textSpatialEntity}
 
@@ -95,11 +97,7 @@ De volgende visualize bevat de geobserveerd aantal voor de specie
 	
 	# new visualization with plotly
 	library(plotly)
-	set.seed(100)
-	d <- diamonds[sample(nrow(diamonds), 1000), ]
-	plot_ly(d, x = ~carat, y = ~price, color = ~carat,
-		size = ~carat, text = ~paste("Clarity: ", clarity),
-		height = 350)
+	createPlot1(height = 300)
 
 ```
 
@@ -111,23 +109,19 @@ De volgende visualize bevat de geobserveerd aantal voor de specie
 	includeImageWrapper("graph2.png")
 
 	# new visualization with plotly
-	plot_ly(d, x = ~carat, y = ~price, color = ~carat,
-		size = ~carat, text = ~paste("Clarity: ", clarity),
-		height = 350)
+	createPlot2(height = 300)
 
 ```
 
 ## Percentage jaarlijks afschot per maand
 
-```{r comparePreviousNewVisualization-graph3, out.width = '50%', out.height = '20%'}
+```{r comparePreviousNewVisualization-graph3, out.width = '50%', out.height = '10%'}
 
 	# previous visualization
 	includeImageWrapper("graph3.png")
 
 	# new visualization with plotly
-	plot_ly(d, x = ~carat, y = ~price, color = ~carat,
-		size = ~carat, text = ~paste("Clarity: ", clarity),
-		height = 350)
+	createPlot3(height = 300)
 
 ```
 

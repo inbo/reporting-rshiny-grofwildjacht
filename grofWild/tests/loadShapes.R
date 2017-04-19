@@ -30,3 +30,6 @@ leaflet(communeData) %>%
         layerId = seq_len(nrow(communeData@data)),
         group = "region"
     )
+
+table(substr(communeData$NISCODE, start = 1, stop = 1))
+provinceData@data

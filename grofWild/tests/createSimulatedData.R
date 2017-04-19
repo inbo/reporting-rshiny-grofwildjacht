@@ -23,7 +23,6 @@ nYears <- length(years)
 
 nReplicates <- 10
 
-shapeData@data$NISCODE
 
 createCountsData <- function(type = c("province", "commune")){
 	nEntities <- switch(type, 'province' = nProvinces, 'commune' = nCommunes)

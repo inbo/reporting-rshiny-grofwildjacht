@@ -13,6 +13,11 @@ load(file.path(dataDir, "countsData.RData"))
 
 timePoints <- sort(unique(countsData$commune$year))
 
+dataDir <- system.file("extdata", package = "grofWild")
+provinceData <- readShapeData(zipFile = file.path(dataDir, "provinces.zip"))
+communeData <- readShapeData(zipFile = file.path(dataDir, "communes.zip"))
+
+
 shinyServer(function(input, output, session) {
       
       # For debugging
@@ -40,43 +45,19 @@ shinyServer(function(input, output, session) {
       results$shapeData <- reactive({
             
             if (input$spatialLevel == "provinces")
-              readShapeData(zipFile = file.path(dataDir, "provinces.zip")) else
-              readShapeData(zipFile = file.path(dataDir, "communes.zip"))
+              provinceData else
+              communeData
             
           })
-  
- 	   results$countsData <- reactive({
-			countsData 
-			switch(input$spatialLevel,
-				'provinces' = countsData$province,
-				'communes' = countsData$commune
-			)
-		})
+      
       
       # TODO Create data for plotting in the maps
       results$plotData <- reactive({
             
-            nObs <- length(row.names(results$shapeData()@data))
-            
-			entitiesNaam <- results$shapeData()$NAAM
-			countsDataSpecieYear <- subset(
-				results$countsData(), 
-				specie == input$showSpecie & year == input$showTime)
-			counts <- countsDataSpecieYear[
-				match(entitiesNaam, countsDataSpecieYear$NAAM), "counts"]
-			counts[is.na(counts)] <- 0
-			
-            plotData <- data.frame(
-				space = entitiesNaam,
-#                gemiddelde = round(rnorm(n = nObs, mean = 0.3, sd = 0.2), 2),
-				counts = counts,
-				time = input$showTime
-			)
-            
-#            plotData <- rbind(plotData, plotData)
-#            plotData$time <- c(rep(2002, nObs), rep(2003, nObs))
-            
-            return(plotData)
+            switch(input$spatialLevel,
+                'provinces' = countsData$province,
+                'communes' = countsData$commune
+            )
             
           })
       
@@ -87,19 +68,30 @@ shinyServer(function(input, output, session) {
             
             validate(need(results$plotData(), "Geen data beschikbaar"))
             
-            if (is.null(input$showTime))
-              selectedTime <- timePoints[1] else
-              selectedTime <- as.numeric(input$showTime)
+#            if (is.null(input$showTime))
+#              selectedTime <- timePoints[1] else
+#              selectedTime <- as.numeric(input$showTime)
+#            
+#            if (is.null(input$showSpecies))
+#              selectedSpecies <- levels(results$plotData()$specie)[1] else
+#              selectedSpecies <- input$showSpecies
             
-#            if (is.null(input$showVariable))
-#              selectedVariable <- "gemiddelde" else
-#              selectedVariable <- input$showVariable
+#            entitiesNaam <- results$shapeData()$NAAM
+            countsDataSpecieYear <- subset(
+                results$plotData(), 
+                specie == input$showSpecies & year == input$showTime)
+#            counts <- countsDataSpecieYear[
+#                match(entitiesNaam, countsDataSpecieYear$NAAM), "counts"]
+#            counts[is.na(counts)] <- 0
+#            
+#            plotData <- data.frame(
+#                space = entitiesNaam,
+            ##                gemiddelde = round(rnorm(n = nObs, mean = 0.3, sd = 0.2), 2),
+#                counts = counts,
+#                time = input$showTime
+#            )
             
-#            subsetData <- results$plotData()[results$plotData()$time == selectedTime, ]
-            returnData <- results$plotData()[, c("time", "space", "count")] #selectedVariable
-            
-            
-            return(returnData)
+            return(countsDataSpecieYear)
             
           })
       
@@ -110,42 +102,60 @@ shinyServer(function(input, output, session) {
             validate(need(results$shapeData(), "Geen data beschikbaar"),
                 need(results$plotData(), "Geen data beschikbaar"))
             
-			if (input$doMap > 0) {    
-		
-				wellPanel(
-	                fluidRow(
-	#                    column(4, selectInput("showVariable", "Statistiek",
-	#                            choices = c("gemiddelde", "variantie"))
-	#                    ),
-						column(4, 
-	#							selectInput("showTime", "op tijdstip", choices = timePoints)
-								numericInput("showTime", "op tijdstip", 
-										value = min(timePoints),
-										min = min(timePoints),
-										max =  max(timePoints),
-										step = 1)
-						),
-	                    column(4, selectInput("showRegion", "voor regio('s)",
-	                            choices = results$shapeData()$NAAM, 
-	                            multiple = TRUE)),
-						column(4, selectInput("showSpecie", "voor specie('s)",
-								choices = levels(results$countsData()$specie), 
-								multiple = TRUE))
-	                ),
-	                
-	                
-	                actionLink("providerTiles", label = "Voeg landkaart toe",
-	                    icon = icon("globe"))
-		
-				)
-              
-            }
+            list(
+                fluidRow(
+                    column(4, 
+                        # TODO allow for multiple species and times
+                        selectInput("showSpecies", "Species",
+                            choices = levels(results$plotData()$specie), 
+                            selected = levels(results$plotData()$specie)[1])
+                    ),
+                    column(4, 
+                        numericInput("showTime", "Tijdstip", 
+                            value = min(timePoints),
+                            min = min(timePoints),
+                            max =  max(timePoints),
+                            step = 1)
+                    ),
+                    column(4, 
+                        selectInput("showRegion", "Regio('s)",
+                            choices = results$shapeData()$NAAM,
+                            multiple = TRUE)
+#                        checkboxInput("selectAll", "Selecteer alles", value = TRUE)
+                    )
+                
+                ),
+                
+                fluidRow(
+                    column(4, selectInput("popupVariables", "Extra variabelen in popup",
+                            choices = names(results$plotData()), multiple = TRUE)
+                    ),
+                    column(4, selectInput("legendPlacement", "Legende plaatsing",
+                            choices = c("<none>" = "none", "topright", "bottomright", 
+                                "bottomleft", "topleft"))
+                    )
+                ),
+                
+                actionLink("providerTiles", label = "Voeg landkaart toe",
+                    icon = icon("globe"))
+            
+            )
             
           })
       
       
+      
       # Which region(s) are selected?
       observe({
+            
+#            validate(need(!is.null(input$selectAll), "Laden..."))
+#            
+#            if (input$selectAll)
+#              updateSelectInput(session = session, inputId = "showRegion",
+#                  selected = results$shapeData()$NAAM) else
+#              updateSelectInput(session = session, inputId = "showRegion",
+#                  selected = NULL)
+            
             
             event <- input$showMap_shape_click
             
@@ -177,7 +187,6 @@ shinyServer(function(input, output, session) {
                 need(results$plotData(), "Geen data beschikbaar"))
             
             extraVariables <- ""
-            selectedTime <- input$showTime
             
             
             if (!is.null(input$popupVariables)) {
@@ -189,19 +198,19 @@ shinyServer(function(input, output, session) {
                 
                 extraVariables <- paste(extraVariables,
                     "<br> <b>", iName, "</b>: ", 
-                    results$plotData()[results$plotData()$time == selectedTime, iName])
+                    results$subsetPlotData()[, iName])
                 
               }
               
             }
             
             regionNames <- results$shapeData()$NAAM
-            titleText <- paste("Geobserveerd", input$showVariable, "in ")            
+            titleText <- paste("Geobserveerd aantal in ")            
             
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
                 "<strong>", titleText, input$showTime, "</strong>: ", 
-                round(results$subsetPlotData()[, input$showVariable], 2),
+                round(results$subsetPlotData()$counts, 2),
                 "<br>", extraVariables
             )
             
@@ -211,17 +220,29 @@ shinyServer(function(input, output, session) {
           })
       
       
+      results$colorPalette <- reactive({
+            
+            validate(need(nrow(results$subsetPlotData()) > 0, "Geen data beschikbaar"))
+            
+            domain <- range(results$subsetPlotData()$counts, na.rm = TRUE)
+            
+            palette <- colorNumeric(palette = input$colorPalette, 
+                domain = domain)
+            
+            palette(results$subsetPlotData()$counts)
+            
+          })
+      
+      
       # Send map to the UI
       output$showMap <- renderLeaflet({
             
             validate(need(results$shapeData(), "Geen data beschikbaar"),
-                need(results$subsetPlotData(), "Geen data beschikbaar"),
-                need(input$showVariable, "Gelieve 'Statistiek' te selecteren"))
+                need(nrow(results$subsetPlotData()) > 0, "Geen data beschikbaar"))
             
-            domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
-            
-            palette <- colorNumeric(palette = input$colorPalette, 
-                domain = domain)
+            if (input$spatialLevel == "provinces")
+              provinceBounds <- list(color = "white", opacity = 0) else
+              provinceBounds <- list(color = "black", opacity = 0.8)            
             
             
             leaflet(results$shapeData()) %>%
@@ -229,36 +250,17 @@ shinyServer(function(input, output, session) {
                 addPolygons(
                     weight = 1, 
                     color = "white",
-                    fillColor = ~ palette(results$subsetPlotData()[, input$showVariable]),
-                    fillOpacity = 0.8,
-                    layerId = results$shapeData()$NAAM
-                ) 
-            
-          })
-      
-      
-      # Plot polygons
-      observe({
-            
-            validate(need(results$shapeData(), "Geen data beschikbaar"),
-                need(results$subsetPlotData(), "Geen data beschikbaar"),
-                need(input$showVariable, "Gelieve 'Statistiek' te selecteren"))
-            
-            domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
-            
-            palette <- colorNumeric(palette = input$colorPalette, 
-                domain = domain)
-            
-            leafletProxy("showMap", data = results$shapeData()) %>%
-                
-                addPolygons(
-                    weight = 1,
-                    color = "white",
-                    fillColor = ~ palette(results$subsetPlotData()[, input$showVariable]),
+                    fillColor = ~ results$colorPalette(),
                     fillOpacity = 0.8,
                     layerId = results$shapeData()$NAAM,
                     group = "region"
-                ) 
+                ) %>%
+                
+                addPolylines(
+                    data = provinceData, 
+                    color = provinceBounds$color, 
+                    weight = 3,
+                    opacity = provinceBounds$opacity)
             
           })
       
@@ -279,6 +281,29 @@ shinyServer(function(input, output, session) {
                   
                   addPolylines(data = selectedPolygons, color = "white", weight = 5,
                       group = "regionLines")
+              
+            }
+            
+          })
+      
+      
+      # Plot thick border for province if communes are shown
+      observe({
+            
+            validate(need(input$spatialLevel, "Gelieve 'Regio-schaal' te selecteren"))
+            
+            if (input$spatialLevel == "communes") {  
+              
+              leafletProxy("showMap", data = results$shapeData()) %>%
+                  
+                  addPolylines(data = provinceData, color = "black", weight = 3,
+                      opacity = 0.8, group = "provinceLines")
+              
+            } else {
+              
+              leafletProxy("showMap", data = results$shapeData()) %>%
+                  
+                  clearGroup(group = "provinceLines")
               
             }
             
@@ -313,11 +338,11 @@ shinyServer(function(input, output, session) {
       observe({
             
             validate(need(results$shapeData(), "Geen data beschikbaar"),
-                need(results$subsetPlotData(), "Geen data beschikbaar"))
+                need(nrow(results$subsetPlotData()) > 0, "Geen data beschikbaar"))
             
             if (!is.null(input$legendPlacement)) {
               
-              domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
+              domain <- range(results$subsetPlotData()$counts, na.rm = TRUE)
               
               proxy <- leafletProxy("showMap", data = results$shapeData())
               
@@ -330,7 +355,7 @@ shinyServer(function(input, output, session) {
                 proxy %>% addLegend(position = input$legendPlacement,
                     pal = colorNumeric(palette = input$colorPalette, 
                         domain = domain), 
-                    values = results$subsetPlotData()[, input$showVariable],
+                    values = results$subsetPlotData()$counts,
                     opacity = 0.8,
                     title = "Legend",
                     layerId = "legend"
@@ -338,30 +363,29 @@ shinyServer(function(input, output, session) {
                 
                 if (!is.null(input$legendPlacement)) {
                   
-#                  domain <- range(results$shapeData()$LENGTE, na.rm = TRUE)
-					domain <- range(results$plotData()$count, na.rm = TRUE)	
-                 
-                    proxy <- leafletProxy("showMap", data = results$shapeData())
+                  domain <- range(results$plotData()$count, na.rm = TRUE)	
+                  
+                  proxy <- leafletProxy("showMap", data = results$shapeData())
+                  
+                  proxy %>% removeControl(layerId = "legend")
+                  
+                  if (input$legendPlacement != "none"){
                     
-                    proxy %>% removeControl(layerId = "legend")
+                    validate(need(input$showTime, "Gelieve een tijdstip te selecteren"))
                     
-                    if (input$legendPlacement != "none"){
-                      
-                      validate(need(input$showTime, "Gelieve een tijdstip te selecteren"))
-                      
-                      proxy %>% addLegend(position = input$legendPlacement,
-                          pal = colorNumeric(palette = input$colorPalette, 
-                              domain = domain), 
-                          values = results$plotData()$count, #results$shapeData()$LENGTE,
-                          opacity = 0.8,
-                          title = "Legend",
-                          layerId = "legend"
-                      )                      
+                    proxy %>% addLegend(position = input$legendPlacement,
+                        pal = colorNumeric(palette = input$colorPalette, 
+                            domain = domain), 
+                        values = results$plotData()$count, #results$shapeData()$LENGTE,
+                        opacity = 0.8,
+                        title = "Legend",
+                        layerId = "legend"
+                    )                      
                     
                   }
                   
                 }
-
+                
               }
               
             }
@@ -406,20 +430,21 @@ shinyServer(function(input, output, session) {
             
             plotTime$xAxis(categories = timePoints, 
                 labels = list(rotation = -45, align = 'right'))
-#            plotPredictions$yAxis(min = 0, max = 1)
-#            plotPredictions$chart(width = 600)
+#            plotTime$yAxis(min = 0, max = 1)
+            plotTime$chart(width = 600)
             
-            plotTime$title(text = paste("Geobserveerd", input$showVariable))
+            plotTime$title(text = paste("Geobserveerd aantal"))
             
-            currentData <- results$plotData()
-            currentData$y <- currentData[, input$showVariable]      
+            currentData <- subset(results$plotData(),
+                specie == input$showSpecies)
+            currentData$y <- currentData$counts      
             
             
             plotTime$series(
                 lapply(input$showRegion, function(iArea) {
                       
                       list(name = iArea, data = toJSONArray2(currentData[
-                                  currentData$space == iArea, ], json = F))
+                                  currentData$NAAM == iArea, ], json = F))
                       
                     })
             )
@@ -457,16 +482,7 @@ shinyServer(function(input, output, session) {
               selectedTime <- input$showTime
             
             
-            if (is.null(input$showVariable))
-              selectedVariable <- "gemiddelde" else 
-              selectedVariable <- input$showVariable
-            
-            
-            if (is.na(selectedVariable))
-              startTitle <- "Geobserveerd gemiddelde" else 
-              startTitle <- paste("Geobserveerd", input$showVariable)
-            
-            h4(startTitle, "in", selectedTime)
+            h4("Geobserveerd aantal in", selectedTime)
             
           })
       
@@ -477,7 +493,7 @@ shinyServer(function(input, output, session) {
             validate(need(results$shapeData(), "Geen data beschikbaar"),
                 need(results$subsetPlotData(), "Geen data beschikbaar"))
             
-            domain <- range(results$subsetPlotData()[, input$showVariable], na.rm = TRUE)
+            domain <- range(results$subsetPlotData()$counts, na.rm = TRUE)
             
             palette <- colorNumeric(palette = input$colorPalette, 
                 domain = domain)      
@@ -496,7 +512,7 @@ shinyServer(function(input, output, session) {
                   position = input$legendPlacement,
                   pal = colorNumeric(palette = input$colorPalette, 
                       domain = domain), 
-                  values = results$subsetPlotData()[, input$showVariable],
+                  values = results$subsetPlotData()$counts,
                   opacity = 0.8,
                   title = "Legend",
                   layerId = "legend"
@@ -507,7 +523,7 @@ shinyServer(function(input, output, session) {
             newMap <- addPolygons(newMap,
                 weight = 1,
                 color = "white",
-                fillColor = ~ palette(results$subsetPlotData()[, input$showVariable]),
+                fillColor = ~ results$colorPalette(),
                 fillOpacity = 0.8,
                 layerId = results$shapeData()$NAAM,
                 group = "region"

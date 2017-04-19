@@ -56,6 +56,7 @@ shinyUI(
                 downloadButton("downloadPlotTime", "Download")
             )
         ),
+		tags$br(),
 		fluidRow(
 			downloadButton(
 				outputId = "exportResults", 

@@ -1,8 +1,11 @@
 #' Create interactive version of plot at page 4
+#' @param width plot width (optional)
+#' @param height plot height (optional)
 #' @return plotly object
 #' @import plotly
+#' @importFrom stats reshape
 #' @export
-createPlot1 <- function() {
+createPlot1 <- function(width = NULL, height = NULL) {
   
   voeren <- c(1, 7, 12, 26, 52, 28, 29, 34, 68)
   limburg <- c(NA, 20, 28, 68, 91, 190, 400, 444, 
@@ -24,7 +27,8 @@ createPlot1 <- function() {
   plotData$time <- as.character(2006:2014)[plotData$time]
   rownames(plotData) <- NULL
   plot_ly(x = plotData$time, y = plotData$aantal, color = plotData$id,
-          type = "scatter", mode = "lines+markers") %>% 
+          type = "scatter", mode = "lines+markers",
+		  width = width, height = height) %>% 
       layout(xaxis = list(title = "Jaar"), 
           yaxis = list(title = "Aantal everzwijnen (afschot en valwild)"))  
   
@@ -32,11 +36,13 @@ createPlot1 <- function() {
 
 
 #' Create interactive version of plot at page 7
+#' @param width plot width (optional)
+#' @param height plot height (optional)
 #' @return plotly object
 #' @import plotly
-#' @importFrom plyr ddply  
+#' @importFrom plyr ddply .
 #' @export
-createPlot2 <- function() {
+createPlot2 <- function(width = NULL, height = NULL) {
   
   d2006 <- c(2, 3)
   d2007 <- c(sample.int(5, size = 15, replace = TRUE), 
@@ -118,7 +124,8 @@ createPlot2 <- function() {
   
   plot_ly(x = plotData$Year, y = plotData$Value, color = plotData$Province, 
           marker = list(size = plotData$V1*7), type = "scatter", 
-          mode = "markers", symbol = plotData$symbols) %>%
+          mode = "markers", symbol = plotData$symbols,
+		  width = width, height = height) %>%
       layout(xaxis = list(title = "Jaar"), 
           yaxis = list(title = "Aantal everzwijnen"),
           annotations = list(
@@ -133,10 +140,13 @@ createPlot2 <- function() {
 
 #' Create interactive version of plot at page 13
 #' @param year integer, year that you want to compare to all remaining years
+#' @param width plot width (optional)
+#' @param height plot height (optional)
 #' @return plotly object
 #' @import plotly
+#' @importFrom stats median runif
 #' @export
-createPlot3 <- function(year = 2014) {
+createPlot3 <- function(year = 2014, width = NULL, height = NULL) {
   
   # data
   
@@ -186,7 +196,8 @@ createPlot3 <- function(year = 2014) {
       )
   
   plot_ly(plotData, x = ~month, y = ~minimum, type = 'scatter', mode = 'lines',
-          line = list(color = 'transparent'), showlegend = FALSE, name = "Min-Max") %>%
+          line = list(color = 'transparent'), showlegend = FALSE, name = "Min-Max",
+		  width = width, height = height) %>%
       add_trace(y = ~maximum, type = 'scatter', mode = 'lines',
           fill = 'tonexty', fillcolor='rgba(0,100,80,0.2)', 
           line = list(color = 'transparent'), showlegend = TRUE, name = "Min-Max") %>%

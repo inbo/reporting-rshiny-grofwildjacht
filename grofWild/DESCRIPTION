@@ -11,4 +11,4 @@ Imports:
     shiny, maptools
 Suggests:
 	leaflet, RColorBrewer, rCharts, htmlwidgets, webshot
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

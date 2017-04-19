@@ -6,8 +6,15 @@ shinyUI(
     
     fluidPage(
         
+        # TODO remove this link for final version
         h5(actionLink(inputId = "debug_console", label = "Debug"),
             align = "right"),
+        # Shape data source
+        helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", 
+                    target = "_blank", "Geodata bron"), align = "right")
+        ),
+        
+        
         
         titlePanel(title = div(img(src = "logo.png", 
                     float = "top", height = "60px", hspace = "50px"),
@@ -18,18 +25,16 @@ shinyUI(
         tags$br(),
         
         
-        selectInput(inputId = "spatialLevel", label = "Regio-schaal",
-            choices = c("Provincie" = "provinces", "Gemeente" = "communes")),
-        selectInput("colorPalette", "Kleurenpalet",
-            choices = c("Rood" = "Reds", "Blauw" = "Blues", "Groen" = "Greens", 
-                "Divergerend" = "RdBu")),
-        
-        actionButton(inputId = "doMap", label = "Toon figuren"),
-        
-        tags$br(), 
-        tags$br(),
-        
-        uiOutput("controlMap"),
+        wellPanel(
+            fluidRow(
+                column(4, selectInput(inputId = "spatialLevel", label = "Regio-schaal",
+                        choices = c("Provincie" = "provinces", "Gemeente" = "communes"))),
+                column(4, selectInput("colorPalette", "Kleurenpalet",
+                        choices = c("Rood" = "Reds", "Blauw" = "Blues", "Groen" = "Greens", 
+                            "Divergerend" = "RdBu")))                    
+            ),
+            uiOutput("controlMap")
+        ),
         
         fluidRow(
             column(6,
@@ -43,10 +48,17 @@ shinyUI(
         ),
         
         tags$br(),
-        uiOutput("downloadPlots"),
+        fluidRow(
+            column(6, 
+                downloadButton("downloadPlotSpace", "Download")
+            ),
+            column(6, 
+                downloadButton("downloadPlotTime", "Download")
+            )
+        ),
         tags$br()
-
-        
+    
+    
     )
 
 )

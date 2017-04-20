@@ -1,7 +1,7 @@
 library(leaflet)
 library(rCharts)
-library(plyr)
 library(grofWild)
+library(plyr)
 
 `%then%` <- shiny:::`%OR%`
 
@@ -77,8 +77,6 @@ shinyServer(function(input, output, session) {
             countsDataSpecieYear <- subset(
                 results$plotData(), 
                 specie == input$showSpecies & year %in% chosenTimes)
-		
-#			message("subsetPlotData subset to", toString(input$showTime))
             
             return(countsDataSpecieYear)
             
@@ -584,9 +582,9 @@ shinyServer(function(input, output, session) {
       output$downloadPlotSpace <- downloadHandler("plotRuimte.png",
           content = function(file) {
             
-            saveWidget(widget = results$finalMap(), 
+            htmlwidgets::saveWidget(widget = results$finalMap(), 
                 file = file.path(tempdir(), "plotRuimte.html"), selfcontained = FALSE)
-            webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
+            webshot::webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
                 cliprect = "viewport")
             
           }

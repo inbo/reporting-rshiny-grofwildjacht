@@ -47,13 +47,21 @@ save(params, file = "params.RData")
 
 # Resultaten uit de Applicatie
 
+```{r paramsYearReformat}
+
+	yearsST <- ifelse(params$times[1] != params$times[2],
+		paste("de jaren", params$times[1], "t.e.m", params$times[2]),
+		paste("het jaar", params$times[1])
+	)
+
+```
+
 ## Kaart
 
 De volgende kaart toont het geobserveerde aantal van de diersoort
-`r params$showSpecies` per 
+`r params$specie` per 
 `r ifelse(params$spatialLevel == "provinces", "provincie", "gemeente")` voor
-`r ifelse(length(params$showTime) > 1, paste("de jaren", params$showTime[1], "t.e.m", params$showTime[2]), 
-    paste("het jaar", params$showTime))`.
+`r yearsST`.
 
 ```{r map}
 
@@ -73,12 +81,13 @@ if(params$spatialLevel == "provinces")
 textSpatialEntity <- ifelse(
     is.null(params$regions), 
     paste("alle", params$spatialLevel), 
-    paste0("de ", params$spatialLevel, ": ", toString(params$regions)))
+    paste0("de ", params$spatialLevel, ": ", 
+		toString(params$regions)))
 
 ```
 
 De volgende figuur toont het geobserveerd aantal voor de diersoort
-`r params$showSpecies` en `r textSpatialEntity`.
+`r params$specie`, `r yearsST`,  en `r textSpatialEntity`.
 
 ```{r profile,results = 'asis', comment = NA}
 

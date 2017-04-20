@@ -1,6 +1,5 @@
 library(leaflet)
 library(rCharts)
-library(plyr)
 library(grofWild)
 
 `%then%` <- shiny:::`%OR%`
@@ -81,7 +80,7 @@ shinyServer(function(input, output, session) {
             
             if (length(input$showTime) > 1) {
               
-              countsDataSpecieYear <- ddply(countsDataSpecieYear, .(NAAM, specie),
+              countsDataSpecieYear <- plyr::ddply(countsDataSpecieYear, .(NAAM, specie),
                   summarize, counts = sum(counts))
               
             }
@@ -545,9 +544,9 @@ shinyServer(function(input, output, session) {
       output$downloadPlotSpace <- downloadHandler("plotRuimte.png",
           content = function(file) {
             
-            saveWidget(widget = results$finalMap(), 
+            htmlwidgets::saveWidget(widget = results$finalMap(), 
                 file = file.path(tempdir(), "plotRuimte.html"), selfcontained = FALSE)
-            webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
+            webshot::webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
                 cliprect = "viewport")
             
           }

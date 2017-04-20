@@ -8,9 +8,14 @@ output:
     toc: true
     toc_depth: 4
     number_sections: true
-    toc_float:
-      collapsed: true
 ---
+
+<!-- Note: clash between inclusion of rCharts plot and floating table of contents -->
+<!-- so removed it -->
+<!--     toc_float: -->
+<!--       collapsed: false -->
+<!--       smooth_scroll: false -->
+
 
 ```{r optionsChunks, echo = FALSE, message = FALSE, warning=FALSE}
 
@@ -45,10 +50,10 @@ save(params, file = "params.RData")
 ## Kaart
 
 De volgende kaart toont het geobserveerde aantal van de diersoort
-`r input$showSpecies` per 
-`r ifelse(input$spatialLevel == "provinces", "provincie", "gemeente")` voor
-`r ifelse(length(input$showTime) > 1, paste("de jaren", input$showTime[1], "t.e.m", input$showTime[2]), 
-    paste("het jaar", input$showTime))`).
+`r params$showSpecies` per 
+`r ifelse(params$spatialLevel == "provinces", "provincie", "gemeente")` voor
+`r ifelse(length(params$showTime) > 1, paste("de jaren", params$showTime[1], "t.e.m", params$showTime[2]), 
+    paste("het jaar", params$showTime))`.
 
 ```{r map}
 
@@ -57,11 +62,11 @@ params$map
 
 ```	
 
-## Geobserveerd aantal per regio pver totale periode
+## Geobserveerd aantal per regio per totale periode
 
 ```{r textSpatialEntity}
 
-if(input$spatialLevel == "provinces")
+if(params$spatialLevel == "provinces")
   regio <- "provincies" else
   regio <- "gemeenten"
 
@@ -73,12 +78,13 @@ textSpatialEntity <- ifelse(
 ```
 
 De volgende figuur toont het geobserveerd aantal voor de diersoort
-`r input$showSpecies` en `r textSpatialEntity`.
+`r params$showSpecies` en `r textSpatialEntity`.
 
-```{r profile}
+```{r profile,results = 'asis', comment = NA}
 
-if (!is.null(input$showRegion))
-  params$interactiveTime$print('chart2', include_assets = TRUE)
+if (!is.null(params$interactiveTime))
+	params$interactiveTime$show('inline', include_assets = TRUE, cdn = TRUE)
+#  params$interactiveTime$print('chart2', include_assets = TRUE, cdn = TRUE)
 
 ```
 
@@ -94,42 +100,52 @@ includeImageWrapper <- function(x)
 
 ## Aantal everzwijnen per provincie en per jaar
 
-```{r comparePreviousNewVisualization-graph1, out.width = '50%'}
+```{r comparePreviousNewVisualization-graph1, out.width = '90%'}
 
 library(grofWild)
 
 # previous visualization
+cat("### Huidige visualisatie\n\n")
 library(knitr)
-includeImageWrapper("graph1.png")
-#	include_graphics(getPathFigure("graph1.png")) # cannot specify the size
+#includeImageWrapper("graph1.png")
+include_graphics(getPathFigure("graph1.png")) # cannot specify the size
 
 # new visualization with plotly
+cat("\n\n### Voorstel\n\n")
 library(plotly)
-createPlot1(height = 300)
+createPlot1()
 
 ```
 
 ## Aantal everzwijnen per gemeente en per jaar
 
-```{r comparePreviousNewVisualization-graph2, out.width = '50%'}
+```{r comparePreviousNewVisualization-graph2, out.width = '90%'}
 
 # previous visualization
-includeImageWrapper("graph2.png")
+cat("### Huidige visualisatie\n\n")
+#includeImageWrapper("graph2.png")
+include_graphics(getPathFigure("graph2.png"))
 
 # new visualization with plotly
-createPlot2(height = 300)
+cat("\n\n### Voorstel\n\n")
+createPlot2()
 
 ```
 
 ## Percentage jaarlijks afschot per maand
 
-```{r comparePreviousNewVisualization-graph3, out.width = '50%', out.height = '10%'}
+<!-- , out.width = '50%', out.height = '10%' -->
+
+```{r comparePreviousNewVisualization-graph3, out.width = '90%'}
 
 # previous visualization
-includeImageWrapper("graph3.png")
+cat("### Huidige visualisatie\n\n")
+#includeImageWrapper("graph3.png")
+include_graphics(getPathFigure("graph3.png"))
 
 # new visualization with plotly
-createPlot3(height = 300)
+cat("\n\n### Voorstel\n\n")
+createPlot3()
 
 ```
 
@@ -140,6 +156,6 @@ createPlot3(height = 300)
 
 ```{r usedSoftware}
 
-printSessionInfoMarkdown()
+	printSessionInfoMarkdown()
 
 ```

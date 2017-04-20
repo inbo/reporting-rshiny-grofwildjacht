@@ -86,3 +86,70 @@ p + stat_summary(fun.y=mean, geom="point", shape=18,
     size=8, color="red")
 dev.off()
 
+##
+#dataDir <- system.file("extdata", package = "grofWild")
+#
+## extract the 'countsData' object from the package
+#load(file.path(dataDir, "countsData.RData"))
+#
+#head(countsData$commune)
+##countsData$commune$year <- factor(countsData$commune$year)
+#nCommunesPerSpecieYearCount <- ddply(countsData$commune, c("specie", "year", "counts"), nrow)
+#nCommunesPerSpecieYearCount$year <- factor(nCommunesPerSpecieYearCount$year)
+#dataPlot <- subset(nCommunesPerSpecieYearCount, specie == "moeflon")
+#dataPlot$year <- factor(dataPlot$year)
+#
+## scatterplot of number of communes by number of animals colored by year (as graph2 but scatterplot)
+#ggplot(data = dataPlot, aes(x = counts, y = V1, color = year)) +
+#	geom_line() +
+#	labs(x = "aantal dieren", y = "aantal gemeenten")
+#
+## number of animals by 
+##ggplot(
+##	data = subset(countsData$commune, specie = "moeflon"),
+##	aes(x = year, y = counts, color = NAAM)) +
+##	geom_line() + guides(color = FALSE)
+#
+## for provinces
+#nProvincesPerSpecieYearCount <- ddply(countsData$province, c("specie", "year", "counts"), nrow)
+#nProvincesPerSpecieYearCount$year <- factor(nProvincesPerSpecieYearCount$year)
+#dataPlot <- subset(nProvincesPerSpecieYearCount, specie == "moeflon")
+#dataPlot$year <- factor(dataPlot$year)
+#
+## scatterplot of number of provinces by number of animals colored by year (as graph2 but scatterplot)
+#ggplot(data = dataPlot, aes(x = counts, y = V1, color = year)) +
+#	geom_line() +
+#	labs(x = "aantal dieren", y = "aantal gemeenten")
+#
+#countsData$province$year <- factor(countsData$province$year)
+#
+## histogram
+#ggplot(data = countsData$province) + 
+#	geom_histogram(aes(x = counts, fill = year, alpha = 0.2), 
+#	binwidth = 1, position = 'identity')
+#
+#ggplot(data = countsData$province) + 
+#	geom_freqpoly(aes(x = counts, col = year, alpha = 0.3), 
+#		binwidth = 5)
+#
+#
+#gg <- ggplot(
+#	data = subset(countsData$province, specie = "moeflon")) + 
+#	geom_density(aes(x = counts, col = year)) + 
+#	theme_bw() +
+#	labs(x = "aantal specie", ylab = "density aantal gemeenten",
+#		title = "Distributie van aantal gemeenten per aantal moeflon")
+#ggplotly(gg)
+#
+#countsData$commune$year <- factor(countsData$commune$year)
+#pdf("graph2.pdf")
+#ggplot(
+#	data = subset(countsData$commune, specie = "moeflon"),
+#	aes(x = counts, col = year)) + 
+#	geom_density(aes(y = ..count..)) + 
+#	theme_bw() +
+#	labs(x = "aantal specie", y = "aantal gemeenten",
+#		title = "Distributie van aantal gemeenten per aantal moeflons")
+#dev.off()
+
+

@@ -133,9 +133,9 @@ createPlot2 <- function(width = NULL, height = NULL) {
           annotations = list(
               list(xref = "paper", yref = "paper", 
                   xanchor = "left", yanchor = "bottom",
-                  x = 1.02, y = 0.6, showarrow = FALSE, bordercolor = "white",
+                  x = 1.02, y = 0.4, showarrow = FALSE, bordercolor = "white",
                   font = list(family = "arial", size = 14), 
-                  text = "Aantal overlappende \n punten bepaalt \n puntgrootte \n (behalve gemiddelde)")              
+                  text = "Aantal overlappende<br>punten bepaalt<br>puntgrootte<br>(behalve gemiddelde)")              
           ))
   
 }

@@ -35,7 +35,20 @@ knitr::opts_chunk$set(
     fig.align = "center")
 
 options(warn = 1, width = 200)
+library(grofWild)
 
+```
+
+```{r addLogo}
+
+#	cat('<img src="', getPathFigure("logo.png"), 
+#		'" style="position:absolute;top:0px;" />\n', sep = "")
+
+	library(htmltools)
+	htmltools::img(src = knitr::image_uri(getPathFigure("logo.png")), 
+		alt = 'logo', 
+		style = 'position:absolute; top:0; right:0; width:400px; padding:50px;')
+		
 ```
 
 ```{r saveInputParameters}

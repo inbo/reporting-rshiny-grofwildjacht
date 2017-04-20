@@ -464,7 +464,7 @@ shinyServer(function(input, output, session) {
             plotTime$chart(width = 600)
             			
             plotTime$title(
-				text = paste("Geobserveerd aantal", input$showSpecies,
+				text = paste("Geobserveerd aantal voor", input$showSpecies,
 					ifelse(input$showTime[1] != input$showTime[2],
 						paste("van", input$showTime[1], "tot", input$showTime[2]),
 						paste("in", input$showTime[1])
@@ -514,7 +514,7 @@ shinyServer(function(input, output, session) {
       
       output$titleInteractivePlot <- renderUI({
             
-            h4(paste("Geobserveerd aantal",
+            h4(paste("Geobserveerd aantal voor", input$showSpecies,
 				ifelse(input$showTime[1] != input$showTime[2],
 					paste("van", input$showTime[1], "tot", input$showTime[2]),
 					paste("in", input$showTime[1])

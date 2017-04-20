@@ -6,9 +6,8 @@ shinyUI(
     
     fluidPage(
         
-        # TODO remove this link for final version
-        h5(actionLink(inputId = "debug_console", label = "Debug"),
-            align = "right"),
+#        h5(actionLink(inputId = "debug_console", label = "Debug"),
+#            align = "right"),
         # Shape data source
         helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", 
                     target = "_blank", "Geodata bron"), align = "right")

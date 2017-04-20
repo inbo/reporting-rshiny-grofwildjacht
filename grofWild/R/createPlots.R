@@ -226,14 +226,16 @@ createPlot3 <- function(year = 2014, width = NULL, height = NULL) {
 		  width = width, height = height) %>%
       add_trace(y = ~max, type = 'scatter', mode = 'lines',
           fill = 'tonexty', fillcolor='rgba(0,100,80,0.2)', 
-          line = list(color = 'transparent'), showlegend = TRUE, name = "Min-Max") %>%
+          line = list(color = 'transparent'), showlegend = TRUE, 
+          name = "Min-Max (2009-2013)") %>%
       add_trace(x = ~month, y = ~median, type = 'scatter', mode = 'markers+lines',
-          line = list(color='rgb(0,100,80)'), name = "Mediaan", showlegend = TRUE) %>%
+          line = list(color='rgb(0,100,80)'), 
+          name = "Mediaan (2009-2013)", showlegend = TRUE) %>%
       add_trace(x = ~month, y = ~new, type = 'scatter', mode = 'markers+lines',
-          name = paste0("Huidig (", as.character(year), ")"), 
+          name = paste0("Huidig geobserveerd (", as.character(year), ")"), 
           line = list(color='rgb(100,0,0)'), showlegend = TRUE) %>%
       add_trace(x = ~month, y = ~mean, type = 'scatter', mode = 'lines',
-          name = paste0("Gemiddelde in ", as.character(year)), 
+          name = paste0("Gemiddelde (", as.character(year), ")"), 
           line = list(color="gray", dash = "dot"), showlegend = TRUE) %>%
       layout(xaxis = list(title = "Maand"), 
           yaxis = list(title = "Percentage jaarlijks afschot"),

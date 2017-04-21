@@ -22,9 +22,9 @@ createPlot1 <- function(width = NULL, height = NULL) {
       "Vlaams-Brabant", "Oost-Vlaanderen", "West-Vlaanderen")
   
   # plotly
-  plotData <- reshape(data = data, varying = list(as.character(2006:2014)), 
+  plotData <- reshape(data = data, varying = list(as.character(colnames(data))), 
       v.names = "aantal", ids = rownames(data), direction = "long")
-  plotData$time <- as.character(2006:2014)[plotData$time]
+  plotData$time <- as.character(colnames(data))[plotData$time]
   rownames(plotData) <- NULL
   plot_ly(x = plotData$time, y = plotData$aantal, color = plotData$id,
           type = "scatter", mode = "lines+markers",

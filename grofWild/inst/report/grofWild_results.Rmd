@@ -1,0 +1,183 @@
+---
+title: "Grof Wild in Vlaanderen: Rapport"
+author: "OpenAnalytics"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  rmarkdown::html_document:
+    css: custom.css
+    toc: true
+    toc_depth: 4
+    number_sections: true
+---
+
+<!-- Note: clash between inclusion of rCharts plot and floating table of contents -->
+<!-- so removed it -->
+<!--     toc_float: -->
+<!--       collapsed: false -->
+<!--       smooth_scroll: false -->
+
+
+```{r optionsChunks, echo = FALSE, message = FALSE, warning=FALSE}
+
+## Chunk with options for knitr. This chunk should not be modified.
+
+knitr::opts_chunk$set(
+    eval = TRUE,
+    echo = FALSE, 
+    message = FALSE,
+    cache = FALSE,
+    warning = FALSE,
+    error = FALSE,
+    comment = "#",
+    tidy = FALSE,
+    collapse = TRUE,
+    results = "asis",
+    fig.align = "center")
+
+options(warn = 1, width = 200)
+library(grofWild)
+
+```
+
+```{r addLogo}
+
+#	cat('<img src="', getPathFigure("logo.png"), 
+#		'" style="position:absolute;top:0px;" />\n', sep = "")
+
+	library(htmltools)
+	htmltools::img(src = knitr::image_uri(getPathFigure("logo.png")), 
+		alt = 'logo', 
+		style = 'position:absolute; top:0; right:0; width:400px; padding:50px;')
+		
+```
+
+```{r saveInputParameters}
+
+# for reproducibility/debugging, save parameters from the Shiny app
+save(params, file = "params.RData")
+
+```
+
+# Resultaten uit de Applicatie
+
+```{r paramsYearReformat}
+
+	yearsST <- ifelse(params$times[1] != params$times[2],
+		paste("de jaren", params$times[1], "t.e.m", params$times[2]),
+		paste("het jaar", params$times[1])
+	)
+
+```
+
+## Kaart
+
+De volgende kaart toont het geobserveerde aantal van de diersoort
+`r params$specie` per 
+`r ifelse(params$spatialLevel == "provinces", "provincie", "gemeente")` voor
+`r yearsST`.
+
+```{r map}
+
+library(leaflet)
+params$map
+
+```	
+
+## Geobserveerd aantal per regio per totale periode
+
+```{r textSpatialEntity}
+
+if(params$spatialLevel == "provinces")
+  regio <- "provincies" else
+  regio <- "gemeenten"
+
+textSpatialEntity <- ifelse(
+    is.null(params$regions), 
+    paste("alle", params$spatialLevel), 
+    paste0("de ", params$spatialLevel, ": ", 
+		toString(params$regions)))
+
+```
+
+De volgende figuur toont het geobserveerd aantal voor de diersoort
+`r params$specie`, `r yearsST`,  en `r textSpatialEntity`.
+
+```{r profile,results = 'asis', comment = NA}
+
+if (!is.null(params$interactiveTime))
+	params$interactiveTime$show('inline', include_assets = TRUE, cdn = TRUE)
+#  params$interactiveTime$print('chart2', include_assets = TRUE, cdn = TRUE)
+
+```
+
+# Resultaten op Basis van Huidig Rapport
+
+```{r includeImageWrapper}
+
+includeImageWrapper <- function(x)
+  cat('<img style="float: right;" src="', getPathFigure(x), 
+      '" width="400">\n', sep = "")
+
+```
+
+## Aantal everzwijnen per provincie en per jaar
+
+```{r comparePreviousNewVisualization-graph1, out.width = '90%'}
+
+library(grofWild)
+
+# previous visualization
+cat("### Huidige visualisatie\n\n")
+library(knitr)
+#includeImageWrapper("graph1.png")
+include_graphics(getPathFigure("graph1.png")) # cannot specify the size
+
+# new visualization with plotly
+cat("\n\n### Voorstel\n\n")
+library(plotly)
+createPlot1()
+
+```
+
+## Aantal everzwijnen per gemeente en per jaar
+
+```{r comparePreviousNewVisualization-graph2, out.width = '90%'}
+
+# previous visualization
+cat("### Huidige visualisatie\n\n")
+#includeImageWrapper("graph2.png")
+include_graphics(getPathFigure("graph2.png"))
+
+# new visualization with plotly
+cat("\n\n### Voorstel\n\n")
+createPlot2()
+
+```
+
+## Percentage jaarlijks afschot per maand
+
+<!-- , out.width = '50%', out.height = '10%' -->
+
+```{r comparePreviousNewVisualization-graph3, out.width = '90%'}
+
+# previous visualization
+cat("### Huidige visualisatie\n\n")
+#includeImageWrapper("graph3.png")
+include_graphics(getPathFigure("graph3.png"))
+
+# new visualization with plotly
+cat("\n\n### Voorstel\n\n")
+createPlot3()
+
+```
+
+
+# Appendix
+
+## Used software
+
+```{r usedSoftware}
+
+	printSessionInfoMarkdown()
+
+```

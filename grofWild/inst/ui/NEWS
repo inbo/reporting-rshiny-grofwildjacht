@@ -1,2 +1,4 @@
+0.0.2
+	o separated R files for each createPlot function
 0.0.1
     o initial version: interactive map + line plot

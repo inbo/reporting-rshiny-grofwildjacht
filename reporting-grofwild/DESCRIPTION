@@ -1,12 +1,12 @@
-Package: grofWild
+Package: reportingGrofwild
 Maintainer: Machteld Varewyck <machteld.varewyck@openanalytics.eu>
 License: MIT + file LICENSE
 Title: Grof Wild analysis for INBO
 Type: Package
 Author: Machteld Varewyck, Laure Cougnaud
 Description: Data visualization of grof wild in Vlaanderen.
-Version: 0.0.2
-Date: 2017-04-26
+Version: 0.0.3
+Date: 2017-06-09
 Imports:
     shiny, maptools, sp, plotly, plyr
 Suggests:

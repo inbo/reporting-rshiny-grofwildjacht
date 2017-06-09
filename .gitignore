@@ -35,3 +35,5 @@ vignettes/*.pdf
 
 # Rstudio project file
 *.Rproj
+/.settings/
+/.project

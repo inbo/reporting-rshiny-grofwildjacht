@@ -3,6 +3,8 @@
 export(createPlot1)
 export(createPlot2)
 export(createPlot3)
+export(figureModuleServer)
+export(figureModuleUI)
 export(getPathCss)
 export(getPathFigure)
 export(getPathReport)

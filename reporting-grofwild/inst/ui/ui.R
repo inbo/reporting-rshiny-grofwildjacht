@@ -1,5 +1,6 @@
 library(leaflet)
 library(rCharts)
+library(plotly)
 
 shinyUI(
     
@@ -23,32 +24,37 @@ shinyUI(
         tags$br(),
         tags$br(),
         
-        downloadButton(outputId = "exportResults", label = "Rapport"),
+#        downloadButton(outputId = "exportResults", label = "Rapport"),
         
         tags$br(),
         tags$br(),
         
         selectInput("showSpecies", "Diersoort (species)",
-            choices = c("wild zwijn" = "wildZwijn", "ree", "damhert", "edelhert"), 
-            selected = "wildZwijn"
+            choices = c("Wild zwijn", "Ree", "Damhert", "Edelhert")
         ),
         
         # Show user input module per plot
+        
+        
+        ## countYearProvince: all species
+        h4("Aantal van wildsoort per jaar en per provincie"),
         fluidRow(
             
-            column(4, figureModuleUI(id = "plot1", title = "Plot 1")),
-            column(8, plotOutput("plot1"))
+            column(4, optionsModuleUI(id = "plot1", showTime = TRUE)),
+            column(8, plotModuleUI(id = "plot1"))
         
         ),
         
         conditionalPanel("input.showSpecies == 'wildZwijn'", {
-              
-              fluidRow(
+              list(
+                  h4("Plot 2"),
                   
-                  column(4, figureModuleUI(id = "plot2", title = "Plot 2", 
-                          showLegend = FALSE)),
-                  column(8, plotOutput("plot2"))
-              
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot2", showLegend = TRUE, showGlobe = TRUE)),
+                      column(8, plotModuleUI(id = "plot2"))
+                  
+                  )
               )
               
             }),

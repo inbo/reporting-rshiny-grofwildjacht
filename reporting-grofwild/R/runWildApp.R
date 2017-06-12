@@ -11,6 +11,7 @@
 #' @return no return value
 #' @import shiny
 #' @importFrom devtools install_github dev_package_deps
+#' @importFrom stats update
 #' @export
 runWildApp <- function(installDependencies = FALSE, ...) {
   

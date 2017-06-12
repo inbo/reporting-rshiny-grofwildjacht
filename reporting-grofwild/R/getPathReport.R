@@ -4,7 +4,7 @@
 #' @export
 getPathReport <- function(){
 	
-	basePathReport <- system.file("report", package = "grofWild")
+	basePathReport <- system.file("report", package = "reportingGrofwild")
 	pathReport <- dir(basePathReport , pattern = "grofWild_results.Rmd", full.names = TRUE)
 	
 	return(pathReport)
@@ -17,7 +17,7 @@ getPathReport <- function(){
 #' @export
 getPathCss <- function(){
 	
-	basePath <- system.file("report", package = "grofWild")
+	basePath <- system.file("report", package = "reportingGrofwild")
 	pathFile <- dir(basePath, pattern = "custom.css", full.names = TRUE)
 	
 	return(pathFile)
@@ -32,7 +32,7 @@ getPathCss <- function(){
 #' @export
 getPathFigure <- function(figureName){
 	
-	basePath <- system.file("report/figure", package = "grofWild")
+	basePath <- system.file("report/figure", package = "reportingGrofwild")
 	pathFile <- dir(basePath, pattern = figureName, full.names = TRUE)
 	
 	return(pathFile)

@@ -5,9 +5,9 @@
 
 if(FALSE){
 
-	library(grofWild)
+	library(reportingGrofwild)
 	
-	dataDir <- system.file("extdata", package = "grofWild")
+	dataDir <- system.file("extdata", package = "reportingGrofwild")
 	
 	provinceData <- readShapeData(zipFile = file.path(dataDir, "provinces.zip"))
 	provincesNaam <- unique(provinceData@data$NAAM)

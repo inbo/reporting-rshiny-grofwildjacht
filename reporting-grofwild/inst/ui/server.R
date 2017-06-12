@@ -2,18 +2,17 @@ library(leaflet)
 library(rCharts)
 library(reportingGrofwild)
 library(plyr)
+library(plotly)
 
 `%then%` <- shiny:::`%OR%`
 
 
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 
-# extract the 'countsData' object from the package
-load(file.path(dataDir, "countsData.RData"))
+## Load all data
+ecologyData <- loadEcologyData()
 
-timePoints <- sort(unique(countsData$commune$year))
 
-dataDir <- system.file("extdata", package = "grofWild")
 provinceData <- readShapeData(zipFile = file.path(dataDir, "provinces.zip"))
 communeData <- readShapeData(zipFile = file.path(dataDir, "communes.zip"))
 
@@ -41,27 +40,30 @@ shinyServer(function(input, output, session) {
       
       results <- reactiveValues()
       
-      
-      # User input for controlling the plots
-      callModule(module = figureModuleServer, id = "plot1", 
-          data = reactive(countsData$province))
-      callModule(module = figureModuleServer, id = "plot2", 
-          data = reactive(countsData$province))
-      
-      
-      # Create plot output
-      output$plot1 <- renderPlot({
+      results$wildData <- reactive({
             
-            plot(1:10, 1:10)
+            ecologyData[ecologyData$wildsoort == input$showSpecies, ]
             
           })
       
       
-      output$plot2 <- renderPlot({
-            
-            plot(1:10, 10:1)
-            
-          })
+      
+      ## User input for controlling the plots and create plotly
+      # Plot 1
+      callModule(module = optionsModuleServer, id = "plot1", 
+          data = results$wildData)
+      callModule(module = plotModuleServer, id = "plot1",
+          plotFunction = "countYearProvince", 
+          data = results$wildData, 
+          wildNaam = tolower(input$showSpecies))
+      
+      # Plot 2
+      callModule(module = optionsModuleServer, id = "plot2", 
+          data = results$wildData)
+      callModule(module = plotModuleServer, id = "plot2",
+          plotFunction = "countYearProvince", 
+          data = results$wildData, 
+          wildNaam = tolower(input$showSpecies))
       
       
 #      # Read shape data for provinces or communes

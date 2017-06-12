@@ -1,9 +1,9 @@
 
-library(grofWild)
+library(reportingGrofwild)
 library(leaflet)
 library(sp)
 
-dataDir <- system.file("extdata", package = "grofWild")
+dataDir <- system.file("extdata", package = "reportingGrofwild")
 
 provinceData <- readShapeData(zipFile = file.path(dataDir, "provinces.zip"))
 plot(provinceData)

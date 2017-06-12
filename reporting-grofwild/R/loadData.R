@@ -26,6 +26,33 @@ readShapeData <- function(zipFile, id = NULL) {
 }
 
 
+#' Read ecology data
+#' @return data.frame, loaded ecology data
+#' @author mvarewyck
+#' @importFrom utils read.csv
+#' @export
+loadEcologyData <- function() {
+  
+  ecologyData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
+          "rshiny_reporting_data_ecology.csv"), sep = ";")
+#  xtabs( ~ provincie + wildsoort, data = ecologyData)
+  
+  
+  ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
+  ecologyData$provincie <- factor(ifelse(ecologyData$wildsoort == "Wild zwijn", 
+          as.character(ecologyData$provincie), 
+          ifelse(ecologyData$provincie == "Voeren", 
+              "Limburg", 
+              as.character(ecologyData$provincie))),
+      levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams-Brabant", "Antwerpen", "Limburg", "Voeren"))
+#  xtabs( ~ provincie + wildsoort, data = ecologyData)
+  
+  
+  return(ecologyData)
+  
+}
+
+
 
 #' Print for debugging
 #' @param x R object that will be printed

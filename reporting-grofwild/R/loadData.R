@@ -1,56 +1,140 @@
-#' Read shape data from zipped file
-#' @param zipFile the pathname of the zip file 
-#' @param id character string, the name of a column in the shapefile .dbf 
-#' containing the ID values to be used; default value is NULL
-#' @return a SpatialPolygonsDataFrame object, with polygons and data as provided
-#' in the zipFile
-#' @importFrom maptools readShapePoly
-#' @importFrom sp CRS spTransform
+#' Load all shape data from zipped files
+#' @return list with for each spatial level a SpatialPolygonsDataFrame object, 
+#' with polygons and data as provided in the zipFile; spatial levels are 
+#' flanders, provinces, communes and provincesVoeren (Voeren as separate province)
+#' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
 #' @importFrom utils unzip
+#' @importFrom methods slot
+#' @importFrom maptools readShapePoly unionSpatialPolygons spRbind
 #' @export
-readShapeData <- function(zipFile, id = NULL) {
+loadShapeData <- function() {
   
-  tmpDir <- tempdir()
-  unlink(file.path(tmpDir, "*.shp"))
-  unlink(file.path(tmpDir, "*.shp.*"))
-  unzip(zipFile, exdir = tmpDir)
-  allShapeFiles <- list.files(path = tmpDir, pattern = ".shp", 
-      full.names = TRUE)
-  if (length(allShapeFiles) == 0)
-    stop("Unzipped folder contains no files. Please make sure that the files are not in a subfolder.")
-  shapeData <- readShapePoly(allShapeFiles, IDvar = id, proj4string = CRS("+init=epsg:31370"))
-  shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
+  dataDir <- system.file("extdata", package = "reportingGrofwild")
   
-  return(shapeData)
+  allLevels <- c("flanders", "provinces", "communes")
+  
+  
+  ## Read all spatial data
+  spatialData <- lapply(allLevels, function(iLevel) {
+        
+        tmpDir <- tempdir()
+        unlink(file.path(tmpDir, "*.shp"))
+        unlink(file.path(tmpDir, "*.shp.*"))
+        unzip(file.path(dataDir, paste0(iLevel, ".zip")), exdir = tmpDir)
+        allShapeFiles <- list.files(path = tmpDir, pattern = ".shp", 
+            full.names = TRUE)
+        if (length(allShapeFiles) == 0)
+          stop("Unzipped folder contains no files. Please make sure that the files are not in a subfolder.")
+        shapeData <- readShapePoly(allShapeFiles, IDvar = NULL, proj4string = CRS("+init=epsg:31370"))
+        shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
+        
+        
+        return(shapeData)
+        
+      })
+  
+  names(spatialData) <- allLevels
+  
+  
+  ## Create "province" Voeren
+  
+  # Define provinces based on NIS codes
+  provinceIds <- substr(spatialData$communes$NISCODE, start = 1, stop = 1)
+  # Give Voeren unique code, different from any other province
+  voerenId <- which(spatialData$communes$NAAM == "Voeren")
+  provinceIds[voerenId] <- 100
+  # Select Limburg and Voeren
+  isLimburg <- provinceIds %in% c(7, 100)
+  isLimburgProvince <- spatialData$provinces$NAAM == "Limburg"
+
+  # Create new polygon for Limburg
+  limburgPolygon <- unionSpatialPolygons(SpP = spatialData$communes[isLimburg,],
+      IDs = provinceIds[isLimburg])
+  limburgData <- spatialData$provinces@data[isLimburgProvince, ]
+  voerenData <- limburgData
+  voerenData$NAAM <- "Voeren"
+  
+  # Bind all province polygons and data
+  allPolygons <- spRbind(spatialData$provinces[!isLimburgProvince, ],
+      limburgPolygon)
+  tmpData <- rbind(spatialData$provinces@data[!isLimburgProvince, ],
+      voerenData, limburgData)
+  rownames(tmpData) <- sapply(slot(allPolygons, "polygons"), function(x) slot(x, "ID")) 
+  
+  newProvinceData <- SpatialPolygonsDataFrame(Sr = allPolygons,
+      data = tmpData)
+  
+  # Attach new province data to spatialData
+  spatialData$provincesVoeren <- newProvinceData
+  
+  
+  return(spatialData)
   
 }
 
 
-#' Read ecology data
-#' @return data.frame, loaded ecology data
+
+#' Read ecology or geography data
+#' @param type data type, "eco" for ecology data and "geo" for geography data
+#' @param shapeData list with objects of class SpatialPolygonsDataFrame as 
+#' returned by \code{\link{loadShapeData}}; if not NULL, commune names are 
+#' matched between geography (raw) data and spatial (shape) data 
+#' @return data.frame, loaded ecology or geography data
 #' @author mvarewyck
 #' @importFrom utils read.csv
 #' @export
-loadEcologyData <- function() {
+loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
   
-  ecologyData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
-          "rshiny_reporting_data_ecology.csv"), sep = ";")
-#  xtabs( ~ provincie + wildsoort, data = ecologyData)
+  type <- match.arg(type)
   
+  
+  dataFile <- switch(type,
+      "eco" = "rshiny_reporting_data_ecology.csv",
+      "geo" = "rshiny_reporting_data_geography.csv")
+  
+  rawData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
+          dataFile), sep = ";", stringsAsFactors = FALSE)
+#  xtabs( ~ provincie + wildsoort, data = rawData)
+  
+  ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
+  rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
+          "Vlaams Brabant", as.character(rawData$provincie)))
+#  xtabs( ~ provincie + wildsoort, data = rawData)
+   
+  ## Mismatch names with spatial (shape) data for multiple communes
+  if (type == "geo" & !is.null(shapeData)) {
+    
+    communeData <- shapeData$communes@data
+    # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
+    gemeenteData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
+            "gemeentecodes.csv"), header = TRUE, sep = ";")
+    
+    geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
+    geoName <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 
+    
+#    tmpData <- data.frame(old = as.character(rawData$gemeente_afschot_locatie), 
+#        new = geoName, stringsAsFactors = FALSE)
+#    tmpData[which(tmpData$old != tmpData$new), ]
+    
+    rawData$gemeente_afschot_locatie <- geoName
+    
+  }
   
   ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
-  ecologyData$provincie <- factor(ifelse(ecologyData$wildsoort == "Wild zwijn", 
-          as.character(ecologyData$provincie), 
-          ifelse(ecologyData$provincie == "Voeren", 
+  ## Re-order factor levels for plots
+  rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
+          as.character(rawData$provincie), 
+          ifelse(rawData$provincie == "Voeren", 
               "Limburg", 
-              as.character(ecologyData$provincie))),
-      levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams-Brabant", "Antwerpen", "Limburg", "Voeren"))
-#  xtabs( ~ provincie + wildsoort, data = ecologyData)
+              as.character(rawData$provincie))),
+      levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
+#  xtabs( ~ provincie + wildsoort, data = rawData)
   
   
-  return(ecologyData)
+  return(rawData)
   
 }
+
 
 
 

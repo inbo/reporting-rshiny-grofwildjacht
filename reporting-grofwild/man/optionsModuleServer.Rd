@@ -4,7 +4,7 @@
 \alias{optionsModuleServer}
 \title{User input for controlling specific plot (server-side)}
 \usage{
-optionsModuleServer(input, output, session, data)
+optionsModuleServer(input, output, session, data, extraVariables = NULL)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -14,6 +14,9 @@ optionsModuleServer(input, output, session, data)
 \item{session}{shiny session variable for specific namespace}
 
 \item{data}{reactive data.frame, data for chosen species}
+
+\item{extraVariables}{character vector, defines the variables in \code{data}
+for which values should be shown in popup-window in the plot}
 }
 \value{
 no return value; some output objects are created

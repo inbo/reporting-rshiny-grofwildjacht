@@ -26,6 +26,8 @@ shinyUI(
         
 #        downloadButton(outputId = "exportResults", label = "Rapport"),
         
+        verbatimTextOutput("print"),
+        
         tags$br(),
         tags$br(),
         
@@ -37,7 +39,7 @@ shinyUI(
         
         
         ## countYearProvince: all species
-        h4("Aantal van wildsoort per jaar en per provincie"),
+        h4("Aantal van wildsoort per jaar en per regio"),
         fluidRow(
             
             column(4, optionsModuleUI(id = "plot1", showTime = TRUE)),
@@ -45,6 +47,52 @@ shinyUI(
         
         ),
         
+        ## countMap: all species
+        wellPanel(
+            fluidRow(
+                column(4, selectInput(inputId = "map_regionLevel", label = "Regio-schaal",
+                        choices = c("Vlaanderen" = "flanders", 
+                            "Provincie" = "provinces", "Gemeente" = "communes"))),
+                column(8, uiOutput("map_region"))
+            ),
+            
+            fluidRow(
+                column(6, selectInput(inputId = "map_legend", "Legende",
+                        choices = c("<none>" = "none", 
+                            "Bovenaan rechts" = "topright", 
+                            "Onderaan rechts" = "bottomright", 
+                            "Bovenaan links" = "topleft",
+                            "Onderaan links" = "bottomleft"))),
+                column(6, uiOutput("map_time"))
+            ),
+            
+            actionLink(inputId = "map_globe", label = "Voeg landkaart toe",
+                icon = icon("globe"))
+        
+        ),
+        
+#        # For debugging
+#        dataTableOutput("table1"),
+#        dataTableOutput("table2"),
+        
+        fluidRow(
+            column(6, 
+                uiOutput("map_title"),
+                leafletOutput("map_spacePlot", height = "500px")
+            ),
+            column(6, showOutput("map_timePlot", "highcharts"))
+        
+        ),
+        
+        tags$br(),
+        fluidRow(
+            column(6, downloadButton("downloadPlotSpace", "Download")),
+            column(6, downloadButton("downloadPlotTime", "Download"))
+        ),
+        
+        
+        
+        # TODO
         conditionalPanel("input.showSpecies == 'wildZwijn'", {
               list(
                   h4("Plot 2"),
@@ -59,27 +107,7 @@ shinyUI(
               
             }),
         
-#        fluidRow(
-#            column(6,
-#                uiOutput("titleInteractivePlot"),
-#                leafletOutput("showMap", height = "500px")
-#            ),
-#            column(6, 
-#                showOutput("interactiveTime", "highcharts")
-#            
-#            )
-#        ),
-#        
-#        tags$br(),
-#        fluidRow(
-#            column(6, 
-#                downloadButton("downloadPlotSpace", "Download")
-#            ),
-#            column(6, 
-#                downloadButton("downloadPlotTime", "Download")
-#            )
-#        ),
-#        
+        
         tags$br()
     
     

@@ -25,7 +25,7 @@ optionsModuleUI <- function(id,
       
       wellPanel(
           if (showLegend)
-            selectInput(inputId = "legend", "Legende",
+            selectInput(inputId = ns("legend"), "Legende",
                 choices = c("<none>" = "none", 
                     "Bovenaan rechts" = "topright", 
                     "Onderaan rechts" = "bottomright", 
@@ -37,12 +37,14 @@ optionsModuleUI <- function(id,
           if (showTime)
             uiOutput(ns("time")),
           if (showRegion)
-            list(selectInput(inputId = "regionLevel", label = "Regio-schaal",
-                    choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", "Gemeente" = "communes")),
-                uiOutput(ns("region"))
+            fluidRow(
+                column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+                    choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
+                        "Fusiegemeenten" = "communes"))),
+                column(8, uiOutput(ns("region")))
             ),
           if (showGlobe)
-            actionLink(inputId = "globe", label = "Voeg landkaart toe",
+            actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
                 icon = icon("globe"))
       
       )
@@ -57,9 +59,11 @@ optionsModuleUI <- function(id,
 #' @param output shiny output variable for specific namespace
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
+#' @param extraVariables character vector, defines the variables in \code{data}
+#' for which values should be shown in popup-window in the plot
 #' @return no return value; some output objects are created
 #' @export
-optionsModuleServer <- function(input, output, session, data) {
+optionsModuleServer <- function(input, output, session, data, extraVariables = NULL) {
   
   ns <- session$ns
   
@@ -67,9 +71,8 @@ optionsModuleServer <- function(input, output, session, data) {
         
         selectInput(inputId = ns("extraVariables"), 
             label = "Extra variabelen in popup",
-            choices = {
-              vars <- names(data()); vars[!vars %in% c("counts", "year")]
-            }, multiple = TRUE)
+            choices = extraVariables,
+            multiple = TRUE)
         
       })
   
@@ -88,9 +91,15 @@ optionsModuleServer <- function(input, output, session, data) {
   
   output$region <- renderUI({
         
+        validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
+        
+        if (input$regionLevel == "flanders") 
+          choices <- "Vlaams Gewest" else if (input$regionLevel == "provinces")
+          choices <- unique(data()$provincie) else
+          choices <- unique(data()$gemeente_afschot_locatie)
+        
         selectInput(inputId = ns("region"), label = "Regio('s)",
-#            choices = sort(data()$NAAM),
-            choices = letters[1:4],
+            choices = choices,
             multiple = TRUE)
         
       })
@@ -108,10 +117,8 @@ plotModuleUI <- function(id) {
   
   ns <- NS(id)
   
-  tagList(
-      verbatimTextOutput(ns("print")),
-      plotlyOutput(ns("plot"))
-  )
+  plotlyOutput(ns("plot"))
+  
 }
 
 
@@ -133,17 +140,18 @@ plotModuleServer <- function(input, output, session, plotFunction, data, wildNaa
         
         argList <- c(
             list(data = data(), wildNaam = wildNaam),
-            if (!is.null(input$legend))
-              list(legend = input$legend), 
-            if (!is.null(input$extraVariables))
-              list(extraVariables = input$extraVariables),
             if (!is.null(input$time))
-              list(jaartallen = input$time[1]:input$time[2]),
-            if (!is.null(input$regionLevel))
-              list(regionLevel = input$regionLevel,
-                  region = input$region),
-            if (!is.null(input$globe))
-              list(globe = input$globe)
+              list(jaartallen = input$time[1]:input$time[2])
+        # Currently these options are never used
+#            if (!is.null(input$legend))
+#              list(legend = input$legend), 
+#            if (!is.null(input$extraVariables))
+#              list(extraVariables = input$extraVariables),
+#            if (!is.null(input$regionLevel))
+#              list(regionLevel = input$regionLevel,
+#                  region = input$region),
+#            if (!is.null(input$globe))
+#              list(globe = input$globe)
         )
         
         do.call(plotFunction, args = argList)
@@ -151,3 +159,4 @@ plotModuleServer <- function(input, output, session, plotFunction, data, wildNaa
       })
   
 }
+

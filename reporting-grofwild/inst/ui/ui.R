@@ -92,14 +92,14 @@ shinyUI(
         
         
         
-        # TODO
-        conditionalPanel("input.showSpecies == 'wildZwijn'", {
+        ## countAgeCheek: Wild zwijn and Ree
+        conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
+              
               list(
-                  h4("Plot 2"),
-                  
+                  h4("Leeftijdscategorie op basis van onderkaak"),
                   fluidRow(
                       
-                      column(4, optionsModuleUI(id = "plot2", showLegend = TRUE, showGlobe = TRUE)),
+                      column(4, optionsModuleUI(id = "plot2", showTime = TRUE)),
                       column(8, plotModuleUI(id = "plot2"))
                   
                   )

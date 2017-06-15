@@ -85,15 +85,16 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot1",
           plotFunction = "countYearProvince", 
           data = results$wildEcoData, 
-          wildNaam = tolower(input$showSpecies))
+          wildNaam = input$showSpecies)
+      
       
       # Plot 2
       callModule(module = optionsModuleServer, id = "plot2", 
           data = results$wildEcoData)
       callModule(module = plotModuleServer, id = "plot2",
-          plotFunction = "countYearProvince", 
-          data = results$wildEcoData, 
-          wildNaam = tolower(input$showSpecies))
+          plotFunction = "countAgeCheek", 
+          data = results$wildEcoData,
+          wildNaam = input$showSpecies)
       
       
       ### Plot 3 ###

@@ -11,7 +11,7 @@ spatialData <- loadShapeData()
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo", shapeData = spatialData)
 
-
+wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 
 
 ## PLOT 1: Counts per year and province ##
@@ -25,7 +25,6 @@ allPlots <- lapply(levels(ecoData$wildsoort), function(wildsoort) {
 allPlots
 
 # Some special cases
-wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 countYearProvince(data = wildEcoData, wildNaam = "wild zwijn", 
     jaartallen = 2016, doodsoorzaak = "afschot")
 countYearProvince(data = wildEcoData, wildNaam = "wild zwijn",
@@ -65,3 +64,20 @@ plot(spatialData$provincesVoeren)
 plot(spatialData$communes)
 
 
+
+
+## PLOT 4: Counts age based on cheek ##
+
+allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
+      
+      plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
+      countAgeCheek(data = plotData, wildNaam = wildsoort)
+      
+    })
+allPlots
+
+# Some special cases
+countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn", 
+    jaartallen = 2016)
+countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn",
+    jaartallen = 2016:2017)

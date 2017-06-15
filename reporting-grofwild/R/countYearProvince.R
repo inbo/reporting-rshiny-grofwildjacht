@@ -40,19 +40,23 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   colors <- rev(inbo.2015.colours(n = nlevels(summaryData$provincie)))
-  title <- paste0("Aantal ", wildNaam, " (", paste(doodsoorzaak, collapse = " en "), ")")
+  title <- paste0(wildNaam, " ",
+      ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
+              jaartallen),
+      " (", paste(doodsoorzaak, collapse = " en "), ")")
     
   
   # Create plot
   plot_ly(data = summaryData, x = ~afschotjaar, y = ~freq, color = ~provincie,
           colors = colors, type = "bar",  width = width, height = height) %>%
-      layout(xaxis = list(title = "Jaar"), 
-          yaxis = list(title = title),
-          margin = list(b = 120), 
+      layout(title = title,
+          xaxis = list(title = "Jaar"), 
+          yaxis = list(title = "Aantal"),
+          margin = list(b = 80, t = 100), 
           barmode = ifelse(nlevels(summaryData$afschotjaar) == 1, "group", "stack"),
           annotations = list(x = levels(summaryData$afschotjaar), 
               y = totalCount, 
-              text = paste(ifelse(nlevels(summaryData$afschotjaar) == 1, "total:", ""), totalCount),
+              text = paste(ifelse(nlevels(summaryData$afschotjaar) == 1, "totaal:", ""), totalCount),
               xanchor = 'center', yanchor = 'bottom',
               showarrow = FALSE))  
   

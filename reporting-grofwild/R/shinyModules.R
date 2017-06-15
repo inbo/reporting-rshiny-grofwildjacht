@@ -117,7 +117,7 @@ plotModuleUI <- function(id) {
   
   ns <- NS(id)
   
-  plotlyOutput(ns("plot"))
+  plotlyOutput(ns("plot"), height = "600px")
   
 }
 

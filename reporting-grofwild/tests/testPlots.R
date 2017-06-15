@@ -81,3 +81,21 @@ countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016)
 countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
+
+
+
+## PLOT 5: Counts per year and age ##
+
+allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
+      
+      plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
+      countYearAge(data = plotData, wildNaam = wildsoort)
+      
+    })
+allPlots
+
+# Some special cases
+countYearAge(data = wildEcoData, wildNaam = "wild zwijn", 
+    jaartallen = 2016)
+countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
+    jaartallen = 2016:2017)

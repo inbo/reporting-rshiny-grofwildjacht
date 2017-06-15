@@ -35,17 +35,8 @@ shinyUI(
             choices = c("Wild zwijn", "Ree", "Damhert", "Edelhert")
         ),
         
-        # Show user input module per plot
         
-        
-        ## countYearProvince: all species
-        h4("Aantal van wildsoort per jaar en per regio"),
-        fluidRow(
-            
-            column(4, optionsModuleUI(id = "plot1", showTime = TRUE)),
-            column(8, plotModuleUI(id = "plot1"))
-        
-        ),
+        # Map with according line plot
         
         ## countMap: all species
         wellPanel(
@@ -92,7 +83,20 @@ shinyUI(
         
         
         
-        ## countAgeCheek: Wild zwijn and Ree
+        # Show user input module per plot
+        
+        
+        ## countYearProvince: all species
+        h4("Aantal per jaar en per regio"),
+        fluidRow(
+            
+            column(4, optionsModuleUI(id = "plot1", showTime = TRUE)),
+            column(8, plotModuleUI(id = "plot1"))
+        
+        ),
+        
+        
+        ## countAgeCheek & countYearAge: Wild zwijn and Ree
         conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
               
               list(
@@ -101,6 +105,15 @@ shinyUI(
                       
                       column(4, optionsModuleUI(id = "plot2", showTime = TRUE)),
                       column(8, plotModuleUI(id = "plot2"))
+                  
+                  ),
+                  
+                  h4("Aantal per jaar en per leeftijdscategorie (o.b.v. onderkaak)"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot3", showTime = TRUE,
+                              regionLevels = 1:2)),
+                      column(8, plotModuleUI(id = "plot3"))
                   
                   )
               )

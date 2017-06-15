@@ -1,3 +1,9 @@
+# Project: inbo-grofwildjacht_git
+# 
+# Author: mvarewyck
+###############################################################################
+
+
 #' Create interactive plot for counts per province and year
 #' 
 #' Figure p. 4 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

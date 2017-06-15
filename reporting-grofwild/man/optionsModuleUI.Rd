@@ -5,7 +5,7 @@
 \title{User input for controlling specific plot (ui-side)}
 \usage{
 optionsModuleUI(id, showLegend = FALSE, showExtraVariables = FALSE,
-  showTime = FALSE, showRegion = FALSE, showGlobe = FALSE)
+  showTime = FALSE, regionLevels = NULL, showGlobe = FALSE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
@@ -17,7 +17,8 @@ extra variables (popup)}
 
 \item{showTime}{boolean, whether to show input field for time range}
 
-\item{showRegion}{boolean, whether to show input fields for region selection}
+\item{regionLevels}{numeric vector, if not NULL, defines the choices for 
+region levels: 1 = flanders, 2 = provinces, 3 = communes}
 
 \item{showGlobe}{boolean, whether to show input field for map of the globe}
 }

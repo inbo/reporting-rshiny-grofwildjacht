@@ -97,6 +97,15 @@ shinyServer(function(input, output, session) {
           wildNaam = input$showSpecies)
       
       
+      # Plot 3
+      callModule(module = optionsModuleServer, id = "plot3", 
+          data = results$wildEcoData)
+      callModule(module = plotModuleServer, id = "plot3",
+          plotFunction = "countYearAge", 
+          data = results$wildEcoData,
+          wildNaam = input$showSpecies)
+      
+      
       ### Plot 3 ###
       
       # Data-dependent input fields

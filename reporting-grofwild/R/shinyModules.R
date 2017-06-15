@@ -11,15 +11,17 @@
 #' @param showExtraVariables boolean, whether to show input field for 
 #' extra variables (popup)
 #' @param showTime boolean, whether to show input field for time range
-#' @param showRegion boolean, whether to show input fields for region selection
+#' @param regionLevels numeric vector, if not NULL, defines the choices for 
+#' region levels: 1 = flanders, 2 = provinces, 3 = communes
 #' @param showGlobe boolean, whether to show input field for map of the globe
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showExtraVariables = FALSE, showTime = FALSE, 
-    showRegion = FALSE, showGlobe = FALSE) {
+    regionLevels = NULL, showGlobe = FALSE) {
   
   ns <- NS(id)
+  
   
   tagList(
       
@@ -36,11 +38,11 @@ optionsModuleUI <- function(id,
             uiOutput(ns("extraVariables")),
           if (showTime)
             uiOutput(ns("time")),
-          if (showRegion)
+          if (!is.null(regionLevels))
             fluidRow(
                 column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                     choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                        "Fusiegemeenten" = "communes"))),
+                        "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
             ),
           if (showGlobe)
@@ -99,7 +101,7 @@ optionsModuleServer <- function(input, output, session, data, extraVariables = N
           choices <- unique(data()$gemeente_afschot_locatie)
         
         selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices,
+            choices = choices[!is.na(choices)],
             multiple = TRUE)
         
       })
@@ -135,21 +137,40 @@ plotModuleUI <- function(id) {
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, data, wildNaam) {
   
+  subData <- reactive({
+        
+        provincie <- NULL  # to prevent warnings with R CMD check
+        subData <- data()
+        
+        if (!is.null(input$regionLevel)) {
+          
+          validate(need(input$region, "Gelieve regio('s) te selectere"))
+          
+          if (input$regionLevel == "provinces")
+            subData <- subset(subData, provincie %in% input$region)
+          
+        }
+
+        
+        return(subData)
+        
+      })
   
   output$plot <- renderPlotly({
         
+        req(nrow(subData()) > 0)
+        
         argList <- c(
-            list(data = data(), wildNaam = wildNaam),
+            list(data = subData(), wildNaam = wildNaam),
             if (!is.null(input$time))
-              list(jaartallen = input$time[1]:input$time[2])
+              list(jaartallen = input$time[1]:input$time[2]),
         # Currently these options are never used
 #            if (!is.null(input$legend))
 #              list(legend = input$legend), 
 #            if (!is.null(input$extraVariables))
 #              list(extraVariables = input$extraVariables),
-#            if (!is.null(input$regionLevel))
-#              list(regionLevel = input$regionLevel,
-#                  region = input$region),
+            if (!is.null(input$regionLevel))
+              list(regio = input$region)
 #            if (!is.null(input$globe))
 #              list(globe = input$globe)
         )

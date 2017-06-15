@@ -57,18 +57,21 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   # Summarize data per province and year
   summaryData <- count(df = plotData, vars = names(plotData))
   freq <- NULL  # to prevent warnings with R CMD check 
-  summaryPercent <- ddply(summaryData, "kaak", transform, 
+  summaryData <- ddply(summaryData, "kaak", transform, 
       percent = freq / sum(freq) * 100)
   
   
  
   # For optimal displaying in the plot
-  summaryPercent$jager <- factor(summaryPercent$jager, levels = newLevelsJager)
-  summaryPercent$kaak <- factor(summaryPercent$kaak, levels = newLevelsKaak)
+  summaryData$jager <- factor(summaryData$jager, levels = newLevelsJager)
+  summaryData$kaak <- factor(summaryData$kaak, levels = newLevelsKaak)
   
-  summaryPercent$text <- paste(round(summaryPercent$percent, 2), "%")
+  summaryData$text <- paste0(round(summaryData$percent), "%",
+      " (", summaryData$freq, ")")
   
-  colors <- rev(inbo.2015.colours(n = nlevels(summaryPercent$jager)))
+  totalCount <- count(df = summaryData, vars = "kaak", wt_var = "freq")$freq
+  
+  colors <- rev(inbo.2015.colours(n = nlevels(summaryData$jager)))
   title <- paste(wildNaam, paste0("(", 
           ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
       jaartallen), ")"))
@@ -76,7 +79,7 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   
   
   # Create plot
-  plot_ly(data = summaryPercent, x = ~kaak, y = ~percent, color = ~jager,
+  plot_ly(data = summaryData, x = ~kaak, y = ~percent, color = ~jager,
           text = ~text,  hoverinfo = "x+text+name",
           colors = colors, type = "bar",  width = width, height = height) %>%
       layout(title = title,
@@ -84,12 +87,15 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
           yaxis = list(title = "Percentage"),
           legend = list(y = 0.8, yanchor = "top"),
           margin = list(r = 300, b = 120, t = 100), 
-          barmode = "stack") %>%
+          barmode = "stack",
+          annotations = list(x = levels(summaryData$kaak), y = -10, 
+              text = totalCount, xanchor = 'center', yanchor = 'bottom', 
+              showarrow = FALSE)) %>%
       add_annotations(text = "Categorie op basis van meldingsformulier", 
           xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
           y = 0.8, yanchor = "bottom",    # Same y as legend below
           legendtitle = TRUE, showarrow = FALSE) %>%
-      add_annotations(text = paste0(round(percentCollected, 4)*100, 
+      add_annotations(text = paste0(round(percentCollected, 2)*100, 
               "% ingezamelde onderkaken van totaal (", nrow(plotData), "/", nRecords, ")"),
           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
           y = -0.3, yanchor = "bottom", showarrow = FALSE)

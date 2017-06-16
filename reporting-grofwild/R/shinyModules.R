@@ -10,14 +10,17 @@
 #' @param showLegend boolean, whether to show input field for the legend
 #' @param showExtraVariables boolean, whether to show input field for 
 #' extra variables (popup)
-#' @param showTime boolean, whether to show input field for time range
+#' @param showTime boolean, whether to show slider input field for time range
+#' @param showYear boolean, whether to show numeric input field for year selection
+#' @param showType, boolean, whether to select a select input field with type
 #' @param regionLevels numeric vector, if not NULL, defines the choices for 
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes
 #' @param showGlobe boolean, whether to show input field for map of the globe
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
-    showLegend = FALSE, showExtraVariables = FALSE, showTime = FALSE, 
+    showLegend = FALSE, showExtraVariables = FALSE, 
+	showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, showGlobe = FALSE) {
   
   ns <- NS(id)
@@ -36,8 +39,12 @@ optionsModuleUI <- function(id,
             ),
           if (showExtraVariables)
             uiOutput(ns("extraVariables")),
+					if(showYear)
+						uiOutput(ns("year")), 
           if (showTime)
             uiOutput(ns("time")),
+					if(showType)
+						uiOutput(ns("type")),
           if (!is.null(regionLevels))
             fluidRow(
                 column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
@@ -61,11 +68,16 @@ optionsModuleUI <- function(id,
 #' @param output shiny output variable for specific namespace
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
+#' @param openingstijdenData data with openingstijden
+#' @param wildNaam character, defines the species name for y-label in plot
 #' @param extraVariables character vector, defines the variables in \code{data}
 #' for which values should be shown in popup-window in the plot
+#' @param timeLabel label for the time slider, 'Tijdstip(pen)' by default
 #' @return no return value; some output objects are created
 #' @export
-optionsModuleServer <- function(input, output, session, data, extraVariables = NULL) {
+optionsModuleServer <- function(input, output, session, 
+	data, openingstijdenData = NULL, wildNaam = NULL,
+	extraVariables = NULL, timeLabel = "Tijdstip(pen)") {
   
   ns <- session$ns
   
@@ -79,9 +91,9 @@ optionsModuleServer <- function(input, output, session, data, extraVariables = N
       })
   
   
-  output$time <- renderUI({
+	output$time <- renderUI({
         
-        sliderInput(inputId = ns("time"), label = "Tijdstip(pen)", 
+        sliderInput(inputId = ns("time"), label = timeLabel, 
             value = c(min(data()$afschotjaar), max(data()$afschotjaar)),
             min = min(data()$afschotjaar),
             max = max(data()$afschotjaar),
@@ -89,6 +101,18 @@ optionsModuleServer <- function(input, output, session, data, extraVariables = N
             sep = "")
         
       })
+
+  output$year <- renderUI({
+				
+				sliderInput(inputId = ns("year"), label = "Jaar selectie", 
+						value = max(data()$afschotjaar),
+						min = min(data()$afschotjaar),
+						max = max(data()$afschotjaar),
+						step = 1,
+						sep = "")
+							
+							
+			})
   
   
   output$region <- renderUI({
@@ -105,6 +129,18 @@ optionsModuleServer <- function(input, output, session, data, extraVariables = N
             multiple = TRUE)
         
       })
+	
+		output$type <- renderUI({
+				
+				types <- unique(openingstijdenData[openingstijdenData$Soort == wildNaam, "Type"])
+				types <- if(length(types) == 1 && types == "")	"all"	else types
+					
+				selectInput(
+						inputId = ns("type"), label = "Type",
+						choices = types, selected = types[1],
+						multiple = FALSE)
+					
+			})
   
 }
 
@@ -131,11 +167,13 @@ plotModuleUI <- function(id) {
 #' @param session shiny session variable for specific namespace
 #' @param plotFunction character, defines the plot function to be called
 #' @param data reactive data.frame, data for chosen species
+#' @param openingstijdenData data with openingstijden, optional
 #' @param wildNaam character, defines the species name for y-label in plot
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @export
-plotModuleServer <- function(input, output, session, plotFunction, data, wildNaam) {
+plotModuleServer <- function(input, output, session, plotFunction, 
+		data, openingstijdenData = NULL, wildNaam) {
   
   subData <- reactive({
         
@@ -162,7 +200,9 @@ plotModuleServer <- function(input, output, session, plotFunction, data, wildNaa
         
         argList <- c(
             list(data = subData(), wildNaam = wildNaam),
-            if (!is.null(input$time))
+						if (!is.null(input$year))
+							list(jaar = input$year),
+						if (!is.null(input$time))
               list(jaartallen = input$time[1]:input$time[2]),
         # Currently these options are never used
 #            if (!is.null(input$legend))
@@ -170,7 +210,18 @@ plotModuleServer <- function(input, output, session, plotFunction, data, wildNaa
 #            if (!is.null(input$extraVariables))
 #              list(extraVariables = input$extraVariables),
             if (!is.null(input$regionLevel))
-              list(regio = input$region)
+              list(regio = input$region),
+						if(!is.null(input$type))
+							list(type = input$type),
+						if(!is.null(input$type) & !is.null(input$year))
+							list(openingstijden = unlist(
+									openingstijdenData[
+										openingstijdenData$Soort == wildNaam &
+										openingstijdenData$Type == input$type &
+										openingstijdenData$Jaar == input$year, 
+										c("Startdatum", "Stopdatum")
+								])
+							)
 #            if (!is.null(input$globe))
 #              list(globe = input$globe)
         )

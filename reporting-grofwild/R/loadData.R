@@ -72,6 +72,29 @@ loadShapeData <- function() {
   
 }
 
+#' read openingstijden data
+#' @return data.frame with openingstijden
+#' @return data.frame with columns:
+#' \itemize{
+#' \item{'Soort': }{specie}
+#' \item{'Type': }{specie type}
+#' \item{'Jaar': }{year}
+#' \item{'Startdatum': }{start datum, in the format '\%d/\%m/\%Y'}
+#' \item{'Stopdatum': }{end datum, in the format '\%d/\%m/\%Y'}
+#' }
+#' @importFrom utils read.csv
+#' @export
+loadOpeningstijdenData <- function(){
+	
+	pathFile <- file.path(system.file("extdata", package = "reportingGrofwild"),
+			"Openingstijden_grofwild.csv")
+	
+	rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+	
+	return(rawData)
+
+}
+
 
 
 #' Read ecology or geography data
@@ -130,6 +153,20 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
       levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
+
+	# add 'type' column to do the matching with the openingstijden table (only for ree)
+	if(type == "eco"){
+		idx <- which(rawData$wildsoort == "Ree")
+		typeRee <- ifelse(
+				rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
+				ifelse(rawData[idx, "leeftijdscategorie_MF"] == "Volwassen",
+						ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
+								ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
+						),
+			""))
+		rawData$type[idx] <- typeRee
+		rawData$type[is.na(rawData$type)] <- ""
+	}
   
   return(rawData)
   

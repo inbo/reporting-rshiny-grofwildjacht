@@ -99,3 +99,21 @@ countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016)
 countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
+
+## PLOT: yearly percentage of shot animals
+
+allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
+			
+		plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
+		
+		lapply(sort(unique(plotData$afschotjaar)), function(jaar)
+	
+			percentageYearlyShotAnimals(
+				data = plotData, 
+				wildNaam = wildsoort, 
+				jaar = jaar
+			)
+
+		)
+	
+})

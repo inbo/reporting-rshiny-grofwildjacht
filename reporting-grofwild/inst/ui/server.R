@@ -20,8 +20,7 @@ allSpatialData <- loadShapeData()
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo", shapeData = allSpatialData)
-
-
+openingstijdenData <- loadOpeningstijdenData()
 
 shinyServer(function(input, output, session) {
       
@@ -104,6 +103,18 @@ shinyServer(function(input, output, session) {
           plotFunction = "countYearAge", 
           data = results$wildEcoData,
           wildNaam = input$showSpecies)
+  
+	  	# Plot 4
+	  	callModule(module = optionsModuleServer, id = "plot4", 
+			 	data = results$wildEcoData,
+				wildNaam = input$showSpecies
+			)
+	  	callModule(module = plotModuleServer, id = "plot4",
+			 	 plotFunction = "percentageYearlyShotAnimals", 
+			 	 data = results$wildEcoData,
+				 wildNaam = input$showSpecies,
+				 openingstijdenData = openingstijdenData
+		 )
       
       
       ### Plot 3 ###

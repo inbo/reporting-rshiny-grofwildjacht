@@ -4,7 +4,8 @@
 \alias{plotModuleServer}
 \title{Interactive plot (server-side)}
 \usage{
-plotModuleServer(input, output, session, plotFunction, data, wildNaam)
+plotModuleServer(input, output, session, plotFunction, data,
+  openingstijdenData = NULL, wildNaam)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -16,6 +17,8 @@ plotModuleServer(input, output, session, plotFunction, data, wildNaam)
 \item{plotFunction}{character, defines the plot function to be called}
 
 \item{data}{reactive data.frame, data for chosen species}
+
+\item{openingstijdenData}{data with openingstijden, optional}
 
 \item{wildNaam}{character, defines the species name for y-label in plot}
 }

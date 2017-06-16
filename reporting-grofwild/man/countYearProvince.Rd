@@ -23,7 +23,7 @@ be considered in the plot}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given species the observed number 
+plotly object, for a given specie the observed number 
 per year and per province is plotted in a stacked bar chart
 }
 \description{

@@ -15,7 +15,7 @@
 #' be considered in the plot 
 #' @param width plot width (optional)
 #' @param height plot height (optional)
-#' @return plotly object, for a given species the observed number 
+#' @return plotly object, for a given specie the observed number 
 #' per year and per province is plotted in a stacked bar chart
 #' @import plotly
 #' @importFrom plyr count

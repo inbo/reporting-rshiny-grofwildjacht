@@ -4,8 +4,8 @@
 \alias{optionsModuleServer}
 \title{User input for controlling specific plot (server-side)}
 \usage{
-optionsModuleServer(input, output, session, data, openingstijdenData = NULL,
-  wildNaam = NULL, extraVariables = NULL, timeLabel = "Tijdstip(pen)")
+optionsModuleServer(input, output, session, data, types = NULL,
+  extraVariables = NULL, timeLabel = "Tijdstip(pen)")
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -16,9 +16,7 @@ optionsModuleServer(input, output, session, data, openingstijdenData = NULL,
 
 \item{data}{reactive data.frame, data for chosen species}
 
-\item{openingstijdenData}{data with openingstijden}
-
-\item{wildNaam}{character, defines the species name for y-label in plot}
+\item{types, }{defines the species types that can be selected}
 
 \item{extraVariables}{character vector, defines the variables in \code{data}
 for which values should be shown in popup-window in the plot}

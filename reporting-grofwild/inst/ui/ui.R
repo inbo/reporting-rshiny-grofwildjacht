@@ -111,21 +111,30 @@ shinyUI(
                   h4("Aantal per jaar en per leeftijdscategorie (o.b.v. onderkaak)"),
                   fluidRow(
                       
-                      column(4, optionsModuleUI(id = "plot3", showTime = TRUE,
-                              regionLevels = 1:2)),
+                      column(4, optionsModuleUI(id = "plot3", 
+                              showTime = TRUE, regionLevels = 1:2)),
                       column(8, plotModuleUI(id = "plot3"))
                   
                   ),
-				  
-							  h4("Percentage jaarlijks afschot"),
-							  fluidRow(
-									  
-								  column(4, optionsModuleUI(id = "plot4", 
-											showTime = TRUE, showYear = TRUE, showType = TRUE)),
-								  column(8, plotModuleUI(id = "plot4"))
-							  
-							  )
-			         )
+                  
+                  h4("Percentage jaarlijks afschot"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot4", 
+                              showTime = TRUE, showYear = TRUE, showType = TRUE)),
+                      column(8, plotModuleUI(id = "plot4"))
+                  
+                  ),
+                  
+                  h4("Percentage per leeftijdscategorie en geslacht"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot5", 
+                              showTime = TRUE)),
+                      column(8, plotModuleUI(id = "plot5"))
+                  
+                  )
+              )
               
             }),
         

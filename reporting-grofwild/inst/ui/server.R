@@ -84,7 +84,7 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot1",
           plotFunction = "countYearProvince", 
           data = results$wildEcoData, 
-          wildNaam = input$showSpecies)
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 2
@@ -93,7 +93,7 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot2",
           plotFunction = "countAgeCheek", 
           data = results$wildEcoData,
-          wildNaam = input$showSpecies)
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 3
@@ -102,22 +102,45 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot3",
           plotFunction = "countYearAge", 
           data = results$wildEcoData,
-          wildNaam = input$showSpecies)
-  
-	  	# Plot 4
-	  	callModule(module = optionsModuleServer, id = "plot4", 
-			 	data = results$wildEcoData,
-				wildNaam = input$showSpecies
-			)
-	  	callModule(module = plotModuleServer, id = "plot4",
-			 	 plotFunction = "percentageYearlyShotAnimals", 
-			 	 data = results$wildEcoData,
-				 wildNaam = input$showSpecies,
-				 openingstijdenData = openingstijdenData
-		 )
+          wildNaam = reactive(input$showSpecies))
+      
+      # Plot 4
+      results$types <- reactive({
+            
+            req(openingstijdenData)
+            
+            types <- unique(openingstijdenData[
+                    openingstijdenData$Soort == input$showSpecies, "Type"])
+            
+            if (length(types) == 1 && types == "")
+              return(c("alle" = "all")) else 
+              return(types)
+            
+          })
       
       
-      ### Plot 3 ###
+      callModule(module = optionsModuleServer, id = "plot4", 
+          data = results$wildEcoData, types = results$types)
+      callModule(module = plotModuleServer, id = "plot4",
+          plotFunction = "percentageYearlyShotAnimals", 
+          data = results$wildEcoData,
+          wildNaam = reactive(input$showSpecies),
+          openingstijdenData = reactive(openingstijdenData)
+      )
+      
+      
+      # Plot 5
+      callModule(module = optionsModuleServer, id = "plot5", 
+          data = results$wildEcoData)
+      callModule(module = plotModuleServer, id = "plot5",
+          plotFunction = "countAgeGender", 
+          data = results$wildEcoData,
+          wildNaam = reactive(input$showSpecies))
+      
+      
+      
+      
+      ### The MAP ###
       
       # Data-dependent input fields
       output$map_time <- renderUI({
@@ -219,27 +242,27 @@ shinyServer(function(input, output, session) {
       observe({
             
             event <- input$map_spacePlot_shape_click
+            
+            if (!is.null(event)) {
               
-              if (!is.null(event)) {
+              currentSelected <- isolate(input$map_region)
+              
+              # Remove from list
+              if (event$id %in% currentSelected) {
                 
-                currentSelected <- isolate(input$map_region)
+                updateSelectInput(session, "map_region", 
+                    selected = currentSelected[ - which(currentSelected == event$id)])
                 
-                # Remove from list
-                if (event$id %in% currentSelected) {
-                  
-                  updateSelectInput(session, "map_region", 
-                      selected = currentSelected[ - which(currentSelected == event$id)])
-                  
-                  # Add to list
-                } else {
-                  
-                  updateSelectInput(session, "map_region", 
-                      selected = c(currentSelected, event$id))
-                  
-                }
+                # Add to list
+              } else {
+                
+                updateSelectInput(session, "map_region", 
+                    selected = c(currentSelected, event$id))
                 
               }
               
+            }
+            
           })
       
       

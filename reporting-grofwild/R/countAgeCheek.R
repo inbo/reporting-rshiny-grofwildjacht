@@ -75,7 +75,6 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   title <- paste(wildNaam, paste0("(", 
           ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
       jaartallen), ")"))
-  subTitle <- "Categorie op meldingsformulier versus onderkaak"
   
   
   # Create plot

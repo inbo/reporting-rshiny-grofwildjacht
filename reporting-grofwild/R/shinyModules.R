@@ -39,8 +39,12 @@ optionsModuleUI <- function(id,
             ),
           if (showExtraVariables)
             uiOutput(ns("extraVariables")),
-					if(showYear)
-						uiOutput(ns("year")), 
+					if(showYear) {
+						list(
+                uiOutput(ns("year")),
+                tags$b("Referentieperiode")
+            )
+          }, 
           if (showTime)
             uiOutput(ns("time")),
 					if(showType)
@@ -68,16 +72,14 @@ optionsModuleUI <- function(id,
 #' @param output shiny output variable for specific namespace
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
-#' @param openingstijdenData data with openingstijden
-#' @param wildNaam character, defines the species name for y-label in plot
+#' @param types, defines the species types that can be selected
 #' @param extraVariables character vector, defines the variables in \code{data}
 #' for which values should be shown in popup-window in the plot
 #' @param timeLabel label for the time slider, 'Tijdstip(pen)' by default
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-	data, openingstijdenData = NULL, wildNaam = NULL,
-	extraVariables = NULL, timeLabel = "Tijdstip(pen)") {
+	data, types = NULL, extraVariables = NULL, timeLabel = "Tijdstip(pen)") {
   
   ns <- session$ns
   
@@ -104,7 +106,7 @@ optionsModuleServer <- function(input, output, session,
 
   output$year <- renderUI({
 				
-				sliderInput(inputId = ns("year"), label = "Jaar selectie", 
+				sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
 						value = max(data()$afschotjaar),
 						min = min(data()$afschotjaar),
 						max = max(data()$afschotjaar),
@@ -132,13 +134,8 @@ optionsModuleServer <- function(input, output, session,
 	
 		output$type <- renderUI({
 				
-				types <- unique(openingstijdenData[openingstijdenData$Soort == wildNaam, "Type"])
-				types <- if(length(types) == 1 && types == "")	"all"	else types
-					
-				selectInput(
-						inputId = ns("type"), label = "Type",
-						choices = types, selected = types[1],
-						multiple = FALSE)
+				selectInput(inputId = ns("type"), label = "Type",
+						choices = types(), multiple = FALSE)
 					
 			})
   
@@ -182,7 +179,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
         if (!is.null(input$regionLevel)) {
           
-          validate(need(input$region, "Gelieve regio('s) te selectere"))
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
           if (input$regionLevel == "provinces")
             subData <- subset(subData, provincie %in% input$region)
@@ -199,7 +196,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         req(nrow(subData()) > 0)
         
         argList <- c(
-            list(data = subData(), wildNaam = wildNaam),
+            list(data = subData(), wildNaam = wildNaam()),
 						if (!is.null(input$year))
 							list(jaar = input$year),
 						if (!is.null(input$time))
@@ -211,14 +208,14 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #              list(extraVariables = input$extraVariables),
             if (!is.null(input$regionLevel))
               list(regio = input$region),
-						if(!is.null(input$type))
+						if (!is.null(input$type))
 							list(type = input$type),
-						if(!is.null(input$type) & !is.null(input$year))
+						if (!is.null(input$type) & !is.null(input$year))
 							list(openingstijden = unlist(
-									openingstijdenData[
-										openingstijdenData$Soort == wildNaam &
-										openingstijdenData$Type == input$type &
-										openingstijdenData$Jaar == input$year, 
+									openingstijdenData()[
+										openingstijdenData()$Soort == wildNaam() &
+										openingstijdenData()$Type == input$type &
+										openingstijdenData()$Jaar == input$year, 
 										c("Startdatum", "Stopdatum")
 								])
 							)

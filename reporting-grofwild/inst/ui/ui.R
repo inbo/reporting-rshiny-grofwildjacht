@@ -85,6 +85,45 @@ shinyUI(
         
         # Show user input module per plot
         
+        ## tableProvince for "leeftijd": wild zwijn and ree
+        conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
+              
+              list(
+                  h4("Aantal per regio en per leeftijdscategorie"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "table1", showYear = TRUE)),
+                      column(8, tableModuleUI(id = "table1"))
+                  
+                  )
+              )
+              
+            }),
+        
+        
+        ## tableProvince for "type": ree
+        conditionalPanel("input.showSpecies == 'Ree'", {
+              
+              list(
+                  h4("Aantal afschot per regio en per type"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "table2", showYear = TRUE)),
+                      column(8, tableModuleUI(id = "table2"))
+                  
+                  ),
+                  
+                  h4("Percentage gerealiseerd afschot per regio en per type"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "table3", showYear = TRUE)),
+                      column(8, tableModuleUI(id = "table3"))
+                  
+                  )
+              )
+              
+            }),
+        
         
         ## countYearProvince: all species
         h4("Aantal per jaar en per regio"),
@@ -112,7 +151,8 @@ shinyUI(
                   fluidRow(
                       
                       column(4, optionsModuleUI(id = "plot3", 
-                              showTime = TRUE, regionLevels = 1:2)),
+                              showSummarizeBy = TRUE, showTime = TRUE, 
+                              regionLevels = 1:2)),
                       column(8, plotModuleUI(id = "plot3"))
                   
                   ),

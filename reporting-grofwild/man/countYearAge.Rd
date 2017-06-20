@@ -5,7 +5,8 @@
 \title{Create interactive plot for counts per age category and year}
 \usage{
 countYearAge(data, wildNaam = "", jaartallen = NULL, regio = "",
-  doodsoorzaak = "afschot", width = NULL, height = NULL)
+  doodsoorzaak = "afschot", summarizeBy = c("count", "percent"),
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
@@ -20,6 +21,8 @@ to be shown in the plot title}
 
 \item{doodsoorzaak}{character vector, defines the cause(s) of death that should
 be considered in the plot}
+
+\item{summarizeBy}{character, whether to summarize data in terms of counts or percentages}
 
 \item{width}{plot width (optional)}
 

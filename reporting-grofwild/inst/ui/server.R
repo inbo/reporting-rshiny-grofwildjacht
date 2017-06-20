@@ -20,7 +20,9 @@ allSpatialData <- loadShapeData()
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo", shapeData = allSpatialData)
+
 openingstijdenData <- loadOpeningstijdenData()
+toekenningsData <- loadToekenningen()
 
 shinyServer(function(input, output, session) {
       
@@ -61,6 +63,13 @@ shinyServer(function(input, output, session) {
           })
       
       
+      results$afschotData <- reactive({
+            
+            results$wildEcoData()[results$wildEcoData()$doodsoorzaak == "afschot", ]
+            
+          })
+      
+      
       results$spatialData <- reactive({
             
             if (input$showSpecies == "Wild zwijn" & input$map_regionLevel == "provinces") {
@@ -78,6 +87,49 @@ shinyServer(function(input, output, session) {
       
       
       ## User input for controlling the plots and create plotly
+      # Table 1
+      callModule(module = optionsModuleServer, id = "table1", 
+          data = results$wildEcoData)
+      callModule(module = plotModuleServer, id = "table1",
+          plotFunction = "tableProvince", 
+          data = results$wildEcoData, 
+          wildNaam = reactive(input$showSpecies),
+          categorie = "leeftijd")
+      
+      
+      # Table 2 - input
+      callModule(module = optionsModuleServer, id = "table2", 
+          data = results$afschotData)
+      # Table 3 - input
+      callModule(module = optionsModuleServer, id = "table3", 
+          data = results$wildEcoData)
+      
+      
+      observe({
+            
+            if (input$showSpecies == "Ree") {
+              
+              # Table 2 - output
+              callModule(module = plotModuleServer, id = "table2",
+                  plotFunction = "tableProvince", 
+                  data = results$afschotData, 
+                  wildNaam = reactive(input$showSpecies),
+                  categorie = "typeAantal")
+              
+              
+              # Table 3 - output
+              callModule(module = plotModuleServer, id = "table3",
+                  plotFunction = "tableProvince", 
+                  data = results$afschotData,
+                  toekenningsData = reactive(toekenningsData), 
+                  wildNaam = reactive(input$showSpecies),
+                  categorie = "typePercent")
+              
+            }
+            
+          })
+      
+      
       # Plot 1
       callModule(module = optionsModuleServer, id = "plot1", 
           data = results$wildEcoData)

@@ -13,7 +13,7 @@
 #' and per gender, based on meldingsformulier data in a stacked bar chart
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme INBO.colours inbo.lichtgrijs
+#' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
 #' @author mvarewyck
 #' @export
 countAgeGender <- function(data, wildNaam = "", jaartallen = NULL, 
@@ -39,10 +39,7 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
   # Define names and ordering of factor levels
   if ("Frisling" %in% plotData$leeftijd) {  # wild zwijn
     
-    plotData$leeftijd[plotData$leeftijd == "Volwassen"] <- "Adult/Volwassen"
-    plotData$leeftijd[plotData$leeftijd == "Adult"] <- "Adult/Volwassen"
-    
-    newLevelsLeeftijd <- c("Frisling", "Overloper", "Adult/Volwassen")
+    newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
     
   } else {  # ree
     
@@ -67,7 +64,7 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
   
   totalCount <- count(df = summaryData, vars = "leeftijd", wt_var = "freq")$freq
   
-  colors <- INBO.colours(n = nlevels(as.factor(summaryData$geslacht)))
+  colors <- inbo.2015.colours(n = nlevels(as.factor(summaryData$geslacht)))
   title <- paste(wildNaam, paste0("(", 
           ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
               jaartallen), ")"))

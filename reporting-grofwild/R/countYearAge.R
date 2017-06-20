@@ -11,14 +11,19 @@
 #' @inheritParams countYearProvince
 #' @param regio character vector, names of the selected regions in \code{data}
 #' to be shown in the plot title
+#' @param summarizeBy character, whether to summarize data in terms of counts or percentages
 #' @return plotly object, for a given species the observed number 
 #' per year and per age category is plotted in a stacked bar chart
 #' @import plotly
 #' @importFrom plyr count ddply
+#' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
 #' @export
 countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
-    doodsoorzaak = "afschot", width = NULL, height = NULL) {
+    doodsoorzaak = "afschot", summarizeBy = c("count", "percent"),
+    width = NULL, height = NULL) {
   
+  
+  summarizeBy <- match.arg(summarizeBy)
   
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
@@ -38,11 +43,9 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   # Define names and ordering of factor levels
   if ("Frisling" %in% plotData$kaak) {  # wild zwijn
     
-    newLevelsKaak <- c("Frisling", "Overloper", "Adult", "Niet ingezameld")
+    newLevelsKaak <- c("Frisling", "Overloper", "Volwassen", "Niet ingezameld")
     
   } else {  # ree
-    
-    plotData$kaak[plotData$kaak == "Adult"] <- "Volwassen"
     
     newLevelsKaak <- c("Kits", "Jongvolwassen", "Volwassen", "Niet ingezameld")
     
@@ -81,15 +84,15 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   summaryData$kaak <- factor(summaryData$kaak, levels = newLevelsKaak)
   summaryData$jaar <- as.factor(summaryData$jaar)
   
-  summaryData$text <- paste0("<b>Jaar ", summaryData$jaar, "</b>",
-      "<br>", summaryData$freq, 
+  summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
+      "<br>Aantal: ", summaryData$freq, 
       "<br>Totaal: ", summaryData$totaal,
       ifelse(is.na(summaryData$percent), "", 
           paste0("<br><br><i>Subset ingezamelde onderkaken </i>",
               "<br>", round(summaryData$percent), "% van totaal aantal ingezamelde onderkaken"))
   )
   
-  colors <- c("#989868", "#688599", "#CC3D3D", "grey70")
+  colors <- c(inbo.2015.colours(3), inbo.lichtgrijs)
   names(colors) <- newLevelsKaak
   
   title <- paste0(wildNaam, " ",
@@ -103,14 +106,17 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   
   # Create plot
-  plot_ly(data = summaryData, x = ~jaar, y = ~freq, color = ~kaak,
-          text = ~text,  hoverinfo = "text+name",
+  plot_ly(data = summaryData, x = ~jaar, 
+          y = if (summarizeBy == "count") ~freq else ~percent, 
+          color = ~kaak, text = ~text,  hoverinfo = "text+name",
           colors = colors, 
           type = "scatter", mode = "lines+markers", 
           width = width, height = height) %>%
       layout(title = title,
           xaxis = list(title = "Jaar"), 
-          yaxis = list(title = "Aantal"),
+          yaxis = if (summarizeBy == "count") 
+            list(title = "Aantal") else 
+            list(title = "Percentage", range = c(0, 100)),
           margin = list(b = 80, t = 100))     
   
   

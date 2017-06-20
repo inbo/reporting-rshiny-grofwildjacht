@@ -46,7 +46,7 @@ loadShapeData <- function() {
   # Select Limburg and Voeren
   isLimburg <- provinceIds %in% c(7, 100)
   isLimburgProvince <- spatialData$provinces$NAAM == "Limburg"
-
+  
   # Create new polygon for Limburg
   limburgPolygon <- unionSpatialPolygons(SpP = spatialData$communes[isLimburg,],
       IDs = provinceIds[isLimburg])
@@ -73,7 +73,6 @@ loadShapeData <- function() {
 }
 
 #' read openingstijden data
-#' @return data.frame with openingstijden
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'Soort': }{specie}
@@ -85,14 +84,47 @@ loadShapeData <- function() {
 #' @importFrom utils read.csv
 #' @export
 loadOpeningstijdenData <- function(){
-	
-	pathFile <- file.path(system.file("extdata", package = "reportingGrofwild"),
-			"Openingstijden_grofwild.csv")
-	
-	rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
-	
-	return(rawData)
+  
+  pathFile <- file.path(system.file("extdata", package = "reportingGrofwild"),
+      "Openingstijden_grofwild.csv")
+  
+  rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+  
+  return(rawData)
+  
+}
 
+
+#' Read toekenningen (Ree) data
+#' @return data.frame with columns:
+#' \itemize{
+#' \item{'Provincie': }{character, province}
+#' \item{'Jaar': }{integer, year}
+#' \item{'Labeltype': }{character, type of Ree, one of \code{c("Geiten", "Bokken", "Kitsen")}}
+#' \item{'Aantal': }{integer, frequencie per categorie}
+#' }
+#' @importFrom utils read.csv
+#' @export
+loadToekenningen <- function() {
+  
+  pathFile <- file.path(system.file("extdata", package = "reportingGrofwild"),
+      "Toekenningen_ree.csv")
+  
+  rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+  
+  # Rename LabelType to non-plural
+  rawData$Labeltype[rawData$Labeltype == "Geiten"] <- "geit"
+  rawData$Labeltype[rawData$Labeltype == "Bokken"] <- "bok"
+  rawData$Labeltype[rawData$Labeltype == "Kitsen"] <- "kits"
+  
+  # Rename provinces
+  rawData$Provincie[rawData$Provincie == "Vlaams-Brabant"] <- "Vlaams Brabant"
+  rawData$Provincie <- factor(rawData$Provincie,
+      levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant",
+          "Antwerpen", "Limburg"))
+  
+  return(rawData)
+  
 }
 
 
@@ -123,7 +155,7 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
   rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
           "Vlaams Brabant", as.character(rawData$provincie)))
 #  xtabs( ~ provincie + wildsoort, data = rawData)
-   
+  
   ## Mismatch names with spatial (shape) data for multiple communes
   if (type == "geo" & !is.null(shapeData)) {
     
@@ -153,20 +185,28 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
       levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
-
-	# add 'type' column to do the matching with the openingstijden table (only for ree)
-	if(type == "eco"){
-		idx <- which(rawData$wildsoort == "Ree")
-		typeRee <- ifelse(
-				rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
-				ifelse(rawData[idx, "leeftijdscategorie_MF"] == "Volwassen",
-						ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
-								ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
-						),
-			""))
-		rawData$type[idx] <- typeRee
-		rawData$type[is.na(rawData$type)] <- ""
-	}
+  
+  # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
+  if (type == "eco") {
+    
+    rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
+    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
+    
+  } 
+  
+  # add 'type' column to do the matching with the openingstijden table (only for ree)
+  if(type == "eco"){
+    idx <- which(rawData$wildsoort == "Ree")
+    typeRee <- ifelse(
+        rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
+        ifelse(rawData[idx, "leeftijdscategorie_MF"] == "Volwassen",
+            ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
+                ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
+            ),
+            ""))
+    rawData$type[idx] <- typeRee
+    rawData$type[is.na(rawData$type)] <- ""
+  }
   
   return(rawData)
   

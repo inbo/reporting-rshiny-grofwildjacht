@@ -7,8 +7,6 @@
 loadOpeningstijdenData()
 }
 \value{
-data.frame with openingstijden
-
 data.frame with columns:
 \itemize{
 \item{'Soort': }{specie}

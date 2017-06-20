@@ -18,7 +18,7 @@
 #' @return plotly object, for a given specie the observed number 
 #' per year and per province is plotted in a stacked bar chart
 #' @import plotly
-#' @importFrom plyr count
+#' @importFrom reshape2 melt
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 countYearProvince <- function(data, wildNaam = "", jaartallen = NULL, 
@@ -35,10 +35,13 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
   plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$provincie), ]
   
   # Summarize data per province and year
-  summaryData <- count(df = plotData, vars = names(plotData))
+  plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
+          min(afschotjaar):max(afschotjaar)))
+
+  summaryData <- melt(table(plotData), id.vars = "afschotjaar")
   
   # Summarize data per year
-  totalCount <- count(df = plotData, vars = "afschotjaar")$freq
+  totalCount <- table(plotData$afschotjaar)
   
   
   # For optimal displaying in the plot
@@ -53,7 +56,7 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
     
   
   # Create plot
-  plot_ly(data = summaryData, x = ~afschotjaar, y = ~freq, color = ~provincie,
+  plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~provincie,
           colors = colors, type = "bar",  width = width, height = height) %>%
       layout(title = title,
           xaxis = list(title = "Jaar"), 

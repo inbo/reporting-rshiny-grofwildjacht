@@ -38,18 +38,11 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   # Define names and ordering of factor levels
   if ("Frisling" %in% plotData$jager) {  # wild zwijn
     
-    plotData$jager[plotData$jager == "Volwassen"] <- "Adult/Volwassen"
-    plotData$jager[plotData$jager == "Adult"] <- "Adult/Volwassen"
-    
-    newLevelsJager <- c("Frisling", "Overloper", "Adult/Volwassen")
-    newLevelsKaak <- c("Frisling", "Overloper", "Adult")
+    newLevels <- c("Frisling", "Overloper", "Volwassen")
     
   } else {  # ree
     
-    plotData$kaak[plotData$kaak == "Adult"] <- "Volwassen"
-    
-    newLevelsJager <- c("Kits", "Jongvolwassen", "Volwassen")
-    newLevelsKaak <- c("Kits", "Jongvolwassen", "Volwassen")
+    newLevels <- c("Kits", "Jongvolwassen", "Volwassen")
     
   }
   
@@ -63,8 +56,8 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   
  
   # For optimal displaying in the plot
-  summaryData$jager <- factor(summaryData$jager, levels = newLevelsJager)
-  summaryData$kaak <- factor(summaryData$kaak, levels = newLevelsKaak)
+  summaryData$jager <- factor(summaryData$jager, levels = newLevels)
+  summaryData$kaak <- factor(summaryData$kaak, levels = newLevels)
   
   summaryData$text <- paste0(round(summaryData$percent), "%",
       " (", summaryData$freq, ")")

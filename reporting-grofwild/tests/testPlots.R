@@ -14,9 +14,35 @@ geoData <- loadRawData(type = "geo", shapeData = spatialData)
 wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 
 
+
+## TABLES: Summary tables for Wild zwijn and Ree
+
+# For age
+allTables <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
+      
+      plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
+      tableProvince(data = plotData, categorie = "leeftijd")
+      
+    })
+allTables
+
+
+# For count with type
+# TODO we will need to select "afschot" only
+tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAantal")
+tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAantal",
+    jaar = 2016)
+
+# For percent shot of assigned with type
+toekenningsData <- loadToekenningen()
+tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
+    assignedData = toekenningsData, categorie = "typePercent")
+
+
+
 ## PLOT 1: Counts per year and province ##
 
-allPlots <- lapply(levels(ecoData$wildsoort), function(wildsoort) {
+allPlots <- lapply(unique(ecoData$wildsoort), function(wildsoort) {
       
       plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
       countYearProvince(data = plotData, wildNaam = wildsoort)
@@ -89,7 +115,9 @@ countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn",
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
       
       plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-      countYearAge(data = plotData, wildNaam = wildsoort)
+      lapply(c("count", "percent"), function(summarizeBy)
+            countYearAge(data = plotData, wildNaam = wildsoort, 
+                summarizeBy = summarizeBy))
       
     })
 allPlots

@@ -30,4 +30,4 @@ COPY Rprofile.site /usr/lib/R/etc/
 
 EXPOSE 3838
 
-CMD ["R", "-e reporting-grofwild::runWildApp.R()"]
+CMD ["R", "-e reporting-grofwild::runWildApp.()"]

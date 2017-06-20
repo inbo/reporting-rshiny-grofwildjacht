@@ -5,7 +5,7 @@
 \title{User input for controlling specific plot (server-side)}
 \usage{
 optionsModuleServer(input, output, session, data, types = NULL,
-  extraVariables = NULL, timeLabel = "Tijdstip(pen)")
+  timeLabel = "Periode")
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -18,10 +18,10 @@ optionsModuleServer(input, output, session, data, types = NULL,
 
 \item{types, }{defines the species types that can be selected}
 
+\item{timeLabel}{label for the time slider, 'Periode' by default}
+
 \item{extraVariables}{character vector, defines the variables in \code{data}
 for which values should be shown in popup-window in the plot}
-
-\item{timeLabel}{label for the time slider, 'Tijdstip(pen)' by default}
 }
 \value{
 no return value; some output objects are created

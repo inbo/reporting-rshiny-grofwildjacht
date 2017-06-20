@@ -4,17 +4,14 @@
 \alias{optionsModuleUI}
 \title{User input for controlling specific plot (ui-side)}
 \usage{
-optionsModuleUI(id, showLegend = FALSE, showExtraVariables = FALSE,
-  showTime = FALSE, showYear = FALSE, showType = FALSE,
-  regionLevels = NULL, showGlobe = FALSE, showSummarizeBy = FALSE)
+optionsModuleUI(id, showLegend = FALSE, showTime = FALSE,
+  showYear = FALSE, showType = FALSE, regionLevels = NULL,
+  showSummarizeBy = FALSE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
 
 \item{showLegend}{boolean, whether to show input field for the legend}
-
-\item{showExtraVariables}{boolean, whether to show input field for 
-extra variables (popup)}
 
 \item{showTime}{boolean, whether to show slider input field for time range}
 
@@ -24,8 +21,6 @@ extra variables (popup)}
 
 \item{regionLevels}{numeric vector, if not NULL, defines the choices for 
 region levels: 1 = flanders, 2 = provinces, 3 = communes}
-
-\item{showGlobe}{boolean, whether to show input field for map of the globe}
 
 \item{showSummarizeBy}{boolean, whether to show input field to choose between
 aantal of percentage}

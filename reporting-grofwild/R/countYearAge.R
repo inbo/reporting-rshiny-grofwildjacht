@@ -38,7 +38,6 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   # Remove some categories
   plotData <- plotData[!is.na(plotData$jaar) & !is.na(plotData$kaak), ]
-  percentCollected <- nrow(plotData)/nRecords
   
   # Define names and ordering of factor levels
   if ("Frisling" %in% plotData$kaak) {  # wild zwijn
@@ -65,6 +64,8 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   # Calculate percentages excluding "niet ingezameld"
   kaak <- NULL  # to prevent warnings with R CMD check
   subData <- subset(summaryData, kaak != "Niet ingezameld")
+  nCollected <- sum(subData$freq)
+  percentCollected <- nCollected/nRecords
   freq <- NULL  # to prevent warnings with R CMD check 
   subData <- ddply(subData, "jaar", transform, 
       percent = freq / sum(freq) * 100)
@@ -106,7 +107,7 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   
   # Create plot
-  plot_ly(data = summaryData, x = ~jaar, 
+  toPlot <- plot_ly(data = summaryData, x = ~jaar, 
           y = if (summarizeBy == "count") ~freq else ~percent, 
           color = ~kaak, text = ~text,  hoverinfo = "text+name",
           colors = colors, 
@@ -117,8 +118,17 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
           yaxis = if (summarizeBy == "count") 
             list(title = "Aantal") else 
             list(title = "Percentage", range = c(0, 100)),
-          margin = list(b = 80, t = 100))     
+          margin = list(b = 120, t = 100))     
+   
   
+  if (summarizeBy == "percent")
+    toPlot <- toPlot %>% add_annotations(text = paste0(round(percentCollected, 2)*100, 
+            "% ingezamelde onderkaken van totaal (", nCollected, "/", nRecords, ")"),
+        xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+        y = -0.3, yanchor = "bottom", showarrow = FALSE)
+  
+  
+  return(toPlot)
   
 }
 

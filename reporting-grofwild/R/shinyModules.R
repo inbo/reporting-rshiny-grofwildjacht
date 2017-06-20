@@ -8,22 +8,18 @@
 #' User input for controlling specific plot (ui-side)
 #' @param id character, module id, unique name per plot
 #' @param showLegend boolean, whether to show input field for the legend
-#' @param showExtraVariables boolean, whether to show input field for 
-#' extra variables (popup)
 #' @param showTime boolean, whether to show slider input field for time range
 #' @param showYear boolean, whether to show numeric input field for year selection
 #' @param showType, boolean, whether to select a select input field with type
 #' @param regionLevels numeric vector, if not NULL, defines the choices for 
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes
-#' @param showGlobe boolean, whether to show input field for map of the globe
 #' @param showSummarizeBy boolean, whether to show input field to choose between
 #' aantal of percentage
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
-    showLegend = FALSE, showExtraVariables = FALSE, 
-    showTime = FALSE, showYear = FALSE, showType = FALSE,
-    regionLevels = NULL, showGlobe = FALSE, showSummarizeBy = FALSE) {
+    showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
+    regionLevels = NULL, showSummarizeBy = FALSE) {
   
   ns <- NS(id)
   
@@ -43,12 +39,8 @@ optionsModuleUI <- function(id,
 #                    "Bovenaan links" = "topleft",
 #                    "Onderaan links" = "bottomleft")
 #            ),
-#          if (showExtraVariables)
-#            uiOutput(ns("extraVariables")),
           if(showYear)
             uiOutput(ns("year")),
-          if (showYear & showTime)
-            tags$b("Referentieperiode"),
           if (showTime)
             uiOutput(ns("time")),
           if(showType)
@@ -60,9 +52,6 @@ optionsModuleUI <- function(id,
                             "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
             )
-#          if (showGlobe)
-#            actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
-#                icon = icon("globe")),
               
       )
   )
@@ -79,22 +68,13 @@ optionsModuleUI <- function(id,
 #' @param types, defines the species types that can be selected
 #' @param extraVariables character vector, defines the variables in \code{data}
 #' for which values should be shown in popup-window in the plot
-#' @param timeLabel label for the time slider, 'Tijdstip(pen)' by default
+#' @param timeLabel label for the time slider, 'Periode' by default
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-    data, types = NULL, extraVariables = NULL, timeLabel = "Tijdstip(pen)") {
+    data, types = NULL, timeLabel = "Periode") {
   
   ns <- session$ns
-  
-  output$extraVariables <- renderUI({
-        
-        selectInput(inputId = ns("extraVariables"), 
-            label = "Extra variabelen in popup",
-            choices = extraVariables,
-            multiple = TRUE)
-        
-      })
   
   
   output$time <- renderUI({
@@ -107,6 +87,7 @@ optionsModuleServer <- function(input, output, session,
             sep = "")
         
       })
+  
   
   output$year <- renderUI({
         
@@ -135,6 +116,7 @@ optionsModuleServer <- function(input, output, session,
             multiple = TRUE)
         
       })
+  
   
   output$type <- renderUI({
         
@@ -224,8 +206,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
             # Currently these options are never used
 #            if (!is.null(input$legend))
 #              list(legend = input$legend), 
-#            if (!is.null(input$extraVariables))
-#              list(extraVariables = input$extraVariables),
             if (!is.null(input$regionLevel))
               list(regio = input$region),
             if (!is.null(input$type))
@@ -245,8 +225,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(categorie = categorie),
             if (!is.null(input$summarizeBy))
               list(summarizeBy = input$summarizeBy)        
-#            if (!is.null(input$globe))
-#              list(globe = input$globe)
         )
         
         

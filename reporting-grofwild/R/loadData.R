@@ -192,6 +192,8 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
     
+    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == ""] <- "Niet ingezameld"
+    
   } 
   
   # add 'type' column to do the matching with the openingstijden table (only for ree)

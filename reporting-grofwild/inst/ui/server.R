@@ -9,7 +9,6 @@ library(rCharts)
 #library(reportingGrofwild)
 library(plotly)
 
-library(INBOtheme)
 
 `%then%` <- shiny:::`%OR%`
 
@@ -71,6 +70,8 @@ shinyServer(function(input, output, session) {
       
       
       results$spatialData <- reactive({
+            
+            input$map_regionLevel
             
             if (input$showSpecies == "Wild zwijn" & input$map_regionLevel == "provinces") {
               
@@ -172,13 +173,13 @@ shinyServer(function(input, output, session) {
       
       
       callModule(module = optionsModuleServer, id = "plot4", 
-          data = results$wildEcoData, types = results$types)
+          data = results$wildEcoData, types = results$types,
+          timeLabel = "Referentieperiode")
       callModule(module = plotModuleServer, id = "plot4",
           plotFunction = "percentageYearlyShotAnimals", 
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies),
-          openingstijdenData = reactive(openingstijdenData)
-      )
+          openingstijdenData = reactive(openingstijdenData))
       
       
       # Plot 5
@@ -197,7 +198,7 @@ shinyServer(function(input, output, session) {
       # Data-dependent input fields
       output$map_time <- renderUI({
             
-            sliderInput(inputId = "map_time", label = "Tijdstip(pen)", 
+            sliderInput(inputId = "map_time", label = "Periode", 
                 value = c(min(results$wildGeoData()$afschotjaar), 
                     max(results$wildGeoData()$afschotjaar)),
                 min = min(results$wildGeoData()$afschotjaar),
@@ -208,14 +209,10 @@ shinyServer(function(input, output, session) {
           })
       
       
-      observeEvent(input$map_regionLevel, {
+      output$map_region <- renderUI({
             
-            output$map_region <- renderUI({
-                  
-                  selectInput(inputId = "map_region", label = "Regio('s)",
-                      choices = results$spatialData()$NAAM, multiple = TRUE)
-                  
-                })
+            selectInput(inputId = "map_region", label = "Regio('s)",
+                choices = results$spatialData()$NAAM, multiple = TRUE)
             
           })
       
@@ -226,7 +223,7 @@ shinyServer(function(input, output, session) {
       results$map_timeData <- reactive({
             
             validate(need(results$wildGeoData(), "Geen data beschikbaar"),
-                need(input$map_time, "Gelieve tijdstip(pen) te selecteren"))
+                need(input$map_time, "Gelieve periode te selecteren"))
             
             # Select subset for time
             chosenTimes <- input$map_time[1]:input$map_time[2]
@@ -251,6 +248,8 @@ shinyServer(function(input, output, session) {
                     locatie = unique(results$spatialData()$NAAM)))
             newData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
             newData$freq[is.na(newData$freq)] <- 0
+            
+            newData$afschotjaar <- as.factor(newData$afschotjaar)
             
             
             return(newData)
@@ -279,17 +278,7 @@ shinyServer(function(input, output, session) {
 #      output$table1 <- renderDataTable({results$map_spaceData()})
 #      output$table2 <- renderDataTable({results$map_timeData()})
       
-      # TODO update input fields needs debugging
       
-#output$print <- renderPrint({
-#      
-#      print(input$map_regionLevel)
-#      
-#            print(length(results$spatialData()))
-#            input$map_region
-#      
-#    })
-#
       # Which region(s) are selected?
       observe({
             
@@ -343,12 +332,20 @@ shinyServer(function(input, output, session) {
       
       
       # Define colors for the polygons
+      results$map_colorScheme <- reactive({
+            
+            # Might give warnings if n < 3
+            suppressWarnings(c("white", RColorBrewer::brewer.pal(
+                        n = nlevels(results$map_spaceData()$group) - 1, name = "YlOrBr")))
+            
+          })
+      
       results$map_colors <- reactive({
             
             validate(need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
             
-            palette <- colorFactor(palette = inbo.2015.colours(nlevels(results$map_spaceData()$group)), 
-                domain = levels(results$map_spaceData()$group))
+            palette <- colorFactor(palette = results$map_colorScheme(), 
+                levels = levels(results$map_spaceData()$group))
             
             valuesPalette <- results$map_spaceData()[
                 match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
@@ -366,8 +363,8 @@ shinyServer(function(input, output, session) {
                 need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
             
             provinceBounds <- switch(input$map_regionLevel,
-                "flanders" = list(color = NULL, opacity = 0), 
-                "provinces" = list(color = "white", opacity = 0),
+                "flanders" = list(opacity = 0), 
+                "provinces" = list(opacity = 0),
                 "communes" = list(color = "black", opacity = 0.8))            
             
             
@@ -375,7 +372,7 @@ shinyServer(function(input, output, session) {
                 
                 addPolygons(
                     weight = 1, 
-                    color = "white",
+                    color = "gray",
                     fillColor = ~ results$map_colors(),
                     fillOpacity = 0.8,
                     layerId = results$spatialData()$NAAM,
@@ -405,7 +402,7 @@ shinyServer(function(input, output, session) {
                   
                   clearGroup(group = "regionLines") %>%
                   
-                  addPolylines(data = selectedPolygons, color = "white", weight = 5,
+                  addPolylines(data = selectedPolygons, color = "gray", weight = 5,
                       group = "regionLines")
               
             }
@@ -449,8 +446,8 @@ shinyServer(function(input, output, session) {
             
             if (input$map_legend != "none") {
               
-              palette <- colorFactor(palette = inbo.2015.colours(nlevels(results$map_spaceData()$group)), 
-                  domain = levels(results$map_spaceData()$group))
+              palette <- colorFactor(palette = results$map_colorScheme(), 
+                  levels = levels(results$map_spaceData()$group))
               
               valuesPalette <- results$map_spaceData()[
                   match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
@@ -462,7 +459,7 @@ shinyServer(function(input, output, session) {
                   pal = palette, 
                   values = valuesPalette,
                   opacity = 0.8,
-                  title = "Legend",
+                  title = "Legende",
                   layerId = "legend"
               )                      
               
@@ -484,15 +481,19 @@ shinyServer(function(input, output, session) {
             
             if (!is.null(event)) {
               
-              textSelected <- results$map_textPopup()[
-                  results$map_spaceData()$locatie == event$id]
-              
-              isolate({
-                    
-                    currentMap %>% 
-                        addPopups(event$lng, event$lat, popup = textSelected)
-                    
-                  }) 
+              if (event$id %in% results$map_spaceData()$locatie) {
+                
+                textSelected <- results$map_textPopup()[
+                    results$map_spaceData()$locatie == event$id]
+                
+                isolate({
+                      
+                      currentMap %>% 
+                          addPopups(event$lng, event$lat, popup = textSelected)
+                      
+                    }) 
+                
+              }
               
             }
             
@@ -518,8 +519,8 @@ shinyServer(function(input, output, session) {
             validate(need(results$map_spaceData(), "Geen data beschikbaar"))
             
             
-            palette <- colorFactor(palette = inbo.2015.colours(nlevels(results$map_spaceData()$group)), 
-                domain = levels(results$map_spaceData()$group))
+            palette <- colorFactor(palette = results$map_colorScheme(), 
+                levels = levels(results$map_spaceData()$group))
             
             valuesPalette <- results$map_spaceData()[
                 match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
@@ -548,7 +549,7 @@ shinyServer(function(input, output, session) {
             
             newMap <- addPolygons(newMap,
                 weight = 1,
-                color = "white",
+                color = "gray",
                 fillColor = ~ results$map_colors(),
                 fillOpacity = 0.8,
                 layerId = results$spatialData()$NAAM,
@@ -571,7 +572,7 @@ shinyServer(function(input, output, session) {
           })
       
       
-      output$downloadPlotSpace <- downloadHandler("plotRuimte.png",
+      output$map_download <- downloadHandler("plotRuimte.png",
           content = function(file) {
             
             htmlwidgets::saveWidget(widget = results$finalMap(), 
@@ -583,68 +584,38 @@ shinyServer(function(input, output, session) {
       )
       
       
-      
-      # Interactive time plot
-      results$map_timePlot <- reactive({
+      ## Create time plot
+      output$map_timePlot <- renderPlotly({
             
             validate(need(results$map_timeData(), "Geen data beschikbaar"),
                 need(input$map_region, "Gelieve regio('s) te selecteren"))
             
-            currentData <- results$map_timeData()
             
-            plotTime <- Highcharts$new()
-            
-            timePointsSelected <- sort(unique(currentData$afschotjaar))
-            
-            plotTime$xAxis(categories = timePointsSelected, 
-                labels = list(rotation = -45, align = 'right'))
-            plotTime$chart(width = 600)
-            
-            plotTime$title(
-                text = paste("Geobserveerd aantal voor", input$showSpecies,
-                    ifelse(input$map_time[1] != input$map_time[2],
-                        paste("van", input$map_time[1], "tot", input$map_time[2]),
-                        paste("in", input$map_time[1])
-                    )
+            title <- paste("Geobserveerd aantal voor", input$showSpecies,
+                ifelse(input$map_time[1] != input$map_time[2],
+                    paste("van", input$map_time[1], "tot", input$map_time[2]),
+                    paste("in", input$map_time[1])
                 )
             )
             
-            
-            currentData$y <- currentData$freq      
-            
-#            Code for adapting colors (if needed)
-#            https://stackoverflow.com/questions/26507326/rcharts-change-the-individual-point-colors-of-a-time-series-plot-highcharts
-            plotTime$series(
-                lapply(input$map_region, function(iArea) {
-                      
-                      list(name = iArea, data = toJSONArray2(currentData[
-                                  currentData$locatie == iArea, ], json = F))
-                      
-                    })
-            )
+            currentData <- subset(results$map_timeData(), locatie %in% input$map_region)
             
             
-            plotTime$save(file.path(tempdir(), "plotTijd.html"),
-                standalone = TRUE)
+            # Create plot
+            plot_ly(data = currentData, x = ~afschotjaar, y = ~freq,
+                    color = ~locatie, hoverinfo = "text+name",
+                    type = "scatter", mode = "lines+markers") %>%
+                layout(title = title,
+                    xaxis = list(title = "Jaar"), 
+                    yaxis = list(title = "Aantal"),
+                    showlegend = TRUE,
+                    margin = list(b = 80, t = 100))     
             
-            
-            plotTime
             
           })
       
       
-      output$map_timePlot <- renderChart2({results$map_timePlot()})
       
-      
-      output$downloadPlotTime <- downloadHandler("plotTijd.html",
-          content = function(file) {
-            file.copy(file.path(tempdir(), "plotTijd.html"), file)
-          }
-      )
-      
-      
-      
-#      
 #      # export the results as an html report
 #      output$exportResults <- downloadHandler(
 #          
@@ -686,7 +657,7 @@ shinyServer(function(input, output, session) {
 #            # copy start template in working directory
 #            file.copy(from = pathReport, to = tmpDir, overwrite = TRUE)
 #            file.copy(from = pathCss, to = tmpDir, overwrite = TRUE)
-#            
+      ##            
 #            # run report
 #            library(rmarkdown)
 #            potentialErrorMessage <- try(

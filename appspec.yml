@@ -1,0 +1,14 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ubuntu/reporting-rshiny-grofwildjacht
+hooks:
+  AfterInstall:
+    - location: scripts/reporting-rshiny-grofwildjacht.sh
+      timeout: 1000
+permissions:
+  - object: /home/ubuntu/reporting-rshiny-grofwildjacht
+    owner: ubuntu
+    group: ubuntu
+mode: 764

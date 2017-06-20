@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     libssl1.0.0 
 
 # basic shiny functionality
-RUN R -e "install.packages(c('shiny', 'rmarkdown'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'rmarkdown', 'sp', 'plotly', 'plyr', 'RColorBrewer', 'devtools', 'methods', 'maptools', 'leaflet'), repos='https://cloud.r-project.org/')"
 
 # install dependencies of reporting-grofwild app
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
@@ -30,4 +30,4 @@ COPY Rprofile.site /usr/lib/R/etc/
 
 EXPOSE 3838
 
-CMD ["R", "-e reporting-grofwild::runWildApp.R()"]
+CMD ["R", "-e reporting-grofwild::runWildApp()"]

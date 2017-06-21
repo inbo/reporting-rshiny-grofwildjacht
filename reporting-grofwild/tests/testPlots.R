@@ -13,6 +13,7 @@ geoData <- loadRawData(type = "geo", shapeData = spatialData)
 
 wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 
+openingstijdenData <- loadOpeningstijdenData()
 
 
 ## TABLES: Summary tables for Wild zwijn and Ree
@@ -135,15 +136,41 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 			
 		plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
 		
-		lapply(sort(unique(plotData$afschotjaar)), function(jaar)
+		openingSeasonData <- openingstijdenData[
+			openingstijdenData$Soort == wildsoort, ]
 	
-			percentageYearlyShotAnimals(
-				data = plotData, 
-				wildNaam = wildsoort, 
-				jaar = jaar
-			)
-
+		openingstijdRange <- c(
+				max(
+						min(plotData$afschotjaar), 
+						min(openingSeasonData$Jaar)
+				),
+				min(
+						max(plotData$afschotjaar), 
+						max(openingSeasonData$Jaar)
+				)-1
 		)
+		
+		openingstijd <- seq(openingstijdRange[1], openingstijdRange[2])
+		
+		types <- unique(openingSeasonData$Type)
+		types[types == ""] <- "all"
+		
+		lapply(types, function(type){
+										
+			lapply(openingstijd, function(jaar)
+		
+				print(percentageYearlyShotAnimals(
+					data = plotData, 
+					openingstijdenData = openingSeasonData,
+					wildNaam = wildsoort, 
+					type = type,
+					jaar = jaar,
+					jaartallen = openingstijd
+				))
+	
+			)
+			
+		})
 	
 })
 

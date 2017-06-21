@@ -66,21 +66,23 @@ optionsModuleUI <- function(id,
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
 #' @param types, defines the species types that can be selected
+#' @param timeRange numeric vector of length 2 with time range (in year)
 #' @param timeLabel label for the time slider, 'Periode' by default
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-    data, types = NULL, timeLabel = "Periode") {
+    data, types = NULL, timeRange = NULL, timeLabel = "Periode") {
   
   ns <- session$ns
-  
-  
+	
+#	message("Time range: ", toString(isolate(timeRange())))
+	
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = c(min(data()$afschotjaar), max(data()$afschotjaar)),
-            min = min(data()$afschotjaar),
-            max = max(data()$afschotjaar),
+            value = timeRange(),
+            min = min(timeRange()),
+            max = max(timeRange()),
             step = 1,
             sep = "")
         
@@ -90,9 +92,9 @@ optionsModuleServer <- function(input, output, session,
   output$year <- renderUI({
         
         sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-            value = max(data()$afschotjaar),
-            min = min(data()$afschotjaar),
-            max = max(data()$afschotjaar),
+            value = max(timeRange()),
+            min = min(timeRange()),
+            max = max(timeRange()),
             step = 1,
             sep = "")
         
@@ -213,15 +215,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(regio = input$region),
             if (!is.null(input$type))
               list(type = input$type),
-            if (!is.null(input$type) & !is.null(input$year))
-              list(openingstijden = unlist(
-                      openingstijdenData()[
-                          openingstijdenData()$Soort == wildNaam() &
-                              openingstijdenData()$Type == input$type &
-                              openingstijdenData()$Jaar == input$year, 
-                          c("Startdatum", "Stopdatum")
-                      ])
-              ),
+            if (!is.null(input$type))
+              list(openingstijdenData = openingstijdenData()),
             if (!is.null(toekenningsData))
               list(assignedData = toekenningsData()),
             if (!is.null(categorie))

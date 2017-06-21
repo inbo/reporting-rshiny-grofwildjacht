@@ -205,7 +205,7 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
     idx <- which(rawData$wildsoort == "Ree")
     typeRee <- ifelse(
         rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
-        ifelse(rawData[idx, "leeftijdscategorie_MF"] == "Volwassen",
+        ifelse(rawData[idx, "leeftijdscategorie_MF"] %in% c("Jongvolwassen", "Volwassen"),
             ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
                 ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
             ),

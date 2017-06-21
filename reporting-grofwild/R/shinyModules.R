@@ -106,12 +106,24 @@ optionsModuleServer <- function(input, output, session,
         
         validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
         
-        if (input$regionLevel == "flanders") 
-          choices <- "Vlaams Gewest" else if (input$regionLevel == "provinces")
-          choices <- unique(data()$provincie) else
-          choices <- unique(data()$gemeente_afschot_locatie)
+        if (input$regionLevel == "flanders") {
+          
+          choices <- "Vlaams Gewest"
         
-        choices <- choices[!is.na(choices)]
+        } else if (input$regionLevel == "provinces") {
+          
+          choices <- levels(droplevels(factor(unique(data()$provincie), 
+                      levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
+                          "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
+        
+        } else {
+          
+          choices <- unique(data()$gemeente_afschot_locatie)
+          choices <- choices[!is.na(choices)]
+          choices <- choices[order(choices)]
+        
+        }
+         
         
         if (input$regionLevel == "flanders")
           selected <- choices[1] else

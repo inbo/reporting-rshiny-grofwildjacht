@@ -1,33 +1,43 @@
 #' Load all shape data from zipped files
+#' @param showProgress boolean, whether to show progress window in the shiny app;
+#' Note, if used outside shiny app, this will cause an error; if FALSE progress
+#' is printed in the console
 #' @return list with for each spatial level a SpatialPolygonsDataFrame object, 
 #' with polygons and data as provided in the zipFile; spatial levels are 
 #' flanders, provinces, communes and provincesVoeren (Voeren as separate province)
 #' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
-#' @importFrom utils unzip
 #' @importFrom methods slot
-#' @importFrom maptools readShapePoly unionSpatialPolygons spRbind
+#' @importFrom maptools unionSpatialPolygons spRbind
+#' @importFrom rgdal readOGR
+#' @importFrom shiny incProgress
 #' @export
-loadShapeData <- function() {
+loadShapeData <- function(showProgress = FALSE) {
   
   dataDir <- system.file("extdata", package = "reportingGrofwild")
   
-  allLevels <- c("flanders", "provinces", "communes")
+  allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
+      "Gemeenten" = "communes")
   
-  
-  ## Read all spatial data
+  ## New code for geojson files
   spatialData <- lapply(allLevels, function(iLevel) {
         
-        tmpDir <- tempdir()
-        unlink(file.path(tmpDir, "*.shp"))
-        unlink(file.path(tmpDir, "*.shp.*"))
-        unzip(file.path(dataDir, paste0(iLevel, ".zip")), exdir = tmpDir)
-        allShapeFiles <- list.files(path = tmpDir, pattern = ".shp", 
-            full.names = TRUE)
-        if (length(allShapeFiles) == 0)
-          stop("Unzipped folder contains no files. Please make sure that the files are not in a subfolder.")
-        shapeData <- readShapePoly(allShapeFiles, IDvar = NULL, proj4string = CRS("+init=epsg:31370"))
-        shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
+        if (showProgress)
+          incProgress(1/3, 
+              detail = paste0("Geo Data: ", 
+                  names(allLevels)[allLevels == iLevel], 
+                  " (", which(allLevels == iLevel), "/3)"))
         
+        file <- file.path(dataDir, paste0(iLevel, ".geojson"))
+#        # Check whether we can use readOGR()
+#        "GeoJSON" %in% ogrDrivers()$name
+        shapeData <- readOGR(dsn = file, layer = "OGRGeoJSON", 
+            verbose = !showProgress)
+        shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
+  
+        # Create factor for region names
+        if (iLevel == "provinces")
+          shapeData$NAAM <- factor(shapeData$NAAM, levels = c("West-Vlaanderen",
+                  "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg"))
         
         return(shapeData)
         
@@ -166,7 +176,7 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
     communeData <- shapeData$communes@data
     # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
     gemeenteData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
-            "gemeentecodes.csv"), header = TRUE, sep = ";")
+            "gemeentecodes.csv"), header = TRUE, sep = ",")
     
     geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
     geoName <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 

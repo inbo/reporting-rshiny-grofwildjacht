@@ -31,7 +31,6 @@ allTables
 
 
 # For count with type
-# TODO we will need to select "afschot" only
 tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAantal")
 tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAantal",
     jaar = 2016)
@@ -61,12 +60,7 @@ countYearProvince(data = wildEcoData, wildNaam = "wild zwijn",
 
 
 
-## PLOT 2: Table per age and province ##
-
-# TODO we wait for extra data on "ree"
-
-
-## PLOT 3: Map with counts and corresponding line plot ##
+## PLOT 2: Map with counts and corresponding line plot ##
 
 wildGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 
@@ -92,10 +86,18 @@ plot(spatialData$provinces)
 plot(spatialData$provincesVoeren)
 plot(spatialData$communes)
 
+#leaflet(spatialData$provinces) %>% 
+#    addProviderTiles("Hydda.Full") %>%
+#    addPolygons(
+#        weight = 1, 
+#        color = "gray",
+#        fillColor = "red",
+#        fillOpacity = 0.8,
+#        group = "region"
+#    ) 
 
 
-
-## PLOT 4: Counts age based on cheek ##
+## PLOT 3: Counts age based on cheek ##
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
       
@@ -113,7 +115,7 @@ countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn",
 
 
 
-## PLOT 5: Counts per year and age ##
+## PLOT 4: Counts per year and age ##
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
       
@@ -132,7 +134,7 @@ countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
 
 
-## PLOT 6: yearly percentage of shot animals
+## PLOT 5: yearly percentage of shot animals
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 			
@@ -177,7 +179,7 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 })
 
 
-## PLOT 7: Percentages per age and gender
+## PLOT 6: Percentages per age and gender
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
       
@@ -194,7 +196,7 @@ countAgeGender(data = wildEcoData, wildNaam = "wild zwijn",
 
 
 
-## PLOT 8: Distribution of weight ifo age ##
+## PLOT 7: Distribution of weight ifo age ##
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
       

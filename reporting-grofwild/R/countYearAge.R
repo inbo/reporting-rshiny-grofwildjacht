@@ -72,19 +72,25 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   totalCount$freq <- NULL
   
   summaryData <- merge(summaryData, totalCount)
-
+  
   
   # For optimal displaying in the plot
   summaryData$kaak <- factor(summaryData$kaak, levels = newLevelsKaak)
   summaryData$jaar <- as.factor(summaryData$jaar)
   
-  summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
-      "<br>Aantal: ", summaryData$freq, 
-      "<br>Totaal: ", summaryData$totaal,
-      ifelse(is.na(summaryData$percent), "", 
-          paste0("<br><br><i>Subset ingezamelde onderkaken </i>",
-              "<br>", round(summaryData$percent), "% van totaal aantal ingezamelde onderkaken"))
-  )
+  if (summarizeBy == "count") {
+    
+    summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
+        "<br>Aantal: ", summaryData$freq, 
+        "<br>Totaal: ", summaryData$totaal)
+    
+  } else {
+    
+    summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
+        "<br><i>Subset ingezamelde onderkaken </i>",
+        "<br>", round(summaryData$percent), "%")
+    
+  }
   
   colors <- c(inbo.2015.colours(3), inbo.lichtgrijs)
   names(colors) <- newLevelsKaak
@@ -109,10 +115,10 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
       layout(title = title,
           xaxis = list(title = "Jaar"), 
           yaxis = if (summarizeBy == "count") 
-            list(title = "Aantal") else 
-            list(title = "Percentage", range = c(0, 100)),
+                list(title = "Aantal") else 
+                list(title = "Percentage", range = c(0, 100)),
           margin = list(b = 120, t = 100))     
-   
+  
   
   if (summarizeBy == "percent")
     toPlot <- toPlot %>% add_annotations(text = paste0(round(percentCollected, 2)*100, 

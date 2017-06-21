@@ -13,17 +13,47 @@ library(plotly)
 `%then%` <- shiny:::`%OR%`
 
 
+# Initialize data (prevent errors)
+allSpatialData <- NULL
+ecoData <- NULL
+geoData <- NULL
+openingstijdenData <- NULL
+toekenningsData <- NULL
 
-## Load all data
-allSpatialData <- loadShapeData()
 
-ecoData <- loadRawData(type = "eco")
-geoData <- loadRawData(type = "geo", shapeData = allSpatialData)
-
-openingstijdenData <- loadOpeningstijdenData()
-toekenningsData <- loadToekenningen()
 
 shinyServer(function(input, output, session) {
+      
+      
+      observe({
+            
+            ## Load Geo Data
+            withProgress(message = "Data Laden...", value = 0, {
+                  
+                  allSpatialData <<- loadShapeData(showProgress = TRUE)
+                  
+                })
+            
+            ## Load Raw Data
+            withProgress(message = "Data Laden...", value = 0, {
+                  
+                  incProgress(1/4, detail = "Gegevens")
+                  ecoData <<- loadRawData(type = "eco")
+                  
+                  incProgress(2/4, detail = "Gegevens")
+                  geoData <<- loadRawData(type = "geo", shapeData = allSpatialData)
+                  
+                  incProgress(3/4, detail = "Gegevens")
+                  openingstijdenData <<- loadOpeningstijdenData()
+
+                  incProgress(4/4, detail = "Gegevens")
+                  toekenningsData <<- loadToekenningen()
+                  
+                })
+            
+          })
+      
+      
       
       # For debugging
       observe({
@@ -50,12 +80,16 @@ shinyServer(function(input, output, session) {
       ## Create data upon user choices
       results$wildEcoData <- reactive({
             
+            validate(need(ecoData, "No eco data"))
+            
             ecoData[ecoData$wildsoort == input$showSpecies, ]
             
           })
       
       
       results$wildGeoData <- reactive({
+            
+            validate(need(geoData, "No geo data"))
             
             geoData[geoData$wildsoort == input$showSpecies, ]
             
@@ -71,7 +105,7 @@ shinyServer(function(input, output, session) {
       
       results$spatialData <- reactive({
             
-            input$map_regionLevel
+            req(allSpatialData)
             
             if (input$showSpecies == "Wild zwijn" & input$map_regionLevel == "provinces") {
               
@@ -223,9 +257,9 @@ shinyServer(function(input, output, session) {
             if (input$map_regionLevel == "flanders")
               selected <- results$spatialData()$NAAM[1] else
               selected <- NULL
-                          
+            
             selectInput(inputId = "map_region", label = "Regio('s)",
-                choices = results$spatialData()$NAAM,
+                choices = levels(droplevels(results$spatialData()$NAAM)),
                 selected = selected, multiple = TRUE)
             
           })
@@ -373,6 +407,8 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
+            req(allSpatialData)
+            
             validate(need(results$spatialData(), "Geen data beschikbaar"),
                 need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
             
@@ -397,7 +433,8 @@ shinyServer(function(input, output, session) {
                     data = allSpatialData$provinces, 
                     color = provinceBounds$color, 
                     weight = 3,
-                    opacity = provinceBounds$opacity)
+                    opacity = provinceBounds$opacity
+                )
             
           })
       
@@ -617,7 +654,7 @@ shinyServer(function(input, output, session) {
             
             # Create plot
             plot_ly(data = currentData, x = ~afschotjaar, y = ~freq,
-                    color = ~locatie, hoverinfo = "text+name",
+                    color = ~locatie, hoverinfo = "x+y+name",
                     type = "scatter", mode = "lines+markers") %>%
                 layout(title = title,
                     xaxis = list(title = "Jaar"), 

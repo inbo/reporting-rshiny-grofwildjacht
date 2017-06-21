@@ -29,6 +29,18 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | Leeftijdscategorie_onderkaak | factor        | de leeftijdscategorie door het INBO      |
 
 
+## GIS data files
+
+The `*.geojson` files are providing GIS data for the grofwild reporting at three geographical levels
+
+* flanders (gewesten): Vlaams Gewest
+* provinces (provincies): West-Vlaanderen, Oost-Vlaanderen, Antwerpen, Vlaams Brabant, Limburg
+* communes (gemeenten): 308 communes following "referentiebestand gemeentegrenzen 2016-01-29"
+
+Data projection is EPSG:31370. 
+Source: [www.geopunt.be](http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen)
+
+
 ## reference data
 
 * `Toekenningen_ree.csv`: this provides the *toegekende* numbers per province/year, will be updated each year.
@@ -54,7 +66,12 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 
 ## GIS reference data
 
-* `deelgemeenten_GIS.csv`
-* `Fusiegemeenten_2006.csv`
+* `gemeentecodes.csv`
+
+| Kolom    | Eigenschappen | Toelichting              |
+| -------- | --------------| ------------------------ |
+| NIS code | int           | de NIS code van gemeente |
+| Postcode | int           | de postcode van gemeente |
+| Gemeente | str           | de naam van gemeente     |
 
 

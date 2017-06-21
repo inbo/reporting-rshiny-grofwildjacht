@@ -5,7 +5,7 @@
 \title{User input for controlling specific plot (server-side)}
 \usage{
 optionsModuleServer(input, output, session, data, types = NULL,
-  timeLabel = "Periode")
+  timeRange = NULL, timeLabel = "Periode")
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -17,6 +17,8 @@ optionsModuleServer(input, output, session, data, types = NULL,
 \item{data}{reactive data.frame, data for chosen species}
 
 \item{types, }{defines the species types that can be selected}
+
+\item{timeRange}{numeric vector of length 2 with time range (in year)}
 
 \item{timeLabel}{label for the time slider, 'Periode' by default}
 }

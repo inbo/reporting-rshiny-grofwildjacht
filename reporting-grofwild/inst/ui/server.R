@@ -20,8 +20,6 @@ geoData <- NULL
 openingstijdenData <- NULL
 toekenningsData <- NULL
 
-
-
 shinyServer(function(input, output, session) {
       
       
@@ -118,13 +116,52 @@ shinyServer(function(input, output, session) {
             }
             
           })
-      
+			
+			results$openingstijdenData <- reactive({
+						
+					openingstijdenData[openingstijdenData$Soort == input$showSpecies, ]
+
+			})
+	
+			results$openingstijd <- reactive({
+						
+					# for Ree: openingseason contains more year than in the data
+					# for Wildboar: openingseason contains less year than in the data
+						
+					# so retains the years when data and opening season specified
+					# and doesn't retain the last year (because not full)
+						
+					if(input$showSpecies %in% c("Ree", "Wild zwijn")){
+						
+						openingstijd <- c(
+								max(
+									min(results$wildEcoData()$afschotjaar), 
+									min(results$openingstijdenData()$Jaar)
+								),
+								min(
+										max(results$wildEcoData()$afschotjaar), 
+										max(results$openingstijdenData()$Jaar)
+								)-1
+						)
+						
+#						message("openingstijd is: ", toString(openingstijd))
+						
+						openingstijd
+						
+					}else NULL
+						
+			})
+		
+			results$timeRange <- reactive({range(results$wildEcoData()$afschotjaar)})  
+			
+#			isolate(results$timeRange())
       
       
       ## User input for controlling the plots and create plotly
       # Table 1
       callModule(module = optionsModuleServer, id = "table1", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "table1",
           plotFunction = "tableProvince", 
           data = results$wildEcoData, 
@@ -134,10 +171,12 @@ shinyServer(function(input, output, session) {
       
       # Table 2 - input
       callModule(module = optionsModuleServer, id = "table2", 
-          data = results$afschotData)
+          data = results$afschotData,
+					timeRange = results$timeRange)
       # Table 3 - input
       callModule(module = optionsModuleServer, id = "table3", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       
       
       observe({
@@ -167,7 +206,8 @@ shinyServer(function(input, output, session) {
       
       # Plot 1
       callModule(module = optionsModuleServer, id = "plot1", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "plot1",
           plotFunction = "countYearProvince", 
           data = results$wildEcoData, 
@@ -176,7 +216,8 @@ shinyServer(function(input, output, session) {
       
       # Plot 2
       callModule(module = optionsModuleServer, id = "plot2", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "plot2",
           plotFunction = "countAgeCheek", 
           data = results$wildEcoData,
@@ -185,7 +226,8 @@ shinyServer(function(input, output, session) {
       
       # Plot 3
       callModule(module = optionsModuleServer, id = "plot3", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "plot3",
           plotFunction = "countYearAge", 
           data = results$wildEcoData,
@@ -194,10 +236,9 @@ shinyServer(function(input, output, session) {
       # Plot 4
       results$types <- reactive({
             
-            req(openingstijdenData)
+            req(results$openingstijdenData())
             
-            types <- unique(openingstijdenData[
-                    openingstijdenData$Soort == input$showSpecies, "Type"])
+            types <- unique(results$openingstijdenData()$Type)
             
             if (length(types) == 1 && types == "")
               return(c("alle" = "all")) else 
@@ -207,18 +248,23 @@ shinyServer(function(input, output, session) {
       
       
       callModule(module = optionsModuleServer, id = "plot4", 
-          data = results$wildEcoData, types = results$types,
-          timeLabel = "Referentieperiode")
+          data = results$wildEcoData,
+					timeRange = results$openingstijd,
+          timeLabel = "Referentieperiode",
+					types = results$types)
+			
       callModule(module = plotModuleServer, id = "plot4",
           plotFunction = "percentageYearlyShotAnimals", 
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies),
-          openingstijdenData = reactive(openingstijdenData))
+          openingstijdenData = results$openingstijdenData
+			)
       
       
       # Plot 5
       callModule(module = optionsModuleServer, id = "plot5", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "plot5",
           plotFunction = "countAgeGender", 
           data = results$wildEcoData,
@@ -227,7 +273,8 @@ shinyServer(function(input, output, session) {
       
       # Plot 6
       callModule(module = optionsModuleServer, id = "plot6", 
-          data = results$wildEcoData)
+          data = results$wildEcoData,
+					timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "plot6",
           plotFunction = "boxAgeWeight", 
           data = results$wildEcoData,

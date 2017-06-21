@@ -4,16 +4,20 @@
 \alias{percentageYearlyShotAnimals}
 \title{Create interactive plot to represent yearly percentage killed}
 \usage{
-percentageYearlyShotAnimals(data, wildNaam = "", type = NULL,
+percentageYearlyShotAnimals(data, openingstijdenData, wildNaam, type = NULL,
   doodsoorzaak = "afschot", jaartallen = NULL, jaar = NULL,
-  width = NULL, height = NULL, openingstijden = NULL)
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
+\item{openingstijdenData}{data.frame with opening season, 
+as returned by the link{loadOpeningstijdenData} function}
+
 \item{wildNaam}{character, the name that should be displayed for y-label}
 
-\item{type}{animal type}
+\item{type}{animal type, used to filter \code{data} and \code{openingstijdenData} ('type' column)
+If NULL (by default) or 'all', the data is not filtered.}
 
 \item{doodsoorzaak}{character vector, defines the cause(s) of death that should
 be considered in the plot}
@@ -26,9 +30,6 @@ in the plot; if NULL no selection on year(s) is made}
 \item{width}{plot width (optional)}
 
 \item{height}{plot height (optional)}
-
-\item{openingstijden}{vector with start and end of season, see output of
-\link{loadOpeningstijdenData}}
 }
 \value{
 plotly object, for a given specie the observed yearly percentage

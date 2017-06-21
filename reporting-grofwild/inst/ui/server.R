@@ -252,6 +252,16 @@ shinyServer(function(input, output, session) {
           plotFunction = "boxAgeWeight", 
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
+			
+			
+			# Plot 7
+			callModule(module = optionsModuleServer, id = "plot7", 
+					data = results$wildEcoData,
+					timeRange = results$timeRange)
+			callModule(module = plotModuleServer, id = "plot7",
+					plotFunction = "boxAgeGenderLowerJaw", 
+					data = results$wildEcoData,
+					wildNaam = reactive(input$showSpecies))
       
       
       

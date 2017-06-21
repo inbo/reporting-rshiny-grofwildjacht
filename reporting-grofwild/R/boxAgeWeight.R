@@ -77,7 +77,7 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
           paste("in", jaartallen)),
       if (!all(regio == "")) 
-        paste0(" (", paste(regio, collapse = " en "), ")"))
+        paste0(" (", toString(regio), ")"))
   
   
   # Create plot

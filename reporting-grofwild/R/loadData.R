@@ -195,13 +195,14 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
     
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-    
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == ""] <- "Niet ingezameld"
     
   } 
   
   # add 'type' column to do the matching with the openingstijden table (only for ree)
   if(type == "eco"){
+		
+		# for Figure 13: combine age and gender
     idx <- which(rawData$wildsoort == "Ree")
     typeRee <- ifelse(
         rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
@@ -212,6 +213,20 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
             ""))
     rawData$type[idx] <- typeRee
     rawData$type[is.na(rawData$type)] <- ""
+		
+		# for Figure 28: combine age and gender, with subcategory for young adult
+		male <- rawData$geslacht.MF == "Mannelijk"
+		female <- rawData$geslacht.MF == "Vrouwelijk"
+		ageGender <- with(rawData,
+				ifelse(leeftijdscategorie_MF	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
+						ifelse(leeftijdscategorie_MF	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
+								ifelse(leeftijdscategorie_MF	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
+						)))
+		ageGender[is.na(rawData$ageGender)] <- ""
+		
+		rawData$ageGender <- factor(ageGender, 
+			levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
+		
   }
   
   return(rawData)

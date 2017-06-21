@@ -13,6 +13,8 @@ geoData <- loadRawData(type = "geo", shapeData = spatialData)
 
 wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 
+reeEcoData <- ecoData[ecoData$wildsoort == "Ree", ]
+
 openingstijdenData <- loadOpeningstijdenData()
 
 
@@ -207,3 +209,9 @@ boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016)
 boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
+
+## PLOT 9: Distribution of cheek length vs class ##
+
+boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", jaartallen = unique(reeEcoData$afschotjaar))
+	
+

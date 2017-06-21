@@ -7,7 +7,7 @@
 #' Create interactive plot for comparing age based on cheek or reported by hunter
 #' 
 #' Figure p. 9 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
-#' @inheritParams countYearProvince 
+#' @inheritParams countYearAge
 #' @return plotly object, for a given species the percentage per age category
 #' based on cheek or hunter report in a stacked bar chart
 #' @import plotly

@@ -197,6 +197,24 @@ shinyUI(
               )
               
             }),
+						
+						conditionalPanel("input.showSpecies == 'Ree'", {
+									
+								list(		
+									
+									h4("Verdeling van onderkaaklengte per leeftijdscategorie en geslacht"),
+									fluidRow(
+											
+											column(4, optionsModuleUI(id = "plot7", 
+													showTime = TRUE, regionLevels = 1:2)),
+											column(8, plotModuleUI(id = "plot7"))
+									
+									),
+									tags$hr()
+							
+								)
+									
+						}),
         
         
         tags$br()

@@ -1,10 +1,3 @@
-# Project: inbo-grofwildjacht_git
-# 
-# Author: mvarewyck
-###############################################################################
-
-
-
 #' Create interactive plot for counts per age category and year
 #' 
 #' Figure p. 11 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

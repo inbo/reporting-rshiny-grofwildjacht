@@ -66,8 +66,6 @@ optionsModuleUI <- function(id,
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
 #' @param types, defines the species types that can be selected
-#' @param extraVariables character vector, defines the variables in \code{data}
-#' for which values should be shown in popup-window in the plot
 #' @param timeLabel label for the time slider, 'Periode' by default
 #' @return no return value; some output objects are created
 #' @export
@@ -111,9 +109,14 @@ optionsModuleServer <- function(input, output, session,
           choices <- unique(data()$provincie) else
           choices <- unique(data()$gemeente_afschot_locatie)
         
+        choices <- choices[!is.na(choices)]
+        
+        if (input$regionLevel == "flanders")
+          selected <- choices[1] else
+          selected <- NULL
+        
         selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices[!is.na(choices)],
-            multiple = TRUE)
+            choices = choices, selected = selected, multiple = TRUE)
         
       })
   

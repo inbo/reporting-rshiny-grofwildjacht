@@ -162,3 +162,21 @@ countAgeGender(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016)
 countAgeGender(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
+
+
+
+## PLOT 8: Distribution of weight ifo age ##
+
+allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
+      
+      plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
+      boxAgeWeight(data = plotData, wildNaam = wildsoort)
+      
+    })
+allPlots
+
+# Some special cases
+boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn", 
+    jaartallen = 2016)
+boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
+    jaartallen = 2016:2017)

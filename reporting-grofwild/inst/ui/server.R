@@ -191,6 +191,15 @@ shinyServer(function(input, output, session) {
           wildNaam = reactive(input$showSpecies))
       
       
+      # Plot 6
+      callModule(module = optionsModuleServer, id = "plot6", 
+          data = results$wildEcoData)
+      callModule(module = plotModuleServer, id = "plot6",
+          plotFunction = "boxAgeWeight", 
+          data = results$wildEcoData,
+          wildNaam = reactive(input$showSpecies))
+      
+      
       
       
       ### The MAP ###
@@ -211,8 +220,13 @@ shinyServer(function(input, output, session) {
       
       output$map_region <- renderUI({
             
+            if (input$map_regionLevel == "flanders")
+              selected <- results$spatialData()$NAAM[1] else
+              selected <- NULL
+                          
             selectInput(inputId = "map_region", label = "Regio('s)",
-                choices = results$spatialData()$NAAM, multiple = TRUE)
+                choices = results$spatialData()$NAAM,
+                selected = selected, multiple = TRUE)
             
           })
       

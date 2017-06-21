@@ -97,8 +97,8 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   names(colors) <- newLevelsKaak
   
   title <- paste0(wildNaam, " ",
-      ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-          jaartallen),
+      ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+          paste("in", jaartallen)),
       " (", paste(doodsoorzaak, collapse = " en "), 
       if (!all(regio == "")) 
         paste(" in", paste(regio, collapse = " en ")),

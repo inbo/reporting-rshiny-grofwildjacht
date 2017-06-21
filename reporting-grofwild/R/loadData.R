@@ -151,6 +151,10 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
           dataFile), sep = ";", stringsAsFactors = FALSE)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
+  ## Replace decimal comma by dot
+  if ("ontweid_gewicht" %in% names(rawData))
+    rawData$ontweid_gewicht<- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
+  
   ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
   rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
           "Vlaams Brabant", as.character(rawData$provincie)))

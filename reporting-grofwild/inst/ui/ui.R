@@ -181,6 +181,17 @@ shinyUI(
                       column(8, plotModuleUI(id = "plot5"))
                   
                   ),
+                  tags$hr(),
+                  
+                  
+                  h4("Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot6", 
+                              showTime = TRUE, regionLevels = 1:2)),
+                      column(8, plotModuleUI(id = "plot6"))
+                  
+                  ),
                   tags$hr()
               
               )

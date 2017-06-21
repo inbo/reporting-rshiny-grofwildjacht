@@ -32,8 +32,11 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
   nRecords <- nrow(plotData)
   
   # Remove some categories
-  plotData <- plotData[with(plotData, !is.na(geslacht) & geslacht != "Onbekend" &
-              !is.na(leeftijd) & leeftijd != "Onbekend"), ]
+  # To prevent error with R CMD check
+  leeftijd <- NULL
+  geslacht <- NULL
+  plotData <- subset(plotData, !is.na(geslacht) & geslacht != "Onbekend" &
+              !is.na(leeftijd) & leeftijd != "Onbekend")
   percentCollected <- nrow(plotData)/nRecords
   
   # Define names and ordering of factor levels

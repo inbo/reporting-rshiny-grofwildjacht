@@ -232,7 +232,7 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
 						ifelse(leeftijdscategorie_MF	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
 								ifelse(leeftijdscategorie_MF	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
 						)))
-		ageGender[is.na(rawData$ageGender)] <- ""
+		ageGender[is.na(ageGender)] <- ""
 		
 		rawData$ageGender <- factor(ageGender, 
 			levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))

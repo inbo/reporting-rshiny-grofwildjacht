@@ -220,12 +220,18 @@ boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", jaartallen = unique(re
 
 indicators <- c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos")
 
-sapply(indicators, function(bioindicator)
-	plotBioindicator(
+tmp <- sapply(indicators, function(bioindicator){
+	message("Plot for ", bioindicator, " in progress")
+	pl <- plotBioindicator(
 		data = reeEcoData, 
-		wildNaam = "Ree", jaartallen = unique(reeEcoData$afschotjaar),
+#		type = "Geitkits",	
+		wildNaam = "Ree", 
+		jaartallen = c(2016, 2017), #unique(reeEcoData$afschotjaar),
 		bioindicator = bioindicator
 	)
-)
+	print(pl)
+})
+
+# 2017 for aantal embryos
 	
 

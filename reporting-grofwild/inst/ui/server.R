@@ -301,7 +301,8 @@ shinyServer(function(input, output, session) {
           types = results$typesGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot8",
-          plotFunction = "newPlot", 
+          plotFunction = "plotBioindicator", 
+					bioindicator = "onderkaaklengte",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       
@@ -313,7 +314,8 @@ shinyServer(function(input, output, session) {
           types = results$typesGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot9",
-          plotFunction = "newPlot", 
+          plotFunction = "plotBioindicator", 
+					bioindicator = "ontweid_gewicht",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       
@@ -332,7 +334,8 @@ shinyServer(function(input, output, session) {
           types = results$typesFemale,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot10",
-          plotFunction = "newPlot", 
+          plotFunction = "plotBioindicator", 
+					bioindicator =  "aantal_embryos",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       

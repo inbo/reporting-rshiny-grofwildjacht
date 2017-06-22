@@ -4,14 +4,17 @@
 \alias{plotBioindicator}
 \title{Create interactive plot for bioindicator versus year}
 \usage{
-plotBioindicator(data, wildNaam = "", jaartallen = NULL, regio = "",
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos"),
-  width = NULL, height = NULL)
+plotBioindicator(data, wildNaam = "", type = NULL, jaartallen = NULL,
+  regio = "", bioindicator = c("onderkaaklengte", "ontweid_gewicht",
+  "aantal_embryos"), width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
 \item{wildNaam}{character, the name that should be displayed for y-label}
+
+\item{type}{animal type, used to filter \code{data} ('ageGender' column)
+If NULL (by default) or 'all', the data is not filtered.}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

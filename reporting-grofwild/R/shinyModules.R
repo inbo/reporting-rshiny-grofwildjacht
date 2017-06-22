@@ -186,11 +186,13 @@ tableModuleUI <- function(id) {
 #' @param toekenningsData data with toekenningen, optional
 #' @param wildNaam character, defines the species name for y-label in plot
 #' @param categorie character, defines which type of table should be made
+#' @param bioindicator corresponding parameter to the \link{plotBioindicator} function
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
-    data, openingstijdenData, toekenningsData = NULL, wildNaam, categorie = NULL) {
+    data, openingstijdenData, toekenningsData = NULL, wildNaam, 
+		categorie = NULL, bioindicator = NULL) {
   
   subData <- reactive({
         
@@ -236,7 +238,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if (!is.null(categorie))
               list(categorie = categorie),
             if (!is.null(input$summarizeBy))
-              list(summarizeBy = input$summarizeBy)        
+              list(summarizeBy = input$summarizeBy),
+						if(!is.null(bioindicator))
+							list(bioindicator = bioindicator)
         )
         
         

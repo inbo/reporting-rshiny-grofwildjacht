@@ -5,7 +5,7 @@
 \title{Interactive plot or table (server-side)}
 \usage{
 plotModuleServer(input, output, session, plotFunction, data, openingstijdenData,
-  toekenningsData = NULL, wildNaam, categorie = NULL)
+  toekenningsData = NULL, wildNaam, categorie = NULL, bioindicator = NULL)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -25,6 +25,8 @@ plotModuleServer(input, output, session, plotFunction, data, openingstijdenData,
 \item{wildNaam}{character, defines the species name for y-label in plot}
 
 \item{categorie}{character, defines which type of table should be made}
+
+\item{bioindicator}{corresponding parameter to the \link{plotBioindicator} function}
 }
 \value{
 no return value; plot output object is created

@@ -4,8 +4,8 @@
 \alias{percentageYearlyShotAnimals}
 \title{Create interactive plot to represent yearly percentage killed}
 \usage{
-percentageYearlyShotAnimals(data, openingstijdenData, wildNaam, type = NULL,
-  doodsoorzaak = "afschot", jaartallen = NULL, jaar = NULL,
+percentageYearlyShotAnimals(data, openingstijdenData = NULL, wildNaam,
+  type = NULL, doodsoorzaak = "afschot", jaartallen = NULL, jaar = NULL,
   width = NULL, height = NULL)
 }
 \arguments{

@@ -9,7 +9,7 @@ Version: 0.0.3
 Date: 2017-06-09
 Imports:
     shiny, sp, plotly, plyr, INBOtheme, RColorBrewer, devtools, methods, 
-    reshape2, rgdal
+    reshape2, rgdal, mgcv
 Depends: maptools
 Suggests:
 	leaflet, rCharts, htmlwidgets, 

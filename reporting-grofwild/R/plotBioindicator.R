@@ -2,17 +2,23 @@
 #' @param bioindicator string with column of \code{data}
 #' with bioindicator, either 'onderkaaklengte',
 #' 'ontweid_gewicht', or 'aantal_embryos'
+#' @param type animal type, used to filter \code{data} ('ageGender' column)
+#' If NULL (by default) or 'all', the data is not filtered.
 #' @inheritParams countYearAge
 #' @import plotly
 #' @importFrom INBOtheme inbo.2015.colours
-#' @importFrom stats na.omit loess predict qt
+#' @importFrom stats na.omit 
+#' @import mgcv
 #' @return plotly object, for the specified specie and years
 #' @author Laure Cougnaud
 #' @export
 plotBioindicator <- function(data, wildNaam = "", 
+		type = NULL,
 		jaartallen = NULL, regio = "",
 		bioindicator = c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos"),
 		width = NULL, height = NULL){
+	
+#	message("type is:", type)
 	
 	bioindicator <- match.arg(bioindicator)
 	
@@ -24,30 +30,36 @@ plotBioindicator <- function(data, wildNaam = "",
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
+	if(!is.null(type))
+		data <- data[data$ageGender %in% type, ]
+	
 	# Select data of specified years
 	plotData <- data[
 		data$afschotjaar %in% jaartallen,
 		c("afschotjaar", "afschot_datum", bioindicator)]
 
 	if(bioindicator != "aantal_embryos")
-		plotData <- data[!is.na(data[, bioindicator]), ]
+		plotData <- plotData[!is.na(plotData[, bioindicator]), ]
 
 	colnames(plotData)[colnames(plotData) == bioindicator] <- "variable"
 	
 	if(bioindicator == "aantal_embryos"){
 		
 		# replace NA by 'Niet ingevuld', convert to a factor
-		variable <- ifelse(is.na(plotData$variable), 
-			"Niet ingevuld", 
-			as.character(plotData$variable))
-		uniqueNEmbryos <- as.character(sort(unique(na.omit(plotData$variable))))
+		formatVariable <- function(x)
+			paste0(x, " embryo", ifelse(x > 1,	"'s", ""))
+		variable <- ifelse(
+			is.na(plotData$variable),  "Niet ingevuld", 
+			formatVariable(plotData$variable))
 		levelsVariable <- c("Niet ingevuld", 
-			paste0(uniqueNEmbryos, " embryo", ifelse(uniqueNEmbryos > 1,	"'s", "")))
-		
+				formatVariable(sort(unique(na.omit(plotData$variable)))))
 		plotData$variable <- factor(variable, levels = levelsVariable)
+		
 		plotData$afschotjaar <- as.factor(plotData$afschotjaar)
+		
 		# use table with factor to have 0 when no counts for certain year/number of embryos
 		inputPlot <- as.data.frame(with(plotData, table(afschotjaar, variable)))
+		
 	}
 	
 #	plotData$afschot_datum <- as.Date(plotData$afschot_datum, format = "%Y-%m-%d")
@@ -57,7 +69,7 @@ plotBioindicator <- function(data, wildNaam = "",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
 			if (!all(regio == "")) paste0(" (", toString(regio), ")"))
 	
-	if(bioindicator == "aantal embryos"){
+	if(bioindicator == "aantal_embryos"){
 		
 		palette <- inbo.2015.colours(n = nlevels(inputPlot$variable))
 		
@@ -80,7 +92,6 @@ plotBioindicator <- function(data, wildNaam = "",
 							data = inputPlot[which(inputPlot$variable == varI), , drop = FALSE],
 							x = ~afschotjaar, y = ~Freq, 
 							type = 'scatter', mode = 'lines',
-							marker = list(color = col),
 							line = list(color = palette[i]), 
 							name = varI,
 							showlegend = TRUE)
@@ -95,7 +106,7 @@ plotBioindicator <- function(data, wildNaam = "",
 		
 	}else{
 	
-		# in ggplot:
+		# equivalent at in ggplot:
 		#	ggplot(mapping = aes(y = variable, x = as.integer(afschotjaar)), data = plotData) +
 		#		geom_smooth(method = "loess")
 	
@@ -104,42 +115,62 @@ plotBioindicator <- function(data, wildNaam = "",
 		#		add_lines(y = ~fitted(loess(variable ~ afschotjaar)))
 		
 		# compute lowess manually
-		model <- loess(variable ~ afschotjaar, data = plotData)
-		pred <- predict(object = model, newdata = NULL, se = TRUE)
-	
+#		system.time(model <- loess(variable ~ afschotjaar, data = plotData))
+#		system.time(pred <- predict(object = model, se = TRUE))
+#		getCiLoess <- function(type)
+#			pred$fit + switch(type, 'lower' = -1, 'upper' = 1) * 
+#					qt(0.975, pred$df) * pred$se
+		
+		# Note: default used by ggplot for high number of points
+		# but doesn't support use of <= 2 years
+#		cs = Cubic regression splines
+		model <- gam(
+			formula = variable ~ s(afschotjaar, bs = "cs", k = length(unique(plotData$afschotjaar))), 
+			data = plotData)
+		pred <- predict(object = model, se.fit = TRUE)
 		getCiLoess <- function(type)
 			pred$fit + switch(type, 'lower' = -1, 'upper' = 1) * 
-					qt(0.975, pred$df) * pred$se
-		
+					qnorm(p = 0.975) * pred$se.fit
 		inputPlot <- data.frame(
-			afschotjaar = as.factor(plotData$afschotjaar),
-			fit = pred$fit, 
-			ciLower = getCiLoess("lower"),
-			ciUpper = getCiLoess("upper")
-			)
+				afschotjaar = as.factor(plotData$afschotjaar),
+				fit = pred$fit, 
+				ciLower = getCiLoess("lower"),
+				ciUpper = getCiLoess("upper")
+		)
+	
+#		represent median and quantile		
+#		inputPlot <- ddply(plotData, "afschotjaar", function(x){
+#				quantiles <- quantile(x$variable, probs = c(0.025, 0.975))
+#				data.frame(median = median(x$variable), 
+#					quant1 = quantiles[1], quant2 = quantiles[2], 
+#					stringsAsFactors = FALSE)
+#		})
+#		inputPlot$afschotjaar <- as.factor(inputPlot$afschotjaar)
 			
 		# ribbon color with transparency	
 		colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
 			
 		# base plot
-		pl <- plot_ly(inputPlot, x = ~afschotjaar, width = width, height = height)  %>%
+		pl <- plot_ly(inputPlot, 
+					x = ~afschotjaar, y = ~fit,
+					width = width, height = height) %>%
 				
 				# loess fit
-				add_lines(y = ~fit,
-					line = list(color = inbo.lichtblauw),
-					name = "Loess Smoother") %>%
+				add_lines(line = list(color = inbo.lichtblauw),
+					name = "Smoother") %>%
 			
 				# confidence interval
 				add_ribbons(ymin = ~ciLower, ymax = ~ciUpper,
 						fill = 'tonexty', fillcolor = colorRibbon,
-						list(color = inbo.lichtblauw),
-						name = "Betrouwbaarheidsinterval")  %>%
+						line = list(color = inbo.lichtblauw),
+						name = "95% betrouwbaarheidsinterval")  %>%
 				
 				# title axes and margin bottom
 				layout(title = title,
 					xaxis = list(title = "afchotjaar"), 
 					yaxis = list(title = bioindicatorName),
-					margin = list(b = 40, t = 100)
+					margin = list(b = 40, t = 100),
+					yaxis = list(range = c(100, 200))
 			)
 	
 		}

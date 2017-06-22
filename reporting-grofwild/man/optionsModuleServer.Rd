@@ -5,7 +5,7 @@
 \title{User input for controlling specific plot (server-side)}
 \usage{
 optionsModuleServer(input, output, session, data, types = NULL,
-  timeRange = NULL, timeLabel = "Periode")
+  timeRange = NULL, timeLabel = "Periode", multipleTypes = FALSE)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -20,7 +20,9 @@ optionsModuleServer(input, output, session, data, types = NULL,
 
 \item{timeRange}{numeric vector of length 2 with time range (in year)}
 
-\item{timeLabel}{label for the time slider, 'Periode' by default}
+\item{timeLabel}{character, label for the time slider, 'Periode' by default}
+
+\item{multipleTypes}{boolean, whether multiple types can be selected or not}
 }
 \value{
 no return value; some output objects are created

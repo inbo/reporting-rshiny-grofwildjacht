@@ -22,11 +22,6 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 		data$ageGender != "" & !is.na(data$ageGender), ]
 
 	plotData$ageGender <- droplevels(plotData$ageGender)
-	
-	# compute cheek length
-	plotData$onderkaaklengte <- rowMeans(
-		plotData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
-		na.rm = TRUE)
 
 	# filter animal with left/right cheek length measured
 	plotData <- plotData[!is.na(plotData$onderkaaklengte), ]
@@ -37,7 +32,7 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 	pl <- plot_ly(data = plotData, x = ~ageGender, y = ~onderkaaklengte,
 			colors = inbo.lichtgrijs, type = "box", width = width, height = height) %>%
 			layout(title = paste0(wildNaam, " onderkaak lengte ",
-					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)), jaartallen), 
+					ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
 					if (!all(regio == "")) paste0(" (", toString(regio), ")")),
 					xaxis = list(title = "Categorie op basis van leeftijdscategorie and geslacht"), 
 					yaxis = list(title = "Onderkaaklengte (mm)"),

@@ -200,19 +200,16 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
   
-  # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
+ 
   if (type == "eco") {
-    
+		
+		# Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == ""] <- "Niet ingezameld"
-    
-  } 
   
-  # add 'type' column to do the matching with the openingstijden table (only for ree)
-  if(type == "eco"){
-		
-		# for Figure 13: combine age and gender
+  	# for Figure 13: combine age and gender: 'type' column 
+		# (to do the matching with the openingstijden table)
     idx <- which(rawData$wildsoort == "Ree")
     typeRee <- ifelse(
         rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
@@ -236,6 +233,11 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
 		
 		rawData$ageGender <- factor(ageGender, 
 			levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
+	
+		# for Figure 27, 28: compute cheek length
+		rawData$onderkaaklengte <- rowMeans(
+			rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
+			na.rm = TRUE)
 		
   }
   

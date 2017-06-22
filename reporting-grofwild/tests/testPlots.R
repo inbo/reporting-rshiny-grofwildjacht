@@ -215,5 +215,17 @@ boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
 ## PLOT 9: Distribution of cheek length vs class ##
 
 boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", jaartallen = unique(reeEcoData$afschotjaar))
+
+## PLOT 10: bioindicators
+
+indicators <- c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos")
+
+sapply(indicators, function(bioindicator)
+	plotBioindicator(
+		data = reeEcoData, 
+		wildNaam = "Ree", jaartallen = unique(reeEcoData$afschotjaar),
+		bioindicator = bioindicator
+	)
+)
 	
 

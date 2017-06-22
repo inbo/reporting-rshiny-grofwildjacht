@@ -4,7 +4,12 @@
 \alias{loadShapeData}
 \title{Load all shape data from zipped files}
 \usage{
-loadShapeData()
+loadShapeData(showProgress = FALSE)
+}
+\arguments{
+\item{showProgress}{boolean, whether to show progress window in the shiny app;
+Note, if used outside shiny app, this will cause an error; if FALSE progress
+is printed in the console}
 }
 \value{
 list with for each spatial level a SpatialPolygonsDataFrame object, 

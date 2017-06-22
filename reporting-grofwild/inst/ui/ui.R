@@ -136,7 +136,9 @@ shinyUI(
         
         
         
-        ## countAgeCheek & countYearAge: Wild zwijn and Ree
+        ## countAgeCheek & countYearAge & percentageYearlyShotAnimals
+        ## countAgeGender & boxAgeWeight
+        ## - Wild zwijn and Ree
         conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
               
               list(
@@ -198,6 +200,9 @@ shinyUI(
               
             }),
 						
+            
+            ## boxAgeGenderLowerJaw 
+            ## - Ree
 						conditionalPanel("input.showSpecies == 'Ree'", {
 									
 								list(		
@@ -210,7 +215,40 @@ shinyUI(
 											column(8, plotModuleUI(id = "plot7"))
 									
 									),
-									tags$hr()
+									tags$hr(),
+                  
+                  
+                  h3("Bio-indicatoren"),
+                  
+                  h4("Onderkaaklengte per jaar"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot8", 
+                              showTime = TRUE, showType = TRUE, 
+                              regionLevels = 1:2)),
+                      column(8, plotModuleUI(id = "plot8"))
+                  
+                  ),
+                  
+                  h4("Gewicht per jaar"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot9", 
+                              showTime = TRUE, showType = TRUE,
+                              regionLevels = 1:2)),
+                      column(8, plotModuleUI(id = "plot9"))
+                  
+                  ),
+                  
+                  h4("Aantal embryo's voor vrouwelijke reeën per jaar"),
+                  fluidRow(
+                      
+                      column(4, optionsModuleUI(id = "plot10", 
+                              showTime = TRUE, showType = TRUE,
+                              regionLevels = 1:2)),
+                      column(8, plotModuleUI(id = "plot10"))
+                  
+                  )
 							
 								)
 									

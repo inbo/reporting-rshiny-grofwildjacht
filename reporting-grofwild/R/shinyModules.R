@@ -67,11 +67,13 @@ optionsModuleUI <- function(id,
 #' @param data reactive data.frame, data for chosen species
 #' @param types, defines the species types that can be selected
 #' @param timeRange numeric vector of length 2 with time range (in year)
-#' @param timeLabel label for the time slider, 'Periode' by default
+#' @param timeLabel character, label for the time slider, 'Periode' by default
+#' @param multipleTypes boolean, whether multiple types can be selected or not
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-    data, types = NULL, timeRange = NULL, timeLabel = "Periode") {
+    data, types = NULL, timeRange = NULL, timeLabel = "Periode",
+    multipleTypes = FALSE) {
   
   ns <- session$ns
 	
@@ -138,7 +140,7 @@ optionsModuleServer <- function(input, output, session,
   output$type <- renderUI({
         
         selectInput(inputId = ns("type"), label = "Type",
-            choices = types(), multiple = FALSE)
+            choices = types(), multiple = multipleTypes)
         
       })
   
@@ -227,7 +229,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(regio = input$region),
             if (!is.null(input$type))
               list(type = input$type),
-            if (!is.null(input$type))
+            if (!is.null(input$type) & !is.null(input$year))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(toekenningsData))
               list(assignedData = toekenningsData()),
@@ -243,7 +245,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$plot <- renderPlotly({       
         
-        do.call(plotFunction, args = argList())
+        toReturn <- do.call(plotFunction, args = argList())
+        validate(need(!is.null(toReturn), "Niet beschikbaar"))
+        
+        return(toReturn)
         
       })
   

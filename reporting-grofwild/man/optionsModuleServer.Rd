@@ -5,7 +5,8 @@
 \title{User input for controlling specific plot (server-side)}
 \usage{
 optionsModuleServer(input, output, session, data, types = NULL,
-  timeRange = NULL, timeLabel = "Periode", multipleTypes = FALSE)
+  typesDefault = types, timeRange = NULL, timeLabel = "Periode",
+  multipleTypes = FALSE)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -17,6 +18,9 @@ optionsModuleServer(input, output, session, data, types = NULL,
 \item{data}{reactive data.frame, data for chosen species}
 
 \item{types, }{defines the species types that can be selected}
+
+\item{typesDefault, }{defines the default values for \code{types},
+same as \code{types} by defualt}
 
 \item{timeRange}{numeric vector of length 2 with time range (in year)}
 

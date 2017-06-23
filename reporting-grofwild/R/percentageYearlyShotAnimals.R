@@ -27,7 +27,7 @@ percentageYearlyShotAnimals <- function(
     width = NULL, height = NULL) {
   
   if (is.null(openingstijdenData))
-    return(NULL)
+    stop("Geen openingstijden data geschikbaar.")
   
   ## default
   
@@ -73,7 +73,7 @@ percentageYearlyShotAnimals <- function(
   ## format date to factor with half-month resolution
   
   # reformat dates as 'Date' object
-  inputData$afschot_datum_Date <- as.Date(inputData$afschot_datum, format = "%Y-%m-%d")
+  inputData$afschot_datum_Date <- as.Date(inputData$afschot_datum, format = "%d/%m/%Y")
   openingstijdenData$Startdatum_Date <- as.Date(openingstijdenData$Startdatum, format = "%d/%m/%Y")
   openingstijdenData$Stopdatum_Date <- as.Date(openingstijdenData$Stopdatum, format = "%d/%m/%Y")
   

@@ -82,9 +82,7 @@ optionsModuleServer <- function(input, output, session,
     multipleTypes = FALSE) {
   
   ns <- session$ns
-	
-#	message("Time range: ", toString(isolate(timeRange())))
-	
+		
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
@@ -254,19 +252,26 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
 
 	resultFct <- reactive({
+			
+			toReturn <- tryCatch(
+				 do.call(plotFunction, args = argList()),
+					error = function(err)
+					 validate(need(FALSE, err$message))
+				)		
 				
-			do.call(plotFunction, args = argList())
+			validate(need(!is.null(toReturn), "Niet beschikbaar"))
+				
+			return(toReturn)
+				
 				
 	})
 	
   
-  output$plot <- renderPlotly({       
+  output$plot <- renderPlotly({  
+				
+				resultFct()$plot
         
-        validate(need(!is.null(resultFct()$plot), "Niet beschikbaar"))
-        
-        return(resultFct()$plot)
-        
-      })
+    })
   
 	
 	output$dataDownload <- downloadHandler("data.csv",
@@ -281,9 +286,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
 					ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
 					FALSE
 				)
-				
-				message("isDataPresent:", isDataPresent)
-				
+								
 				validate(
 						need(resFct, "Niet beschikbaar"),
 						need(
@@ -294,9 +297,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
 				
 				## extract data to export
 				dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
-				
-				message("dataToExport:", str(dataPlot))
-				
+								
 				## write data to exported file
 				write.csv(x = dataPlot, file = file,
 						quote = FALSE, row.names = FALSE)
@@ -305,9 +306,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
 	)
   
   output$table <- renderTable({
-        
-        validate(need(!is.null(resultFct()), "Niet beschikbaar"))
-        
+       
         return(resultFct())
         
       }, digits = 0)

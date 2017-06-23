@@ -9,8 +9,19 @@
 #' 
 #' Figure p. 17 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
-#' @return plotly object, for a given species the distribution of weight
-#' in function of age is plotted in box plots
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object, for a given species the distribution of weight
+#' in function of age is plotted in box plots}
+#' \item{'data': }{raw data used for the plot, as data.frame with:
+#' \itemize{
+#' \item{'gewicht': }{weight in kilograms}
+#' \item{'leeftijd': }{age category}
+#' \item{'maanden': }{age in months}
+#' \item{'geslacht': }{gender}
+#' }
+#' }
+#' }
 #' @import plotly
 #' @importFrom plyr count ddply
 #' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
@@ -82,7 +93,7 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   # Create plot
   # Prevent Warning: 'layout' objects don't have these attributes: 'boxmode'
-  suppressWarnings(plot_ly(data = plotData, x = ~leeftijd, y = ~gewicht, 
+  suppressWarnings(pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~gewicht, 
           color = ~geslacht, colors = colors, type = "box", 
           width = width, height = height) %>%
       layout(title = title,
@@ -93,6 +104,9 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
           annotations = list(x = totalCounts$index, 
               y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
               xref = "paper", text = totalCounts$freq, xanchor = 'center', 
-              yanchor = 'bottom', showarrow = FALSE)))     
+              yanchor = 'bottom', showarrow = FALSE)))  
+
+	return(list(plot = pl, data = plotData))
+
   
 }

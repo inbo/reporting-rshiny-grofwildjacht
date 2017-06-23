@@ -35,7 +35,28 @@ with bioindicator, either 'onderkaaklengte',
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for the specified specie and years
+list with:
+\itemize{
+\item{'plot': }{plotly object, for the specified specie and years}
+\item{'data': }{
+\itemize{
+\item{for bioindicator set to 'aantal_embryos': }{
+data displayed in the plot, as data.frame with:
+\itemize{
+\item{'afschotjaar': }{year at which the animal was shot}
+\item{'variable': }{age/gender category}
+\item{'Freq': }{counts of females}
+}}
+\item{for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte': }{
+raw data used for the plot, as data.frame with:
+\itemize{
+\item{'afschotjaar': }{year at which the animal was shot}
+\item{'variable': }{value of the bioindicator, a.k.a
+weight for 'ontweid_gewicht' or length of the lower jaw for
+'onderkaaklengte'}}
+}}
+}
+}
 }
 \description{
 Create interactive plot for bioindicator versus year

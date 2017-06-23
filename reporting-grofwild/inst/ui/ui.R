@@ -87,7 +87,7 @@ shinyUI(
                   h4("Aantal per regio en per leeftijdscategorie"),
                   fluidRow(
                       
-                      column(4, optionsModuleUI(id = "table1", showYear = TRUE)),
+                      column(4, optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE)),
                       column(8, tableModuleUI(id = "table1"))
                   
                   ),
@@ -104,7 +104,7 @@ shinyUI(
                   h4("Aantal afschot per regio en per type"),
                   fluidRow(
                       
-                      column(4, optionsModuleUI(id = "table2", showYear = TRUE)),
+                      column(4, optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE)),
                       column(8, tableModuleUI(id = "table2"))
                   
                   ),
@@ -114,7 +114,7 @@ shinyUI(
                   h4("Percentage gerealiseerd afschot per regio en per type"),
                   fluidRow(
                       
-                      column(4, optionsModuleUI(id = "table3", showYear = TRUE)),
+                      column(4, optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE)),
                       column(8, tableModuleUI(id = "table3"))
                   
                   ),
@@ -128,7 +128,7 @@ shinyUI(
         h4("Aantal per jaar en per regio"),
         fluidRow(
             
-            column(4, optionsModuleUI(id = "plot1", showTime = TRUE)),
+            column(4, optionsModuleUI(id = "plot1", showTime = TRUE, exportData = TRUE)),
             column(8, plotModuleUI(id = "plot1"))
         
         ),
@@ -145,7 +145,7 @@ shinyUI(
                   h4("Leeftijdscategorie op basis van onderkaak"),
                   fluidRow(
                       
-                      column(4, optionsModuleUI(id = "plot2", showTime = TRUE)),
+                      column(4, optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot2"))
                   
                   ),
@@ -157,7 +157,7 @@ shinyUI(
                       
                       column(4, optionsModuleUI(id = "plot3", 
                               showSummarizeBy = TRUE, showTime = TRUE, 
-                              regionLevels = 1:2)),
+                              regionLevels = 1:2, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot3"))
                   
                   ),
@@ -168,7 +168,8 @@ shinyUI(
                   fluidRow(
                       
                       column(4, optionsModuleUI(id = "plot4", 
-                              showTime = TRUE, showYear = TRUE, showType = TRUE)),
+                              showTime = TRUE, showYear = TRUE, 
+															showType = TRUE, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot4"))
                   
                   ),
@@ -179,7 +180,7 @@ shinyUI(
                   fluidRow(
                       
                       column(4, optionsModuleUI(id = "plot5", 
-                              showTime = TRUE)),
+                              showTime = TRUE, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot5"))
                   
                   ),
@@ -190,7 +191,7 @@ shinyUI(
                   fluidRow(
                       
                       column(4, optionsModuleUI(id = "plot6", 
-                              showTime = TRUE, regionLevels = 1:2)),
+                              showTime = TRUE, regionLevels = 1:2, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot6"))
                   
                   ),
@@ -211,7 +212,7 @@ shinyUI(
 									fluidRow(
 											
 											column(4, optionsModuleUI(id = "plot7", 
-													showTime = TRUE, regionLevels = 1:2)),
+													showTime = TRUE, regionLevels = 1:2, exportData = TRUE)),
 											column(8, plotModuleUI(id = "plot7"))
 									
 									),
@@ -225,7 +226,7 @@ shinyUI(
                       
                       column(4, optionsModuleUI(id = "plot8", 
                               showTime = TRUE, showType = TRUE, 
-                              regionLevels = 1:2)),
+                              regionLevels = 1:2, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot8"))
                   
                   ),
@@ -235,7 +236,7 @@ shinyUI(
                       
                       column(4, optionsModuleUI(id = "plot9", 
                               showTime = TRUE, showType = TRUE,
-                              regionLevels = 1:2)),
+                              regionLevels = 1:2, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot9"))
                   
                   ),
@@ -245,7 +246,7 @@ shinyUI(
                       
                       column(4, optionsModuleUI(id = "plot10", 
                               showTime = TRUE, showType = TRUE,
-                              regionLevels = 1:2)),
+                              regionLevels = 1:2, exportData = TRUE)),
                       column(8, plotModuleUI(id = "plot10"))
                   
                   )

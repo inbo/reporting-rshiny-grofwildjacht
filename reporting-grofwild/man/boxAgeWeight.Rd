@@ -23,8 +23,19 @@ to be shown in the plot title}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given species the distribution of weight
-in function of age is plotted in box plots
+list with:
+\itemize{
+\item{'plot': }{plotly object, for a given species the distribution of weight
+in function of age is plotted in box plots}
+\item{'data': }{raw data used for the plot, as data.frame with:
+\itemize{
+\item{'gewicht': }{weight in kilograms}
+\item{'leeftijd': }{age category}
+\item{'maanden': }{age in months}
+\item{'geslacht': }{gender}
+}
+}
+}
 }
 \description{
 Figure p. 17 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

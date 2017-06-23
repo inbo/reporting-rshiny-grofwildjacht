@@ -20,8 +20,19 @@ in the plot; if NULL no selection on year(s) is made}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given species the percentage per age category
-and per gender, based on meldingsformulier data in a stacked bar chart
+list with:
+\itemize{
+\item{'plot': }{plotly object, for a given species the percentage per age category
+and per gender, based on meldingsformulier data in a stacked bar chart}
+\item{'data': }{data displayed in the plot, as data.frame with:
+\itemize{
+\item{'geslacht': }{gender}
+\item{'leeftijd': }{age category}
+\item{'freq': }{counts of animals}
+\item{'percent': }{percentage of counts of animals}
+}
+}
+}
 }
 \description{
 Figure p. 15 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

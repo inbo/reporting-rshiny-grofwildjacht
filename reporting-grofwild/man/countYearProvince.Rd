@@ -23,8 +23,18 @@ be considered in the plot}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given specie the observed number 
-per year and per province is plotted in a stacked bar chart
+list with:
+\itemize{
+\item{'plot': }{plotly object, for a given specie the observed number 
+per year and per province is plotted in a stacked bar chart}
+\item{'data': }{data displayed in the plot, as data.frame with:
+\itemize{
+\item{'afschotjaar': }{year at which the animals was shot}
+\item{'provincie': }{province name}
+\item{'value': }{counts of animals}
+}
+}
+}
 }
 \description{
 Figure p. 4 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

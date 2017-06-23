@@ -20,8 +20,20 @@ in the plot; if NULL no selection on year(s) is made}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given species the percentage per age category
-based on cheek or hunter report in a stacked bar chart
+list with:
+\itemize{
+\item{'plot': }{plotly object, for a given species the percentage per age category
+based on cheek or hunter report in a stacked bar chart}
+\item{'data': }{data displayed in the plot, as data.frame with:
+\itemize{
+\item{'jager': }{category based on the meldingsformulier}
+\item{'kaak': }{category based on the lower jaw inspection}
+\item{'freq': }{counts of animals}
+\item{'percent': }{percentage in the entire category based on
+the lower jaw inspection}
+}
+}
+}
 }
 \description{
 Figure p. 9 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

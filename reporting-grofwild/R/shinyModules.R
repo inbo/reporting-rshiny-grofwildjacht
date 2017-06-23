@@ -19,7 +19,8 @@
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
-    regionLevels = NULL, showSummarizeBy = FALSE) {
+    regionLevels = NULL, showSummarizeBy = FALSE,
+		exportData = FALSE) {
   
   ns <- NS(id)
   
@@ -51,7 +52,9 @@ optionsModuleUI <- function(id,
                         choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
                             "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
-            )
+            ),
+					if(exportData)
+						downloadButton(ns("dataDownload"), "Download data")
               
       )
   )
@@ -250,24 +253,62 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
 
+	resultFct <- reactive({
+				
+			do.call(plotFunction, args = argList())
+				
+	})
+	
   
   output$plot <- renderPlotly({       
         
-        toReturn <- do.call(plotFunction, args = argList())
-        validate(need(!is.null(toReturn), "Niet beschikbaar"))
+        validate(need(!is.null(resultFct()$plot), "Niet beschikbaar"))
         
-        return(toReturn)
+        return(resultFct()$plot)
         
       })
   
+	
+	output$dataDownload <- downloadHandler("data.csv",
+			content = function(file) {
+				
+				resFct <- resultFct()
+				
+				## checks
+				
+				# Note: a data.frame is a list!
+				isDataPresent <- ifelse(!is.null(resFct),
+					ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
+					FALSE
+				)
+				
+				message("isDataPresent:", isDataPresent)
+				
+				validate(
+						need(resFct, "Niet beschikbaar"),
+						need(
+								if(is.data.frame(resFct))	resFct	else	resFct$plot,
+								"Niet beschikbaar"
+							)
+					)
+				
+				## extract data to export
+				dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
+				
+				message("dataToExport:", str(dataPlot))
+				
+				## write data to exported file
+				write.csv(x = dataPlot, file = file,
+						quote = FALSE, row.names = FALSE)
+				
+			}
+	)
   
   output$table <- renderTable({
         
-        toReturn <- do.call(plotFunction, args = argList())
-        validate(need(!is.null(toReturn), "Niet beschikbaar"))
+        validate(need(!is.null(resultFct()), "Niet beschikbaar"))
         
-        
-        return(toReturn)
+        return(resultFct())
         
       }, digits = 0)
 

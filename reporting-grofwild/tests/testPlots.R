@@ -139,6 +139,8 @@ countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 			
+		message("Plot for specie ", wildsoort, " in progress")
+			
 		plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
 		
 		openingSeasonData <- openingstijdenData[
@@ -161,8 +163,13 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 		types[types == ""] <- "all"
 		
 		lapply(types, function(type){
+					
+				message("Plot for type ", type, " in progress")
+					
 										
-			lapply(openingstijd, function(jaar)
+			lapply(openingstijd, function(jaar){
+						
+						message("Plot for year ", jaar, " in progress")
 		
 				print(percentageYearlyShotAnimals(
 					data = plotData, 
@@ -172,6 +179,8 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 					jaar = jaar,
 					jaartallen = openingstijd
 				))
+		
+			}
 	
 			)
 			
@@ -227,8 +236,7 @@ tmp <- sapply(indicators, function(bioindicator){
 		data = reeEcoData, 
 #		type = "Geitkits",	
 		wildNaam = "Ree", 
-		jaartallen = c(2016, 2017), #unique(reeEcoData$afschotjaar),
-		jaartallen  = 2017,
+		jaartallen = unique(reeEcoData$afschotjaar),
 		bioindicator = bioindicator
 	)
 	print(pl)

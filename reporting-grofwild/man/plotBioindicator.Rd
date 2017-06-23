@@ -14,7 +14,11 @@ plotBioindicator(data, wildNaam = "", type = NULL, jaartallen = NULL,
 \item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{type}{animal type, used to filter \code{data} ('ageGender' column)
-If NULL (by default) or 'all', the data is not filtered.}
+If NULL (by default), for bioindicator set to:
+\itemize{
+\item{'aantal_embryos': }{only animals with age/gender type: "Smalree" "Geit" are considered}
+\item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{ageGender} set to '')}
+}}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

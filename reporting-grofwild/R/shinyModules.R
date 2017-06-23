@@ -66,13 +66,16 @@ optionsModuleUI <- function(id,
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
 #' @param types, defines the species types that can be selected
+#' @param typesDefault, defines the default values for \code{types},
+#' same as \code{types} by defualt
 #' @param timeRange numeric vector of length 2 with time range (in year)
 #' @param timeLabel character, label for the time slider, 'Periode' by default
 #' @param multipleTypes boolean, whether multiple types can be selected or not
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-    data, types = NULL, timeRange = NULL, timeLabel = "Periode",
+    data, types = NULL, typesDefault = types, 
+		timeRange = NULL, timeLabel = "Periode",
     multipleTypes = FALSE) {
   
   ns <- session$ns
@@ -140,7 +143,8 @@ optionsModuleServer <- function(input, output, session,
   output$type <- renderUI({
         
         selectInput(inputId = ns("type"), label = "Type",
-            choices = types(), multiple = multipleTypes)
+            choices = types(), 
+						selected = typesDefault(), multiple = multipleTypes)
         
       })
   

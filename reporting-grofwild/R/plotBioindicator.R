@@ -3,12 +3,16 @@
 #' with bioindicator, either 'onderkaaklengte',
 #' 'ontweid_gewicht', or 'aantal_embryos'
 #' @param type animal type, used to filter \code{data} ('ageGender' column)
-#' If NULL (by default) or 'all', the data is not filtered.
+#' If NULL (by default), for bioindicator set to:
+#' \itemize{
+#' \item{'aantal_embryos': }{only animals with age/gender type: "Smalree" "Geit" are considered}
+#' \item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{ageGender} set to '')}
+#' }
 #' @inheritParams countYearAge
 #' @import plotly
-#' @importFrom INBOtheme inbo.2015.colours
-#' @importFrom stats na.omit 
 #' @import mgcv
+#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom stats na.omit predict qnorm
 #' @return plotly object, for the specified specie and years
 #' @author Laure Cougnaud
 #' @export
@@ -25,13 +29,18 @@ plotBioindicator <- function(data, wildNaam = "",
 	bioindicatorName <- switch(bioindicator,
 			'onderkaaklengte' = "onderkaak lengte", 
 			"ontweid_gewicht" = "ontweid gewicht", 
-			"aantal_embryos" = "aantal embryos")
+			"aantal_embryos" = "aantal embryo's")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
-	if(!is.null(type))
+	if(is.null(type))
+		type <- if(bioindicator == "aantal_embryos")
+			c("Smalree", "Geit")	else	levels(data$ageGender)[levels(data$ageGender) != ""]
+	
+	if(!is.null(type)){
 		data <- data[data$ageGender %in% type, ]
+	}
 	
 	# Select data of specified years
 	plotData <- data[
@@ -39,7 +48,7 @@ plotBioindicator <- function(data, wildNaam = "",
 		c("afschotjaar", "afschot_datum", bioindicator)]
 
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
-		return(NULL)
+		stop("Niet beschikbaar: geselecteerd period minder dan 2 jaaren")
 
 	if(bioindicator != "aantal_embryos")
 		plotData <- plotData[!is.na(plotData[, bioindicator]), ]
@@ -47,6 +56,9 @@ plotBioindicator <- function(data, wildNaam = "",
 	colnames(plotData)[colnames(plotData) == bioindicator] <- "variable"
 	
 	if(bioindicator == "aantal_embryos"){
+		
+		# remove > 3 embryos
+		plotData <- plotData[is.na(plotData$variable) | plotData$variable <= 3, ]
 		
 		# replace NA by 'Niet ingevuld', convert to a factor
 		formatVariable <- function(x)

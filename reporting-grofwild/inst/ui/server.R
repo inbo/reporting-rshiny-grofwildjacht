@@ -294,11 +294,16 @@ shinyServer(function(input, output, session) {
             types[types != ""]
             
           })
+			
+			results$typesDefaultGender <- reactive({
+					grep("kits", results$typesGender(), value = TRUE)
+			})
       
       callModule(module = optionsModuleServer, id = "plot8", 
           data = results$wildEcoData,
           timeRange = results$timeRange,
           types = results$typesGender,
+					typesDefault = results$typesDefaultGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot8",
           plotFunction = "plotBioindicator", 
@@ -312,6 +317,7 @@ shinyServer(function(input, output, session) {
           data = results$wildEcoData,
           timeRange = results$timeRange,
           types = results$typesGender,
+					typesDefault = results$typesDefaultGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot9",
           plotFunction = "plotBioindicator", 
@@ -324,7 +330,7 @@ shinyServer(function(input, output, session) {
       results$typesFemale <- reactive({
             
             types <- levels(ecoData$ageGender)
-            types[!types %in% c("", "Bokkits", "Jaarlingbok", "Bok")]
+            types[!types %in% c("", "Bokkits", "Jaarlingbok", "Bok", "Geitkits")]
             
           })
       

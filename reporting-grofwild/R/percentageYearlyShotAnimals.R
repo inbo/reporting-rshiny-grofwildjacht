@@ -9,11 +9,22 @@
 #' @param type animal type, used to filter \code{data} and \code{openingstijdenData} ('type' column)
 #' If NULL (by default) or 'all', the data is not filtered.
 #' @inheritParams countYearProvince
-#' @return plotly object, for a given specie the observed yearly percentage
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object, for a given specie the observed yearly percentage
 #' killed animals for the year \code{jaar}. 
 #' The mean in the entire year is represented by a dotted line.
 #' The range of the yearly percentage killed for the \code{jaartallen} period is represented
-#' by a ribbon, and its median by a full line.
+#' by a ribbon, and its median by a full line.}
+#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \itemize{
+#' \item{'dateHalfMonth': }{date in half-month resolution,
+#' e.g. January (01) for 01/01 -> 14/01 and January (02) for 15/01 -> end month (31/01)
+#' }
+#' \item{'obsYear': }{observed percentage of the counts for the specific half-month}
+#' }
+#' }
+#' }
 #' @import plotly
 #' @import INBOtheme
 #' @importFrom plyr ddply
@@ -199,6 +210,8 @@ percentageYearlyShotAnimals <- function(
           margin = list(b = 70, t = 40)
       )
   
-  return(pl)
+	colsFinal <- c("dateHalfMonth", "obsYear")
+	
+	return(list(plot = pl, data = dataPlot[, colsFinal]))
   
 }

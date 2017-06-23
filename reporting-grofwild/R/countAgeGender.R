@@ -9,8 +9,19 @@
 #' 
 #' Figure p. 15 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countAgeCheek
-#' @return plotly object, for a given species the percentage per age category
-#' and per gender, based on meldingsformulier data in a stacked bar chart
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object, for a given species the percentage per age category
+#' and per gender, based on meldingsformulier data in a stacked bar chart}
+#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \itemize{
+#' \item{'geslacht': }{gender}
+#' \item{'leeftijd': }{age category}
+#' \item{'freq': }{counts of animals}
+#' \item{'percent': }{percentage of counts of animals}
+#' }
+#' }
+#' }
 #' @import plotly
 #' @importFrom plyr count ddply
 #' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
@@ -74,7 +85,7 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
   
   
   # Create plot
-  plot_ly(data = summaryData, x = ~leeftijd, y = ~percent, color = ~geslacht,
+  pl <- plot_ly(data = summaryData, x = ~leeftijd, y = ~percent, color = ~geslacht,
           text = ~text,  hoverinfo = "x+text+name",
           colors = colors, type = "bar",  width = width, height = height) %>%
       
@@ -99,6 +110,11 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
               "% met gekende leeftijd en geslacht (", nrow(plotData), "/", nRecords, ")"),
           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
           y = -0.3, yanchor = "bottom", showarrow = FALSE)  
+	
+	colsFinal <- colnames(summaryData)[colnames(summaryData) != "text"]
+	
+	return(list(plot = pl, data = summaryData[, colsFinal]))
+	
   
 }
 

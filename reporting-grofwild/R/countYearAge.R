@@ -5,8 +5,23 @@
 #' @param regio character vector, names of the selected regions in \code{data}
 #' to be shown in the plot title
 #' @param summarizeBy character, whether to summarize data in terms of counts or percentages
-#' @return plotly object, for a given species the observed number 
-#' per year and per age category is plotted in a stacked bar chart
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object, for a given species the observed number 
+#' per year and per age category is plotted in a stacked bar chart}
+#' \item{'data'}{data displayed in the plot, as data.frame with:
+#' \itemize{
+#' \item{'jaar': }{year at which the animals was counted}
+#' \item{count, depending if \code{summarizeBy} is: }{
+#' \itemize{
+#' \item{'count': }{counts of animals in the 'freq' column}
+#' \item{'percent': }{percentage of counts of animals in the 'percent'  column}
+#' }
+#' }
+#' \item{'totaal': }{total number of animals across categories}
+#' }
+#' }
+#' }
 #' @import plotly
 #' @importFrom plyr count ddply
 #' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
@@ -91,6 +106,8 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
         "<br>", round(summaryData$percent), "%")
     
   }
+	
+
   
   colors <- c(inbo.2015.colours(3), inbo.lichtgrijs)
   names(colors) <- newLevelsKaak
@@ -127,7 +144,13 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
         y = -0.3, yanchor = "bottom", showarrow = FALSE)
   
   
-  return(toPlot)
+	colsFinal <- 	colnames(summaryData)[
+		!colnames(summaryData) %in% c("text", 
+			if(summarizeBy == "count")	"percent"	else	c("freq", "totaal")
+		)
+	]
+	
+	return(list(plot = toPlot, data = summaryData[, colsFinal]))
   
 }
 

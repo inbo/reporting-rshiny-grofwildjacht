@@ -32,11 +32,22 @@ in the plot; if NULL no selection on year(s) is made}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given specie the observed yearly percentage
+list with:
+\itemize{
+\item{'plot': }{plotly object, for a given specie the observed yearly percentage
 killed animals for the year \code{jaar}. 
 The mean in the entire year is represented by a dotted line.
 The range of the yearly percentage killed for the \code{jaartallen} period is represented
-by a ribbon, and its median by a full line.
+by a ribbon, and its median by a full line.}
+\item{'data': }{data displayed in the plot, as data.frame with:
+\itemize{
+\item{'dateHalfMonth': }{date in half-month resolution,
+e.g. January (01) for 01/01 -> 14/01 and January (02) for 15/01 -> end month (31/01)
+}
+\item{'obsYear': }{observed percentage of the counts for the specific half-month}
+}
+}
+}
 }
 \description{
 Adapted version from Figure p. 13 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

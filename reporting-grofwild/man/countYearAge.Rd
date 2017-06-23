@@ -29,8 +29,23 @@ be considered in the plot}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object, for a given species the observed number 
-per year and per age category is plotted in a stacked bar chart
+list with:
+\itemize{
+\item{'plot': }{plotly object, for a given species the observed number 
+per year and per age category is plotted in a stacked bar chart}
+\item{'data'}{data displayed in the plot, as data.frame with:
+\itemize{
+\item{'jaar': }{year at which the animals was counted}
+\item{count, depending if \code{summarizeBy} is: }{
+\itemize{
+\item{'count': }{counts of animals in the 'freq' column}
+\item{'percent': }{percentage of counts of animals in the 'percent'  column}
+}
+}
+\item{'totaal': }{total number of animals across categories}
+}
+}
+}
 }
 \description{
 Figure p. 11 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

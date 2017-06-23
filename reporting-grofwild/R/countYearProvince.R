@@ -15,8 +15,18 @@
 #' be considered in the plot 
 #' @param width plot width (optional)
 #' @param height plot height (optional)
-#' @return plotly object, for a given specie the observed number 
-#' per year and per province is plotted in a stacked bar chart
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object, for a given specie the observed number 
+#' per year and per province is plotted in a stacked bar chart}
+#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \itemize{
+#' \item{'afschotjaar': }{year at which the animals was shot}
+#' \item{'provincie': }{province name}
+#' \item{'value': }{counts of animals}
+#' }
+#' }
+#' }
 #' @import plotly
 #' @importFrom reshape2 melt
 #' @importFrom INBOtheme inbo.2015.colours
@@ -56,7 +66,7 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
     
   
   # Create plot
-  plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~provincie,
+  pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~provincie,
           colors = colors, type = "bar",  width = width, height = height) %>%
       layout(title = title,
           xaxis = list(title = "Jaar"), 
@@ -68,6 +78,7 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
               text = paste(ifelse(nlevels(summaryData$afschotjaar) == 1, "totaal:", ""), totalCount),
               xanchor = 'center', yanchor = 'bottom',
               showarrow = FALSE))  
-  
+	
+		return(list(plot = pl, data = summaryData))
   
 }

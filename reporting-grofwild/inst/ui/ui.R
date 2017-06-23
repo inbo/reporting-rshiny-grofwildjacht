@@ -101,7 +101,7 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "table1", showYear = TRUE),
+                              optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on table1")
                           ),
@@ -127,15 +127,14 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "table2", showYear = TRUE),
+                              optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on table2")
                           ),
                           column(8, tableModuleUI(id = "table2"))
                       
                       ),
-                      tags$hr()
-                  
+                      tags$hr()                  
                   ),
                   
                   actionLink(inputId = "linkTable3", 
@@ -145,7 +144,7 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "table3", showYear = TRUE),
+                              optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on table3")
                           ),
@@ -166,7 +165,7 @@ shinyUI(
             fluidRow(
                 
                 column(4, 
-                    optionsModuleUI(id = "plot1", showTime = TRUE),
+                    optionsModuleUI(id = "plot1", showTime = TRUE, exportData = TRUE),
                     tags$b("Extra info"),
                     tags$p("Some text on plot1")
                 ),
@@ -191,7 +190,7 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "plot2", showTime = TRUE),
+                              optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot2")
                           ),
@@ -205,18 +204,16 @@ shinyUI(
                   actionLink(inputId = "linkPlot3", 
                       label = h4("Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
                   conditionalPanel("input.linkPlot3 % 2 == 1",
-                      
                       fluidRow(
                           
                           column(4, 
                               optionsModuleUI(id = "plot3", 
                                   showSummarizeBy = TRUE, showTime = TRUE, 
-                                  regionLevels = 1:2),
+                                  regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot3")
                           ),
                           column(8, plotModuleUI(id = "plot3"))
-                      
                       ),
                       tags$hr()
                   ),
@@ -229,12 +226,13 @@ shinyUI(
                           
                           column(4, 
                               optionsModuleUI(id = "plot4", 
-                                  showTime = TRUE, showYear = TRUE, showType = TRUE),
+                                  showTime = TRUE, showYear = TRUE, 
+																	showType = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot4")
                           ),
                           column(8, plotModuleUI(id = "plot4"))
-                      
+
                       ),
                       tags$hr()
                   ),
@@ -247,7 +245,7 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "plot5", showTime = TRUE),
+                              optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot5")
                           ),
@@ -264,7 +262,7 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2),
+                              optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot6")
                           ),
@@ -278,7 +276,6 @@ shinyUI(
               
             }),
         
-        
         ## boxAgeGenderLowerJaw 
         ## - Ree
         conditionalPanel("input.showSpecies == 'Ree'", {
@@ -291,15 +288,15 @@ shinyUI(
                       fluidRow(
                           
                           column(4, 
-                              optionsModuleUI(id = "plot7", showTime = TRUE, regionLevels = 1:2),
+                              optionsModuleUI(id = "plot7", showTime = TRUE, 
+																regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot7")),
                           column(8, plotModuleUI(id = "plot7"))
                       
                       ),
                       tags$hr()
-                  ),
-                  
+                  ),                  
                   
                   h3("Bio-indicatoren"),
                   
@@ -310,16 +307,14 @@ shinyUI(
                           
                           column(4, 
                               optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE, 
-                                  regionLevels = 1:2),
+                                  regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot8")
                           ),
                           column(8, plotModuleUI(id = "plot8"))
-                      
                       ),
                       tags$hr()
                   ),
-                  
                   
                   actionLink(inputId = "linkPlot9", label = h4("Gewicht per jaar")),
                   conditionalPanel("input.linkPlot9 % 2 == 1", 
@@ -328,7 +323,7 @@ shinyUI(
                           column(4, 
                               optionsModuleUI(id = "plot9", 
                                   showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2),
+                                  regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot9")
                           ),
@@ -338,7 +333,6 @@ shinyUI(
                       tags$hr()
                   ),
                   
-                  
                   actionLink(inputId = "linkPlot10", 
                       label = h4("Aantal embryo's voor vrouwelijke reeën per jaar")
                   ),
@@ -347,7 +341,7 @@ shinyUI(
                           
                           column(4, 
                               optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2),
+                                  regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot10")),
                           column(8, plotModuleUI(id = "plot10"))

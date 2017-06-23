@@ -2,7 +2,17 @@
 #' 
 #' Figure p.17 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
-#' @return plotly object with length lower jaw per age/gender category for specified \code{jaartallen}
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object with length lower jaw per 
+#' age/gender category for specified \code{jaartallen}}
+#' \item{'data': }{raw data used for the plot, as data.frame with:
+#' \itemize{
+#' \item{'ageGender': }{age/gender category}
+#' \item{'onderkaaklengte': }{length of the lower jaw in mm}
+#' }
+#' }
+#' }
 #' @author Laure Cougnaud
 #' @import plotly
 #' @importFrom INBOtheme inbo.lichtgrijs
@@ -28,6 +38,9 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 	# filter all averages < 100 and > 200
 	plotData <- plotData[plotData$onderkaaklengte >= 100 & plotData$onderkaaklengte <= 200, ]
 	
+	# only keep columns displayed in the plot
+	plotData <- plotData[, c("ageGender", "onderkaaklengte")]
+	
 	# create plot
 	pl <- plot_ly(data = plotData, x = ~ageGender, y = ~onderkaaklengte,
 			colors = inbo.lichtgrijs, type = "box", width = width, height = height) %>%
@@ -39,6 +52,6 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 					margin = list(b = 40, t = 100)
 			)
 	
-	return(pl)
+	return(list(plot = pl, data = plotData))
 	
 }

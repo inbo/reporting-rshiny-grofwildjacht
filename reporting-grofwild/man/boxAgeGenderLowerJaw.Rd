@@ -23,7 +23,17 @@ to be shown in the plot title}
 \item{height}{plot height (optional)}
 }
 \value{
-plotly object with length lower jaw per age/gender category for specified \code{jaartallen}
+list with:
+\itemize{
+\item{'plot': }{plotly object with length lower jaw per 
+age/gender category for specified \code{jaartallen}}
+\item{'data': }{raw data used for the plot, as data.frame with:
+\itemize{
+\item{'ageGender': }{age/gender category}
+\item{'onderkaaklengte': }{length of the lower jaw in mm}
+}
+}
+}
 }
 \description{
 Figure p.17 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf

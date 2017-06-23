@@ -19,7 +19,8 @@
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
-    regionLevels = NULL, showSummarizeBy = FALSE) {
+    regionLevels = NULL, showSummarizeBy = FALSE,
+		exportData = FALSE) {
   
   ns <- NS(id)
   
@@ -51,7 +52,9 @@ optionsModuleUI <- function(id,
                         choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
                             "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
-            )
+            ),
+					if(exportData)
+						downloadButton(ns("dataDownload"), "Download data")
               
       )
   )
@@ -79,9 +82,7 @@ optionsModuleServer <- function(input, output, session,
     multipleTypes = FALSE) {
   
   ns <- session$ns
-	
-#	message("Time range: ", toString(isolate(timeRange())))
-	
+		
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
@@ -250,34 +251,63 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
 
+	resultFct <- reactive({
+			
+			toReturn <- tryCatch(
+				 do.call(plotFunction, args = argList()),
+					error = function(err)
+					 validate(need(FALSE, err$message))
+				)		
+				
+			validate(need(!is.null(toReturn), "Niet beschikbaar"))
+				
+			return(toReturn)
+				
+				
+	})
+	
   
-  output$plot <- renderPlotly({       
+  output$plot <- renderPlotly({  
+				
+				resultFct()$plot
         
-        toReturn <- tryCatch(
-            do.call(plotFunction, args = argList()),
-            error = function(err)
-              validate(need(FALSE, err$message))
-              )
-              
-        validate(need(!is.null(toReturn), "Niet beschikbaar"))
-        
-        return(toReturn)
-        
-      })
+    })
   
+	
+	output$dataDownload <- downloadHandler("data.csv",
+			content = function(file) {
+				
+				resFct <- resultFct()
+				
+				## checks
+				
+				# Note: a data.frame is a list!
+				isDataPresent <- ifelse(!is.null(resFct),
+					ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
+					FALSE
+				)
+								
+				validate(
+						need(resFct, "Niet beschikbaar"),
+						need(
+								if(is.data.frame(resFct))	resFct	else	resFct$plot,
+								"Niet beschikbaar"
+							)
+					)
+				
+				## extract data to export
+				dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
+								
+				## write data to exported file
+				write.csv(x = dataPlot, file = file,
+						quote = FALSE, row.names = FALSE)
+				
+			}
+	)
   
   output$table <- renderTable({
-        
-        toReturn <- tryCatch(
-            do.call(plotFunction, args = argList()),
-            error = function(err)
-              validate(need(FALSE, err$message))
-        )
-        
-        validate(need(!is.null(toReturn), "Niet beschikbaar"))
-        
-        
-        return(toReturn)
+       
+        return(resultFct())
         
       }, digits = 0)
 

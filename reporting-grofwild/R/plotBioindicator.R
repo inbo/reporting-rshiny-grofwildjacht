@@ -13,7 +13,28 @@
 #' @import mgcv
 #' @importFrom INBOtheme inbo.2015.colours
 #' @importFrom stats na.omit predict qnorm
-#' @return plotly object, for the specified specie and years
+#' @return list with:
+#' \itemize{
+#' \item{'plot': }{plotly object, for the specified specie and years}
+#' \item{'data': }{
+#' \itemize{
+#' \item{for bioindicator set to 'aantal_embryos': }{
+#' data displayed in the plot, as data.frame with:
+#' \itemize{
+#' \item{'afschotjaar': }{year at which the animal was shot}
+#' \item{'variable': }{age/gender category}
+#' \item{'Freq': }{counts of females}
+#' }}
+#' \item{for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte': }{
+#' raw data used for the plot, as data.frame with:
+#' \itemize{
+#' \item{'afschotjaar': }{year at which the animal was shot}
+#' \item{'variable': }{value of the bioindicator, a.k.a
+#' weight for 'ontweid_gewicht' or length of the lower jaw for
+#' 'onderkaaklengte'}}
+#' }}
+#' }
+#' }
 #' @author Laure Cougnaud
 #' @export
 plotBioindicator <- function(data, wildNaam = "", 
@@ -45,7 +66,7 @@ plotBioindicator <- function(data, wildNaam = "",
 	# Select data of specified years
 	plotData <- data[
 		data$afschotjaar %in% jaartallen,
-		c("afschotjaar", "afschot_datum", bioindicator)]
+		c("afschotjaar", bioindicator)]
 
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
 		stop("Niet beschikbaar: Gelieve periode met minstens 3 jaren te selecteren")
@@ -151,6 +172,8 @@ plotBioindicator <- function(data, wildNaam = "",
 #			pred$fit + switch(type, 'lower' = -1, 'upper' = 1) * 
 #					qt(0.975, pred$df) * pred$se
 		
+		returnedData <- plotData
+	
 		# Note: default used by ggplot for high number of points
 		# but doesn't support use of <= 2 years
 #		cs = Cubic regression splines
@@ -204,7 +227,9 @@ plotBioindicator <- function(data, wildNaam = "",
 			)
 	
 		}
+		
+	returnedData <- if(bioindicator == "aantal_embryos")	inputPlot	else	plotData
 
-	return(pl)
+	return(list(plot = pl, data = returnedData))
 
 }

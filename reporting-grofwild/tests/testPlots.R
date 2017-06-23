@@ -49,7 +49,7 @@ tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
 allPlots <- lapply(unique(ecoData$wildsoort), function(wildsoort) {
       
       plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-      countYearProvince(data = plotData, wildNaam = wildsoort)
+      res <- countYearProvince(data = plotData, wildNaam = wildsoort)
       
     })
 allPlots
@@ -107,7 +107,7 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
       countAgeCheek(data = plotData, wildNaam = wildsoort)
       
     })
-allPlots
+tmp <- sapply(allPlots, function(x) print(x$plot))
 
 # Some special cases
 countAgeCheek(data = wildEcoData, wildNaam = "wild zwijn", 
@@ -172,14 +172,14 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 						
 						message("Plot for year ", jaar, " in progress")
 		
-				print(percentageYearlyShotAnimals(
+				percentageYearlyShotAnimals(
 					data = plotData, 
 					openingstijdenData = openingSeasonData,
 					wildNaam = wildsoort, 
 					type = type,
 					jaar = jaar,
 					jaartallen = openingstijd
-				))
+				)
 		
 			}
 	
@@ -225,13 +225,14 @@ boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
 
 ## PLOT 9: Distribution of cheek length vs class ##
 
-boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", jaartallen = unique(reeEcoData$afschotjaar))
+res <- boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", 
+		jaartallen = unique(reeEcoData$afschotjaar))
 
 ## PLOT 10: bioindicators
 
 indicators <- c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos")
 
-tmp <- sapply(indicators, function(bioindicator){
+tmp <- lapply(indicators, function(bioindicator){
 	message("Plot for ", bioindicator, " in progress")
 	pl <- plotBioindicator(
 		data = reeEcoData, 
@@ -240,7 +241,7 @@ tmp <- sapply(indicators, function(bioindicator){
 		jaartallen = unique(reeEcoData$afschotjaar),
 		bioindicator = bioindicator
 	)
-	print(pl)
+#	print(pl)
 })
 
 # 2017 for aantal embryos

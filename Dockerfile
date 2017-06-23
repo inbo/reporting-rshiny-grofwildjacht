@@ -14,16 +14,30 @@ RUN apt-get update && apt-get install -y \
     libssh2-1-dev \
     libssl1.0.0 
 
-# basic shiny functionality
-RUN R -e "install.packages(c('shiny', 'rmarkdown', 'sp', 'plotly', 'plyr', 'RColorBrewer', 'devtools', 'methods', 'maptools', 'leaflet'), repos='https://cloud.r-project.org/')"
 
-# install dependencies of reporting-grofwild app
+RUN apt-get install -y libgeos-dev                 # for rgeos
+RUN apt-get install -y libgdal1-dev libproj-dev    # for rgdal
+RUN apt-get install -y phantomjs                   # for webshot    
+
+
+# install imports of reporting-grofwild app that are not on cloud
+RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal'), repos = 'https://cloud.r-project.org/')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 
+# install depends of reporting-grofwild app
+RUN R -e "install.packages(c('maptools'), repos='https://cloud.r-project.org/')"
+
+# install suggests of reporting-grofwild app
+RUN R -e "install.packages(c('leaflet', 'htmlwidgets', 'webshot', 'rgeos'), repos='https://cloud.r-project.org/')"
+
+# For downloading the maps
+# RUN R -e "webshot::install_phantomjs(version = '2.1.1', baseURL = 'https://bitbucket.org/ariya/phantomjs/downloads/')"
+
+ 
 # copy the app to the image by installing package
-COPY reporting-grofwild.tar.gz /root/
-RUN R CMD INSTALL /root/reporting-grofwild.tar.gz
-RUN rm /root/reporting-grofwild.tar.gz
+COPY reportingGrofwild_0.0.4.tar.gz /root/
+RUN R CMD INSTALL /root/reportingGrofwild_0.0.4.tar.gz
+RUN rm /root/reportingGrofwild_0.0.4.tar.gz
 
 # set host
 COPY Rprofile.site /usr/lib/R/etc/

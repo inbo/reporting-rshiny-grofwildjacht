@@ -18,6 +18,7 @@
 #' @import INBOtheme
 #' @importFrom plyr ddply
 #' @importFrom grDevices col2rgb
+#' @importFrom stats median
 #' @export
 percentageYearlyShotAnimals <- function(
     data, openingstijdenData = NULL,

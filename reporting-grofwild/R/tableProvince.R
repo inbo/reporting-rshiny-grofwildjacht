@@ -65,7 +65,7 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
       jaar <- min(max(allData$jaar), max(assignedData$jaar)) 
     
     if (!jaar %in% allData$jaar | !jaar %in% assignedData$jaar)
-      stop("Geen data voor het gekozen jaar")
+      stop("Niet beschikbaar: Geen data voor het gekozen jaar")
     
   } else {
     
@@ -73,7 +73,7 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
       jaar <- max(allData$jaar)
     
     if (!jaar %in% allData$jaar)
-      stop("Geen data voor het gekozen jaar")
+      stop("Niet beschikbaar: Geen data voor het gekozen jaar")
     
   }
   

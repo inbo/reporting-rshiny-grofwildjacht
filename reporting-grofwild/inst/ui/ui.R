@@ -29,12 +29,17 @@ shinyUI(
         tags$br(),
         tags$br(),
         
-        selectInput("showSpecies", "Diersoort (species)",
+        radioButtons("showSpecies", "Diersoort (species)",
             choices = c("Wild zwijn", "Ree", "Damhert", "Edelhert")
         ),
         
+        tags$br(),
+        tags$br(),
+        
         
         # Map with according line plot
+        
+        h3("Landkaart"),
         
         ## countMap: all species
         wellPanel(
@@ -80,18 +85,29 @@ shinyUI(
         
         # Show user input module per plot
         
+        h3("Extra Figuren en Tabellen"),
+        
         ## tableProvince for "leeftijd": wild zwijn and ree
         conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
               
               list(
-                  h4("Aantal per regio en per leeftijdscategorie"),
-                  fluidRow(
+                  actionLink(inputId = "linkTable1", 
+                      label = h4("Aantal per regio en per leeftijdscategorie")),
+                  conditionalPanel("input.linkTable1 % 2 == 1", 
                       
-                      column(4, optionsModuleUI(id = "table1", showYear = TRUE)),
-                      column(8, tableModuleUI(id = "table1"))
-                  
-                  ),
-                  tags$hr()
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "table1", showYear = TRUE),
+                              tags$b("Extra info"),
+                              tags$p("Some text on table1")
+                          ),
+                          column(8, tableModuleUI(id = "table1"))
+                      
+                      ),
+                      tags$hr()
+                  )
+              
               )
               
             }),
@@ -101,38 +117,62 @@ shinyUI(
         conditionalPanel("input.showSpecies == 'Ree'", {
               
               list(
-                  h4("Aantal afschot per regio en per type"),
-                  fluidRow(
+                  
+                  actionLink(inputId = "linkTable2", 
+                      label = h4("Aantal afschot per regio en per type")),
+                  conditionalPanel("input.linkTable2 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "table2", showYear = TRUE),
+                              tags$b("Extra info"),
+                              tags$p("Some text on table2")
+                          ),
+                          column(8, tableModuleUI(id = "table2"))
                       
-                      column(4, optionsModuleUI(id = "table2", showYear = TRUE)),
-                      column(8, tableModuleUI(id = "table2"))
+                      ),
+                      tags$hr()
                   
                   ),
-                  tags$hr(),
                   
-                  
-                  h4("Percentage gerealiseerd afschot per regio en per type"),
-                  fluidRow(
+                  actionLink(inputId = "linkTable3", 
+                      label = h4("Percentage gerealiseerd afschot per regio en per type")),
+                  conditionalPanel("input.linkTable3 % 2 == 1",
                       
-                      column(4, optionsModuleUI(id = "table3", showYear = TRUE)),
-                      column(8, tableModuleUI(id = "table3"))
-                  
-                  ),
-                  tags$hr()
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "table3", showYear = TRUE),
+                              tags$b("Extra info"),
+                              tags$p("Some text on table3")
+                          ),
+                          column(8, tableModuleUI(id = "table3"))
+                      
+                      ),
+                      tags$hr()
+                  )
               )
               
             }),
         
         
         ## countYearProvince: all species
-        h4("Aantal per jaar en per regio"),
-        fluidRow(
+        actionLink(inputId = "linkPlot1", 
+            label = h4("Aantal per jaar en per regio")),
+        conditionalPanel("input.linkPlot1 % 2 == 1", 
+            fluidRow(
+                
+                column(4, 
+                    optionsModuleUI(id = "plot1", showTime = TRUE),
+                    tags$b("Extra info"),
+                    tags$p("Some text on plot1")
+                ),
+                column(8, plotModuleUI(id = "plot1"))
             
-            column(4, optionsModuleUI(id = "plot1", showTime = TRUE)),
-            column(8, plotModuleUI(id = "plot1"))
-        
+            ),
+            tags$hr()
         ),
-        tags$hr(),
+        
         
         
         
@@ -142,117 +182,179 @@ shinyUI(
         conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
               
               list(
-                  h4("Leeftijdscategorie op basis van onderkaak"),
-                  fluidRow(
+                  actionLink(inputId = "linkPlot2", label = 
+                          h4("Leeftijdscategorie op basis van onderkaak")),
+                  conditionalPanel("input.linkPlot2 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot2", showTime = TRUE),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot2")
+                          ),
+                          column(8, plotModuleUI(id = "plot2"))
                       
-                      column(4, optionsModuleUI(id = "plot2", showTime = TRUE)),
-                      column(8, plotModuleUI(id = "plot2"))
-                  
+                      ),
+                      tags$hr()
                   ),
-                  tags$hr(),
                   
                   
-                  h4("Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)"),
-                  fluidRow(
+                  actionLink(inputId = "linkPlot3", 
+                      label = h4("Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
+                  conditionalPanel("input.linkPlot3 % 2 == 1",
                       
-                      column(4, optionsModuleUI(id = "plot3", 
-                              showSummarizeBy = TRUE, showTime = TRUE, 
-                              regionLevels = 1:2)),
-                      column(8, plotModuleUI(id = "plot3"))
-                  
-                  ),
-                  tags$hr(),
-                  
-                  
-                  h4("Percentage jaarlijks afschot"),
-                  fluidRow(
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot3", 
+                                  showSummarizeBy = TRUE, showTime = TRUE, 
+                                  regionLevels = 1:2),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot3")
+                          ),
+                          column(8, plotModuleUI(id = "plot3"))
                       
-                      column(4, optionsModuleUI(id = "plot4", 
-                              showTime = TRUE, showYear = TRUE, showType = TRUE)),
-                      column(8, plotModuleUI(id = "plot4"))
-                  
+                      ),
+                      tags$hr()
                   ),
-                  tags$hr(),
                   
                   
-                  h4("Percentage per leeftijdscategorie en geslacht"),
-                  fluidRow(
+                  actionLink(inputId = "linkPlot4", 
+                      label = h4("Percentage jaarlijks afschot")),
+                  conditionalPanel("input.linkPlot4 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot4", 
+                                  showTime = TRUE, showYear = TRUE, showType = TRUE),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot4")
+                          ),
+                          column(8, plotModuleUI(id = "plot4"))
                       
-                      column(4, optionsModuleUI(id = "plot5", 
-                              showTime = TRUE)),
-                      column(8, plotModuleUI(id = "plot5"))
-                  
+                      ),
+                      tags$hr()
                   ),
-                  tags$hr(),
                   
                   
-                  h4("Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht"),
-                  fluidRow(
+                  actionLink(inputId = "linkPlot5", 
+                      label = h4("Percentage per leeftijdscategorie en geslacht")),
+                  conditionalPanel("input.linkPlot5 % 2 == 1", 
                       
-                      column(4, optionsModuleUI(id = "plot6", 
-                              showTime = TRUE, regionLevels = 1:2)),
-                      column(8, plotModuleUI(id = "plot6"))
-                  
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot5", showTime = TRUE),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot5")
+                          ),
+                          column(8, plotModuleUI(id = "plot5"))
+                      
+                      ),
+                      tags$hr()
                   ),
-                  tags$hr()
+                  
+                  
+                  actionLink(inputId = "linkPlot6", 
+                      label = h4("Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+                  conditionalPanel("input.linkPlot6 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot6")
+                          ),
+                          column(8, plotModuleUI(id = "plot6"))
+                      
+                      ),
+                      tags$hr()
+                  )
               
               )
               
             }),
-						
-            
-            ## boxAgeGenderLowerJaw 
-            ## - Ree
-						conditionalPanel("input.showSpecies == 'Ree'", {
-									
-								list(		
-									
-									h4("Verdeling van onderkaaklengte per leeftijdscategorie en geslacht"),
-									fluidRow(
-											
-											column(4, optionsModuleUI(id = "plot7", 
-													showTime = TRUE, regionLevels = 1:2)),
-											column(8, plotModuleUI(id = "plot7"))
-									
-									),
-									tags$hr(),
+        
+        
+        ## boxAgeGenderLowerJaw 
+        ## - Ree
+        conditionalPanel("input.showSpecies == 'Ree'", {
+              
+              list(		
+                  
+                  actionLink(inputId = "linkPlot7", 
+                      label = h4("Verdeling van onderkaaklengte per leeftijdscategorie en geslacht")),
+                  conditionalPanel("input.linkPlot7 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot7", showTime = TRUE, regionLevels = 1:2),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot7")),
+                          column(8, plotModuleUI(id = "plot7"))
+                      
+                      ),
+                      tags$hr()
+                  ),
                   
                   
                   h3("Bio-indicatoren"),
                   
-                  h4("Onderkaaklengte per jaar"),
-                  fluidRow(
+                  actionLink(inputId = "linkPlot8", 
+                      label = h4("Onderkaaklengte per jaar")),
+                  conditionalPanel("input.linkPlot8 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE, 
+                                  regionLevels = 1:2),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot8")
+                          ),
+                          column(8, plotModuleUI(id = "plot8"))
                       
-                      column(4, optionsModuleUI(id = "plot8", 
-                              showTime = TRUE, showType = TRUE, 
-                              regionLevels = 1:2)),
-                      column(8, plotModuleUI(id = "plot8"))
-                  
+                      ),
+                      tags$hr()
                   ),
                   
-                  h4("Gewicht per jaar"),
-                  fluidRow(
-                      
-                      column(4, optionsModuleUI(id = "plot9", 
-                              showTime = TRUE, showType = TRUE,
-                              regionLevels = 1:2)),
-                      column(8, plotModuleUI(id = "plot9"))
                   
+                  actionLink(inputId = "linkPlot9", label = h4("Gewicht per jaar")),
+                  conditionalPanel("input.linkPlot9 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot9", 
+                                  showTime = TRUE, showType = TRUE,
+                                  regionLevels = 1:2),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot9")
+                          ),
+                          column(8, plotModuleUI(id = "plot9"))
+                      
+                      ),
+                      tags$hr()
                   ),
                   
-                  h4("Aantal embryo's voor vrouwelijke reeën per jaar"),
-                  fluidRow(
-                      
-                      column(4, optionsModuleUI(id = "plot10", 
-                              showTime = TRUE, showType = TRUE,
-                              regionLevels = 1:2)),
-                      column(8, plotModuleUI(id = "plot10"))
                   
+                  actionLink(inputId = "linkPlot10", 
+                      label = h4("Aantal embryo's voor vrouwelijke reeën per jaar")
+                  ),
+                  conditionalPanel("input.linkPlot10 % 2 == 1", 
+                      fluidRow(
+                          
+                          column(4, 
+                              optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
+                                  regionLevels = 1:2),
+                              tags$b("Extra info"),
+                              tags$p("Some text on plot10")),
+                          column(8, plotModuleUI(id = "plot10"))
+                      
+                      )
                   )
-							
-								)
-									
-						}),
+              
+              )
+              
+            }),
         
         
         tags$br()

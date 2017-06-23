@@ -39,7 +39,8 @@ tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAan
 toekenningsData <- loadToekenningen()
 tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
     assignedData = toekenningsData, categorie = "typePercent")
-
+tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
+    assignedData = toekenningsData, categorie = "typePercent", jaar = 2017)
 
 
 ## PLOT 1: Counts per year and province ##

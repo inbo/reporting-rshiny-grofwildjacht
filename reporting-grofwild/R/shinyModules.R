@@ -249,7 +249,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$plot <- renderPlotly({       
         
-        toReturn <- do.call(plotFunction, args = argList())
+        toReturn <- tryCatch(
+            do.call(plotFunction, args = argList()),
+            error = function(err)
+              validate(need(FALSE, err$message))
+              )
+              
         validate(need(!is.null(toReturn), "Niet beschikbaar"))
         
         return(toReturn)
@@ -259,7 +264,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$table <- renderTable({
         
-        toReturn <- do.call(plotFunction, args = argList())
+        toReturn <- tryCatch(
+            do.call(plotFunction, args = argList()),
+            error = function(err)
+              validate(need(FALSE, err$message))
+        )
+        
         validate(need(!is.null(toReturn), "Niet beschikbaar"))
         
         

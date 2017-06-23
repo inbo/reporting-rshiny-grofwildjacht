@@ -58,13 +58,26 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
   allData$categorie[is.na(allData$categorie) | allData$categorie == ""] <- "Onbekend"
   
   
-  if (is.null(jaar)) {
+  
+  if (categorie == "typePercent") {
     
-    if (categorie == "typePercent")
-      jaar <- min(max(allData$jaar), max(assignedData$jaar)) else
+    if (is.null(jaar))
+      jaar <- min(max(allData$jaar), max(assignedData$jaar)) 
+    
+    if (!jaar %in% allData$jaar | !jaar %in% assignedData$jaar)
+      stop("Geen data voor het gekozen jaar")
+    
+  } else {
+    
+    if (is.null(jaar)) 
       jaar <- max(allData$jaar)
     
+    if (!jaar %in% allData$jaar)
+      stop("Geen data voor het gekozen jaar")
+    
   }
+  
+  
   
   
   
@@ -124,9 +137,9 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
         summaryTable <- summaryTable[, c("provincie", levelsCategorie)]
         
         # Add row and column sum
-      levels(summaryTable$provincie) <- c(levels(summaryTable$provincie), "Vlaanderen")
+        levels(summaryTable$provincie) <- c(levels(summaryTable$provincie), "Vlaanderen")
         summaryTable <- rbind(summaryTable, 
-                c(provincie = "Vlaanderen", as.list(apply(summaryTable[, levelsCategorie], 2, sum))))
+            c(provincie = "Vlaanderen", as.list(apply(summaryTable[, levelsCategorie], 2, sum))))
         summaryTable <- cbind(summaryTable, 
             Totaal = apply(summaryTable[, levelsCategorie], 1, sum))
         
@@ -202,7 +215,7 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
       
       finalTable$freq <- NULL
       finalTable[is.na(finalTable)] <- ""
-           
+      
     }
     
   }
@@ -220,7 +233,7 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
   if (categorie == "typePercent")
     toReturn[, c(levelsCategorie, "Totaal")] <- 
         sapply(toReturn[, c(levelsCategorie, "Totaal")], function(x)
-          paste0(round(x*100), "%")) 
+              paste0(round(x*100), "%")) 
   
   
   return(toReturn)

@@ -69,7 +69,7 @@ plotBioindicator <- function(data, wildNaam = "",
 		c("afschotjaar", bioindicator)]
 
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
-		stop("Niet beschikbaar: geselecteerd period minder dan 2 jaaren")
+		stop("Niet beschikbaar: Gelieve periode met minstens 3 jaren te selecteren")
 
 	if(bioindicator != "aantal_embryos")
 		plotData <- plotData[!is.na(plotData[, bioindicator]), ]

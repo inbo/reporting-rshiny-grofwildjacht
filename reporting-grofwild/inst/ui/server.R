@@ -3,10 +3,10 @@
 # Author: mvarewyck
 ###############################################################################
 
+library(reportingGrofwild)
+
 
 library(leaflet)
-library(rCharts)
-#library(reportingGrofwild)
 library(plotly)
 
 
@@ -294,20 +294,20 @@ shinyServer(function(input, output, session) {
             types[types != ""]
             
           })
-			
-			results$typesDefaultGender <- reactive({
-					grep("kits", results$typesGender(), value = TRUE)
-			})
+      
+      results$typesDefaultGender <- reactive({
+            grep("kits", results$typesGender(), value = TRUE)
+          })
       
       callModule(module = optionsModuleServer, id = "plot8", 
           data = results$wildEcoData,
           timeRange = results$timeRange,
           types = results$typesGender,
-					typesDefault = results$typesDefaultGender,
+          typesDefault = results$typesDefaultGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot8",
           plotFunction = "plotBioindicator", 
-					bioindicator = "onderkaaklengte",
+          bioindicator = "onderkaaklengte",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       
@@ -317,11 +317,11 @@ shinyServer(function(input, output, session) {
           data = results$wildEcoData,
           timeRange = results$timeRange,
           types = results$typesGender,
-					typesDefault = results$typesDefaultGender,
+          typesDefault = results$typesDefaultGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot9",
           plotFunction = "plotBioindicator", 
-					bioindicator = "ontweid_gewicht",
+          bioindicator = "ontweid_gewicht",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       
@@ -341,7 +341,7 @@ shinyServer(function(input, output, session) {
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot10",
           plotFunction = "plotBioindicator", 
-					bioindicator =  "aantal_embryos",
+          bioindicator =  "aantal_embryos",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       
@@ -352,9 +352,20 @@ shinyServer(function(input, output, session) {
       ### The MAP ###
       
       # Data-dependent input fields
+      output$map_year <- renderUI({
+            
+            sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
+                min = min(results$wildGeoData()$afschotjaar),
+                max = max(results$wildGeoData()$afschotjaar),
+                value = 2016,
+                sep = "", step = 1)
+            
+          })
+      
+      
       output$map_time <- renderUI({
             
-            sliderInput(inputId = "map_time", label = "Periode", 
+            sliderInput(inputId = "map_time", label = "Periode (grafiek)", 
                 value = c(min(results$wildGeoData()$afschotjaar), 
                     max(results$wildGeoData()$afschotjaar)),
                 min = min(results$wildGeoData()$afschotjaar),
@@ -421,16 +432,43 @@ shinyServer(function(input, output, session) {
       # Create data for map, spatial plot
       results$map_spaceData <- reactive({
             
-            plotData <- results$map_timeData()
+            validate(need(results$wildGeoData(), "Geen data beschikbaar"),
+                need(input$map_year, "Gelieve jaar te selecteren"))
             
-            summaryData <- plyr::count(df = plotData, vars = "locatie", wt_var = "freq")
+            # Select subset for time
+            tmpData <- subset(results$wildGeoData(), afschotjaar == input$map_year)
+            
+            # Create general plot data names
+            plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
+            if (input$map_regionLevel == "flanders")
+              plotData$locatie <- "Vlaams Gewest" else if (input$map_regionLevel == "provinces")
+              plotData$locatie <- tmpData$provincie else
+              plotData$locatie <- tmpData$gemeente_afschot_locatie
+            
+            # Exclude data with missing time or space
+            plotData <- plotData[!is.na(plotData$afschotjaar) & 
+                    !is.na(plotData$locatie) & plotData$locatie != "",]
+            
+            # Summarize data over years
+            summaryData <- plyr::count(df = plotData, vars = names(plotData))
+            
+            # Add names & times with 0 observations
+            fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
+                    locatie = unique(results$spatialData()$NAAM)))
+            newData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+            newData$freq[is.na(newData$freq)] <- 0
+            
+            newData$afschotjaar <- as.factor(newData$afschotjaar)
+            
+            
+            summaryData2 <- plyr::count(df = newData, vars = "locatie", wt_var = "freq")
             
             # Create group variable
-            summaryData$group <- cut(x = summaryData$freq, 
+            summaryData2$group <- cut(x = summaryData2$freq, 
                 breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
                 labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
             
-            return(summaryData)
+            return(summaryData2)
             
           })
       
@@ -474,12 +512,7 @@ shinyServer(function(input, output, session) {
             validate(need(results$map_spaceData(), "Geen data beschikbaar"))
             
             regionNames <- results$map_spaceData()$locatie
-            titleText <- paste("Geobserveerd aantal",            
-                ifelse(input$map_time[1] != input$map_time[2],
-                    paste("van", input$map_time[1], "tot", input$map_time[2]),
-                    paste("in", input$map_time[1])
-                )
-            )
+            titleText <- paste("Geobserveerd aantal in", input$map_year[1])
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
                 "<strong>", titleText, "</strong>: ", 
@@ -668,11 +701,8 @@ shinyServer(function(input, output, session) {
       output$map_title <- renderUI({
             
             h4(paste("Geobserveerd aantal voor", input$showSpecies,
-                    ifelse(input$map_time[1] != input$map_time[2],
-                        paste("van", input$map_time[1], "tot", input$map_time[2]),
-                        paste("in", input$map_time[1])
-                    )
-                ))
+                    "in", input$map_year[1]))
+                
             
           })
       

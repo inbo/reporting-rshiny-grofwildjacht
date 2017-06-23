@@ -46,17 +46,21 @@ shinyUI(
             fluidRow(
                 column(4, selectInput(inputId = "map_regionLevel", label = "Regio-schaal",
                         choices = c("Vlaanderen" = "flanders", 
-                            "Provincie" = "provinces", "Gemeente" = "communes"))),
+                            "Provincie" = "provinces", "Gemeente" = "communes"),
+                        selected = "communes")),
                 column(8, uiOutput("map_region"))
             ),
             
             fluidRow(
-                column(6, selectInput(inputId = "map_legend", "Legende (kaart)",
+                column(6, 
+                    uiOutput("map_year"),
+                    selectInput(inputId = "map_legend", "Legende (kaart)",
                         choices = c("Bovenaan rechts" = "topright", 
                             "Onderaan rechts" = "bottomright", 
                             "Bovenaan links" = "topleft",
                             "Onderaan links" = "bottomleft",
-                            "<geen>" = "none"))),
+                            "<geen>" = "none"))
+                ),
                 column(6, uiOutput("map_time"))
             ),
             

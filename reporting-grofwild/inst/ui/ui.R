@@ -1,5 +1,4 @@
 library(leaflet)
-library(rCharts)
 library(plotly)
 
 shinyUI(

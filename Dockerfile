@@ -34,7 +34,7 @@ RUN R -e "install.packages(c('leaflet', 'htmlwidgets', 'webshot', 'rgeos'), repo
 # RUN R -e "webshot::install_phantomjs(version = '2.1.1', baseURL = 'https://bitbucket.org/ariya/phantomjs/downloads/')"
 
  
-# copy the app to the image by installing package
+# copy the app to the image by installing package (need latest version!!)
 COPY reportingGrofwild_0.0.4.tar.gz /root/
 RUN R CMD INSTALL /root/reportingGrofwild_0.0.4.tar.gz
 RUN rm /root/reportingGrofwild_0.0.4.tar.gz

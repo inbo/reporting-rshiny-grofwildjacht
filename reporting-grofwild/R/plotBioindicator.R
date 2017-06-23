@@ -38,6 +38,9 @@ plotBioindicator <- function(data, wildNaam = "",
 		data$afschotjaar %in% jaartallen,
 		c("afschotjaar", "afschot_datum", bioindicator)]
 
+	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
+		return(NULL)
+
 	if(bioindicator != "aantal_embryos")
 		plotData <- plotData[!is.na(plotData[, bioindicator]), ]
 
@@ -82,19 +85,34 @@ plotBioindicator <- function(data, wildNaam = "",
 #				add_lines(line = list(color = palette),
 #						name = "Aantal vrouwelijke reeen"
 #						) %>%
-		
+	
+			# custom wrapper for trace
+			traceWrapper <- function(...){
+				argsTrace <- c(
+					list(...,
+							x = ~afschotjaar, y = ~Freq, 
+							type = 'scatter',
+							showlegend = TRUE
+					),
+					# if only one year, nothing is plotted with 'lines'
+					if(length(unique(inputPlot$afschotjaar)) == 1)
+							list(mode = "markers", marker = list(color = palette[i]))else
+							list(mode = "lines", line = list(color = palette[i]))
+				)
+				do.call(add_trace, argsTrace)
+			}
+
+			# base plot
 			pl <- plot_ly()
 			
 			# to have INBO palette for each line:
 			for(i in 1:nlevels(inputPlot$variable)){
 					varI <- levels(inputPlot$variable)[i]
-					pl <- pl %>% add_trace(
-							data = inputPlot[which(inputPlot$variable == varI), , drop = FALSE],
-							x = ~afschotjaar, y = ~Freq, 
-							type = 'scatter', mode = 'lines',
-							line = list(color = palette[i]), 
-							name = varI,
-							showlegend = TRUE)
+					pl <- traceWrapper(
+						p = pl, 
+						data = inputPlot[which(inputPlot$variable == varI), , drop = FALSE],
+						name = varI
+					)
 			}
 		
 			# title axes and margin bottom

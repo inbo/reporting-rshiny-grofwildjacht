@@ -227,6 +227,7 @@ tmp <- sapply(indicators, function(bioindicator){
 #		type = "Geitkits",	
 		wildNaam = "Ree", 
 		jaartallen = c(2016, 2017), #unique(reeEcoData$afschotjaar),
+		jaartallen  = 2017,
 		bioindicator = bioindicator
 	)
 	print(pl)

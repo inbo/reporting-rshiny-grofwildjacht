@@ -28,9 +28,44 @@ shinyUI(
         tags$br(),
         tags$br(),
         
-        radioButtons("showSpecies", "Diersoort (species)",
-            choices = c("Wild zwijn", "Ree", "Damhert", "Edelhert")
+#        radioButtons("showSpecies", "Diersoort (species)",
+#            choices = c("Wild zwijn", "Ree", "Damhert", "Edelhert")
+#        ),
+        
+        fluidRow(column = 12, align = "center",
+            radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
+                choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
+                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg'>"),
+                    HTML("<b>Ree</b><br><br><img src='ree.jpeg'>"),
+                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg'>"),
+                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg'>"))
+            )
         ),
+        
+        
+#        tags$div(HTML('<div id="showSpecies" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline">
+#                    <label class="control-label" for="test">Diersoort (species)</label>
+#                    <div class="shiny-options-group">
+#                    <label class="radio-inline">
+#                    <input type="radio" name="test" value="Wild zwijn" checked="checked"/>
+#                    <span><h5>Wild Zwijn</h5><center><img src="wildZwijn.jpeg"></center></span>
+#                    </label>
+#                    <label class="radio-inline">
+#                    <input type="radio" name="test" value="Ree"/>
+#                    <span><h5>Ree</h5><center><img src="ree.jpeg"></center></span>
+#                    </label>
+#                    <label class="radio-inline">
+#                    <input type="radio" name="test" value="Damhert"/>
+#                    <span><h5>Damhert</h5><center><img src="damhert.jpeg"></center></span>
+#                    </label>
+#                    <label class="radio-inline">
+#                    <input type="radio" name="test" value="Edelhert"/>
+#                    <span><h5>Edelhert</h5><center><img src="edelhert.jpeg"></center></span>
+#                    </label>
+#                    </div>
+#                    </div> ')),
+        
+        
         
         tags$br(),
         tags$br(),
@@ -227,12 +262,12 @@ shinyUI(
                           column(4, 
                               optionsModuleUI(id = "plot4", 
                                   showTime = TRUE, showYear = TRUE, 
-																	showType = TRUE, exportData = TRUE),
+                                  showType = TRUE, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot4")
                           ),
                           column(8, plotModuleUI(id = "plot4"))
-
+                      
                       ),
                       tags$hr()
                   ),
@@ -289,7 +324,7 @@ shinyUI(
                           
                           column(4, 
                               optionsModuleUI(id = "plot7", showTime = TRUE, 
-																regionLevels = 1:2, exportData = TRUE),
+                                  regionLevels = 1:2, exportData = TRUE),
                               tags$b("Extra info"),
                               tags$p("Some text on plot7")),
                           column(8, plotModuleUI(id = "plot7"))

@@ -6,8 +6,8 @@ shinyUI(
     
     fluidPage(
         
-        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
-            align = "right"),
+#        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
+#            align = "right"),
         # Shape data source
         helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", 
                     target = "_blank", "Geodata bron"), align = "right")
@@ -16,8 +16,8 @@ shinyUI(
         
         
         titlePanel(title = div(img(src = "logo.png", 
-                    float = "top", height = "60px", hspace = "50px"),
-                "Grofwildjacht in Vlaanderen"), 
+                    float = "top", height = "60px", hspace = "70px"),
+                HTML("<font face = 'verdana', color = '#c04384'>Grofwildjacht in Vlaanderen</font>")), 
             windowTitle = "Grofwildjacht"),
         
         tags$br(),
@@ -28,9 +28,6 @@ shinyUI(
         tags$br(),
         tags$br(),
         
-#        radioButtons("showSpecies", "Diersoort (species)",
-#            choices = c("Wild zwijn", "Ree", "Damhert", "Edelhert")
-#        ),
         
         fluidRow(column = 12, align = "center",
             radioButtons(inputId = "showSpecies", label = "", inline = TRUE,

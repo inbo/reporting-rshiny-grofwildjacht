@@ -35,9 +35,9 @@ RUN R -e "install.packages(c('leaflet', 'htmlwidgets', 'webshot', 'rgeos'), repo
 
  
 # copy the app to the image by installing package (need latest version!!)
-COPY reportingGrofwild_0.0.4.tar.gz /root/
-RUN R CMD INSTALL /root/reportingGrofwild_0.0.4.tar.gz
-RUN rm /root/reportingGrofwild_0.0.4.tar.gz
+COPY reporting-grofwild.tar.gz /root/
+RUN R CMD INSTALL /root/reporting-grofwild.tar.gz
+RUN rm /root/reporting-grofwild.tar.gz
 
 # set host
 COPY Rprofile.site /usr/lib/R/etc/

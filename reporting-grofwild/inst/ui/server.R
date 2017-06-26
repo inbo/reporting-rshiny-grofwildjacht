@@ -418,13 +418,13 @@ shinyServer(function(input, output, session) {
             # Add names & times with 0 observations
             fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
                     locatie = unique(results$spatialData()$NAAM)))
-            newData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-            newData$freq[is.na(newData$freq)] <- 0
+            allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+            allData$freq[is.na(allData$freq)] <- 0
             
-            newData$afschotjaar <- as.factor(newData$afschotjaar)
+            allData$afschotjaar <- as.factor(allData$afschotjaar)
             
             
-            return(newData)
+            return(allData)
             
           })
       
@@ -455,13 +455,13 @@ shinyServer(function(input, output, session) {
             # Add names & times with 0 observations
             fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
                     locatie = unique(results$spatialData()$NAAM)))
-            newData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-            newData$freq[is.na(newData$freq)] <- 0
+            allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+            allData$freq[is.na(allData$freq)] <- 0
             
-            newData$afschotjaar <- as.factor(newData$afschotjaar)
+            allData$afschotjaar <- as.factor(allData$afschotjaar)
             
             
-            summaryData2 <- plyr::count(df = newData, vars = "locatie", wt_var = "freq")
+            summaryData2 <- plyr::count(df = allData, vars = "locatie", wt_var = "freq")
             
             # Create group variable
             summaryData2$group <- cut(x = summaryData2$freq, 
@@ -786,7 +786,70 @@ shinyServer(function(input, output, session) {
       )
       
       
-      ## Create time plot
+      ## Create time plot for Flanders (reference) 
+      output$map_timePlotFlanders <- renderPlotly({
+            
+            validate(need(input$map_time, "Gelieve periode te selecteren"))
+            
+            ## Get data for Flanders
+            # Select subset for time
+            chosenTimes <- input$map_time[1]:input$map_time[2]
+            tmpData <- subset(results$wildGeoData(), afschotjaar %in% chosenTimes)
+            
+            # Create general plot data names
+            plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
+            plotData$locatie <- "Vlaams Gewest"
+            
+            # Exclude data with missing time or space
+            plotData <- plotData[!is.na(plotData$afschotjaar) & 
+                    !is.na(plotData$locatie) & plotData$locatie != "",]
+            
+            # Summarize data over years
+            summaryData <- plyr::count(df = plotData, vars = names(plotData))
+            
+            # Add names & times with 0 observations
+            fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
+                    locatie = "Vlaams Gewest"))
+            allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+            allData$freq[is.na(allData$freq)] <- 0
+            
+            allData$afschotjaar <- as.factor(allData$afschotjaar)
+            
+            
+            title <- paste("Geobserveerd aantal voor", input$showSpecies,
+                ifelse(input$map_time[1] != input$map_time[2],
+                    paste("van", input$map_time[1], "tot", input$map_time[2]),
+                    paste("in", input$map_time[1])
+                )
+            )
+            
+            ## Create plot
+            plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
+                    color = ~locatie, hoverinfo = "x+y+name",
+                    type = "scatter", mode = "lines+markers") %>%
+                layout(title = title,
+                    xaxis = list(title = "Jaar"), 
+                    yaxis = list(title = "Aantal"),
+                    showlegend = TRUE,
+                    margin = list(b = 80, t = 100))     
+            
+            
+          })
+      
+      
+      
+      ## Create time plot for selected regions
+      output$map_timeTitle <- renderUI({
+            
+            regionLevel <- switch(input$map_regionLevel,
+                "flanders" = "Vlaanderen",
+                "provinces" = "Provincie",
+                "communes" = "Gemeente")
+            
+            h4("Regio-schaal:", regionLevel)
+            
+          })
+      
       output$map_timePlot <- renderPlotly({
             
             validate(need(results$map_timeData(), "Geen data beschikbaar"),
@@ -800,11 +863,11 @@ shinyServer(function(input, output, session) {
                 )
             )
             
-            currentData <- subset(results$map_timeData(), locatie %in% input$map_region)
+            allData <- subset(results$map_timeData(), locatie %in% input$map_region)
             
             
             # Create plot
-            plot_ly(data = currentData, x = ~afschotjaar, y = ~freq,
+            plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
                     color = ~locatie, hoverinfo = "x+y+name",
                     type = "scatter", mode = "lines+markers") %>%
                 layout(title = title,

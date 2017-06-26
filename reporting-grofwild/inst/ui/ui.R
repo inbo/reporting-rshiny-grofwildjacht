@@ -41,30 +41,6 @@ shinyUI(
         ),
 
 
-#        tags$div(HTML('<div id="showSpecies" class="form-group shiny-input-radiogroup shiny-input-container shiny-input-container-inline">
-#                    <label class="control-label" for="test">Diersoort (species)</label>
-#                    <div class="shiny-options-group">
-#                    <label class="radio-inline">
-#                    <input type="radio" name="test" value="Wild zwijn" checked="checked"/>
-#                    <span><h5>Wild Zwijn</h5><center><img src="wildZwijn.jpeg"></center></span>
-#                    </label>
-#                    <label class="radio-inline">
-#                    <input type="radio" name="test" value="Ree"/>
-#                    <span><h5>Ree</h5><center><img src="ree.jpeg"></center></span>
-#                    </label>
-#                    <label class="radio-inline">
-#                    <input type="radio" name="test" value="Damhert"/>
-#                    <span><h5>Damhert</h5><center><img src="damhert.jpeg"></center></span>
-#                    </label>
-#                    <label class="radio-inline">
-#                    <input type="radio" name="test" value="Edelhert"/>
-#                    <span><h5>Edelhert</h5><center><img src="edelhert.jpeg"></center></span>
-#                    </label>
-#                    </div>
-#                    </div> ')),
-
-
-
         tags$br(),
         tags$br(),
 
@@ -108,11 +84,16 @@ shinyUI(
         fluidRow(
             column(6,
                 uiOutput("map_title"),
-                leafletOutput("map_spacePlot", height = "500px"),
+                leafletOutput("map_spacePlot", height = "700px"),
                 tags$br(),
                 downloadButton("map_download", "Download")
             ),
-            column(6, plotlyOutput("map_timePlot", height = "600px"))
+            column(6, 
+                h4("Referentie (Vlaanderen)"),
+                plotlyOutput("map_timePlotFlanders", height = "400px"),
+                tags$hr(),
+                uiOutput("map_timeTitle"),
+                plotlyOutput("map_timePlot", height = "400px"))
 
         ),
 

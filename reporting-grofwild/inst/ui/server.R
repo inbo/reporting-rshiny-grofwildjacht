@@ -476,7 +476,7 @@ shinyServer(function(input, output, session) {
 #      # For checking errors in the data
 #      output$table1 <- renderDataTable({results$map_spaceData()})
 #      output$table2 <- renderDataTable({results$map_timeData()})
-      
+
       
       # Which region(s) are selected?
       observe({
@@ -485,19 +485,23 @@ shinyServer(function(input, output, session) {
             
             if (!is.null(event)) {
               
-              currentSelected <- isolate(input$map_region)
-              
-              # Remove from list
-              if (event$id %in% currentSelected) {
+              if (!is.null(event$id)) {
                 
-                updateSelectInput(session, "map_region", 
-                    selected = currentSelected[ - which(currentSelected == event$id)])
+                currentSelected <- isolate(input$map_region)
                 
-                # Add to list
-              } else {
-                
-                updateSelectInput(session, "map_region", 
-                    selected = c(currentSelected, event$id))
+                # Remove from list
+                if (event$id %in% currentSelected) {
+                  
+                  updateSelectInput(session, "map_region", 
+                      selected = currentSelected[ - which(currentSelected == event$id)])
+                  
+                  # Add to list
+                } else {
+                  
+                  updateSelectInput(session, "map_region", 
+                      selected = c(currentSelected, event$id))
+                  
+                }
                 
               }
               
@@ -678,17 +682,21 @@ shinyServer(function(input, output, session) {
             
             if (!is.null(event)) {
               
-              if (event$id %in% results$map_spaceData()$locatie) {
+              if (!is.null(event$id)) {
                 
-                textSelected <- results$map_textPopup()[
-                    results$map_spaceData()$locatie == event$id]
-                
-                isolate({
-                      
-                      currentMap %>% 
-                          addPopups(event$lng, event$lat, popup = textSelected)
-                      
-                    }) 
+                if (event$id %in% results$map_spaceData()$locatie) {
+                  
+                  textSelected <- results$map_textPopup()[
+                      results$map_spaceData()$locatie == event$id]
+                  
+                  isolate({
+                        
+                        currentMap %>% 
+                            addPopups(event$lng, event$lat, popup = textSelected)
+                        
+                      }) 
+                  
+                }
                 
               }
               
@@ -702,7 +710,7 @@ shinyServer(function(input, output, session) {
             
             h4(paste("Geobserveerd aantal voor", input$showSpecies,
                     "in", input$map_year[1]))
-                
+            
             
           })
       

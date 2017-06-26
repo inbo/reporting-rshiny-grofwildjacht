@@ -276,7 +276,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     })
   
 	
-	output$dataDownload <- downloadHandler("data.csv",
+	output$dataDownload <- downloadHandler(paste0("data_", plotFunction, ".csv"),
 			content = function(file) {
 				
 				resFct <- resultFct()

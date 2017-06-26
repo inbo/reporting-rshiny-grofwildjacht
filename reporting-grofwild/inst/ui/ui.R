@@ -28,6 +28,8 @@ shinyUI(
         tags$br(),
         tags$br(),
 
+        h3("Introductie"),
+        p("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek. Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen. Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort en  regio-schaal en de gewenste jaren en periodes, zowel een afschotkaart als een kaart met de evolutie van het afschot in de laatste jaren. Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die U zelf wenst te visualiseren."),
 
         fluidRow(column = 12, align = "center",
             radioButtons(inputId = "showSpecies", label = "", inline = TRUE,

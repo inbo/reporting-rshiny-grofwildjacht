@@ -15,6 +15,7 @@
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes
 #' @param showSummarizeBy boolean, whether to show input field to choose between
 #' aantal of percentage
+#' @param exportData boolean, whether a download button for the data is shown
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
@@ -194,6 +195,7 @@ tableModuleUI <- function(id) {
 #' @param bioindicator corresponding parameter to the \link{plotBioindicator} function
 #' @return no return value; plot output object is created
 #' @author mvarewyck
+#' @importFrom utils write.csv
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL, wildNaam, 

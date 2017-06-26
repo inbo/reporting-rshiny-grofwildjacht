@@ -4,11 +4,14 @@
 \alias{runWildApp}
 \title{Run the reporting-grofwild application}
 \usage{
-runWildApp(installDependencies = FALSE, ...)
+runWildApp(installDependencies = FALSE, copyFiles = FALSE, ...)
 }
 \arguments{
 \item{installDependencies}{boolean, whether to first install packages listed
 in the Suggests field of DESCRIPTION; default value is FALSE}
+
+\item{copyFiles}{boolean, whether to copy files for the app from the inst/ui
+to a temporary directory which is writeable}
 
 \item{...}{further arguments that can be passed to \code{\link[shiny]{runApp}}}
 }

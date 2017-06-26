@@ -6,7 +6,7 @@
 \usage{
 optionsModuleUI(id, showLegend = FALSE, showTime = FALSE,
   showYear = FALSE, showType = FALSE, regionLevels = NULL,
-  showSummarizeBy = FALSE)
+  showSummarizeBy = FALSE, exportData = FALSE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
@@ -24,6 +24,8 @@ region levels: 1 = flanders, 2 = provinces, 3 = communes}
 
 \item{showSummarizeBy}{boolean, whether to show input field to choose between
 aantal of percentage}
+
+\item{exportData}{boolean, whether a download button for the data is shown}
 }
 \value{
 ui object (tagList)

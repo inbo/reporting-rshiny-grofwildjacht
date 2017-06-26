@@ -6,7 +6,7 @@ shinyUI(
     
     fluidPage(
         
-#        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
+#        h5(actionLink(inputId = "debug_console", label =` "Connect with console"),
 #            align = "right"),
         # Shape data source
         helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", 
@@ -32,10 +32,10 @@ shinyUI(
         fluidRow(column = 12, align = "center",
             radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
                 choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
-                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg'>"),
-                    HTML("<b>Ree</b><br><br><img src='ree.jpeg'>"),
-                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg'>"),
-                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg'>"))
+                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg' width = '400px'><br><br>"),
+                    HTML("<b>Ree</b><br><br><img src='ree.jpeg' width = '400px'><br><br>"),
+                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg' width = '400px'><br><br>"),
+                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg' width = '400px'><br><br>"))
             )
         ),
         

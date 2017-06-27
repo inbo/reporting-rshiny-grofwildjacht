@@ -2,3 +2,15 @@
 background: none;
 border: none;
 }
+
+div#shiny-disconnected-overlay:before {
+	content: "Your session has timed out. Please reload to start a new session";
+	text-align: center;
+	font-size: 50pt;
+	background-color: white;
+	padding: 5%;
+	width: 100%;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+}

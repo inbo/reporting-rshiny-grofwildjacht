@@ -6,7 +6,9 @@
 library(reportingGrofwild)
 
 # Load all data
-spatialData <- loadShapeData()
+readShapeData()  # create shape data
+dataDir <- system.file("extdata", package = "reportingGrofwild")
+load(file = file.path(dataDir, "spatialData.RData"))
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo", shapeData = spatialData)

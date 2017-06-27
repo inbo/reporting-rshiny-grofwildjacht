@@ -1,9 +1,11 @@
-#' Load all shape data from zipped files
+#' Read all shape data from geojson files
+#' @param dataDir character vector, defines the path to the geojson files
 #' @param showProgress boolean, whether to show progress window in the shiny app;
 #' Note, if used outside shiny app, this will cause an error; if FALSE progress
 #' is printed in the console
-#' @return list with for each spatial level a SpatialPolygonsDataFrame object, 
-#' with polygons and data as provided in the zipFile; spatial levels are 
+#' @return save to dataDir object spatialData, i.e. a list with for each 
+#' spatial level a SpatialPolygonsDataFrame object, 
+#' with polygons and data as provided in the dataDir; spatial levels are 
 #' flanders, provinces, communes and provincesVoeren (Voeren as separate province)
 #' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
 #' @importFrom methods slot
@@ -11,10 +13,10 @@
 #' @importFrom rgdal readOGR
 #' @importFrom shiny incProgress
 #' @export
-loadShapeData <- function(showProgress = FALSE) {
+readShapeData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
+    showProgress = FALSE) {
   
-  dataDir <- system.file("extdata", package = "reportingGrofwild")
-  
+   
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
       "Gemeenten" = "communes")
   
@@ -76,11 +78,14 @@ loadShapeData <- function(showProgress = FALSE) {
   
   # Attach new province data to spatialData
   spatialData$provincesVoeren <- newProvinceData
+ 
   
-  
-  return(spatialData)
+  save(spatialData, file = file.path(dataDir, "spatialData.RData"))
   
 }
+
+
+
 
 #' read openingstijden data
 #' @return data.frame with columns:
@@ -142,7 +147,7 @@ loadToekenningen <- function() {
 #' Read ecology or geography data
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' @param shapeData list with objects of class SpatialPolygonsDataFrame as 
-#' returned by \code{\link{loadShapeData}}; if not NULL, commune names are 
+#' returned by \code{\link{readShapeData}}; if not NULL, commune names are 
 #' matched between geography (raw) data and spatial (shape) data 
 #' @return data.frame, loaded ecology or geography data
 #' @author mvarewyck

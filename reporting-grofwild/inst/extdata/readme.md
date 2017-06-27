@@ -39,6 +39,18 @@ The `*.geojson` files are providing GIS data for the grofwild reporting at three
 
 Data projection is EPSG:31370. 
 Source: [www.geopunt.be](http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen)
+Conversion of data from source to geojson (in terminal)
+`$ ogr2ogr -f "GeoJSON"  -t_srs "EPSG:31370" -s_srs "EPSG:31370" "flanders.geojson" "Refgew.shp"`
+
+
+## R data files
+
+The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes and provincesVoeren (Voeren as separate province). When any of the geosjon files are changed, this object should be updated by executing int R `readShapeData()`.
+The object `spatialData` can easily be loaded in R by
+
+`dataDir <- system.file("extdata", package = "reportingGrofwild")`
+
+`load(file = file.path(dataDir, "spatialData.RData"))`
 
 
 ## reference data

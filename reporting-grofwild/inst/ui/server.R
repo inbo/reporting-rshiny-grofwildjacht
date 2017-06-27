@@ -18,7 +18,9 @@ openingstijdenData <- loadOpeningstijdenData()
 toekenningsData <- loadToekenningen()
 ecoData <- loadRawData(type = "eco")
 
-allSpatialData <- NULL
+dataDir <- system.file("extdata", package = "reportingGrofwild")
+load(file = file.path(dataDir, "spatialData.RData"))
+
 geoData <- NULL
 
 
@@ -27,18 +29,18 @@ shinyServer(function(input, output, session) {
       
       observe({
             
-            ## Load Geo Data
-            withProgress(message = "Data Laden...", value = 0, {
-                  
-                  allSpatialData <<- loadShapeData(showProgress = TRUE)
-                  
-                })
+#            ## Load Geo Data
+#            withProgress(message = "Data Laden...", value = 0, {
+#                  
+#                  spatialData <<- loadShapeData(showProgress = TRUE)
+#                  
+#                })
             
             ## Load Raw Data
             withProgress(message = "Data Laden...", value = 0, {
                   
                   incProgress(1/2, detail = "Gegevens")
-                  geoData <<- loadRawData(type = "geo", shapeData = allSpatialData)
+                  geoData <<- loadRawData(type = "geo", shapeData = spatialData)
                   
                 })
             
@@ -94,15 +96,15 @@ shinyServer(function(input, output, session) {
       
       results$spatialData <- reactive({
             
-            req(allSpatialData)
+            req(spatialData)
             
             if (input$showSpecies == "Wild zwijn" & input$map_regionLevel == "provinces") {
               
-              allSpatialData$provincesVoeren
+              spatialData$provincesVoeren
               
             } else {
               
-              allSpatialData[[input$map_regionLevel]]
+              spatialData[[input$map_regionLevel]]
               
             }
             
@@ -558,7 +560,7 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
-            req(allSpatialData)
+            req(spatialData)
             
             validate(need(results$spatialData(), "Geen data beschikbaar"),
                 need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
@@ -581,7 +583,7 @@ shinyServer(function(input, output, session) {
                 ) %>%
                 
                 addPolylines(
-                    data = allSpatialData$provinces, 
+                    data = spatialData$provinces, 
                     color = provinceBounds$color, 
                     weight = 3,
                     opacity = provinceBounds$opacity
@@ -762,7 +764,7 @@ shinyServer(function(input, output, session) {
             if (input$map_regionLevel == "communes") {  
               
               newMap <- addPolylines(newMap,
-                  data = allSpatialData$provinces,
+                  data = spatialData$provinces,
                   color = "black", 
                   weight = 3,
                   opacity = 0.8, 

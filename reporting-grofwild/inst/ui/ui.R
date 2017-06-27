@@ -19,8 +19,10 @@ shinyUI(
         
         titlePanel(title = div(img(src = "logo.png",
                     float = "top", height = "60px", hspace = "70px"),
-                HTML("<font face = 'verdana', color = '#c04384'>Grofwildjacht in Vlaanderen</font>")),
+                HTML("<nobr><font face = 'verdana', color = '#c04384'>Grofwildjacht in Vlaanderen</font></nobr>")),
             windowTitle = "Grofwildjacht"),
+        
+        
         
         tags$br(),
         tags$br(),

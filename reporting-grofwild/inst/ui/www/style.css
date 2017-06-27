@@ -1,7 +1,9 @@
+
 .sliderBlank .irs-bar-edge, .sliderBlank .irs-bar {
 background: none;
 border: none;
 }
+
 
 div#shiny-disconnected-overlay:before {
 	content: "Your session has timed out. Please reload to start a new session";
@@ -13,4 +15,12 @@ div#shiny-disconnected-overlay:before {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
+	background: none;
+	border: none;
+}
+
+
+.purple { 
+	text-align: center;
+	background-color: rgb(192, 67, 132, 0.5);
 }

@@ -2,8 +2,8 @@ library(leaflet)
 library(plotly)
 
 shinyUI(
-
-
+    
+    
     fluidPage(
         
         includeCSS("www/style.css"),
@@ -14,25 +14,34 @@ shinyUI(
         helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#",
                     target = "_blank", "Geodata bron"), align = "right")
         ),
-
-
-
+        
+        
+        
         titlePanel(title = div(img(src = "logo.png",
                     float = "top", height = "60px", hspace = "70px"),
-                HTML("<font face = 'verdana', color = '#c04384'>Grofwildjacht in Vlaanderen</font>")),
+                HTML("<nobr><font face = 'verdana', color = '#c04384'>Grofwildjacht in Vlaanderen</font></nobr>")),
             windowTitle = "Grofwildjacht"),
-
+        
+        
+        
         tags$br(),
         tags$br(),
-
+        
 #        downloadButton(outputId = "exportResults", label = "Rapport"),
-
+        
+        fluidRow(div(class = "purple", 
+                tags$br(), 
+                h4("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek"), 
+                p(tags$br(),
+                    "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen",
+                    tags$br(),
+                    "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort en regio-schaal en de gewenste jaren en periodes, zowel een afschotkaart als een kaart met de evolutie van het afschot in de laatste jaren",
+                    tags$br(), 
+                    "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren"),
+                tags$br())),
+        
         tags$br(),
-        tags$br(),
-
-        h3("Introductie"),
-        p("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek. Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen. Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort en  regio-schaal en de gewenste jaren en periodes, zowel een afschotkaart als een kaart met de evolutie van het afschot in de laatste jaren. Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die U zelf wenst te visualiseren."),
-
+        
         fluidRow(column = 12, align = "center",
             radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
                 choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
@@ -42,16 +51,16 @@ shinyUI(
                     HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg' width = '400px'><br><br>"))
             )
         ),
-
-
+        
+        
         tags$br(),
         tags$br(),
-
-
+        
+        
         # Map with according line plot
-
+        
         h3("Landkaart"),
-
+        
         ## countMap: all species
         wellPanel(
             fluidRow(
@@ -61,7 +70,7 @@ shinyUI(
                         selected = "communes")),
                 column(8, uiOutput("map_region"))
             ),
-
+            
             fluidRow(
                 column(6,
                     uiOutput("map_year"),
@@ -74,16 +83,16 @@ shinyUI(
                 ),
                 column(6, uiOutput("map_time"))
             ),
-
+            
             actionLink(inputId = "map_globe", label = "Voeg landkaart toe",
                 icon = icon("globe"))
-
+        
         ),
-
+        
 #        # For debugging
 #        dataTableOutput("table1"),
 #        dataTableOutput("table2"),
-
+        
         fluidRow(
             column(6,
                 uiOutput("map_title"),
@@ -97,127 +106,127 @@ shinyUI(
                 tags$hr(),
                 uiOutput("map_timeTitle"),
                 plotlyOutput("map_timePlot", height = "400px"))
-
+        
         ),
-
+        
         tags$hr(),
-
-
+        
+        
         # Show user input module per plot
-
+        
         h3("Extra Figuren en Tabellen"),
-
+        
         ## tableProvince for "leeftijd": wild zwijn and ree
         conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
-
+              
               list(
                   actionLink(inputId = "linkTable1",
                       label = h4("Aantal per regio en per leeftijdscategorie")),
                   conditionalPanel("input.linkTable1 % 2 == 1",
-
+                      
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
                               tags$p("Het aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
                           ),
                           column(8, tableModuleUI(id = "table1"))
-
+                      
                       ),
                       tags$hr()
                   )
-
+              
               )
-
+              
             }),
-
-
+        
+        
         ## tableProvince for "type": ree
         conditionalPanel("input.showSpecies == 'Ree'", {
-
+              
               list(
-
+                  
                   actionLink(inputId = "linkTable2",
                       label = h4("Aantal afschot per regio en per type")),
                   conditionalPanel("input.linkTable2 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
                               tags$p("Het aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
                           ),
                           column(8, tableModuleUI(id = "table2"))
-
+                      
                       ),
                       tags$hr()
                   ),
-
+                  
                   actionLink(inputId = "linkTable3",
                       label = h4("Percentage gerealiseerd afschot per regio en per type")),
                   conditionalPanel("input.linkTable3 % 2 == 1",
-
+                      
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
                               tags$p("Realisatiegraad per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
                           ),
                           column(8, tableModuleUI(id = "table3"))
-
+                      
                       ),
                       tags$hr()
                   )
               )
-
+              
             }),
-
-
+        
+        
         ## countYearProvince: all species
         actionLink(inputId = "linkPlot1",
             label = h4("Aantal per jaar en per regio")),
         conditionalPanel("input.linkPlot1 % 2 == 1",
             fluidRow(
-
+                
                 column(4,
                     optionsModuleUI(id = "plot1", showTime = TRUE, exportData = TRUE),
                     tags$p("Het aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totale afschot voor dat jaar weer).")
                 ),
                 column(8, plotModuleUI(id = "plot1"))
-
+            
             ),
             tags$hr()
         ),
-
-
-
-
+        
+        
+        
+        
         ## countAgeCheek & countYearAge & percentageYearlyShotAnimals
         ## countAgeGender & boxAgeWeight
         ## - Wild zwijn and Ree
         conditionalPanel("input.showSpecies == 'Wild zwijn' || input.showSpecies == 'Ree'", {
-
+              
               list(
                   actionLink(inputId = "linkPlot2", label =
                           h4("Leeftijdscategorie op basis van onderkaak")),
                   conditionalPanel("input.linkPlot2 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE),
                               tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaalt op basis van een ingezamelde onderkaak")
                           ),
                           column(8, plotModuleUI(id = "plot2"))
-
+                      
                       ),
                       tags$hr()
                   ),
-
-
+                  
+                  
                   actionLink(inputId = "linkPlot3",
                       label = h4("Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
                   conditionalPanel("input.linkPlot3 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot3",
                                   showSummarizeBy = TRUE, showTime = TRUE,
@@ -228,13 +237,13 @@ shinyUI(
                       ),
                       tags$hr()
                   ),
-
-
+                  
+                  
                   actionLink(inputId = "linkPlot4",
                       label = h4("Percentage jaarlijks afschot")),
                   conditionalPanel("input.linkPlot4 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot4",
                                   showTime = TRUE, showYear = TRUE,
@@ -242,76 +251,76 @@ shinyUI(
                               tags$p("Procentuele verdeling van het afschot per labeltype doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
                           ),
                           column(8, plotModuleUI(id = "plot4"))
-
+                      
                       ),
                       tags$hr()
                   ),
-
-
+                  
+                  
                   actionLink(inputId = "linkPlot5",
                       label = h4("Percentage per leeftijdscategorie en geslacht")),
                   conditionalPanel("input.linkPlot5 % 2 == 1",
-
+                      
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
                               tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode")
                           ),
                           column(8, plotModuleUI(id = "plot5"))
-
+                      
                       ),
                       tags$hr()
                   ),
-
-
+                  
+                  
                   actionLink(inputId = "linkPlot6",
                       label = h4("Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
                   conditionalPanel("input.linkPlot6 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
                               tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode.")
                           ),
                           column(8, plotModuleUI(id = "plot6"))
-
+                      
                       ),
                       tags$hr()
                   )
-
+              
               )
-
+              
             }),
-
+        
         ## boxAgeGenderLowerJaw
         ## - Ree
         conditionalPanel("input.showSpecies == 'Ree'", {
-
+              
               list(
-
+                  
                   actionLink(inputId = "linkPlot7",
                       label = h4("Verdeling van onderkaaklengte per leeftijdscategorie en geslacht")),
                   conditionalPanel("input.linkPlot7 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot7", showTime = TRUE,
                                   regionLevels = 1:2, exportData = TRUE),
                               tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode.")),
                           column(8, plotModuleUI(id = "plot7"))
-
+                      
                       ),
                       tags$hr()
                   ),
-
+                  
                   h3("Bio-indicatoren"),
-
+                  
                   actionLink(inputId = "linkPlot8",
                       label = h4("Onderkaaklengte per jaar")),
                   conditionalPanel("input.linkPlot8 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE,
                                   regionLevels = 1:2, exportData = TRUE),
@@ -321,11 +330,11 @@ shinyUI(
                       ),
                       tags$hr()
                   ),
-
+                  
                   actionLink(inputId = "linkPlot9", label = h4("Gewicht per jaar")),
                   conditionalPanel("input.linkPlot9 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot9",
                                   showTime = TRUE, showType = TRUE,
@@ -333,34 +342,34 @@ shinyUI(
                               tags$p("Evolutie van de gemodelleerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types.")
                           ),
                           column(8, plotModuleUI(id = "plot9"))
-
+                      
                       ),
                       tags$hr()
                   ),
-
+                  
                   actionLink(inputId = "linkPlot10",
                       label = h4("Aantal embryo's voor vrouwelijke reeën per jaar")
                   ),
                   conditionalPanel("input.linkPlot10 % 2 == 1",
                       fluidRow(
-
+                          
                           column(4,
                               optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
                                   regionLevels = 1:2, exportData = TRUE),
                               tags$p("Evolutie van het  aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.")),
                           column(8, plotModuleUI(id = "plot10"))
-
+                      
                       )
                   )
-
+              
               )
-
+              
             }),
-
-
+        
+        
         tags$br()
-
-
+    
+    
     )
 
 )

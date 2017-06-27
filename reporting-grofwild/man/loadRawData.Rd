@@ -10,7 +10,7 @@ loadRawData(type = c("eco", "geo"), shapeData = NULL)
 \item{type}{data type, "eco" for ecology data and "geo" for geography data}
 
 \item{shapeData}{list with objects of class SpatialPolygonsDataFrame as 
-returned by \code{\link{loadShapeData}}; if not NULL, commune names are 
+returned by \code{\link{readShapeData}}; if not NULL, commune names are 
 matched between geography (raw) data and spatial (shape) data}
 }
 \value{

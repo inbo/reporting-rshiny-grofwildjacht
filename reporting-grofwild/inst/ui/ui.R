@@ -11,12 +11,11 @@ shinyUI(
 #        h5(actionLink(inputId = "debug_console", label =` "Connect with console"),
 #            align = "right"),
         # Shape data source
-        helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#",
+        helpText(
+            h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#",
                     target = "_blank", "Geodata bron"), align = "right"),
             h5(a(href = "mailto:frank.huysentruyt@inbo.be,thomas.scheppers@inbo.be?SUBJECT=Grofwildjacht web applicatie", "Contact"), align = "right")
         ),
-        
-        
         
         
         
@@ -48,10 +47,10 @@ shinyUI(
         fluidRow(column = 12, align = "center",
             radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
                 choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
-                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg' width = '400px'><br>"),
-                    HTML("<b>Ree</b><br><br><img src='ree.jpeg' width = '400px'><br>"),
-                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg' width = '400px'><br>"),
-                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg' width = '400px'><br>"))
+                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg' width = '400px' title = 'Foto: Vildaphoto'><br>"),
+                    HTML("<b>Ree</b><br><br><img src='ree.jpeg' width = '400px' title = 'Foto: Vildaphoto'><br>"),
+                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg' width = '400px' title = 'Foto: Vildaphoto'><br>"),
+                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg' width = '400px' title = 'Foto: Vildaphoto'><br>"))
             )
         ),
         

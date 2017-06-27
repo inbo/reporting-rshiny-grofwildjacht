@@ -560,34 +560,38 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
-            req(spatialData)
-            
-            validate(need(results$spatialData(), "Geen data beschikbaar"),
-                need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
-            
-            provinceBounds <- switch(input$map_regionLevel,
-                "flanders" = list(opacity = 0), 
-                "provinces" = list(opacity = 0),
-                "communes" = list(color = "black", opacity = 0.8))            
-            
-            
-            leaflet(results$spatialData()) %>%
-                
-                addPolygons(
-                    weight = 1, 
-                    color = "gray",
-                    fillColor = ~ results$map_colors(),
-                    fillOpacity = 0.8,
-                    layerId = results$spatialData()$NAAM,
-                    group = "region"
-                ) %>%
-                
-                addPolylines(
-                    data = spatialData$provinces, 
-                    color = provinceBounds$color, 
-                    weight = 3,
-                    opacity = provinceBounds$opacity
-                )
+#            withProgress(message = "Kaart maken...", value = 0.5, {                  
+                  
+                  req(spatialData)
+                  
+                  validate(need(results$spatialData(), "Geen data beschikbaar"),
+                      need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
+                  
+                  provinceBounds <- switch(input$map_regionLevel,
+                      "flanders" = list(opacity = 0), 
+                      "provinces" = list(opacity = 0),
+                      "communes" = list(color = "black", opacity = 0.8))            
+                  
+                  
+                  leaflet(results$spatialData()) %>%
+                      
+                      addPolygons(
+                          weight = 1, 
+                          color = "gray",
+                          fillColor = ~ results$map_colors(),
+                          fillOpacity = 0.8,
+                          layerId = results$spatialData()$NAAM,
+                          group = "region"
+                      ) %>%
+                      
+                      addPolylines(
+                          data = spatialData$provinces, 
+                          color = provinceBounds$color, 
+                          weight = 3,
+                          opacity = provinceBounds$opacity
+                      )
+                                    
+#                })
             
           })
       

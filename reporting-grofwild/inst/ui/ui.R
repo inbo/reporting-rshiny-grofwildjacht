@@ -12,8 +12,11 @@ shinyUI(
 #            align = "right"),
         # Shape data source
         helpText(h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#",
-                    target = "_blank", "Geodata bron"), align = "right")
+                    target = "_blank", "Geodata bron"), align = "right"),
+            h5(a(href = "mailto:frank.huysentruyt@inbo.be,thomas.scheppers@inbo.be?SUBJECT=Grofwildjacht web applicatie", "Contact"), align = "right")
         ),
+        
+        
         
         
         

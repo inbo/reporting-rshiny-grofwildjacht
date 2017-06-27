@@ -96,7 +96,12 @@ plotBioindicator <- function(data, wildNaam = "",
 		# use table with factor to have 0 when no counts for certain year/number of embryos
 		inputPlot <- as.data.frame(with(plotData, table(afschotjaar, variable)))
 		
-	}
+	} else if (bioindicator == "ontweid_gewicht") {
+    
+    # remove weights < 5kg or > 25kg
+    plotData <- subset(plotData, variable >= 5 & variable <= 25)    
+    
+  }
 	
 #	plotData$afschot_datum <- as.Date(plotData$afschot_datum, format = "%Y-%m-%d")
 #	plotData$afschotjaar <- as.Date(as.numeric(plotData$afschotjaar), format = "%Y")
@@ -150,7 +155,7 @@ plotBioindicator <- function(data, wildNaam = "",
 		
 			# title axes and margin bottom
 			pl <- pl %>% layout(title = title,
-				xaxis = list(title = "afchotjaar"), 
+				xaxis = list(title = "afschotjaar"), 
 				yaxis = list(title = "Aantal vrouwelijke reeen"),
 				margin = list(b = 40, t = 100)
 			)
@@ -220,7 +225,7 @@ plotBioindicator <- function(data, wildNaam = "",
 				
 				# title axes and margin bottom
 				layout(title = title,
-					xaxis = list(title = "afchotjaar"), 
+					xaxis = list(title = "afschotjaar"), 
 					yaxis = list(title = bioindicatorName),
 					margin = list(b = 40, t = 100),
 					yaxis = list(range = c(100, 200))

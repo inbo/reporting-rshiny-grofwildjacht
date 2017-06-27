@@ -45,10 +45,10 @@ shinyUI(
         fluidRow(column = 12, align = "center",
             radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
                 choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
-                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg' width = '400px'><br><br>"),
-                    HTML("<b>Ree</b><br><br><img src='ree.jpeg' width = '400px'><br><br>"),
-                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg' width = '400px'><br><br>"),
-                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg' width = '400px'><br><br>"))
+                choiceNames = list(HTML("<b>Wild Zwijn</b><br><br><img src='wildZwijn.jpeg' width = '400px'><br>"),
+                    HTML("<b>Ree</b><br><br><img src='ree.jpeg' width = '400px'><br>"),
+                    HTML("<b>Damhert</b><br><br><img src='damhert.jpeg' width = '400px'><br>"),
+                    HTML("<b>Edelhert</b><br><br><img src='edelhert.jpeg' width = '400px'><br>"))
             )
         ),
         

@@ -21,7 +21,7 @@
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, showSummarizeBy = FALSE,
-		exportData = FALSE) {
+    exportData = FALSE) {
   
   ns <- NS(id)
   
@@ -54,9 +54,9 @@ optionsModuleUI <- function(id,
                             "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
             ),
-					if(exportData)
-						downloadButton(ns("dataDownload"), "Download data")
-              
+          if(exportData)
+            downloadButton(ns("dataDownload"), "Download data")
+      
       )
   )
   
@@ -79,11 +79,11 @@ optionsModuleUI <- function(id,
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, typesDefault = types, 
-		timeRange = NULL, timeLabel = "Periode",
+    timeRange = NULL, timeLabel = "Periode",
     multipleTypes = FALSE) {
   
   ns <- session$ns
-		
+  
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
@@ -98,12 +98,14 @@ optionsModuleServer <- function(input, output, session,
   
   output$year <- renderUI({
         
-        sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-            value = max(timeRange()),
-            min = min(timeRange()),
-            max = max(timeRange()),
-            step = 1,
-            sep = "")
+        div(class = "sliderBlank", 
+            sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
+                value = max(timeRange()),
+                min = min(timeRange()),
+                max = max(timeRange()),
+                step = 1,
+                sep = "")
+        )
         
         
       })
@@ -116,21 +118,21 @@ optionsModuleServer <- function(input, output, session,
         if (input$regionLevel == "flanders") {
           
           choices <- "Vlaams Gewest"
-        
+          
         } else if (input$regionLevel == "provinces") {
           
           choices <- levels(droplevels(factor(unique(data()$provincie), 
                       levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
                           "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
-        
+          
         } else {
           
           choices <- unique(data()$gemeente_afschot_locatie)
           choices <- choices[!is.na(choices)]
           choices <- choices[order(choices)]
-        
+          
         }
-         
+        
         
         if (input$regionLevel == "flanders")
           selected <- choices[1] else
@@ -146,7 +148,7 @@ optionsModuleServer <- function(input, output, session,
         
         selectInput(inputId = ns("type"), label = "Type",
             choices = types(), 
-						selected = typesDefault(), multiple = multipleTypes)
+            selected = typesDefault(), multiple = multipleTypes)
         
       })
   
@@ -199,7 +201,7 @@ tableModuleUI <- function(id) {
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL, wildNaam, 
-		categorie = NULL, bioindicator = NULL) {
+    categorie = NULL, bioindicator = NULL) {
   
   subData <- reactive({
         
@@ -246,72 +248,72 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(categorie = categorie),
             if (!is.null(input$summarizeBy))
               list(summarizeBy = input$summarizeBy),
-						if(!is.null(bioindicator))
-							list(bioindicator = bioindicator)
+            if(!is.null(bioindicator))
+              list(bioindicator = bioindicator)
         )
         
         
       })
-
-	resultFct <- reactive({
-			
-			toReturn <- tryCatch(
-				 do.call(plotFunction, args = argList()),
-					error = function(err)
-					 validate(need(FALSE, err$message))
-				)		
-				
-			validate(need(!is.null(toReturn), "Niet beschikbaar"))
-				
-			return(toReturn)
-				
-				
-	})
-	
+  
+  resultFct <- reactive({
+        
+        toReturn <- tryCatch(
+            do.call(plotFunction, args = argList()),
+            error = function(err)
+              validate(need(FALSE, err$message))
+        )		
+        
+        validate(need(!is.null(toReturn), "Niet beschikbaar"))
+        
+        return(toReturn)
+        
+        
+      })
+  
   
   output$plot <- renderPlotly({  
-				
-				resultFct()$plot
         
-    })
+        resultFct()$plot
+        
+      })
   
-	
-	output$dataDownload <- downloadHandler(paste0("data_", plotFunction, ".csv"),
-			content = function(file) {
-				
-				resFct <- resultFct()
-				
-				## checks
-				
-				# Note: a data.frame is a list!
-				isDataPresent <- ifelse(!is.null(resFct),
-					ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
-					FALSE
-				)
-								
-				validate(
-						need(resFct, "Niet beschikbaar"),
-						need(
-								if(is.data.frame(resFct))	resFct	else	resFct$plot,
-								"Niet beschikbaar"
-							)
-					)
-				
-				## extract data to export
-				dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
-								
-				## write data to exported file
-				write.csv(x = dataPlot, file = file,
-						quote = FALSE, row.names = FALSE)
-				
-			}
-	)
+  
+  output$dataDownload <- downloadHandler(paste0("data_", plotFunction, ".csv"),
+      content = function(file) {
+        
+        resFct <- resultFct()
+        
+        ## checks
+        
+        # Note: a data.frame is a list!
+        isDataPresent <- ifelse(!is.null(resFct),
+            ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
+            FALSE
+        )
+        
+        validate(
+            need(resFct, "Niet beschikbaar"),
+            need(
+                if(is.data.frame(resFct))	resFct	else	resFct$plot,
+                "Niet beschikbaar"
+            )
+        )
+        
+        ## extract data to export
+        dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
+        
+        ## write data to exported file
+        write.csv(x = dataPlot, file = file,
+            quote = FALSE, row.names = FALSE)
+        
+      }
+  )
   
   output$table <- renderTable({
-       
+        
         return(resultFct())
         
       }, digits = 0)
-
+  
 }
 

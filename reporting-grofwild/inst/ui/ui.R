@@ -5,6 +5,9 @@ shinyUI(
 
 
     fluidPage(
+        
+        includeCSS("www/style.css"),
+        
 #        h5(actionLink(inputId = "debug_console", label =` "Connect with console"),
 #            align = "right"),
         # Shape data source
@@ -344,7 +347,7 @@ shinyUI(
                           column(4,
                               optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
                                   regionLevels = 1:2, exportData = TRUE),
-                              tags$p("Evolutie van het  aantal embryo�s per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.")),
+                              tags$p("Evolutie van het  aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.")),
                           column(8, plotModuleUI(id = "plot10"))
 
                       )

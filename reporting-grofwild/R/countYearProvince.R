@@ -44,6 +44,9 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
           data$doodsoorzaak %in% doodsoorzaak, c("afschotjaar", "provincie")]
   plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$provincie), ]
   
+  # Exclude unused provinces
+  plotData$provincie <- droplevels(plotData$provincie)
+  
   # Summarize data per province and year
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
           min(afschotjaar):max(afschotjaar)))

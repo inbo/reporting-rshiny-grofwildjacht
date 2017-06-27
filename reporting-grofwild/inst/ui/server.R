@@ -354,11 +354,12 @@ shinyServer(function(input, output, session) {
       # Data-dependent input fields
       output$map_year <- renderUI({
             
-            sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
-                min = min(results$wildGeoData()$afschotjaar),
-                max = max(results$wildGeoData()$afschotjaar),
-                value = 2016,
-                sep = "", step = 1)
+            div(class = "sliderBlank", 
+                sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
+                    min = min(results$wildGeoData()$afschotjaar),
+                    max = max(results$wildGeoData()$afschotjaar),
+                    value = 2016,
+                    sep = "", step = 1))
             
           })
       
@@ -476,7 +477,7 @@ shinyServer(function(input, output, session) {
 #      # For checking errors in the data
 #      output$table1 <- renderDataTable({results$map_spaceData()})
 #      output$table2 <- renderDataTable({results$map_timeData()})
-
+      
       
       # Which region(s) are selected?
       observe({

@@ -21,14 +21,14 @@ RUN apt-get install -y phantomjs                   # for webshot
 
 
 # install imports of reporting-grofwild app that are not on cloud
-RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos'), repos = 'https://cloud.r-project.org/')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 
 # install depends of reporting-grofwild app
 RUN R -e "install.packages(c('maptools'), repos='https://cloud.r-project.org/')"
 
 # install suggests of reporting-grofwild app
-RUN R -e "install.packages(c('leaflet', 'htmlwidgets', 'webshot', 'rgeos'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('leaflet', 'htmlwidgets', 'webshot'), repos='https://cloud.r-project.org/')"
 
 # For downloading the maps
 # RUN R -e "webshot::install_phantomjs(version = '2.1.1', baseURL = 'https://bitbucket.org/ariya/phantomjs/downloads/')"

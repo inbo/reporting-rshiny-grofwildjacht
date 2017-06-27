@@ -519,7 +519,7 @@ shinyServer(function(input, output, session) {
             validate(need(results$map_spaceData(), "Geen data beschikbaar"))
             
             regionNames <- results$map_spaceData()$locatie
-            titleText <- paste("Geobserveerd aantal in", input$map_year[1])
+            titleText <- paste("Gerapporteerd aantal in", input$map_year[1])
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
                 "<strong>", titleText, "</strong>: ", 
@@ -711,7 +711,7 @@ shinyServer(function(input, output, session) {
       # Title for the map
       output$map_title <- renderUI({
             
-            h4(paste("Geobserveerd aantal voor", input$showSpecies,
+            h4(paste("Gerapporteerd aantal voor", input$showSpecies,
                     "in", input$map_year[1]))
             
             
@@ -819,7 +819,7 @@ shinyServer(function(input, output, session) {
             allData$afschotjaar <- as.factor(allData$afschotjaar)
             
             
-            title <- paste("Geobserveerd aantal voor", input$showSpecies,
+            title <- paste("Gerapporteerd aantal voor", input$showSpecies,
                 ifelse(input$map_time[1] != input$map_time[2],
                     paste("van", input$map_time[1], "tot", input$map_time[2]),
                     paste("in", input$map_time[1])
@@ -859,7 +859,7 @@ shinyServer(function(input, output, session) {
                 need(input$map_region, "Gelieve regio('s) te selecteren"))
             
             
-            title <- paste("Geobserveerd aantal voor", input$showSpecies,
+            title <- paste("Gerapporteerd aantal voor", input$showSpecies,
                 ifelse(input$map_time[1] != input$map_time[2],
                     paste("van", input$map_time[1], "tot", input$map_time[2]),
                     paste("in", input$map_time[1])

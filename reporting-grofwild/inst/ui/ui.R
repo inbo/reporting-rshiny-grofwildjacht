@@ -121,14 +121,14 @@ shinyUI(
               
               list(
                   actionLink(inputId = "linkTable1",
-                      label = h4("Aantal per regio en per leeftijdscategorie")),
+                      label = h4("Gerapporteerd aantal per regio en per leeftijdscategorie")),
                   conditionalPanel("input.linkTable1 % 2 == 1",
                       
                       fluidRow(
                           
                           column(4,
                               optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
-                              tags$p("Het aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
+                              tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
                           ),
                           column(8, tableModuleUI(id = "table1"))
                       
@@ -147,13 +147,13 @@ shinyUI(
               list(
                   
                   actionLink(inputId = "linkTable2",
-                      label = h4("Aantal afschot per regio en per type")),
+                      label = h4("Gerapporteerd aantal afschot per regio en per type")),
                   conditionalPanel("input.linkTable2 % 2 == 1",
                       fluidRow(
                           
                           column(4,
                               optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
-                              tags$p("Het aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
+                              tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
                           ),
                           column(8, tableModuleUI(id = "table2"))
                       
@@ -183,13 +183,13 @@ shinyUI(
         
         ## countYearProvince: all species
         actionLink(inputId = "linkPlot1",
-            label = h4("Aantal per jaar en per regio")),
+            label = h4("Gerapporteerd aantal per jaar en per regio")),
         conditionalPanel("input.linkPlot1 % 2 == 1",
             fluidRow(
                 
                 column(4,
                     optionsModuleUI(id = "plot1", showTime = TRUE, exportData = TRUE),
-                    tags$p("Het aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totale afschot voor dat jaar weer).")
+                    tags$p("Het gerapporteerd aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totale afschot voor dat jaar weer).")
                 ),
                 column(8, plotModuleUI(id = "plot1"))
             
@@ -348,7 +348,7 @@ shinyUI(
                   ),
                   
                   actionLink(inputId = "linkPlot10",
-                      label = h4("Aantal embryo's voor vrouwelijke reeën per jaar")
+                      label = h4("Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
                   ),
                   conditionalPanel("input.linkPlot10 % 2 == 1",
                       fluidRow(
@@ -356,7 +356,7 @@ shinyUI(
                           column(4,
                               optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
                                   regionLevels = 1:2, exportData = TRUE),
-                              tags$p("Evolutie van het  aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.")),
+                              tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.")),
                           column(8, plotModuleUI(id = "plot10"))
                       
                       )

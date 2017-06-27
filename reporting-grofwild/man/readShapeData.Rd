@@ -5,7 +5,7 @@
 \title{Read all shape data from geojson files}
 \usage{
 readShapeData(dataDir = system.file("extdata", package = "reportingGrofwild"),
-  showProgress = FALSE)
+  showProgress = FALSE, tolerance = 0.001)
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the geojson files}
@@ -13,6 +13,9 @@ readShapeData(dataDir = system.file("extdata", package = "reportingGrofwild"),
 \item{showProgress}{boolean, whether to show progress window in the shiny app;
 Note, if used outside shiny app, this will cause an error; if FALSE progress
 is printed in the console}
+
+\item{tolerance}{numeric, defines the tolerance in the Douglas-Peuker algorithm;
+larger values will impose stronger simplification; default value is 0.01}
 }
 \value{
 save to dataDir object spatialData, i.e. a list with for each 

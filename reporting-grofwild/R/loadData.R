@@ -3,6 +3,8 @@
 #' @param showProgress boolean, whether to show progress window in the shiny app;
 #' Note, if used outside shiny app, this will cause an error; if FALSE progress
 #' is printed in the console
+#' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
+#' larger values will impose stronger simplification; default value is 0.01
 #' @return save to dataDir object spatialData, i.e. a list with for each 
 #' spatial level a SpatialPolygonsDataFrame object, 
 #' with polygons and data as provided in the dataDir; spatial levels are 
@@ -11,12 +13,13 @@
 #' @importFrom methods slot
 #' @importFrom maptools unionSpatialPolygons spRbind
 #' @importFrom rgdal readOGR
+#' @importFrom rgeos gSimplify
 #' @importFrom shiny incProgress
 #' @export
 readShapeData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-    showProgress = FALSE) {
+    showProgress = FALSE, tolerance = 0.001) {
   
-   
+  
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
       "Gemeenten" = "communes")
   
@@ -35,7 +38,7 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
         shapeData <- readOGR(dsn = file, layer = "OGRGeoJSON", 
             verbose = !showProgress)
         shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
-  
+        
         # Create factor for region names
         if (iLevel == "provinces")
           shapeData$NAAM <- factor(shapeData$NAAM, levels = c("West-Vlaanderen",
@@ -78,7 +81,25 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
   
   # Attach new province data to spatialData
   spatialData$provincesVoeren <- newProvinceData
- 
+  
+  # Try to simplify polygons
+  spatialData <- lapply(spatialData, function(iData) {
+        
+        simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
+        
+        if (length(simpleShapeData) != length(iData))
+          stop("The number of polygons in original shapeData is: ", length(iData),
+              "\nThe number of polygons in simplified shapeData is: ", length(simpleShapeData),
+              "\nPlease decrease value for tolerance")
+        
+        iData <- SpatialPolygonsDataFrame(Sr = simpleShapeData, 
+            data = data.frame(iData@data, stringsAsFactors = FALSE))
+        
+        
+        return(iData)
+        
+      })
+  
   
   save(spatialData, file = file.path(dataDir, "spatialData.RData"))
   
@@ -205,16 +226,16 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
   
- 
+  
   if (type == "eco") {
-		
-		# Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
+    
+    # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == ""] <- "Niet ingezameld"
-  
-  	# for Figure 13: combine age and gender: 'type' column 
-		# (to do the matching with the openingstijden table)
+    
+    # for Figure 13: combine age and gender: 'type' column 
+    # (to do the matching with the openingstijden table)
     idx <- which(rawData$wildsoort == "Ree")
     typeRee <- ifelse(
         rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
@@ -225,25 +246,25 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
             ""))
     rawData$type[idx] <- typeRee
     rawData$type[is.na(rawData$type)] <- ""
-		
-		# for Figure 28: combine age and gender, with subcategory for young adult
-		male <- rawData$geslacht.MF == "Mannelijk"
-		female <- rawData$geslacht.MF == "Vrouwelijk"
-		ageGender <- with(rawData,
-				ifelse(leeftijdscategorie_MF	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
-						ifelse(leeftijdscategorie_MF	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
-								ifelse(leeftijdscategorie_MF	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
-						)))
-		ageGender[is.na(ageGender)] <- ""
-		
-		rawData$ageGender <- factor(ageGender, 
-			levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
-	
-		# for Figure 27, 28: compute cheek length
-		rawData$onderkaaklengte <- rowMeans(
-			rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
-			na.rm = TRUE)
-		
+    
+    # for Figure 28: combine age and gender, with subcategory for young adult
+    male <- rawData$geslacht.MF == "Mannelijk"
+    female <- rawData$geslacht.MF == "Vrouwelijk"
+    ageGender <- with(rawData,
+        ifelse(leeftijdscategorie_MF	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
+            ifelse(leeftijdscategorie_MF	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
+                ifelse(leeftijdscategorie_MF	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
+            )))
+    ageGender[is.na(ageGender)] <- ""
+    
+    rawData$ageGender <- factor(ageGender, 
+        levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
+    
+    # for Figure 27, 28: compute cheek length
+    rawData$onderkaaklengte <- rowMeans(
+        rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
+        na.rm = TRUE)
+    
   }
   
   return(rawData)

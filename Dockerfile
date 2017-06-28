@@ -17,8 +17,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install -y libgeos-dev                 # for rgeos
 RUN apt-get install -y libgdal1-dev libproj-dev    # for rgdal
-RUN apt-get install -y phantomjs                   # for webshot    
-
 
 # install imports of reporting-grofwild app that are not on cloud
 RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos'), repos = 'https://cloud.r-project.org/')"
@@ -31,7 +29,8 @@ RUN R -e "install.packages(c('maptools'), repos='https://cloud.r-project.org/')"
 RUN R -e "install.packages(c('leaflet', 'htmlwidgets', 'webshot'), repos='https://cloud.r-project.org/')"
 
 # For downloading the maps
-# RUN R -e "webshot::install_phantomjs(version = '2.1.1', baseURL = 'https://bitbucket.org/ariya/phantomjs/downloads/')"
+# Attention: do not install phantomjs directly, will not work then!
+RUN R -e "webshot::install_phantomjs()"
 
  
 # copy the app to the image by installing package (need latest version!!)

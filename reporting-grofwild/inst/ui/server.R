@@ -560,7 +560,7 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
-#            withProgress(message = "Kaart maken...", value = 0.5, {                  
+            withProgress(message = "Kaart laden...", value = 0.5, {                  
                   
                   req(spatialData)
                   
@@ -591,7 +591,7 @@ shinyServer(function(input, output, session) {
                           opacity = provinceBounds$opacity
                       )
                                     
-#                })
+                })
             
           })
       

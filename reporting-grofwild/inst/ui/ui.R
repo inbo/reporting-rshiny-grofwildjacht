@@ -37,7 +37,7 @@ shinyUI(
                 p(tags$br(),
                     "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen",
                     tags$br(),
-                    "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort en regio-schaal en de gewenste jaren en periodes, zowel een afschotkaart als een kaart met de evolutie van het afschot in de laatste jaren",
+                    "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes, een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren",
                     tags$br(), 
                     "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren"),
                 tags$br())),

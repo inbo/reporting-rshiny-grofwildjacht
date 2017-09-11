@@ -124,7 +124,7 @@ shinyUI(
               
               list(
                   actionLink(inputId = "linkTable1",
-                      label = h4("Gerapporteerd aantal per regio en per leeftijdscategorie")),
+                      label = h4("TABEL: Gerapporteerd afschot per regio en per leeftijdscategorie")),
                   conditionalPanel("input.linkTable1 % 2 == 1",
                       
                       fluidRow(
@@ -150,7 +150,7 @@ shinyUI(
               list(
                   
                   actionLink(inputId = "linkTable2",
-                      label = h4("Gerapporteerd aantal afschot per regio en per type")),
+                      label = h4("TABEL: Gerapporteerd afschot per regio en per type")),
                   conditionalPanel("input.linkTable2 % 2 == 1",
                       fluidRow(
                           
@@ -165,7 +165,7 @@ shinyUI(
                   ),
                   
                   actionLink(inputId = "linkTable3",
-                      label = h4("Percentage gerealiseerd afschot per regio en per type")),
+                      label = h4("TABEL: Percentage gerealiseerd afschot per regio en per type")),
                   conditionalPanel("input.linkTable3 % 2 == 1",
                       
                       fluidRow(
@@ -186,7 +186,7 @@ shinyUI(
         
         ## countYearProvince: all species
         actionLink(inputId = "linkPlot1",
-            label = h4("Gerapporteerd aantal per jaar en per regio")),
+            label = h4("FIGUUR: Gerapporteerd aantal per jaar en per regio")),
         conditionalPanel("input.linkPlot1 % 2 == 1",
             fluidRow(
                 
@@ -210,7 +210,7 @@ shinyUI(
               
               list(
                   actionLink(inputId = "linkPlot2", label =
-                          h4("Leeftijdscategorie op basis van onderkaak")),
+                          h4("FIGUUR: Leeftijdscategorie op basis van onderkaak")),
                   conditionalPanel("input.linkPlot2 % 2 == 1",
                       fluidRow(
                           
@@ -226,7 +226,7 @@ shinyUI(
                   
                   
                   actionLink(inputId = "linkPlot3",
-                      label = h4("Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
+                      label = h4("FIGUUR: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
                   conditionalPanel("input.linkPlot3 % 2 == 1",
                       fluidRow(
                           
@@ -243,7 +243,7 @@ shinyUI(
                   
                   
                   actionLink(inputId = "linkPlot4",
-                      label = h4("Percentage jaarlijks afschot")),
+                      label = h4("FIGUUR: Percentage jaarlijks afschot")),
                   conditionalPanel("input.linkPlot4 % 2 == 1",
                       fluidRow(
                           
@@ -261,7 +261,7 @@ shinyUI(
                   
                   
                   actionLink(inputId = "linkPlot5",
-                      label = h4("Percentage per leeftijdscategorie en geslacht")),
+                      label = h4("FIGUUR: Percentage per leeftijdscategorie en geslacht")),
                   conditionalPanel("input.linkPlot5 % 2 == 1",
                       
                       fluidRow(
@@ -278,7 +278,7 @@ shinyUI(
                   
                   
                   actionLink(inputId = "linkPlot6",
-                      label = h4("Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+                      label = h4("FIGUUR: Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
                   conditionalPanel("input.linkPlot6 % 2 == 1",
                       fluidRow(
                           
@@ -303,7 +303,7 @@ shinyUI(
               list(
                   
                   actionLink(inputId = "linkPlot7",
-                      label = h4("Verdeling van onderkaaklengte per leeftijdscategorie en geslacht")),
+                      label = h4("FIGUUR: Verdeling van onderkaaklengte per leeftijdscategorie en geslacht")),
                   conditionalPanel("input.linkPlot7 % 2 == 1",
                       fluidRow(
                           
@@ -320,7 +320,7 @@ shinyUI(
                   h3("Bio-indicatoren"),
                   
                   actionLink(inputId = "linkPlot8",
-                      label = h4("Onderkaaklengte per jaar")),
+                      label = h4("FIGUUR: Onderkaaklengte per jaar")),
                   conditionalPanel("input.linkPlot8 % 2 == 1",
                       fluidRow(
                           
@@ -334,7 +334,7 @@ shinyUI(
                       tags$hr()
                   ),
                   
-                  actionLink(inputId = "linkPlot9", label = h4("Gewicht per jaar")),
+                  actionLink(inputId = "linkPlot9", label = h4("FIGUUR: Gewicht per jaar")),
                   conditionalPanel("input.linkPlot9 % 2 == 1",
                       fluidRow(
                           
@@ -351,7 +351,7 @@ shinyUI(
                   ),
                   
                   actionLink(inputId = "linkPlot10",
-                      label = h4("Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
+                      label = h4("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
                   ),
                   conditionalPanel("input.linkPlot10 % 2 == 1",
                       fluidRow(

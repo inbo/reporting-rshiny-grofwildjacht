@@ -38,9 +38,9 @@ shinyUI(
                   p(tags$br(),
                     "De bron voor de kaarten, figuren en tabellen wordt gevormd door het E-loket van het Agentschap voor Natuur en Bos (https://www.natuurenbos.be/e-loket),",tags$br()," gecombineerd met door het INBO uitgevoerde metingen op ingezamelde stalen (onderkaken en baarmoeders).",
                     tags$br(),
-                    "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes,", tags$br(),"een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren",
+                    "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes,", tags$br(),"een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren.",
                     tags$br(), 
-                    "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren"),
+                    "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
                 tags$br())),
         
         tags$br(),

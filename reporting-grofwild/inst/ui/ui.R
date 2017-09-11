@@ -36,7 +36,7 @@ shinyUI(
                 h4("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek"), 
                 p(tags$br()), "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.",
                   p(tags$br(),
-                    "De bron voor de kaarten, figuren en tabellen wordt gevormd door het E-loket van het Agentschap voor Natuur en Bos,",tags$br()," gecombineerd met door het INBO uitgevoerde metingen op ingezamelde stalen (onderkaken en baarmoeders).",
+                    "De bron voor de kaarten, figuren en tabellen wordt gevormd door het E-loket van het Agentschap voor Natuur en Bos (https://www.natuurenbos.be/e-loket),",tags$br()," gecombineerd met door het INBO uitgevoerde metingen op ingezamelde stalen (onderkaken en baarmoeders).",
                     tags$br(),
                     "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes,", tags$br(),"een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren",
                     tags$br(), 

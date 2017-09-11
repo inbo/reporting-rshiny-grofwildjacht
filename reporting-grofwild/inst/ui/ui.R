@@ -210,7 +210,7 @@ shinyUI(
               
               list(
                   actionLink(inputId = "linkPlot2", label =
-                          h4("FIGUUR: Leeftijdscategorie op basis van onderkaak")),
+                          h4("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulieren")),
                   conditionalPanel("input.linkPlot2 % 2 == 1",
                       fluidRow(
                           
@@ -261,7 +261,7 @@ shinyUI(
                   
                   
                   actionLink(inputId = "linkPlot5",
-                      label = h4("FIGUUR: Percentage per leeftijdscategorie en geslacht")),
+                      label = h4("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie ")),
                   conditionalPanel("input.linkPlot5 % 2 == 1",
                       
                       fluidRow(

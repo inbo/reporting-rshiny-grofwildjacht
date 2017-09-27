@@ -18,9 +18,3 @@ div#shiny-disconnected-overlay:before {
 	background: none;
 	border: none;
 }
-
-
-.purple { 
-	text-align: center;
-	background-color: rgb(192, 67, 132, 0.5);
-}

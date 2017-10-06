@@ -132,7 +132,7 @@ shinyUI(
 
                           column(4,
                               optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
-                              tags$p("Het gerapporteerd aantal geschoten of dood gevonden dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
+                              tags$p("Het gerapporteerd aantal geschoten of dood gevonden dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren. Voor everzwijn werd de leeftijfscategorie bepaald op basis van de ingezamelde onderkaken. Voor de overige soorten is deze afkomstig van het meldingsformulier.")
                           ),
                           column(8, tableModuleUI(id = "table1"))
 

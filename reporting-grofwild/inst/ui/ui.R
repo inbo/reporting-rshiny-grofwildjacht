@@ -132,7 +132,7 @@ shinyUI(
 
                           column(4,
                               optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
-                              tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
+                              tags$p("Het gerapporteerd aantal geschoten of dood gevonden dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
                           ),
                           column(8, tableModuleUI(id = "table1"))
 

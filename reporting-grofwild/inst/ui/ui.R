@@ -252,7 +252,7 @@ shinyUI(
                               optionsModuleUI(id = "plot4",
                                   showTime = TRUE, showYear = TRUE,
                                   showType = TRUE, exportData = TRUE),
-                              tags$p("Procentuele verdeling van het afschot per labeltype doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
+                              tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
                           ),
                           column(8, plotModuleUI(id = "plot4"))
 

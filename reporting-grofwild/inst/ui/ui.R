@@ -262,14 +262,14 @@ shinyUI(
 
 
                   actionLink(inputId = "linkPlot5",
-                      label = h4("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie ")),
+                      label = h4("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie")),
                   conditionalPanel("input.linkPlot5 % 2 == 1",
 
                       fluidRow(
 
                           column(4,
                               optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
-                              tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode")
+                              tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. Voor everzwijn werd de leeftijdscategorie bepaald op basis van de ingezamelde onderkaak. Voor ree is dit de leeftijdscategorie vermeld op het meldingsformulier.")
                           ),
                           column(8, plotModuleUI(id = "plot5"))
 

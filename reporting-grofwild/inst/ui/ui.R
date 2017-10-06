@@ -235,7 +235,7 @@ shinyUI(
                               optionsModuleUI(id = "plot3",
                                   showSummarizeBy = TRUE, showTime = TRUE,
                                   regionLevels = 1:2, exportData = TRUE),
-                              tags$p("Evolutie van de verdeling van het afschot over de verschillende leeftijdscategorie�n doorheen de jaren op basis van de ingezamelde onderkaak.")
+                              tags$p("Evolutie van de verdeling van het afschot over de verschillende leeftijdscategorieën doorheen de jaren op basis van de ingezamelde onderkaak.")
                           ),
                           column(8, plotModuleUI(id = "plot3"))
                       ),

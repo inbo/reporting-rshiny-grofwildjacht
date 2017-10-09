@@ -304,7 +304,7 @@ shinyUI(
               list(
 
                   actionLink(inputId = "linkPlot7",
-                      label = h4("FIGUUR: Verdeling van onderkaaklengte per leeftijdscategorie en geslacht")),
+                      label = h4("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaaak) en geslacht")),
                   conditionalPanel("input.linkPlot7 % 2 == 1",
                       fluidRow(
 

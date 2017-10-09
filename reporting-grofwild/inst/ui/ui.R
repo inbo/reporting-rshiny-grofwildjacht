@@ -279,7 +279,7 @@ shinyUI(
 
 
                   actionLink(inputId = "linkPlot6",
-                      label = h4("FIGUUR: Verdeling van leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+                      label = h4("FIGUUR: Leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
                   conditionalPanel("input.linkPlot6 % 2 == 1",
                       fluidRow(
 

@@ -303,8 +303,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
         dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
         
         ## write data to exported file
-        write.csv(x = dataPlot, file = file,
-            quote = FALSE, row.names = FALSE)
+        write.table(x = dataPlot, file = file, quote = FALSE, row.names = FALSE,
+            sep = ";", dec = ",")
         
       }
   )

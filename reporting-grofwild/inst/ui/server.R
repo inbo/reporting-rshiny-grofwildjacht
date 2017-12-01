@@ -19,6 +19,7 @@ toekenningsData <- loadToekenningen()
 ecoData <- loadRawData(type = "eco")
 
 dataDir <- system.file("extdata", package = "reportingGrofwild")
+# Load object called spatialData
 load(file = file.path(dataDir, "spatialData.RData"))
 
 geoData <- NULL

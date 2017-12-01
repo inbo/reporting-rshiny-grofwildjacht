@@ -100,7 +100,8 @@ shinyUI(
                 uiOutput("map_title"),
                 leafletOutput("map_spacePlot", height = "700px"),
                 tags$br(),
-                downloadButton("map_download", "Download")
+                downloadButton("map_download", "Download figuur"),
+                downloadButton("map_downloadData", "Download data")
             ),
             column(6, 
                 h4("Referentie (Vlaanderen)"),

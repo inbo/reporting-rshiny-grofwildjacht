@@ -22,6 +22,12 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 # Load object called spatialData
 load(file = file.path(dataDir, "spatialData.RData"))
 
+# Center coordinates of Belgium, to crop the amount of gray in image
+flandersRange <- list(
+    lng = 4.23,
+    lat = 51.1
+)
+
 geoData <- NULL
 
 
@@ -576,6 +582,9 @@ shinyServer(function(input, output, session) {
                   
                   leaflet(results$spatialData()) %>%
                       
+                      setView(lng = flandersRange$lng, lat = flandersRange$lat,
+                          zoom = 8.5) %>%
+                      
                       addPolygons(
                           weight = 1, 
                           color = "gray",
@@ -591,7 +600,7 @@ shinyServer(function(input, output, session) {
                           weight = 3,
                           opacity = provinceBounds$opacity
                       )
-                                    
+                  
                 })
             
           })
@@ -736,7 +745,9 @@ shinyServer(function(input, output, session) {
                 match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
                 "group"]
             
-            newMap <- leaflet(results$spatialData())
+            newMap <- leaflet(results$spatialData()) %>%
+                setView(lng = flandersRange$lng, lat = flandersRange$lat,
+                    zoom = 8.5)
             
             if (input$map_globe %% 2 == 1) {
               
@@ -788,10 +799,19 @@ shinyServer(function(input, output, session) {
             htmlwidgets::saveWidget(widget = results$finalMap(), 
                 file = file.path(tempdir(), "plotRuimte.html"), selfcontained = FALSE)
             webshot::webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
-                cliprect = "viewport")
+                vwidth = 1000, vheight = 500, cliprect = "viewport", zoom = 3)
             
           }
       )
+      
+      output$map_downloadData <- downloadHandler("data_landkaart.csv",
+          content = function(file) {
+            
+            ## write data to exported file
+            write.table(x = results$map_spaceData(), file = file, quote = FALSE, row.names = FALSE,
+                sep = ";", dec = ",")
+            
+          })
       
       
       ## Create time plot for Flanders (reference) 

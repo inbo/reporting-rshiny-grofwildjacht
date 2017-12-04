@@ -225,7 +225,9 @@ shinyServer(function(input, output, session) {
       # Plot 2
       callModule(module = optionsModuleServer, id = "plot2", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Ree")
+                    c(2014, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot2",
           plotFunction = "countAgeCheek", 
           data = results$wildEcoData,

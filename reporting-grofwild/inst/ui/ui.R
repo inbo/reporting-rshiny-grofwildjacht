@@ -8,8 +8,8 @@ shinyUI(
         
         includeCSS("www/style.css"),
         
-#        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
-#            align = "left"),
+        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
+            align = "left"),
         # Shape data source
         helpText(
             h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#",

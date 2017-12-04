@@ -5,7 +5,7 @@
 \title{Create summary table for specific species}
 \usage{
 tableProvince(data, assignedData, wildNaam = NULL, jaar = NULL,
-  categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 10)
+  categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50)
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}

@@ -20,7 +20,7 @@
 #' @importFrom plyr count join
 #' @export
 tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL, 
-    categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 10) {
+    categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50) {
   
   
   categorie <- match.arg(categorie)
@@ -178,6 +178,7 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
       # Add provinces with 0 observations
       freqBack <- merge(x = data.frame(provincie = unique(allData$provincie)),
           y = freqBack, all = TRUE)
+      freqBack$freq[is.na(freqBack$freq)] <- 0
       
       # Calculate percentages
       if (categorie == "typePercent") {
@@ -202,18 +203,22 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
         freqBack <- rbind(freqBack, list(provincie = "Vlaanderen", 
                 freq = sum(freqBack$freq, na.rm = TRUE)))
       
+      freqBack$totaal <- NULL
+      
+      
       # Calculate trend
       finalTable <- join(x = finalTable, y = freqBack, by = "provincie")
       finalTable[, paste0("Verandering tov ", yearsBack, " jaar (", jaar - yearsBack, ")")] <- 
           ifelse(summaryTables[[1]]$Totaal > minForTrend & 
-                  freqBack$freq > minForTrend,
-              {if (categorie == "typePercent") 
+                  finalTable$freq > minForTrend,
+              { if (categorie == "typePercent") 
                   value <- sprintf("%.1f", round((finalTable$Totaal - finalTable$percent)*100, 1)) else
                   value <- sprintf("%.1f", round((finalTable$Totaal/finalTable$freq - 1)*100, 1))
                 ifelse(value > 0, paste0("+", value, "%"), paste0(value, "%"))},
               "")
       
       finalTable$freq <- NULL
+      finalTable$percent <- NULL
       finalTable[is.na(finalTable)] <- ""
       
     }
@@ -234,6 +239,9 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
     toReturn[, c(levelsCategorie, "Totaal")] <- 
         sapply(toReturn[, c(levelsCategorie, "Totaal")], function(x)
               paste0(round(x*100), "%")) 
+  
+  # Rename provincie
+  names(toReturn)[names(toReturn) == "provincie"] <- "Provincie"
   
   
   return(toReturn)

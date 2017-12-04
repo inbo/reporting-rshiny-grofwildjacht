@@ -793,7 +793,11 @@ shinyServer(function(input, output, session) {
           })
       
       
-      output$map_download <- downloadHandler("plotRuimte.png",
+      output$map_download <- downloadHandler(
+          filename = function()
+            nameFile(species = input$showSpecies,
+                year = input$map_year[1], 
+                content = "kaart", fileExt = "png"),
           content = function(file) {
             
             htmlwidgets::saveWidget(widget = results$finalMap(), 
@@ -804,7 +808,11 @@ shinyServer(function(input, output, session) {
           }
       )
       
-      output$map_downloadData <- downloadHandler("data_landkaart.csv",
+      output$map_downloadData <- downloadHandler(
+          filename = function()
+            nameFile(species = input$showSpecies,
+                year = input$map_year[1], 
+                content = "kaartData", fileExt = "csv"),
           content = function(file) {
             
             ## write data to exported file

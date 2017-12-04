@@ -278,7 +278,11 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
-  output$dataDownload <- downloadHandler(paste0("data_", plotFunction, ".csv"),
+  output$dataDownload <- downloadHandler(
+      filename = function() nameFile(species = wildNaam(),
+            year = if (!is.null(input$year)) input$year else
+                  unique(c(input$time[1], input$time[2])), 
+            content = paste0(plotFunction, "_data"), fileExt = "csv"),
       content = function(file) {
         
         resFct <- resultFct()

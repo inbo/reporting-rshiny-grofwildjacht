@@ -213,7 +213,9 @@ shinyServer(function(input, output, session) {
       # Plot 1
       callModule(module = optionsModuleServer, id = "plot1", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Edelhert")
+                    c(2008, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot1",
           plotFunction = "countYearProvince", 
           data = results$wildEcoData, 

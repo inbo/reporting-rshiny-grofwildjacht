@@ -195,7 +195,7 @@ shinyUI(
                 
                 column(4,
                     optionsModuleUI(id = "plot1", showTime = TRUE, exportData = TRUE),
-                    tags$p("Het gerapporteerd aantal geschoten en dood gevonden dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totale afschot voor dat jaar weer).")
+                    tags$p("Het gerapporteerd aantal geschoten en dood gevonden dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totaal aantal voor dat jaar weer).")
                 ),
                 column(8, plotModuleUI(id = "plot1"))
             

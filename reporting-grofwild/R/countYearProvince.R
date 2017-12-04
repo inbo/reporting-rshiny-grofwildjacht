@@ -32,7 +32,7 @@
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 countYearProvince <- function(data, wildNaam = "", jaartallen = NULL, 
-    doodsoorzaak = c("afschot", "valwild"), 
+    doodsoorzaak = c("afschot", "valwild", "verdelging ANB"), 
     width = NULL, height = NULL) {
   
   
@@ -49,7 +49,7 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
   
   # Summarize data per province and year
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
-              min(afschotjaar):max(afschotjaar)))
+              min(jaartallen):max(jaartallen)))
   
   summaryData <- melt(table(plotData), id.vars = "afschotjaar")
   
@@ -65,7 +65,10 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
   title <- paste0(wildNaam, " ",
       ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
           jaartallen),
-      " (", paste(doodsoorzaak, collapse = " en "), ")")
+      if (length(doodsoorzaak) > 2)
+            paste0(" (", paste(doodsoorzaak[-length(doodsoorzaak)], collapse = ", "), " en ", doodsoorzaak[length(doodsoorzaak)], ")") else 
+            paste0(" (", paste(doodsoorzaak, collapse = " en "), ")")
+  )
   
   
   # Create plot

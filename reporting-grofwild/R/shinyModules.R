@@ -79,7 +79,7 @@ optionsModuleUI <- function(id,
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, typesDefault = types, 
-    timeRange = NULL, timeLabel = "Periode",
+    timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE) {
   
   ns <- session$ns

@@ -35,8 +35,9 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   # Select data
   plotData <- data[data$afschotjaar %in% jaartallen, 
-      c("ontweid_gewicht", "Leeftijdscategorie_onderkaak", "leeftijd_maanden", "geslacht.MF")]
-  names(plotData) <- c("gewicht", "leeftijd", "maanden", "geslacht")
+      c("ontweid_gewicht", "Leeftijdscategorie_onderkaak", "leeftijd_maanden", "geslacht.MF",
+          "provincie")]
+  names(plotData) <- c("gewicht", "leeftijd", "maanden", "geslacht", "provincie")
   
   
   # Percentage collected
@@ -50,6 +51,9 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   plotData <- subset(plotData, !is.na(leeftijd) & leeftijd != "Niet ingezameld" &
           !is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
   plotData$geslacht <- factor(plotData$geslacht)
+  
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
   
   # Define names and ordering of factor levels
   if ("Frisling" %in% plotData$leeftijd) {  # wild zwijn

@@ -234,6 +234,7 @@ boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
 boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
 
+
 ## PLOT 9: Distribution of cheek length vs class ##
 
 res <- boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", 

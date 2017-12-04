@@ -289,7 +289,9 @@ shinyUI(
                           
                           column(4,
                               optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
-                              tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode.")
+                              tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode."),
+                              conditionalPanel("input.showSpecies == 'Ree'",
+                                  "Voor ree: geen data beschikbaar voor 2014.")
                           ),
                           column(8, plotModuleUI(id = "plot6"))
                       
@@ -308,7 +310,7 @@ shinyUI(
               list(
                   
                   actionLink(inputId = "linkPlot7",
-                      label = h4("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaaak) en geslacht")),
+                      label = h4("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
                   conditionalPanel("input.linkPlot7 % 2 == 1",
                       fluidRow(
                           

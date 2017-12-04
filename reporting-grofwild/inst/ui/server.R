@@ -286,8 +286,8 @@ shinyServer(function(input, output, session) {
       callModule(module = optionsModuleServer, id = "plot6", 
           data = results$wildEcoData,
           timeRange = reactive(if (input$showSpecies == "Ree")
-                c(2014, max(results$timeRange())) else 
-                results$timeRange()))
+                    c(2014, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot6",
           plotFunction = "boxAgeWeight", 
           data = results$wildEcoData,
@@ -297,7 +297,9 @@ shinyServer(function(input, output, session) {
       # Plot 7
       callModule(module = optionsModuleServer, id = "plot7", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Ree")
+                    c(2014, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot7",
           plotFunction = "boxAgeGenderLowerJaw", 
           data = results$wildEcoData,

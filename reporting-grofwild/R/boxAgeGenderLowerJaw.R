@@ -16,10 +16,10 @@
 #' @author Laure Cougnaud
 #' @import plotly
 #' @importFrom INBOtheme inbo.lichtgrijs
+#' @importFrom plyr count
 #' @export
 boxAgeGenderLowerJaw <- function(data, wildNaam = "", 
-	jaartallen = NULL, regio = "", 
-	width = NULL, height = NULL){
+	jaartallen = NULL, regio = "", width = NULL, height = NULL) {
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
@@ -32,14 +32,17 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 		data$ageGender != "" & !is.na(data$ageGender), ]
 
 	plotData$ageGender <- droplevels(plotData$ageGender)
-
-	# filter animal with left/right cheek length measured
+  
+  # filter animal with left/right cheek length measured
 	plotData <- plotData[!is.na(plotData$onderkaaklengte), ]
 	# filter all averages < 100 and > 200
 	plotData <- plotData[plotData$onderkaaklengte >= 100 & plotData$onderkaaklengte <= 200, ]
 	
 	# only keep columns displayed in the plot
 	plotData <- plotData[, c("ageGender", "onderkaaklengte")]
+  
+  totalCounts <- count(plotData, vars = c("ageGender"))
+  totalCounts$index <- (seq_along(totalCounts$ageGender) - 1/2)/nrow(totalCounts) 
 	
 	# create plot
 	pl <- plot_ly(data = plotData, x = ~ageGender, y = ~onderkaaklengte,
@@ -49,7 +52,11 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 					if (!all(regio == "")) paste0(" (", toString(regio), ")")),
 					xaxis = list(title = "Categorie op basis van leeftijdscategorie and geslacht"), 
 					yaxis = list(title = "Onderkaaklengte (mm)"),
-					margin = list(b = 40, t = 100)
+					margin = list(b = 40, t = 100),
+          annotations = list(x = totalCounts$index, 
+              y = -diff(range(plotData$onderkaaklengte, na.rm = TRUE))/10, 
+              xref = "paper", text = totalCounts$freq, xanchor = 'center', 
+              yanchor = 'bottom', showarrow = FALSE)
 			)
   
   # To prevent warnings in UI

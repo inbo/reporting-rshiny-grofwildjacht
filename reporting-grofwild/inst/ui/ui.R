@@ -9,8 +9,9 @@ shinyUI(
 
         includeCSS("www/style.css"),
 
-#        h5(actionLink(inputId = "debug_console", label =` "Connect with console"),
-#            align = "right"),
+        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
+            align = "left"),
+
         # Shape data source
         helpText(
             h5(a(href = "http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#",
@@ -102,7 +103,8 @@ shinyUI(
                 uiOutput("map_title"),
                 leafletOutput("map_spacePlot", height = "700px"),
                 tags$br(),
-                downloadButton("map_download", "Download")
+                downloadButton("map_download", "Download figuur"),
+                downloadButton("map_downloadData", "Download data")
             ),
             column(6,
                 h4("Referentie (Vlaanderen)"),

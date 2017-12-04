@@ -39,7 +39,7 @@ percentageYearlyShotAnimals <- function(
     width = NULL, height = NULL) {
   
   if (is.null(openingstijdenData))
-    stop("Geen openingstijden data geschikbaar.")
+    stop("Geen openingstijden data beschikbaar.")
   
   ## default
   
@@ -54,11 +54,11 @@ percentageYearlyShotAnimals <- function(
   # check if specified year/year range are in the data
   # and in the opening season
   if(! all(jaartallen %in% openingstijdenData$Jaar)) 
-    stop("Not all years specified in 'jaartallen' are in the openingsijden data.")
+    stop("Niet voor alle jaartallen zijn er observaties in de openingstijden data.")
   if(! jaar %in% data$afschotjaar) 
-    stop("Specified year is not in the data.")
+    stop("Geen data voor het gekozen jaar.")
   if(! jaar %in% openingstijdenData$Jaar) 
-    stop("Specified year is not in the  openingsijden data.")
+    stop("Geen data voor het gekozen jaar in de openingstijden data.")
   
   
   ## filtering
@@ -69,12 +69,13 @@ percentageYearlyShotAnimals <- function(
   # only retains animals of specified type
   specifiedType <- !is.null(type) && type != "all"
   if(specifiedType){
-    inputData <- inputData[inputData$type == type, ]
-    openingstijdenData <- openingstijdenData[openingstijdenData$Type == type, ]
+    inputData <- inputData[inputData$type %in% type, ]
+    openingstijdenData <- openingstijdenData[openingstijdenData$Type %in% type, ]
   }
   
-  if(length(unique(openingstijdenData$Type)) > 1)
-    stop("Multiple types in openingstijden data.")
+  ## Now allow for multiple types
+#  if(length(unique(openingstijdenData$Type)) > 1)
+#    stop("Meerdere types in openingstijden data.")
   
   # only retains counts with no missing afschot_datum
   inputData <- inputData[!is.na(inputData$afschot_datum), ]
@@ -124,10 +125,12 @@ percentageYearlyShotAnimals <- function(
           formatDate(openingstijdenData[openingstijdenData$Jaar == jaar, "Stopdatum_Date"], dateSeparation = 15)
       ))
   
-  # only consider half month in opening season
+#  # only consider half month in opening season
   openingSeasonHalfMonth <- allHalfMonth[do.call(':', as.list(which(allHalfMonth %in% openingSeasonYear)))]
-  
-  # format date as factor
+  # consider all half months
+#openingSeasonHalfMonth <- allHalfMonth
+
+# format date as factor
   inputDataFilter$afschot_datum_halfMonth <- factor(afschotDatumHalfMonth, levels = openingSeasonHalfMonth)
   
   ## compute statistics for plot
@@ -181,7 +184,7 @@ percentageYearlyShotAnimals <- function(
       # median
       add_trace(x = ~dateHalfMonth, y = ~medianRange, 
           type = 'scatter', mode = 'lines',
-          line =  list(color = inbo.lichtblauw, dash = "dot"), 
+          line =  list(color = inbo.grijsblauw, dash = "dot"), 
           name = getNameRange("Mediaan")
       ) %>%
       
@@ -196,17 +199,18 @@ percentageYearlyShotAnimals <- function(
       
       # mean in entire year
       add_lines(x = ~dateHalfMonth, y = ~ meanYear,
-          name = paste0("Gemiddelde (", as.character(jaar), ")"), 
+          name = paste0("Uniforme verdeling (", as.character(jaar), ")"), 
           line = list(color = inbo.steun.donkerroos, dash = "dot")
       )	%>%	
       
       ## title axes and margin bottom
       layout(
           title = paste0(wildNaam, 
-              if(specifiedType)	paste0(" ", type),
+              if (specifiedType)	paste0(" (", paste(type, collapse = ", "), ")"),
               " percentage jaarlijks afschot in ", jaar),
           xaxis = list(title = "openingstijd (half-maand resolutie)"), 
-          yaxis = list(title = "Percentage jaarlijks afschot"),
+          yaxis = list(title = "Percentage jaarlijks afschot", 
+              range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
           margin = list(b = 70, t = 40)
       )
   

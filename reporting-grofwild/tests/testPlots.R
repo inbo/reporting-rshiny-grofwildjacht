@@ -198,6 +198,9 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
 })
 
 
+
+
+
 ## PLOT 6: Percentages per age and gender
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {

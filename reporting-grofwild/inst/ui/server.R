@@ -257,7 +257,9 @@ shinyServer(function(input, output, session) {
           data = results$wildEcoData,
           timeRange = results$openingstijd,
           timeLabel = "Referentieperiode",
-          types = results$types)
+          types = results$types,
+          # TODO change to true? see GIT issue #32
+          multipleTypes = FALSE)
       
       callModule(module = plotModuleServer, id = "plot4",
           plotFunction = "percentageYearlyShotAnimals", 

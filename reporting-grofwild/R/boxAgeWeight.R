@@ -48,7 +48,7 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   gewicht <- NULL
   geslacht <- NULL
   plotData <- subset(plotData, !is.na(leeftijd) & leeftijd != "Niet ingezameld" &
-      !is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
+          !is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
   plotData$geslacht <- factor(plotData$geslacht)
   
   # Define names and ordering of factor levels
@@ -94,19 +94,23 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   # Create plot
   # Prevent Warning: 'layout' objects don't have these attributes: 'boxmode'
   suppressWarnings(pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~gewicht, 
-          color = ~geslacht, colors = colors, type = "box", 
-          width = width, height = height) %>%
-      layout(title = title,
-          xaxis = list(title = "Categorie"), 
-          yaxis = list(title = "Leeggewicht (kg)"),
-          margin = list(t = 100),
-          boxmode = "group",
-          annotations = list(x = totalCounts$index, 
-              y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
-              xref = "paper", text = totalCounts$freq, xanchor = 'center', 
-              yanchor = 'bottom', showarrow = FALSE)))  
-
-	return(list(plot = pl, data = plotData))
-
+              color = ~geslacht, colors = colors, type = "box", 
+              width = width, height = height) %>%
+          layout(title = title,
+              xaxis = list(title = "Categorie"), 
+              yaxis = list(title = "Leeggewicht (kg)"),
+              margin = list(t = 100),
+              boxmode = "group",
+              annotations = list(x = totalCounts$index, 
+                  y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
+                  xref = "paper", text = totalCounts$freq, xanchor = 'center', 
+                  yanchor = 'bottom', showarrow = FALSE)))  
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
+  return(list(plot = pl, data = plotData))
+  
   
 }

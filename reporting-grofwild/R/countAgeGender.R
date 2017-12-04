@@ -113,6 +113,10 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
 	
 	colsFinal <- colnames(summaryData)[colnames(summaryData) != "text"]
 	
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
 	return(list(plot = pl, data = summaryData[, colsFinal]))
 	
   

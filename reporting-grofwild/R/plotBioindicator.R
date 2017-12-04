@@ -235,6 +235,10 @@ plotBioindicator <- function(data, wildNaam = "",
 		
 	returnedData <- if(bioindicator == "aantal_embryos")	inputPlot	else	plotData
 
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
 	return(list(plot = pl, data = returnedData))
 
 }

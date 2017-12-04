@@ -51,7 +51,11 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 					yaxis = list(title = "Onderkaaklengte (mm)"),
 					margin = list(b = 40, t = 100)
 			)
-	
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+
+  
 	return(list(plot = pl, data = plotData))
 	
 }

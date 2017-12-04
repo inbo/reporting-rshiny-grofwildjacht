@@ -104,6 +104,10 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
           y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
 	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"]))
   
 }

@@ -168,6 +168,10 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
       )
   ]
   
+  # To prevent warnings in UI
+  toPlot$elementId <- NULL
+  
+  
   return(list(plot = toPlot, data = summaryData[, colsFinal]))
   
 }

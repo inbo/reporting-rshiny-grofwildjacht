@@ -862,15 +862,20 @@ shinyServer(function(input, output, session) {
             )
             
             ## Create plot
-            plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
+            toPlot <- plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
                     color = ~locatie, hoverinfo = "x+y+name",
                     type = "scatter", mode = "lines+markers") %>%
                 layout(title = title,
                     xaxis = list(title = "Jaar"), 
                     yaxis = list(title = "Aantal"),
                     showlegend = TRUE,
-                    margin = list(b = 80, t = 100))     
+                    margin = list(b = 80, t = 100))
             
+            # To prevent warnings in UI
+            toPlot$elementId <- NULL
+            
+            
+            toPlot
             
           })
       
@@ -905,7 +910,7 @@ shinyServer(function(input, output, session) {
             
             
             # Create plot
-            plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
+            toPlot <- plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
                     color = ~locatie, hoverinfo = "x+y+name",
                     type = "scatter", mode = "lines+markers") %>%
                 layout(title = title,
@@ -914,6 +919,11 @@ shinyServer(function(input, output, session) {
                     showlegend = TRUE,
                     margin = list(b = 80, t = 100))     
             
+            # To prevent warnings in UI
+            toPlot$elementId <- NULL
+            
+            
+            toPlot
             
           })
       

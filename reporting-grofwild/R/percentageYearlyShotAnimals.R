@@ -74,8 +74,8 @@ percentageYearlyShotAnimals <- function(
   }
   
   ## Now allow for multiple types
-#  if(length(unique(openingstijdenData$Type)) > 1)
-#    stop("Meerdere types in openingstijden data.")
+  if(length(unique(openingstijdenData$Type)) > 1)
+    stop("Meerdere types in openingstijden data.")
   
   # only retains counts with no missing afschot_datum
   inputData <- inputData[!is.na(inputData$afschot_datum), ]
@@ -215,6 +215,10 @@ percentageYearlyShotAnimals <- function(
       )
   
 	colsFinal <- c("dateHalfMonth", "obsYear")
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
 	
 	return(list(plot = pl, data = dataPlot[, colsFinal]))
   

@@ -134,8 +134,14 @@ allPlots
 # Some special cases
 countYearAge(data = wildEcoData, wildNaam = "wild zwijn", 
     jaartallen = 2016)
+countYearAge(data = wildEcoData, wildNaam = "wild zwijn", 
+    jaartallen = 2016, summarizeBy = "percent")
+
+
 countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
     jaartallen = 2016:2017)
+countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
+    jaartallen = 2016:2017, summarizeBy = "percent")
 
 
 ## PLOT 5: yearly percentage of shot animals

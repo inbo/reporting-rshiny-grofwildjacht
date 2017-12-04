@@ -32,7 +32,7 @@ optionsModuleUI <- function(id,
           if (showSummarizeBy)
             radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
                 choices = c("Aantal (alle data)" = "count", 
-                    "Percentage (subset van ingezamelde onderkaken)" = "percent")),
+                    "Percentage (enkel ingezamelde onderkaken)" = "percent")),
 #          if (showLegend)
 #            selectInput(inputId = ns("legend"), "Legende",
 #                choices = c("<none>" = "none", 

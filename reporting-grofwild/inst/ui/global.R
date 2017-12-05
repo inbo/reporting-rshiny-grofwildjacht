@@ -26,3 +26,10 @@ ecoData <- loadRawData(dataDir = dataDir, type = "eco")
 geoData <- loadRawData(dataDir = dataDir, type = "geo", 
     shapeData = spatialData)
 
+
+## Reactive values
+results <- reactiveValues(
+    showSpecies = "Wild zwijn" # For which species should summaries be shown?
+)
+
+

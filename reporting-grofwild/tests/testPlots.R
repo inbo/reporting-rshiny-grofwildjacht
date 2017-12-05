@@ -251,7 +251,8 @@ tmp <- lapply(indicators, function(bioindicator){
 #		type = "Geitkits",	
 		wildNaam = "Ree", 
 		jaartallen = unique(reeEcoData$afschotjaar),
-		bioindicator = bioindicator
+		bioindicator = bioindicator,
+    sourceIndicator = c("inbo", "meldingsformulier", "both")[3]
 	)
 #	print(pl)
 })

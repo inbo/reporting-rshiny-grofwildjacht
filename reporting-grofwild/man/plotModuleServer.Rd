@@ -26,7 +26,9 @@ plotModuleServer(input, output, session, plotFunction, data, openingstijdenData,
 
 \item{categorie}{character, defines which type of table should be made}
 
-\item{bioindicator}{corresponding parameter to the \link{plotBioindicator} function}
+\item{bioindicator}{string with column of \code{data}
+with bioindicator, either 'onderkaaklengte',
+'ontweid_gewicht', or 'aantal_embryos'}
 }
 \value{
 no return value; plot output object is created

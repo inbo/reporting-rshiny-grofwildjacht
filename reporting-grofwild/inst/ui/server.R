@@ -321,7 +321,7 @@ shinyServer(function(input, output, session) {
       callModule(module = optionsModuleServer, id = "plot8", 
           data = results$wildEcoData,
           timeRange = results$timeRange,
-          types = results$typesGender,
+          types = reactive(c("Geitkits", "Bokkits")),
           typesDefault = results$typesDefaultGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot8",

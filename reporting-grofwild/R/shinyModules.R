@@ -16,12 +16,14 @@
 #' @param showSummarizeBy boolean, whether to show input field to choose between
 #' aantal of percentage
 #' @param exportData boolean, whether a download button for the data is shown
+#' @param showDataSource boolean, whether to show choices of data source to be 
+#' used for plotted bioindicator
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, showSummarizeBy = FALSE,
-    exportData = FALSE) {
+    exportData = FALSE, showDataSource = FALSE) {
   
   ns <- NS(id)
   
@@ -54,6 +56,10 @@ optionsModuleUI <- function(id,
                             "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
             ),
+          if (showDataSource)
+            selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
+                choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
+                    "INBO en meldingsformulier" = "both")),
           if(exportData)
             downloadButton(ns("dataDownload"), "Download data")
       
@@ -88,7 +94,9 @@ optionsModuleServer <- function(input, output, session,
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
             value = timeRange(),
-            min = min(timeRange()),
+            min = if (!is.null(input$sourceIndicator)) {
+                  if (input$sourceIndicator == "inbo") 2014 else min(timeRange())
+                } else {min(timeRange())},
             max = max(timeRange()),
             step = 1,
             sep = "")
@@ -194,7 +202,7 @@ tableModuleUI <- function(id) {
 #' @param toekenningsData data with toekenningen, optional
 #' @param wildNaam character, defines the species name for y-label in plot
 #' @param categorie character, defines which type of table should be made
-#' @param bioindicator corresponding parameter to the \link{plotBioindicator} function
+#' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.csv
@@ -249,7 +257,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if (!is.null(input$summarizeBy))
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))
-              list(bioindicator = bioindicator)
+              list(bioindicator = bioindicator),
+            if(!is.null(input$sourceIndicator))
+              list(sourceIndicator = input$sourceIndicator)
         )
         
         

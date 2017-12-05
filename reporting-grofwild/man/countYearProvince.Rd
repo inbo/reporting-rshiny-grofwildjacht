@@ -5,7 +5,8 @@
 \title{Create interactive plot for counts per province and year}
 \usage{
 countYearProvince(data, wildNaam = "", jaartallen = NULL,
-  doodsoorzaak = c("afschot", "valwild"), width = NULL, height = NULL)
+  doodsoorzaak = c("afschot", "valwild", "verdelging ANB"), width = NULL,
+  height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

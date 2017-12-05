@@ -189,7 +189,11 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
   
   ## Replace decimal comma by dot
   if ("ontweid_gewicht" %in% names(rawData))
-    rawData$ontweid_gewicht<- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
+    rawData$ontweid_gewicht <- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
+  
+  ## Replace decimal comma by dot
+  if ("lengte_mm" %in% names(rawData))
+    rawData$lengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
   
   ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
   rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",

@@ -6,7 +6,8 @@
 \usage{
 plotBioindicator(data, wildNaam = "", type = NULL, jaartallen = NULL,
   regio = "", bioindicator = c("onderkaaklengte", "ontweid_gewicht",
-  "aantal_embryos"), width = NULL, height = NULL)
+  "aantal_embryos"), sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

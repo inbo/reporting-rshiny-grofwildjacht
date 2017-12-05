@@ -41,6 +41,10 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 	# only keep columns displayed in the plot
 	plotData <- plotData[, c("ageGender", "onderkaaklengte")]
   
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
+  
+  
   totalCounts <- count(plotData, vars = c("ageGender"))
   totalCounts$index <- (seq_along(totalCounts$ageGender) - 1/2)/nrow(totalCounts) 
 	

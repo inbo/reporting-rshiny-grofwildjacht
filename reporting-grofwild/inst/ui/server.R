@@ -359,8 +359,7 @@ shinyServer(function(input, output, session) {
           types = results$typesFemale,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot10",
-          plotFunction = "plotBioindicator", 
-          bioindicator =  "aantal_embryos",
+          plotFunction = "countEmbryos",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       

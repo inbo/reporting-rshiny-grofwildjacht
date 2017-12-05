@@ -257,6 +257,15 @@ tmp <- lapply(indicators, function(bioindicator){
 #	print(pl)
 })
 
-# 2017 for aantal embryos
+
+## PLOT 11: Number of embryos (bio-indicator
 	
+pl <- countEmbryos(
+    data = reeEcoData, 
+    wildNaam = "Ree", 
+#    jaartallen = unique(reeEcoData$afschotjaar)
+    jaartallen = 2002:2010
+)
+pl$plot
+head(pl$data)
 

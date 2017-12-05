@@ -1,5 +1,5 @@
 #' Read all shape data from geojson files
-#' @param dataDir character vector, defines the path to the geojson files
+#' @param dataDir character vector, defines the path to the data files
 #' @param showProgress boolean, whether to show progress window in the shiny app;
 #' Note, if used outside shiny app, this will cause an error; if FALSE progress
 #' is printed in the console
@@ -109,6 +109,7 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
 
 
 #' read openingstijden data
+#' @inheritParams readShapeData
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'Soort': }{specie}
@@ -117,14 +118,15 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
 #' \item{'Startdatum': }{start datum, in the format '\%d/\%m/\%Y'}
 #' \item{'Stopdatum': }{end datum, in the format '\%d/\%m/\%Y'}
 #' }
+#' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
-loadOpeningstijdenData <- function(){
+loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "reportingGrofwild")){
   
-  pathFile <- file.path(system.file("extdata", package = "reportingGrofwild"),
-      "Openingstijden_grofwild.csv")
+  pathFile <- file.path(dataDir, "Openingstijden_grofwild.csv")
   
   rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+  attr(rawData, "Date") <- file.mtime(pathFile)
   
   return(rawData)
   
@@ -132,6 +134,7 @@ loadOpeningstijdenData <- function(){
 
 
 #' Read toekenningen (Ree) data
+#' @inheritParams readShapeData
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'Provincie': }{character, province}
@@ -139,12 +142,12 @@ loadOpeningstijdenData <- function(){
 #' \item{'Labeltype': }{character, type of Ree, one of \code{c("Geiten", "Bokken", "Kitsen")}}
 #' \item{'Aantal': }{integer, frequencie per categorie}
 #' }
+#' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
-loadToekenningen <- function() {
+loadToekenningen <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
   
-  pathFile <- file.path(system.file("extdata", package = "reportingGrofwild"),
-      "Toekenningen_ree.csv")
+  pathFile <- file.path(dataDir, "Toekenningen_ree.csv")
   
   rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
   
@@ -159,6 +162,9 @@ loadToekenningen <- function() {
       levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant",
           "Antwerpen", "Limburg"))
   
+  attr(rawData, "Date") <- file.mtime(pathFile)
+  
+  
   return(rawData)
   
 }
@@ -166,25 +172,27 @@ loadToekenningen <- function() {
 
 
 #' Read ecology or geography data
+#' @inheritParams readShapeData
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' @param shapeData list with objects of class SpatialPolygonsDataFrame as 
 #' returned by \code{\link{readShapeData}}; if not NULL, commune names are 
 #' matched between geography (raw) data and spatial (shape) data 
-#' @return data.frame, loaded ecology or geography data
+#' @return data.frame, loaded ecology or geography data; 
+#' and attribute 'Date', the date that this data file was created
 #' @author mvarewyck
 #' @importFrom utils read.csv
 #' @export
-loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
+loadRawData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
+    type = c("eco", "geo"), shapeData = NULL) {
   
   type <- match.arg(type)
   
   
-  dataFile <- switch(type,
+  dataFile <- file.path(dataDir, switch(type,
       "eco" = "rshiny_reporting_data_ecology.csv",
-      "geo" = "rshiny_reporting_data_geography.csv")
+      "geo" = "rshiny_reporting_data_geography.csv"))
   
-  rawData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
-          dataFile), sep = ";", stringsAsFactors = FALSE)
+  rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
   ## Replace decimal comma by dot
@@ -205,8 +213,8 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
     
     communeData <- shapeData$communes@data
     # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
-    gemeenteData <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"),
-            "gemeentecodes.csv"), header = TRUE, sep = ",")
+    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+        header = TRUE, sep = ",")
     
     geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
     geoName <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 
@@ -270,6 +278,9 @@ loadRawData <- function(type = c("eco", "geo"), shapeData = NULL) {
         na.rm = TRUE)
     
   }
+  
+  attr(rawData, "Date") <- file.mtime(dataFile)
+  
   
   return(rawData)
   

@@ -1,4 +1,6 @@
 #' Create interactive plot for number of embryos versus year
+#' 
+#' Adapted version from Figure p. 30 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @param type animal type, used to filter \code{data} ('ageGender' column)
 #' default is \code{c("Smalree", "Geit")}
 #' @inheritParams countYearAge
@@ -50,6 +52,7 @@ countEmbryos <- function(data, wildNaam = "", type = c("Smalree", "Geit"),
   
   # Calculate percentages excluding "niet ingezameld"
   variable <- NULL  # to prevent warnings with R CMD check
+  Freq <- NULL
   subData <- subset(tmpSummary, variable != "Niet ingevuld")
   tmpPercent <- ddply(subData, "afschotjaar", transform, 
       percent = Freq / sum(Freq) * 100)
@@ -82,12 +85,12 @@ countEmbryos <- function(data, wildNaam = "", type = c("Smalree", "Geit"),
       
       layout(title = title,
           xaxis = list(title = "afschotjaar"), 
-          yaxis = list(title = "Aantal vrouwelijke reeën"),
+          yaxis = list(title = "Aantal vrouwelijke ree\u00EBn"),
           margin = list(b = 40, t = 100),
           legend = list(y = 0.8, yanchor = "top"),
           barmode = "stack",
           annotations = list(x = as.numeric(names(totalCounts)), 
-              y = 0, text = totalCount, xanchor = 'center', yanchor = 'bottom', 
+              y = 0, text = totalCounts, xanchor = 'center', yanchor = 'bottom', 
               showarrow = FALSE)) %>%
       
       add_annotations(text = "Aantal embryo's", 

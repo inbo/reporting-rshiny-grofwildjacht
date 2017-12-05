@@ -31,6 +31,9 @@ to be shown in the plot title}
 with bioindicator, either 'onderkaaklengte',
 'ontweid_gewicht', or 'aantal_embryos'}
 
+\item{sourceIndicator}{character, defines the data source to be used for
+bioindicator 'onderkaaklengte'}
+
 \item{width}{plot width (optional)}
 
 \item{height}{plot height (optional)}

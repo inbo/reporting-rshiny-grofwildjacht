@@ -3,24 +3,7 @@
 # Author: mvarewyck
 ###############################################################################
 
-library(reportingGrofwild)
 
-
-library(leaflet)
-library(plotly)
-
-
-`%then%` <- shiny:::`%OR%`
-
-
-# Initialize data (prevent errors)
-openingstijdenData <- loadOpeningstijdenData()
-toekenningsData <- loadToekenningen()
-ecoData <- loadRawData(type = "eco")
-
-dataDir <- system.file("extdata", package = "reportingGrofwild")
-# Load object called spatialData
-load(file = file.path(dataDir, "spatialData.RData"))
 
 # Center coordinates of Belgium, to crop the amount of gray in image
 flandersRange <- list(
@@ -28,31 +11,10 @@ flandersRange <- list(
     lat = 51.1
 )
 
-geoData <- NULL
+
 
 
 shinyServer(function(input, output, session) {
-      
-      
-      observe({
-            
-#            ## Load Geo Data
-#            withProgress(message = "Data Laden...", value = 0, {
-#                  
-#                  spatialData <<- loadShapeData(showProgress = TRUE)
-#                  
-#                })
-            
-            ## Load Raw Data
-            withProgress(message = "Data Laden...", value = 0, {
-                  
-                  incProgress(1/2, detail = "Gegevens")
-                  geoData <<- loadRawData(type = "geo", shapeData = spatialData)
-                  
-                })
-            
-          })
-      
       
       
       # For debugging
@@ -933,77 +895,6 @@ shinyServer(function(input, output, session) {
             toPlot
             
           })
-      
-      
-      
-#      # export the results as an html report
-#      output$exportResults <- downloadHandler(
-#          
-#          filename = 'grofWild_results.html',
-#          
-#          content = function(file) {
-#            
-#            # extract parameters
-#            params <- list(
-#                
-#                # input parameters
-#                spatialLevel = input$spatialLevel,
-#                specie = input$showSpecies,
-#                times = input$showTime,
-#                regions = input$showRegion,
-#                
-#                # map
-#                map = results$finalMap(),
-#                
-#                # profile plot
-#                interactiveTime = results$interactiveTime()
-#            
-#            )
-#            
-      ##			message("params: ", str(params))
-#            
-#            # get path template report
-#            pathReport <- grofWild::getPathReport()
-#            pathCss <- grofWild::getPathCss()
-#            
-#            # get report name
-#            reportName <- basename(pathReport)
-#            
-#            # create temporary files in temp
-#            tmpDir <- tempdir()
-#            dir.create(tmpDir, recursive = TRUE)
-      ##			message("File", pathReport, "copied to", tmpDir)
-#            
-#            # copy start template in working directory
-#            file.copy(from = pathReport, to = tmpDir, overwrite = TRUE)
-#            file.copy(from = pathCss, to = tmpDir, overwrite = TRUE)
-      ##            
-#            # run report
-#            library(rmarkdown)
-#            potentialErrorMessage <- try(
-#                res <- rmarkdown::render(
-#                    file.path(tmpDir, reportName), params = params
-#                )
-#                , silent = TRUE)
-#            
-#            # print message
-#            if(inherits(potentialErrorMessage, "try-error"))
-#              message("Error during exporting results:", potentialErrorMessage)
-#            
-#            # return the report file
-#            pathHtmlReport <- file.path(tmpDir, sub("Rmd", "html", reportName))
-#            file.copy(pathHtmlReport, file)
-#            
-#            message("The html report is available at:", pathHtmlReport)
-#            
-#            # clean directory
-      ##			unlink(tmpDir)
-#            
-#          }, 
-#          
-#          contentType = "text/html"
-#      
-#      )
       
       
     })

@@ -4,7 +4,11 @@
 \alias{loadOpeningstijdenData}
 \title{read openingstijden data}
 \usage{
-loadOpeningstijdenData()
+loadOpeningstijdenData(dataDir = system.file("extdata", package =
+  "reportingGrofwild"))
+}
+\arguments{
+\item{dataDir}{character vector, defines the path to the data files}
 }
 \value{
 data.frame with columns:
@@ -15,6 +19,7 @@ data.frame with columns:
 \item{'Startdatum': }{start datum, in the format '\%d/\%m/\%Y'}
 \item{'Stopdatum': }{end datum, in the format '\%d/\%m/\%Y'}
 }
+and attribute 'Date', the date that this data file was created
 }
 \description{
 read openingstijden data

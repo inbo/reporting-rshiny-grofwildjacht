@@ -2,6 +2,8 @@
 #' @param bioindicator string with column of \code{data}
 #' with bioindicator, either 'onderkaaklengte',
 #' 'ontweid_gewicht', or 'aantal_embryos'
+#' @param sourceIndicator character, defines the data source to be used for
+#' bioindicator 'onderkaaklengte'
 #' @param type animal type, used to filter \code{data} ('ageGender' column)
 #' If NULL (by default), for bioindicator set to:
 #' \itemize{

@@ -1,6 +1,3 @@
-library(leaflet)
-library(plotly)
-library(reportingGrofwild)
 
 shinyUI(
     
@@ -36,14 +33,18 @@ shinyUI(
         fluidRow(div(class = "purple",
                 tags$br(),
                 h4("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek"),
-                p(tags$br()), "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.",
-                p(tags$br(),
-                    "De bron voor de kaarten, figuren en tabellen wordt gevormd door het E-loket van het Agentschap voor Natuur en Bos (https://www.natuurenbos.be/e-loket),",tags$br()," gecombineerd met door het INBO uitgevoerde metingen op ingezamelde stalen (onderkaken en baarmoeders).",
+                
+                p("Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen."),
+                tags$br(),
+                
+                p("De bron voor de kaarten, figuren en tabellen wordt gevormd door het E-loket van het Agentschap voor Natuur en Bos (https://www.natuurenbos.be/e-loket),",tags$br()," gecombineerd met door het INBO uitgevoerde metingen op ingezamelde stalen (onderkaken en baarmoeders).",
                     tags$br(),
                     "Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes,", tags$br(),"een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren.",
                     tags$br(),
                     "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
-                tags$br())),
+                tags$br(),
+                p("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op", format(as.Date(attr(ecoData, "Date")), "%d/%m/%Y"))
+            )),
         
         tags$br(),
         

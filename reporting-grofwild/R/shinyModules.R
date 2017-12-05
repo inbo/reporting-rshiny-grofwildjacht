@@ -205,7 +205,7 @@ tableModuleUI <- function(id) {
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
-#' @importFrom utils write.csv
+#' @importFrom utils write.table
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL, wildNaam, 

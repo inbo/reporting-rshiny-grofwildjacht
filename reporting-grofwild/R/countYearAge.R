@@ -58,6 +58,7 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
     newLevelsKaak <- c("Kits", "Jongvolwassen", "Volwassen", "Niet ingezameld")
     # Exclude categories 'jongvolwassen' and 'volwassen' for all animals labelled 'mannelijk' 
     # see github issue no. 31
+    geslacht <- NULL  # to prevent warnings with R CMD check
     plotData <- subset(plotData, 
         subset = !(geslacht %in% "Mannelijk" & kaak %in% c("Jongvolwassen", "Volwassen")))
     

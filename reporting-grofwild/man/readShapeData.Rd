@@ -8,7 +8,7 @@ readShapeData(dataDir = system.file("extdata", package = "reportingGrofwild"),
   showProgress = FALSE, tolerance = 0.001)
 }
 \arguments{
-\item{dataDir}{character vector, defines the path to the geojson files}
+\item{dataDir}{character vector, defines the path to the data files}
 
 \item{showProgress}{boolean, whether to show progress window in the shiny app;
 Note, if used outside shiny app, this will cause an error; if FALSE progress

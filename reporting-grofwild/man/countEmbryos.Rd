@@ -39,7 +39,7 @@ list with:
 }
 }
 \description{
-Create interactive plot for number of embryos versus year
+Adapted version from Figure p. 30 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 }
 \author{
 mvarewyck

@@ -88,17 +88,17 @@ countEmbryos <- function(data, wildNaam = "", type = c("Smalree", "Geit"),
           yaxis = list(title = "Aantal vrouwelijke ree\u00EBn"),
           margin = list(b = 40, t = 100),
           legend = list(y = 0.8, yanchor = "top"),
-          barmode = "stack",
-          annotations = list(x = as.numeric(names(totalCounts)), 
-              y = 0, text = totalCounts, xanchor = 'center', yanchor = 'bottom', 
-              showarrow = FALSE)) %>%
+          barmode = if(length(totalCounts) == 1) "group" else "stack",
+          annotations = list(x = as.numeric(names(totalCounts)), y = totalCounts, 
+              text = paste(if(length(totalCounts) == 1) "totaal:" else "", totalCounts),
+              xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) %>%
       
       add_annotations(text = "Aantal embryo's", 
           xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
           y = 0.8, yanchor = "bottom",    # Same y as legend below
           legendtitle = TRUE, showarrow = FALSE)
-
- 
+  
+  
   # To prevent warnings in UI
   pl$elementId <- NULL
   

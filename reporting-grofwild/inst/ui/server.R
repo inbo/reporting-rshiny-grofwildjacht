@@ -563,10 +563,7 @@ shinyServer(function(input, output, session) {
                   
                   
                   leaflet(results$spatialData()) %>%
-                      
-                      setView(lng = flandersRange$lng, lat = flandersRange$lat,
-                          zoom = 8.5) %>%
-                      
+                       
                       addPolygons(
                           weight = 1, 
                           color = "gray",
@@ -731,12 +728,6 @@ shinyServer(function(input, output, session) {
                 setView(lng = flandersRange$lng, lat = flandersRange$lat,
                     zoom = 8.5)
             
-            if (input$map_globe %% 2 == 1) {
-              
-              newMap <- addProviderTiles(newMap, "Hydda.Full")
-              
-            } 
-            
             if (input$map_legend != "none") { 
               
               newMap <- addLegend(newMap,
@@ -744,7 +735,7 @@ shinyServer(function(input, output, session) {
                   pal = palette, 
                   values = valuesPalette,
                   opacity = 0.8,
-                  title = "Legend",
+                  title = "Legende",
                   layerId = "legend"
               )
               
@@ -769,6 +760,12 @@ shinyServer(function(input, output, session) {
                   group = "provinceLines")
               
             }
+            
+            if (input$map_globe %% 2 == 1) {
+              
+              newMap <- addProviderTiles(newMap, "Hydda.Full")
+              
+            } 
             
             newMap
             
@@ -927,7 +924,7 @@ shinyServer(function(input, output, session) {
                     label = h3("TABEL: Gerapporteerd afschot per regio en per leeftijdscategorie")),
                 conditionalPanel("input.linkTable1 % 2 == 1",
                     
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
@@ -957,7 +954,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkTable2",
                     label = h3("TABEL: Gerapporteerd afschot per regio en per type")),
                 conditionalPanel("input.linkTable2 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
@@ -973,7 +970,7 @@ shinyServer(function(input, output, session) {
                     label = h3("TABEL: Percentage gerealiseerd afschot per regio en per type")),
                 conditionalPanel("input.linkTable3 % 2 == 1",
                     
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
@@ -1002,7 +999,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkPlot2", label =
                         h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulieren")),
                 conditionalPanel("input.linkPlot2 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE),
@@ -1018,7 +1015,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkPlot3",
                     label = h3("FIGUUR: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
                 conditionalPanel("input.linkPlot3 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot3",
@@ -1037,7 +1034,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkPlot4",
                     label = h3("FIGUUR: Percentage jaarlijks afschot")),
                 conditionalPanel("input.linkPlot4 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot4",
@@ -1056,7 +1053,7 @@ shinyServer(function(input, output, session) {
                     label = h3("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie")),
                 conditionalPanel("input.linkPlot5 % 2 == 1",
                     
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
@@ -1072,7 +1069,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkPlot6",
                     label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
                 conditionalPanel("input.linkPlot6 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
@@ -1105,7 +1102,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkPlot7",
                     label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
                 conditionalPanel("input.linkPlot7 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot7", showTime = TRUE,
@@ -1122,7 +1119,7 @@ shinyServer(function(input, output, session) {
                 actionLink(inputId = "linkPlot8",
                     label = h3("FIGUUR: Onderkaaklengte per jaar")),
                 conditionalPanel("input.linkPlot8 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE,
@@ -1137,7 +1134,7 @@ shinyServer(function(input, output, session) {
                 
                 actionLink(inputId = "linkPlot9", label = h3("FIGUUR: Gewicht per jaar")),
                 conditionalPanel("input.linkPlot9 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot9",
@@ -1156,7 +1153,7 @@ shinyServer(function(input, output, session) {
                     label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
                 ),
                 conditionalPanel("input.linkPlot10 % 2 == 1",
-                    fluidRow(
+                    fixedRow(
                         
                         column(4,
                             optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,

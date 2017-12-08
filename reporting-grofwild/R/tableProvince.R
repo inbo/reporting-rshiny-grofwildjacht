@@ -214,7 +214,8 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
               { if (categorie == "typePercent") 
                   value <- sprintf("%.1f", round((finalTable$Totaal - finalTable$percent)*100, 1)) else
                   value <- sprintf("%.1f", round((finalTable$Totaal/finalTable$freq - 1)*100, 1))
-                ifelse(value > 0, paste0("+", value, "%"), paste0(value, "%"))},
+                ifelse(value > 0, paste0("+", gsub(pattern = "\\.", "\\,", value), "%"), 
+                    paste0(gsub(pattern = "\\.", "\\,", value), "%"))},
               "")
       
       finalTable$freq <- NULL

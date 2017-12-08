@@ -456,9 +456,24 @@ shinyServer(function(input, output, session) {
             summaryData2 <- plyr::count(df = allData, vars = "locatie", wt_var = "freq")
             
             # Create group variable
+#            summaryData2$group <- cut(x = summaryData2$freq, 
+#                breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
+#                labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
+            
+            ## Option (a)
+#            otherBreaks <- round(seq(0, max(summaryData2$freq), length.out = 5))
+#            otherBreaks <- otherBreaks[otherBreaks != 0]
+            ## Option (b)
+            otherBreaks <- quantile(summaryData2$freq, probs = seq(0, 1, by = 0.2))
+            otherBreaks <- unique(otherBreaks[otherBreaks != 0])
             summaryData2$group <- cut(x = summaryData2$freq, 
-                breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
-                labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
+                breaks = c(-Inf, 0, otherBreaks),
+                labels = c("0", sapply(seq_along(otherBreaks), function(i) {
+                          if (i == 1 & any(summaryData2$freq == 0))
+                            paste0("1-", otherBreaks[i]) else if (i == 1)
+                            paste0("0-", otherBreaks[i]) else 
+                            paste0(otherBreaks[i-1]+1, "-", otherBreaks[i])
+                        })))
             
             return(summaryData2)
             
@@ -563,7 +578,7 @@ shinyServer(function(input, output, session) {
                   
                   
                   leaflet(results$spatialData()) %>%
-                       
+                      
                       addPolygons(
                           weight = 1, 
                           color = "gray",

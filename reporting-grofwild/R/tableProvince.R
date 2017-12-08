@@ -212,10 +212,11 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
           ifelse(summaryTables[[1]]$Totaal > minForTrend & 
                   finalTable$freq > minForTrend,
               { if (categorie == "typePercent") 
-                  value <- sprintf("%.1f", round((finalTable$Totaal - finalTable$percent)*100, 1)) else
-                  value <- sprintf("%.1f", round((finalTable$Totaal/finalTable$freq - 1)*100, 1))
-                ifelse(value > 0, paste0("+", gsub(pattern = "\\.", "\\,", value), "%"), 
-                    paste0(gsub(pattern = "\\.", "\\,", value), "%"))},
+                  value <- round((finalTable$Totaal - finalTable$percent)*100, 1) else
+                  value <- round((finalTable$Totaal/finalTable$freq - 1)*100, 1)
+                charValue <- sprintf("%.1f", value)
+                ifelse(value > 0, paste0("+", gsub(pattern = "\\.", "\\,", charValue), "%"), 
+                    paste0(gsub(pattern = "\\.", "\\,", charValue), "%"))},
               "")
       
       finalTable$freq <- NULL

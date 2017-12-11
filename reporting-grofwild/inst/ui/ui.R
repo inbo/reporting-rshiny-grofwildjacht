@@ -54,7 +54,7 @@ shinyUI(
                 tags$p("Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes,", tags$br(),"een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren.",
                     "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
                 
-                tags$p("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op", format(as.Date(attr(ecoData, "Date")), "%d/%m/%Y"))
+                tags$p(paste0("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ", format(as.Date(attr(ecoData, "Date")), "%d/%m/%Y"), "."))
             
             ),
             

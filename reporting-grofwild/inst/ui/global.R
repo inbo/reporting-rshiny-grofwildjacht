@@ -1,8 +1,9 @@
 library(reportingGrofwild)
 
 
-library(leaflet)
-library(plotly)
+library(leaflet)           # for interactive map
+library(plotly)            # for interactive graphs
+library(shinycssloaders)   # for busy indicator
 
 
 `%then%` <- shiny:::`%OR%`
@@ -28,8 +29,8 @@ geoData <- loadRawData(dataDir = dataDir, type = "geo",
 
 
 ## Reactive values
-results <- reactiveValues(
-    showSpecies = "Wild zwijn" # For which species should summaries be shown?
-)
-
+#results <- reactiveValues(
+#    showSpecies = "Wild zwijn" # For which species should summaries be shown?
+#)
+results <- list()
 

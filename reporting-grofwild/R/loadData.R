@@ -189,8 +189,8 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
   
   
   dataFile <- file.path(dataDir, switch(type,
-      "eco" = "rshiny_reporting_data_ecology.csv",
-      "geo" = "rshiny_reporting_data_geography.csv"))
+          "eco" = "rshiny_reporting_data_ecology.csv",
+          "geo" = "rshiny_reporting_data_geography.csv"))
   
   rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
@@ -241,6 +241,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
   
   if (type == "eco") {
     
+    # Re-define doodsoorzaak "verdelging ANB" into afschot
+    rawData$doodsoorzaak[rawData$doodsoorzaak == "verdelging ANB"] <- "afschot" 
+    
     # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
@@ -272,7 +275,7 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
     rawData$ageGender <- factor(ageGender, 
         levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
     
-    # for Figure 27, 28: compute cheek length
+    # for Figure p. 27, 28: compute cheek length
     rawData$onderkaaklengte <- rowMeans(
         rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
         na.rm = TRUE)

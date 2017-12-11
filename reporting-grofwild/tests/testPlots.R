@@ -147,55 +147,55 @@ countYearAge(data = wildEcoData, wildNaam = "wild zwijn",
 ## PLOT 5: yearly percentage of shot animals
 
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
-			
-		message("Plot for specie ", wildsoort, " in progress")
-			
-		plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-		
-		openingSeasonData <- openingstijdenData[
-			openingstijdenData$Soort == wildsoort, ]
-	
-		openingstijdRange <- c(
-				max(
-						min(plotData$afschotjaar), 
-						min(openingSeasonData$Jaar)
-				),
-				min(
-						max(plotData$afschotjaar), 
-						max(openingSeasonData$Jaar)
-				)-1
-		)
-		
-		openingstijd <- seq(openingstijdRange[1], openingstijdRange[2])
-		
-		types <- unique(openingSeasonData$Type)
-		types[types == ""] <- "all"
-		
-		lapply(types, function(type){
-					
-				message("Plot for type ", type, " in progress")
-					
-										
-			lapply(openingstijd, function(jaar){
-						
-						message("Plot for year ", jaar, " in progress")
-		
-				percentageYearlyShotAnimals(
-					data = plotData, 
-					openingstijdenData = openingSeasonData,
-					wildNaam = wildsoort, 
-					type = type,
-					jaar = jaar,
-					jaartallen = openingstijd
-				)
-		
-			}
-	
-			)
-			
-		})
-	
-})
+      
+      message("Plot for specie ", wildsoort, " in progress")
+      
+      plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
+      
+      openingSeasonData <- openingstijdenData[
+          openingstijdenData$Soort == wildsoort, ]
+      
+      openingstijdRange <- c(
+          max(
+              min(plotData$afschotjaar), 
+              min(openingSeasonData$Jaar)
+          ),
+          min(
+              max(plotData$afschotjaar), 
+              max(openingSeasonData$Jaar)
+          )-1
+      )
+      
+      openingstijd <- seq(openingstijdRange[1], openingstijdRange[2])
+      
+      types <- unique(openingSeasonData$Type)
+      types[types == ""] <- "all"
+      
+      lapply(types, function(type){
+            
+            message("Plot for type ", type, " in progress")
+            
+            
+            lapply(openingstijd, function(jaar){
+                  
+                  message("Plot for year ", jaar, " in progress")
+                  
+                  percentageYearlyShotAnimals(
+                      data = plotData, 
+                      openingstijdenData = openingSeasonData,
+                      wildNaam = wildsoort, 
+                      type = type,
+                      jaar = jaar,
+                      jaartallen = openingstijd
+                  )
+                  
+                }
+            
+            )
+            
+          })
+      
+    })
 
 
 
@@ -238,28 +238,28 @@ boxAgeWeight(data = wildEcoData, wildNaam = "wild zwijn",
 ## PLOT 9: Distribution of cheek length vs class ##
 
 res <- boxAgeGenderLowerJaw(data = reeEcoData, wildNaam = "Ree", 
-		jaartallen = unique(reeEcoData$afschotjaar))
+    jaartallen = unique(reeEcoData$afschotjaar))
 
 ## PLOT 10: bioindicators
 
 indicators <- c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos")
 
 tmp <- lapply(indicators, function(bioindicator){
-	message("Plot for ", bioindicator, " in progress")
-	pl <- plotBioindicator(
-		data = reeEcoData, 
+      message("Plot for ", bioindicator, " in progress")
+      pl <- plotBioindicator(
+          data = reeEcoData, 
 #		type = "Geitkits",	
-		wildNaam = "Ree", 
-		jaartallen = unique(reeEcoData$afschotjaar),
-		bioindicator = bioindicator,
-    sourceIndicator = c("inbo", "meldingsformulier", "both")[3]
-	)
+          wildNaam = "Ree", 
+          jaartallen = unique(reeEcoData$afschotjaar),
+          bioindicator = bioindicator,
+          sourceIndicator = c("inbo", "meldingsformulier", "both")[3]
+      )
 #	print(pl)
-})
+    })
 
 
 ## PLOT 11: Number of embryos (bio-indicator
-	
+
 pl <- countEmbryos(
     data = reeEcoData, 
     wildNaam = "Ree", 

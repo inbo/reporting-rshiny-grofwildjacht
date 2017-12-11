@@ -38,22 +38,22 @@ shinyServer(function(input, output, session) {
       output$print <- renderPrint({
             
             
-            results$showSpecies
+            input$showSpecies
             
           })
       
       
-      ## For which species should summaries be shown?
-      observeEvent(input$showSpecies1, results$showSpecies <- "Wild zwijn")
-      observeEvent(input$showSpecies2, results$showSpecies <- "Ree")
-      observeEvent(input$showSpecies3, results$showSpecies <- "Damhert")
-      observeEvent(input$showSpecies4, results$showSpecies <- "Edelhert")
+#      ## For which species should summaries be shown?
+#      observeEvent(input$showSpecies1, results$showSpecies <- "Wild zwijn")
+#      observeEvent(input$showSpecies2, results$showSpecies <- "Ree")
+#      observeEvent(input$showSpecies3, results$showSpecies <- "Damhert")
+#      observeEvent(input$showSpecies4, results$showSpecies <- "Edelhert")
       
       
       ## Create data upon user choices
       results$wildEcoData <- reactive({
             
-            ecoData[ecoData$wildsoort == results$showSpecies, ]
+            ecoData[ecoData$wildsoort == input$showSpecies, ]
             
           })
       
@@ -62,7 +62,7 @@ shinyServer(function(input, output, session) {
             
             req(geoData)
             
-            geoData[geoData$wildsoort == results$showSpecies, ]
+            geoData[geoData$wildsoort == input$showSpecies, ]
             
           })
       
@@ -78,7 +78,7 @@ shinyServer(function(input, output, session) {
             
             req(spatialData)
             
-            if (results$showSpecies == "Wild zwijn" & input$map_regionLevel == "provinces") {
+            if (input$showSpecies == "Wild zwijn" & input$map_regionLevel == "provinces") {
               
               spatialData$provincesVoeren
               
@@ -93,7 +93,7 @@ shinyServer(function(input, output, session) {
       
       results$openingstijdenData <- reactive({
             
-            openingstijdenData[openingstijdenData$Soort == results$showSpecies, ]
+            openingstijdenData[openingstijdenData$Soort == input$showSpecies, ]
             
           })
       
@@ -106,7 +106,7 @@ shinyServer(function(input, output, session) {
             # so retains the years when data and opening season specified
             # and doesn't retain the last year (because not full)
             
-            if (results$showSpecies %in% c("Ree", "Wild zwijn")) {
+            if (input$showSpecies %in% c("Ree", "Wild zwijn")) {
               
               openingstijd <- c(
                   max(
@@ -139,12 +139,12 @@ shinyServer(function(input, output, session) {
       ## User input for controlling the plots and create plotly
       # Table 1
       callModule(module = optionsModuleServer, id = "table1", 
-          data = results$wildEcoData,
+          data = results$afschotData,
           timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "table1",
           plotFunction = "tableProvince", 
-          data = results$wildEcoData, 
-          wildNaam = reactive(results$showSpecies),
+          data = results$afschotData, 
+          wildNaam = reactive(input$showSpecies),
           categorie = "leeftijd")
       
       
@@ -154,19 +154,19 @@ shinyServer(function(input, output, session) {
           timeRange = results$timeRange)
       # Table 3 - input
       callModule(module = optionsModuleServer, id = "table3", 
-          data = results$wildEcoData,
+          data = results$afschotData,
           timeRange = results$timeRange)
       
       
       observe({
             
-            if (results$showSpecies == "Ree") {
+            if (input$showSpecies == "Ree") {
               
               # Table 2 - output
               callModule(module = plotModuleServer, id = "table2",
                   plotFunction = "tableProvince", 
                   data = results$afschotData, 
-                  wildNaam = reactive(results$showSpecies),
+                  wildNaam = reactive(input$showSpecies),
                   categorie = "typeAantal")
               
               
@@ -175,7 +175,7 @@ shinyServer(function(input, output, session) {
                   plotFunction = "tableProvince", 
                   data = results$afschotData,
                   toekenningsData = reactive(toekenningsData), 
-                  wildNaam = reactive(results$showSpecies),
+                  wildNaam = reactive(input$showSpecies),
                   categorie = "typePercent")
               
             }
@@ -186,25 +186,25 @@ shinyServer(function(input, output, session) {
       # Plot 1
       callModule(module = optionsModuleServer, id = "plot1", 
           data = results$wildEcoData,
-          timeRange = reactive(if (results$showSpecies == "Edelhert")
+          timeRange = reactive(if (input$showSpecies == "Edelhert")
                     c(2008, max(results$timeRange())) else 
                     results$timeRange()))
       callModule(module = plotModuleServer, id = "plot1",
           plotFunction = "countYearProvince", 
           data = results$wildEcoData, 
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 2
       callModule(module = optionsModuleServer, id = "plot2", 
           data = results$wildEcoData,
-          timeRange = reactive(if (results$showSpecies == "Ree")
+          timeRange = reactive(if (input$showSpecies == "Ree")
                     c(2014, max(results$timeRange())) else 
                     results$timeRange()))
       callModule(module = plotModuleServer, id = "plot2",
           plotFunction = "countAgeCheek", 
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 3
@@ -214,7 +214,7 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot3",
           plotFunction = "countYearAge", 
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       # Plot 4
       results$types <- reactive({
@@ -241,7 +241,7 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot4",
           plotFunction = "percentageYearlyShotAnimals", 
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies),
+          wildNaam = reactive(input$showSpecies),
           openingstijdenData = results$openingstijdenData)
       
       
@@ -252,31 +252,31 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot5",
           plotFunction = "countAgeGender", 
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 6
       callModule(module = optionsModuleServer, id = "plot6", 
           data = results$wildEcoData,
-          timeRange = reactive(if (results$showSpecies == "Ree")
+          timeRange = reactive(if (input$showSpecies == "Ree")
                     c(2014, max(results$timeRange())) else 
                     results$timeRange()))
       callModule(module = plotModuleServer, id = "plot6",
           plotFunction = "boxAgeWeight", 
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 7
       callModule(module = optionsModuleServer, id = "plot7", 
           data = results$wildEcoData,
-          timeRange = reactive(if (results$showSpecies == "Ree")
+          timeRange = reactive(if (input$showSpecies == "Ree")
                     c(2014, max(results$timeRange())) else 
                     results$timeRange()))
       callModule(module = plotModuleServer, id = "plot7",
           plotFunction = "boxAgeGenderLowerJaw", 
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 8
@@ -301,7 +301,7 @@ shinyServer(function(input, output, session) {
           plotFunction = "plotBioindicator", 
           bioindicator = "onderkaaklengte",
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 9
@@ -315,7 +315,7 @@ shinyServer(function(input, output, session) {
           plotFunction = "plotBioindicator", 
           bioindicator = "ontweid_gewicht",
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 10
@@ -334,7 +334,7 @@ shinyServer(function(input, output, session) {
       callModule(module = plotModuleServer, id = "plot10",
           plotFunction = "countEmbryos",
           data = results$wildEcoData,
-          wildNaam = reactive(results$showSpecies))
+          wildNaam = reactive(input$showSpecies))
       
       
       
@@ -456,24 +456,32 @@ shinyServer(function(input, output, session) {
             summaryData2 <- plyr::count(df = allData, vars = "locatie", wt_var = "freq")
             
             # Create group variable
-#            summaryData2$group <- cut(x = summaryData2$freq, 
-#                breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
-#                labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
-            
-            ## Option (a)
-#            otherBreaks <- round(seq(0, max(summaryData2$freq), length.out = 5))
-#            otherBreaks <- otherBreaks[otherBreaks != 0]
-            ## Option (b)
-            otherBreaks <- quantile(summaryData2$freq, probs = seq(0, 1, by = 0.2))
-            otherBreaks <- unique(otherBreaks[otherBreaks != 0])
-            summaryData2$group <- cut(x = summaryData2$freq, 
-                breaks = c(-Inf, 0, otherBreaks),
-                labels = c("0", sapply(seq_along(otherBreaks), function(i) {
-                          if (i == 1 & any(summaryData2$freq == 0))
-                            paste0("1-", otherBreaks[i]) else if (i == 1)
-                            paste0("0-", otherBreaks[i]) else 
-                            paste0(otherBreaks[i-1]+1, "-", otherBreaks[i])
-                        })))
+            if (input$map_regionLevel %in% c("flanders", "provinces")) {
+              
+              otherBreaks <- sort(unique(summaryData2$freq))
+              
+              summaryData2$group <- cut(x = summaryData2$freq, 
+                  breaks = c(-Inf, otherBreaks),
+                  labels = otherBreaks) 
+              
+            } else {
+              
+              summaryData2$group <- cut(x = summaryData2$freq, 
+                  breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
+                  labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
+              
+#              otherBreaks <- quantile(summaryData2$freq, probs = seq(0, 1, by = 0.2))
+#              otherBreaks <- unique(otherBreaks[otherBreaks != 0])
+#              summaryData2$group <- cut(x = summaryData2$freq, 
+#                  breaks = c(-Inf, 0, otherBreaks),
+#                  labels = c("0", sapply(seq_along(otherBreaks), function(i) {
+#                            if (i == 1 & any(summaryData2$freq == 0))
+#                              paste0("1-", otherBreaks[i]) else if (i == 1)
+#                              paste0("0-", otherBreaks[i]) else 
+#                              paste0(otherBreaks[i-1]+1, "-", otherBreaks[i])
+#                          })))
+              
+            }
             
             return(summaryData2)
             
@@ -564,8 +572,6 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
-            withProgress(message = "Kaart laden...", value = 0.5, {                  
-                  
                   req(spatialData)
                   
                   validate(need(results$spatialData(), "Geen data beschikbaar"),
@@ -594,9 +600,7 @@ shinyServer(function(input, output, session) {
                           weight = 3,
                           opacity = provinceBounds$opacity
                       )
-                  
-                })
-            
+             
           })
       
       
@@ -719,7 +723,7 @@ shinyServer(function(input, output, session) {
       # Title for the map
       output$map_title <- renderUI({
             
-            h3(paste("Gerapporteerd aantal voor", tolower(results$showSpecies),
+            h3(paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
                     "in", input$map_year[1]))
             
             
@@ -789,7 +793,7 @@ shinyServer(function(input, output, session) {
       
       output$map_download <- downloadHandler(
           filename = function()
-            nameFile(species = results$showSpecies,
+            nameFile(species = input$showSpecies,
                 year = input$map_year[1], 
                 content = "kaart", fileExt = "png"),
           content = function(file) {
@@ -804,7 +808,7 @@ shinyServer(function(input, output, session) {
       
       output$map_downloadData <- downloadHandler(
           filename = function()
-            nameFile(species = results$showSpecies,
+            nameFile(species = input$showSpecies,
                 year = input$map_year[1], 
                 content = "kaartData", fileExt = "csv"),
           content = function(file) {
@@ -846,7 +850,7 @@ shinyServer(function(input, output, session) {
             allData$afschotjaar <- as.factor(allData$afschotjaar)
             
             
-            title <- paste("Gerapporteerd aantal voor", tolower(results$showSpecies),
+            title <- paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
                 ifelse(input$map_time[1] != input$map_time[2],
                     paste("van", input$map_time[1], "tot", input$map_time[2]),
                     paste("in", input$map_time[1])
@@ -891,7 +895,7 @@ shinyServer(function(input, output, session) {
                 need(input$map_region, "Gelieve regio('s) te selecteren"))
             
             
-            title <- paste("Gerapporteerd aantal voor", tolower(results$showSpecies),
+            title <- paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
                 ifelse(input$map_time[1] != input$map_time[2],
                     paste("van", input$map_time[1], "tot", input$map_time[2]),
                     paste("in", input$map_time[1])
@@ -918,273 +922,6 @@ shinyServer(function(input, output, session) {
             toPlot
             
           })
-      
-      
-      
-      
-      
-      
-      ## CONDITIONAL PANELS FOR UI ##
-      ## ------------------------- ##
-      
-      ## tableProvince for "leeftijd": wild zwijn and ree
-      output$showTableProvince <- renderUI({
-            
-            if (!results$showSpecies %in% c('Wild zwijn', 'Ree'))
-              return(NULL)
-            
-            
-            list(
-                actionLink(inputId = "linkTable1",
-                    label = h3("TABEL: Gerapporteerd afschot per regio en per leeftijdscategorie")),
-                conditionalPanel("input.linkTable1 % 2 == 1",
-                    
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
-                            tags$p("Het gerapporteerd aantal geschoten of dood gevonden dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren. Voor everzwijn werd de leeftijfscategorie bepaald op basis van de ingezamelde onderkaken. Voor ree is deze afkomstig van het meldingsformulier.")
-                        ),
-                        column(8, tableModuleUI(id = "table1"))
-                    
-                    ),
-                    tags$hr()
-                )
-            
-            )
-            
-          })
-      
-      
-      
-      ## tableProvince for "type": ree
-      output$showTableProvince2 <- renderUI({
-            
-            if (results$showSpecies != 'Ree')
-              return(NULL)
-            
-            
-            list(
-                
-                actionLink(inputId = "linkTable2",
-                    label = h3("TABEL: Gerapporteerd afschot per regio en per type")),
-                conditionalPanel("input.linkTable2 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
-                            tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
-                        ),
-                        column(8, tableModuleUI(id = "table2"))
-                    
-                    ),
-                    tags$hr()
-                ),
-                
-                actionLink(inputId = "linkTable3",
-                    label = h3("TABEL: Percentage gerealiseerd afschot per regio en per type")),
-                conditionalPanel("input.linkTable3 % 2 == 1",
-                    
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
-                            tags$p("Realisatiegraad per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
-                        ),
-                        column(8, tableModuleUI(id = "table3"))
-                    
-                    ),
-                    tags$hr()
-                )
-            )
-            
-          })
-      
-      
-      ## countAgeCheek & countYearAge & percentageYearlyShotAnimals
-      ## countAgeGender & boxAgeWeight
-      ## - Wild zwijn and Ree
-      output$showPlotsWild_Ree <- renderUI({
-            
-            if (!results$showSpecies %in% c('Wild zwijn', 'Ree'))
-              return(NULL)
-            
-            
-            list(
-                actionLink(inputId = "linkPlot2", label =
-                        h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulieren")),
-                conditionalPanel("input.linkPlot2 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE),
-                            tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaalt op basis van een ingezamelde onderkaak")
-                        ),
-                        column(8, plotModuleUI(id = "plot2"))
-                    
-                    ),
-                    tags$hr()
-                ),
-                
-                
-                actionLink(inputId = "linkPlot3",
-                    label = h3("FIGUUR: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
-                conditionalPanel("input.linkPlot3 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot3",
-                                showSummarizeBy = TRUE, showTime = TRUE,
-                                regionLevels = 1:2, exportData = TRUE),
-                            tags$p("Evolutie van de verdeling van het afschot over de verschillende leeftijdscategorieën doorheen de jaren op basis van de ingezamelde onderkaak."),
-                            conditionalPanel("input.showSpecies == 'Ree'",
-                                "Voor mannelijke reeën zijn de leeftijdscategorieën 'jongvolwassen' en 'volwassen' uitgesloten.")
-                        ),
-                        column(8, plotModuleUI(id = "plot3"))
-                    ),
-                    tags$hr()
-                ),
-                
-                
-                actionLink(inputId = "linkPlot4",
-                    label = h3("FIGUUR: Percentage jaarlijks afschot")),
-                conditionalPanel("input.linkPlot4 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot4",
-                                showTime = TRUE, showYear = TRUE,
-                                showType = TRUE, exportData = TRUE),
-                            tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
-                        ),
-                        column(8, plotModuleUI(id = "plot4"))
-                    
-                    ),
-                    tags$hr()
-                ),
-                
-                
-                actionLink(inputId = "linkPlot5",
-                    label = h3("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie")),
-                conditionalPanel("input.linkPlot5 % 2 == 1",
-                    
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
-                            tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. Voor everzwijn werd de leeftijdscategorie bepaald op basis van de ingezamelde onderkaak. Voor ree is dit de leeftijdscategorie vermeld op het meldingsformulier.")
-                        ),
-                        column(8, plotModuleUI(id = "plot5"))
-                    
-                    ),
-                    tags$hr()
-                ),
-                
-                
-                actionLink(inputId = "linkPlot6",
-                    label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
-                conditionalPanel("input.linkPlot6 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot6", showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
-                            tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode."),
-                            conditionalPanel("input.showSpecies == 'Ree'",
-                                "Voor ree: geen data beschikbaar voor 2014.")
-                        ),
-                        column(8, plotModuleUI(id = "plot6"))
-                    
-                    ),
-                    tags$hr()
-                )
-            
-            )
-            
-            
-          })
-      
-      
-      ## boxAgeGenderLowerJaw
-      ## - Ree
-      output$showPlotsRee <- renderUI({
-            
-            if (results$showSpecies != "Ree")
-              return(NULL)
-            
-            
-            list(
-                
-                actionLink(inputId = "linkPlot7",
-                    label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
-                conditionalPanel("input.linkPlot7 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot7", showTime = TRUE,
-                                regionLevels = 1:2, exportData = TRUE),
-                            tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode.")),
-                        column(8, plotModuleUI(id = "plot7"))
-                    
-                    ),
-                    tags$hr()
-                ),
-                
-                h3("Bio-indicatoren"),
-                
-                actionLink(inputId = "linkPlot8",
-                    label = h3("FIGUUR: Onderkaaklengte per jaar")),
-                conditionalPanel("input.linkPlot8 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE,
-                                regionLevels = 1:2, exportData = TRUE,
-                                showDataSource = TRUE),
-                            tags$p("Evolutie van de gemodelleerde onderkaaklengte (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types.")
-                        ),
-                        column(8, plotModuleUI(id = "plot8"))
-                    ),
-                    tags$hr()
-                ),
-                
-                actionLink(inputId = "linkPlot9", label = h3("FIGUUR: Gewicht per jaar")),
-                conditionalPanel("input.linkPlot9 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot9",
-                                showTime = TRUE, showType = TRUE,
-                                regionLevels = 1:2, exportData = TRUE),
-                            tags$p("Evolutie van de gemodelleerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types."),
-                            tags$p("Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur.")
-                        ),
-                        column(8, plotModuleUI(id = "plot9"))
-                    
-                    ),
-                    tags$hr()
-                ),
-                
-                actionLink(inputId = "linkPlot10",
-                    label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
-                ),
-                conditionalPanel("input.linkPlot10 % 2 == 1",
-                    fixedRow(
-                        
-                        column(4,
-                            optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
-                                regionLevels = 1:2, exportData = TRUE),
-                            tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2013 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
-                            tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
-                        column(8, plotModuleUI(id = "plot10"))
-                    
-                    )
-                )
-            
-            )
-            
-          })
-      
-      
       
       
     })

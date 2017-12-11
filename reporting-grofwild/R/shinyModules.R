@@ -168,12 +168,15 @@ optionsModuleServer <- function(input, output, session,
 #' @param id character, module id, unique name per plot
 #' @return ui object
 #' @author mvarewyck
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom plotly plotlyOutput
+#' @importFrom shiny NS
 #' @export
 plotModuleUI <- function(id) {
   
   ns <- NS(id)
   
-  plotlyOutput(ns("plot"), height = "600px")
+  withSpinner(plotlyOutput(ns("plot"), height = "600px"))
   
 }
 
@@ -182,12 +185,14 @@ plotModuleUI <- function(id) {
 #' @param id character, module id, unique name per plot
 #' @return ui object
 #' @author mvarewyck
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom shiny tableOutput NS
 #' @export
 tableModuleUI <- function(id) {
   
   ns <- NS(id)
   
-  tableOutput(ns("table"))
+  withSpinner(tableOutput(ns("table")))
   
 }
 

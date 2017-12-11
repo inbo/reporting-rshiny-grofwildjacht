@@ -73,7 +73,7 @@ percentageYearlyShotAnimals <- function(
     openingstijdenData <- openingstijdenData[openingstijdenData$Type %in% type, ]
   }
   
-  ## Now allow for multiple types
+  ## Not allow for multiple types
   if(length(unique(openingstijdenData$Type)) > 1)
     stop("Meerdere types in openingstijden data.")
   
@@ -131,7 +131,7 @@ percentageYearlyShotAnimals <- function(
 #openingSeasonHalfMonth <- allHalfMonth
 
 # format date as factor
-  inputDataFilter$afschot_datum_halfMonth <- factor(afschotDatumHalfMonth, levels = openingSeasonHalfMonth)
+  inputDataFilter$afschot_datum_halfMonth <- factor(afschotDatumHalfMonth, levels = allHalfMonth)
   
   ## compute statistics for plot
   
@@ -154,8 +154,8 @@ percentageYearlyShotAnimals <- function(
         )
       })
   
-  # extract mean percentage in selected year
-  dataPlot$meanYear <- mean(dataPlot$obsYear)
+  # extract mean percentage in selected year - during opening season
+  dataPlot$meanYear <- mean(dataPlot$obsYear[dataPlot$dateHalfMonth %in% openingSeasonHalfMonth])
   
   
   ## create plot

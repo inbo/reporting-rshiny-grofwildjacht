@@ -32,7 +32,7 @@
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 countYearProvince <- function(data, wildNaam = "", jaartallen = NULL, 
-    doodsoorzaak = c("afschot", "valwild", "verdelging ANB"), 
+    doodsoorzaak = c("afschot", "valwild"), 
     width = NULL, height = NULL) {
   
   

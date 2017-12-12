@@ -6,4 +6,4 @@ if [ -f reporting-grofwild.tar.gz ]; then
 fi
 tar -zcvf reporting-grofwild.tar.gz reporting-grofwild
 # Build the docker image
-sudo docker build -t openanalytics/wildapp .
+sudo docker build --no-cache -t openanalytics/wildapp .

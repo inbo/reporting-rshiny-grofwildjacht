@@ -269,3 +269,10 @@ pl <- countEmbryos(
 pl$plot
 head(pl$data)
 
+
+
+## PLOT 12: Percentage realised afschot
+percentageRealisedShotAnimals(data = reeEcoData, assignedData = toekenningsData,
+    wildNaam = "Ree", type = NULL, summarizeBy = "count")
+percentageRealisedShotAnimals(data = reeEcoData, assignedData = toekenningsData,
+    wildNaam = "Ree", type = NULL, summarizeBy = "percent")

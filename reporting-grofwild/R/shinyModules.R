@@ -13,8 +13,8 @@
 #' @param showType, boolean, whether to select a select input field with type
 #' @param regionLevels numeric vector, if not NULL, defines the choices for 
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes
-#' @param showSummarizeBy boolean, whether to show input field to choose between
-#' aantal of percentage
+#' @param summarizeBy character, choices to be shown as summary statistics
+#' (expect count or percent)
 #' @param exportData boolean, whether a download button for the data is shown
 #' @param showDataSource boolean, whether to show choices of data source to be 
 #' used for plotted bioindicator
@@ -22,7 +22,7 @@
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
-    regionLevels = NULL, showSummarizeBy = FALSE,
+    regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, showDataSource = FALSE) {
   
   ns <- NS(id)
@@ -31,10 +31,9 @@ optionsModuleUI <- function(id,
   tagList(
       
       wellPanel(
-          if (showSummarizeBy)
+          if (!is.null(summarizeBy))
             radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
-                choices = c("Aantal (alle data)" = "count", 
-                    "Percentage (enkel ingezamelde onderkaken)" = "percent")),
+                choices = summarizeBy),
 #          if (showLegend)
 #            selectInput(inputId = ns("legend"), "Legende",
 #                choices = c("<none>" = "none", 
@@ -236,6 +235,33 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
+  subToekenningsData <- reactive({
+        
+        if (is.null(toekenningsData))
+          return(NULL)
+        
+        Provincie <- NULL  # to prevent warnings with R CMD check
+        Jaar <- NULL  # to prevent warnings with R CMD check
+        subData <- toekenningsData()
+        
+        if (!is.null(input$regionLevel)) {
+          
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          
+          if (input$regionLevel == "provinces")
+            subData <- subset(subData, Provincie %in% input$region)
+          
+        }
+        
+        if (!is.null(input$time))
+           subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
+        
+        
+        return(subData)
+        
+      })
+  
+  
   argList <- reactive({
         
         req(nrow(subData()) > 0)
@@ -255,8 +281,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = input$type),
             if (!is.null(input$type) & !is.null(input$year))
               list(openingstijdenData = openingstijdenData()),
-            if (!is.null(toekenningsData))
-              list(assignedData = toekenningsData()),
+            if (!is.null(subToekenningsData()))
+              list(assignedData = subToekenningsData()),
             if (!is.null(categorie))
               list(categorie = categorie),
             if (!is.null(input$summarizeBy))

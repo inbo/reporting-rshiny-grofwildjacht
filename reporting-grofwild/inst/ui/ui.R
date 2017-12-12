@@ -226,6 +226,27 @@ shinyUI(
                               
                               ),
                               tags$hr()
+                          ),
+                          
+                          
+                          actionLink(inputId = "linkPlot4b",
+                              label = h3("FIGUUR: Percentage gerealiseerd afschot per jaar en per type")),
+                          conditionalPanel("input.linkPlot4b % 2 == 1",
+                              fixedRow(
+                                  
+                                  column(4,
+                                      optionsModuleUI(id = "plot4b",
+                                          summarizeBy = c("Aantal" = "count", 
+                                              "Percentage" = "percent"), 
+                                          showTime = TRUE,
+                                          showType = TRUE, regionLevels = 1:2,
+                                          exportData = TRUE),
+                                      tags$p("Evolutie van de realisatiegraad doorheen de jaren voor geselecteerde regio('s) en labeltype.")
+                                  ),
+                                  column(8, plotModuleUI(id = "plot4b"))
+                              
+                              ),
+                              tags$hr()
                           )
                       )
                       
@@ -278,7 +299,9 @@ shinyUI(
                                   
                                   column(4,
                                       optionsModuleUI(id = "plot3",
-                                          showSummarizeBy = TRUE, showTime = TRUE,
+                                          summarizeBy = c("Aantal (alle data)" = "count", 
+                                              "Percentage (enkel ingezamelde onderkaken)" = "percent"),
+                                          showTime = TRUE,
                                           regionLevels = 1:2, exportData = TRUE),
                                       tags$p("Evolutie van de verdeling van het afschot over de verschillende leeftijdscategorieën doorheen de jaren op basis van de ingezamelde onderkaak."),
                                       conditionalPanel("input.showSpecies == 'Ree'",

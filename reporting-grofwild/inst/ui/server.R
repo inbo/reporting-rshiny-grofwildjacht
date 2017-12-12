@@ -235,7 +235,6 @@ shinyServer(function(input, output, session) {
           timeRange = results$openingstijd,
           timeLabel = "Referentieperiode",
           types = results$types,
-          # TODO change to true? see GIT issue #32
           multipleTypes = FALSE)
       
       callModule(module = plotModuleServer, id = "plot4",
@@ -243,6 +242,20 @@ shinyServer(function(input, output, session) {
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies),
           openingstijdenData = results$openingstijdenData)
+      
+      
+      # Plot 4b
+      callModule(module = optionsModuleServer, id = "plot4b", 
+          data = results$wildEcoData,
+          timeRange = results$timeRange,
+          types = results$types,
+          multipleTypes = TRUE)
+      
+      callModule(module = plotModuleServer, id = "plot4b",
+          plotFunction = "percentageRealisedShotAnimals", 
+          data = results$wildEcoData,
+          toekenningsData = reactive(toekenningsData), 
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 5
@@ -572,35 +585,35 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
-                  req(spatialData)
-                  
-                  validate(need(results$spatialData(), "Geen data beschikbaar"),
-                      need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
-                  
-                  provinceBounds <- switch(input$map_regionLevel,
-                      "flanders" = list(opacity = 0), 
-                      "provinces" = list(opacity = 0),
-                      "communes" = list(color = "black", opacity = 0.8))            
-                  
-                  
-                  leaflet(results$spatialData()) %>%
-                      
-                      addPolygons(
-                          weight = 1, 
-                          color = "gray",
-                          fillColor = ~ results$map_colors(),
-                          fillOpacity = 0.8,
-                          layerId = results$spatialData()$NAAM,
-                          group = "region"
-                      ) %>%
-                      
-                      addPolylines(
-                          data = spatialData$provinces, 
-                          color = provinceBounds$color, 
-                          weight = 3,
-                          opacity = provinceBounds$opacity
-                      )
-             
+            req(spatialData)
+            
+            validate(need(results$spatialData(), "Geen data beschikbaar"),
+                need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
+            
+            provinceBounds <- switch(input$map_regionLevel,
+                "flanders" = list(opacity = 0), 
+                "provinces" = list(opacity = 0),
+                "communes" = list(color = "black", opacity = 0.8))            
+            
+            
+            leaflet(results$spatialData()) %>%
+                
+                addPolygons(
+                    weight = 1, 
+                    color = "gray",
+                    fillColor = ~ results$map_colors(),
+                    fillOpacity = 0.8,
+                    layerId = results$spatialData()$NAAM,
+                    group = "region"
+                ) %>%
+                
+                addPolylines(
+                    data = spatialData$provinces, 
+                    color = provinceBounds$color, 
+                    weight = 3,
+                    opacity = provinceBounds$opacity
+                )
+            
           })
       
       

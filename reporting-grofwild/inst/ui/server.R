@@ -479,9 +479,13 @@ shinyServer(function(input, output, session) {
               
             } else {
               
-              summaryData2$group <- cut(x = summaryData2$freq, 
-                  breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
-                  labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
+              if (input$showSpecies %in% c("Wild zwijn", "Ree"))
+                summaryData2$group <- cut(x = summaryData2$freq, 
+                    breaks = c(-Inf, 0, 10, 20, 40, 80, Inf),
+                    labels = c("0", "1-10", "11-20", "21-40", "41-80", ">80")) else
+                summaryData2$group <- cut(x = summaryData2$freq, 
+                    breaks = c(-Inf, 0, 5, 10, 15, 20, Inf),
+                    labels = c("0", "1-5", "6-10", "11-15", "16-20", ">20"))
               
 #              otherBreaks <- quantile(summaryData2$freq, probs = seq(0, 1, by = 0.2))
 #              otherBreaks <- unique(otherBreaks[otherBreaks != 0])

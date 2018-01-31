@@ -6,7 +6,8 @@
 \usage{
 plotBioindicator(data, wildNaam = "", type = NULL, jaartallen = NULL,
   regio = "", bioindicator = c("onderkaaklengte", "ontweid_gewicht",
-  "aantal_embryos"), width = NULL, height = NULL)
+  "aantal_embryos"), sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
@@ -29,6 +30,9 @@ to be shown in the plot title}
 \item{bioindicator}{string with column of \code{data}
 with bioindicator, either 'onderkaaklengte',
 'ontweid_gewicht', or 'aantal_embryos'}
+
+\item{sourceIndicator}{character, defines the data source to be used for
+bioindicator 'onderkaaklengte'}
 
 \item{width}{plot width (optional)}
 

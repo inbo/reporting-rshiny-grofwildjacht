@@ -6,7 +6,7 @@
 \usage{
 optionsModuleUI(id, showLegend = FALSE, showTime = FALSE,
   showYear = FALSE, showType = FALSE, regionLevels = NULL,
-  showSummarizeBy = FALSE, exportData = FALSE)
+  summarizeBy = NULL, exportData = FALSE, showDataSource = FALSE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
@@ -22,10 +22,13 @@ optionsModuleUI(id, showLegend = FALSE, showTime = FALSE,
 \item{regionLevels}{numeric vector, if not NULL, defines the choices for 
 region levels: 1 = flanders, 2 = provinces, 3 = communes}
 
-\item{showSummarizeBy}{boolean, whether to show input field to choose between
-aantal of percentage}
+\item{summarizeBy}{character, choices to be shown as summary statistics
+(expect count or percent)}
 
 \item{exportData}{boolean, whether a download button for the data is shown}
+
+\item{showDataSource}{boolean, whether to show choices of data source to be 
+used for plotted bioindicator}
 }
 \value{
 ui object (tagList)

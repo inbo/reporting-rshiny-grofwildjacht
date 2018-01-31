@@ -45,6 +45,10 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   # Remove some categories
   plotData <- plotData[with(plotData, !is.na(jager) & jager != "Onbekend" &
               !is.na(kaak) & kaak != "Niet ingezameld"), ]
+  
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
+  
   percentCollected <- nrow(plotData)/nRecords
   
   # Define names and ordering of factor levels
@@ -104,6 +108,10 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
           y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
 	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"]))
   
 }

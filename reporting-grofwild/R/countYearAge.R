@@ -38,8 +38,9 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   # Select data
   plotData <- data[data$afschotjaar %in% jaartallen &
-          data$doodsoorzaak %in% doodsoorzaak, c("afschotjaar", "Leeftijdscategorie_onderkaak")]
-  names(plotData) <- c("jaar", "kaak")
+          data$doodsoorzaak %in% doodsoorzaak, c("afschotjaar", "Leeftijdscategorie_onderkaak", 
+          "geslacht.MF")]
+  names(plotData) <- c("jaar", "kaak", "geslacht")
   
   # Percentage collected
   nRecords <- nrow(plotData)
@@ -55,8 +56,15 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   } else {  # ree
     
     newLevelsKaak <- c("Kits", "Jongvolwassen", "Volwassen", "Niet ingezameld")
+    # Exclude categories 'jongvolwassen' and 'volwassen' for all animals labelled 'mannelijk' 
+    # see github issue no. 31
+    geslacht <- NULL  # to prevent warnings with R CMD check
+    plotData <- subset(plotData, 
+        subset = !(geslacht %in% "Mannelijk" & kaak %in% c("Jongvolwassen", "Volwassen")))
     
   }
+  
+  plotData$geslacht <- NULL
   
   # Summarize data per year and age category
   summaryData <- count(df = plotData, vars = names(plotData))
@@ -106,8 +114,8 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
         "<br>", round(summaryData$percent), "%")
     
   }
-	
-
+  
+  
   
   colors <- c(inbo.2015.colours(3), inbo.lichtgrijs)
   names(colors) <- newLevelsKaak
@@ -123,34 +131,49 @@ countYearAge <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   
   # Create plot
-  toPlot <- plot_ly(data = summaryData, x = ~jaar, 
-          y = if (summarizeBy == "count") ~freq else ~percent, 
-          color = ~kaak, text = ~text,  hoverinfo = "text+name",
-          colors = colors, 
-          type = "scatter", mode = "lines+markers", 
-          width = width, height = height) %>%
-      layout(title = title,
-          xaxis = list(title = "Jaar"), 
-          yaxis = if (summarizeBy == "count") 
-                list(title = "Aantal") else 
-                list(title = "Percentage", range = c(0, 100)),
-          margin = list(b = 120, t = 100))     
+  toPlot <- switch(summarizeBy,
+      count = plot_ly(data = summaryData, x = ~jaar, 
+              y = ~freq, color = ~kaak, text = ~text, hoverinfo = "text+name",
+              colors = colors, type = "bar",
+              width = width, height = height) %>%
+          layout(title = title,
+              xaxis = list(title = "Jaar"), 
+              yaxis = list(title = "Aantal"),
+              barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
+              margin = list(b = 120, t = 100),
+              annotations = list(x = totalCount$jaar, 
+                  y = totalCount$totaal, 
+                  text = paste(if (length(unique(totalCount$jaar)) == 1) "totaal:" else "", 
+                      totalCount$totaal),
+                  xanchor = 'center', yanchor = 'bottom',
+                  showarrow = FALSE)),
+      percent = plot_ly(data = summaryData, x = ~jaar, 
+              y = ~percent, color = ~kaak, text = ~text, hoverinfo = "text+name",
+              colors = colors, type = "scatter", mode = "lines+markers",
+              width = width, height = height) %>%
+          layout(title = title,
+              xaxis = list(title = "Jaar"), 
+              yaxis = list(title = "Percentage", range = c(0, 100)),
+              margin = list(b = 120, t = 100)) %>% 
+          add_annotations(text = paste0(round(percentCollected, 2)*100, 
+                  "% ingezamelde onderkaken van totaal (", nCollected, "/", nRecords, ")"),
+              xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+              y = -0.3, yanchor = "bottom", showarrow = FALSE)
+  )
   
   
-  if (summarizeBy == "percent")
-    toPlot <- toPlot %>% add_annotations(text = paste0(round(percentCollected, 2)*100, 
-            "% ingezamelde onderkaken van totaal (", nCollected, "/", nRecords, ")"),
-        xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-        y = -0.3, yanchor = "bottom", showarrow = FALSE)
+  
+  colsFinal <- 	colnames(summaryData)[
+      !colnames(summaryData) %in% c("text", 
+          if(summarizeBy == "count")	"percent"	else	c("freq", "totaal")
+      )
+  ]
+  
+  # To prevent warnings in UI
+  toPlot$elementId <- NULL
   
   
-	colsFinal <- 	colnames(summaryData)[
-		!colnames(summaryData) %in% c("text", 
-			if(summarizeBy == "count")	"percent"	else	c("freq", "totaal")
-		)
-	]
-	
-	return(list(plot = toPlot, data = summaryData[, colsFinal]))
+  return(list(plot = toPlot, data = summaryData[, colsFinal]))
   
 }
 

@@ -35,8 +35,9 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   
   # Select data
   plotData <- data[data$afschotjaar %in% jaartallen, 
-      c("ontweid_gewicht", "Leeftijdscategorie_onderkaak", "leeftijd_maanden", "geslacht.MF")]
-  names(plotData) <- c("gewicht", "leeftijd", "maanden", "geslacht")
+      c("ontweid_gewicht", "Leeftijdscategorie_onderkaak", "leeftijd_maanden", "geslacht.MF",
+          "provincie")]
+  names(plotData) <- c("gewicht", "leeftijd", "maanden", "geslacht", "provincie")
   
   
   # Percentage collected
@@ -48,8 +49,11 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   gewicht <- NULL
   geslacht <- NULL
   plotData <- subset(plotData, !is.na(leeftijd) & leeftijd != "Niet ingezameld" &
-      !is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
+          !is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
   plotData$geslacht <- factor(plotData$geslacht)
+  
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
   
   # Define names and ordering of factor levels
   if ("Frisling" %in% plotData$leeftijd) {  # wild zwijn
@@ -94,19 +98,23 @@ boxAgeWeight <- function(data, wildNaam = "", jaartallen = NULL, regio = "",
   # Create plot
   # Prevent Warning: 'layout' objects don't have these attributes: 'boxmode'
   suppressWarnings(pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~gewicht, 
-          color = ~geslacht, colors = colors, type = "box", 
-          width = width, height = height) %>%
-      layout(title = title,
-          xaxis = list(title = "Categorie"), 
-          yaxis = list(title = "Leeggewicht (kg)"),
-          margin = list(t = 100),
-          boxmode = "group",
-          annotations = list(x = totalCounts$index, 
-              y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
-              xref = "paper", text = totalCounts$freq, xanchor = 'center', 
-              yanchor = 'bottom', showarrow = FALSE)))  
-
-	return(list(plot = pl, data = plotData))
-
+              color = ~geslacht, colors = colors, type = "box", 
+              width = width, height = height) %>%
+          layout(title = title,
+              xaxis = list(title = "Categorie"), 
+              yaxis = list(title = "Leeggewicht (kg)"),
+              margin = list(t = 100),
+              boxmode = "group",
+              annotations = list(x = totalCounts$index, 
+                  y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
+                  xref = "paper", text = totalCounts$freq, xanchor = 'center', 
+                  yanchor = 'bottom', showarrow = FALSE)))  
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
+  return(list(plot = pl, data = plotData))
+  
   
 }

@@ -19,7 +19,7 @@ RUN apt-get install -y libgeos-dev                 # for rgeos
 RUN apt-get install -y libgdal1-dev libproj-dev    # for rgdal
 
 # install imports of reporting-grofwild app that are not on cloud
-RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders'), repos = 'https://cloud.r-project.org/')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 
 # install depends of reporting-grofwild app

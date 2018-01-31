@@ -3,24 +3,7 @@
 # Author: mvarewyck
 ###############################################################################
 
-library(reportingGrofwild)
 
-
-library(leaflet)
-library(plotly)
-
-
-`%then%` <- shiny:::`%OR%`
-
-
-# Initialize data (prevent errors)
-openingstijdenData <- loadOpeningstijdenData()
-toekenningsData <- loadToekenningen()
-ecoData <- loadRawData(type = "eco")
-
-dataDir <- system.file("extdata", package = "reportingGrofwild")
-# Load object called spatialData
-load(file = file.path(dataDir, "spatialData.RData"))
 
 # Center coordinates of Belgium, to crop the amount of gray in image
 flandersRange <- list(
@@ -28,31 +11,10 @@ flandersRange <- list(
     lat = 51.1
 )
 
-geoData <- NULL
+
 
 
 shinyServer(function(input, output, session) {
-      
-      
-      observe({
-            
-#            ## Load Geo Data
-#            withProgress(message = "Data Laden...", value = 0, {
-#                  
-#                  spatialData <<- loadShapeData(showProgress = TRUE)
-#                  
-#                })
-            
-            ## Load Raw Data
-            withProgress(message = "Data Laden...", value = 0, {
-                  
-                  incProgress(1/2, detail = "Gegevens")
-                  geoData <<- loadRawData(type = "geo", shapeData = spatialData)
-                  
-                })
-            
-          })
-      
       
       
       # For debugging
@@ -73,9 +35,20 @@ shinyServer(function(input, output, session) {
             
           })
       
+      output$print <- renderPrint({
+            
+            
+            input$showSpecies
+            
+          })
       
       
-      results <- reactiveValues()
+#      ## For which species should summaries be shown?
+#      observeEvent(input$showSpecies1, results$showSpecies <- "Wild zwijn")
+#      observeEvent(input$showSpecies2, results$showSpecies <- "Ree")
+#      observeEvent(input$showSpecies3, results$showSpecies <- "Damhert")
+#      observeEvent(input$showSpecies4, results$showSpecies <- "Edelhert")
+      
       
       ## Create data upon user choices
       results$wildEcoData <- reactive({
@@ -166,11 +139,11 @@ shinyServer(function(input, output, session) {
       ## User input for controlling the plots and create plotly
       # Table 1
       callModule(module = optionsModuleServer, id = "table1", 
-          data = results$wildEcoData,
+          data = results$afschotData,
           timeRange = results$timeRange)
       callModule(module = plotModuleServer, id = "table1",
           plotFunction = "tableProvince", 
-          data = results$wildEcoData, 
+          data = results$afschotData, 
           wildNaam = reactive(input$showSpecies),
           categorie = "leeftijd")
       
@@ -181,7 +154,7 @@ shinyServer(function(input, output, session) {
           timeRange = results$timeRange)
       # Table 3 - input
       callModule(module = optionsModuleServer, id = "table3", 
-          data = results$wildEcoData,
+          data = results$afschotData,
           timeRange = results$timeRange)
       
       
@@ -213,7 +186,9 @@ shinyServer(function(input, output, session) {
       # Plot 1
       callModule(module = optionsModuleServer, id = "plot1", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Edelhert")
+                    c(2008, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot1",
           plotFunction = "countYearProvince", 
           data = results$wildEcoData, 
@@ -223,7 +198,9 @@ shinyServer(function(input, output, session) {
       # Plot 2
       callModule(module = optionsModuleServer, id = "plot2", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Ree")
+                    c(2014, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot2",
           plotFunction = "countAgeCheek", 
           data = results$wildEcoData,
@@ -257,13 +234,28 @@ shinyServer(function(input, output, session) {
           data = results$wildEcoData,
           timeRange = results$openingstijd,
           timeLabel = "Referentieperiode",
-          types = results$types)
+          types = results$types,
+          multipleTypes = FALSE)
       
       callModule(module = plotModuleServer, id = "plot4",
           plotFunction = "percentageYearlyShotAnimals", 
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies),
           openingstijdenData = results$openingstijdenData)
+      
+      
+      # Plot 4b
+      callModule(module = optionsModuleServer, id = "plot4b", 
+          data = results$wildEcoData,
+          timeRange = results$timeRange,
+          types = results$types,
+          multipleTypes = TRUE)
+      
+      callModule(module = plotModuleServer, id = "plot4b",
+          plotFunction = "percentageRealisedShotAnimals", 
+          data = results$wildEcoData,
+          toekenningsData = reactive(toekenningsData), 
+          wildNaam = reactive(input$showSpecies))
       
       
       # Plot 5
@@ -279,7 +271,9 @@ shinyServer(function(input, output, session) {
       # Plot 6
       callModule(module = optionsModuleServer, id = "plot6", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Ree")
+                    c(2014, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot6",
           plotFunction = "boxAgeWeight", 
           data = results$wildEcoData,
@@ -289,7 +283,9 @@ shinyServer(function(input, output, session) {
       # Plot 7
       callModule(module = optionsModuleServer, id = "plot7", 
           data = results$wildEcoData,
-          timeRange = results$timeRange)
+          timeRange = reactive(if (input$showSpecies == "Ree")
+                    c(2014, max(results$timeRange())) else 
+                    results$timeRange()))
       callModule(module = plotModuleServer, id = "plot7",
           plotFunction = "boxAgeGenderLowerJaw", 
           data = results$wildEcoData,
@@ -311,7 +307,7 @@ shinyServer(function(input, output, session) {
       callModule(module = optionsModuleServer, id = "plot8", 
           data = results$wildEcoData,
           timeRange = results$timeRange,
-          types = results$typesGender,
+          types = reactive(c("Geitkits", "Bokkits")),
           typesDefault = results$typesDefaultGender,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot8",
@@ -349,8 +345,7 @@ shinyServer(function(input, output, session) {
           types = results$typesFemale,
           multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "plot10",
-          plotFunction = "plotBioindicator", 
-          bioindicator =  "aantal_embryos",
+          plotFunction = "countEmbryos",
           data = results$wildEcoData,
           wildNaam = reactive(input$showSpecies))
       
@@ -474,9 +469,36 @@ shinyServer(function(input, output, session) {
             summaryData2 <- plyr::count(df = allData, vars = "locatie", wt_var = "freq")
             
             # Create group variable
-            summaryData2$group <- cut(x = summaryData2$freq, 
-                breaks = c(-Inf, 0, 10, 20, 40, 70, Inf),
-                labels = c("0", "1-10", "11-20", "21-40", "41-70", ">70"))
+            if (input$map_regionLevel %in% c("flanders", "provinces")) {
+              
+              otherBreaks <- sort(unique(summaryData2$freq))
+              
+              summaryData2$group <- cut(x = summaryData2$freq, 
+                  breaks = c(-Inf, otherBreaks),
+                  labels = otherBreaks) 
+              
+            } else {
+              
+              if (input$showSpecies %in% c("Wild zwijn", "Ree"))
+                summaryData2$group <- cut(x = summaryData2$freq, 
+                    breaks = c(-Inf, 0, 10, 20, 40, 80, Inf),
+                    labels = c("0", "1-10", "11-20", "21-40", "41-80", ">80")) else
+                summaryData2$group <- cut(x = summaryData2$freq, 
+                    breaks = c(-Inf, 0, 5, 10, 15, 20, Inf),
+                    labels = c("0", "1-5", "6-10", "11-15", "16-20", ">20"))
+              
+#              otherBreaks <- quantile(summaryData2$freq, probs = seq(0, 1, by = 0.2))
+#              otherBreaks <- unique(otherBreaks[otherBreaks != 0])
+#              summaryData2$group <- cut(x = summaryData2$freq, 
+#                  breaks = c(-Inf, 0, otherBreaks),
+#                  labels = c("0", sapply(seq_along(otherBreaks), function(i) {
+#                            if (i == 1 & any(summaryData2$freq == 0))
+#                              paste0("1-", otherBreaks[i]) else if (i == 1)
+#                              paste0("0-", otherBreaks[i]) else 
+#                              paste0(otherBreaks[i-1]+1, "-", otherBreaks[i])
+#                          })))
+              
+            }
             
             return(summaryData2)
             
@@ -567,41 +589,34 @@ shinyServer(function(input, output, session) {
       # Send map to the UI
       output$map_spacePlot <- renderLeaflet({
             
-            withProgress(message = "Kaart laden...", value = 0.5, {                  
-                  
-                  req(spatialData)
-                  
-                  validate(need(results$spatialData(), "Geen data beschikbaar"),
-                      need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
-                  
-                  provinceBounds <- switch(input$map_regionLevel,
-                      "flanders" = list(opacity = 0), 
-                      "provinces" = list(opacity = 0),
-                      "communes" = list(color = "black", opacity = 0.8))            
-                  
-                  
-                  leaflet(results$spatialData()) %>%
-                      
-                      setView(lng = flandersRange$lng, lat = flandersRange$lat,
-                          zoom = 8.5) %>%
-                      
-                      addPolygons(
-                          weight = 1, 
-                          color = "gray",
-                          fillColor = ~ results$map_colors(),
-                          fillOpacity = 0.8,
-                          layerId = results$spatialData()$NAAM,
-                          group = "region"
-                      ) %>%
-                      
-                      addPolylines(
-                          data = spatialData$provinces, 
-                          color = provinceBounds$color, 
-                          weight = 3,
-                          opacity = provinceBounds$opacity
-                      )
-                  
-                })
+            req(spatialData)
+            
+            validate(need(results$spatialData(), "Geen data beschikbaar"),
+                need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
+            
+            provinceBounds <- switch(input$map_regionLevel,
+                "flanders" = list(opacity = 0), 
+                "provinces" = list(opacity = 0),
+                "communes" = list(color = "black", opacity = 0.8))            
+            
+            
+            leaflet(results$spatialData()) %>%
+                
+                addPolygons(
+                    weight = 1, 
+                    color = "gray",
+                    fillColor = ~ results$map_colors(),
+                    fillOpacity = 0.8,
+                    layerId = results$spatialData()$NAAM,
+                    group = "region"
+                ) %>%
+                
+                addPolylines(
+                    data = spatialData$provinces, 
+                    color = provinceBounds$color, 
+                    weight = 3,
+                    opacity = provinceBounds$opacity
+                )
             
           })
       
@@ -725,7 +740,7 @@ shinyServer(function(input, output, session) {
       # Title for the map
       output$map_title <- renderUI({
             
-            h4(paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
+            h3(paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
                     "in", input$map_year[1]))
             
             
@@ -749,12 +764,6 @@ shinyServer(function(input, output, session) {
                 setView(lng = flandersRange$lng, lat = flandersRange$lat,
                     zoom = 8.5)
             
-            if (input$map_globe %% 2 == 1) {
-              
-              newMap <- addProviderTiles(newMap, "Hydda.Full")
-              
-            } 
-            
             if (input$map_legend != "none") { 
               
               newMap <- addLegend(newMap,
@@ -762,7 +771,7 @@ shinyServer(function(input, output, session) {
                   pal = palette, 
                   values = valuesPalette,
                   opacity = 0.8,
-                  title = "Legend",
+                  title = "Legende",
                   layerId = "legend"
               )
               
@@ -787,6 +796,12 @@ shinyServer(function(input, output, session) {
                   group = "provinceLines")
               
             }
+            
+            if (input$map_globe %% 2 == 1) {
+              
+              newMap <- addProviderTiles(newMap, "Hydda.Full")
+              
+            } 
             
             newMap
             
@@ -860,15 +875,20 @@ shinyServer(function(input, output, session) {
             )
             
             ## Create plot
-            plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
+            toPlot <- plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
                     color = ~locatie, hoverinfo = "x+y+name",
                     type = "scatter", mode = "lines+markers") %>%
                 layout(title = title,
                     xaxis = list(title = "Jaar"), 
                     yaxis = list(title = "Aantal"),
                     showlegend = TRUE,
-                    margin = list(b = 80, t = 100))     
+                    margin = list(b = 80, t = 100))
             
+            # To prevent warnings in UI
+            toPlot$elementId <- NULL
+            
+            
+            toPlot
             
           })
       
@@ -882,7 +902,7 @@ shinyServer(function(input, output, session) {
                 "provinces" = "Provincie",
                 "communes" = "Gemeente")
             
-            h4("Regio-schaal:", regionLevel)
+            h3("Regio-schaal:", regionLevel)
             
           })
       
@@ -903,7 +923,7 @@ shinyServer(function(input, output, session) {
             
             
             # Create plot
-            plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
+            toPlot <- plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
                     color = ~locatie, hoverinfo = "x+y+name",
                     type = "scatter", mode = "lines+markers") %>%
                 layout(title = title,
@@ -912,79 +932,13 @@ shinyServer(function(input, output, session) {
                     showlegend = TRUE,
                     margin = list(b = 80, t = 100))     
             
+            # To prevent warnings in UI
+            toPlot$elementId <- NULL
+            
+            
+            toPlot
             
           })
-      
-      
-      
-#      # export the results as an html report
-#      output$exportResults <- downloadHandler(
-#          
-#          filename = 'grofWild_results.html',
-#          
-#          content = function(file) {
-#            
-#            # extract parameters
-#            params <- list(
-#                
-#                # input parameters
-#                spatialLevel = input$spatialLevel,
-#                specie = input$showSpecies,
-#                times = input$showTime,
-#                regions = input$showRegion,
-#                
-#                # map
-#                map = results$finalMap(),
-#                
-#                # profile plot
-#                interactiveTime = results$interactiveTime()
-#            
-#            )
-#            
-      ##			message("params: ", str(params))
-#            
-#            # get path template report
-#            pathReport <- grofWild::getPathReport()
-#            pathCss <- grofWild::getPathCss()
-#            
-#            # get report name
-#            reportName <- basename(pathReport)
-#            
-#            # create temporary files in temp
-#            tmpDir <- tempdir()
-#            dir.create(tmpDir, recursive = TRUE)
-      ##			message("File", pathReport, "copied to", tmpDir)
-#            
-#            # copy start template in working directory
-#            file.copy(from = pathReport, to = tmpDir, overwrite = TRUE)
-#            file.copy(from = pathCss, to = tmpDir, overwrite = TRUE)
-      ##            
-#            # run report
-#            library(rmarkdown)
-#            potentialErrorMessage <- try(
-#                res <- rmarkdown::render(
-#                    file.path(tmpDir, reportName), params = params
-#                )
-#                , silent = TRUE)
-#            
-#            # print message
-#            if(inherits(potentialErrorMessage, "try-error"))
-#              message("Error during exporting results:", potentialErrorMessage)
-#            
-#            # return the report file
-#            pathHtmlReport <- file.path(tmpDir, sub("Rmd", "html", reportName))
-#            file.copy(pathHtmlReport, file)
-#            
-#            message("The html report is available at:", pathHtmlReport)
-#            
-#            # clean directory
-      ##			unlink(tmpDir)
-#            
-#          }, 
-#          
-#          contentType = "text/html"
-#      
-#      )
       
       
     })

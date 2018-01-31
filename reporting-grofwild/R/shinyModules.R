@@ -13,15 +13,17 @@
 #' @param showType, boolean, whether to select a select input field with type
 #' @param regionLevels numeric vector, if not NULL, defines the choices for 
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes
-#' @param showSummarizeBy boolean, whether to show input field to choose between
-#' aantal of percentage
+#' @param summarizeBy character, choices to be shown as summary statistics
+#' (expect count or percent)
 #' @param exportData boolean, whether a download button for the data is shown
+#' @param showDataSource boolean, whether to show choices of data source to be 
+#' used for plotted bioindicator
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
-    regionLevels = NULL, showSummarizeBy = FALSE,
-    exportData = FALSE) {
+    regionLevels = NULL, summarizeBy = NULL,
+    exportData = FALSE, showDataSource = FALSE) {
   
   ns <- NS(id)
   
@@ -29,10 +31,9 @@ optionsModuleUI <- function(id,
   tagList(
       
       wellPanel(
-          if (showSummarizeBy)
+          if (!is.null(summarizeBy))
             radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
-                choices = c("Aantal (alle data)" = "count", 
-                    "Percentage (subset van ingezamelde onderkaken)" = "percent")),
+                choices = summarizeBy),
 #          if (showLegend)
 #            selectInput(inputId = ns("legend"), "Legende",
 #                choices = c("<none>" = "none", 
@@ -54,6 +55,10 @@ optionsModuleUI <- function(id,
                             "Fusiegemeenten" = "communes")[regionLevels])),
                 column(8, uiOutput(ns("region")))
             ),
+          if (showDataSource)
+            selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
+                choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
+                    "INBO en meldingsformulier" = "both")),
           if(exportData)
             downloadButton(ns("dataDownload"), "Download data")
       
@@ -79,7 +84,7 @@ optionsModuleUI <- function(id,
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, typesDefault = types, 
-    timeRange = NULL, timeLabel = "Periode",
+    timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE) {
   
   ns <- session$ns
@@ -88,7 +93,9 @@ optionsModuleServer <- function(input, output, session,
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
             value = timeRange(),
-            min = min(timeRange()),
+            min = if (!is.null(input$sourceIndicator)) {
+                  if (input$sourceIndicator == "inbo") 2014 else min(timeRange())
+                } else {min(timeRange())},
             max = max(timeRange()),
             step = 1,
             sep = "")
@@ -160,12 +167,15 @@ optionsModuleServer <- function(input, output, session,
 #' @param id character, module id, unique name per plot
 #' @return ui object
 #' @author mvarewyck
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom plotly plotlyOutput
+#' @importFrom shiny NS
 #' @export
 plotModuleUI <- function(id) {
   
   ns <- NS(id)
   
-  plotlyOutput(ns("plot"), height = "600px")
+  withSpinner(plotlyOutput(ns("plot"), height = "600px"))
   
 }
 
@@ -174,12 +184,14 @@ plotModuleUI <- function(id) {
 #' @param id character, module id, unique name per plot
 #' @return ui object
 #' @author mvarewyck
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom shiny tableOutput NS
 #' @export
 tableModuleUI <- function(id) {
   
   ns <- NS(id)
   
-  tableOutput(ns("table"))
+  withSpinner(tableOutput(ns("table")))
   
 }
 
@@ -194,10 +206,10 @@ tableModuleUI <- function(id) {
 #' @param toekenningsData data with toekenningen, optional
 #' @param wildNaam character, defines the species name for y-label in plot
 #' @param categorie character, defines which type of table should be made
-#' @param bioindicator corresponding parameter to the \link{plotBioindicator} function
+#' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
-#' @importFrom utils write.csv
+#' @importFrom utils write.table
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL, wildNaam, 
@@ -216,6 +228,33 @@ plotModuleServer <- function(input, output, session, plotFunction,
             subData <- subset(subData, provincie %in% input$region)
           
         }
+        
+        
+        return(subData)
+        
+      })
+  
+  
+  subToekenningsData <- reactive({
+        
+        if (is.null(toekenningsData))
+          return(NULL)
+        
+        Provincie <- NULL  # to prevent warnings with R CMD check
+        Jaar <- NULL  # to prevent warnings with R CMD check
+        subData <- toekenningsData()
+        
+        if (!is.null(input$regionLevel)) {
+          
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          
+          if (input$regionLevel == "provinces")
+            subData <- subset(subData, Provincie %in% input$region)
+          
+        }
+        
+        if (!is.null(input$time))
+           subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
         
         
         return(subData)
@@ -242,14 +281,16 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = input$type),
             if (!is.null(input$type) & !is.null(input$year))
               list(openingstijdenData = openingstijdenData()),
-            if (!is.null(toekenningsData))
-              list(assignedData = toekenningsData()),
+            if (!is.null(subToekenningsData()))
+              list(assignedData = subToekenningsData()),
             if (!is.null(categorie))
               list(categorie = categorie),
             if (!is.null(input$summarizeBy))
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))
-              list(bioindicator = bioindicator)
+              list(bioindicator = bioindicator),
+            if(!is.null(input$sourceIndicator))
+              list(sourceIndicator = input$sourceIndicator)
         )
         
         

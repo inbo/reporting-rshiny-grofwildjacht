@@ -35,8 +35,11 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
     jaartallen <- unique(data$afschotjaar)
   
   # Select data
-  plotData <- data[data$afschotjaar %in% jaartallen, 
-      c("geslacht.MF", "leeftijdscategorie_MF")]
+  if (wildNaam == "Wild zwijn")
+    plotData <- data[data$afschotjaar %in% jaartallen, 
+        c("geslacht.MF", "Leeftijdscategorie_onderkaak")] else
+    plotData <- data[data$afschotjaar %in% jaartallen, 
+        c("geslacht.MF", "leeftijdscategorie_MF")]
   names(plotData) <- c("geslacht", "leeftijd")
   
   # Percentage collected
@@ -47,7 +50,7 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
   leeftijd <- NULL
   geslacht <- NULL
   plotData <- subset(plotData, !is.na(geslacht) & geslacht != "Onbekend" &
-              !is.na(leeftijd) & leeftijd != "Onbekend")
+          !is.na(leeftijd) & leeftijd != "Onbekend" & leeftijd != "Niet ingezameld")
   percentCollected <- nrow(plotData)/nRecords
   
   # Define names and ordering of factor levels
@@ -90,7 +93,9 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
           colors = colors, type = "bar",  width = width, height = height) %>%
       
       layout(title = title,
-          xaxis = list(title = "Leeftijdscategorie (meldingsformulier)"), 
+          xaxis = list(title =  if (wildNaam == "Wild zwijn")
+                "Leeftijdscategorie (onderkaak)" else
+                "Leeftijdscategorie (meldingsformulier)"), 
           yaxis = list(title = "Percentage"),
           legend = list(y = 0.8, yanchor = "top"),
           margin = list(b = 120, t = 100), 
@@ -105,16 +110,20 @@ countAgeGender <- function(data, wildNaam = "", jaartallen = NULL,
           xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
           y = 0.8, yanchor = "bottom",    # Same y as legend below
           legendtitle = TRUE, showarrow = FALSE) %>%
-
+      
       add_annotations(text = paste0(round(percentCollected, 2)*100, 
               "% met gekende leeftijd en geslacht (", nrow(plotData), "/", nRecords, ")"),
           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
           y = -0.3, yanchor = "bottom", showarrow = FALSE)  
-	
-	colsFinal <- colnames(summaryData)[colnames(summaryData) != "text"]
-	
-	return(list(plot = pl, data = summaryData[, colsFinal]))
-	
+  
+  colsFinal <- colnames(summaryData)[colnames(summaryData) != "text"]
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
+  return(list(plot = pl, data = summaryData[, colsFinal]))
+  
   
 }
 

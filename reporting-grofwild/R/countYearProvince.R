@@ -49,8 +49,8 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
   
   # Summarize data per province and year
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
-          min(afschotjaar):max(afschotjaar)))
-
+              min(jaartallen):max(jaartallen)))
+  
   summaryData <- melt(table(plotData), id.vars = "afschotjaar")
   
   # Summarize data per year
@@ -64,9 +64,12 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
   colors <- rev(inbo.2015.colours(n = nlevels(summaryData$provincie)))
   title <- paste0(wildNaam, " ",
       ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-              jaartallen),
-      " (", paste(doodsoorzaak, collapse = " en "), ")")
-    
+          jaartallen),
+      if (length(doodsoorzaak) > 2)
+            paste0(" (", paste(doodsoorzaak[-length(doodsoorzaak)], collapse = ", "), " en ", doodsoorzaak[length(doodsoorzaak)], ")") else 
+            paste0(" (", paste(doodsoorzaak, collapse = " en "), ")")
+  )
+  
   
   # Create plot
   pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~provincie,
@@ -81,7 +84,11 @@ countYearProvince <- function(data, wildNaam = "", jaartallen = NULL,
               text = paste(ifelse(nlevels(summaryData$afschotjaar) == 1, "totaal:", ""), totalCount),
               xanchor = 'center', yanchor = 'bottom',
               showarrow = FALSE))  
-	
-		return(list(plot = pl, data = summaryData))
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
+  return(list(plot = pl, data = summaryData))
   
 }

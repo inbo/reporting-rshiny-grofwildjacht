@@ -4,9 +4,12 @@
 \alias{loadRawData}
 \title{Read ecology or geography data}
 \usage{
-loadRawData(type = c("eco", "geo"), shapeData = NULL)
+loadRawData(dataDir = system.file("extdata", package = "reportingGrofwild"),
+  type = c("eco", "geo"), shapeData = NULL)
 }
 \arguments{
+\item{dataDir}{character vector, defines the path to the data files}
+
 \item{type}{data type, "eco" for ecology data and "geo" for geography data}
 
 \item{shapeData}{list with objects of class SpatialPolygonsDataFrame as 
@@ -14,7 +17,8 @@ returned by \code{\link{readShapeData}}; if not NULL, commune names are
 matched between geography (raw) data and spatial (shape) data}
 }
 \value{
-data.frame, loaded ecology or geography data
+data.frame, loaded ecology or geography data; 
+and attribute 'Date', the date that this data file was created
 }
 \description{
 Read ecology or geography data

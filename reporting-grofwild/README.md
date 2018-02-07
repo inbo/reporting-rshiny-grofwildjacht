@@ -12,3 +12,16 @@ One installed, the functionalities can be derived by loading the package:
 ``` r
 library("reportingGrofwild")
 ```
+
+## Development information
+
+When adding elements to the code or ui and you want to test if your local adaptations are effectively working, make sure to build and install your local adaptations:
+
+(assuming your working in a Rstudio project)
+
+```
+devtools::build()
+devtools::install()
+library(reportingGrofwild)
+reportingGrofwild::runWildApp()
+```

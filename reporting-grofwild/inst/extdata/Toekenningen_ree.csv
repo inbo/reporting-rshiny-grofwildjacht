@@ -14,6 +14,7 @@ Antwerpen;2013;Bokken;758
 Antwerpen;2014;Bokken;786
 Antwerpen;2015;Bokken;727
 Antwerpen;2016;Bokken;733
+Antwerpen;2017;Bokken;732
 Antwerpen;2002;Geiten;506
 Antwerpen;2003;Geiten;498
 Antwerpen;2004;Geiten;505
@@ -29,6 +30,7 @@ Antwerpen;2013;Geiten;552
 Antwerpen;2014;Geiten;578
 Antwerpen;2015;Geiten;543
 Antwerpen;2016;Geiten;551
+Antwerpen;2017;Geiten;552
 Antwerpen;2002;Kitsen;774
 Antwerpen;2003;Kitsen;750
 Antwerpen;2004;Kitsen;765
@@ -44,6 +46,7 @@ Antwerpen;2013;Kitsen;955
 Antwerpen;2014;Kitsen;989
 Antwerpen;2015;Kitsen;989
 Antwerpen;2016;Kitsen;1020
+Antwerpen;2017;Kitsen;1015
 Limburg;2002;Bokken;655
 Limburg;2003;Bokken;745
 Limburg;2004;Bokken;656
@@ -58,6 +61,8 @@ Limburg;2012;Bokken;1014
 Limburg;2013;Bokken;1071
 Limburg;2014;Bokken;1067
 Limburg;2015;Bokken;1032
+Limburg;2016;Bokken;1030
+Limburg;2017;Bokken;1033
 Limburg;2002;Geiten;551
 Limburg;2003;Geiten;623
 Limburg;2004;Geiten;577
@@ -72,6 +77,8 @@ Limburg;2012;Geiten;899
 Limburg;2013;Geiten;932
 Limburg;2014;Geiten;878
 Limburg;2015;Geiten;764
+Limburg;2016;Geiten;777
+Limburg;2017;Geiten;789
 Limburg;2002;Kitsen;955
 Limburg;2003;Kitsen;1074
 Limburg;2004;Kitsen;1060
@@ -86,6 +93,8 @@ Limburg;2012;Kitsen;1817
 Limburg;2013;Kitsen;1881
 Limburg;2014;Kitsen;1579
 Limburg;2015;Kitsen;1456
+Limburg;2016;Kitsen;1483
+Limburg;2017;Kitsen;1512
 Oost-Vlaanderen;2002;Bokken;1
 Oost-Vlaanderen;2004;Bokken;3
 Oost-Vlaanderen;2005;Bokken;5
@@ -99,6 +108,8 @@ Oost-Vlaanderen;2012;Bokken;88
 Oost-Vlaanderen;2013;Bokken;138
 Oost-Vlaanderen;2014;Bokken;180
 Oost-Vlaanderen;2015;Bokken;172
+Oost-Vlaanderen;2016;Bokken;195
+Oost-Vlaanderen;2017;Bokken;203
 Oost-Vlaanderen;2002;Geiten;0
 Oost-Vlaanderen;2004;Geiten;1
 Oost-Vlaanderen;2005;Geiten;2
@@ -112,6 +123,8 @@ Oost-Vlaanderen;2012;Geiten;80
 Oost-Vlaanderen;2013;Geiten;104
 Oost-Vlaanderen;2014;Geiten;126
 Oost-Vlaanderen;2015;Geiten;125
+Oost-Vlaanderen;2016;Geiten;144
+Oost-Vlaanderen;2017;Geiten;151
 Oost-Vlaanderen;2002;Kitsen;1
 Oost-Vlaanderen;2004;Kitsen;2
 Oost-Vlaanderen;2005;Kitsen;7
@@ -125,6 +138,8 @@ Oost-Vlaanderen;2012;Kitsen;123
 Oost-Vlaanderen;2013;Kitsen;157
 Oost-Vlaanderen;2014;Kitsen;175
 Oost-Vlaanderen;2015;Kitsen;215
+Oost-Vlaanderen;2016;Kitsen;230
+Oost-Vlaanderen;2017;Kitsen;245
 Vlaams-Brabant;2002;Bokken;254
 Vlaams-Brabant;2003;Bokken;314
 Vlaams-Brabant;2004;Bokken;284
@@ -139,6 +154,8 @@ Vlaams-Brabant;2012;Bokken;357
 Vlaams-Brabant;2013;Bokken;380
 Vlaams-Brabant;2014;Bokken;417
 Vlaams-Brabant;2015;Bokken;359
+Vlaams-Brabant;2016;Bokken;361
+Vlaams-Brabant;2017;Bokken;366
 Vlaams-Brabant;2002;Geiten;201
 Vlaams-Brabant;2003;Geiten;272
 Vlaams-Brabant;2004;Geiten;228
@@ -153,6 +170,8 @@ Vlaams-Brabant;2012;Geiten;303
 Vlaams-Brabant;2013;Geiten;314
 Vlaams-Brabant;2014;Geiten;345
 Vlaams-Brabant;2015;Geiten;280
+Vlaams-Brabant;2016;Geiten;280
+Vlaams-Brabant;2017;Geiten;284
 Vlaams-Brabant;2002;Kitsen;265
 Vlaams-Brabant;2003;Kitsen;308
 Vlaams-Brabant;2004;Kitsen;293
@@ -167,6 +186,8 @@ Vlaams-Brabant;2012;Kitsen;404
 Vlaams-Brabant;2013;Kitsen;410
 Vlaams-Brabant;2014;Kitsen;428
 Vlaams-Brabant;2015;Kitsen;467
+Vlaams-Brabant;2016;Kitsen;468
+Vlaams-Brabant;2017;Kitsen;469
 West-Vlaanderen;2002;Bokken;2
 West-Vlaanderen;2004;Bokken;2
 West-Vlaanderen;2005;Bokken;6
@@ -180,6 +201,8 @@ West-Vlaanderen;2012;Bokken;35
 West-Vlaanderen;2013;Bokken;59
 West-Vlaanderen;2014;Bokken;63
 West-Vlaanderen;2015;Bokken;63
+West-Vlaanderen;2016;Bokken;69
+West-Vlaanderen;2017;Bokken;73
 West-Vlaanderen;2002;Geiten;0
 West-Vlaanderen;2004;Geiten;2
 West-Vlaanderen;2005;Geiten;5
@@ -193,6 +216,8 @@ West-Vlaanderen;2012;Geiten;24
 West-Vlaanderen;2013;Geiten;37
 West-Vlaanderen;2014;Geiten;44
 West-Vlaanderen;2015;Geiten;48
+West-Vlaanderen;2016;Geiten;48
+West-Vlaanderen;2017;Geiten;49
 West-Vlaanderen;2002;Kitsen;0
 West-Vlaanderen;2004;Kitsen;4
 West-Vlaanderen;2005;Kitsen;6
@@ -206,15 +231,5 @@ West-Vlaanderen;2012;Kitsen;62
 West-Vlaanderen;2013;Kitsen;79
 West-Vlaanderen;2014;Kitsen;89
 West-Vlaanderen;2015;Kitsen;87
-Limburg;2016;Bokken;1030
-Limburg;2016;Geiten;777
-Limburg;2016;Kitsen;1483
-Oost-Vlaanderen;2016;Bokken;195
-Oost-Vlaanderen;2016;Geiten;144
-Oost-Vlaanderen;2016;Kitsen;230
-Vlaams-Brabant;2016;Bokken;361
-Vlaams-Brabant;2016;Geiten;280
-Vlaams-Brabant;2016;Kitsen;468
-West-Vlaanderen;2016;Bokken;69
-West-Vlaanderen;2016;Geiten;48
 West-Vlaanderen;2016;Kitsen;89
+West-Vlaanderen;2017;Kitsen;95

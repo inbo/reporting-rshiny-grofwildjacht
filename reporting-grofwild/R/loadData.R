@@ -259,6 +259,7 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
                 ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
             ),
             ""))
+    rawData$type <- ""
     rawData$type[idx] <- typeRee
     rawData$type[is.na(rawData$type)] <- ""
     

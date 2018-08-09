@@ -1,4 +1,6 @@
 
+## Installation
+
 As the `reportingGrofWild` package is not available on CRAN, the easiest way of installing the package is using the `devtools` package and referring to the git repository holding the package code:
 
 ```

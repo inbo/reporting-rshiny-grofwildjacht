@@ -28,14 +28,14 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL, 
-    width = NULL, height = NULL) {
+    width = NULL, height = NULL, doodsoorzaak = "afschot") {
   
   
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
   # Select data
-  plotData <- data[data$afschotjaar %in% jaartallen, 
+  plotData <- data[data$afschotjaar %in% jaartallen & data$doodsoorzaak %in% doodsoorzaak, 
       c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")]
   names(plotData) <- c("jager", "kaak")
   

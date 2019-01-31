@@ -54,7 +54,7 @@ shinyUI(
                     "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
 
                 tags$p(paste0("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ",format(max(as.Date(ecoData$afschot_datum), na.rm = T), "%d/%m/%Y") , 
-                              ".Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset"),tags$br(),
+                              " .Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset"),tags$br(),
                               "Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar faunabeheer@inbo.be.")
                 
             ),

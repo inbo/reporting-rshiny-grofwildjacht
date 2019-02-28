@@ -26,7 +26,7 @@ shinyUI(
 
         ## Body
         ## ------
-
+        
         # Shape data source + contact e-mail
         tags$body(
 
@@ -53,8 +53,10 @@ shinyUI(
                 tags$p("Bovenaan deze pagina krijgt u, in functie van de gekozen jachtwildsoort, de regio-schaal en de gewenste jaren en periodes,", tags$br(),"een kaart met de geografische spreiding van het afschot en een figuur met de evolutie van het afschot de laatste jaren.",
                     "Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
 
-                tags$p(paste0("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ", format(as.Date(attr(ecoData, "Date")), "%d/%m/%Y"), "."))
-
+                tags$p(paste0("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ",format(max(as.Date(ecoData$afschot_datum), na.rm = T), "%d/%m/%Y") , 
+                              " .Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset"),tags$br(),
+                              "Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar faunabeheer@inbo.be.")
+                
             ),
 
 #            tags$div(class = "container",

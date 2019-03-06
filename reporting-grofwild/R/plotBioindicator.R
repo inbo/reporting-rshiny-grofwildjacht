@@ -65,7 +65,7 @@ plotBioindicator <- function(data, wildNaam = "",
           levels(data$ageGender)[levels(data$ageGender) != ""]
   
   if(!is.null(type)){
-    data <- data[data$ageGender %in% type, ]
+    data <- data[data$ageGender %in% type,]
   }
   
   # Bioindicator 'onderkaaklengte' depends on data source
@@ -216,9 +216,9 @@ plotBioindicator <- function(data, wildNaam = "",
           qnorm(p = 0.975) * pred$se.fit
     inputPlot <- data.frame(
         afschotjaar = as.factor(plotData$afschotjaar),
-        fit = pred$fit, 
-        ciLower = getCiLoess("lower"),
-        ciUpper = getCiLoess("upper")
+        fit = as.numeric(pred$fit), 
+        ciLower = as.numeric(getCiLoess("lower")),
+        ciUpper = as.numeric(getCiLoess("upper"))
     )
     
 #		represent median and quantile		

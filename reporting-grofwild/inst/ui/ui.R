@@ -195,64 +195,64 @@ shinyUI(
                     }),
 
                 ## tableProvince for "type": ree
-                conditionalPanel("input.showSpecies == 'Ree'", {
+                #conditionalPanel("input.showSpecies == 'Ree'", {
 
-                      tagList(
+                 #     tagList(
 
-                          actionLink(inputId = "linkTable2",
-                              label = h3("TABEL: Gerapporteerd afschot per regio en per type")),
-                          conditionalPanel("input.linkTable2 % 2 == 1",
-                              fixedRow(
+                  #        actionLink(inputId = "linkTable2",
+                   #           label = h3("TABEL: Gerapporteerd afschot per regio en per type")),
+                    #      conditionalPanel("input.linkTable2 % 2 == 1",
+                     #         fixedRow(
 
-                                  column(4,
-                                      optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
-                                      tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
-                                  ),
-                                  column(8, tableModuleUI(id = "table2"))
+                      #            column(4,
+                       #               optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
+                        #              tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
+                         #         ),
+                          #        column(8, tableModuleUI(id = "table2"))
 
-                              ),
-                              tags$hr()
-                          ),
+                           #   ),
+                            #  tags$hr()
+                        #  ),
 
-                          actionLink(inputId = "linkTable3",
-                              label = h3("TABEL: Percentage gerealiseerd afschot per regio en per type")),
-                          conditionalPanel("input.linkTable3 % 2 == 1",
+                         # actionLink(inputId = "linkTable3",
+                          #    label = h3("TABEL: Percentage gerealiseerd afschot per regio en per type")),
+                          #conditionalPanel("input.linkTable3 % 2 == 1",
 
-                              fixedRow(
+                           #   fixedRow(
 
-                                  column(4,
-                                      optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
-                                      tags$p("Realisatiegraad per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
-                                  ),
-                                  column(8, tableModuleUI(id = "table3"))
+                            #      column(4,
+                             #         optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
+                              #        tags$p("Realisatiegraad per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
+                               #   ),
+                                #  column(8, tableModuleUI(id = "table3"))
 
-                              ),
-                              tags$hr()
-                          ),
+                            #  ),
+                             # tags$hr()
+                        #  ),
 
 
-                          actionLink(inputId = "linkPlot4b",
-                              label = h3("FIGUUR: Percentage gerealiseerd afschot per jaar en per type")),
-                          conditionalPanel("input.linkPlot4b % 2 == 1",
-                              fixedRow(
+                         # actionLink(inputId = "linkPlot4b",
+                          #    label = h3("FIGUUR: Percentage gerealiseerd afschot per jaar en per type")),
+                        #  conditionalPanel("input.linkPlot4b % 2 == 1",
+                         #     fixedRow(
 
-                                  column(4,
-                                      optionsModuleUI(id = "plot4b",
-                                          summarizeBy = c("Aantal" = "count",
-                                              "Percentage" = "percent"),
-                                          showTime = TRUE,
-                                          showType = TRUE, regionLevels = 1:2,
-                                          exportData = TRUE),
-                                      tags$p("Evolutie van de realisatiegraad doorheen de jaren voor geselecteerde regio('s) en labeltype.")
-                                  ),
-                                  column(8, plotModuleUI(id = "plot4b"))
+                          #        column(4,
+                           #           optionsModuleUI(id = "plot4b",
+                            #              summarizeBy = c("Aantal" = "count",
+                             #                 "Percentage" = "percent"),
+                              #            showTime = TRUE,
+                               #           showType = TRUE, regionLevels = 1:2,
+                                #          exportData = TRUE),
+                                 #     tags$p("Evolutie van de realisatiegraad doorheen de jaren voor geselecteerde regio('s) en labeltype.")
+                                #  ),
+                                 # column(8, plotModuleUI(id = "plot4b"))
 
-                              ),
-                              tags$hr()
-                          )
-                      )
+                            #  ),
+                             # tags$hr()
+                        #  )
+                    #  )
 
-                    }),
+                  #  }),
 
 
                 ## countYearProvince: all species
@@ -315,22 +315,22 @@ shinyUI(
                           ),
 
 
-                          actionLink(inputId = "linkPlot4",
-                              label = h3("FIGUUR: Percentage jaarlijks afschot")),
-                          conditionalPanel("input.linkPlot4 % 2 == 1",
-                              fixedRow(
+                         # actionLink(inputId = "linkPlot4",
+                          #    label = h3("FIGUUR: Percentage jaarlijks afschot")),
+                        #  conditionalPanel("input.linkPlot4 % 2 == 1",
+                         #     fixedRow(
 
-                                  column(4,
-                                      optionsModuleUI(id = "plot4",
-                                          showTime = TRUE, showYear = TRUE,
-                                          showType = TRUE, exportData = TRUE),
-                                      tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
-                                  ),
-                                  column(8, plotModuleUI(id = "plot4"))
+                          #        column(4,
+                           #           optionsModuleUI(id = "plot4",
+                            #              showTime = TRUE, showYear = TRUE,
+                             #             showType = TRUE, exportData = TRUE),
+                              #        tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
+                               #   ),
+                                #  column(8, plotModuleUI(id = "plot4"))
 
-                              ),
-                              tags$hr()
-                          ),
+                              #),
+                              #tags$hr()
+                         # ),
 
 
                           actionLink(inputId = "linkPlot5",
@@ -427,23 +427,23 @@ shinyUI(
 
                               ),
                               tags$hr()
-                          ),
-
-                          actionLink(inputId = "linkPlot10",
-                              label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
-                          ),
-                          conditionalPanel("input.linkPlot10 % 2 == 1",
-                              fixedRow(
-
-                                  column(4,
-                                      optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
-                                          regionLevels = 1:2, exportData = TRUE),
-                                      tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2014 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
-                                      tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
-                                  column(8, plotModuleUI(id = "plot10"))
-
-                              )
                           )
+
+                          #actionLink(inputId = "linkPlot10",
+                        #      label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
+                         # ),
+                        #  conditionalPanel("input.linkPlot10 % 2 == 1",
+                         #     fixedRow(
+
+                          #        column(4,
+                           #           optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
+                            #              regionLevels = 1:2, exportData = TRUE),
+                             #         tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2014 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
+                              #        tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
+                               #   column(8, plotModuleUI(id = "plot10"))
+
+                           #   )
+                        #  )
 
                       )
 

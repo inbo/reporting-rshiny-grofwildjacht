@@ -427,23 +427,23 @@ shinyUI(
 
                               ),
                               tags$hr()
-                          ),
-
-                          actionLink(inputId = "linkPlot10",
-                              label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
-                          ),
-                          conditionalPanel("input.linkPlot10 % 2 == 1",
-                              fixedRow(
-
-                                  column(4,
-                                      optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
-                                          regionLevels = 1:2, exportData = TRUE),
-                                      tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2014 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
-                                      tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
-                                  column(8, plotModuleUI(id = "plot10"))
-
-                              )
                           )
+
+                          #actionLink(inputId = "linkPlot10",
+                        #      label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
+                         # ),
+                        #  conditionalPanel("input.linkPlot10 % 2 == 1",
+                         #     fixedRow(
+
+                          #        column(4,
+                           #           optionsModuleUI(id = "plot10", showTime = TRUE, showType = TRUE,
+                            #              regionLevels = 1:2, exportData = TRUE),
+                             #         tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2014 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
+                              #        tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
+                               #   column(8, plotModuleUI(id = "plot10"))
+
+                           #   )
+                        #  )
 
                       )
 

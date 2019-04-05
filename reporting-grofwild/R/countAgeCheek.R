@@ -33,6 +33,7 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
+    jaartallen[2019] <- NULL
   
   # Select data
   plotData <- data[data$afschotjaar %in% jaartallen & data$doodsoorzaak %in% doodsoorzaak, 

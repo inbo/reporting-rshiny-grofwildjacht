@@ -34,9 +34,14 @@ countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
+  # Disable graph when only year t is selected
+  t <- 2019
+  if (jaartallen == t)
+    stop(paste0("Voor ", t, " werden tot nu toe onvoldoende onderkaken ingezameld om een zinvolle grafiek te maken."))
+  
   # Select data
   plotData <- data[data$afschotjaar %in% jaartallen & data$doodsoorzaak %in% doodsoorzaak, 
-      c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")]
+      c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
   names(plotData) <- c("jager", "kaak")
   
   # Percentage collected

@@ -315,22 +315,22 @@ shinyUI(
                           ),
 
 
-                         # actionLink(inputId = "linkPlot4",
-                          #    label = h3("FIGUUR: Percentage jaarlijks afschot")),
-                        #  conditionalPanel("input.linkPlot4 % 2 == 1",
-                         #     fixedRow(
+                          actionLink(inputId = "linkPlot4",
+                              label = h3("FIGUUR: Percentage jaarlijks afschot")),
+                          conditionalPanel("input.linkPlot4 % 2 == 1",
+                              fixedRow(
 
-                          #        column(4,
-                           #           optionsModuleUI(id = "plot4",
-                            #              showTime = TRUE, showYear = TRUE,
-                             #             showType = TRUE, exportData = TRUE),
-                              #        tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
-                               #   ),
-                                #  column(8, plotModuleUI(id = "plot4"))
+                                  column(4,
+                                      optionsModuleUI(id = "plot4",
+                                          showTime = TRUE, showYear = TRUE,
+                                          showType = TRUE, exportData = TRUE),
+                                      tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
+                                  ),
+                                  column(8, plotModuleUI(id = "plot4"))
 
-                              #),
-                              #tags$hr()
-                         # ),
+                              ),
+                              tags$hr()
+                          ),
 
 
                           actionLink(inputId = "linkPlot5",

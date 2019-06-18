@@ -89,15 +89,15 @@ tableProvince <- function(data, assignedData, wildNaam = NULL, jaar = NULL,
     tableAssignedData <- assignedData[assignedData$jaar == jaar, ]
   
   # Define names and ordering of factor levels
-  if ("Frisling" %in% tableData$categorie) {  # wild zwijn for leeftijd
+  if (categorie == "leeftijd" & unique(data$wildsoort) == "Wild zwijn") {  # wild zwijn for leeftijd
     
     levelsCategorie <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
     
-  } else if ("Jongvolwassen" %in% tableData$categorie){  # ree for leeftijd
+  } else if (categorie == "leeftijd" & unique(data$wildsoort) == "Ree") {  # ree for leeftijd
     
     levelsCategorie <- c("Kits", "Jongvolwassen", "Volwassen", "Onbekend")
     
-  } else {  # ree for type
+  } else if (grepl("type", categorie) & unique(data$wildsoort) == "Ree") {  # ree for type
     
     levelsCategorie <- c("geit", "bok", "kits")
     

@@ -3,10 +3,9 @@ shinyUI(
     bootstrapPage(
 
         ## For debugging
-#        h5(actionLink(inputId = "debug_console", label = "Connect with console"),
-#            align = "left"),
-#        verbatimTextOutput("print"),
+		uiOutput("debug"),
 
+		
         ## Header
         ## ------
 

@@ -34,8 +34,9 @@ allTables
 
 # For count with type
 tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAantal")
-tableProvince(data = ecoData[ecoData$wildsoort == "Ree", ], categorie = "typeAantal",
-    jaar = 2016)
+
+tableProvince(data = wildEcoData[wildEcoData$doodsoorzaak == "afschot", ], 
+		categorie = "leeftijd", jaar = 2006)
 
 # For percent shot of assigned with type
 toekenningsData <- loadToekenningen()

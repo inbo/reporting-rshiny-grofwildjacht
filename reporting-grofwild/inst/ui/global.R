@@ -34,3 +34,12 @@ geoData <- loadRawData(dataDir = dataDir, type = "geo",
 #)
 results <- list()
 
+
+## Debugging
+onStop(function() {
+			if (file.exists(".RDuetConsole"))
+				file.remove(".RDuetConsole")
+		})
+
+if (!exists("doDebug"))
+	doDebug <- FALSE

@@ -6,7 +6,7 @@
 \usage{
 plotModuleServer(input, output, session, plotFunction, data,
   openingstijdenData, toekenningsData = NULL, categorie = NULL,
-  bioindicator = NULL)
+  bioindicator = NULL, locaties = NULL, timeRange = NULL)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -28,6 +28,12 @@ plotModuleServer(input, output, session, plotFunction, data,
 \item{bioindicator}{string with column of \code{data}
 with bioindicator, either 'onderkaaklengte',
 'ontweid_gewicht', or 'aantal_embryos'}
+
+\item{locaties}{character, defines on which locations to filter on;
+defined externally for large map}
+
+\item{timeRange}{numeric vector, defines on which year range to filter on;
+defined externally for large map}
 }
 \value{
 no return value; plot output object is created

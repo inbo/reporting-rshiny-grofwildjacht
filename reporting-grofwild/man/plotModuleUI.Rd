@@ -4,10 +4,12 @@
 \alias{plotModuleUI}
 \title{Interactive plot (ui-side)}
 \usage{
-plotModuleUI(id)
+plotModuleUI(id, height = "600px")
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
+
+\item{height}{character, plot height, default is "600px"}
 }
 \value{
 ui object

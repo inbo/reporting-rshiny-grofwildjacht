@@ -18,19 +18,21 @@
 #' @param exportData boolean, whether a download button for the data is shown
 #' @param showDataSource boolean, whether to show choices of data source to be 
 #' used for plotted bioindicator
+#' @param doWellPanel boolean, whether to display the options within a 
+#' \code{shiny::wellPanel()}
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
 		showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
 		regionLevels = NULL, summarizeBy = NULL,
-		exportData = FALSE, showDataSource = FALSE) {
+		exportData = FALSE, showDataSource = FALSE,
+		doWellPanel = TRUE) {
 	
 	ns <- NS(id)
 	
 	
-	tagList(
+	toReturn <- tagList(
 			
-			wellPanel(
 					if (!is.null(summarizeBy))
 						radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
 								choices = summarizeBy),
@@ -62,8 +64,11 @@ optionsModuleUI <- function(id,
 					if(exportData)
 						downloadButton(ns("dataDownload"), "Download data")
 			
-			)
 	)
+	
+	if (doWellPanel)
+		wellPanel(toReturn) else
+		toReturn
 	
 }
 
@@ -165,17 +170,18 @@ optionsModuleServer <- function(input, output, session,
 
 #' Interactive plot (ui-side)
 #' @param id character, module id, unique name per plot
+#' @param height character, plot height, default is "600px" 
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom plotly plotlyOutput
 #' @importFrom shiny NS
 #' @export
-plotModuleUI <- function(id) {
+plotModuleUI <- function(id, height = "600px") {
 	
 	ns <- NS(id)
 	
-	withSpinner(plotlyOutput(ns("plot"), height = "600px"))
+	withSpinner(plotlyOutput(ns("plot"), height = height))
 	
 }
 
@@ -205,6 +211,10 @@ tableModuleUI <- function(id) {
 #' @param openingstijdenData data with openingstijden, optional
 #' @param toekenningsData data with toekenningen, optional
 #' @param categorie character, defines which type of table should be made
+#' @param locaties character, defines on which locations to filter on;
+#' defined externally for large map
+#' @param timeRange numeric vector, defines on which year range to filter on;
+#' defined externally for large map
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
@@ -212,7 +222,8 @@ tableModuleUI <- function(id) {
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
 		data, openingstijdenData, toekenningsData = NULL,
-		categorie = NULL, bioindicator = NULL) {
+		categorie = NULL, bioindicator = NULL,
+		locaties = NULL, timeRange = NULL) {
 	
 	subData <- reactive({
 				
@@ -291,7 +302,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
 						if(!is.null(bioindicator))
 							list(bioindicator = bioindicator),
 						if(!is.null(input$sourceIndicator))
-							list(sourceIndicator = input$sourceIndicator)
+							list(sourceIndicator = input$sourceIndicator),
+						if (!is.null(locaties))
+							list(locaties = locaties()),
+						if (!is.null(timeRange))
+							list(timeRange = timeRange())
+						
 				)
 				
 				
@@ -322,8 +338,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
 	
 	output$dataDownload <- downloadHandler(
 			filename = function() nameFile(species = wildNaam(),
-						year = if (!is.null(input$year)) input$year else
-									unique(c(input$time[1], input$time[2])), 
+						year = if (!is.null(input$year)) 
+									input$year else if (!is.null(input$time))
+									unique(c(input$time[1], input$time[2])) else
+									timeRange(), 
 						content = paste0(plotFunction, "_data"), fileExt = "csv"),
 			content = function(file) {
 				

@@ -405,7 +405,9 @@ shinyServer(function(input, output, session) {
 						tmpData <- subset(results$wildGeoData(), afschotjaar %in% chosenTimes)
 						
 						# Create general plot data names
-						plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
+						plotData <- data.frame(
+								wildsoort = input$showSpecies,
+								afschotjaar = tmpData$afschotjaar)
 						if (input$map_regionLevel == "flanders")
 							plotData$locatie <- "Vlaams Gewest" else if (input$map_regionLevel == "provinces")
 							plotData$locatie <- tmpData$provincie else
@@ -419,7 +421,9 @@ shinyServer(function(input, output, session) {
 						summaryData <- plyr::count(df = plotData, vars = names(plotData))
 						
 						# Add names & times with 0 observations
-						fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
+						fullData <- cbind(expand.grid(
+										wildsoort = input$showSpecies,
+										afschotjaar = unique(summaryData$afschotjaar),
 										locatie = unique(results$spatialData()$NAAM)))
 						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
 						allData$freq[is.na(allData$freq)] <- 0
@@ -913,39 +917,59 @@ shinyServer(function(input, output, session) {
 						
 					})
 			
-			output$map_timePlot <- renderPlotly({
-						
-						validate(need(results$map_timeData(), "Geen data beschikbaar"),
-								need(input$map_region, "Gelieve regio('s) te selecteren"))
-						
-						
-						title <- paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
-								ifelse(input$map_time[1] != input$map_time[2],
-										paste("van", input$map_time[1], "tot", input$map_time[2]),
-										paste("in", input$map_time[1])
-								)
-						)
-						
-						allData <- subset(results$map_timeData(), locatie %in% input$map_region)
-						
-						
-						# Create plot
-						toPlot <- plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
-										color = ~locatie, hoverinfo = "x+y+name",
-										type = "scatter", mode = "lines+markers") %>%
-								layout(title = title,
-										xaxis = list(title = "Jaar"), 
-										yaxis = list(title = "Aantal"),
-										showlegend = TRUE,
-										margin = list(b = 80, t = 100))     
-						
-						# To prevent warnings in UI
-						toPlot$elementId <- NULL
-						
-						
-						toPlot
-						
-					})
+			
+#			# Select data for time plot Regio-schaal
+#			results$map_timeRegio <- reactive({
+#						
+#						validate(need(results$map_timeData(), "Geen data beschikbaar"),
+#								need(input$map_region, "Gelieve regio('s) te selecteren"))
+#						
+#						subset(results$map_timeData(), locatie %in% input$map_region)
+#						
+#					}) 
+#			
+#			# Create time plot Regio-schaal 
+#			output$map_timePlot <- renderPlotly({
+#						
+#						req(results$map_timeRegio())
+#						
+#						title <- paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
+#								ifelse(input$map_time[1] != input$map_time[2],
+#										paste("van", input$map_time[1], "tot", input$map_time[2]),
+#										paste("in", input$map_time[1])
+#								)
+#						)
+#						
+#						allData <- subset(results$map_timeData(), locatie %in% input$map_region)
+#						
+#						
+#						# Create plot
+#						toPlot <- plot_ly(data = results$map_timeRegio(), x = ~afschotjaar, y = ~freq,
+#										color = ~locatie, hoverinfo = "x+y+name",
+#										type = "scatter", mode = "lines+markers") %>%
+#								layout(title = title,
+#										xaxis = list(title = "Jaar"), 
+#										yaxis = list(title = "Aantal"),
+#										showlegend = TRUE,
+#										margin = list(b = 80, t = 100))     
+#						
+#						# To prevent warnings in UI
+#						toPlot$elementId <- NULL
+#						
+#						
+#						toPlot
+#						
+#					})
+			
+			
+			callModule(module = optionsModuleServer, id = "map_timePlot", 
+					data = results$map_timeData)
+			callModule(module = plotModuleServer, id = "map_timePlot",
+					plotFunction = "countYearRegion", 
+					data = results$map_timeData,
+					locaties = reactive(input$map_region),
+					timeRange = reactive(input$map_time)
+			)
 			
 			
 		})

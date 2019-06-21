@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     libssl1.0.0 \
     libgdal-dev \
     libproj-dev \
-    libgeos-dev
+    libgeos-dev \
+    libudunits2-dev
 
 
 # Dependencies for rgdal and rgeos
@@ -35,11 +36,11 @@ RUN R -e "install.packages(c('leaflet', 'mapview'), repos='https://cloud.r-proje
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!
-# RUN R -e "webshot::install_phantomjs()"
+RUN R -e "webshot::install_phantomjs()"
 
  
 # copy the app to the image by installing package (need latest version!!)
-ENV latestApp reporting-grofwild_0.1.0.tar.gz
+ENV latestApp reportingGrofwild_0.1.0.tar.gz
 COPY $latestApp /root/
 RUN R CMD INSTALL /root/$latestApp
 RUN rm /root/$latestApp

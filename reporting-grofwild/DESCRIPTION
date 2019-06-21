@@ -11,5 +11,5 @@ Imports:
     shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders
 Depends: maptools
 Suggests:
-	testthat, leaflet, htmlwidgets, webshot
+	testthat, leaflet, mapview
 RoxygenNote: 6.1.1

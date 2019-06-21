@@ -52,7 +52,7 @@ shinyServer(function(input, output, session) {
 						)
 					})
 			
-						
+			
 			
 			## Create data upon user choices
 			results$wildEcoData <- reactive({
@@ -801,11 +801,18 @@ shinyServer(function(input, output, session) {
 							
 						} 
 						
-						newMap
+						# save the zoom level and centering
+						newMap %>%  setView(
+								lng = input$map_spacePlot_center$lng,
+								lat = input$map_spacePlot_center$lat,
+								zoom = input$map_spacePlot_zoom
+						)
 						
-					})
-			
-			
+						
+					}) 
+					
+					
+			# Download the map
 			output$map_download <- downloadHandler(
 					filename = function()
 						nameFile(species = input$showSpecies,
@@ -813,10 +820,12 @@ shinyServer(function(input, output, session) {
 								content = "kaart", fileExt = "png"),
 					content = function(file) {
 						
-						htmlwidgets::saveWidget(widget = results$finalMap(), 
-								file = file.path(tempdir(), "plotRuimte.html"), selfcontained = FALSE)
-						webshot::webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
-								vwidth = 1000, vheight = 500, cliprect = "viewport", zoom = 3)
+#						htmlwidgets::saveWidget(widget = results$finalMap(), 
+#								file = file.path(tempdir(), "plotRuimte.html"), selfcontained = FALSE)
+#						webshot::webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
+#								vwidth = 1000, vheight = 500, cliprect = "viewport", zoom = 3)
+						mapview::mapshot(x = results$finalMap(), file = file,
+								vwidth = 1000, vheight = 500, cliprect = "viewport")
 						
 					}
 			)

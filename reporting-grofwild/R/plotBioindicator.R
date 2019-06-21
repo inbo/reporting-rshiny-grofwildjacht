@@ -38,6 +38,7 @@
 #' }
 #' }
 #' @author Laure Cougnaud
+#' @importFrom INBOtheme inbo.lichtblauw
 #' @export
 plotBioindicator <- function(data, 
 		type = NULL,
@@ -46,8 +47,7 @@ plotBioindicator <- function(data,
 		sourceIndicator = c("inbo", "meldingsformulier", "both"),
 		width = NULL, height = NULL){
 	
-#	message("type is:", type)
-	
+
 	
 	wildNaam <- unique(data$wildsoort)
 	
@@ -62,14 +62,10 @@ plotBioindicator <- function(data,
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
-	if(is.null(type))
+	if (is.null(type))
 		type <- if (bioindicator == "aantal_embryos")
 					c("Smalree", "Geit") else
 					levels(data$ageGender)[levels(data$ageGender) != ""]
-	
-	if(!is.null(type)){
-		data <- data[data$ageGender %in% type,]
-	}
 	
 	# Bioindicator 'onderkaaklengte' depends on data source
 	if (bioindicator == "onderkaaklengte")
@@ -79,7 +75,7 @@ plotBioindicator <- function(data,
 						both = ifelse(!is.na(onderkaaklengte), onderkaaklengte, lengte_mm)))
 	
 	# Select data of specified years
-	plotData <- data[data$afschotjaar %in% jaartallen,
+	plotData <- data[data$afschotjaar %in% jaartallen & data$ageGender %in% type,
 			c("afschotjaar", bioindicator)]
 	
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
@@ -138,7 +134,7 @@ plotBioindicator <- function(data,
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
 			if (!all(regio == "")) paste0(" (", toString(regio), ")"))
 	
-	if(bioindicator == "aantal_embryos"){
+	if (bioindicator == "aantal_embryos") {
 		
 		palette <- inbo.2015.colours(n = nlevels(inputPlot$variable))
 		
@@ -190,81 +186,82 @@ plotBioindicator <- function(data,
 		
 	}else{
 		
-		# equivalent at in ggplot:
-		#	ggplot(mapping = aes(y = variable, x = as.integer(afschotjaar)), data = plotData) +
-		#		geom_smooth(method = "loess")
-		
-		# directly in plotly:
-		#	plot_ly(plotData, x = ~afschotjaar, y = ~variable, type = "scatter") %>%
-		#		add_lines(y = ~fitted(loess(variable ~ afschotjaar)))
-		
-		# compute lowess manually
-#		system.time(model <- loess(variable ~ afschotjaar, data = plotData))
-#		system.time(pred <- predict(object = model, se = TRUE))
-#		getCiLoess <- function(type)
-#			pred$fit + switch(type, 'lower' = -1, 'upper' = 1) * 
-#					qt(0.975, pred$df) * pred$se
-		
+			
 		returnedData <- plotData
 		
-		# Note: default used by ggplot for high number of points
-		# but doesn't support use of <= 2 years
-#		cs = Cubic regression splines
-		model <- gam(
-				formula = variable ~ s(afschotjaar, bs = "cs", k = length(unique(plotData$afschotjaar))), 
-				data = plotData)
-		pred <- predict(object = model, se.fit = TRUE)
-		getCiLoess <- function(type)
-			pred$fit + switch(type, 'lower' = -1, 'upper' = 1) * 
-					qnorm(p = 0.975) * pred$se.fit
-		inputPlot <- data.frame(
-				afschotjaar = as.factor(plotData$afschotjaar),
-				fit = as.numeric(pred$fit), 
-				ciLower = as.numeric(getCiLoess("lower")),
-				ciUpper = as.numeric(getCiLoess("upper"))
+		
+		# create plot
+		pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
+						colors = inbo.lichtblauw, type = "box", width = width, height = height) %>%
+		layout(title = title,
+				xaxis = list(title = "afschotjaar"), 
+				yaxis = list(title = bioindicatorName),
+				margin = list(b = 40, t = 100)
 		)
 		
-#		represent median and quantile		
-#		inputPlot <- ddply(plotData, "afschotjaar", function(x){
-#				quantiles <- quantile(x$variable, probs = c(0.025, 0.975))
-#				data.frame(median = median(x$variable), 
-#					quant1 = quantiles[1], quant2 = quantiles[2], 
-#					stringsAsFactors = FALSE)
-#		})
-#		inputPlot$afschotjaar <- as.factor(inputPlot$afschotjaar)
+		# To prevent warnings in UI
+		pl$elementId <- NULL
 		
-		# ribbon color with transparency	
-		colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
 		
-		# base plot
-		pl <- plot_ly(inputPlot, 
-						x = ~afschotjaar, y = ~fit, 
-						text = paste("n =", sapply(inputPlot$afschotjaar, function(x)
-											totalCounts[names(totalCounts) == as.character(x)])),
-						width = width, height = height) %>%
-				
-				# loess fit
-				add_lines(line = list(color = inbo.lichtblauw),
-						name = "Gemiddelde") %>%
-				
-				# confidence interval
-				add_ribbons(ymin = ~ciLower, ymax = ~ciUpper,
-						fill = 'tonexty', fillcolor = colorRibbon,
-						line = list(color = inbo.lichtblauw),
-						name = "95% betrouwbaarheidsinterval")  %>%
-				
-				# title axes and margin bottom
-				layout(title = title,
-						xaxis = list(title = "afschotjaar"), 
-						yaxis = list(title = bioindicatorName),
-						margin = list(b = 40, t = 100),
-						# Let y-axis start at 0 
-						annotations = list(x = seq(0, 1, length.out = length(totalCounts)), 
-								y = 0, 
-								xref = "paper", text = "", xanchor = 'center', 
-								yanchor = 'bottom', showarrow = FALSE)
-				)
 		
+#		# Note: default used by ggplot for high number of points
+#		# but doesn't support use of <= 2 years
+##		cs = Cubic regression splines
+#		model <- gam(
+#				formula = variable ~ s(afschotjaar, bs = "cs", k = length(unique(plotData$afschotjaar))), 
+#				data = plotData)
+#		pred <- predict(object = model, se.fit = TRUE)
+#		getCiLoess <- function(type)
+#			pred$fit + switch(type, 'lower' = -1, 'upper' = 1) * 
+#					qnorm(p = 0.975) * pred$se.fit
+#		inputPlot <- data.frame(
+#				afschotjaar = as.factor(plotData$afschotjaar),
+#				fit = as.numeric(pred$fit), 
+#				ciLower = as.numeric(getCiLoess("lower")),
+#				ciUpper = as.numeric(getCiLoess("upper"))
+#		)
+#		
+##		represent median and quantile		
+##		inputPlot <- ddply(plotData, "afschotjaar", function(x){
+##				quantiles <- quantile(x$variable, probs = c(0.025, 0.975))
+##				data.frame(median = median(x$variable), 
+##					quant1 = quantiles[1], quant2 = quantiles[2], 
+##					stringsAsFactors = FALSE)
+##		})
+##		inputPlot$afschotjaar <- as.factor(inputPlot$afschotjaar)
+#		
+#		# ribbon color with transparency	
+#		colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
+#		
+#		# base plot
+#		pl <- plot_ly(inputPlot, 
+#						x = ~afschotjaar, y = ~fit, 
+#						text = paste("n =", sapply(inputPlot$afschotjaar, function(x)
+#											totalCounts[names(totalCounts) == as.character(x)])),
+#						width = width, height = height) %>%
+#				
+#				# loess fit
+#				add_lines(line = list(color = inbo.lichtblauw),
+#						name = "Gemiddelde") %>%
+#				
+#				# confidence interval
+#				add_ribbons(ymin = ~ciLower, ymax = ~ciUpper,
+#						fill = 'tonexty', fillcolor = colorRibbon,
+#						line = list(color = inbo.lichtblauw),
+#						name = "95% betrouwbaarheidsinterval")  %>%
+#				
+#				# title axes and margin bottom
+#				layout(title = title,
+#						xaxis = list(title = "afschotjaar"), 
+#						yaxis = list(title = bioindicatorName),
+#						margin = list(b = 40, t = 100),
+#						# Let y-axis start at 0 
+#						annotations = list(x = seq(0, 1, length.out = length(totalCounts)), 
+#								y = 0, 
+#								xref = "paper", text = "", xanchor = 'center', 
+#								yanchor = 'bottom', showarrow = FALSE)
+#				)
+#		
 	}
 	
 	returnedData <- if(bioindicator == "aantal_embryos")	inputPlot	else	plotData

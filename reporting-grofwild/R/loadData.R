@@ -247,7 +247,7 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
     # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == ""] <- "Niet ingezameld"
+    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
     
     # for Figure 13: combine age and gender: 'type' column 
     # (to do the matching with the openingstijden table)

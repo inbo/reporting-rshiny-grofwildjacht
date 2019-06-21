@@ -4,8 +4,8 @@
 \alias{percentageRealisedShotAnimals}
 \title{Create interactive plot to represent yearly percentage killed and non-killed animals}
 \usage{
-percentageRealisedShotAnimals(data, assignedData, wildNaam = "",
-  jaartallen = NULL, type = NULL, regio = "", doodsoorzaak = "afschot",
+percentageRealisedShotAnimals(data, assignedData, jaartallen = NULL,
+  type = NULL, regio = "", doodsoorzaak = "afschot",
   summarizeBy = c("count", "percent"), width = NULL, height = NULL)
 }
 \arguments{
@@ -13,8 +13,6 @@ percentageRealisedShotAnimals(data, assignedData, wildNaam = "",
 
 \item{assignedData}{data.frame with summary data on the number of assigned
 animals that can be shot}
-
-\item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{jaartallen}{integer vector, defines the year(s) considered for the reference period
 in the plot; if NULL no selection on year(s) is made}

@@ -4,13 +4,11 @@
 \alias{countYearProvince}
 \title{Create interactive plot for counts per province and year}
 \usage{
-countYearProvince(data, wildNaam = "", jaartallen = NULL,
-  doodsoorzaak = c("afschot", "valwild"), width = NULL, height = NULL)
+countYearProvince(data, jaartallen = NULL, doodsoorzaak = c("afschot",
+  "valwild"), width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
-
-\item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

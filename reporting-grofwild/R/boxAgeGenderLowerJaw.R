@@ -2,6 +2,7 @@
 #' 
 #' Figure p.17 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
+#' @param type animal type, used to filter \code{data}, based on 'ageGender' column
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object with length lower jaw per 
@@ -18,8 +19,11 @@
 #' @importFrom INBOtheme inbo.lichtgrijs
 #' @importFrom plyr count
 #' @export
-boxAgeGenderLowerJaw <- function(data, wildNaam = "", 
-	jaartallen = NULL, regio = "", width = NULL, height = NULL) {
+boxAgeGenderLowerJaw <- function(data, 
+		type, jaartallen = NULL, regio = "", width = NULL, height = NULL) {
+	
+	
+	wildNaam <- unique(data$wildsoort)	
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
@@ -29,7 +33,7 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 		# data of specified years
 		data$afschotjaar %in% jaartallen &
 		# with specified gender/age category
-		data$ageGender != "" & !is.na(data$ageGender), ]
+		data$ageGender %in% type, ]
 
 	plotData$ageGender <- droplevels(plotData$ageGender)
   
@@ -54,7 +58,7 @@ boxAgeGenderLowerJaw <- function(data, wildNaam = "",
 			layout(title = paste0(wildNaam, " onderkaak lengte ",
 					ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
 					if (!all(regio == "")) paste0(" (", toString(regio), ")")),
-					xaxis = list(title = "Categorie op basis van leeftijdscategorie and geslacht"), 
+					xaxis = list(title = "Categorie op basis van leeftijdscategorie en geslacht"), 
 					yaxis = list(title = "Onderkaaklengte (mm)"),
 					margin = list(b = 40, t = 100),
           annotations = list(x = totalCounts$index, 

@@ -4,13 +4,13 @@
 \alias{boxAgeGenderLowerJaw}
 \title{Create interactive plot for comparing length of lower jaw between age/gender category}
 \usage{
-boxAgeGenderLowerJaw(data, wildNaam = "", jaartallen = NULL, regio = "",
+boxAgeGenderLowerJaw(data, type, jaartallen = NULL, regio = "",
   width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
-\item{wildNaam}{character, the name that should be displayed for y-label}
+\item{type}{animal type, used to filter \code{data}, based on 'ageGender' column}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

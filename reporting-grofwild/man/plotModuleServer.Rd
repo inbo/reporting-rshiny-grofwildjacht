@@ -4,8 +4,9 @@
 \alias{plotModuleServer}
 \title{Interactive plot or table (server-side)}
 \usage{
-plotModuleServer(input, output, session, plotFunction, data, openingstijdenData,
-  toekenningsData = NULL, wildNaam, categorie = NULL, bioindicator = NULL)
+plotModuleServer(input, output, session, plotFunction, data,
+  openingstijdenData, toekenningsData = NULL, categorie = NULL,
+  bioindicator = NULL)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -21,8 +22,6 @@ plotModuleServer(input, output, session, plotFunction, data, openingstijdenData,
 \item{openingstijdenData}{data with openingstijden, optional}
 
 \item{toekenningsData}{data with toekenningen, optional}
-
-\item{wildNaam}{character, defines the species name for y-label in plot}
 
 \item{categorie}{character, defines which type of table should be made}
 

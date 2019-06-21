@@ -21,7 +21,7 @@ runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, ...) {
   if (installDependencies) {
     
     ## (a) CRAN packages
-    update(dev_package_deps(pkg = system.file("ui", package = "reportingGrofwild"), 
+    update(dev_package_deps(pkgdir = system.file("ui", package = "reportingGrofwild"), 
             dependencies = "Suggests"))
     
     

@@ -212,33 +212,33 @@ shinyServer(function(input, output, session) {
 					plotFunction = "countYearAge", 
 					data = results$wildEcoData)
 			
-#			# Plot 4
-#			results$types <- reactive({
-#						
-#						req(results$openingstijdenData())
-#						
-#						types <- unique(results$openingstijdenData()$Type)
-#						
-#						if (length(types) == 1 && types == "")
-#							return(c("alle" = "all")) else 
-#							return(types)
-#						
-#					})
-#			
-#			
-#			callModule(module = optionsModuleServer, id = "plot4", 
-#					data = results$wildEcoData,
-#					timeRange = results$openingstijd,
-#					timeLabel = "Referentieperiode",
-#					types = results$types,
-#					multipleTypes = FALSE)
-#			
-#			callModule(module = plotModuleServer, id = "plot4",
-#					plotFunction = "percentageYearlyShotAnimals", 
-#					data = results$wildEcoData,
-#					openingstijdenData = results$openingstijdenData)
-#			
-#			
+			# Plot 4
+			results$types <- reactive({
+						
+						req(results$openingstijdenData())
+						
+						types <- unique(results$openingstijdenData()$Type)
+						
+						if (length(types) == 1 && types == "")
+							return(c("alle" = "all")) else 
+							return(types)
+						
+					})
+			
+			
+			callModule(module = optionsModuleServer, id = "plot4", 
+					data = results$wildEcoData,
+					timeRange = results$openingstijd,
+					timeLabel = "Referentieperiode",
+					types = results$types,
+					multipleTypes = FALSE)
+			
+			callModule(module = plotModuleServer, id = "plot4",
+					plotFunction = "percentageYearlyShotAnimals", 
+					data = results$wildEcoData,
+					openingstijdenData = results$openingstijdenData)
+			
+			
 #			# Plot 4b
 #			callModule(module = optionsModuleServer, id = "plot4b", 
 #					data = results$wildEcoData,

@@ -81,15 +81,15 @@ percentageYearlyShotAnimals <- function(
 		stop("Meerdere types in openingstijden data.")
 	
 	# only retains counts with no missing afschot_datum
-	inputData <- inputData[!is.na(inputData$afschot_datum), ]
+	# select jaartallen
+	inputData <- inputData[!is.na(inputData$afschot_datum) &
+					inputData$afschotjaar %in% c(jaar, jaartallen), ]
 	
-	# jaartallen
-	inputData <- inputData[inputData$afschotjaar %in% c(jaar, jaartallen), ]
 	
 	## format date to factor with half-month resolution
 	
 	# reformat dates as 'Date' object
-	inputData$afschot_datum_Date <- as.Date(inputData$afschot_datum, format = "%d/%m/%Y")
+	inputData$afschot_datum_Date <- as.Date(inputData$afschot_datum, format = "%Y-%m-%d")
 	openingstijdenData$Startdatum_Date <- as.Date(openingstijdenData$Startdatum, format = "%d/%m/%Y")
 	openingstijdenData$Stopdatum_Date <- as.Date(openingstijdenData$Stopdatum, format = "%d/%m/%Y")
 	
@@ -149,7 +149,9 @@ percentageYearlyShotAnimals <- function(
 	# format data for plot: extract percentage for observed year
 	# median, min and max in reference period
 	dataPlot <- ddply(dataPercShotInYear, "dateHalfMonth", function(x){
-				obsYear <- x[x$afschotjaar == jaar, "percShotInYear"] # year observation
+				obsYear <- if (!jaar %in% x$afschotjaar) # year observation
+					NA else
+					x[x$afschotjaar == jaar, "percShotInYear"] 
 				xRange <- x[x$afschotjaar %in% jaartallen, "percShotInYear"] # range in reference period
 				cbind(obsYear = obsYear,
 						medianRange = median(xRange),
@@ -197,6 +199,7 @@ percentageYearlyShotAnimals <- function(
 			add_trace(x = ~dateHalfMonth, y = ~obsYear, 
 					type = 'scatter', mode = 'markers+lines',
 					line = list(color = inbo.steun.donkerroos), 
+					marker = list(color = inbo.steun.donkerroos), 
 					name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
 			) %>%
 			

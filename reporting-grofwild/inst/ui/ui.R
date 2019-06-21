@@ -121,9 +121,9 @@ shinyUI(
 										),
 										column(6,
 												uiOutput("map_timeTitle"),
-#                       						withSpinner(plotlyOutput("map_timePlot", height = "400px"))
 												plotModuleUI(id = "map_timePlot", height = "400px"),
-												optionsModuleUI(id = "map_timePlot", exportData = TRUE)
+												optionsModuleUI(id = "map_timePlot", exportData = TRUE,
+														doWellPanel = FALSE)
 										)
 								)
 						
@@ -282,22 +282,22 @@ shinyUI(
 													),
 													
 													
-#						  actionLink(inputId = "linkPlot4",
-#								  label = h3("FIGUUR: Percentage jaarlijks afschot")),
-#						  conditionalPanel("input.linkPlot4 % 2 == 1",
-#								  fixedRow(
-#										  
-#										  column(4,
-#												  optionsModuleUI(id = "plot4",
-#														  showTime = TRUE, showYear = TRUE,
-#														  showType = TRUE, exportData = TRUE),
-#												  tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
-#										  ),
-#										  column(8, plotModuleUI(id = "plot4"))
-#								  
-#								  ),
-#								  tags$hr()
-#						  ),
+													actionLink(inputId = "linkPlot4",
+															label = h3("FIGUUR: Percentage jaarlijks afschot")),
+													conditionalPanel("input.linkPlot4 % 2 == 1",
+															fixedRow(
+																	
+																	column(4,
+																			optionsModuleUI(id = "plot4",
+																					showTime = TRUE, showYear = TRUE,
+																					showType = TRUE, exportData = TRUE),
+																			tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
+																	),
+																	column(8, plotModuleUI(id = "plot4"))
+															
+															),
+															tags$hr()
+													),
 													
 													
 													actionLink(inputId = "linkPlot5",

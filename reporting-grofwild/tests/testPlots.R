@@ -197,54 +197,47 @@ countYearAge(data = wildEcoData, jaartallen = 2016, summarizeBy = "percent")
 countYearAge(data = wildEcoData, jaartallen = 2016:2017)
 countYearAge(data = wildEcoData, jaartallen = 2016:2017, summarizeBy = "percent")
 
-## -- outdated: not shown anymore -- ##
-if (FALSE) {
-	
-	## PLOT 5: yearly percentage of shot animals
-	allPlots <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
-				
-				plotData <- ecoData[ecoData$wildsoort == iSoort, ]
-				
-				openingSeasonData <- openingstijdenData[
-						openingstijdenData$Soort == iSoort, ]
-				
-				openingstijdRange <- c(
-						max(
-								min(plotData$afschotjaar), 
-								min(openingSeasonData$Jaar)
-						),
-						min(
-								max(plotData$afschotjaar), 
-								max(openingSeasonData$Jaar)
-						)-1
-				)
-				
-				openingstijd <- seq(openingstijdRange[1], openingstijdRange[2])
-				
-				types <- unique(openingSeasonData$Type)
-				types[types == ""] <- "all"
-				
-				lapply(types, function(type){
-							
-							lapply(openingstijd, function(jaar){
-										
-										percentageYearlyShotAnimals(
-												data = plotData, 
-												openingstijdenData = openingSeasonData,
-												type = type,
-												jaar = jaar,
-												jaartallen = openingstijd
-										)
-										
-									}
-							
-							)
-							
-						})
-				
-			})
-	
-}
+## PLOT 5: yearly percentage of shot animals
+allPlots <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
+			
+			plotData <- ecoData[ecoData$wildsoort == iSoort, ]
+			
+			openingSeasonData <- openingstijdenData[
+					openingstijdenData$Soort == iSoort, ]
+			
+			openingstijdRange <- c(
+					max(
+							min(plotData$afschotjaar), 
+							min(openingSeasonData$Jaar)
+					),
+					min(
+							max(plotData$afschotjaar), 
+							max(openingSeasonData$Jaar)
+					)-1
+			)
+			
+			openingstijd <- seq(openingstijdRange[1], openingstijdRange[2])
+			
+			types <- unique(openingSeasonData$Type)
+			types[types == ""] <- "all"
+			
+			lapply(types, function(type){
+						
+						lapply(openingstijd, function(jaar){
+									
+									percentageYearlyShotAnimals(
+											data = plotData, 
+											openingstijdenData = openingSeasonData,
+											type = type,
+											jaar = jaar,
+											jaartallen = openingstijd
+									)
+									
+								})
+						
+					})
+			
+		})
 
 
 

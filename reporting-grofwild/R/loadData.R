@@ -317,7 +317,6 @@ nameFile <- function(species, year, content, fileExt) {
 #' Print for debugging
 #' @param x R object that will be printed
 #' @return NULL, print output in the console
-#' @export
 printer <- function(x){
   
   cat("MV", deparse(substitute(x)), "\n")
@@ -330,7 +329,6 @@ printer <- function(x){
 #' Paste elements of vector into string vector (for testing)
 #' @param x vector
 #' @return string of the form "c(<elements of x>)"
-#' @export
 pasteToVector <- function(x) {
   
   if (is.character(x))

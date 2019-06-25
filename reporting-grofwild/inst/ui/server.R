@@ -57,7 +57,7 @@ shinyServer(function(input, output, session) {
 			## Create data upon user choices
 			results$wildEcoData <- reactive({
 						
-						ecoData[ecoData$wildsoort == input$showSpecies, ]
+						subset(ecoData, wildsoort == input$showSpecies)
 						
 					})
 			
@@ -66,7 +66,7 @@ shinyServer(function(input, output, session) {
 						
 						req(geoData)
 						
-						geoData[geoData$wildsoort == input$showSpecies, ]
+						subset(geoData, wildsoort == input$showSpecies)
 						
 					})
 			
@@ -392,7 +392,54 @@ shinyServer(function(input, output, session) {
 					})
 			
 			
+			## Time plot for Flanders (reference) ##
 			
+			results$map_timeDataFlanders <- reactive({
+						
+						validate(need(input$map_time, "Gelieve periode te selecteren"))
+						
+						## Get data for Flanders
+						# Select subset for time
+						chosenTimes <- input$map_time[1]:input$map_time[2]
+						tmpData <- subset(results$wildGeoData(), afschotjaar %in% chosenTimes)
+						
+						# Create general plot data names
+						plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
+						plotData$locatie <- "Vlaams Gewest"
+						plotData$wildsoort <- input$showSpecies
+						
+						# Exclude data with missing time or space
+						plotData <- plotData[!is.na(plotData$afschotjaar) & 
+										!is.na(plotData$locatie) & plotData$locatie != "",]
+						
+						# Summarize data over years
+						summaryData <- plyr::count(df = plotData, vars = names(plotData))
+						summaryData <- plyr::rename(summaryData, replace = c("freq" = "aantal"))
+						
+						# Add names & times with 0 observations
+						fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
+										locatie = "Vlaams Gewest"))
+						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+						allData$aantal[is.na(allData$aantal)] <- 0
+						
+						allData$afschotjaar <- as.factor(allData$afschotjaar)
+						
+						allData
+						
+					})
+			
+			callModule(module = optionsModuleServer, id = "map_timePlotFlanders", 
+					data = results$map_timeDataFlanders)
+			callModule(module = plotModuleServer, id = "map_timePlotFlanders",
+					plotFunction = "countYearFlanders", 
+					data = results$map_timeDataFlanders,
+					timeRange = reactive(input$map_time)
+			)
+			
+			
+			
+			
+			## Time plot for selected region ##
 			
 			# Create data for map, time plot
 			results$map_timeData <- reactive({
@@ -419,6 +466,7 @@ shinyServer(function(input, output, session) {
 						
 						# Summarize data over years
 						summaryData <- plyr::count(df = plotData, vars = names(plotData))
+						summaryData <- plyr::rename(summaryData, replace = c("freq" = "aantal"))
 						
 						# Add names & times with 0 observations
 						fullData <- cbind(expand.grid(
@@ -426,7 +474,7 @@ shinyServer(function(input, output, session) {
 										afschotjaar = unique(summaryData$afschotjaar),
 										locatie = unique(results$spatialData()$NAAM)))
 						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-						allData$freq[is.na(allData$freq)] <- 0
+						allData$aantal[is.na(allData$aantal)] <- 0
 						
 						allData$afschotjaar <- as.factor(allData$afschotjaar)
 						
@@ -435,6 +483,30 @@ shinyServer(function(input, output, session) {
 						
 					})
 			
+			# Title for selected region level
+			output$map_timeTitle <- renderUI({
+						
+						regionLevel <- switch(input$map_regionLevel,
+								"flanders" = "Vlaanderen",
+								"provinces" = "Provincie",
+								"communes" = "Gemeente")
+						
+						h3("Regio-schaal:", regionLevel)
+						
+					})
+			
+			
+			callModule(module = optionsModuleServer, id = "map_timePlot", 
+					data = results$map_timeData)
+			callModule(module = plotModuleServer, id = "map_timePlot",
+					plotFunction = "countYearRegion", 
+					data = results$map_timeData,
+					locaties = reactive(input$map_region),
+					timeRange = reactive(input$map_time)
+			)
+			
+			
+			## Map for Flanders ##
 			
 			# Create data for map, spatial plot
 			results$map_spaceData <- reactive({
@@ -814,8 +886,8 @@ shinyServer(function(input, output, session) {
 						
 						
 					}) 
-					
-					
+			
+			
 			# Download the map
 			output$map_download <- downloadHandler(
 					filename = function()
@@ -846,130 +918,6 @@ shinyServer(function(input, output, session) {
 								sep = ";", dec = ",")
 						
 					})
-			
-			
-			## Create time plot for Flanders (reference) 
-			output$map_timePlotFlanders <- renderPlotly({
-						
-						validate(need(input$map_time, "Gelieve periode te selecteren"))
-						
-						## Get data for Flanders
-						# Select subset for time
-						chosenTimes <- input$map_time[1]:input$map_time[2]
-						tmpData <- subset(results$wildGeoData(), afschotjaar %in% chosenTimes)
-						
-						# Create general plot data names
-						plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
-						plotData$locatie <- "Vlaams Gewest"
-						
-						# Exclude data with missing time or space
-						plotData <- plotData[!is.na(plotData$afschotjaar) & 
-										!is.na(plotData$locatie) & plotData$locatie != "",]
-						
-						# Summarize data over years
-						summaryData <- plyr::count(df = plotData, vars = names(plotData))
-						
-						# Add names & times with 0 observations
-						fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
-										locatie = "Vlaams Gewest"))
-						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-						allData$freq[is.na(allData$freq)] <- 0
-						
-						allData$afschotjaar <- as.factor(allData$afschotjaar)
-						
-						
-						title <- paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
-								ifelse(input$map_time[1] != input$map_time[2],
-										paste("van", input$map_time[1], "tot", input$map_time[2]),
-										paste("in", input$map_time[1])
-								)
-						)
-						
-						## Create plot
-						toPlot <- plot_ly(data = allData, x = ~afschotjaar, y = ~freq,
-										color = ~locatie, hoverinfo = "x+y+name",
-										type = "scatter", mode = "lines+markers") %>%
-								layout(title = title,
-										xaxis = list(title = "Jaar"), 
-										yaxis = list(title = "Aantal"),
-										showlegend = TRUE,
-										margin = list(b = 80, t = 100))
-						
-						# To prevent warnings in UI
-						toPlot$elementId <- NULL
-						
-						
-						toPlot
-						
-					})
-			
-			
-			
-			## Create time plot for selected regions
-			output$map_timeTitle <- renderUI({
-						
-						regionLevel <- switch(input$map_regionLevel,
-								"flanders" = "Vlaanderen",
-								"provinces" = "Provincie",
-								"communes" = "Gemeente")
-						
-						h3("Regio-schaal:", regionLevel)
-						
-					})
-			
-			
-#			# Select data for time plot Regio-schaal
-#			results$map_timeRegio <- reactive({
-#						
-#						validate(need(results$map_timeData(), "Geen data beschikbaar"),
-#								need(input$map_region, "Gelieve regio('s) te selecteren"))
-#						
-#						subset(results$map_timeData(), locatie %in% input$map_region)
-#						
-#					}) 
-#			
-#			# Create time plot Regio-schaal 
-#			output$map_timePlot <- renderPlotly({
-#						
-#						req(results$map_timeRegio())
-#						
-#						title <- paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
-#								ifelse(input$map_time[1] != input$map_time[2],
-#										paste("van", input$map_time[1], "tot", input$map_time[2]),
-#										paste("in", input$map_time[1])
-#								)
-#						)
-#						
-#						allData <- subset(results$map_timeData(), locatie %in% input$map_region)
-#						
-#						
-#						# Create plot
-#						toPlot <- plot_ly(data = results$map_timeRegio(), x = ~afschotjaar, y = ~freq,
-#										color = ~locatie, hoverinfo = "x+y+name",
-#										type = "scatter", mode = "lines+markers") %>%
-#								layout(title = title,
-#										xaxis = list(title = "Jaar"), 
-#										yaxis = list(title = "Aantal"),
-#										showlegend = TRUE,
-#										margin = list(b = 80, t = 100))     
-#						
-#						# To prevent warnings in UI
-#						toPlot$elementId <- NULL
-#						
-#						
-#						toPlot
-#						
-#					})
-			
-			
-			callModule(module = optionsModuleServer, id = "map_timePlot", 
-					data = results$map_timeData)
-			callModule(module = plotModuleServer, id = "map_timePlot",
-					plotFunction = "countYearRegion", 
-					data = results$map_timeData,
-					locaties = reactive(input$map_region),
-					timeRange = reactive(input$map_time)
-			)
-			
+					
 			
 		})

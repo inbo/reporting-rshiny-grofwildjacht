@@ -1,0 +1,46 @@
+# TODO: Add comment
+# 
+# Author: mvarewyck
+###############################################################################
+
+
+#' Create interactive plot for counts in Flanders per selected years
+#' @param data data.frame, formatted data for plotting
+#' @inheritParams countYearRegion
+#' @return list with plot and data
+#' 
+#' @author mvarewyck
+#' @import plotly
+#' @export
+countYearFlanders <- function(data, timeRange, 
+		width = NULL, height = NULL) {
+	
+	
+	wildNaam <- unique(data$wildsoort)
+	data$wildsoort <- NULL 
+	
+	title <- paste("Gerapporteerd aantal voor", tolower(wildNaam),
+			ifelse(timeRange[1] != timeRange[2],
+					paste("van", timeRange[1], "tot", timeRange[2]),
+					paste("in", timeRange[1])
+			)
+	)
+	
+	## Create plot
+	toPlot <- plot_ly(data = data, x = ~afschotjaar, y = ~aantal,
+					color = ~locatie, hoverinfo = "x+y+name",
+					type = "scatter", mode = "lines+markers",
+					width = width, height = height) %>%
+			layout(title = title,
+					xaxis = list(title = "Jaar"), 
+					yaxis = list(title = "Aantal"),
+					showlegend = TRUE,
+					margin = list(b = 80, t = 100))
+	
+	# To prevent warnings in UI
+	toPlot$elementId <- NULL
+	
+	
+	return(list(plot = toPlot, data = data))
+	
+}

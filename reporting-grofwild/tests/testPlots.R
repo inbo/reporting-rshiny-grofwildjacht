@@ -16,6 +16,8 @@ load(file = file.path(dataDir, "spatialData.RData"))
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo", shapeData = spatialData)
 
+expect_equal(nrow(ecoData), nrow(geoData))
+
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
 getCategories <- function(wildSoort) {

@@ -47,7 +47,7 @@ plotBioindicator <- function(data,
 		sourceIndicator = c("inbo", "meldingsformulier", "both"),
 		width = NULL, height = NULL){
 	
-
+	
 	
 	wildNaam <- unique(data$wildsoort)
 	
@@ -68,11 +68,15 @@ plotBioindicator <- function(data,
 					levels(data$ageGender)[levels(data$ageGender) != ""]
 	
 	# Bioindicator 'onderkaaklengte' depends on data source
-	if (bioindicator == "onderkaaklengte")
-		data$onderkaaklengte <- with(data, switch(sourceIndicator,
-						inbo = onderkaaklengte,
-						meldingsformulier = lengte_mm,
-						both = ifelse(!is.na(onderkaaklengte), onderkaaklengte, lengte_mm)))
+	if (bioindicator == "onderkaaklengte") {
+		
+		if (sourceIndicator == "both")
+			data$bron <- with(data, ifelse(!is.na(onderkaaklengte), "inbo", "meldingsformulier")) else
+			data$bron <- sourceIndicator
+		
+		data$onderkaaklengte <- with(data, ifelse(bron == "inbo", onderkaaklengte, lengte_mm))
+		
+	}
 	
 	# Select data of specified years
 	plotData <- data[data$afschotjaar %in% jaartallen & data$ageGender %in% type,
@@ -186,18 +190,18 @@ plotBioindicator <- function(data,
 		
 	}else{
 		
-			
+		
 		returnedData <- plotData
 		
 		
 		# create plot
 		pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
 						colors = inbo.lichtblauw, type = "box", width = width, height = height) %>%
-		layout(title = title,
-				xaxis = list(title = "afschotjaar"), 
-				yaxis = list(title = bioindicatorName),
-				margin = list(b = 40, t = 100)
-		)
+				layout(title = title,
+						xaxis = list(title = "afschotjaar"), 
+						yaxis = list(title = bioindicatorName),
+						margin = list(b = 40, t = 100)
+				)
 		
 		# To prevent warnings in UI
 		pl$elementId <- NULL
@@ -206,7 +210,7 @@ plotBioindicator <- function(data,
 		
 #		# Note: default used by ggplot for high number of points
 #		# but doesn't support use of <= 2 years
-##		cs = Cubic regression splines
+		##		cs = Cubic regression splines
 #		model <- gam(
 #				formula = variable ~ s(afschotjaar, bs = "cs", k = length(unique(plotData$afschotjaar))), 
 #				data = plotData)
@@ -221,14 +225,14 @@ plotBioindicator <- function(data,
 #				ciUpper = as.numeric(getCiLoess("upper"))
 #		)
 #		
-##		represent median and quantile		
-##		inputPlot <- ddply(plotData, "afschotjaar", function(x){
-##				quantiles <- quantile(x$variable, probs = c(0.025, 0.975))
-##				data.frame(median = median(x$variable), 
-##					quant1 = quantiles[1], quant2 = quantiles[2], 
-##					stringsAsFactors = FALSE)
-##		})
-##		inputPlot$afschotjaar <- as.factor(inputPlot$afschotjaar)
+		##		represent median and quantile		
+		##		inputPlot <- ddply(plotData, "afschotjaar", function(x){
+		##				quantiles <- quantile(x$variable, probs = c(0.025, 0.975))
+		##				data.frame(median = median(x$variable), 
+		##					quant1 = quantiles[1], quant2 = quantiles[2], 
+		##					stringsAsFactors = FALSE)
+		##		})
+		##		inputPlot$afschotjaar <- as.factor(inputPlot$afschotjaar)
 #		
 #		# ribbon color with transparency	
 #		colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
@@ -264,7 +268,11 @@ plotBioindicator <- function(data,
 #		
 	}
 	
-	returnedData <- if(bioindicator == "aantal_embryos")	inputPlot	else	plotData
+	returnedData <- if(bioindicator == "aantal_embryos")
+				inputPlot else
+				plotData
+	
+	colnames(returnedData)[colnames(returnedData) == "variable"] <- bioindicator
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL

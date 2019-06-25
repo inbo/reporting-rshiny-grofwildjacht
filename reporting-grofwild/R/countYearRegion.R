@@ -1,10 +1,9 @@
-#' Create interactive plot for counts selected communes and years
+#' Create interactive plot for counts per selected communes and years
 #' 
 #' @param data data.frame with raw data for plotting
 #' @param locaties character vector, regions that were selected to plot
 #' @param timeRange numeric vector, time range selected for plot
-#' @param width plot width (optional)
-#' @param height plot height (optional)
+#' @inheritParams countYearProvince
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given species the observed number 
@@ -13,7 +12,7 @@
 #' \itemize{
 #' \item{'afschotjaar': }{year at which the animals was shot}
 #' \item{'locatie': }{comune name}
-#' \item{'freq': }{counts of animals}
+#' \item{'aantal': }{counts of animals}
 #' }
 #' }
 #' }
@@ -31,7 +30,7 @@ countYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	
 	
 	if (is.null(locaties))
-		stop("Gelieve gemeentes te selecteren")
+		stop("Gelieve regio('s) te selecteren")
 	
 	# Select data
 	plotData <- subset(data, locatie %in% locaties)
@@ -47,9 +46,10 @@ countYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	
 	
 	# Create plot
-	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
+	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~aantal,
 					color = ~locatie, hoverinfo = "x+y+name",
-					type = "scatter", mode = "lines+markers") %>%
+					type = "scatter", mode = "lines+markers",
+					width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Jaar"), 
 					yaxis = list(title = "Aantal"),

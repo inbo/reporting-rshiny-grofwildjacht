@@ -32,9 +32,8 @@ shinyUI(
 						tags$nav(class = "navbar navbar-default",
 								tags$div(class="container",
 										tags$ul(class="nav navbar-nav navbar-right",
-												tags$li(tags$a(
-																href="http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", target="_blank", "Geodata bron")),
-												tags$li(tags$a(href="mailto:frank.huysentruyt@inbo.be,thomas.scheppers@inbo.be?SUBJECT=Grofwildjacht web applicatie", "Contact"))
+												tags$li(tags$a(href="http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", target="_blank", "Geodata bron")),
+												tags$li(tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "Contact"))
 										)
 								)
 						),
@@ -117,7 +116,9 @@ shinyUI(
 								fixedRow(
 										column(6,
 												h3("Referentie (Vlaanderen)"),
-												withSpinner(plotlyOutput("map_timePlotFlanders", height = "400px"))
+												plotModuleUI(id = "map_timePlotFlanders", height = "400px"),
+												optionsModuleUI(id = "map_timePlotFlanders", exportData = TRUE,
+														doWellPanel = FALSE)
 										),
 										column(6,
 												uiOutput("map_timeTitle"),

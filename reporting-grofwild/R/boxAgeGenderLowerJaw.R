@@ -42,8 +42,6 @@ boxAgeGenderLowerJaw <- function(data,
 	# filter all averages < 100 and > 200
 	plotData <- plotData[plotData$onderkaaklengte >= 100 & plotData$onderkaaklengte <= 200, ]
 	
-	# only keep columns displayed in the plot
-	plotData <- plotData[, c("ageGender", "onderkaaklengte")]
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
@@ -71,6 +69,9 @@ boxAgeGenderLowerJaw <- function(data,
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = plotData))
+	return(list(
+					plot = pl, 
+					data = subset(plotData, select = c("ageGender", "onderkaaklengte", "provincie"))
+	))
 	
 }

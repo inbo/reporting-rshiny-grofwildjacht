@@ -19,7 +19,7 @@
 #' @import plotly
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
-countYearRegion <- function(data, locaties = NULL, timeRange = NULL,
+trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 		width = NULL, height = NULL) {
 	
 	
@@ -47,7 +47,8 @@ countYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	
 	# Create plot
 	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~aantal,
-					color = ~locatie, hoverinfo = "x+y+name",
+					color = ~locatie, colors = colors, 
+					hoverinfo = "x+y+name",
 					type = "scatter", mode = "lines+markers",
 					width = width, height = height) %>%
 			layout(title = title,

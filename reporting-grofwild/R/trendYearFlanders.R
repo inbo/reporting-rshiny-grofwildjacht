@@ -1,8 +1,3 @@
-# TODO: Add comment
-# 
-# Author: mvarewyck
-###############################################################################
-
 
 #' Create interactive plot for counts in Flanders per selected years
 #' @param data data.frame, formatted data for plotting
@@ -12,7 +7,7 @@
 #' @author mvarewyck
 #' @import plotly
 #' @export
-countYearFlanders <- function(data, timeRange, 
+trendYearFlanders <- function(data, timeRange, 
 		width = NULL, height = NULL) {
 	
 	

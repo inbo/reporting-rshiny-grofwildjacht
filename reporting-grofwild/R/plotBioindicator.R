@@ -80,7 +80,9 @@ plotBioindicator <- function(data,
 	
 	# Select data of specified years
 	plotData <- data[data$afschotjaar %in% jaartallen & data$ageGender %in% type,
-			c("afschotjaar", bioindicator)]
+			c("afschotjaar", bioindicator, 
+					if (bioindicator == "onderkaaklengte") "bron" else NULL, 
+					"ageGender", "provincie")]
 	
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
 		stop("Niet beschikbaar: Gelieve periode met minstens 3 jaren te selecteren")
@@ -190,8 +192,6 @@ plotBioindicator <- function(data,
 		
 	}else{
 		
-		
-		returnedData <- plotData
 		
 		
 		# create plot

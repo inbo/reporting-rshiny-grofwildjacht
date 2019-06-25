@@ -431,7 +431,7 @@ shinyServer(function(input, output, session) {
 			callModule(module = optionsModuleServer, id = "map_timePlotFlanders", 
 					data = results$map_timeDataFlanders)
 			callModule(module = plotModuleServer, id = "map_timePlotFlanders",
-					plotFunction = "countYearFlanders", 
+					plotFunction = "trendYearFlanders", 
 					data = results$map_timeDataFlanders,
 					timeRange = reactive(input$map_time)
 			)
@@ -499,7 +499,7 @@ shinyServer(function(input, output, session) {
 			callModule(module = optionsModuleServer, id = "map_timePlot", 
 					data = results$map_timeData)
 			callModule(module = plotModuleServer, id = "map_timePlot",
-					plotFunction = "countYearRegion", 
+					plotFunction = "trendYearRegion", 
 					data = results$map_timeData,
 					locaties = reactive(input$map_region),
 					timeRange = reactive(input$map_time)

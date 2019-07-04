@@ -268,6 +268,7 @@ shinyServer(function(input, output, session) {
 									"Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
 									Ree = c("Kits", "Jongvolwassen", "Volwassen")									
 							)),
+					labelTypes = "Leeftijdscategorie",
 					multipleTypes = TRUE,
 					timeRange = reactive(if (input$showSpecies == "Ree")
 										c(2014, max(results$timeRange())) else 

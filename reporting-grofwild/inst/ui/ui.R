@@ -40,7 +40,10 @@ shinyUI(
 						
 						tags$div(class = "container",
 								
-								h1("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek"),
+								tags$div(align = "center",
+										h1("Welkom op de informatiepagina rond grofwildjacht"),
+										h1("van het Instituut voor Natuur- en Bosonderzoek (INBO)")
+								),
 								
 								tags$p(class = "lead", "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen."),
 								
@@ -52,8 +55,11 @@ shinyUI(
 										"Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
 								
 								tags$p(paste0("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ",format(max(as.Date(ecoData$afschot_datum), na.rm = T), "%d/%m/%Y") , 
-												" .Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset"),tags$br(),
-										"Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar faunabeheer@inbo.be.")
+												". Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset.")
+								),
+								tags$p("Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar",
+										tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "faunabeheer@inbo.be")
+								)
 						
 						),
 						
@@ -69,7 +75,13 @@ shinyUI(
 								)
 						),
 						
-						
+						# TODO create nice buttons? https://stackoverflow.com/questions/44841346/adding-an-image-to-shiny-action-button
+#						tags$button(
+#								id = "web_button",
+#								class = "btn action_button",
+#								label = "Wild zwijn",
+#								img(src = "wildZwijn.jpeg", width = "400px")
+#						),
 						
 						
 						# Map with according line plot

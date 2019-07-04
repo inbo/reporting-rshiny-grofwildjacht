@@ -277,9 +277,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 		male <- rawData$geslacht.MF == "Mannelijk"
 		female <- rawData$geslacht.MF == "Vrouwelijk"
 		ageGender <- with(rawData,
-				ifelse(leeftijdscategorie_comp	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
-						ifelse(leeftijdscategorie_comp	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
-								ifelse(leeftijdscategorie_comp	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
+				ifelse(leeftijd_comp	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
+						ifelse(leeftijd_comp	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
+								ifelse(leeftijd_comp	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
 						)))
 		ageGender[is.na(ageGender)] <- ""
 		

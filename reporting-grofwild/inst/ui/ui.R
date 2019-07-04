@@ -323,7 +323,8 @@ shinyUI(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
-																			tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. Voor everzwijn werd de leeftijdscategorie bepaald op basis van de ingezamelde onderkaak. Voor ree is dit de leeftijdscategorie vermeld op het meldingsformulier.")
+																			tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode.",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, plotModuleUI(id = "plot5"))
 															

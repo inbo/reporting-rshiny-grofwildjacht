@@ -68,11 +68,24 @@ plotBioindicator <- function(data,
 					levels(data$ageGender)[levels(data$ageGender) != ""]
 	
 	# Bioindicator 'onderkaaklengte' depends on data source
+	# bron == "both" -> onderkaaklengte_comp
+	# bron == "inbo" -> lengte_mm
+	# bron == "meldingsformulier" -> mean(onderkaaklengte_links, onderkaaklengte_rechts)
 	if (bioindicator == "onderkaaklengte") {
 		
-		if (sourceIndicator == "both")
-		data <- subset(data, bron %in% c("inbo", "meldingsformulier")) else
-		data <- subset(data, bron %in% sourceIndicator)
+		if (sourceIndicator == "both") {
+			
+			data$onderkaaklengte <- data$onderkaaklengte_comp
+			data <- subset(data, !is.na(bron))
+			
+		} else {
+			
+			data$bron <- sourceIndicator
+			
+			if (sourceIndicator == "inbo") 
+				data$onderkaaklengte <- data$lengte_mm else
+				data$onderkaaklengte <- rowMeans(data[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
+		}
 		
 	}
 	

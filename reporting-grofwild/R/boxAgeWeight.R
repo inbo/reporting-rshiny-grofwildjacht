@@ -40,7 +40,7 @@ boxAgeWeight <- function(data,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "Leeftijdscategorie_onderkaak", "leeftijd_maanden", "geslacht.MF",
+			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_maanden", "geslacht.MF",
 					"provincie")]
 	names(plotData) <- c("gewicht", "leeftijd", "maanden", "geslacht", "provincie")
 	
@@ -123,7 +123,9 @@ boxAgeWeight <- function(data,
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = plotData))
+	return(list(plot = pl, 
+					data = subset(plotData, select = c("gewicht", "leeftijd", "geslacht", "provincie")))
+	)
 	
 	
 }

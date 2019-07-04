@@ -163,7 +163,8 @@ shinyUI(
 																	
 																	column(4,
 																			optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
-																			tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren. Voor everzwijn werd de leeftijdscategorie bepaald op basis van de ingezamelde onderkaken. Voor ree is deze afkomstig van het meldingsformulier.")
+																			tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, tableModuleUI(id = "table1"))
 															
@@ -265,7 +266,7 @@ shinyUI(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE),
-																			tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaalt op basis van een ingezamelde onderkaak")
+																			tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald op basis van een ingezamelde onderkaak")
 																	),
 																	column(8, plotModuleUI(id = "plot2"))
 															
@@ -304,7 +305,8 @@ shinyUI(
 																			optionsModuleUI(id = "plot4",
 																					showTime = TRUE, showYear = TRUE,
 																					showType = TRUE, exportData = TRUE),
-																			tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
+																			tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, plotModuleUI(id = "plot4"))
 															
@@ -331,14 +333,15 @@ shinyUI(
 													
 													
 													actionLink(inputId = "linkPlot6",
-															label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+															label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
 													conditionalPanel("input.linkPlot6 % 2 == 1",
 															fixedRow(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot6", showTime = TRUE, showType = TRUE,
 																					regionLevels = 1:2, exportData = TRUE),
-																			tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode."),
+																			tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald."),
 																			conditionalPanel("input.showSpecies == 'Ree'",
 																					"Voor ree: geen data beschikbaar voor 2014.")
 																	),
@@ -360,14 +363,15 @@ shinyUI(
 											tagList(
 													
 													actionLink(inputId = "linkPlot7",
-															label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+															label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
 													conditionalPanel("input.linkPlot7 % 2 == 1",
 															fixedRow(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot7", showTime = TRUE, showType = TRUE,
 																					regionLevels = 1:2, exportData = TRUE),
-																			tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode.")),
+																			tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
 																	column(8, plotModuleUI(id = "plot7"))
 															
 															),
@@ -386,7 +390,8 @@ shinyUI(
 																			optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE,
 																					regionLevels = 1:2, exportData = TRUE,
 																					showDataSource = TRUE),
-																			tags$p("Evolutie van de gemodelleerde onderkaaklengte (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types.")
+																			tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, plotModuleUI(id = "plot8"))
 															),

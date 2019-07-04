@@ -34,7 +34,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	
 	if (categorie == "leeftijd") {
 		
-		allData <- data[, c("provincie", "leeftijdscategorie_MF", "afschotjaar")]
+		allData <- data[, c("provincie", "leeftijd_comp", "afschotjaar")]
 		names(allData) <- c("provincie", "categorie", "jaar")
 		
 	} else if (categorie == "typeAantal") {

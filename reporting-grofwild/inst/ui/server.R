@@ -281,10 +281,11 @@ shinyServer(function(input, output, session) {
 			# Plot 7
 			callModule(module = optionsModuleServer, id = "plot7", 
 					data = results$wildEcoData,
-					types = reactive({
-								tmpLevels <- levels(results$wildEcoData()$ageGender)
-								tmpLevels[tmpLevels != ""]
-							}),
+					types = reactive(switch(input$showSpecies,
+									"Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
+									Ree = c("Kits", "Jongvolwassen", "Volwassen")									
+							)),
+					labelTypes = "Leeftijdscategorie",
 					multipleTypes = TRUE,
 					timeRange = reactive(if (input$showSpecies == "Ree")
 										c(2014, max(results$timeRange())) else 

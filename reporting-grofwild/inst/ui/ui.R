@@ -64,7 +64,7 @@ shinyUI(
 						),
 						
 						# Select species
-						tags$div(class = "container",
+						tags$div(class = "container", align = "center",
 								radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
 										choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
 										choiceNames = list(

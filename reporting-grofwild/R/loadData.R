@@ -287,9 +287,13 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 				levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
 		
 		# for Figure p. 27, 28: compute cheek length
-		rawData$onderkaaklengte <- rowMeans(
-				rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
-				na.rm = TRUE)
+	rawData$onderkaaklengte <- with(rawData, ifelse(!is.na(lengte_mm),
+					lengte_mm,
+					rowMeans(rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
+			))	
+	rawData$bron <- with(rawData, ifelse(is.nan(onderkaaklengte), NA,
+					ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
+		
 		
 	}
 	

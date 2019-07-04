@@ -71,10 +71,8 @@ plotBioindicator <- function(data,
 	if (bioindicator == "onderkaaklengte") {
 		
 		if (sourceIndicator == "both")
-			data$bron <- with(data, ifelse(!is.na(onderkaaklengte), "inbo", "meldingsformulier")) else
-			data$bron <- sourceIndicator
-		
-		data$onderkaaklengte <- with(data, ifelse(bron == "inbo", onderkaaklengte, lengte_mm))
+		data <- subset(data, bron %in% c("inbo", "meldingsformulier")) else
+		data <- subset(data, bron %in% sourceIndicator)
 		
 	}
 	

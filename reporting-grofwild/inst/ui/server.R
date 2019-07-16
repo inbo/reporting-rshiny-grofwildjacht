@@ -352,6 +352,8 @@ shinyServer(function(input, output, session) {
 			# Data-dependent input fields
 			output$map_year <- renderUI({
 						
+						# TODO restrict to available years for input$map_regionLevel
+						
 						div(class = "sliderBlank", 
 								sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
 										min = min(results$wildGeoData()$afschotjaar),

@@ -7,12 +7,14 @@
 library(reportingGrofwild)
 library(testthat)
 
-
-
-# Load all data
-#readShapeData()  # create shape data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
-load(file = file.path(dataDir, "spatialData.RData"))
+
+
+
+
+## 1. Ecological Data
+## -------------------
+
 
 ecoData <- loadRawData(type = "eco")
 expect_equal(unique(ecoData$doodsoorzaak), "afschot")
@@ -57,6 +59,18 @@ lapply(wildsoorten, function(iSoort) {
 			
 		})
 
+dev.off()
+
+
+## 2. Geographical Data
+## --------------------
+
+#readShapeData()  # create shape data
+load(file = file.path(dataDir, "spatialData.RData"))
+
+pdf(file.path(tempdir(), "checkGeoData.pdf"))
+for (iLevel in names(spatialData))
+	plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(10, "Set1"))
 dev.off()
 
 

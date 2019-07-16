@@ -5,8 +5,8 @@
 \title{Create interactive plot to represent yearly percentage killed}
 \usage{
 percentageYearlyShotAnimals(data, openingstijdenData = NULL,
-  type = NULL, doodsoorzaak = "afschot", jaartallen = NULL,
-  jaar = NULL, width = NULL, height = NULL)
+  type = NULL, jaartallen = NULL, jaar = NULL, width = NULL,
+  height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
@@ -16,9 +16,6 @@ as returned by the link{loadOpeningstijdenData} function}
 
 \item{type}{animal type, used to filter \code{data} and \code{openingstijdenData} ('type' column)
 If NULL (by default) or 'all', the data is not filtered.}
-
-\item{doodsoorzaak}{character vector, defines the cause(s) of death that should
-be considered in the plot}
 
 \item{jaartallen}{integer vector, defines the year(s) considered for the reference period
 in the plot; if NULL no selection on year(s) is made}

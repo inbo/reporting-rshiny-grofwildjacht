@@ -334,3 +334,34 @@ if (FALSE) {
 			type = NULL, summarizeBy = "percent")
 	
 }
+
+
+## THE MAP
+
+for (regionLevel in names(spatialData)[1:5]) {
+	
+	for (iSpecies in species) {
+		
+		spaceData <- createSpaceData(
+				data = geoData, 
+				spatialData = spatialData[[regionLevel]],
+				year = 2015,
+				species = iSpecies,
+				regionLevel = regionLevel
+		)
+		
+		myPlot <- mapFlanders(
+				spatialData = spatialData[[regionLevel]], 
+				allSpatialData = spatialData, 
+				regionLevel = regionLevel, 
+				colorScheme = c("white", RColorBrewer::brewer.pal(
+								n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
+				summaryData = spaceData,
+				legend = "topright"
+		)
+		
+		print(myPlot)
+		
+	}
+	
+}

@@ -39,9 +39,21 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
 				shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
 				
 				# Create factor for region names
-				if (iLevel == "provinces")
+				if (iLevel == "provinces") {
+					
 					shapeData$NAAM <- factor(shapeData$NAAM, levels = c("West-Vlaanderen",
-									"Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg"))
+									"Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg")) 
+					
+				} else if (iLevel == "faunabeheerzones") {
+					
+					shapeData$NAAM <- factor(shapeData$Code)
+					
+				} else if (iLevel == "fbz_gemeentes") {
+					
+					# Create fbz_gemeente
+					shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
+					
+				}
 				
 				return(shapeData)
 				
@@ -234,6 +246,10 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 #    tmpData[which(tmpData$old != tmpData$new), ]
 		
 		rawData$gemeente_afschot_locatie <- geoName
+		
+		# Create fbz_gemeente
+		rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
+				NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
 		
 	}
 	

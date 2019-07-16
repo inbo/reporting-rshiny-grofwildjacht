@@ -5,15 +5,6 @@
 
 
 
-# Center coordinates of Belgium, to crop the amount of gray in image
-flandersRange <- list(
-		lng = 4.23,
-		lat = 51.1
-)
-
-
-
-
 shinyServer(function(input, output, session) {
 			
 			
@@ -352,11 +343,11 @@ shinyServer(function(input, output, session) {
 			# Data-dependent input fields
 			output$map_year <- renderUI({
 						
-						# TODO restrict to available years for input$map_regionLevel
-						
 						div(class = "sliderBlank", 
 								sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
-										min = min(results$wildGeoData()$afschotjaar),
+										min = if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+											2014 else
+											min(results$wildGeoData()$afschotjaar),
 										max = max(results$wildGeoData()$afschotjaar),
 										value = 2016,
 										sep = "", step = 1))
@@ -366,13 +357,33 @@ shinyServer(function(input, output, session) {
 			
 			output$map_time <- renderUI({
 						
+						minYear <- if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+									2014 else
+									min(results$wildGeoData()$afschotjaar)
+						
 						sliderInput(inputId = "map_time", label = "Periode (grafiek)", 
-								value = c(min(results$wildGeoData()$afschotjaar), 
+								value = c(minYear, 
 										max(results$wildGeoData()$afschotjaar)),
-								min = min(results$wildGeoData()$afschotjaar),
+								min = minYear,
 								max = max(results$wildGeoData()$afschotjaar),
 								step = 1,
 								sep = "")
+						
+					})
+			
+			# show borders in map if gemeente -> province or fbz
+			output$map_border <- renderUI({
+						
+						conditionalPanel("input.map_regionLevel == 'communes'",
+								selectInput(
+										inputId = "map_border",
+										label = "Boorden (kaart)",
+										choices = c(
+												"Faunabeheerzones" = "faunabeheerzones",
+												"Provincies" = "provinces",
+												"")
+								)
+						)
 						
 					})
 			
@@ -445,6 +456,9 @@ shinyServer(function(input, output, session) {
 						validate(need(results$wildGeoData(), "Geen data beschikbaar"),
 								need(input$map_time, "Gelieve periode te selecteren"))
 						
+						
+						# TODO incorporate this code in createSpaceData()
+			
 						# Select subset for time
 						chosenTimes <- input$map_time[1]:input$map_time[2]
 						tmpData <- subset(results$wildGeoData(), afschotjaar %in% chosenTimes)
@@ -453,10 +467,13 @@ shinyServer(function(input, output, session) {
 						plotData <- data.frame(
 								wildsoort = input$showSpecies,
 								afschotjaar = tmpData$afschotjaar)
-						if (input$map_regionLevel == "flanders")
-							plotData$locatie <- "Vlaams Gewest" else if (input$map_regionLevel == "provinces")
-							plotData$locatie <- tmpData$provincie else
-							plotData$locatie <- tmpData$gemeente_afschot_locatie
+						plotData$locatie <- switch(input$map_regionLevel,
+								flanders = "Vlaams Gewest",
+								provinces = tmpData$provincie,
+								communes = tmpData$gemeente_afschot_locatie,
+								faunabeheerzones = tmpData$FaunabeheerZone,
+								fbz_gemeentes = tmpData$fbz_gemeente
+						)
 						
 						# Exclude data with missing time or space
 						plotData <- plotData[!is.na(plotData$afschotjaar) & 
@@ -506,73 +523,20 @@ shinyServer(function(input, output, session) {
 			
 			## Map for Flanders ##
 			
-			# Create data for map, spatial plot
-			results$map_spaceData <- reactive({
+			# Create data for map, summary of ecological data, given year, species and regionLevel
+			results$map_summarySpaceData <- reactive({
 						
 						validate(need(results$wildGeoData(), "Geen data beschikbaar"),
 								need(input$map_year, "Gelieve jaar te selecteren"))
 						
-						# Select subset for time
-						tmpData <- subset(results$wildGeoData(), afschotjaar == input$map_year)
 						
-						# Create general plot data names
-						plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
-						if (input$map_regionLevel == "flanders")
-							plotData$locatie <- "Vlaams Gewest" else if (input$map_regionLevel == "provinces")
-							plotData$locatie <- tmpData$provincie else
-							plotData$locatie <- tmpData$gemeente_afschot_locatie
-						
-						# Exclude data with missing time or space
-						plotData <- plotData[!is.na(plotData$afschotjaar) & 
-										!is.na(plotData$locatie) & plotData$locatie != "",]
-						
-						# Summarize data over years
-						summaryData <- plyr::count(df = plotData, vars = names(plotData))
-						
-						# Add names & times with 0 observations
-						fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
-										locatie = unique(results$spatialData()$NAAM)))
-						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-						allData$freq[is.na(allData$freq)] <- 0
-						
-						allData$afschotjaar <- as.factor(allData$afschotjaar)
-						
-						
-						summaryData2 <- plyr::count(df = allData, vars = "locatie", wt_var = "freq")
-						
-						# Create group variable
-						if (input$map_regionLevel %in% c("flanders", "provinces")) {
-							
-							otherBreaks <- sort(unique(summaryData2$freq))
-							
-							summaryData2$group <- cut(x = summaryData2$freq, 
-									breaks = c(-Inf, otherBreaks),
-									labels = otherBreaks) 
-							
-						} else {
-							
-							if (input$showSpecies %in% c("Wild zwijn", "Ree"))
-								summaryData2$group <- cut(x = summaryData2$freq, 
-										breaks = c(-Inf, 0, 10, 20, 40, 80, Inf),
-										labels = c("0", "1-10", "11-20", "21-40", "41-80", ">80")) else
-								summaryData2$group <- cut(x = summaryData2$freq, 
-										breaks = c(-Inf, 0, 5, 10, 15, 20, Inf),
-										labels = c("0", "1-5", "6-10", "11-15", "16-20", ">20"))
-							
-#              otherBreaks <- quantile(summaryData2$freq, probs = seq(0, 1, by = 0.2))
-#              otherBreaks <- unique(otherBreaks[otherBreaks != 0])
-#              summaryData2$group <- cut(x = summaryData2$freq, 
-#                  breaks = c(-Inf, 0, otherBreaks),
-#                  labels = c("0", sapply(seq_along(otherBreaks), function(i) {
-#                            if (i == 1 & any(summaryData2$freq == 0))
-#                              paste0("1-", otherBreaks[i]) else if (i == 1)
-#                              paste0("0-", otherBreaks[i]) else 
-#                              paste0(otherBreaks[i-1]+1, "-", otherBreaks[i])
-#                          })))
-							
-						}
-						
-						return(summaryData2)
+						createSpaceData(
+								data = geoData, 
+								spatialData = results$spatialData(),
+								year = input$map_year,
+								species = input$showSpecies,
+								regionLevel = input$map_regionLevel
+						)
 						
 					})
 			
@@ -617,14 +581,14 @@ shinyServer(function(input, output, session) {
 			# Define text to be shown in the pop-ups
 			results$map_textPopup <- reactive({
 						
-						validate(need(results$map_spaceData(), "Geen data beschikbaar"))
+						validate(need(results$map_summarySpaceData(), "Geen data beschikbaar"))
 						
-						regionNames <- results$map_spaceData()$locatie
+						regionNames <- results$map_summarySpaceData()$locatie
 						titleText <- paste("Gerapporteerd aantal in", input$map_year[1])
 						
 						textPopup <- paste0("<h4>", regionNames, "</h4>",  
 								"<strong>", titleText, "</strong>: ", 
-								round(results$map_spaceData()$freq, 2)
+								round(results$map_summarySpaceData()$freq, 2)
 						)
 						
 						
@@ -638,24 +602,9 @@ shinyServer(function(input, output, session) {
 						
 						# Might give warnings if n < 3
 						suppressWarnings(c("white", RColorBrewer::brewer.pal(
-												n = nlevels(results$map_spaceData()$group) - 1, name = "YlOrBr")))
+												n = nlevels(results$map_summarySpaceData()$group) - 1, name = "YlOrBr")))
 						
-					})
-			
-			results$map_colors <- reactive({
-						
-						validate(need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
-						
-						palette <- colorFactor(palette = results$map_colorScheme(), 
-								levels = levels(results$map_spaceData()$group))
-						
-						valuesPalette <- results$map_spaceData()[
-								match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
-								"group"]
-						
-						palette(valuesPalette)
-						
-					})
+					})			
 			
 			
 			# Send map to the UI
@@ -664,31 +613,16 @@ shinyServer(function(input, output, session) {
 						req(spatialData)
 						
 						validate(need(results$spatialData(), "Geen data beschikbaar"),
-								need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
+								need(nrow(results$map_summarySpaceData()) > 0, "Geen data beschikbaar"))
 						
-						provinceBounds <- switch(input$map_regionLevel,
-								"flanders" = list(opacity = 0), 
-								"provinces" = list(opacity = 0),
-								"communes" = list(color = "black", opacity = 0.8))            
+						mapFlanders(
+								regionLevel = input$map_regionLevel,
+								spatialData = results$spatialData(),
+								allSpatialData = spatialData,
+								summaryData = results$map_summarySpaceData(),
+								colorScheme = results$map_colorScheme()
+						)
 						
-						
-						leaflet(results$spatialData()) %>%
-								
-								addPolygons(
-										weight = 1, 
-										color = "gray",
-										fillColor = ~ results$map_colors(),
-										fillOpacity = 0.8,
-										layerId = results$spatialData()$NAAM,
-										group = "region"
-								) %>%
-								
-								addPolylines(
-										data = spatialData$provinces, 
-										color = provinceBounds$color, 
-										weight = 3,
-										opacity = provinceBounds$opacity
-								)
 						
 					})
 			
@@ -742,7 +676,7 @@ shinyServer(function(input, output, session) {
 			# Add legend
 			observe({
 						
-						validate(need(nrow(results$map_spaceData()) > 0, "Geen data beschikbaar"))
+						validate(need(nrow(results$map_summarySpaceData()) > 0, "Geen data beschikbaar"))
 						
 						req(input$map_legend)
 						
@@ -752,10 +686,10 @@ shinyServer(function(input, output, session) {
 						if (input$map_legend != "none") {
 							
 							palette <- colorFactor(palette = results$map_colorScheme(), 
-									levels = levels(results$map_spaceData()$group))
+									levels = levels(results$map_summarySpaceData()$group))
 							
-							valuesPalette <- results$map_spaceData()[
-									match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
+							valuesPalette <- results$map_summarySpaceData()[
+									match(results$spatialData()$NAAM, results$map_summarySpaceData()$locatie),
 									"group"]
 							
 							
@@ -788,10 +722,10 @@ shinyServer(function(input, output, session) {
 							
 							if (!is.null(event$id)) {
 								
-								if (event$id %in% results$map_spaceData()$locatie) {
+								if (event$id %in% results$map_summarySpaceData()$locatie) {
 									
 									textSelected <- results$map_textPopup()[
-											results$map_spaceData()$locatie == event$id]
+											results$map_summarySpaceData()$locatie == event$id]
 									
 									isolate({
 												
@@ -822,58 +756,18 @@ shinyServer(function(input, output, session) {
 			# Create final map (for download)
 			results$finalMap <- reactive({
 						
-						validate(need(results$map_spaceData(), "Geen data beschikbaar"))
+						validate(need(results$map_summarySpaceData(), "Geen data beschikbaar"))
 						
 						
-						palette <- colorFactor(palette = results$map_colorScheme(), 
-								levels = levels(results$map_spaceData()$group))
-						
-						valuesPalette <- results$map_spaceData()[
-								match(results$spatialData()$NAAM, results$map_spaceData()$locatie),
-								"group"]
-						
-						newMap <- leaflet(results$spatialData()) %>%
-								setView(lng = flandersRange$lng, lat = flandersRange$lat,
-										zoom = 8.5)
-						
-						if (input$map_legend != "none") { 
-							
-							newMap <- addLegend(newMap,
-									position = input$map_legend,
-									pal = palette, 
-									values = valuesPalette,
-									opacity = 0.8,
-									title = "Legende",
-									layerId = "legend"
-							)
-							
-						}
-						
-						newMap <- addPolygons(newMap,
-								weight = 1,
-								color = "gray",
-								fillColor = ~ results$map_colors(),
-								fillOpacity = 0.8,
-								layerId = results$spatialData()$NAAM,
-								group = "region"
+						newMap <- mapFlanders(
+								regionLevel = input$map_regionLevel, 
+								spatialData = results$spatialData(),
+								allSpatialData = spatialData,
+								summaryData = results$map_summarySpaceData(),
+								colorScheme = results$map_colorScheme(),
+								legend = input$map_legend,
+								addGlobe = input$map_globe %% 2 == 1
 						)
-						
-						if (input$map_regionLevel == "communes") {  
-							
-							newMap <- addPolylines(newMap,
-									data = spatialData$provinces,
-									color = "black", 
-									weight = 3,
-									opacity = 0.8, 
-									group = "provinceLines")
-							
-						}
-						
-						if (input$map_globe %% 2 == 1) {
-							
-							newMap <- addProviderTiles(newMap, "Hydda.Full")
-							
-						} 
 						
 						# save the zoom level and centering
 						newMap %>%  setView(
@@ -894,10 +788,6 @@ shinyServer(function(input, output, session) {
 								content = "kaart", fileExt = "png"),
 					content = function(file) {
 						
-#						htmlwidgets::saveWidget(widget = results$finalMap(), 
-#								file = file.path(tempdir(), "plotRuimte.html"), selfcontained = FALSE)
-#						webshot::webshot(file.path(tempdir(), "plotRuimte.html"), file = file, 
-#								vwidth = 1000, vheight = 500, cliprect = "viewport", zoom = 3)
 						mapview::mapshot(x = results$finalMap(), file = file,
 								vwidth = 1000, vheight = 500, cliprect = "viewport")
 						
@@ -912,7 +802,7 @@ shinyServer(function(input, output, session) {
 					content = function(file) {
 						
 						## write data to exported file
-						write.table(x = results$map_spaceData(), file = file, quote = FALSE, row.names = FALSE,
+						write.table(x = results$map_summarySpaceData(), file = file, quote = FALSE, row.names = FALSE,
 								sep = ";", dec = ",")
 						
 					})

@@ -94,8 +94,13 @@ shinyUI(
 								wellPanel(
 										fixedRow(
 												column(4, selectInput(inputId = "map_regionLevel", label = "Regio-schaal",
-																choices = c("Vlaanderen" = "flanders",
-																		"Provincie" = "provinces", "Gemeente" = "communes"),
+																choices = c(
+																		"Vlaanderen" = "flanders",
+																		"Provincie" = "provinces", 
+																		"Faunabeheerzones" = "faunabeheerzones",
+																		"Gemeente (binnen provincie)" = "communes",
+																		"Gemeente (binnen faunabeheerzone)" = "fbz_gemeentes"
+																		),
 																selected = "communes")),
 												column(8, uiOutput("map_region"))
 										),
@@ -110,7 +115,9 @@ shinyUI(
 																		"Onderaan links" = "bottomleft",
 																		"<geen>" = "none"))
 												),
-												column(6, uiOutput("map_time"))
+												column(6, 
+														uiOutput("map_time")
+												)
 										),
 										
 										actionLink(inputId = "map_globe", label = "Voeg landkaart toe",

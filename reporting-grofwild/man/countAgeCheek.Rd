@@ -4,8 +4,7 @@
 \alias{countAgeCheek}
 \title{Create interactive plot for comparing age based on cheek or reported by hunter}
 \usage{
-countAgeCheek(data, jaartallen = NULL, width = NULL, height = NULL,
-  doodsoorzaak = "afschot")
+countAgeCheek(data, jaartallen = NULL, width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
@@ -16,9 +15,6 @@ in the plot; if NULL no selection on year(s) is made}
 \item{width}{plot width (optional)}
 
 \item{height}{plot height (optional)}
-
-\item{doodsoorzaak}{character vector, defines the cause(s) of death that should
-be considered in the plot}
 }
 \value{
 list with:

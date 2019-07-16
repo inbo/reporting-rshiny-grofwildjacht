@@ -32,7 +32,7 @@
 #' @export
 percentageRealisedShotAnimals <- function(data, assignedData,
 		jaartallen = NULL, type = NULL,
-		regio = "", doodsoorzaak = "afschot", summarizeBy = c("count", "percent"),
+		regio = "", summarizeBy = c("count", "percent"),
 		width = NULL, height = NULL) {
 	
 	
@@ -44,8 +44,7 @@ percentageRealisedShotAnimals <- function(data, assignedData,
 		jaartallen <- unique(data$afschotjaar)
 	
 	# Data observed afschot
-	plotData <- data[data$afschotjaar %in% jaartallen &
-					data$doodsoorzaak %in% doodsoorzaak, c("afschotjaar", "type")]
+	plotData <- data[data$afschotjaar %in% jaartallen, c("afschotjaar", "type")]
 	names(plotData) <- c("jaar", "type")
 	
 	# Data assigned afschot
@@ -117,10 +116,9 @@ percentageRealisedShotAnimals <- function(data, assignedData,
 	title <- paste0(wildNaam, " (", paste(type, collapse = ", "), ") ",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
 					paste("in", jaartallen)),
-			"\n(", paste(doodsoorzaak, collapse = " en "), 
-			if (!all(regio == "")) 
-				paste(" in", paste(regio, collapse = " en ")),
-			")")
+			if (!all(regio == ""))
+				paste0("\n(in ", paste(regio, collapse = " en "), ")")
+	)
 	
 	
 	

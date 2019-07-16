@@ -40,7 +40,10 @@ shinyUI(
 						
 						tags$div(class = "container",
 								
-								h1("Welkom op de informatiepagina rond grofwildjacht van het Instituut voor Natuur- en Bosonderzoek"),
+								tags$div(align = "center",
+										h1("Welkom op de informatiepagina rond grofwildjacht"),
+										h1("van het Instituut voor Natuur- en Bosonderzoek (INBO)")
+								),
 								
 								tags$p(class = "lead", "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen."),
 								
@@ -52,13 +55,16 @@ shinyUI(
 										"Daaronder kunnen verdere grafieken worden aangeklikt, die telkens kunnen worden aangepast naargelang de informatie die u zelf wenst te visualiseren."),
 								
 								tags$p(paste0("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ",format(max(as.Date(ecoData$afschot_datum), na.rm = T), "%d/%m/%Y") , 
-												" .Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset"),tags$br(),
-										"Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar faunabeheer@inbo.be.")
+												". Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset.")
+								),
+								tags$p("Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar",
+										tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "faunabeheer@inbo.be")
+								)
 						
 						),
 						
 						# Select species
-						tags$div(class = "container",
+						tags$div(class = "container", align = "center",
 								radioButtons(inputId = "showSpecies", label = "", inline = TRUE,
 										choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
 										choiceNames = list(
@@ -69,7 +75,13 @@ shinyUI(
 								)
 						),
 						
-						
+						# TODO create nice buttons? https://stackoverflow.com/questions/44841346/adding-an-image-to-shiny-action-button
+#						tags$button(
+#								id = "web_button",
+#								class = "btn action_button",
+#								label = "Wild zwijn",
+#								img(src = "wildZwijn.jpeg", width = "400px")
+#						),
 						
 						
 						# Map with according line plot
@@ -151,7 +163,8 @@ shinyUI(
 																	
 																	column(4,
 																			optionsModuleUI(id = "table1", showYear = TRUE, exportData = TRUE),
-																			tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren. Voor everzwijn werd de leeftijdscategorie bepaald op basis van de ingezamelde onderkaken. Voor ree is deze afkomstig van het meldingsformulier.")
+																			tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, tableModuleUI(id = "table1"))
 															
@@ -253,7 +266,7 @@ shinyUI(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot2", showTime = TRUE, exportData = TRUE),
-																			tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaalt op basis van een ingezamelde onderkaak")
+																			tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald op basis van een ingezamelde onderkaak")
 																	),
 																	column(8, plotModuleUI(id = "plot2"))
 															
@@ -292,7 +305,8 @@ shinyUI(
 																			optionsModuleUI(id = "plot4",
 																					showTime = TRUE, showYear = TRUE,
 																					showType = TRUE, exportData = TRUE),
-																			tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.")
+																			tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling in de geselecteerde referentieperiode.",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, plotModuleUI(id = "plot4"))
 															
@@ -309,7 +323,8 @@ shinyUI(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot5", showTime = TRUE, exportData = TRUE),
-																			tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. Voor everzwijn werd de leeftijdscategorie bepaald op basis van de ingezamelde onderkaak. Voor ree is dit de leeftijdscategorie vermeld op het meldingsformulier.")
+																			tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode.",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, plotModuleUI(id = "plot5"))
 															
@@ -319,14 +334,15 @@ shinyUI(
 													
 													
 													actionLink(inputId = "linkPlot6",
-															label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+															label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
 													conditionalPanel("input.linkPlot6 % 2 == 1",
 															fixedRow(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot6", showTime = TRUE, showType = TRUE,
 																					regionLevels = 1:2, exportData = TRUE),
-																			tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode."),
+																			tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald."),
 																			conditionalPanel("input.showSpecies == 'Ree'",
 																					"Voor ree: geen data beschikbaar voor 2014.")
 																	),
@@ -348,14 +364,15 @@ shinyUI(
 											tagList(
 													
 													actionLink(inputId = "linkPlot7",
-															label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (o.b.v. onderkaak) en geslacht")),
+															label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
 													conditionalPanel("input.linkPlot7 % 2 == 1",
 															fixedRow(
 																	
 																	column(4,
 																			optionsModuleUI(id = "plot7", showTime = TRUE, showType = TRUE,
 																					regionLevels = 1:2, exportData = TRUE),
-																			tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode.")),
+																			tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
 																	column(8, plotModuleUI(id = "plot7"))
 															
 															),
@@ -374,7 +391,8 @@ shinyUI(
 																			optionsModuleUI(id = "plot8", showTime = TRUE, showType = TRUE,
 																					regionLevels = 1:2, exportData = TRUE,
 																					showDataSource = TRUE),
-																			tags$p("Evolutie van de gemodelleerde onderkaaklengte (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types.")
+																			tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).",
+																					"Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
 																	),
 																	column(8, plotModuleUI(id = "plot8"))
 															),

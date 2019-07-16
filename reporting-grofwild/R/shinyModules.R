@@ -88,7 +88,7 @@ optionsModuleUI <- function(id,
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-		data, types = NULL, typesDefault = types, 
+		data, types = NULL, labelTypes = "Type", typesDefault = types, 
 		timeRange = NULL, timeLabel = "Periode", 
 		multipleTypes = FALSE) {
 	
@@ -158,7 +158,7 @@ optionsModuleServer <- function(input, output, session,
 	
 	output$type <- renderUI({
 				
-				selectInput(inputId = ns("type"), label = "Type",
+				selectInput(inputId = ns("type"), label = labelTypes,
 						choices = types(), 
 						selected = typesDefault(), multiple = multipleTypes)
 				

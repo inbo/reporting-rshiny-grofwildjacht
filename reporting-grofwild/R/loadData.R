@@ -250,11 +250,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 	
 	
 	if (type == "eco") {
+
 		
-		# Re-define doodsoorzaak "verdelging ANB" into afschot
-		rawData$doodsoorzaak[rawData$doodsoorzaak == "verdelging ANB"] <- "afschot" 
-		
-		# Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
+		# TODO will become redundant --- Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
 		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
 		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
 		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
@@ -263,8 +261,8 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 		# (to do the matching with the openingstijden table)
 		idx <- which(rawData$wildsoort == "Ree")
 		typeRee <- ifelse(
-				rawData[idx, "leeftijdscategorie_MF"]  == "Kits", "kits",
-				ifelse(rawData[idx, "leeftijdscategorie_MF"] %in% c("Jongvolwassen", "Volwassen"),
+				rawData[idx, "leeftijd_comp"]  == "Kits", "kits",
+				ifelse(rawData[idx, "leeftijd_comp"] %in% c("Jongvolwassen", "Volwassen"),
 						ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
 								ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
 						),
@@ -277,9 +275,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 		male <- rawData$geslacht.MF == "Mannelijk"
 		female <- rawData$geslacht.MF == "Vrouwelijk"
 		ageGender <- with(rawData,
-				ifelse(leeftijdscategorie_MF	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
-						ifelse(leeftijdscategorie_MF	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
-								ifelse(leeftijdscategorie_MF	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
+				ifelse(leeftijd_comp	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
+						ifelse(leeftijd_comp	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
+								ifelse(leeftijd_comp	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
 						)))
 		ageGender[is.na(ageGender)] <- ""
 		
@@ -287,9 +285,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 				levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
 		
 		# for Figure p. 27, 28: compute cheek length
-		rawData$onderkaaklengte <- rowMeans(
-				rawData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
-				na.rm = TRUE)
+		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
+						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
+		
 		
 	}
 	

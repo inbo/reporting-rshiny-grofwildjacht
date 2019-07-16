@@ -34,7 +34,6 @@
 percentageYearlyShotAnimals <- function(
 		data, openingstijdenData = NULL,
 		type = NULL,
-		doodsoorzaak = "afschot",
 		jaartallen = NULL, jaar = NULL,
 		width = NULL, height = NULL) {
 	
@@ -67,7 +66,7 @@ percentageYearlyShotAnimals <- function(
 	## filtering
 	
 	# consider only animals shot in specified zaak
-	inputData <- data[data$doodsoorzaak == doodsoorzaak, ]
+	inputData <- data
 	
 	# only retains animals of specified type
 	specifiedType <- !is.null(type) && type != "all"

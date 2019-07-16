@@ -28,7 +28,7 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
-		width = NULL, height = NULL, doodsoorzaak = "afschot") {
+		width = NULL, height = NULL) {
 	
 	
 	wildNaam <- unique(data$wildsoort)
@@ -42,7 +42,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 		stop(paste0("Voor ", t, " werden tot nu toe onvoldoende onderkaken ingezameld om een zinvolle grafiek te maken."))
 	
 	# Select data
-	plotData <- data[data$afschotjaar %in% jaartallen & data$doodsoorzaak %in% doodsoorzaak, 
+	plotData <- data[data$afschotjaar %in% jaartallen, 
 			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
 	names(plotData) <- c("jager", "kaak")
 	

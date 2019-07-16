@@ -37,11 +37,8 @@ countAgeGender <- function(data, jaartallen = NULL,
 		jaartallen <- unique(data$afschotjaar)
 	
 	# Select data
-	if (wildNaam == "Wild zwijn")
-		plotData <- data[data$afschotjaar %in% jaartallen, 
-				c("geslacht.MF", "Leeftijdscategorie_onderkaak")] else
-		plotData <- data[data$afschotjaar %in% jaartallen, 
-				c("geslacht.MF", "leeftijdscategorie_MF")]
+	plotData <- data[data$afschotjaar %in% jaartallen, 
+				c("geslacht.MF", "leeftijd_comp")]
 	names(plotData) <- c("geslacht", "leeftijd")
 	
 	# Percentage collected
@@ -95,9 +92,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 					colors = colors, type = "bar",  width = width, height = height) %>%
 			
 			layout(title = title,
-					xaxis = list(title =  if (wildNaam == "Wild zwijn")
-										"Leeftijdscategorie (onderkaak)" else
-										"Leeftijdscategorie (meldingsformulier)"), 
+					xaxis = list(title = "Leeftijdscategorie (INBO of Meldingsformulier)"), 
 					yaxis = list(title = "Percentage"),
 					legend = list(y = 0.8, yanchor = "top"),
 					margin = list(b = 120, t = 100), 

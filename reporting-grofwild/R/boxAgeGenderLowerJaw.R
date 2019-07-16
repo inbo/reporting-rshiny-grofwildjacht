@@ -31,34 +31,73 @@ boxAgeGenderLowerJaw <- function(data,
 	# Select data
 	plotData <- data[
 			# data of specified years
-			data$afschotjaar %in% jaartallen &
-					# with specified gender/age category
-					data$ageGender %in% type, ]
+			data$afschotjaar %in% jaartallen, 
+			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_maanden", "geslacht.MF", "provincie")]
+	names(plotData) <- c("onderkaaklengte", "leeftijd", "maanden", "geslacht", "provincie")
 	
-	plotData$ageGender <- droplevels(plotData$ageGender)
 	
-	# filter animal with left/right cheek length measured
-	plotData <- plotData[!is.na(plotData$onderkaaklengte), ]
-	# filter all averages < 100 and > 200
-	plotData <- plotData[plotData$onderkaaklengte >= 100 & plotData$onderkaaklengte <= 200, ]
+	# Percentage collected
+	nRecords <- nrow(plotData)
 	
+	# Remove some categories
+	# To prevent error with R CMD check
+	leeftijd <- NULL
+	onderkaaklengte <- NULL
+	geslacht <- NULL
+	plotData <- subset(plotData, !is.na(leeftijd) & leeftijd != "Niet ingezameld" &
+					!is.na(onderkaaklengte) & geslacht != "Onbekend" & !is.na(geslacht))
+	plotData$geslacht <- factor(plotData$geslacht)
+	
+	if (nrow(plotData) == 0)
+		stop("Geen data beschikbaar")
+	
+	# Define names and ordering of factor levels
+	if (wildNaam == "Wild zwijn") {  # wild zwijn
+		
+		plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
+				ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
+						"Frisling (<6m)", "Frisling (>6m)")
+		
+		newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
+		
+	} else {  # ree
+		
+		newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
+		
+	}
+	
+	plotData$leeftijd <- factor(plotData$leeftijd, levels = newLevelsLeeftijd)
+	
+	plotData <- subset(plotData, leeftijd %in% type)
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
 	
 	
-	totalCounts <- count(plotData, vars = c("ageGender"))
-	totalCounts$index <- (seq_along(totalCounts$ageGender) - 1/2)/nrow(totalCounts) 
+	# For optimal displaying in the plot
+	colors <- inbo.2015.colours(n = 2)
+	names(colors) <- unique(plotData$geslacht)
 	
+	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))
+	nIndices <- nrow(totalCounts)/2
+	totalCounts$index[totalCounts$geslacht == "Mannelijk"] <- (-2/3 + seq_len(nIndices))/nIndices
+	totalCounts$index[totalCounts$geslacht == "Vrouwelijk"] <- (-1/3 + seq_len(nIndices))/nIndices
+	
+	title <- paste0(wildNaam, " onderkaak lengte ",
+			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), 
+					paste("in", jaartallen)), 
+			if (!all(regio == "")) 
+				paste0(" (", toString(regio), ")")) 
+			
 	# create plot
-	pl <- plot_ly(data = plotData, x = ~ageGender, y = ~onderkaaklengte,
-					colors = inbo.lichtgrijs, type = "box", width = width, height = height) %>%
-			layout(title = paste0(wildNaam, " onderkaak lengte ",
-							ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-							if (!all(regio == "")) paste0(" (", toString(regio), ")")),
-					xaxis = list(title = "Categorie op basis van leeftijdscategorie en geslacht"), 
+	pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~onderkaaklengte,
+					color = ~geslacht, colors = colors, type = "box", 
+					width = width, height = height) %>%
+			layout(title = title,
+					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Onderkaaklengte (mm)"),
-					margin = list(b = 40, t = 100),
+					margin = list(t = 100),
+					boxmode = "group",
 					annotations = list(x = totalCounts$index, 
 							y = -diff(range(plotData$onderkaaklengte, na.rm = TRUE))/10, 
 							xref = "paper", text = totalCounts$freq, xanchor = 'center', 
@@ -71,7 +110,7 @@ boxAgeGenderLowerJaw <- function(data,
 	
 	return(list(
 					plot = pl, 
-					data = subset(plotData, select = c("ageGender", "onderkaaklengte", "provincie"))
+					data = subset(plotData, select = c("onderkaaklengte", "leeftijd", "geslacht", "provincie"))
 	))
 	
 }

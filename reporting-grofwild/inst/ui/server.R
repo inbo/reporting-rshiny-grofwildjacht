@@ -45,11 +45,12 @@ shinyServer(function(input, output, session) {
 			
 			output$debug <- renderUI({
 						
-						tagList(
-								h5(actionLink(inputId = "debug_console", label = "Connect with console"),
-										align = "left"),
-								verbatimTextOutput("print")
-						)
+						if (doDebug)
+							tagList(
+									h5(actionLink(inputId = "debug_console", label = "Connect with console"),
+											align = "left"),
+									verbatimTextOutput("print")
+							)
 					})
 			
 			
@@ -67,13 +68,6 @@ shinyServer(function(input, output, session) {
 						req(geoData)
 						
 						subset(geoData, wildsoort == input$showSpecies)
-						
-					})
-			
-			
-			results$afschotData <- reactive({
-						
-						results$wildEcoData()[results$wildEcoData()$doodsoorzaak == "afschot", ]
 						
 					})
 			
@@ -141,21 +135,21 @@ shinyServer(function(input, output, session) {
 			## User input for controlling the plots and create plotly
 			# Table 1
 			callModule(module = optionsModuleServer, id = "table1", 
-					data = results$afschotData,
+					data = results$wildEcoData,
 					timeRange = results$timeRange)
 			callModule(module = plotModuleServer, id = "table1",
 					plotFunction = "tableProvince", 
-					data = results$afschotData, 
+					data = results$wildEcoData, 
 					categorie = "leeftijd")
 			
 			
 #			# Table 2 - input
 #			callModule(module = optionsModuleServer, id = "table2", 
-#					data = results$afschotData,
+#					data = results$wildEcoData,
 #					timeRange = results$timeRange)
 #			# Table 3 - input
 #			callModule(module = optionsModuleServer, id = "table3", 
-#					data = results$afschotData,
+#					data = results$wildEcoData,
 #					timeRange = results$timeRange)
 #			
 #			
@@ -166,14 +160,14 @@ shinyServer(function(input, output, session) {
 #							# Table 2 - output
 #							callModule(module = plotModuleServer, id = "table2",
 #									plotFunction = "tableProvince", 
-#									data = results$afschotData,
+#									data = results$wildEcoData,
 #									categorie = "typeAantal")
 #							
 #							
 #							# Table 3 - output
 #							callModule(module = plotModuleServer, id = "table3",
 #									plotFunction = "tableProvince", 
-#									data = results$afschotData,
+#									data = results$wildEcoData,
 #									toekenningsData = reactive(toekenningsData),
 #									categorie = "typePercent")
 #							
@@ -920,6 +914,6 @@ shinyServer(function(input, output, session) {
 								sep = ";", dec = ",")
 						
 					})
-					
+			
 			
 		})

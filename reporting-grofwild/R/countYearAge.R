@@ -27,7 +27,7 @@
 #' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
 #' @export
 countYearAge <- function(data, jaartallen = NULL, regio = "",
-		doodsoorzaak = "afschot", summarizeBy = c("count", "percent"),
+		summarizeBy = c("count", "percent"),
 		width = NULL, height = NULL) {
 	
 	
@@ -39,8 +39,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 		jaartallen <- unique(data$afschotjaar)
 	
 	# Select data
-	plotData <- data[data$afschotjaar %in% jaartallen &
-					data$doodsoorzaak %in% doodsoorzaak, 
+	plotData <- data[data$afschotjaar %in% jaartallen, 
 			c("afschotjaar", "Leeftijdscategorie_onderkaak", "geslacht.MF")]
 	names(plotData) <- c("jaar", "kaak", "geslacht")
 	
@@ -125,10 +124,9 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
 					paste("in", jaartallen)),
-			" (", paste(doodsoorzaak, collapse = " en "), 
-			if (!all(regio == "")) 
-				paste(" in", paste(regio, collapse = " en ")),
-			")")
+			if (!all(regio == ""))
+				  paste0("\n(in ", paste(regio, collapse = " en "), ")")
+	  )
 	
 	
 	

@@ -15,7 +15,7 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 load(file = file.path(dataDir, "spatialData.RData"))
 
 ecoData <- loadRawData(type = "eco")
-
+expect_equal(unique(ecoData$doodsoorzaak), "afschot")
 
 # check ecological data
 myTab <- table(ecoData$wildsoort)

@@ -251,8 +251,6 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 	
 	if (type == "eco") {
 
-		# TODO will become redundant --- Re-define doodsoorzaak "verdelging ANB" into afschot
-		rawData$doodsoorzaak[rawData$doodsoorzaak == "verdelging ANB"] <- "afschot" 
 		
 		# TODO will become redundant --- Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
 		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"

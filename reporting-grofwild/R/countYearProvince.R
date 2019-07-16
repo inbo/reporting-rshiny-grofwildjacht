@@ -10,8 +10,6 @@
 #' @param data data.frame with raw data for plotting
 #' @param jaartallen integer vector, defines the year(s) that should be considered
 #' in the plot; if NULL no selection on year(s) is made
-#' @param doodsoorzaak character vector, defines the cause(s) of death that should
-#' be considered in the plot 
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
@@ -31,7 +29,6 @@
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
-		doodsoorzaak = c("afschot", "valwild"), 
 		width = NULL, height = NULL) {
 	
 	
@@ -41,8 +38,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 		jaartallen <- unique(data$afschotjaar)
 	
 	# Select data
-	plotData <- data[data$afschotjaar %in% jaartallen &
-					data$doodsoorzaak %in% doodsoorzaak, c("afschotjaar", "provincie")]
+	plotData <- data[data$afschotjaar %in% jaartallen, c("afschotjaar", "provincie")]
 	plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$provincie), ]
 	
 	# Exclude unused provinces
@@ -65,10 +61,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	colors <- rev(inbo.2015.colours(n = nlevels(summaryData$provincie)))
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-					jaartallen),
-			if (length(doodsoorzaak) > 2)
-						paste0(" (", paste(doodsoorzaak[-length(doodsoorzaak)], collapse = ", "), " en ", doodsoorzaak[length(doodsoorzaak)], ")") else 
-						paste0(" (", paste(doodsoorzaak, collapse = " en "), ")")
+					jaartallen)
 	)
 	
 	

@@ -347,8 +347,12 @@ for (regionLevel in names(spatialData)[1:5]) {
 				allSpatialData = spatialData,
 				year = 2015,
 				species = iSpecies,
-				regionLevel = regionLevel
+				regionLevel = regionLevel,
+				unit = c("absolute", "relative")[2]
 		)
+		
+		cat("*", regionLevel, "\n")
+		print(summary(spaceData$freq))
 		
 		myPlot <- mapFlanders(
 				allSpatialData = spatialData, 
@@ -356,7 +360,8 @@ for (regionLevel in names(spatialData)[1:5]) {
 				colorScheme = c("white", RColorBrewer::brewer.pal(
 								n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
 				summaryData = spaceData,
-				legend = "topright"
+				legend = "topright",
+				species = iSpecies
 		)
 		
 		print(myPlot)

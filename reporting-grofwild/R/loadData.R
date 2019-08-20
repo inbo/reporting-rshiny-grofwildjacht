@@ -15,6 +15,7 @@
 #' @importFrom rgdal readOGR
 #' @importFrom rgeos gSimplify
 #' @importFrom shiny incProgress
+#' @importFrom raster area
 #' @export
 readShapeData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
 		showProgress = FALSE, tolerance = 0.001) {
@@ -53,7 +54,8 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
 					# Create fbz_gemeente
 					shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
 					
-				}
+				} 
+				
 				
 				return(shapeData)
 				
@@ -93,12 +95,18 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
 	# Attach new province data to spatialData
 	spatialData$provincesVoeren <- newProvinceData
 	
+	
+	
+	
 	newNames <- names(spatialData)
 	
 	# Try to simplify polygons
 	spatialData <- lapply(names(spatialData), function(iName) {
 				
 				iData <- spatialData[[iName]]
+	
+				# Calculate area for each polygon
+				iData@data$AREA <- raster::area(iData)/1e06
 				
 				# No simplification
 				if (iName == "fbz_gemeentes")

@@ -535,7 +535,8 @@ shinyServer(function(input, output, session) {
 								allSpatialData = spatialData,
 								year = input$map_year,
 								species = input$showSpecies,
-								regionLevel = input$map_regionLevel
+								regionLevel = input$map_regionLevel,
+								unit = input$map_unit
 						)
 						
 					})

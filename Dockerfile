@@ -25,7 +25,7 @@ RUN  apt-get update && apt-get install -y software-properties-common && \
 
 
 # install imports of reporting-grofwild app that are not on cloud
-RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders', 'raster'), repos = 'https://cloud.r-project.org/')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 
 # install depends of reporting-grofwild app

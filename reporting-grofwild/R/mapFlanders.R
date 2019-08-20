@@ -40,8 +40,11 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' @return data.frame
 #' @author mvarewyck
 #' @export
-createSpaceData <- function(data, allSpatialData, year, species, regionLevel) {
+createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
+		unit = c("absolute", "relative")) {
 	
+	
+	unit <- match.arg(unit)
 	
 	# Select correct spatial data
 	if (species == "Wild zwijn" & regionLevel == "provinces") {
@@ -59,8 +62,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel) {
 					wildsoort = species,
 					afschotjaar = year),
 			if (regionLevel %in% c("communes", "fbz_gemeentes"))
-						spatialData@data[, c("NAAM", "NISCODE")] else
-						spatialData@data$NAAM)
+						spatialData@data[, c("NAAM", "AREA", "NISCODE")] else
+						spatialData@data[, c("NAAM", "AREA")])
 	names(fullData)[3] <- "locatie"
 	
 	
@@ -110,10 +113,18 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel) {
 	summaryData2 <- plyr::count(df = allData, vars = names(allData)[!names(allData) %in% "freq"], 
 			wt_var = "freq")
 	
+	
+	# unit taken into account
+	if (unit == "relative")
+		summaryData2$freq <- summaryData2$freq/summaryData2$AREA 
+	
+	
 	# Create group variable
 	if (regionLevel %in% c("flanders", "provinces")) {
 		
-		otherBreaks <- sort(unique(summaryData2$freq))
+		if (unit == "absolute")
+			otherBreaks <- unique(sort(summaryData2$freq)) else
+			otherBreaks <- unique(sort(ceiling(summaryData2$freq*100)/100))
 		
 		summaryData2$group <- cut(x = summaryData2$freq, 
 				breaks = c(-Inf, otherBreaks),
@@ -121,26 +132,40 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel) {
 		
 	} else if (regionLevel == "faunabeheerzones" & species == "Ree") {
 		
-		summaryData2$group <- cut(x = summaryData2$freq, 
-				breaks = c(-Inf, 0, 100, 200, 500, 1000, Inf),
-				labels = c("0", "1-100", "100-200", "200-500", "500-1000", ">1000")) 
+		if (unit == "absolute")
+			summaryData2$group <- cut(x = summaryData2$freq, 
+					breaks = c(-Inf, 0, 100, 200, 500, 1000, Inf),
+					labels = c("0", "1-100", "100-200", "200-500", "500-1000", ">1000")) else
+			summaryData2$group <- cut(x = summaryData2$freq, 
+					breaks = c(-Inf, 0, 1, 2, 3, 4, Inf),
+					labels = c("0", "0-1", "1-2", "2-3", "3-4", ">4"))
 		
 	} else {
 		
-		if (species %in% c("Wild zwijn", "Ree"))
+		if (unit == "absolute") {
+			
+			if (species %in% c("Wild zwijn", "Ree"))
+				summaryData2$group <- cut(x = summaryData2$freq, 
+						breaks = c(-Inf, 0, 10, 20, 40, 80, Inf),
+						labels = c("0", "1-10", "11-20", "21-40", "41-80", ">80")) else
+				summaryData2$group <- cut(x = summaryData2$freq, 
+						breaks = c(-Inf, 0, 5, 10, 15, 20, Inf),
+						labels = c("0", "1-5", "6-10", "11-15", "16-20", ">20"))
+			
+		} else {
+			
 			summaryData2$group <- cut(x = summaryData2$freq, 
-					breaks = c(-Inf, 0, 10, 20, 40, 80, Inf),
-					labels = c("0", "1-10", "11-20", "21-40", "41-80", ">80")) else
-			summaryData2$group <- cut(x = summaryData2$freq, 
-					breaks = c(-Inf, 0, 5, 10, 15, 20, Inf),
-					labels = c("0", "1-5", "6-10", "11-15", "16-20", ">20"))
+					breaks = c(-Inf, 0, 1, 2, 3, 4, Inf),
+					labels = c("0", "0-1", "1-2", "2-3", "3-4", ">4"))
+			
+		}
 		
 	}
-	
 	
 	# remove redundant variables
 	summaryData2$afschotjaar <- NULL
 	summaryData2$wildsoort <- NULL
+	summaryData2$AREA <- NULL
 	
 	return(summaryData2)
 	

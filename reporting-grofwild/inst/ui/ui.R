@@ -116,7 +116,10 @@ shinyUI(
 																		"<geen>" = "none"))
 												),
 												column(6, 
-														uiOutput("map_time")
+														uiOutput("map_time"),
+														selectInput(inputId = "map_unit", "Eenheid",
+																choices = c("Aantal" = "absolute", 
+																		"Aantal / 100 ha" = "relative"))
 												)
 										),
 										

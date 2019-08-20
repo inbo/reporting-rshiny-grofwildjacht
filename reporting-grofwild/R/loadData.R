@@ -270,6 +270,8 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 		
 		# TODO will become redundant --- Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
 		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
+		rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
+		
 		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
 		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
 		

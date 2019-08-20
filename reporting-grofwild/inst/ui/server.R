@@ -532,7 +532,7 @@ shinyServer(function(input, output, session) {
 						
 						createSpaceData(
 								data = geoData, 
-								spatialData = results$spatialData(),
+								allSpatialData = spatialData,
 								year = input$map_year,
 								species = input$showSpecies,
 								regionLevel = input$map_regionLevel
@@ -617,7 +617,7 @@ shinyServer(function(input, output, session) {
 						
 						mapFlanders(
 								regionLevel = input$map_regionLevel,
-								spatialData = results$spatialData(),
+								species = input$showSpecies, 
 								allSpatialData = spatialData,
 								summaryData = results$map_summarySpaceData(),
 								colorScheme = results$map_colorScheme()
@@ -761,7 +761,6 @@ shinyServer(function(input, output, session) {
 						
 						newMap <- mapFlanders(
 								regionLevel = input$map_regionLevel, 
-								spatialData = results$spatialData(),
 								allSpatialData = spatialData,
 								summaryData = results$map_summarySpaceData(),
 								colorScheme = results$map_colorScheme(),

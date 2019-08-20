@@ -5,9 +5,34 @@
 
 
 
+#' Define province based on commune NIS code
+#' @param NISCODE character vector, NIS codes from communes, for which to define province
+#' @inheritParams createSpaceData
+#' @return character vector, same length and order as \code{NISCODE}
+#' with corresponding province for each communeS
+#' @author mvarewyck
+#' @export
+getProvince <- function(NISCODE, allSpatialData) {
+	
+	communeCode <- substr(NISCODE, start = 1, stop = 1)
+	
+	provinceData <- allSpatialData$provinces@data[, c("NISCODE", "NAAM")]
+	provinceData$NISCODE <- substr(provinceData$NISCODE, start = 1, stop = 1)
+	
+	sapply(communeCode, function(iCode) {
+				
+				if (is.na(iCode))
+					NA else
+					as.character(provinceData[provinceData$NISCODE == iCode, ]$NAAM)
+				
+			})
+	
+}
+
+
 #' Create summary data of geographical data for selected year, species and region level
 #' @param data data.frame, geographical data
-#' @param spatialData sp, spatial data for the selected \code{regionLevel}
+#' @param allSpatialData list of sp, spatial data for all spatial levels
 #' @param year integer, year of interest
 #' @param species character, species of interest
 #' @param regionLevel character, regional level of interest should be one of 
@@ -15,14 +40,41 @@
 #' @return data.frame
 #' @author mvarewyck
 #' @export
-createSpaceData <- function(data, spatialData, year, species, regionLevel) {
+createSpaceData <- function(data, allSpatialData, year, species, regionLevel) {
+	
+	
+	# Select correct spatial data
+	if (species == "Wild zwijn" & regionLevel == "provinces") {
+		
+		spatialData <- allSpatialData[["provincesVoeren"]]
+		
+	} else {
+		
+		spatialData <- allSpatialData[[regionLevel]]
+		
+	}
 	
 	# Framework for summary data
 	fullData <- cbind(expand.grid(
 					wildsoort = species,
-					afschotjaar = year,
-					locatie = unique(spatialData$NAAM)
-	))
+					afschotjaar = year),
+			if (regionLevel %in% c("communes", "fbz_gemeentes"))
+						spatialData@data[, c("NAAM", "NISCODE")] else
+						spatialData@data$NAAM)
+	names(fullData)[3] <- "locatie"
+	
+	
+	# For communes -> provide corresponding province in downloaded data
+	if (regionLevel %in% c("communes", "fbz_gemeentes")) {
+		
+		fullData$provincie <- getProvince(
+				NISCODE = fullData$NISCODE, 
+				allSpatialData = allSpatialData)
+		
+		fullData$NISCODE <- NULL
+		
+	}
+	
 	
 	
 	# Select subset for time
@@ -36,6 +88,8 @@ createSpaceData <- function(data, spatialData, year, species, regionLevel) {
 			faunabeheerzones = plotData$FaunabeheerZone,
 			fbz_gemeentes = plotData$fbz_gemeente
 	)
+	
+	
 	# Exclude data with missing time or space
 	plotData <- subset(plotData, !is.na(plotData$afschotjaar) & 
 					!is.na(plotData$locatie) & plotData$locatie != "",
@@ -47,13 +101,14 @@ createSpaceData <- function(data, spatialData, year, species, regionLevel) {
 	
 	# Add names & times with 0 observations
 	
-	allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+	allData <- merge(summaryData, fullData, all = TRUE)
 	allData$freq[is.na(allData$freq)] <- 0
 	
 	allData$afschotjaar <- as.factor(allData$afschotjaar)
 	
 	
-	summaryData2 <- plyr::count(df = allData, vars = "locatie", wt_var = "freq")
+	summaryData2 <- plyr::count(df = allData, vars = names(allData)[!names(allData) %in% "freq"], 
+			wt_var = "freq")
 	
 	# Create group variable
 	if (regionLevel %in% c("flanders", "provinces")) {
@@ -67,8 +122,8 @@ createSpaceData <- function(data, spatialData, year, species, regionLevel) {
 	} else if (regionLevel == "faunabeheerzones" & species == "Ree") {
 		
 		summaryData2$group <- cut(x = summaryData2$freq, 
-					breaks = c(-Inf, 0, 100, 200, 500, 1000, Inf),
-					labels = c("0", "1-100", "100-200", "200-500", "500-1000", ">1000")) 
+				breaks = c(-Inf, 0, 100, 200, 500, 1000, Inf),
+				labels = c("0", "1-100", "100-200", "200-500", "500-1000", ">1000")) 
 		
 	} else {
 		
@@ -82,22 +137,21 @@ createSpaceData <- function(data, spatialData, year, species, regionLevel) {
 		
 	}
 	
+	
+	# remove redundant variables
+	summaryData2$afschotjaar <- NULL
+	summaryData2$wildsoort <- NULL
+	
 	return(summaryData2)
 	
 	
 }
 
 
-mapColors <- function(summaryData) {
-	
-	
-	
-}
 
 
 #' Create map for Flanders - color by incidence
 #' @inheritParams createSpaceData
-#' @param allSpatialData list of sp, spatial data for all spatial levels
 #' @param summaryData data.frame, as returned by \code{\link{createSpaceData}}
 #' @param colorScheme character vector, specifies the color palette for the different groups
 #' in the summary data
@@ -109,9 +163,21 @@ mapColors <- function(summaryData) {
 #' @export
 mapFlanders <- function(
 		regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes"), 
-		spatialData, allSpatialData, summaryData, colorScheme, 
+		species, 
+		allSpatialData, summaryData, colorScheme, 
 		legend = "none", addGlobe = FALSE) {
 	
+	
+	# Select correct spatial data
+	if (species == "Wild zwijn" & regionLevel == "provinces") {
+		
+		spatialData <- allSpatialData[["provincesVoeren"]]
+		
+	} else {
+		
+		spatialData <- allSpatialData[[regionLevel]]
+		
+	}
 	
 	palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
 	

@@ -4,12 +4,12 @@
 \alias{createSpaceData}
 \title{Create summary data of geographical data for selected year, species and region level}
 \usage{
-createSpaceData(data, spatialData, year, species, regionLevel)
+createSpaceData(data, allSpatialData, year, species, regionLevel)
 }
 \arguments{
 \item{data}{data.frame, geographical data}
 
-\item{spatialData}{sp, spatial data for the selected \code{regionLevel}}
+\item{allSpatialData}{list of sp, spatial data for all spatial levels}
 
 \item{year}{integer, year of interest}
 

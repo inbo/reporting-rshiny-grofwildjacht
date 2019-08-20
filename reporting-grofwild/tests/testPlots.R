@@ -344,14 +344,13 @@ for (regionLevel in names(spatialData)[1:5]) {
 		
 		spaceData <- createSpaceData(
 				data = geoData, 
-				spatialData = spatialData[[regionLevel]],
+				allSpatialData = spatialData,
 				year = 2015,
 				species = iSpecies,
 				regionLevel = regionLevel
 		)
 		
 		myPlot <- mapFlanders(
-				spatialData = spatialData[[regionLevel]], 
 				allSpatialData = spatialData, 
 				regionLevel = regionLevel, 
 				colorScheme = c("white", RColorBrewer::brewer.pal(

@@ -215,6 +215,8 @@ tableModuleUI <- function(id) {
 #' defined externally for large map
 #' @param timeRange numeric vector, defines on which year range to filter on;
 #' defined externally for large map
+#' @param unit character, defines whether absolute or relative frequencies are reported;
+#' defined externally for large map
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
@@ -223,7 +225,7 @@ tableModuleUI <- function(id) {
 plotModuleServer <- function(input, output, session, plotFunction, 
 		data, openingstijdenData, toekenningsData = NULL,
 		categorie = NULL, bioindicator = NULL,
-		locaties = NULL, timeRange = NULL) {
+		locaties = NULL, timeRange = NULL, unit = NULL) {
 	
 	subData <- reactive({
 				
@@ -306,7 +308,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
 						if (!is.null(locaties))
 							list(locaties = locaties()),
 						if (!is.null(timeRange))
-							list(timeRange = timeRange())
+							list(timeRange = timeRange()),
+						if (!is.null(unit))
+							list(unit = unit())
 						
 				)
 				

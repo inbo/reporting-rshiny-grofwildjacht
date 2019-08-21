@@ -346,8 +346,8 @@ shinyServer(function(input, output, session) {
 						div(class = "sliderBlank", 
 								sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
 										min = if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
-											2014 else
-											min(results$wildGeoData()$afschotjaar),
+													2014 else
+													min(results$wildGeoData()$afschotjaar),
 										max = max(results$wildGeoData()$afschotjaar),
 										value = 2016,
 										sep = "", step = 1))
@@ -423,13 +423,17 @@ shinyServer(function(input, output, session) {
 						
 						# Summarize data over years
 						summaryData <- plyr::count(df = plotData, vars = names(plotData))
-						summaryData <- plyr::rename(summaryData, replace = c("freq" = "aantal"))
 						
 						# Add names & times with 0 observations
 						fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
 										locatie = "Vlaams Gewest"))
 						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-						allData$aantal[is.na(allData$aantal)] <- 0
+						allData$freq[is.na(allData$freq)] <- 0
+						
+						# unit taken into account
+						if (input$map_unit == "relative")
+							allData$freq <- allData$freq/spatialData[["flanders"]]$AREA 
+						
 						
 						allData$afschotjaar <- as.factor(allData$afschotjaar)
 						
@@ -442,7 +446,8 @@ shinyServer(function(input, output, session) {
 			callModule(module = plotModuleServer, id = "map_timePlotFlanders",
 					plotFunction = "trendYearFlanders", 
 					data = results$map_timeDataFlanders,
-					timeRange = reactive(input$map_time)
+					timeRange = reactive(input$map_time),
+					unit = reactive(input$map_unit)
 			)
 			
 			
@@ -458,7 +463,7 @@ shinyServer(function(input, output, session) {
 						
 						
 						# TODO incorporate this code in createSpaceData()
-			
+						
 						# Select subset for time
 						chosenTimes <- input$map_time[1]:input$map_time[2]
 						tmpData <- subset(results$wildGeoData(), afschotjaar %in% chosenTimes)
@@ -481,15 +486,24 @@ shinyServer(function(input, output, session) {
 						
 						# Summarize data over years
 						summaryData <- plyr::count(df = plotData, vars = names(plotData))
-						summaryData <- plyr::rename(summaryData, replace = c("freq" = "aantal"))
 						
 						# Add names & times with 0 observations
 						fullData <- cbind(expand.grid(
 										wildsoort = input$showSpecies,
 										afschotjaar = unique(summaryData$afschotjaar),
 										locatie = unique(results$spatialData()$NAAM)))
+						# add Area
+						fullData <- merge(fullData, results$spatialData()@data[, c("NAAM", "AREA")],
+							by.x = "locatie", by.y = "NAAM")
+					
 						allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-						allData$aantal[is.na(allData$aantal)] <- 0
+						allData$freq[is.na(allData$freq)] <- 0
+						
+						# unit taken into account
+						if (input$map_unit == "relative")
+							allData$freq <- allData$freq/allData$AREA 
+						
+						allData$AREA <- NULL
 						
 						allData$afschotjaar <- as.factor(allData$afschotjaar)
 						
@@ -504,7 +518,10 @@ shinyServer(function(input, output, session) {
 						regionLevel <- switch(input$map_regionLevel,
 								"flanders" = "Vlaanderen",
 								"provinces" = "Provincie",
-								"communes" = "Gemeente")
+								"faunabeheerzones" = "Faunabeheerzones",
+								"communes" = "Gemeente (binnen provincie)",
+								"fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)")
+						
 						
 						h3("Regio-schaal:", regionLevel)
 						
@@ -517,7 +534,8 @@ shinyServer(function(input, output, session) {
 					plotFunction = "trendYearRegion", 
 					data = results$map_timeData,
 					locaties = reactive(input$map_region),
-					timeRange = reactive(input$map_time)
+					timeRange = reactive(input$map_time),
+					unit = reactive(input$map_unit)
 			)
 			
 			
@@ -585,7 +603,7 @@ shinyServer(function(input, output, session) {
 						validate(need(results$map_summarySpaceData(), "Geen data beschikbaar"))
 						
 						regionNames <- results$map_summarySpaceData()$locatie
-						titleText <- paste("Gerapporteerd aantal in", input$map_year[1])
+						titleText <- paste("Gerapporteerd", input$map_unit, "in", input$map_year[1])
 						
 						textPopup <- paste0("<h4>", regionNames, "</h4>",  
 								"<strong>", titleText, "</strong>: ", 
@@ -747,7 +765,7 @@ shinyServer(function(input, output, session) {
 			# Title for the map
 			output$map_title <- renderUI({
 						
-						h3(paste("Gerapporteerd aantal voor", tolower(input$showSpecies),
+						h3(paste("Gerapporteerd", input$map_unit, "voor", tolower(input$showSpecies),
 										"in", input$map_year[1]))
 						
 						
@@ -801,8 +819,14 @@ shinyServer(function(input, output, session) {
 								content = "kaartData", fileExt = "csv"),
 					content = function(file) {
 						
+						myData <- results$map_summarySpaceData()
+						# change variable names
+						names(myData)[names(myData) == "freq"] <- if (input$map_unit == "absolute")
+									"aantal" else "aantal/100ha"
+						names(myData)[names(myData) == "group"] <- "groep"
+						
 						## write data to exported file
-						write.table(x = results$map_summarySpaceData(), file = file, quote = FALSE, row.names = FALSE,
+						write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,
 								sep = ";", dec = ",")
 						
 					})

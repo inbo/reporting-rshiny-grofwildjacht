@@ -3,6 +3,7 @@
 #' @param data data.frame with raw data for plotting
 #' @param locaties character vector, regions that were selected to plot
 #' @param timeRange numeric vector, time range selected for plot
+#' @inheritParams createSpaceData
 #' @inheritParams countYearProvince
 #' @return list with:
 #' \itemize{
@@ -12,20 +13,21 @@
 #' \itemize{
 #' \item{'afschotjaar': }{year at which the animals was shot}
 #' \item{'locatie': }{comune name}
-#' \item{'aantal': }{counts of animals}
+#' \item{'aantal' or 'aantal/100ha': }{absolute or relative counts of animals}
 #' }
 #' }
 #' }
 #' @import plotly
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
-trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
+trendYearRegion <- function(data, locaties = NULL, timeRange = NULL, unit = c("absolute", "relative"), 
 		width = NULL, height = NULL) {
 	
 	
 	# To prevent warnings with R CMD check
 	locatie <- NULL
 	
+	unit <- match.arg(unit)
 	wildNaam <- unique(data$wildsoort)
 	
 	
@@ -37,7 +39,9 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	plotData$wildsoort <- NULL
 	
 	colors <- rev(inbo.2015.colours(n = length(locaties)))
-	title <- paste("Gerapporteerd aantal voor", tolower(wildNaam),
+	title <- paste("Gerapporteerd",
+			if (unit == "absolute") "aantal" else "aantal/100ha",
+			"voor", tolower(wildNaam), "\n",
 			ifelse(timeRange[1] != timeRange[2],
 					paste("van", timeRange[1], "tot", timeRange[2]),
 					paste("in", timeRange[1])
@@ -46,19 +50,23 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	
 	
 	# Create plot
-	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~aantal,
+	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
 					color = ~locatie, colors = colors, 
 					hoverinfo = "x+y+name",
 					type = "scatter", mode = "lines+markers",
 					width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Jaar"), 
-					yaxis = list(title = "Aantal"),
+					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha"),
 					showlegend = TRUE,
 					margin = list(b = 80, t = 100))     
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
+	
+	# change variable names
+	names(data)[names(data) == "freq"] <- if (unit == "absolute")
+				"aantal" else "aantal/100ha"
 	
 	
 	return(list(plot = pl, data = plotData))

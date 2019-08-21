@@ -37,6 +37,8 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' @param species character, species of interest
 #' @param regionLevel character, regional level of interest should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}
+#' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
+#' should be reported
 #' @return data.frame
 #' @author mvarewyck
 #' @export

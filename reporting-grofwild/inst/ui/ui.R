@@ -119,7 +119,7 @@ shinyUI(
 														uiOutput("map_time"),
 														selectInput(inputId = "map_unit", "Eenheid",
 																choices = c("Aantal" = "absolute", 
-																		"Aantal / 100 ha" = "relative"))
+																		"Aantal/100ha" = "relative"))
 												)
 										),
 										

@@ -345,7 +345,7 @@ for (regionLevel in names(spatialData)[1:5]) {
 		spaceData <- createSpaceData(
 				data = geoData, 
 				allSpatialData = spatialData,
-				year = 2015,
+				year = 2016,
 				species = iSpecies,
 				regionLevel = regionLevel,
 				unit = c("absolute", "relative")[2]

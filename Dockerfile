@@ -20,7 +20,7 @@ RUN  apt-get update && apt-get install -y software-properties-common && \
      add-apt-repository ppa:ubuntugis/ppa
 
 RUN  apt-get update && \
-     apt-get install -y gdal-bin libgdal1-dev libproj-dev libgeos-dev
+     apt-get install -y gdal-bin libgdal-dev libproj-dev libgeos-dev
 
 # install imports of reporting-grofwild app that are not on cloud
 RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders'), repos = 'https://cloud.r-project.org/')"

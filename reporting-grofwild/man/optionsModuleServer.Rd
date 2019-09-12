@@ -5,8 +5,8 @@
 \title{User input for controlling specific plot (server-side)}
 \usage{
 optionsModuleServer(input, output, session, data, types = NULL,
-  typesDefault = types, timeRange = NULL, timeLabel = "Periode",
-  multipleTypes = FALSE)
+  labelTypes = "Type", typesDefault = types, timeRange = NULL,
+  timeLabel = "Periode", multipleTypes = FALSE)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -18,6 +18,8 @@ optionsModuleServer(input, output, session, data, types = NULL,
 \item{data}{reactive data.frame, data for chosen species}
 
 \item{types, }{defines the species types that can be selected}
+
+\item{labelTypes}{character, the displayed label for selecting options field}
 
 \item{typesDefault, }{defines the default values for \code{types},
 same as \code{types} by defualt}

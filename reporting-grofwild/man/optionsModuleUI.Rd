@@ -6,7 +6,8 @@
 \usage{
 optionsModuleUI(id, showLegend = FALSE, showTime = FALSE,
   showYear = FALSE, showType = FALSE, regionLevels = NULL,
-  summarizeBy = NULL, exportData = FALSE, showDataSource = FALSE)
+  summarizeBy = NULL, exportData = FALSE, showDataSource = FALSE,
+  doWellPanel = TRUE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
@@ -29,6 +30,9 @@ region levels: 1 = flanders, 2 = provinces, 3 = communes}
 
 \item{showDataSource}{boolean, whether to show choices of data source to be 
 used for plotted bioindicator}
+
+\item{doWellPanel}{boolean, whether to display the options within a 
+\code{shiny::wellPanel()}}
 }
 \value{
 ui object (tagList)

@@ -4,13 +4,14 @@
 \alias{boxAgeWeight}
 \title{Create interactive plot for distribution of weight in function of age}
 \usage{
-boxAgeWeight(data, wildNaam = "", jaartallen = NULL, regio = "",
-  width = NULL, height = NULL)
+boxAgeWeight(data, type, jaartallen = NULL, regio = "", width = NULL,
+  height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
-\item{wildNaam}{character, the name that should be displayed for y-label}
+\item{type}{animal type, used to filter \code{data},
+based on 'Leeftijdscategorie_onderkaak' column}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

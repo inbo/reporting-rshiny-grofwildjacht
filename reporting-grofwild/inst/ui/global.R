@@ -5,6 +5,9 @@ library(leaflet)           # for interactive map
 library(plotly)            # for interactive graphs
 library(shinycssloaders)   # for busy indicator
 
+# Other packages needed, but not loaded
+# mapview
+
 
 `%then%` <- shiny:::`%OR%`
 
@@ -27,6 +30,10 @@ ecoData <- loadRawData(dataDir = dataDir, type = "eco")
 geoData <- loadRawData(dataDir = dataDir, type = "geo", 
     shapeData = spatialData)
 
+# TODO temporary fix
+if (!is.null(attr(ecoData, "excluded")))
+    geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
+
 
 ## Reactive values
 #results <- reactiveValues(
@@ -34,3 +41,12 @@ geoData <- loadRawData(dataDir = dataDir, type = "geo",
 #)
 results <- list()
 
+
+## Debugging
+onStop(function() {
+			if (file.exists(".RDuetConsole"))
+				file.remove(".RDuetConsole")
+		})
+
+if (!exists("doDebug"))
+	doDebug <- FALSE

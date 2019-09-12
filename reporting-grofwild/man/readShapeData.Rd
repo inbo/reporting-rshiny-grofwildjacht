@@ -4,8 +4,8 @@
 \alias{readShapeData}
 \title{Read all shape data from geojson files}
 \usage{
-readShapeData(dataDir = system.file("extdata", package = "reportingGrofwild"),
-  showProgress = FALSE, tolerance = 0.001)
+readShapeData(dataDir = system.file("extdata", package =
+  "reportingGrofwild"), showProgress = FALSE, tolerance = 0.001)
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the data files}

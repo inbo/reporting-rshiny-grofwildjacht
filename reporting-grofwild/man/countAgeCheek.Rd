@@ -4,13 +4,10 @@
 \alias{countAgeCheek}
 \title{Create interactive plot for comparing age based on cheek or reported by hunter}
 \usage{
-countAgeCheek(data, wildNaam = "", jaartallen = NULL, width = NULL,
-  height = NULL)
+countAgeCheek(data, jaartallen = NULL, width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
-
-\item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

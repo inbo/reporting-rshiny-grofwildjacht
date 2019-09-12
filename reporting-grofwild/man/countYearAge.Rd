@@ -4,23 +4,17 @@
 \alias{countYearAge}
 \title{Create interactive plot for counts per age category and year}
 \usage{
-countYearAge(data, wildNaam = "", jaartallen = NULL, regio = "",
-  doodsoorzaak = "afschot", summarizeBy = c("count", "percent"),
-  width = NULL, height = NULL)
+countYearAge(data, jaartallen = NULL, regio = "",
+  summarizeBy = c("count", "percent"), width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
-
-\item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}
 
 \item{regio}{character vector, names of the selected regions in \code{data}
 to be shown in the plot title}
-
-\item{doodsoorzaak}{character vector, defines the cause(s) of death that should
-be considered in the plot}
 
 \item{summarizeBy}{character, whether to summarize data in terms of counts or percentages}
 

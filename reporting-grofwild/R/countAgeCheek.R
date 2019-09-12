@@ -27,96 +27,99 @@
 #' @importFrom INBOtheme inbo.2015.colours
 #' @author mvarewyck
 #' @export
-countAgeCheek <- function(data, wildNaam = "", jaartallen = NULL, 
-    width = NULL, height = NULL, doodsoorzaak = "afschot") {
-  
-  
-  if (is.null(jaartallen))
-    jaartallen <- unique(data$afschotjaar)
-  
-  # Disable graph when only year t is selected
-  t <- 2019
-  if (jaartallen == t)
-    stop(paste0("Voor ", t, " werden tot nu toe onvoldoende onderkaken ingezameld om een zinvolle grafiek te maken."))
-  
-  # Select data
-  plotData <- data[data$afschotjaar %in% jaartallen & data$doodsoorzaak %in% doodsoorzaak, 
-      c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
-  names(plotData) <- c("jager", "kaak")
-  
-  # Percentage collected
-  nRecords <- nrow(plotData)
-  
-  # Remove some categories
-  plotData <- plotData[with(plotData, !is.na(jager) & jager != "Onbekend" &
-              !is.na(kaak) & kaak != "Niet ingezameld"), ]
-  
-  if (nrow(plotData) == 0)
-    stop("Geen data beschikbaar")
-  
-  percentCollected <- nrow(plotData)/nRecords
-  
-  # Define names and ordering of factor levels
-  if ("Frisling" %in% plotData$jager) {  # wild zwijn
-    
-    newLevels <- c("Frisling", "Overloper", "Volwassen")
-    
-  } else {  # ree
-    
-    newLevels <- c("Kits", "Jongvolwassen", "Volwassen")
-    
-  }
-  
-  
-  # Summarize data per province and year
-  summaryData <- count(df = plotData, vars = names(plotData))
-  freq <- NULL  # to prevent warnings with R CMD check 
-  summaryData <- ddply(summaryData, "kaak", transform, 
-      percent = freq / sum(freq) * 100)
-  
-  
- 
-  # For optimal displaying in the plot
-  summaryData$jager <- factor(summaryData$jager, levels = newLevels)
-  summaryData$kaak <- factor(summaryData$kaak, levels = newLevels)
-  
-  summaryData$text <- paste0(round(summaryData$percent), "%",
-      " (", summaryData$freq, ")")
-  
-  totalCount <- count(df = summaryData, vars = "kaak", wt_var = "freq")$freq
-  
-  colors <- rev(inbo.2015.colours(n = nlevels(summaryData$jager)))
-  title <- paste(wildNaam, paste0("(", 
-          ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-      jaartallen), ")"))
-  
-  
-  # Create plot
-  pl <- plot_ly(data = summaryData, x = ~kaak, y = ~percent, color = ~jager,
-          text = ~text,  hoverinfo = "x+text+name",
-          colors = colors, type = "bar",  width = width, height = height) %>%
-      layout(title = title,
-          xaxis = list(title = "Categorie op basis van onderkaak"), 
-          yaxis = list(title = "Percentage"),
-          legend = list(y = 0.8, yanchor = "top"),
-          margin = list(r = 300, b = 120, t = 100), 
-          barmode = "stack",
-          annotations = list(x = levels(summaryData$kaak), y = -10, 
-              text = totalCount, xanchor = 'center', yanchor = 'bottom', 
-              showarrow = FALSE)) %>%
-      add_annotations(text = "Categorie op basis van meldingsformulier", 
-          xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
-          y = 0.8, yanchor = "bottom",    # Same y as legend below
-          legendtitle = TRUE, showarrow = FALSE) %>%
-      add_annotations(text = paste0(round(percentCollected, 2)*100, 
-              "% ingezamelde onderkaken van totaal (", nrow(plotData), "/", nRecords, ")"),
-          xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-          y = -0.3, yanchor = "bottom", showarrow = FALSE)
+countAgeCheek <- function(data, jaartallen = NULL, 
+		width = NULL, height = NULL) {
 	
-  # To prevent warnings in UI
-  pl$elementId <- NULL
-  
-  
+	
+	wildNaam <- unique(data$wildsoort)
+	
+	if (is.null(jaartallen))
+		stop("Gelieve jaartallen te selecteren")
+	
+	# Disable graph when only year t is selected
+	t <- 2020
+	if (all(jaartallen == t))
+		stop(paste0("Voor ", t, " werden tot nu toe onvoldoende onderkaken ingezameld om een zinvolle grafiek te maken."))
+	
+	# Select data
+	plotData <- data[data$afschotjaar %in% jaartallen, 
+			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
+	names(plotData) <- c("jager", "kaak")
+	
+	# Percentage collected
+	nRecords <- nrow(plotData)
+	
+	# Remove some categories
+	plotData <- plotData[with(plotData, !is.na(jager) & !jager %in% "Onbekend" &
+							!is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
+	
+	if (nrow(plotData) == 0)
+		stop("Geen data beschikbaar")
+	
+	percentCollected <- nrow(plotData)/nRecords
+	
+	# Define names and ordering of factor levels
+	if (wildNaam == "Wild zwijn") {  # wild zwijn
+		
+		newLevels <- c("Frisling", "Overloper", "Volwassen")
+		
+	} else {  # ree
+		
+		newLevels <- c("Kits", "Jongvolwassen", "Volwassen")
+		
+	}
+	
+	
+	# Summarize data per province and year
+	summaryData <- count(df = plotData, vars = names(plotData))
+	freq <- NULL  # to prevent warnings with R CMD check 
+	summaryData <- ddply(summaryData, "kaak", transform, 
+			percent = freq / sum(freq) * 100)
+	
+	
+	
+	# For optimal displaying in the plot
+	summaryData$jager <- factor(summaryData$jager, levels = newLevels)
+	summaryData$kaak <- factor(summaryData$kaak, levels = newLevels)
+	summaryData <- summaryData[order(summaryData$jager, summaryData$kaak), ]
+	
+	summaryData$text <- paste0(round(summaryData$percent), "%",
+			" (", summaryData$freq, ")")
+	
+	totalCount <- count(df = summaryData, vars = "kaak", wt_var = "freq")$freq
+	
+	colors <- rev(inbo.2015.colours(n = nlevels(summaryData$jager)))
+	title <- paste(wildNaam, paste0("(", 
+					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
+							jaartallen), ")"))
+	
+	
+	# Create plot
+	pl <- plot_ly(data = summaryData, x = ~kaak, y = ~percent, color = ~jager,
+					text = ~text,  hoverinfo = "x+text+name",
+					colors = colors, type = "bar",  width = width, height = height) %>%
+			layout(title = title,
+					xaxis = list(title = "Categorie op basis van onderkaak"), 
+					yaxis = list(title = "Percentage"),
+					legend = list(y = 0.8, yanchor = "top"),
+					margin = list(r = 300, b = 120, t = 100), 
+					barmode = "stack",
+					annotations = list(x = levels(summaryData$kaak), y = -10, 
+							text = totalCount, xanchor = 'center', yanchor = 'bottom', 
+							showarrow = FALSE)) %>%
+			add_annotations(text = "Categorie op basis van meldingsformulier", 
+					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
+					y = 0.8, yanchor = "bottom",    # Same y as legend below
+					legendtitle = TRUE, showarrow = FALSE) %>%
+			add_annotations(text = paste0(round(percentCollected, 2)*100, 
+							"% ingezamelde onderkaken van totaal (", nrow(plotData), "/", nRecords, ")"),
+					xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+					y = -0.3, yanchor = "bottom", showarrow = FALSE)
+	
+	# To prevent warnings in UI
+	pl$elementId <- NULL
+	
+	
 	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"]))
-  
+	
 }

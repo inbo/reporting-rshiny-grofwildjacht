@@ -37,3 +37,6 @@ vignettes/*.pdf
 *.Rproj
 /.settings/
 /.project
+
+# Architect project file
+.project

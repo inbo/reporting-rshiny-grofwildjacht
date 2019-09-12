@@ -18,22 +18,24 @@
 #' @param exportData boolean, whether a download button for the data is shown
 #' @param showDataSource boolean, whether to show choices of data source to be 
 #' used for plotted bioindicator
+#' @param doWellPanel boolean, whether to display the options within a 
+#' \code{shiny::wellPanel()}
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
-    showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
-    regionLevels = NULL, summarizeBy = NULL,
-    exportData = FALSE, showDataSource = FALSE) {
-  
-  ns <- NS(id)
-  
-  
-  tagList(
-      
-      wellPanel(
-          if (!is.null(summarizeBy))
-            radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
-                choices = summarizeBy),
+		showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
+		regionLevels = NULL, summarizeBy = NULL,
+		exportData = FALSE, showDataSource = FALSE,
+		doWellPanel = TRUE) {
+	
+	ns <- NS(id)
+	
+	
+	toReturn <- tagList(
+			
+					if (!is.null(summarizeBy))
+						radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
+								choices = summarizeBy),
 #          if (showLegend)
 #            selectInput(inputId = ns("legend"), "Legende",
 #                choices = c("<none>" = "none", 
@@ -42,29 +44,32 @@ optionsModuleUI <- function(id,
 #                    "Bovenaan links" = "topleft",
 #                    "Onderaan links" = "bottomleft")
 #            ),
-          if(showYear)
-            uiOutput(ns("year")),
-          if (showTime)
-            uiOutput(ns("time")),
-          if(showType)
-            uiOutput(ns("type")),
-          if (!is.null(regionLevels))
-            fluidRow(
-                column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                        choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                            "Fusiegemeenten" = "communes")[regionLevels])),
-                column(8, uiOutput(ns("region")))
-            ),
-          if (showDataSource)
-            selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
-                choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
-                    "INBO en meldingsformulier" = "both")),
-          if(exportData)
-            downloadButton(ns("dataDownload"), "Download data")
-      
-      )
-  )
-  
+					if(showYear)
+						uiOutput(ns("year")),
+					if (showTime)
+						uiOutput(ns("time")),
+					if(showType)
+						uiOutput(ns("type")),
+					if (!is.null(regionLevels))
+						fluidRow(
+								column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+												choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
+														"Fusiegemeenten" = "communes")[regionLevels])),
+								column(8, uiOutput(ns("region")))
+						),
+					if (showDataSource)
+						selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
+								choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
+										"INBO en meldingsformulier" = "both")),
+					if(exportData)
+						downloadButton(ns("dataDownload"), "Download data")
+			
+	)
+	
+	if (doWellPanel)
+		wellPanel(toReturn) else
+		toReturn
+	
 }
 
 
@@ -75,6 +80,7 @@ optionsModuleUI <- function(id,
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
 #' @param types, defines the species types that can be selected
+#' @param labelTypes character, the displayed label for selecting options field
 #' @param typesDefault, defines the default values for \code{types},
 #' same as \code{types} by defualt
 #' @param timeRange numeric vector of length 2 with time range (in year)
@@ -83,100 +89,101 @@ optionsModuleUI <- function(id,
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-    data, types = NULL, typesDefault = types, 
-    timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE) {
-  
-  ns <- session$ns
-  
-  output$time <- renderUI({
-        
-        sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = timeRange(),
-            min = if (!is.null(input$sourceIndicator)) {
-                  if (input$sourceIndicator == "inbo") 2014 else min(timeRange())
-                } else {min(timeRange())},
-            max = max(timeRange()),
-            step = 1,
-            sep = "")
-        
-      })
-  
-  
-  output$year <- renderUI({
-        
-        div(class = "sliderBlank", 
-            sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-                value = max(timeRange()),
-                min = min(timeRange()),
-                max = max(timeRange()),
-                step = 1,
-                sep = "")
-        )
-        
-        
-      })
-  
-  
-  output$region <- renderUI({
-        
-        validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
-        
-        if (input$regionLevel == "flanders") {
-          
-          choices <- "Vlaams Gewest"
-          
-        } else if (input$regionLevel == "provinces") {
-          
-          choices <- levels(droplevels(factor(unique(data()$provincie), 
-                      levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
-                          "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
-          
-        } else {
-          
-          choices <- unique(data()$gemeente_afschot_locatie)
-          choices <- choices[!is.na(choices)]
-          choices <- choices[order(choices)]
-          
-        }
-        
-        
-        if (input$regionLevel == "flanders")
-          selected <- choices[1] else
-          selected <- NULL
-        
-        selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices, selected = selected, multiple = TRUE)
-        
-      })
-  
-  
-  output$type <- renderUI({
-        
-        selectInput(inputId = ns("type"), label = "Type",
-            choices = types(), 
-            selected = typesDefault(), multiple = multipleTypes)
-        
-      })
-  
+		data, types = NULL, labelTypes = "Type", typesDefault = types, 
+		timeRange = NULL, timeLabel = "Periode", 
+		multipleTypes = FALSE) {
+	
+	ns <- session$ns
+	
+	output$time <- renderUI({
+				
+				sliderInput(inputId = ns("time"), label = timeLabel, 
+						value = timeRange(),
+						min = if (!is.null(input$sourceIndicator)) {
+									if (input$sourceIndicator == "inbo") 2014 else min(timeRange())
+								} else {min(timeRange())},
+						max = max(timeRange()),
+						step = 1,
+						sep = "")
+				
+			})
+	
+	
+	output$year <- renderUI({
+				
+				div(class = "sliderBlank", 
+						sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
+								value = max(timeRange()),
+								min = min(timeRange()),
+								max = max(timeRange()),
+								step = 1,
+								sep = "")
+				)
+				
+				
+			})
+	
+	
+	output$region <- renderUI({
+				
+				validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
+				
+				if (input$regionLevel == "flanders") {
+					
+					choices <- "Vlaams Gewest"
+					
+				} else if (input$regionLevel == "provinces") {
+					
+					choices <- levels(droplevels(factor(unique(data()$provincie), 
+											levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
+													"Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
+					
+				} else {
+					
+					choices <- unique(data()$gemeente_afschot_locatie)
+					choices <- choices[!is.na(choices)]
+					choices <- choices[order(choices)]
+					
+				}
+				
+				
+				if (input$regionLevel == "flanders")
+					selected <- choices[1] else
+					selected <- NULL
+				
+				selectInput(inputId = ns("region"), label = "Regio('s)",
+						choices = choices, selected = selected, multiple = TRUE)
+				
+			})
+	
+	
+	output$type <- renderUI({
+				
+				selectInput(inputId = ns("type"), label = labelTypes,
+						choices = types(), 
+						selected = typesDefault(), multiple = multipleTypes)
+				
+			})
+	
 }
 
 
 
 #' Interactive plot (ui-side)
 #' @param id character, module id, unique name per plot
+#' @param height character, plot height, default is "600px" 
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
 #' @importFrom plotly plotlyOutput
 #' @importFrom shiny NS
 #' @export
-plotModuleUI <- function(id) {
-  
-  ns <- NS(id)
-  
-  withSpinner(plotlyOutput(ns("plot"), height = "600px"))
-  
+plotModuleUI <- function(id, height = "600px") {
+	
+	ns <- NS(id)
+	
+	withSpinner(plotlyOutput(ns("plot"), height = height))
+	
 }
 
 
@@ -188,11 +195,11 @@ plotModuleUI <- function(id) {
 #' @importFrom shiny tableOutput NS
 #' @export
 tableModuleUI <- function(id) {
-  
-  ns <- NS(id)
-  
-  withSpinner(tableOutput(ns("table")))
-  
+	
+	ns <- NS(id)
+	
+	withSpinner(tableOutput(ns("table")))
+	
 }
 
 
@@ -204,161 +211,178 @@ tableModuleUI <- function(id) {
 #' @param data reactive data.frame, data for chosen species
 #' @param openingstijdenData data with openingstijden, optional
 #' @param toekenningsData data with toekenningen, optional
-#' @param wildNaam character, defines the species name for y-label in plot
 #' @param categorie character, defines which type of table should be made
+#' @param locaties character, defines on which locations to filter on;
+#' defined externally for large map
+#' @param timeRange numeric vector, defines on which year range to filter on;
+#' defined externally for large map
+#' @param unit character, defines whether absolute or relative frequencies are reported;
+#' defined externally for large map
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
-    data, openingstijdenData, toekenningsData = NULL, wildNaam, 
-    categorie = NULL, bioindicator = NULL) {
-  
-  subData <- reactive({
-        
-        provincie <- NULL  # to prevent warnings with R CMD check
-        subData <- data()
-        
-        if (!is.null(input$regionLevel)) {
-          
-          validate(need(input$region, "Gelieve regio('s) te selecteren"))
-          
-          if (input$regionLevel == "provinces")
-            subData <- subset(subData, provincie %in% input$region)
-          
-        }
-        
-        
-        return(subData)
-        
-      })
-  
-  
-  subToekenningsData <- reactive({
-        
-        if (is.null(toekenningsData))
-          return(NULL)
-        
-        Provincie <- NULL  # to prevent warnings with R CMD check
-        Jaar <- NULL  # to prevent warnings with R CMD check
-        subData <- toekenningsData()
-        
-        if (!is.null(input$regionLevel)) {
-          
-          validate(need(input$region, "Gelieve regio('s) te selecteren"))
-          
-          if (input$regionLevel == "provinces")
-            subData <- subset(subData, Provincie %in% input$region)
-          
-        }
-        
-        if (!is.null(input$time))
-           subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
-        
-        
-        return(subData)
-        
-      })
-  
-  
-  argList <- reactive({
-        
-        req(nrow(subData()) > 0)
-        
-        argList <- c(
-            list(data = subData(), wildNaam = wildNaam()),
-            if (!is.null(input$year))
-              list(jaar = input$year),
-            if (!is.null(input$time))
-              list(jaartallen = input$time[1]:input$time[2]),
-            # Currently these options are never used
+		data, openingstijdenData, toekenningsData = NULL,
+		categorie = NULL, bioindicator = NULL,
+		locaties = NULL, timeRange = NULL, unit = NULL) {
+	
+	subData <- reactive({
+				
+				provincie <- NULL  # to prevent warnings with R CMD check
+				subData <- data()
+				
+				if (!is.null(input$regionLevel)) {
+					
+					validate(need(input$region, "Gelieve regio('s) te selecteren"))
+					
+					if (input$regionLevel == "provinces")
+						subData <- subset(subData, provincie %in% input$region)
+					
+				}
+				
+				
+				return(subData)
+				
+			})
+	
+	wildNaam <- reactive(unique(data()$wildsoort))
+	
+	
+	subToekenningsData <- reactive({
+				
+				if (is.null(toekenningsData))
+					return(NULL)
+				
+				Provincie <- NULL  # to prevent warnings with R CMD check
+				Jaar <- NULL  # to prevent warnings with R CMD check
+				subData <- toekenningsData()
+				
+				if (!is.null(input$regionLevel)) {
+					
+					validate(need(input$region, "Gelieve regio('s) te selecteren"))
+					
+					if (input$regionLevel == "provinces")
+						subData <- subset(subData, Provincie %in% input$region)
+					
+				}
+				
+				if (!is.null(input$time))
+					subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
+				
+				
+				return(subData)
+				
+			})
+	
+	
+	argList <- reactive({
+				
+				req(nrow(subData()) > 0)
+				
+				argList <- c(
+						list(data = subData()),
+						if (!is.null(input$year))
+							list(jaar = input$year),
+						if (!is.null(input$time))
+							list(jaartallen = input$time[1]:input$time[2]),
+						# Currently these options are never used
 #            if (!is.null(input$legend))
 #              list(legend = input$legend), 
-            if (!is.null(input$regionLevel))
-              list(regio = input$region),
-            if (!is.null(input$type))
-              list(type = input$type),
-            if (!is.null(input$type) & !is.null(input$year))
-              list(openingstijdenData = openingstijdenData()),
-            if (!is.null(subToekenningsData()))
-              list(assignedData = subToekenningsData()),
-            if (!is.null(categorie))
-              list(categorie = categorie),
-            if (!is.null(input$summarizeBy))
-              list(summarizeBy = input$summarizeBy),
-            if(!is.null(bioindicator))
-              list(bioindicator = bioindicator),
-            if(!is.null(input$sourceIndicator))
-              list(sourceIndicator = input$sourceIndicator)
-        )
-        
-        
-      })
-  
-  resultFct <- reactive({
-        
-        toReturn <- tryCatch(
-            do.call(plotFunction, args = argList()),
-            error = function(err)
-              validate(need(FALSE, err$message))
-        )		
-        
-        validate(need(!is.null(toReturn), "Niet beschikbaar"))
-        
-        return(toReturn)
-        
-        
-      })
-  
-  
-  output$plot <- renderPlotly({  
-        
-        resultFct()$plot
-        
-      })
-  
-  
-  output$dataDownload <- downloadHandler(
-      filename = function() nameFile(species = wildNaam(),
-            year = if (!is.null(input$year)) input$year else
-                  unique(c(input$time[1], input$time[2])), 
-            content = paste0(plotFunction, "_data"), fileExt = "csv"),
-      content = function(file) {
-        
-        resFct <- resultFct()
-        
-        ## checks
-        
-        # Note: a data.frame is a list!
-        isDataPresent <- ifelse(!is.null(resFct),
-            ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
-            FALSE
-        )
-        
-        validate(
-            need(resFct, "Niet beschikbaar"),
-            need(
-                if(is.data.frame(resFct))	resFct	else	resFct$plot,
-                "Niet beschikbaar"
-            )
-        )
-        
-        ## extract data to export
-        dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
-        
-        ## write data to exported file
-        write.table(x = dataPlot, file = file, quote = FALSE, row.names = FALSE,
-            sep = ";", dec = ",")
-        
-      }
-  )
-  
-  output$table <- renderTable({
-        
-        return(resultFct())
-        
-      }, digits = 0)
-  
+						if (!is.null(input$regionLevel))
+							list(regio = input$region),
+						if (!is.null(input$type))
+							list(type = input$type),
+						if (!is.null(input$type) & !is.null(input$year))
+							list(openingstijdenData = openingstijdenData()),
+						if (!is.null(subToekenningsData()))
+							list(assignedData = subToekenningsData()),
+						if (!is.null(categorie))
+							list(categorie = categorie),
+						if (!is.null(input$summarizeBy))
+							list(summarizeBy = input$summarizeBy),
+						if(!is.null(bioindicator))
+							list(bioindicator = bioindicator),
+						if(!is.null(input$sourceIndicator))
+							list(sourceIndicator = input$sourceIndicator),
+						if (!is.null(locaties))
+							list(locaties = locaties()),
+						if (!is.null(timeRange))
+							list(timeRange = timeRange()),
+						if (!is.null(unit))
+							list(unit = unit())
+						
+				)
+				
+				
+			})
+	
+	resultFct <- reactive({
+				
+				toReturn <- tryCatch(
+						do.call(plotFunction, args = argList()),
+						error = function(err)
+							validate(need(FALSE, err$message))
+				)		
+				
+				validate(need(!is.null(toReturn), "Niet beschikbaar"))
+				
+				return(toReturn)
+				
+				
+			})
+	
+	
+	output$plot <- renderPlotly({  
+				
+				resultFct()$plot
+				
+			})
+	
+	
+	output$dataDownload <- downloadHandler(
+			filename = function() nameFile(species = wildNaam(),
+						year = if (!is.null(input$year)) 
+									input$year else if (!is.null(input$time))
+									unique(c(input$time[1], input$time[2])) else
+									timeRange(), 
+						content = paste0(plotFunction, "_data"), fileExt = "csv"),
+			content = function(file) {
+				
+				resFct <- resultFct()
+				
+				## checks
+				
+				# Note: a data.frame is a list!
+				isDataPresent <- ifelse(!is.null(resFct),
+						ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
+						FALSE
+				)
+				
+				validate(
+						need(resFct, "Niet beschikbaar"),
+						need(
+								if(is.data.frame(resFct))	resFct	else	resFct$plot,
+								"Niet beschikbaar"
+						)
+				)
+				
+				## extract data to export
+				dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
+				
+				## write data to exported file
+				write.table(x = dataPlot, file = file, quote = FALSE, row.names = FALSE,
+						sep = ";", dec = ",")
+				
+			}
+	)
+	
+	output$table <- renderTable({
+				
+				return(resultFct())
+				
+			}, digits = 0)
+	
 }
 

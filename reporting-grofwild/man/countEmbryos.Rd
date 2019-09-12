@@ -4,13 +4,11 @@
 \alias{countEmbryos}
 \title{Create interactive plot for number of embryos versus year}
 \usage{
-countEmbryos(data, wildNaam = "", type = c("Smalree", "Geit"),
-  jaartallen = NULL, regio = "", width = NULL, height = NULL)
+countEmbryos(data, type = c("Smalree", "Geit"), jaartallen = NULL,
+  regio = "", width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
-
-\item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{type}{animal type, used to filter \code{data} ('ageGender' column)
 default is \code{c("Smalree", "Geit")}}

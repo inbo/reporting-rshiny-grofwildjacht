@@ -4,17 +4,15 @@
 \alias{percentageRealisedShotAnimals}
 \title{Create interactive plot to represent yearly percentage killed and non-killed animals}
 \usage{
-percentageRealisedShotAnimals(data, assignedData, wildNaam = "",
-  jaartallen = NULL, type = NULL, regio = "", doodsoorzaak = "afschot",
-  summarizeBy = c("count", "percent"), width = NULL, height = NULL)
+percentageRealisedShotAnimals(data, assignedData, jaartallen = NULL,
+  type = NULL, regio = "", summarizeBy = c("count", "percent"),
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}
 
 \item{assignedData}{data.frame with summary data on the number of assigned
 animals that can be shot}
-
-\item{wildNaam}{character, the name that should be displayed for y-label}
 
 \item{jaartallen}{integer vector, defines the year(s) considered for the reference period
 in the plot; if NULL no selection on year(s) is made}
@@ -24,9 +22,6 @@ If NULL (by default) or 'all', the data is not filtered.}
 
 \item{regio}{character vector, names of the selected regions in \code{data}
 to be shown in the plot title}
-
-\item{doodsoorzaak}{character vector, defines the cause(s) of death that should
-be considered in the plot}
 
 \item{summarizeBy}{character, whether to summarize data in terms of counts or percentages}
 

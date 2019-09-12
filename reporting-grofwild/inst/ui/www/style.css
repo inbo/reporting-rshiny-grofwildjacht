@@ -26,3 +26,22 @@ footer {
 	margin-top: 20px
 }
 
+
+
+/*** For the fancy noButton but tiles - radiobuttons ***/
+
+.noButton input[type='radio'] { /* style for radiobutton */
+        visibility: hidden;
+      }
+
+.noButton .radio-inline {
+	border: 2px solid #843860;
+	border-radius: 20px;
+	padding-right: 20px;
+	padding-bottom: 20px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	margin-right: 10px;
+      }
+
+

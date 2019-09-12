@@ -4,7 +4,8 @@
 \alias{createSpaceData}
 \title{Create summary data of geographical data for selected year, species and region level}
 \usage{
-createSpaceData(data, allSpatialData, year, species, regionLevel)
+createSpaceData(data, allSpatialData, year, species, regionLevel,
+  unit = c("absolute", "relative"))
 }
 \arguments{
 \item{data}{data.frame, geographical data}
@@ -17,6 +18,9 @@ createSpaceData(data, allSpatialData, year, species, regionLevel)
 
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}}
+
+\item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
+should be reported}
 }
 \value{
 data.frame

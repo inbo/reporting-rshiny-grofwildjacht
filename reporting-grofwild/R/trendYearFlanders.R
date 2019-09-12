@@ -2,7 +2,7 @@
 #' Create interactive plot for counts in Flanders per selected years
 #' @param data data.frame, formatted data for plotting
 #' @inheritParams createSpaceData
-#' @inheritParams countYearRegion
+#' @inheritParams trendYearRegion
 #' @return list with plot and data
 #' 
 #' @author mvarewyck

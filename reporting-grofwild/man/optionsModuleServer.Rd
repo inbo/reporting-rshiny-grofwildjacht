@@ -19,6 +19,8 @@ optionsModuleServer(input, output, session, data, types = NULL,
 
 \item{types, }{defines the species types that can be selected}
 
+\item{labelTypes}{character, the displayed label for selecting options field}
+
 \item{typesDefault, }{defines the default values for \code{types},
 same as \code{types} by defualt}
 

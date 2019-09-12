@@ -48,6 +48,8 @@ plotBioindicator <- function(data,
 		width = NULL, height = NULL){
 	
 	
+    # To prevent warnings with R CMD check
+    onderkaaklengte_comp_bron <- NULL
 	
 	wildNaam <- unique(data$wildsoort)
 	

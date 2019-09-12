@@ -5,7 +5,7 @@
 \title{Create interactive plot for counts per selected communes and years}
 \usage{
 trendYearRegion(data, locaties = NULL, timeRange = NULL,
-  width = NULL, height = NULL)
+  unit = c("absolute", "relative"), width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
@@ -13,6 +13,9 @@ trendYearRegion(data, locaties = NULL, timeRange = NULL,
 \item{locaties}{character vector, regions that were selected to plot}
 
 \item{timeRange}{numeric vector, time range selected for plot}
+
+\item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
+should be reported}
 
 \item{width}{plot width (optional)}
 
@@ -27,7 +30,7 @@ per year and per selected commune is plotted in a line plot}
 \itemize{
 \item{'afschotjaar': }{year at which the animals was shot}
 \item{'locatie': }{comune name}
-\item{'aantal': }{counts of animals}
+\item{'aantal' or 'aantal/100ha': }{absolute or relative counts of animals}
 }
 }
 }

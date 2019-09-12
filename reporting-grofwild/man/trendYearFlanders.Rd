@@ -4,10 +4,20 @@
 \alias{trendYearFlanders}
 \title{Create interactive plot for counts in Flanders per selected years}
 \usage{
-trendYearFlanders(data, timeRange, width = NULL, height = NULL)
+trendYearFlanders(data, timeRange, unit = c("absolute", "relative"),
+  width = NULL, height = NULL)
 }
 \arguments{
 \item{data}{data.frame, formatted data for plotting}
+
+\item{timeRange}{numeric vector, time range selected for plot}
+
+\item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
+should be reported}
+
+\item{width}{plot width (optional)}
+
+\item{height}{plot height (optional)}
 }
 \value{
 list with plot and data

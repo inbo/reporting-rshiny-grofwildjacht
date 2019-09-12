@@ -46,6 +46,10 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
 		unit = c("absolute", "relative")) {
 	
 	
+    # To prevent warnings with R CMD check
+    afschotjaar <- NULL
+    wildsoort <- NULL
+    
 	unit <- match.arg(unit)
 	
 	# Select correct spatial data
@@ -186,7 +190,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
 #' @param addGlobe boolean, whether to add world map to background; default is FALSE 
 #' @return leaflet map
 #' @author mvarewyck
-#' @importFrom leaflet leaflet addPolygons addPolylines
+#' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
 		regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes"), 

@@ -6,7 +6,8 @@
 \usage{
 plotModuleServer(input, output, session, plotFunction, data,
   openingstijdenData, toekenningsData = NULL, categorie = NULL,
-  bioindicator = NULL, locaties = NULL, timeRange = NULL)
+  bioindicator = NULL, locaties = NULL, timeRange = NULL,
+  unit = NULL)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -33,6 +34,9 @@ with bioindicator, either 'onderkaaklengte',
 defined externally for large map}
 
 \item{timeRange}{numeric vector, defines on which year range to filter on;
+defined externally for large map}
+
+\item{unit}{character, defines whether absolute or relative frequencies are reported;
 defined externally for large map}
 }
 \value{

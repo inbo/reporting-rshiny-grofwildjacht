@@ -6,11 +6,11 @@ Type: Package
 Author: Machteld Varewyck, Laure Cougnaud
 Description: Data visualization of grof wild in Vlaanderen.
 Version: 0.1.0
-Date: 2019-06-18
+Date: 2019-09-12
 Imports:
-    shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster
+    shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster, leaflet
 Depends: maptools
 Suggests:
-	testthat, leaflet, mapview
+	testthat, mapview
 Encoding: UTF-8
 RoxygenNote: 6.1.1

@@ -80,6 +80,7 @@ optionsModuleUI <- function(id,
 #' @param session shiny session variable for specific namespace
 #' @param data reactive data.frame, data for chosen species
 #' @param types, defines the species types that can be selected
+#' @param labelTypes character, the displayed label for selecting options field
 #' @param typesDefault, defines the default values for \code{types},
 #' same as \code{types} by defualt
 #' @param timeRange numeric vector of length 2 with time range (in year)

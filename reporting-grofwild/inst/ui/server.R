@@ -740,7 +740,7 @@ shinyServer(function(input, output, session) {
 						if (!is.null(event)) {
 							
 							if (!is.null(event$id)) {
-								
+							
 								if (event$id %in% results$map_summarySpaceData()$locatie) {
 									
 									textSelected <- results$map_textPopup()[
@@ -764,8 +764,11 @@ shinyServer(function(input, output, session) {
 			
 			# Title for the map
 			output$map_title <- renderUI({
-						
-						h3(paste("Gerapporteerd", input$map_unit, "voor", tolower(input$showSpecies),
+                        
+                        
+						h3(paste("Gerapporteerd", 
+                                        if (input$map_unit == "absolute") "aantal" else "aantal/100ha", 
+                                        "voor", tolower(input$showSpecies),
 										"in", input$map_year[1]))
 						
 						

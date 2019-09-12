@@ -232,6 +232,10 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 	## Replace decimal comma by dot
 	if ("lengte_mm" %in% names(rawData))
 		rawData$lengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+    
+    ## Replace decimal comma by dot
+    if ("onderkaaklengte_comp" %in% names(rawData))
+        rawData$onderkaaklengte_comp <- as.numeric(sub("\\,", ".", rawData$onderkaaklengte_comp))
 	
 	## Mismatch names with spatial (shape) data for "Vlaams Brabant"
 	rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
@@ -276,12 +280,12 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 	if (type == "eco") {
 
 		
-		# TODO will become redundant --- Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
-		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
+		# Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
+#		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
 		rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
 		
-		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
+#		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
+#		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
 		
 		# for Figure 13: combine age and gender: 'type' column 
 		# (to do the matching with the openingstijden table)
@@ -301,18 +305,21 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 		male <- rawData$geslacht.MF == "Mannelijk"
 		female <- rawData$geslacht.MF == "Vrouwelijk"
 		ageGender <- with(rawData,
-				ifelse(leeftijd_comp	== "Kits", ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
-						ifelse(leeftijd_comp	== "Jongvolwassen", ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
-								ifelse(leeftijd_comp	== "Volwassen", ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
+				ifelse(leeftijd_comp == "Kits", 
+                        ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
+						ifelse(leeftijd_comp == "Jongvolwassen", 
+                                ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
+								ifelse(leeftijd_comp == "Volwassen", 
+                                        ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
 						)))
 		ageGender[is.na(ageGender)] <- ""
 		
 		rawData$ageGender <- factor(ageGender, 
 				levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
 		
-		# for Figure p. 27, 28: compute cheek length
-		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
-						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
+#		# for Figure p. 27, 28: compute cheek length
+#		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
+#						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
 		
 		
 	}

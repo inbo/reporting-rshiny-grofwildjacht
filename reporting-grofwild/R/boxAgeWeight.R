@@ -53,7 +53,7 @@ boxAgeWeight <- function(data,
 	leeftijd <- NULL
 	gewicht <- NULL
 	geslacht <- NULL
-	plotData <- subset(plotData, !is.na(leeftijd) & leeftijd != "Niet ingezameld" &
+	plotData <- subset(plotData, leeftijd != "Onbekend" &
 					!is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
 	plotData$geslacht <- factor(plotData$geslacht)
 	

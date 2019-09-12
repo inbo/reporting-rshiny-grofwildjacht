@@ -76,7 +76,8 @@ plotBioindicator <- function(data,
 		if (sourceIndicator == "both") {
 			
 			data$onderkaaklengte <- data$onderkaaklengte_comp
-			data <- subset(data, !is.na(bron))
+			data <- subset(data, !is.na(onderkaaklengte_comp_bron))
+            colnames(data)[match("onderkaaklengte_comp_bron", colnames(data))] <- "bron" 
 			
 		} else {
 			

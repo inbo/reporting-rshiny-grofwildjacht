@@ -273,7 +273,7 @@ shinyUI(
                                             
                                             tagList(
                                                     actionLink(inputId = "linkPlot2", label =
-                                                                    h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulieren")),
+                                                                    h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier")),
                                                     conditionalPanel("input.linkPlot2 % 2 == 1",
                                                             fixedRow(
                                                                     

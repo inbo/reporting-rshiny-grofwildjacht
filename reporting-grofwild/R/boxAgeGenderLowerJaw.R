@@ -40,11 +40,11 @@ boxAgeGenderLowerJaw <- function(data,
 	nRecords <- nrow(plotData)
 	
 	# Remove some categories
-	# To prevent error with R CMD check
+    # To prevent error with R CMD check
 	leeftijd <- NULL
 	onderkaaklengte <- NULL
 	geslacht <- NULL
-	plotData <- subset(plotData, !is.na(leeftijd) & leeftijd != "Niet ingezameld" &
+	plotData <- subset(plotData, leeftijd != "Onbekend" &
 					!is.na(onderkaaklengte) & geslacht != "Onbekend" & !is.na(geslacht))
 	plotData$geslacht <- factor(plotData$geslacht)
 	

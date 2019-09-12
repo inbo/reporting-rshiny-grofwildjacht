@@ -11,6 +11,6 @@ Imports:
     shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster, leaflet
 Depends: maptools
 Suggests:
-	testthat, mapview
+	testthat, mapview, RColorBrewer
 Encoding: UTF-8
 RoxygenNote: 6.1.1

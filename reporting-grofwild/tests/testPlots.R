@@ -15,8 +15,10 @@ load(file = file.path(dataDir, "spatialData.RData"))
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo", shapeData = spatialData)
+geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 
 expect_equal(nrow(ecoData), nrow(geoData))
+
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
@@ -98,10 +100,8 @@ allPlots <- lapply(species, function(iSoort) {
 
 
 # Some special cases
-countYearProvince(data = wildEcoData, 
-		jaartallen = 2016, doodsoorzaak = "afschot")
-countYearProvince(data = wildEcoData,
-		jaartallen = 2016:2017, doodsoorzaak = "afschot")
+countYearProvince(data = wildEcoData, jaartallen = 2016)
+countYearProvince(data = wildEcoData, jaartallen = 2016:2017)
 
 
 
@@ -284,7 +284,7 @@ boxAgeWeight(data = wildEcoData, jaartallen = 2016:2017,
 res <- boxAgeGenderLowerJaw(
 		data = reeEcoData, 
 		jaartallen = unique(reeEcoData$afschotjaar),
-		type = unique(reeEcoData$ageGender)
+		type = unique(reeEcoData$leeftijd_comp)
 )
 
 ## PLOT 10: bioindicators

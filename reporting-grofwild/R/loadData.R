@@ -322,13 +322,22 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 #						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
         
         # TODO temporary fix - this should be done by Sander (data cleaning) in the future
+        # see also global.R
         if (any(rawData$onderkaaklengte_comp[rawData$ageGender == "Geit"] > 200)) {
             
-            warning(sum(rawData$onderkaaklengte_comp[rawData$ageGender == "Geit"] > 200, na.rm = TRUE), 
-                    " Geit(en) with onderkaaklengte_comp > 200 are excluded.")
+            toExclude <- ifelse(rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200,
+                    TRUE, FALSE)
+            toExclude[is.na(toExclude)] <- FALSE
+            ids <- rawData$ID[toExclude]
             
-            rawData <- rawData[!(rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200), ]
+             
+            rawData <- rawData[!toExclude, ]
            
+            warning(sum(toExclude), 
+                    " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
+            attr(rawData, "excluded") <- ids
+            
+            
         }
         
     }

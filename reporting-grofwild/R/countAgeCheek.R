@@ -37,7 +37,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 		stop("Gelieve jaartallen te selecteren")
 	
 	# Disable graph when only year t is selected
-	t <- 2019
+	t <- 2020
 	if (all(jaartallen == t))
 		stop(paste0("Voor ", t, " werden tot nu toe onvoldoende onderkaken ingezameld om een zinvolle grafiek te maken."))
 	

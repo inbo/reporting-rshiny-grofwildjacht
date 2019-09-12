@@ -6,7 +6,7 @@ files:
 hooks:
   AfterInstall:
     - location: scripts/reporting-rshiny-grofwildjacht.sh
-      timeout: 1000
+      timeout: 3600
 permissions:
   - object: /home/ubuntu/reporting-rshiny-grofwildjacht
     owner: ubuntu

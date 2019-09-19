@@ -783,6 +783,7 @@ shinyServer(function(input, output, session) {
 						
 						newMap <- mapFlanders(
 								regionLevel = input$map_regionLevel, 
+                                species = input$showSpecies,
 								allSpatialData = spatialData,
 								summaryData = results$map_summarySpaceData(),
 								colorScheme = results$map_colorScheme(),

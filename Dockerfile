@@ -40,7 +40,7 @@ RUN R -e "webshot::install_phantomjs()"
 
  
 # copy the app to the image by installing package (need latest version!!)
-ENV latestApp reporting-grofwild.gz
+ENV latestApp reporting-grofwild.tar.gz
 COPY $latestApp /root/
 RUN R CMD INSTALL /root/$latestApp
 RUN rm /root/$latestApp

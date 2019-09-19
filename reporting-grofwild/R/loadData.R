@@ -281,60 +281,73 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         
         
         # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
-		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
+        rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
         rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
         
-		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
+        rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
+        rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
         
-        # for Figure 13: combine age and gender: 'type' column 
-        # (to do the matching with the openingstijden table)
-        idx <- which(rawData$wildsoort == "Ree")
-        typeRee <- ifelse(
-                rawData[idx, "leeftijd_comp"]  == "Kits", "kits",
-                ifelse(rawData[idx, "leeftijd_comp"] %in% c("Jongvolwassen", "Volwassen"),
-                        ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
-                                ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
-                        ),
-                        ""))
-        rawData$type <- ""
-        rawData$type[idx] <- typeRee
-        rawData$type[is.na(rawData$type)] <- ""
         
-        # for Figure 28: combine age and gender, with subcategory for young adult
-        male <- rawData$geslacht.MF == "Mannelijk"
-        female <- rawData$geslacht.MF == "Vrouwelijk"
-        ageGender <- with(rawData,
-                ifelse(leeftijd_comp == "Kits", 
-                        ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
-                        ifelse(leeftijd_comp == "Jongvolwassen", 
-                                ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
-                                ifelse(leeftijd_comp == "Volwassen", 
-                                        ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
-                        )))
-        ageGender[is.na(ageGender)] <- ""
+        # Define type_comp (ageGender)
+        rawData$type_comp <- as.factor(simpleCap(rawData$type_comp))
         
-        rawData$ageGender <- factor(ageGender, 
-                levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
+        rawData$type <- ifelse(rawData$wildsoort != "Ree",
+                "", ifelse(grepl("kits", rawData$type_comp), "kits",
+                        ifelse(rawData$geslacht.MF == "Mannelijk", "bok", "geit")))
         
+        
+#        # for Figure 13: combine age and gender: 'type' column 
+#        # (to do the matching with the openingstijden table)
+#        idx <- which(rawData$wildsoort == "Ree")
+#        typeRee <- ifelse(
+#                rawData[idx, "leeftijd_comp"]  == "Kits", "kits",
+#                ifelse(rawData[idx, "leeftijd_comp"] %in% c("Jongvolwassen", "Volwassen"),
+#                        ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
+#                                ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
+#                        ),
+#                        ""))
+#        rawData$type2 <- ""
+#        rawData$type2[idx] <- typeRee
+#        rawData$type2[is.na(rawData$type2)] <- ""
+#        
+#        
+#       
+#        # for Figure 28: combine age and gender, with subcategory for young adult
+#        male <- rawData$geslacht.MF == "Mannelijk"
+#        female <- rawData$geslacht.MF == "Vrouwelijk"
+#        ageGender <- with(rawData,
+#                ifelse(leeftijd_comp == "Kits", 
+#                        ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
+#                        ifelse(leeftijd_comp == "Jongvolwassen", 
+#                                ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
+#                                ifelse(leeftijd_comp == "Volwassen", 
+#                                        ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
+#                        )))
+#        ageGender[is.na(ageGender)] <- ""
+#        
+#        rawData$ageGender <- factor(ageGender, 
+#                levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
+#        
 #		# for Figure p. 27, 28: compute cheek length
 #		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
 #						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
         
         # TODO temporary fix - this should be done by Sander (data cleaning) in the future
         # see also global.R
-        if (any(rawData$onderkaaklengte_comp[rawData$ageGender == "Geit"] > 200)) {
+        if (any(rawData$onderkaaklengte_comp > 200 | rawData$onderkaaklengte_comp < 100)) {
             
-            toExclude <- ifelse(rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200,
+            toExclude <- ifelse((rawData$onderkaaklengte_comp > 200 | rawData$onderkaaklengte_comp < 100) &
+                            rawData$onderkaaklengte_comp_bron == "inbo" &
+                            rawData$wildsoort == "Ree",
                     TRUE, FALSE)
             toExclude[is.na(toExclude)] <- FALSE
             ids <- rawData$ID[toExclude]
             
-             
+            
             rawData <- rawData[!toExclude, ]
-           
+            
             warning(sum(toExclude), 
-                    " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
+                    " Reeen with onderkaaklengte_comp outside 100 to 220 for source INBO were excluded.")
             attr(rawData, "excluded") <- ids
             
             
@@ -373,13 +386,23 @@ nameFile <- function(species, year, content, fileExt) {
 
 
 
-#' Print for debugging
-#' @param x R object that will be printed
-#' @return NULL, print output in the console
-printer <- function(x){
+
+#' Capitalize first letter
+#' @param names character vector, names to be capitalized (e.g. countries)
+#' @return character vector, capitalized version of \code{names}
+#' @author mvarewyck
+#' @export
+simpleCap <- function(names) {
     
-    cat("MV", deparse(substitute(x)), "\n")
-    print(x)
+    sapply(names, function(x) {
+                
+                if (is.na(x))
+                    return(x)
+                
+                s <- tolower(as.character(x))
+                paste0 (toupper(substring(s, 1, 1)), substring(s, 2))
+                
+            })
     
 }
 

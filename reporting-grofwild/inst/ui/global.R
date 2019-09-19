@@ -9,11 +9,17 @@ library(shinycssloaders)   # for busy indicator
 # mapview
 
 
+
+### General
+### ------------
+
 `%then%` <- shiny:::`%OR%`
 
 
 # Specify directory with data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
+
+
 
 
 ### Load all data
@@ -35,14 +41,14 @@ if (!is.null(attr(ecoData, "excluded")))
     geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 
 
-## Reactive values
-#results <- reactiveValues(
-#    showSpecies = "Wild zwijn" # For which species should summaries be shown?
-#)
-results <- list()
 
 
-## Debugging
+
+
+
+### Debugging
+### -----------
+
 onStop(function() {
 			if (file.exists(".RDuetConsole"))
 				file.remove(".RDuetConsole")

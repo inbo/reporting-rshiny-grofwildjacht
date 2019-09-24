@@ -5,7 +5,8 @@
 \title{Read ecology or geography data}
 \usage{
 loadRawData(dataDir = system.file("extdata", package =
-  "reportingGrofwild"), type = c("eco", "geo"), shapeData = NULL)
+  "reportingGrofwild"), type = c("eco", "geo", "wildschade"),
+  shapeData = NULL)
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the data files}

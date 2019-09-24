@@ -213,14 +213,15 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' @importFrom utils read.csv
 #' @export
 loadRawData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-        type = c("eco", "geo"), shapeData = NULL) {
+        type = c("eco", "geo", "wildschade"), shapeData = NULL) {
     
     type <- match.arg(type)
     
     
     dataFile <- file.path(dataDir, switch(type,
                     "eco" = "rshiny_reporting_data_ecology.csv",
-                    "geo" = "rshiny_reporting_data_geography.csv"))
+                    "geo" = "rshiny_reporting_data_geography.csv",
+                    "wildschade" = "WildSchade_georef.csv"))
     
     rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
@@ -240,9 +241,24 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
     ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
     rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
                     "Vlaams Brabant", as.character(rawData$provincie)))
-#  xtabs( ~ provincie + wildsoort, data = rawData)
+#	xtabs( ~ provincie + wildsoort, data = rawData)
     
-    ## Mismatch names with spatial (shape) data for multiple communes
+    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
+    ## Re-order factor levels for plots
+    if ("wildsoort" %in% names(rawData)) {
+        
+        rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
+                        as.character(rawData$provincie), 
+                        ifelse(rawData$provincie == "Voeren", 
+                                "Limburg", 
+                                as.character(rawData$provincie))),
+                levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
+#   xtabs( ~ provincie + wildsoort, data = rawData)
+        
+    }
+    
+    
+    ## Mismatch names with spatial (shape) data for multiple communes - geodata
     if (type == "geo" & !is.null(shapeData)) {
         
         communeData <- shapeData$communes@data
@@ -250,32 +266,16 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
                 header = TRUE, sep = ",")
         
+        # Determine gemeente: postcode -> NISCODE -> gemeente
         geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
-        geoName <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 
         
-#    tmpData <- data.frame(old = as.character(rawData$gemeente_afschot_locatie), 
-#        new = geoName, stringsAsFactors = FALSE)
-#    tmpData[which(tmpData$old != tmpData$new), ]
-        
-        rawData$gemeente_afschot_locatie <- geoName
+        rawData$gemeente_afschot_locatie <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 
         
         # Create fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
                 NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
         
     }
-    
-    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
-    ## Re-order factor levels for plots
-    rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
-                    as.character(rawData$provincie), 
-                    ifelse(rawData$provincie == "Voeren", 
-                            "Limburg", 
-                            as.character(rawData$provincie))),
-            levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
-#  xtabs( ~ provincie + wildsoort, data = rawData)
-    
-    
     
     if (type == "eco") {
         
@@ -330,9 +330,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
             toExclude[is.na(toExclude)] <- FALSE
             ids <- rawData$ID[toExclude]
             
-             
+            
             rawData <- rawData[!toExclude, ]
-           
+            
             warning(sum(toExclude), 
                     " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
             attr(rawData, "excluded") <- ids
@@ -341,6 +341,33 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         }
         
     }
+    
+    if (type == "wildschade") {
+        
+        # variables to keep
+        rawData <- rawData[, c("UUID", "IndieningID", "Jaartal", 
+                        "IndieningSchadeBasisCode", "IndieningSchadeCode",
+                        "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt", "SchadeBeschrijving",
+                        "provincie", "NISCODE", "x", "y", "GemNaam_Georef")]
+        
+        # format date
+        rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
+                        format = "%Y-%m-%d"), "%d/%m/%Y")
+        
+        # new column names
+        colnames(rawData) <- c("ID", "caseID", "afschotjaar", 
+                "IndieningSchadeBasisCode", "IndieningSchadeCode",
+                "SoortNaam", "wildsoort", "afschot_datum", "SchadeBeschrijving",
+                "provincie", "NISCODE", "x", "y", "gemeente_afschot_locatie")
+       
+        # create shape data
+        coordinates(rawData) <- ~x + y
+        proj4string(rawData) <- CRS("+init=epsg:31370")
+        
+        rawData <- spTransform(rawData, CRS("+proj=longlat"))
+        
+    }
+    
     
     attr(rawData, "Date") <- file.mtime(dataFile)
     

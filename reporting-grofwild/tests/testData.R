@@ -77,3 +77,28 @@ dev.off()
 # Can we combine data sources? 
 geoData <- loadRawData(type = "geo", shapeData = spatialData)
 tmp <- merge(geoData, ecoData)
+
+
+
+
+
+## 3. Wildschade
+## -------------------
+
+
+#readShapeData()  # create shape data
+load(file = file.path(dataDir, "spatialData.RData"))
+
+pdf(file.path(tempdir(), "checkGeoData.pdf"))
+for (iLevel in names(spatialData))
+    plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(10, "Set1"))
+dev.off()
+
+
+# Can we combine data sources? 
+wildschadeData <- loadRawData(type = "wildschade", shapeData = spatialData)
+
+dim(wildschadeData)
+head(wildschadeData)
+
+

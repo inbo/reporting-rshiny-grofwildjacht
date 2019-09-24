@@ -574,7 +574,9 @@ results$map_textPopup <- reactive({
             validate(need(results$map_summarySpaceData(), "Geen data beschikbaar"))
             
             regionNames <- results$map_summarySpaceData()$locatie
-            titleText <- paste("Gerapporteerd", input$map_unit, "in", input$map_year[1])
+            titleText <- paste("Gerapporteerd", 
+                    if (input$map_unit == "absolute") "aantal" else "aantal/100ha",
+                    "in", input$map_year[1])
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
                     "<strong>", titleText, "</strong>: ", 

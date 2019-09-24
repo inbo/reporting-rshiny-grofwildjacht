@@ -36,6 +36,8 @@ ecoData <- loadRawData(dataDir = dataDir, type = "eco")
 geoData <- loadRawData(dataDir = dataDir, type = "geo", 
     shapeData = spatialData)
 
+schadeData <- loadRawData(dataDir = dataDir, type = "wildschade")
+
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))
     geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]

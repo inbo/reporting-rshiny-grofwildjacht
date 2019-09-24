@@ -4,6 +4,9 @@ files:
   - source: /
     destination: /home/ubuntu/reporting-rshiny-grofwildjacht
 hooks:
+  BeforeInstall:
+    - location: scripts/cleanup-reporting-rshiny-grofwildjacht.sh
+      timeout: 300
   AfterInstall:
     - location: scripts/reporting-rshiny-grofwildjacht.sh
       timeout: 3600

@@ -77,3 +77,17 @@ dev.off()
 # Can we combine data sources? 
 geoData <- loadRawData(type = "geo", shapeData = spatialData)
 tmp <- merge(geoData, ecoData)
+
+
+lapply(2016:2018, function(year) {
+            tmp <- createSpaceData(
+                    data = geoData, 
+                    allSpatialData = spatialData,
+                    year = year,
+                    species = "Wild zwijn",
+                    regionLevel = "provinces",
+                    unit = "absolute"
+            )
+            print(sum(tmp$freq))
+            tmp
+        })

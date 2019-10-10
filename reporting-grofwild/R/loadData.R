@@ -347,8 +347,9 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         # variables to keep
         rawData <- rawData[, c("UUID", "IndieningID", "Jaartal", 
                         "IndieningSchadeBasisCode", "IndieningSchadeCode",
-                        "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt", "SchadeBeschrijving",
-                        "provincie", "NISCODE", "x", "y", "GemNaam_Georef")]
+                        "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
+                        "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
+                        "PolyLocatieWKT", "x", "y")]
         
         # format date
         rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
@@ -356,10 +357,15 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         
         # new column names
         colnames(rawData) <- c("ID", "caseID", "afschotjaar", 
-                "IndieningSchadeBasisCode", "IndieningSchadeCode",
-                "SoortNaam", "wildsoort", "afschot_datum", "SchadeBeschrijving",
-                "provincie", "NISCODE", "x", "y", "gemeente_afschot_locatie")
-       
+                "schadeBasisCode", "schadeCode",
+                "SoortNaam", "wildsoort", "afschot_datum",
+                "provincie", "fbz", "fbdz", "NISCODE", "gemeente_afschot_locatie",
+                "perceelPolygon", "x", "y")
+        
+        # TODO what if x/y coordinates missing -> exclude
+        toExclude <- is.na(rawData$x) | is.na(rawData$y)
+        rawData <- rawData[!toExclude, ]
+        
         # create shape data
         coordinates(rawData) <- ~x + y
         proj4string(rawData) <- CRS("+init=epsg:31370")

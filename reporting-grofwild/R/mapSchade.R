@@ -33,7 +33,7 @@ mapSchade <- function(
                             "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
                             "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
                             "<li><strong> Soortnaam </strong>: ", schadeData$Soortnaam,
-                            "<li><strong> Schadebeschrijving </strong>: ", schadeData$SchadeBeschrijving,
+                            "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
                             "</ul>"
                     )
             )

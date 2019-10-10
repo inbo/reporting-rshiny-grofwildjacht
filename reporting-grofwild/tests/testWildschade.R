@@ -73,7 +73,6 @@ for (iSpecies in species) {
     
     myPlot <- mapSchade(
             schadeData = schadeData,
-            species = iSpecies, 
             regionLevel = "provinces",
             allSpatialData = spatialData,
             addGlobe = TRUE)

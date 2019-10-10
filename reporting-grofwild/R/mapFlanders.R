@@ -150,8 +150,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
                     breaks = c(-Inf, 0, 100, 200, 500, 1000, Inf),
                     labels = c("0", "1-100", "100-200", "200-500", "500-1000", ">1000")) else
             summaryData2$group <- cut(x = summaryData2$freq, 
-                    breaks = c(-Inf, 0, 1, 2, 3, 4, Inf),
-                    labels = c("0", "0-1", "1-2", "2-3", "3-4", ">4"))
+                    breaks = c(-Inf, 0, 0.25, 0.5, 1, 2, 3, Inf),
+                    labels = c("0", "0-0.25", "0.25-0.5", "0.5-1", "1-2", "2-3", ">3"))
         
     } else {
         
@@ -168,8 +168,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         } else {
             
             summaryData2$group <- cut(x = summaryData2$freq, 
-                    breaks = c(-Inf, 0, 1, 2, 3, 4, Inf),
-                    labels = c("0", "0-1", "1-2", "2-3", "3-4", ">4"))
+                    breaks = c(-Inf, 0, 0.25, 0.5, 1, 2, 3, Inf),
+                    labels = c("0", "0-0.25", "0.25-0.5", "0.5-1", "1-2", "2-3", ">3"))
             
         }
         

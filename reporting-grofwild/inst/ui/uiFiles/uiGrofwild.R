@@ -70,8 +70,8 @@ tagList(
                                                         "Vlaanderen" = "flanders",
                                                         "Provincie" = "provinces", 
                                                         "Faunabeheerzones" = "faunabeheerzones",
-                                                        "Gemeente (binnen provincie)" = "communes",
-                                                        "Gemeente (binnen faunabeheerzone)" = "fbz_gemeentes"
+                                                        "Gemeente" = "communes",
+                                                        "Gemeente per Faunabeheerzone" = "fbz_gemeentes"
                                                 ),
                                                 selected = "communes")),
                                 column(8, uiOutput("map_region"))

@@ -212,7 +212,8 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' @author mvarewyck
 #' @importFrom utils read.csv
 #' @export
-loadRawData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
+loadRawData <- function(
+        dataDir = system.file("extdata", package = "reportingGrofwild"),
         type = c("eco", "geo", "wildschade"), shapeData = NULL) {
     
     type <- match.arg(type)
@@ -243,6 +244,12 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
                     "Vlaams Brabant", as.character(rawData$provincie)))
 #	xtabs( ~ provincie + wildsoort, data = rawData)
     
+    # Gemeente & NIS & postcode
+    # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
+    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+            header = TRUE, sep = ",")
+    
+    
     ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
     ## Re-order factor levels for plots
     if ("wildsoort" %in% names(rawData)) {
@@ -262,9 +269,6 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
     if (type == "geo" & !is.null(shapeData)) {
         
         communeData <- shapeData$communes@data
-        # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
-        gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-                header = TRUE, sep = ",")
         
         # Determine gemeente: postcode -> NISCODE -> gemeente
         geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
@@ -281,11 +285,11 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         
         
         # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
-		rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
+        rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
         rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
         
-		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-		rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
+        rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
+        rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
         
         # for Figure 13: combine age and gender: 'type' column 
         # (to do the matching with the openingstijden table)
@@ -359,11 +363,23 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
         colnames(rawData) <- c("ID", "caseID", "afschotjaar", 
                 "schadeBasisCode", "schadeCode",
                 "SoortNaam", "wildsoort", "afschot_datum",
-                "provincie", "fbz", "fbdz", "NISCODE", "gemeente_afschot_locatie",
+                "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
                 "perceelPolygon", "x", "y")
+        
+        # Match on NISCODE: otherwise mismatch with spatialData locatie
+        rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
+#        all(tolower(rawData$nieuwe_locatie) == tolower(rawData$gemeente_afschot_locatie), 
+#                na.rm = TRUE)
+        rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
+        rawData$nieuwe_locatie <- NULL
+        
+        # TODO Define fbz_gemeente
+        rawData$fbz_gemeente <- with(rawData, 
+                paste0(FaunabeheerZone, "_", gemeente_afschot_locatie)) 
         
         # TODO what if x/y coordinates missing -> exclude
         toExclude <- is.na(rawData$x) | is.na(rawData$y)
+        warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
         rawData <- rawData[!toExclude, ]
         
         # create shape data

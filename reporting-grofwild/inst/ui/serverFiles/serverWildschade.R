@@ -25,7 +25,7 @@ results$schade_spatialData <- reactive({
             req(spatialData)
             
             spatialData[[req(input$schade_regionLevel)]]
-             
+            
             
         })
 
@@ -51,10 +51,10 @@ output$schade_region <- renderUI({
 output$schade_year <- renderUI({
             
             div(class = "sliderBlank", 
-                    sliderInput(inputId = "schade_year", label = "Geselecteerd Jaar",
+                    sliderInput(inputId = "schade_year", label = "Geselecteerd Jaar (kaart)",
                             min = 
-#                                    if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
-#                                        2014 else
+                                    if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+                                        2014 else
                                         min(results$schade_data()$afschotjaar),
                             max = max(results$schade_data()$afschotjaar),
                             value = 2018,
@@ -63,7 +63,21 @@ output$schade_year <- renderUI({
         })
 
 
-
+output$schade_time <- renderUI({
+            
+            minYear <- if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+                        2014 else
+                        min(results$schade_data()$afschotjaar)
+            
+            sliderInput(inputId = "schade_time", label = "Periode (grafiek)", 
+                    value = c(minYear, 
+                            max(results$schade_data()$afschotjaar)),
+                    min = minYear,
+                    max = max(results$schade_data()$afschotjaar),
+                    step = 1,
+                    sep = "")
+            
+        })
 
 
 # Create data for map, summary of ecological data, given year, species and regionLevel
@@ -358,6 +372,88 @@ output$schade_downloadData <- downloadHandler(
 
 
 
+## Time line plots per region
+## -----------------
+
+
+## Time plot for Flanders (reference) ##
+
+results$schade_timeDataFlanders <- reactive({
+            
+            validate(need(input$schade_time, "Gelieve periode te selecteren"))
+            
+            ## Get data for Flanders
+            createTrendData(
+                    data = results$schade_data(),
+                    allSpatialData = spatialData,
+                    timeRange = input$schade_time,
+                    species = input$schade_species,
+                    regionLevel = "flanders",
+                    unit = input$schade_unit
+            )
+            
+        })
+
+callModule(module = optionsModuleServer, id = "schade_timePlotFlanders", 
+        data = results$schade_timeDataFlanders)
+callModule(module = plotModuleServer, id = "schade_timePlotFlanders",
+        plotFunction = "trendYearFlanders", 
+        data = results$schade_timeDataFlanders,
+        timeRange = reactive(input$schade_time),
+        unit = reactive(input$schade_unit)
+)
+
+
+
+
+## Time plot for selected region ##
+
+# Create data for map, time plot
+results$schade_timeData <- reactive({
+            
+            validate(need(results$schade_data(), "Geen data beschikbaar"),
+                    need(input$schade_time, "Gelieve periode te selecteren"))
+            
+            
+            createTrendData(
+                    data = results$schade_data(),
+                    allSpatialData = spatialData,
+                    timeRange = input$schade_time,
+                    species = input$schade_species,
+                    regionLevel = input$schade_regionLevel,
+                    unit = input$schade_unit
+            )
+            
+        })
+
+# Title for selected region level
+output$schade_timeTitle <- renderUI({
+            
+            regionLevel <- switch(input$schade_regionLevel,
+                    "flanders" = "Vlaanderen",
+                    "provinces" = "Provincie",
+                    "faunabeheerzones" = "Faunabeheerzones",
+                    "communes" = "Gemeente (binnen provincie)",
+                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)")
+            
+            
+            h3("Regio-schaal:", regionLevel)
+            
+        })
+
+
+callModule(module = optionsModuleServer, id = "schade_timePlot", 
+        data = results$schade_timeData)
+callModule(module = plotModuleServer, id = "schade_timePlot",
+        plotFunction = "trendYearRegion", 
+        data = results$schade_timeData,
+        locaties = reactive(input$schade_region),
+        timeRange = reactive(input$schade_time),
+        unit = reactive(input$schade_unit)
+)
+
+
+
 ## Perceel map
 ## -----------------
 
@@ -374,7 +470,7 @@ output$schade_titlePerceel <- renderUI({
                                     max(results$schade_data()$afschotjaar),
                                     ")"
                             )
-            ))
+                    ))
             
         })
 

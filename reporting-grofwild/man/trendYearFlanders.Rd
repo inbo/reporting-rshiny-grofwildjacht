@@ -8,7 +8,7 @@ trendYearFlanders(data, timeRange, unit = c("absolute", "relative"),
   width = NULL, height = NULL)
 }
 \arguments{
-\item{data}{data.frame, formatted data for plotting}
+\item{data}{data.frame, formatted data for plotting as returned by \code{\link{createTrendData}}}
 
 \item{timeRange}{numeric vector, time range selected for plot}
 

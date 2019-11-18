@@ -261,12 +261,12 @@ NIS code,Postcode,Gemeente
 25015,1440,Kasteelbrakel
 25018,1325,Chaumont-Gistoux
 25023,1490,Court-Saint-Etienne
-25031,1470,Genepiën
-25031,1471,Genepiën
-25031,1472,Genepiën
-25031,1473,Genepiën
-25031,1474,Genepiën
-25031,1476,Genepiën
+25031,1470,Genepiï¿½n
+25031,1471,Genepiï¿½n
+25031,1472,Genepiï¿½n
+25031,1473,Genepiï¿½n
+25031,1474,Genepiï¿½n
+25031,1476,Genepiï¿½n
 25037,1390,Graven
 25043,1315,Incourt
 25044,1460,Itter
@@ -288,7 +288,7 @@ NIS code,Postcode,Gemeente
 25112,1300,Waver
 25112,1301,Waver
 25117,1450,Chastre
-25118,1357,Hélécine
+25118,1357,Hï¿½lï¿½cine
 25119,1380,Lasne
 25120,1350,Orp-Jauche
 25121,1340,Ottignies-Louvain-La-Neuve
@@ -510,9 +510,9 @@ NIS code,Postcode,Gemeente
 46013,9150,Kruibeke
 46014,9160,Lokeren
 46020,9170,Sint-Gillis-Waas
-46021,9100,Sint-Niklaas (Prov. Oost-Vlaanderen)
-46021,9111,Sint-Niklaas (Prov. Oost-Vlaanderen)
-46021,9112,Sint-Niklaas (Prov. Oost-Vlaanderen)
+46021,9100,Sint-Niklaas
+46021,9111,Sint-Niklaas
+46021,9112,Sint-Niklaas
 46024,9190,Stekene
 46025,9140,Temse
 51004,7800,Aat
@@ -536,8 +536,8 @@ NIS code,Postcode,Gemeente
 51012,7941,Brugelette
 51012,7942,Brugelette
 51012,7943,Brugelette
-51014,7950,Chièvres
-51014,7951,Chièvres
+51014,7950,Chiï¿½vres
+51014,7951,Chiï¿½vres
 51017,7890,Elzele
 51019,7880,Vloesberg
 51065,7910,Frasnes-Lez-Anvaing
@@ -603,8 +603,8 @@ NIS code,Postcode,Gemeente
 53053,7033,Bergen
 53053,7034,Bergen
 53065,7390,Quaregnon
-53068,7380,Quiévrain
-53068,7382,Quiévrain
+53068,7380,Quiï¿½vrain
+53068,7382,Quiï¿½vrain
 53070,7330,Saint-Ghislain
 53070,7331,Saint-Ghislain
 53070,7332,Saint-Ghislain
@@ -612,8 +612,8 @@ NIS code,Postcode,Gemeente
 53070,7334,Saint-Ghislain
 53082,7340,Colfontaine
 53083,7387,Honnelles
-53084,7040,Quévy
-53084,7041,Quévy
+53084,7040,Quï¿½vy
+53084,7041,Quï¿½vy
 54007,7700,Moeskroen
 54007,7711,Moeskroen
 54007,7712,Moeskroen
@@ -624,8 +624,8 @@ NIS code,Postcode,Gemeente
 54010,7784,Komen
 55004,7090,Sgravenbrakel
 55010,7850,Edingen
-55022,7100,La Louvière
-55022,7110,La Louvière
+55022,7100,La Louviï¿½re
+55022,7110,La Louviï¿½re
 55023,7860,Lessen
 55023,7861,Lessen
 55023,7862,Lessen
@@ -685,12 +685,12 @@ NIS code,Postcode,Gemeente
 57062,7740,Pecq
 57062,7742,Pecq
 57062,7743,Pecq
-57064,7600,Péruwelz
-57064,7601,Péruwelz
-57064,7602,Péruwelz
-57064,7603,Péruwelz
-57064,7604,Péruwelz
-57064,7608,Péruwelz
+57064,7600,Pï¿½ruwelz
+57064,7601,Pï¿½ruwelz
+57064,7602,Pï¿½ruwelz
+57064,7603,Pï¿½ruwelz
+57064,7604,Pï¿½ruwelz
+57064,7608,Pï¿½ruwelz
 57072,7610,Rumes
 57072,7611,Rumes
 57072,7618,Rumes
@@ -728,11 +728,11 @@ NIS code,Postcode,Gemeente
 61003,4540,Amay
 61010,4210,Burdinne
 61012,4560,Clavier
-61019,4190,Ferrières
+61019,4190,Ferriï¿½res
 61024,4180,Hamoir
 61024,4181,Hamoir
-61028,4217,Héron
-61028,4218,Héron
+61028,4217,Hï¿½ron
+61028,4218,Hï¿½ron
 61031,4500,Hoei
 61039,4570,Marchin
 61041,4577,Modave
@@ -765,10 +765,10 @@ NIS code,Postcode,Gemeente
 62027,4607,Dalhem
 62027,4608,Dalhem
 62032,4130,Esneux
-62038,4620,Fléron
-62038,4621,Fléron
-62038,4623,Fléron
-62038,4624,Fléron
+62038,4620,Flï¿½ron
+62038,4621,Flï¿½ron
+62038,4623,Flï¿½ron
+62038,4624,Flï¿½ron
 62051,4040,Herstal
 62051,4041,Herstal
 62051,4042,Herstal
@@ -801,13 +801,13 @@ NIS code,Postcode,Gemeente
 62108,4601,Wezet
 62108,4602,Wezet
 62118,4460,Grace-Hollogne
-62119,4670,Blégny
-62119,4671,Blégny
-62119,4672,Blégny
-62120,4400,Flémalle
-62121,4120,Neupré
-62121,4121,Neupré
-62121,4122,Neupré
+62119,4670,Blï¿½gny
+62119,4671,Blï¿½gny
+62119,4672,Blï¿½gny
+62120,4400,Flï¿½malle
+62121,4120,Neuprï¿½
+62121,4121,Neuprï¿½
+62121,4122,Neuprï¿½
 62122,4870,Trooz
 63001,4770,Amel
 63001,4771,Amel
@@ -859,15 +859,15 @@ NIS code,Postcode,Gemeente
 63086,4983,Trois-Ponts
 63087,4790,Burg-Reuland
 63087,4791,Burg-Reuland
-63088,4850,Plombières
-63088,4851,Plombières
-63088,4852,Plombières
+63088,4850,Plombiï¿½res
+63088,4851,Plombiï¿½res
+63088,4852,Plombiï¿½res
 63089,4890,Thimister-Clermont
 64008,4257,Berloz
 64015,4260,Braives
 64015,4261,Braives
 64015,4263,Braives
-64021,4367,Crisnée
+64021,4367,Crisnï¿½e
 64023,4357,Donceel
 64025,4347,Fexhe-Le-Haut-Clocher
 64029,4250,Geer
@@ -987,7 +987,7 @@ NIS code,Postcode,Gemeente
 82038,6681,Sainte-Ode
 83012,6940,Durbuy
 83012,6941,Durbuy
-83013,6997,Erezée
+83013,6997,Erezï¿½e
 83028,6990,Hotton
 83031,6980,La Roche-En-Ardenne
 83031,6982,La Roche-En-Ardenne
@@ -1014,7 +1014,7 @@ NIS code,Postcode,Gemeente
 84010,6838,Bouillon
 84016,6929,Daverdisse
 84029,6887,Herbeumont
-84033,6860,Léglise
+84033,6860,Lï¿½glise
 84035,6890,Libin
 84043,6840,Neufchateau
 84050,6850,Paliseul
@@ -1043,7 +1043,7 @@ NIS code,Postcode,Gemeente
 85011,6824,Florenville
 85024,6769,Meix-Devant-Virton
 85026,6750,Musson
-85034,6747,Saint-Léger
+85034,6747,Saint-Lï¿½ger
 85039,6730,Tintigny
 85045,6760,Virton
 85045,6761,Virton
@@ -1053,14 +1053,14 @@ NIS code,Postcode,Gemeente
 85046,6723,Habay
 85046,6724,Habay
 85047,6767,Rouvroy
-91005,5537,Anhée
+91005,5537,Anhï¿½e
 91013,5570,Beauraing
 91013,5571,Beauraing
 91013,5572,Beauraing
 91013,5573,Beauraing
 91013,5574,Beauraing
 91013,5576,Beauraing
-91015,5555,Bièvre
+91015,5555,Biï¿½vre
 91030,5590,Ciney
 91034,5500,Dinant
 91034,5501,Dinant
@@ -1090,11 +1090,11 @@ NIS code,Postcode,Gemeente
 91114,5580,Rochefort
 91120,5377,Somme-Leuze
 91141,5530,Yvoir
-91142,5540,Hastière
-91142,5541,Hastière
-91142,5542,Hastière
-91142,5543,Hastière
-91142,5544,Hastière
+91142,5540,Hastiï¿½re
+91142,5541,Hastiï¿½re
+91142,5542,Hastiï¿½re
+91142,5543,Hastiï¿½re
+91142,5544,Hastiï¿½re
 91143,5550,Vresse-Sur-Semois
 92003,5300,Andenne
 92006,5330,Assesse
@@ -1102,7 +1102,7 @@ NIS code,Postcode,Gemeente
 92006,5333,Assesse
 92006,5334,Assesse
 92006,5336,Assesse
-92035,5310,Eghezée
+92035,5310,Eghezï¿½e
 92045,5150,Floreffe
 92048,5070,Fosses-La-Ville
 92054,5340,Gesves
@@ -1131,8 +1131,8 @@ NIS code,Postcode,Gemeente
 92137,5060,Sambreville
 92138,5380,Fernelmont
 92140,5190,Jemeppe-Sur-Sambre
-92141,5080,La Bruyère
-92141,5081,La Bruyère
+92141,5080,La Bruyï¿½re
+92141,5081,La Bruyï¿½re
 92142,5030,Gembloux
 92142,5031,Gembloux
 92142,5032,Gembloux

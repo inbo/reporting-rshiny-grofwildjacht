@@ -56,7 +56,10 @@ tagList(
                                 column(8, uiOutput("schade_region"))
                         ),
                         
-                        uiOutput("schade_year"),
+                        fixedRow(
+                                column(6, uiOutput("schade_year")),
+                                column(6, uiOutput("schade_time"))
+                        ),
                         
                         fixedRow(
                                 column(6,
@@ -69,8 +72,8 @@ tagList(
                                 ),
                                 column(6, 
                                         selectInput(inputId = "schade_unit", "Eenheid",
-                                                choices = c("Aantal schadegevallen" = "absoluteCases", 
-                                                        "Aantal beschadigde percelen" = "absolute"))
+                                                choices = c("Aantal" = "absolute", 
+                                                        "Aantal/100ha" = "relative"))
                                 )
                         ),
                         
@@ -84,7 +87,22 @@ tagList(
                 withSpinner(leafletOutput("schade_spacePlot")),
                 tags$br(),
                 downloadButton("schade_downloadMap", "Download figuur"),
-                downloadButton("schade_downloadData", "Download data")
+                downloadButton("schade_downloadData", "Download data"),
+                
+                fixedRow(
+                        column(6,
+                                h3("Referentie (Vlaanderen)"),
+                                plotModuleUI(id = "schade_timePlotFlanders", height = "400px"),
+                                optionsModuleUI(id = "schade_timePlotFlanders", exportData = TRUE,
+                                        doWellPanel = FALSE)
+                        ),
+                        column(6,
+                                uiOutput("schade_timeTitle"),
+                                plotModuleUI(id = "schade_timePlot", height = "400px"),
+                                optionsModuleUI(id = "schade_timePlot", exportData = TRUE,
+                                        doWellPanel = FALSE)
+                        )
+                )
         
         ),
         

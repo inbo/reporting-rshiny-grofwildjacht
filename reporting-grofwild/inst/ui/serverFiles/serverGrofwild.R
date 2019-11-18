@@ -379,36 +379,14 @@ results$map_timeDataFlanders <- reactive({
             validate(need(input$map_time, "Gelieve periode te selecteren"))
             
             ## Get data for Flanders
-            # Select subset for time
-            chosenTimes <- input$map_time[1]:input$map_time[2]
-            tmpData <- subset(results$wild_geoData(), afschotjaar %in% chosenTimes)
-            
-            # Create general plot data names
-            plotData <- data.frame(afschotjaar = tmpData$afschotjaar)
-            plotData$locatie <- "Vlaams Gewest"
-            plotData$wildsoort <- input$wild_species
-            
-            # Exclude data with missing time or space
-            plotData <- plotData[!is.na(plotData$afschotjaar) & 
-                            !is.na(plotData$locatie) & plotData$locatie != "",]
-            
-            # Summarize data over years
-            summaryData <- plyr::count(df = plotData, vars = names(plotData))
-            
-            # Add names & times with 0 observations
-            fullData <- cbind(expand.grid(afschotjaar = unique(summaryData$afschotjaar),
-                            locatie = "Vlaams Gewest"))
-            allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-            allData$freq[is.na(allData$freq)] <- 0
-            
-            # unit taken into account
-            if (input$map_unit == "relative")
-                allData$freq <- allData$freq/spatialData[["flanders"]]$AREA 
-            
-            
-            allData$afschotjaar <- as.factor(allData$afschotjaar)
-            
-            allData
+            createTrendData(
+                    data = results$wild_geoData(),
+                    allSpatialData = spatialData,
+                    timeRange = input$map_time,
+                    species = input$wild_species,
+                    regionLevel = "flanders",
+                    unit = input$map_unit
+            )
             
         })
 
@@ -432,54 +410,14 @@ results$map_timeData <- reactive({
             validate(need(results$wild_geoData(), "Geen data beschikbaar"),
                     need(input$map_time, "Gelieve periode te selecteren"))
             
-            
-            # TODO incorporate this code in createSpaceData()
-            
-            # Select subset for time
-            chosenTimes <- input$map_time[1]:input$map_time[2]
-            tmpData <- subset(results$wild_geoData(), afschotjaar %in% chosenTimes)
-            
-            # Create general plot data names
-            plotData <- data.frame(
-                    wildsoort = input$wild_species,
-                    afschotjaar = tmpData$afschotjaar)
-            plotData$locatie <- switch(input$map_regionLevel,
-                    flanders = "Vlaams Gewest",
-                    provinces = tmpData$provincie,
-                    communes = tmpData$gemeente_afschot_locatie,
-                    faunabeheerzones = tmpData$FaunabeheerZone,
-                    fbz_gemeentes = tmpData$fbz_gemeente
+            createTrendData(
+                    data = results$wild_geoData(),
+                    allSpatialData = spatialData,
+                    timeRange = input$map_time,
+                    species = input$wild_species,
+                    regionLevel = input$map_regionLevel,
+                    unit = input$map_unit
             )
-            
-            # Exclude data with missing time or space
-            plotData <- plotData[!is.na(plotData$afschotjaar) & 
-                            !is.na(plotData$locatie) & plotData$locatie != "",]
-            
-            # Summarize data over years
-            summaryData <- plyr::count(df = plotData, vars = names(plotData))
-            
-            # Add names & times with 0 observations
-            fullData <- cbind(expand.grid(
-                            wildsoort = input$wild_species,
-                            afschotjaar = unique(summaryData$afschotjaar),
-                            locatie = unique(results$wild_spatialData()$NAAM)))
-            # add Area
-            fullData <- merge(fullData, results$wild_spatialData()@data[, c("NAAM", "AREA")],
-                    by.x = "locatie", by.y = "NAAM")
-            
-            allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
-            allData$freq[is.na(allData$freq)] <- 0
-            
-            # unit taken into account
-            if (input$map_unit == "relative")
-                allData$freq <- allData$freq/allData$AREA 
-            
-            allData$AREA <- NULL
-            
-            allData$afschotjaar <- as.factor(allData$afschotjaar)
-            
-            
-            return(allData)
             
         })
 

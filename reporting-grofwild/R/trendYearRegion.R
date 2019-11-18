@@ -1,3 +1,76 @@
+#' Create data for plotting trend over years in \code{\link{trendYearFlanders}}
+#' @inheritParams createSpaceData
+#' @inheritParams trendYearRegion
+#' @return data.frame, summary of number of animals per species, region and year.
+#' Ready for plotting with \code{\link{trendYearFlanders}} 
+#' @author mvarewyck
+#' @export
+createTrendData <- function(data, allSpatialData, 
+        timeRange, species, regionLevel, unit = c("absolute", "relative")) {
+    
+    
+    # Select correct spatial data
+    if ("Wild zwijn" %in% species & regionLevel == "provinces") {
+        
+        spatialData <- allSpatialData[["provincesVoeren"]]
+        
+    } else {
+        
+        spatialData <- allSpatialData[[regionLevel]]
+        
+    }
+    
+    
+    # Select subset for time
+    chosenTimes <- timeRange[1]:timeRange[2]
+    tmpData <- subset(data, afschotjaar %in% chosenTimes & wildsoort %in% species)
+    
+    # Create general plot data names
+    plotData <- data.frame(
+            wildsoort = species,
+            afschotjaar = tmpData$afschotjaar)
+    plotData$locatie <- switch(regionLevel,
+            flanders = "Vlaams Gewest",
+            provinces = tmpData$provincie,
+            communes = tmpData$gemeente_afschot_locatie,
+            faunabeheerzones = tmpData$FaunabeheerZone,
+            fbz_gemeentes = tmpData$fbz_gemeente
+    )
+    
+    # Exclude data with missing time or space
+    plotData <- plotData[!is.na(plotData$afschotjaar) & 
+                    !is.na(plotData$locatie) & plotData$locatie != "",]
+    
+    # Summarize data over years
+    summaryData <- plyr::count(df = plotData, vars = names(plotData))
+    
+    # Add names & times with 0 observations
+    fullData <- cbind(expand.grid(
+                    wildsoort = species,
+                    afschotjaar = chosenTimes,
+                    locatie = unique(spatialData@data$NAAM)))
+    # add Area
+    fullData <- merge(fullData, spatialData@data[, c("NAAM", "AREA")],
+            by.x = "locatie", by.y = "NAAM")
+    
+    allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
+    allData$freq[is.na(allData$freq)] <- 0
+    
+    # unit taken into account
+    if (unit == "relative")
+        allData$freq <- allData$freq/allData$AREA 
+    
+    allData$AREA <- NULL
+    
+    allData$afschotjaar <- as.factor(allData$afschotjaar)
+    
+    
+    return(allData)
+    
+}
+
+
+
 #' Create interactive plot for counts per selected communes and years
 #' 
 #' @param data data.frame with raw data for plotting
@@ -20,7 +93,8 @@
 #' @import plotly
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
-trendYearRegion <- function(data, locaties = NULL, timeRange = NULL, unit = c("absolute", "relative"), 
+trendYearRegion <- function(data, locaties = NULL, timeRange = NULL, 
+        unit = c("absolute", "relative"), 
 		width = NULL, height = NULL) {
 	
 	

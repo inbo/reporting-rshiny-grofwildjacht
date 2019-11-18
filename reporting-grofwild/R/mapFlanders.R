@@ -53,7 +53,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     unit <- match.arg(unit)
     
     # Select correct spatial data
-    if (species == "Wild zwijn" & regionLevel == "provinces") {
+    if ("Wild zwijn" %in% species & regionLevel == "provinces") {
         
         spatialData <- allSpatialData[["provincesVoeren"]]
         
@@ -89,36 +89,44 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     # Select subset for time
     plotData <- subset(data, subset = afschotjaar %in% year & wildsoort == species)
     
-    # Create general plot data names
-    plotData$locatie <- switch(regionLevel,
-            flanders = "Vlaams Gewest",
-            provinces = plotData$provincie, 
-            communes = plotData$gemeente_afschot_locatie,
-            faunabeheerzones = plotData$FaunabeheerZone,
-            fbz_gemeentes = plotData$fbz_gemeente
-    )
-    
-    # Exclude data with missing time or space
-    plotData <- subset(plotData, !is.na(plotData$afschotjaar) & 
-                    !is.na(plotData$locatie) & plotData$locatie != "",
-            c("afschotjaar", "locatie", if (grepl("Cases", unit)) "caseID")
-    )
-    
-    # Remove duplicate cases if needed
-    if ("caseID" %in% colnames(plotData)) {
+    if (nrow(plotData) == 0) {
         
-        plotData <- plotData[!duplicated(plotData), ]
-        plotData$caseID <- NULL
+        allData <- fullData 
+        allData$freq <- 0
+        
+    } else {
+        
+        # Create general plot data names
+        plotData$locatie <- switch(regionLevel,
+                flanders = "Vlaams Gewest",
+                provinces = plotData$provincie, 
+                communes = plotData$gemeente_afschot_locatie,
+                faunabeheerzones = plotData$FaunabeheerZone,
+                fbz_gemeentes = plotData$fbz_gemeente
+        )
+        
+        # Exclude data with missing time or space
+        plotData <- subset(plotData, !is.na(plotData$afschotjaar) & 
+                        !is.na(plotData$locatie) & plotData$locatie != "",
+                c("afschotjaar", "locatie", if (grepl("Cases", unit)) "caseID")
+        )
+        
+        # Remove duplicate cases if needed
+        if ("caseID" %in% colnames(plotData)) {
+            
+            plotData <- plotData[!duplicated(plotData), ]
+            plotData$caseID <- NULL
+            
+        }
+        
+        # Summarize data over years
+        summaryData <- plyr::count(df = plotData, vars = names(plotData))
+        
+        # Add names & times with 0 observations
+        allData <- merge(summaryData, fullData, all = TRUE)
+        allData$freq[is.na(allData$freq)] <- 0
         
     }
-    
-    # Summarize data over years
-    summaryData <- plyr::count(df = plotData, vars = names(plotData))
-    
-    # Add names & times with 0 observations
-    
-    allData <- merge(summaryData, fullData, all = TRUE)
-    allData$freq[is.na(allData$freq)] <- 0
     
     allData$afschotjaar <- as.factor(allData$afschotjaar)
     

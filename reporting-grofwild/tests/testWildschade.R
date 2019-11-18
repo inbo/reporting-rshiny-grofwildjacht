@@ -26,13 +26,10 @@ species <- unique(schadeData$wildsoort)
 
 xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 
-# TODO for faunabeheerzone
-#for (regionLevel in names(spatialData)[1:5]) {
-for (regionLevel in names(spatialData)[1:3]) {
+for (regionLevel in names(spatialData)[1:5]) {
     
 #    for (iSpecies in species) {
-    
-    for(iUnit in c("absolute", "absoluteCases")) {
+    iSpecies <- "wild zwijn"
         
         spaceData <- createSpaceData(
                 data = schadeData@data, 
@@ -40,27 +37,55 @@ for (regionLevel in names(spatialData)[1:3]) {
                 year = 2018,
                 species = iSpecies,
                 regionLevel = regionLevel,
-                unit = iUnit
+                unit = "absolute"
         )
         
         cat("*", regionLevel, "\n")
-        cat("*", iUnit, "\n")
+        cat("*", iSpecies, "\n")
         print(sum(spaceData$freq))
         
-    }
-    
-    myPlot <- mapFlanders(
-            allSpatialData = spatialData, 
-            regionLevel = regionLevel, 
-            colorScheme = c("white", RColorBrewer::brewer.pal(
-                            n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
-            summaryData = spaceData,
-            legend = "topright",
-            species = iSpecies
-    )
-    
-    print(myPlot)
-    
+        trendData <- createTrendData(
+                data = schadeData@data,
+                allSpatialData = spatialData,
+                timeRange = c(2014, 2018),
+                species = iSpecies,
+                regionLevel = regionLevel,
+                unit = "absolute")
+        
+        # FIXME 
+        if (regionLevel == "fbz_gemeentes") {
+            which(!unique(spaceData$locatie) %in% spatialData$fbz_gemeentes@data$NAAM)
+            tail(spaceData$locatie)
+        } else {
+            
+            mapPlot <- mapFlanders(
+                    allSpatialData = spatialData, 
+                    regionLevel = regionLevel, 
+                    colorScheme = c("white", RColorBrewer::brewer.pal(
+                                    n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
+                    summaryData = spaceData,
+                    legend = "topright",
+                    species = iSpecies
+            )
+            print(mapPlot)
+            
+            if (regionLevel == "flanders")
+                trendPlot <- trendYearFlanders(
+                        data = trendData,
+                        timeRange = c(2014, 2018),
+                        unit = "absolute") else 
+                trendPlot <- trendYearRegion(
+                        data = trendData,
+                        timeRange = c(2014, 2018),
+                        unit = "absolute",
+                        locaties = trendData$locatie[1:3])
+            
+            print(trendPlot)
+            
+            
+            
+        }
+        
 #    }
     
 }

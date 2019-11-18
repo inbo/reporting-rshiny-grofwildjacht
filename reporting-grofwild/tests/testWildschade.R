@@ -47,7 +47,7 @@ for (regionLevel in names(spatialData)[1:5]) {
         trendData <- createTrendData(
                 data = schadeData@data,
                 allSpatialData = spatialData,
-                timeRange = c(2014, 2018),
+                timeRange = c(2006, 2019),
                 species = iSpecies,
                 regionLevel = regionLevel,
                 unit = "absolute")
@@ -72,7 +72,7 @@ for (regionLevel in names(spatialData)[1:5]) {
             if (regionLevel == "flanders")
                 trendPlot <- trendYearFlanders(
                         data = trendData,
-                        timeRange = c(2014, 2018),
+                        timeRange = c(2006, 2019),
                         unit = "absolute") else 
                 trendPlot <- trendYearRegion(
                         data = trendData,

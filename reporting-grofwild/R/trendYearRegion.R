@@ -24,10 +24,10 @@ createTrendData <- function(data, allSpatialData,
     # Select subset for time
     chosenTimes <- timeRange[1]:timeRange[2]
     tmpData <- subset(data, afschotjaar %in% chosenTimes & wildsoort %in% species)
+    tmpData$wildsoort <- NULL
     
     # Create general plot data names
     plotData <- data.frame(
-            wildsoort = species,
             afschotjaar = tmpData$afschotjaar)
     plotData$locatie <- switch(regionLevel,
             flanders = "Vlaams Gewest",
@@ -46,7 +46,6 @@ createTrendData <- function(data, allSpatialData,
     
     # Add names & times with 0 observations
     fullData <- cbind(expand.grid(
-                    wildsoort = species,
                     afschotjaar = chosenTimes,
                     locatie = unique(spatialData@data$NAAM)))
     # add Area

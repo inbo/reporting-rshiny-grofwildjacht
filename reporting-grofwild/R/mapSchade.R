@@ -18,15 +18,21 @@ mapSchade <- function(
         schadeData, 
         regionLevel, 
         allSpatialData,
-        addGlobe = FALSE
+        addGlobe = FALSE,
+        legend = "topright"
 ) {
     
     
-    
+    # Color palette
+    palette <- colorFactor(inbo.2015.colours(n = 4),
+            c("winter", "lente", "zomer", "herfst"))
     
     myMap <- leaflet(schadeData) %>%
             
-            addMarkers(
+            addCircleMarkers(
+                    color = ~palette(season),
+                    stroke = FALSE,
+                    fillOpacity = 0.5,
                     popup = paste0("<h4>Schadegeval ID: ", schadeData$caseID, "</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
@@ -57,6 +63,22 @@ mapSchade <- function(
     if (addGlobe) {
         
         myMap <- addProviderTiles(myMap, "Hydda.Full")
+        
+    }
+    
+    # Add legend
+    if (legend != "none") {
+        
+        myMap <- addLegend(
+                map = myMap,
+                position = legend,
+                pal = palette, 
+                values = ~season,
+                opacity = 0.8,
+                title = "Legende",
+                layerId = "legend"
+        )
+        
         
     }
     

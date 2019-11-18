@@ -382,6 +382,9 @@ loadRawData <- function(
         warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
         rawData <- rawData[!toExclude, ]
         
+        # Define season
+        rawData$season <- getSeason(rawData$afschot_datum)
+        
         # create shape data
         coordinates(rawData) <- ~x + y
         proj4string(rawData) <- CRS("+init=epsg:31370")
@@ -448,3 +451,25 @@ pasteToVector <- function(x) {
 }
 
 
+#' Define season from date
+#' @param dates date vector, format "%d/%m/%Y"
+#' @return character vector with respective season 
+#' @author mvarewyck
+#' @export
+getSeason <- function(dates) {
+    
+    winterStart <- as.Date("21/12/2012", format = "%d/%m/%Y")
+    lenteStart <- as.Date("21/3/2012", format = "%d/%m/%Y")
+    zomerStart <- as.Date("21/6/2012", format = "%d/%m/%Y")
+    herfstStart <- as.Date("21/9/2012", format = "%d/%m/%Y")
+    
+    # Convert dates from any year to 2012 dates - leap year
+    d <- as.Date(strftime(dates, format="%d/%m/2012"), format = "%d/%m/%Y")
+    
+    season <- ifelse (d >= winterStart | d < lenteStart, "winter",
+            ifelse (d >= lenteStart & d < zomerStart, "lente",
+                    ifelse (d >= zomerStart & d < herfstStart, "zomer", "herfst")))
+    
+    factor(season, levels = c("winter", "lente", "zomer", "herfst"))
+    
+}

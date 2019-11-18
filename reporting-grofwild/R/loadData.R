@@ -373,9 +373,10 @@ loadRawData <- function(
         rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
         rawData$nieuwe_locatie <- NULL
         
-        # TODO Define fbz_gemeente
-        rawData$fbz_gemeente <- with(rawData, 
-                paste0(FaunabeheerZone, "_", gemeente_afschot_locatie)) 
+        # Define fbz_gemeente
+        rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
+                NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
+        
         
         # TODO what if x/y coordinates missing -> exclude
         toExclude <- is.na(rawData$x) | is.na(rawData$y)

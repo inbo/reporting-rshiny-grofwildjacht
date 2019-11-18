@@ -13,11 +13,10 @@
 results$schade_data <- reactive({
             
             # Select species
-            subData <- subset(schadeData, wildsoort %in% req(input$schade_species))
+            subData <- subset(schadeData@data, wildsoort %in% req(input$schade_species))
             
             
         })
-
 
 
 results$schade_spatialData <- reactive({
@@ -28,6 +27,13 @@ results$schade_spatialData <- reactive({
             
             
         })
+
+
+results$schade_timeRange <- reactive({
+            
+            range(results$schade_data()$afschotjaar)
+            
+        })  
 
 
 
@@ -88,7 +94,7 @@ results$schade_summarySpaceData <- reactive({
             
             
             createSpaceData(
-                    data = results$schade_data()@data, 
+                    data = results$schade_data(), 
                     allSpatialData = spatialData,
                     year = input$schade_year,
                     species = input$schade_species,
@@ -479,9 +485,30 @@ output$schade_perceelPlot <- renderLeaflet({
             req(schadeData)
             
             mapSchade(
-                    schadeData = results$schade_data(),
+                    schadeData = subset(schadeData, wildsoort %in% req(input$schade_species)),
                     regionLevel = "provinces",
                     allSpatialData = spatialData,
                     addGlobe = TRUE)
             
         })
+
+
+
+
+### Descriptive Plots
+### -----------------
+
+# Plot 1
+callModule(module = optionsModuleServer, id = "schade_plot1", 
+        data = results$schade_data,
+        types = reactive(c(
+                "Vlaanderen" = "flanders",
+                "Provincie" = "provinces", 
+                "Faunabeheerzones" = "faunabeheerzones"
+                )), 
+        labelTypes = "Regio", 
+        typesDefault = reactive("provinces"), 
+        timeRange = results$schade_timeRange)
+callModule(module = plotModuleServer, id = "schade_plot1",
+        plotFunction = "countYearProvince", 
+        data = results$schade_data)

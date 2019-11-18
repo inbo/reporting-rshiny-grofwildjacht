@@ -87,7 +87,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     
     
     # Select subset for time
-    plotData <- subset(data, subset = afschotjaar %in% year & wildsoort == species)
+    plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
     
     if (nrow(plotData) == 0) {
         

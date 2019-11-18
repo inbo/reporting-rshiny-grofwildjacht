@@ -15,7 +15,7 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 load(file = file.path(dataDir, "spatialData.RData"))
 
 schadeData <- loadRawData(type = "wildschade")
-
+wildSchadeData <- subset(schadeData@data, wildsoort == "wild zwijn")
 
 species <- unique(schadeData$wildsoort)
 
@@ -105,3 +105,29 @@ for (iSpecies in species) {
     print(myPlot)
     
 }
+
+
+
+### 3. Descriptive plots
+
+
+## PLOT 1: Counts per year and province ##
+
+allPlots <- lapply(species, function(iSpecies) {
+            
+            plotData <- subset(schadeData, wildsoort == iSpecies)
+            timeRange <- min(plotData$afschotjaar):max(plotData$afschotjaar)
+            
+            res <- countYearProvince(data = plotData@data, jaartallen = timeRange)
+            
+            expect_equal(names(res), c("plot", "data"))
+            expect_equal(names(res$data), c("afschotjaar", "locatie", "value"))
+            
+            res
+            
+        })
+
+
+# Some special cases
+countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
+countYearProvince(data = wildEcoData, jaartallen = 2016:2017)

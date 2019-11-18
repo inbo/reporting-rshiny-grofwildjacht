@@ -5,7 +5,6 @@
 
 
 # TODO debug
-# TODO module for map?
 
 
 tagList(
@@ -111,7 +110,25 @@ tagList(
         h2("Landkaart 2"),
         
         uiOutput("schade_titlePerceel"),        
-        withSpinner(leafletOutput("schade_perceelPlot"))
+        withSpinner(leafletOutput("schade_perceelPlot")),
+        
+        
+        ## countYearProvince: all species
+        actionLink(inputId = "schade_linkPlot1",
+                label = h3("FIGUUR: Gerapporteerd aantal per jaar en per regio")),
+        conditionalPanel("input.schade_linkPlot1 % 2 == 1",
+                fixedRow(
+                        
+                        column(4,
+                                optionsModuleUI(id = "schade_plot1", 
+                                        showTime = TRUE, showType = TRUE, exportData = TRUE),
+                                tags$p("tekstje")
+                        ),
+                        column(8, plotModuleUI(id = "schade_plot1"))
+                
+                ),
+                tags$hr()
+        ),
 
 
 )

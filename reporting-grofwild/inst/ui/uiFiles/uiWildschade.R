@@ -4,8 +4,6 @@
 ###############################################################################
 
 
-# TODO debug
-
 
 tagList(
         
@@ -18,17 +16,35 @@ tagList(
                 
                 tags$p(class = "lead", "intro tekstje"),
                 
+                tags$h2("Filter Data"),
+                wellPanel(
+                        fixedRow(
+                                # Select species
+                                column(4, selectInput(inputId = "schade_species", label = "Wildsoort",
+                                                choices = list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
+                                                        "Klein wild" = c("haas", "fazant", "konijn"),
+                                                        "Waterwild" = c("wilde eend", "smient"),
+                                                        "Overig" = c("houtduif", "vos")),
+                                                selected = "wild zwijn",
+                                                multiple = TRUE,
+                                                width = "100%"
+                                        )),
+                                
+                                # Select type schade
+                                column(4, selectInput(inputId = "schade_code", label = "Type Schade",
+                                                choices = c("Gewas" = "GEWAS", "Voertuig" = "VRTG", 
+                                                        "Andere" = "ANDERE"),
+                                                selected = c("GEWAS", "VRTG", "ANDERE"),
+                                                multiple = TRUE,
+                                                width = "100%"
+                                        )),
+                                
+                                # Select gewas
+                                column(4, uiOutput("schade_gewas"))
+                        )
+                ),
                 
-                # Select species
-                selectInput(inputId = "schade_species", label = "Wildsoort",
-                        choices = list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
-                                "Klein wild" = c("haas", "fazant", "konijn"),
-                                "Waterwild" = c("wilde eend", "smient"),
-                                "Overig" = c("houtduif", "vos")),
-                        selected = "wild zwijn",
-                        multiple = TRUE,
-                        width = "100%"
-                )
+                uiOutput("schade_summary")
         
         ),
         
@@ -47,9 +63,9 @@ tagList(
                                                 choices = c(
                                                         "Vlaanderen" = "flanders",
                                                         "Provincie" = "provinces", 
-#                                                        "Faunabeheerzones" = "faunabeheerzones",
-                                                        "Gemeente (binnen provincie)" = "communes"
-#                                                        "Gemeente (binnen faunabeheerzone)" = "fbz_gemeentes"
+                                                        "Faunabeheerzones" = "faunabeheerzones",
+                                                        "Gemeente (binnen provincie)" = "communes",
+                                                        "Gemeente (binnen faunabeheerzone)" = "fbz_gemeentes"
                                                 ),
                                                 selected = "communes")),
                                 column(8, uiOutput("schade_region"))
@@ -108,6 +124,21 @@ tagList(
         tags$hr(),
         
         h2("Landkaart 2"),
+        
+        wellPanel(
+                fixedRow(
+                        column(6, uiOutput("schade_time2")),
+                        column(6, selectInput(inputId = "schade_legend2", "Legende (kaart)",
+                                        choices = c("Bovenaan rechts" = "topright",
+                                                "Onderaan rechts" = "bottomright",
+                                                "Bovenaan links" = "topleft",
+                                                "Onderaan links" = "bottomleft",
+                                                "<geen>" = "none"))
+                        )
+                ),
+                actionLink(inputId = "schade_globe2", label = "Voeg landkaart toe",
+                        icon = icon("globe"))
+        ),
         
         uiOutput("schade_titlePerceel"),        
         withSpinner(leafletOutput("schade_perceelPlot")),

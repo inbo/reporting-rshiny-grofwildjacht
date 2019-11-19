@@ -376,6 +376,10 @@ loadRawData <- function(
         # Define fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
                 NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
+        # Define season
+        rawData$season <- getSeason(rawData$afschot_datum)
+        # Fix for korrelmais
+        rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
         
         
         # TODO what if x/y coordinates missing -> exclude
@@ -383,8 +387,6 @@ loadRawData <- function(
         warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
         rawData <- rawData[!toExclude, ]
         
-        # Define season
-        rawData$season <- getSeason(rawData$afschot_datum)
         
         # create shape data
         coordinates(rawData) <- ~x + y

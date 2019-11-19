@@ -78,13 +78,13 @@ shinyServer(function(input, output, session) {
                     })
             
             
-#            # TODO if grofwild -> redirect to panel
+#            # At start -> redirect to grofwild panel
 #            observe({
 #                        
-#                         isGrofwild <- grepl("grofwild", parseQueryString(session$clientData$url_hostname))
-##                        if (isGrofwild)
-##                            updateNavbarPage(session = session, "tabs", selected = "Wildschade")
-#                        
+##                         isGrofwild <- grepl("grofwild", parseQueryString(session$clientData$url_hostname))
+#                        if (isGrofwild) 
+#                            updateNavbarPage(session = session, "tabs", selected = "tab-grofwild")
+#                            
 #                    })
             
             

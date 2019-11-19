@@ -4,27 +4,78 @@
 ###############################################################################
 
 
-### Data
+
+### Filter Data
 ### ---------------
 
-
-
-# Create data upon user choices
-results$schade_data <- reactive({
+# Choices for gewas
+output$schade_gewas <- renderUI({
             
-            # Select species
-            subData <- subset(schadeData@data, wildsoort %in% req(input$schade_species))
+            req(schadeData)
+            choices <- unique(schadeData@data$SoortNaam)
             
+            if ("GEWAS" %in% input$schade_code)
+                selectInput(inputId = "schade_gewas", label = "Filter Gewas",
+                        choices = choices[!is.na(choices)],
+                        selected = "Silomais",
+                        multiple = TRUE,
+                        width = "100%"
+                )
             
         })
 
 
-results$schade_spatialData <- reactive({
+
+# Filter data upon user choices
+results$schade_data <- reactive({
             
-            req(spatialData)
+            # Select species & code
+            toRetain <- schadeData@data$wildsoort %in% req(input$schade_species) &
+                    schadeData@data$schadeBasisCode %in% req(input$schade_code)
             
-            spatialData[[req(input$schade_regionLevel)]]
+            # Select gewas
+            if ("GEWAS" %in% input$schade_code) {
+                otherCodes <- input$schade_code[input$schade_code != "GEWAS"]
+                toRetain <- toRetain &
+                        (schadeData@data$schadeBasisCode %in% otherCodes |
+                        schadeData@data$SoortNaam %in% input$schade_gewas)
             
+            }
+            
+            schadeData[toRetain, ]
+            
+        })
+
+# Helper function for displaying table
+formatTable <- function(x, label) {
+    
+    myTable <- as.data.frame(table(x))
+    
+    if (nrow(myTable) == 0)
+        return(NULL)
+    
+    colnames(myTable) <- c(label, "Aantal")
+    
+    myTable
+    
+}
+
+# Summary Filtered data
+output$schade_summary <- renderUI({
+            
+            fixedRow(
+                    column(4, renderTable(
+                                    formatTable(results$schade_data()$wildsoort,
+                                            label = "Wildsoort"))),
+                    column(4, renderTable(
+                                    formatTable(results$schade_data()$schadeBasisCode,
+                                            label = "Type Schade"))),
+                    if ("GEWAS" %in% input$schade_code) 
+                    column(4, renderTable(
+                                    formatTable(results$schade_data()$SoortNaam,
+                                            label = "Gewas")))
+            
+            )
             
         })
 
@@ -41,6 +92,16 @@ results$schade_timeRange <- reactive({
 
 ### Summary map
 ### ---------------
+
+
+results$schade_spatialData <- reactive({
+            
+            req(spatialData)
+            
+            spatialData[[req(input$schade_regionLevel)]]
+            
+            
+        })
 
 # For which region to show the summary map
 output$schade_region <- renderUI({
@@ -94,7 +155,7 @@ results$schade_summarySpaceData <- reactive({
             
             
             createSpaceData(
-                    data = results$schade_data(), 
+                    data = results$schade_data()@data, 
                     allSpatialData = spatialData,
                     year = input$schade_year,
                     species = input$schade_species,
@@ -390,7 +451,7 @@ results$schade_timeDataFlanders <- reactive({
             
             ## Get data for Flanders
             createTrendData(
-                    data = results$schade_data(),
+                    data = results$schade_data()@data,
                     allSpatialData = spatialData,
                     timeRange = input$schade_time,
                     species = input$schade_species,
@@ -422,7 +483,7 @@ results$schade_timeData <- reactive({
             
             
             createTrendData(
-                    data = results$schade_data(),
+                    data = results$schade_data()@data,
                     allSpatialData = spatialData,
                     timeRange = input$schade_time,
                     species = input$schade_species,
@@ -464,6 +525,19 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
 ## -----------------
 
 
+# Data-dependent input fields
+output$schade_time2 <- renderUI({
+            
+            sliderInput(inputId = "schade_time2", label = "Periode", 
+                    value = results$schade_timeRange(),
+                    min = results$schade_timeRange()[1],
+                    max = results$schade_timeRange()[2],
+                    step = 1,
+                    sep = "")
+            
+        })
+
+
 output$schade_titlePerceel <- renderUI({
             
             
@@ -471,9 +545,9 @@ output$schade_titlePerceel <- renderUI({
                             "voor", paste(tolower(input$schade_species), collapse = ", "),
                             #jaartallen
                             paste0("(", 
-                                    min(results$schade_data()$afschotjaar), 
+                                    input$schade_time2[1], 
                                     " tot ", 
-                                    max(results$schade_data()$afschotjaar),
+                                    input$schade_time2[2],
                                     ")"
                             )
                     ))
@@ -482,13 +556,18 @@ output$schade_titlePerceel <- renderUI({
 
 output$schade_perceelPlot <- renderLeaflet({
             
-            req(schadeData)
+            validate(need(results$schade_data(), "Geen data beschikbaar"),
+                    need(input$schade_time2, "Gelieve periode te selecteren"))
+            
+            
             
             mapSchade(
-                    schadeData = subset(schadeData, wildsoort %in% req(input$schade_species)),
+                    schadeData = results$schade_data()[
+                            results$schade_data()@data$afschotjaar %in% input$schade_time2[1]:input$schade_time2[2], ],
                     regionLevel = "provinces",
                     allSpatialData = spatialData,
-                    addGlobe = TRUE)
+                    addGlobe = input$schade_globe2,
+                    legend = input$schade_legend2)
             
         })
 
@@ -500,15 +579,16 @@ output$schade_perceelPlot <- renderLeaflet({
 
 # Plot 1
 callModule(module = optionsModuleServer, id = "schade_plot1", 
-        data = results$schade_data,
+        data = reactive(results$schade_data()@data),
         types = reactive(c(
-                "Vlaanderen" = "flanders",
-                "Provincie" = "provinces", 
-                "Faunabeheerzones" = "faunabeheerzones"
+                        "Vlaanderen" = "flanders",
+                        "Provincie" = "provinces", 
+                        "Faunabeheerzones" = "faunabeheerzones"
                 )), 
         labelTypes = "Regio", 
         typesDefault = reactive("provinces"), 
         timeRange = results$schade_timeRange)
+
 callModule(module = plotModuleServer, id = "schade_plot1",
         plotFunction = "countYearProvince", 
-        data = results$schade_data)
+        data = reactive(results$schade_data()@data))

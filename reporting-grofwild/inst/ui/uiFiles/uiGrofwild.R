@@ -30,11 +30,11 @@ tagList(
                 )
         
         ),
-        
+         
         # Select species
         tags$div(class = "container", 
-#        						align = "center", 
-#								tags$div(class = "noButton",
+        						align = "center", 
+								tags$div(class = "noButton",
                 radioButtons(inputId = "wild_species", label = "", inline = TRUE,
                         choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
                         choiceNames = list(
@@ -43,7 +43,7 @@ tagList(
                                 HTML("<p><b>Damhert</b></p><img src='damhert.jpeg' width = '400px' title = 'Foto: Vildaphoto'>"),
                                 HTML("<p><b>Edelhert</b></p><img src='edelhert.jpeg' width = '400px' title = 'Foto: Vildaphoto'>"))
                 )
-#						)
+						)
         ),
         
         

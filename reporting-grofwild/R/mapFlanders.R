@@ -151,7 +151,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
                 breaks = c(-Inf, otherBreaks),
                 labels = otherBreaks) 
         
-    } else if (regionLevel == "faunabeheerzones" & species == "Ree") {
+    } else if (regionLevel == "faunabeheerzones" & "Ree" %in% species) {
         
         if (unit == "absolute")
             summaryData2$group <- cut(x = summaryData2$freq, 
@@ -165,7 +165,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         
         if (unit == "absolute") {
             
-            if (species %in% c("Wild zwijn", "Ree"))
+            if (any(c("Wild zwijn", "Ree") %in% species))
                 summaryData2$group <- cut(x = summaryData2$freq, 
                         breaks = c(-Inf, 0, 10, 20, 40, 80, Inf),
                         labels = c("0", "1-10", "11-20", "21-40", "41-80", ">80")) else
@@ -215,7 +215,7 @@ mapFlanders <- function(
     
     
     # Select correct spatial data
-    if (species == "Wild zwijn" & regionLevel == "provinces") {
+    if ("Wild zwijn" %in% species & regionLevel == "provinces") {
         
         spatialData <- allSpatialData[["provincesVoeren"]]
         

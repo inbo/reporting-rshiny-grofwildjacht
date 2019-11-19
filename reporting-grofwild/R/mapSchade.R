@@ -30,15 +30,14 @@ mapSchade <- function(
     myMap <- leaflet(schadeData) %>%
             
             addCircleMarkers(
-                    color = ~palette(season),
-                    stroke = FALSE,
+                    fillColor = ~palette(season),
+                    stroke = TRUE, color = "black", weight = 1, 
                     fillOpacity = 0.5,
                     popup = paste0("<h4>Schadegeval ID: ", schadeData$caseID, "</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
                             "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
                             "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
-                            "<li><strong> Soortnaam </strong>: ", schadeData$Soortnaam,
                             "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
                             "</ul>"
                     )
@@ -75,6 +74,7 @@ mapSchade <- function(
                 pal = palette, 
                 values = ~season,
                 opacity = 0.8,
+                na.label = "onbekend",
                 title = "Legende",
                 layerId = "legend"
         )

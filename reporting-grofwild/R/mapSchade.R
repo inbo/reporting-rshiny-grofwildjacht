@@ -33,7 +33,7 @@ mapSchade <- function(
                     fillColor = ~palette(season),
                     stroke = TRUE, color = "black", weight = 1, 
                     fillOpacity = 0.5,
-                    popup = paste0("<h4>Schadegeval ID: ", schadeData$caseID, "</h4>",  
+                    popup = paste0("<h4>Info</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
                             "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 

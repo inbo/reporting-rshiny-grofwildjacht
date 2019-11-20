@@ -4,7 +4,8 @@
 \alias{mapSchade}
 \title{Create map for Wildschade percelen}
 \usage{
-mapSchade(schadeData, regionLevel, allSpatialData, addGlobe = FALSE)
+mapSchade(schadeData, regionLevel, allSpatialData, addGlobe = FALSE,
+  legend = "topright")
 }
 \arguments{
 \item{schadeData}{spatialPointsDataFrame contains the points where there was
@@ -17,7 +18,7 @@ wildschade and descriptives in data.frame}
 
 \item{addGlobe}{boolean, whether to add world map to background; default is FALSE}
 
-\item{species}{character vector, species which need to be shown in the plot}
+\item{legend}{character, legend placement; default is "none", no legend}
 }
 \value{
 leaflet map

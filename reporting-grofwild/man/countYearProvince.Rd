@@ -4,7 +4,7 @@
 \alias{countYearProvince}
 \title{Create interactive plot for counts per province and year}
 \usage{
-countYearProvince(data, jaartallen = NULL, regionLevel = c("provinces",
+countYearProvince(data, jaartallen = NULL, type = c("provinces",
   "flanders", "faunabeheerzones"), width = NULL, height = NULL)
 }
 \arguments{
@@ -13,7 +13,7 @@ countYearProvince(data, jaartallen = NULL, regionLevel = c("provinces",
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}
 
-\item{regionLevel}{character, regional level of interest should be one of 
+\item{type}{character, regional level of interest should be one of 
 \code{c("provinces", "flanders", "faunabeheerzones")}}
 
 \item{width}{plot width (optional)}

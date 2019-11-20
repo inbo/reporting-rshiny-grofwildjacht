@@ -9,6 +9,11 @@ createTrendData <- function(data, allSpatialData,
         timeRange, species, regionLevel, unit = c("absolute", "relative")) {
     
     
+    # To prevent warnings R CMD check
+    afschotjaar <- NULL
+    wildsoort <- NULL
+    
+    
     # Select correct spatial data
     if ("Wild zwijn" %in% species & regionLevel == "provinces") {
         
@@ -20,22 +25,21 @@ createTrendData <- function(data, allSpatialData,
         
     }
     
-    
-    # Select subset for time
-    chosenTimes <- timeRange[1]:timeRange[2]
-    tmpData <- subset(data, afschotjaar %in% chosenTimes & wildsoort %in% species)
-    tmpData$wildsoort <- NULL
-    
-    # Create general plot data names
-    plotData <- data.frame(
-            afschotjaar = tmpData$afschotjaar)
+    plotData <- data
+    # Generic location name
     plotData$locatie <- switch(regionLevel,
             flanders = "Vlaams Gewest",
-            provinces = tmpData$provincie,
-            communes = tmpData$gemeente_afschot_locatie,
-            faunabeheerzones = tmpData$FaunabeheerZone,
-            fbz_gemeentes = tmpData$fbz_gemeente
+            provinces = plotData$provincie,
+            communes = plotData$gemeente_afschot_locatie,
+            faunabeheerzones = plotData$FaunabeheerZone,
+            fbz_gemeentes = plotData$fbz_gemeente
     )
+    
+    # Select subset for time & species
+    chosenTimes <- timeRange[1]:timeRange[2]
+    plotData <- subset(plotData, 
+            subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
+            select = c("afschotjaar", "locatie"))
     
     # Exclude data with missing time or space
     plotData <- plotData[!is.na(plotData$afschotjaar) & 
@@ -62,7 +66,7 @@ createTrendData <- function(data, allSpatialData,
     allData$AREA <- NULL
     
     allData$afschotjaar <- as.factor(allData$afschotjaar)
-    
+    allData$wildsoort <- paste(species, collapse = ", ")
     
     return(allData)
     

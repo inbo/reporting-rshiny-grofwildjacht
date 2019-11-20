@@ -8,11 +8,10 @@
 #' Create map for Wildschade percelen
 #' @param schadeData spatialPointsDataFrame contains the points where there was
 #' wildschade and descriptives in data.frame
-#' @param species character vector, species which need to be shown in the plot
 #' @inheritParams mapFlanders 
 #' @return leaflet map
 #' @author mvarewyck
-#' @importFrom leaflet leaflet addMarkers addProviderTiles
+#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles
 #' @export
 mapSchade <- function(
         schadeData, 

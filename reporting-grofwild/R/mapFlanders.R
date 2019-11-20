@@ -64,13 +64,10 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     }
     
     # Framework for summary data
-    fullData <- cbind(expand.grid(
-                    wildsoort = species,
-                    afschotjaar = year),
-            if (regionLevel %in% c("communes", "fbz_gemeentes"))
+    fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes"))
                         spatialData@data[, c("NAAM", "AREA", "NISCODE")] else
-                        spatialData@data[, c("NAAM", "AREA")])
-    names(fullData)[3] <- "locatie"
+                        spatialData@data[, c("NAAM", "AREA")]
+    colnames(fullData)[1] <- "locatie"
     
     
     # For communes -> provide corresponding province in downloaded data
@@ -108,16 +105,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         # Exclude data with missing time or space
         plotData <- subset(plotData, !is.na(plotData$afschotjaar) & 
                         !is.na(plotData$locatie) & plotData$locatie != "",
-                c("afschotjaar", "locatie", if (grepl("Cases", unit)) "caseID")
+                c("afschotjaar", "locatie")
         )
-        
-        # Remove duplicate cases if needed
-        if ("caseID" %in% colnames(plotData)) {
-            
-            plotData <- plotData[!duplicated(plotData), ]
-            plotData$caseID <- NULL
-            
-        }
         
         # Summarize data over years
         summaryData <- plyr::count(df = plotData, vars = names(plotData))
@@ -128,10 +117,12 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         
     }
     
-    allData$afschotjaar <- as.factor(allData$afschotjaar)
+    # Remove redundant variables
+    allData$afschotjaar <- NULL
     
     
-    summaryData2 <- plyr::count(df = allData, vars = names(allData)[!names(allData) %in% "freq"], 
+    summaryData2 <- plyr::count(df = allData, 
+            vars = names(allData)[!names(allData) %in% "freq"], 
             wt_var = "freq")
     
     
@@ -184,9 +175,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     }
     
     # remove redundant variables
-    summaryData2$afschotjaar <- NULL
-    summaryData2$wildsoort <- NULL
     summaryData2$AREA <- NULL
+    summaryData2$wildsoort <- paste(species, collapse = ", ")
     
     return(summaryData2)
     

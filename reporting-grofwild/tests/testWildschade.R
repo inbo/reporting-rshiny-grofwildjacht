@@ -15,7 +15,7 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 load(file = file.path(dataDir, "spatialData.RData"))
 
 schadeData <- loadRawData(type = "wildschade")
-wildSchadeData <- subset(schadeData@data, wildsoort == "wild zwijn")
+wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree")[1])
 
 species <- unique(schadeData$wildsoort)
 
@@ -28,65 +28,56 @@ xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 
 for (regionLevel in names(spatialData)[1:5]) {
     
-#    for (iSpecies in species) {
-    iSpecies <- "wild zwijn"
-        
-        spaceData <- createSpaceData(
-                data = schadeData@data, 
-                allSpatialData = spatialData,
-                year = 2018,
-                species = iSpecies,
-                regionLevel = regionLevel,
-                unit = "absolute"
+    for (iSpecies in species) {
+    
+    spaceData <- createSpaceData(
+            data = schadeData@data, 
+            allSpatialData = spatialData,
+            year = 2018,
+            species = iSpecies,
+            regionLevel = regionLevel,
+            unit = "absolute"
+    )
+    
+    cat("*", regionLevel, "\n")
+    cat("*", iSpecies, "\n")
+    print(sum(spaceData$freq))
+    
+    trendData <- createTrendData(
+            data = schadeData@data,
+            allSpatialData = spatialData,
+            timeRange = c(2006, 2019),
+            species = iSpecies,
+            regionLevel = regionLevel,
+            unit = "absolute")
+    
+        mapPlot <- mapFlanders(
+                allSpatialData = spatialData, 
+                regionLevel = regionLevel, 
+                colorScheme = c("white", RColorBrewer::brewer.pal(
+                                n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
+                summaryData = spaceData,
+                legend = "topright",
+                species = iSpecies
         )
+        print(mapPlot)
         
-        cat("*", regionLevel, "\n")
-        cat("*", iSpecies, "\n")
-        print(sum(spaceData$freq))
+        if (regionLevel == "flanders")
+            trendPlot <- trendYearFlanders(
+                    data = trendData,
+                    timeRange = c(2006, 2019),
+                    unit = "absolute") else 
+            trendPlot <- trendYearRegion(
+                    data = trendData,
+                    timeRange = c(2014, 2018),
+                    unit = "absolute",
+                    locaties = trendData$locatie[1:3])
         
-        trendData <- createTrendData(
-                data = schadeData@data,
-                allSpatialData = spatialData,
-                timeRange = c(2006, 2019),
-                species = iSpecies,
-                regionLevel = regionLevel,
-                unit = "absolute")
+        print(trendPlot)
         
-        # FIXME 
-        if (regionLevel == "fbz_gemeentes") {
-            which(!unique(spaceData$locatie) %in% spatialData$fbz_gemeentes@data$NAAM)
-            tail(spaceData$locatie)
-        } else {
-            
-            mapPlot <- mapFlanders(
-                    allSpatialData = spatialData, 
-                    regionLevel = regionLevel, 
-                    colorScheme = c("white", RColorBrewer::brewer.pal(
-                                    n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
-                    summaryData = spaceData,
-                    legend = "topright",
-                    species = iSpecies
-            )
-            print(mapPlot)
-            
-            if (regionLevel == "flanders")
-                trendPlot <- trendYearFlanders(
-                        data = trendData,
-                        timeRange = c(2006, 2019),
-                        unit = "absolute") else 
-                trendPlot <- trendYearRegion(
-                        data = trendData,
-                        timeRange = c(2014, 2018),
-                        unit = "absolute",
-                        locaties = trendData$locatie[1:3])
-            
-            print(trendPlot)
-            
-            
-            
-        }
         
-#    }
+        
+    }
     
 }
 
@@ -130,4 +121,4 @@ allPlots <- lapply(species, function(iSpecies) {
 
 # Some special cases
 countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
-countYearProvince(data = wildEcoData, jaartallen = 2016:2017)
+countYearProvince(data = wildSchadeData, jaartallen = 2006:2019, type = "flanders")

@@ -211,6 +211,8 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' and attribute 'Date', the date that this data file was created
 #' @author mvarewyck
 #' @importFrom utils read.csv
+#' @importFrom sp CRS proj4string
+#' @importFrom raster coordinates
 #' @export
 loadRawData <- function(
         dataDir = system.file("extdata", package = "reportingGrofwild"),
@@ -455,7 +457,7 @@ pasteToVector <- function(x) {
 
 
 #' Define season from date
-#' @param dates date vector, format "%d/%m/%Y"
+#' @param dates date vector, format \code{"d/m/Y"}
 #' @return character vector with respective season 
 #' @author mvarewyck
 #' @export

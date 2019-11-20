@@ -36,7 +36,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	
     type <- match.arg(type)
-	wildNaam <- unique(data$wildsoort)
+	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)

@@ -122,3 +122,14 @@ allPlots <- lapply(species, function(iSpecies) {
 # Some special cases
 countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
 countYearProvince(data = wildSchadeData, jaartallen = 2006:2019, type = "flanders")
+
+
+## PLOT 2: Counts per year and variable of interest ##
+
+# count
+countYearSchade(data = wildSchadeData, type = "SoortNaam")$plot
+countYearSchade(data = schadeData@data, type = "wildsoort")$plot
+countYearSchade(data = schadeData@data, type = "schadeCode")$plot
+
+# percent
+countYearSchade(data = schadeData@data, type = "schadeCode", summarizeBy = "percent")$plot

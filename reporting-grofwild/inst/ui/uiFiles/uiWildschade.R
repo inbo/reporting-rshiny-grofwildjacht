@@ -146,7 +146,7 @@ tagList(
         
         ## countYearProvince: all species
         actionLink(inputId = "schade_linkPlot1",
-                label = h3("FIGUUR: Gerapporteerd aantal per jaar en per regio")),
+                label = h3("FIGUUR: Gerapporteerd aantal schadeclaims per jaar en per regio")),
         conditionalPanel("input.schade_linkPlot1 % 2 == 1",
                 fixedRow(
                         
@@ -160,6 +160,24 @@ tagList(
                 ),
                 tags$hr()
         ),
+        
+        ## countYearProvince: all species
+        actionLink(inputId = "schade_linkPlot2",
+                label = h3("FIGUUR: Gerapporteerd aantal schadeclaims per jaar en variabele")),
+        conditionalPanel("input.schade_linkPlot2 % 2 == 1",
+                fixedRow(
+                        
+                        column(4,
+                                optionsModuleUI(id = "schade_plot2", 
+                                        summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
+                                        showTime = TRUE, showType = TRUE, exportData = TRUE),
+                                tags$p("tekstje")
+                        ),
+                        column(8, plotModuleUI(id = "schade_plot2"))
+                
+                ),
+                tags$hr()
+        )
 
 
 )

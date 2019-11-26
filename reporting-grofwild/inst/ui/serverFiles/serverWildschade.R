@@ -592,3 +592,20 @@ callModule(module = optionsModuleServer, id = "schade_plot1",
 callModule(module = plotModuleServer, id = "schade_plot1",
         plotFunction = "countYearProvince", 
         data = reactive(results$schade_data()@data))
+
+
+# Plot 2
+callModule(module = optionsModuleServer, id = "schade_plot2", 
+        data = reactive(results$schade_data()@data),
+        types = reactive(c(
+                        "Wildsoort" = "wildsoort",
+                        "Gewas" = "SoortNaam", 
+                        "Type Schade" = "schadeCode"
+                )), 
+        labelTypes = "Variabele", 
+        typesDefault = reactive("wildsoort"), 
+        timeRange = results$schade_timeRange)
+
+callModule(module = plotModuleServer, id = "schade_plot2",
+        plotFunction = "countYearSchade", 
+        data = reactive(results$schade_data()@data))

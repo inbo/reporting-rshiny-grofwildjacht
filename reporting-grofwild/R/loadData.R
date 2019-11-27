@@ -374,7 +374,11 @@ loadRawData <- function(
 #                na.rm = TRUE)
         rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
         rawData$nieuwe_locatie <- NULL
+        # Remove Voeren as province
+        rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
+        rawData$provincie <- droplevels(rawData$provincie)
         
+              
         # Define fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
                 NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))

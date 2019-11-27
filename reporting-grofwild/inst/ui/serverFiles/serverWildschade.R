@@ -18,14 +18,14 @@ output$schade_gewas <- renderUI({
             
             choices <- unique(subData$SoortNaam)
             
-            # top 5
-            mySummary <- as.data.frame(table(subData$SoortNaam))
-            selected <- head(mySummary[rev(order(mySummary$Freq)), "Var1"], n = 5)
+#            # top 5
+#            mySummary <- as.data.frame(table(subData$SoortNaam))
+#            selected <- head(mySummary[rev(order(mySummary$Freq)), "Var1"], n = 5)
             
             if ("GEWAS" %in% input$schade_code)
                 selectInput(inputId = "schade_gewas", label = "Filter Gewas",
                         choices = choices[!is.na(choices)],
-                        selected = selected,
+                        selected = choices[!is.na(choices)],
                         multiple = TRUE,
                         width = "100%"
                 )
@@ -58,6 +58,7 @@ results$schade_data <- reactive({
 formatTable <- function(x, label) {
     
     myTable <- as.data.frame(table(x))
+    myTable <- myTable[rev(order(myTable$Freq)), ]
     
     if (nrow(myTable) == 0)
         return(NULL)

@@ -26,9 +26,7 @@ shinyUI(
                 
                 tags$body(
                         
-                        navbarPage(title = list(tags$div("INBO", style = "margin-left: -200px")),
-                                windowTitle = "INBO",
-                                fluid = FALSE, id = "tabs",
+                        navbarPage(title = "INBO", fluid = FALSE, id = "tabs",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",

@@ -40,7 +40,7 @@ tagList(
                                         )),
                                 
                                 # Select gewas
-                                column(4, uiOutput("schade_gewas"))
+                                column(4, uiOutput("schade_subcode"))
                         )
                 ),
                 

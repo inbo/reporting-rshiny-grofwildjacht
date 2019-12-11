@@ -8,13 +8,46 @@
 ### Filter Data
 ### ---------------
 
-# Choices for gewas
+output$schade_subcode <- renderUI({
+            
+            gewasChoices <- c(
+                    "Woelschade" = "WLSCHD",
+                    "Vraatschade" = "VRTSCHD"
+            )
+            voertuigChoices <- c(
+                    "Geen personen met letsel" = "GNPERSLTSL",
+                    "Personen met letsel" = "PERSLTSL",
+                    "Onbekend" = "ONBEKEND"
+            )
+            
+            tagList(
+                    if ("GEWAS" %in% input$schade_code)
+                        selectInput(inputId = "schade_gewas", label = "Filter Gewas",
+                                choices = gewasChoices,
+                                selected = gewasChoices,
+                                multiple = TRUE,
+                                width = "100%"
+                        ),
+                    if ("VRTG" %in% input$schade_code)
+                        selectInput(inputId = "schade_voertuig", label = "Filter Gewas",
+                                choices = voertuigChoices,
+                                selected = voertuigChoices,
+                                multiple = TRUE,
+                                width = "100%"
+                        )
+            )
+            
+        })
+
+
+
+# TODO table for gewaChoices for gewass
 output$schade_gewas <- renderUI({
             
             req(schadeData)
             
             subData <- schadeData[schadeData@data$wildsoort %in% req(input$schade_species) &
-                    schadeData@data$schadeBasisCode %in% req(input$schade_code), ]
+                            schadeData@data$schadeBasisCode %in% req(input$schade_code), ]
             
             choices <- unique(subData$SoortNaam)
             
@@ -41,13 +74,22 @@ results$schade_data <- reactive({
             toRetain <- schadeData@data$wildsoort %in% req(input$schade_species) &
                     schadeData@data$schadeBasisCode %in% req(input$schade_code)
             
-            # Select gewas
+            # Filter gewas
             if ("GEWAS" %in% input$schade_code) {
                 otherCodes <- input$schade_code[input$schade_code != "GEWAS"]
                 toRetain <- toRetain &
                         (schadeData@data$schadeBasisCode %in% otherCodes |
-                        schadeData@data$SoortNaam %in% input$schade_gewas)
+                            schadeData@data$SoortNaam %in% input$schade_gewas)
+                
+            }
             
+            # Filter voertuig
+            if ("VRTG" %in% input$schade_code) {
+                otherCodes <- input$schade_code[input$schade_code != "VRTG"]
+                toRetain <- toRetain &
+                        (schadeData@data$schadeBasisCode %in% otherCodes |
+                            schadeData@data$SoortNaam %in% input$schade_voertuig)
+                
             }
             
             schadeData[toRetain, ]
@@ -79,10 +121,10 @@ output$schade_summary <- renderUI({
                     column(4, renderTable(
                                     formatTable(results$schade_data()$schadeBasisCode,
                                             label = "Type Schade"))),
-                    if ("GEWAS" %in% input$schade_code) 
-                    column(4, renderTable(
-                                    formatTable(results$schade_data()$SoortNaam,
-                                            label = "Gewas")))
+                    if (any(c("GEWAS", "VRTG") %in% input$schade_code)) 
+                        column(4, renderTable(
+                                        formatTable(results$schade_data()$schadeCode,
+                                                label = "Type Sub-Schade")))
             
             )
             

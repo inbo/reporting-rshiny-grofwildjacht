@@ -10,26 +10,22 @@
 
 output$schade_subcode <- renderUI({
             
-            gewasChoices <- c(
-                    "Woelschade" = "WLSCHD",
-                    "Vraatschade" = "VRTSCHD"
-            )
-            voertuigChoices <- c(
-                    "Geen personen met letsel" = "GNPERSLTSL",
-                    "Personen met letsel" = "PERSLTSL",
-                    "Onbekend" = "ONBEKEND"
-            )
+            gewasChoices <- fullNames(
+                    unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "GEWAS"]))
+            voertuigChoices <- fullNames(
+                    unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "VRTG"]))
+            
             
             tagList(
                     if ("GEWAS" %in% input$schade_code)
-                        selectInput(inputId = "schade_gewas", label = "Filter Gewas",
+                        selectInput(inputId = "schade_gewas", label = "Filter Gewas Schade",
                                 choices = gewasChoices,
                                 selected = gewasChoices,
                                 multiple = TRUE,
                                 width = "100%"
                         ),
                     if ("VRTG" %in% input$schade_code)
-                        selectInput(inputId = "schade_voertuig", label = "Filter Gewas",
+                        selectInput(inputId = "schade_voertuig", label = "Filter Voertuig Schade",
                                 choices = voertuigChoices,
                                 selected = voertuigChoices,
                                 multiple = TRUE,
@@ -40,30 +36,6 @@ output$schade_subcode <- renderUI({
         })
 
 
-
-# TODO table for gewaChoices for gewass
-output$schade_gewas <- renderUI({
-            
-            req(schadeData)
-            
-            subData <- schadeData[schadeData@data$wildsoort %in% req(input$schade_species) &
-                            schadeData@data$schadeBasisCode %in% req(input$schade_code), ]
-            
-            choices <- unique(subData$SoortNaam)
-            
-#            # top 5
-#            mySummary <- as.data.frame(table(subData$SoortNaam))
-#            selected <- head(mySummary[rev(order(mySummary$Freq)), "Var1"], n = 5)
-            
-            if ("GEWAS" %in% input$schade_code)
-                selectInput(inputId = "schade_gewas", label = "Filter Gewas",
-                        choices = choices[!is.na(choices)],
-                        selected = choices[!is.na(choices)],
-                        multiple = TRUE,
-                        width = "100%"
-                )
-            
-        })
 
 
 
@@ -79,8 +51,7 @@ results$schade_data <- reactive({
                 otherCodes <- input$schade_code[input$schade_code != "GEWAS"]
                 toRetain <- toRetain &
                         (schadeData@data$schadeBasisCode %in% otherCodes |
-                            schadeData@data$SoortNaam %in% input$schade_gewas)
-                
+                            schadeData@data$schadeCode %in% input$schade_gewas)
             }
             
             # Filter voertuig
@@ -88,43 +59,38 @@ results$schade_data <- reactive({
                 otherCodes <- input$schade_code[input$schade_code != "VRTG"]
                 toRetain <- toRetain &
                         (schadeData@data$schadeBasisCode %in% otherCodes |
-                            schadeData@data$SoortNaam %in% input$schade_voertuig)
-                
+                            schadeData@data$schadeCode %in% input$schade_voertuig)
             }
             
             schadeData[toRetain, ]
             
         })
 
-# Helper function for displaying table
-formatTable <- function(x, label) {
-    
-    myTable <- as.data.frame(table(x))
-    myTable <- myTable[rev(order(myTable$Freq)), ]
-    
-    if (nrow(myTable) == 0)
-        return(NULL)
-    
-    colnames(myTable) <- c(label, "Aantal")
-    
-    myTable
-    
-}
 
-# Summary Filtered data
+# Create frequency tables for filtered data
+## wildsoort
+callModule(dataModuleServer, id = "wildsoort",
+        data = results$schade_data,
+        variable = "wildsoort")
+## schade
+callModule(dataModuleServer, id = "schade",
+        data = results$schade_data,
+        variable = "schadeBasisCode")
+## subschade
+callModule(dataModuleServer, id = "subschade",
+        data = results$schade_data,
+        variable = "schadeCode")
+
+
+# Show frequency tables for filtered data
 output$schade_summary <- renderUI({
             
             fixedRow(
-                    column(4, renderTable(
-                                    formatTable(results$schade_data()$wildsoort,
-                                            label = "Wildsoort"))),
-                    column(4, renderTable(
-                                    formatTable(results$schade_data()$schadeBasisCode,
-                                            label = "Type Schade"))),
+                    column(4, tableModuleUI(id = "wildsoort", includeTotal = TRUE)),
+                    column(4, tableModuleUI(id = "schade", includeTotal = TRUE)),
                     if (any(c("GEWAS", "VRTG") %in% input$schade_code)) 
-                        column(4, renderTable(
-                                        formatTable(results$schade_data()$schadeCode,
-                                                label = "Type Sub-Schade")))
+                        column(4, tableModuleUI(id = "subschade",
+                                        includeTotal = TRUE))
             
             )
             
@@ -628,7 +594,7 @@ output$schade_perceelPlot <- renderLeaflet({
 ### Descriptive Plots
 ### -----------------
 
-# Plot 1
+# Plot 1: Gerapporteerd aantal schadegevallen per jaar en per regio
 callModule(module = optionsModuleServer, id = "schade_plot1", 
         data = reactive(results$schade_data()@data),
         types = reactive(c(
@@ -645,7 +611,7 @@ callModule(module = plotModuleServer, id = "schade_plot1",
         data = reactive(results$schade_data()@data))
 
 
-# Plot 2
+# Plot 2: Gerapporteerd aantal schadegevallen per jaar en variabele
 callModule(module = optionsModuleServer, id = "schade_plot2", 
         data = reactive(results$schade_data()@data),
         types = reactive(c(
@@ -660,3 +626,11 @@ callModule(module = optionsModuleServer, id = "schade_plot2",
 callModule(module = plotModuleServer, id = "schade_plot2",
         plotFunction = "countYearSchade", 
         data = reactive(results$schade_data()@data))
+
+
+# Table 1: Frequency table gewas
+callModule(dataModuleServer, id = "gewas",
+        data = results$schade_data,
+        variable = "SoortNaam")
+
+# Table 2: Frequency table schadeCode

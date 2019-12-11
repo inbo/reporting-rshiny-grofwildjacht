@@ -4,10 +4,12 @@
 \alias{tableModuleUI}
 \title{Interactive table (ui-side)}
 \usage{
-tableModuleUI(id)
+tableModuleUI(id, includeTotal = FALSE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
+
+\item{includeTotal}{boolean, whether include text with total number of records in table}
 }
 \value{
 ui object

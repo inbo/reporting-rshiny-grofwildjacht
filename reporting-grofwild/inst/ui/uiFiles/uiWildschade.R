@@ -32,8 +32,7 @@ tagList(
                                 
                                 # Select type schade
                                 column(4, selectInput(inputId = "schade_code", label = "Type Schade",
-                                                choices = c("Gewas" = "GEWAS", "Voertuig" = "VRTG", 
-                                                        "Andere" = "ANDERE"),
+                                                choices = fullNames(x = c("GEWAS", "VRTG", "ANDERE")),
                                                 selected = c("GEWAS", "VRTG", "ANDERE"),
                                                 multiple = TRUE,
                                                 width = "100%"
@@ -144,7 +143,7 @@ tagList(
         withSpinner(leafletOutput("schade_perceelPlot")),
         
         
-        ## countYearProvince: all species
+        ## countYearSchadeProvince: all species
         actionLink(inputId = "schade_linkPlot1",
                 label = h3("FIGUUR: Gerapporteerd aantal schadegevallen per jaar en per regio")),
         conditionalPanel("input.schade_linkPlot1 % 2 == 1",
@@ -161,7 +160,7 @@ tagList(
                 tags$hr()
         ),
         
-        ## countYearProvince: all species
+        ## countYearSchade: all species
         actionLink(inputId = "schade_linkPlot2",
                 label = h3("FIGUUR: Gerapporteerd aantal schadegevallen per jaar en variabele")),
         conditionalPanel("input.schade_linkPlot2 % 2 == 1",
@@ -177,7 +176,16 @@ tagList(
                 
                 ),
                 tags$hr()
+        ),
+        
+        ## tableGewas
+        actionLink(inputId = "schade_linkTable1",
+                label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
+        conditionalPanel("input.schade_linkTable1 % 2 == 1",
+                tableModuleUI(id = "gewas", includeTotal = TRUE),
+                tags$hr()
         )
+
 
 
 )

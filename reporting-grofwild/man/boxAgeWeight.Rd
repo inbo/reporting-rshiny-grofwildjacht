@@ -4,8 +4,14 @@
 \alias{boxAgeWeight}
 \title{Create interactive plot for distribution of weight in function of age}
 \usage{
-boxAgeWeight(data, type, jaartallen = NULL, regio = "", width = NULL,
-  height = NULL)
+boxAgeWeight(
+  data,
+  type,
+  jaartallen = NULL,
+  regio = "",
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

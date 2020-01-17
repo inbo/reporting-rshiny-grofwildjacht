@@ -4,8 +4,14 @@
 \alias{createTrendData}
 \title{Create data for plotting trend over years in \code{\link{trendYearFlanders}}}
 \usage{
-createTrendData(data, allSpatialData, timeRange, species, regionLevel,
-  unit = c("absolute", "relative"))
+createTrendData(
+  data,
+  allSpatialData,
+  timeRange,
+  species,
+  regionLevel,
+  unit = c("absolute", "relative")
+)
 }
 \arguments{
 \item{data}{data.frame, geographical data}

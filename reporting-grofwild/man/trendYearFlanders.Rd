@@ -4,8 +4,13 @@
 \alias{trendYearFlanders}
 \title{Create interactive plot for counts in Flanders per selected years}
 \usage{
-trendYearFlanders(data, timeRange, unit = c("absolute", "relative"),
-  width = NULL, height = NULL)
+trendYearFlanders(
+  data,
+  timeRange,
+  unit = c("absolute", "relative"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame, formatted data for plotting as returned by \code{\link{createTrendData}}}

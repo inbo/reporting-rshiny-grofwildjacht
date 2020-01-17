@@ -4,9 +4,16 @@
 \alias{percentageRealisedShotAnimals}
 \title{Create interactive plot to represent yearly percentage killed and non-killed animals}
 \usage{
-percentageRealisedShotAnimals(data, assignedData, jaartallen = NULL,
-  type = NULL, regio = "", summarizeBy = c("count", "percent"),
-  width = NULL, height = NULL)
+percentageRealisedShotAnimals(
+  data,
+  assignedData,
+  jaartallen = NULL,
+  type = NULL,
+  regio = "",
+  summarizeBy = c("count", "percent"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}

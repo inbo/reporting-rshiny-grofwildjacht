@@ -4,8 +4,13 @@
 \alias{mapSchade}
 \title{Create map for Wildschade percelen}
 \usage{
-mapSchade(schadeData, regionLevel, allSpatialData, addGlobe = FALSE,
-  legend = "topright")
+mapSchade(
+  schadeData,
+  regionLevel,
+  allSpatialData,
+  addGlobe = FALSE,
+  legend = "topright"
+)
 }
 \arguments{
 \item{schadeData}{spatialPointsDataFrame contains the points where there was

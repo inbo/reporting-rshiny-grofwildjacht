@@ -4,8 +4,14 @@
 \alias{createSpaceData}
 \title{Create summary data of geographical data for selected year, species and region level}
 \usage{
-createSpaceData(data, allSpatialData, year, species, regionLevel,
-  unit = c("absolute", "relative", "absoluteCases"))
+createSpaceData(
+  data,
+  allSpatialData,
+  year,
+  species,
+  regionLevel,
+  unit = c("absolute", "relative", "absoluteCases")
+)
 }
 \arguments{
 \item{data}{data.frame, geographical data}

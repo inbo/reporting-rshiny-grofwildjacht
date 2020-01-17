@@ -4,10 +4,16 @@
 \alias{plotBioindicator}
 \title{Create interactive plot for bioindicator versus year}
 \usage{
-plotBioindicator(data, type = NULL, jaartallen = NULL, regio = "",
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht",
-  "aantal_embryos"), sourceIndicator = c("inbo", "meldingsformulier",
-  "both"), width = NULL, height = NULL)
+plotBioindicator(
+  data,
+  type = NULL,
+  jaartallen = NULL,
+  regio = "",
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos"),
+  sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

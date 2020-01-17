@@ -4,8 +4,14 @@
 \alias{boxAgeGenderLowerJaw}
 \title{Create interactive plot for comparing length of lower jaw between age/gender category}
 \usage{
-boxAgeGenderLowerJaw(data, type, jaartallen = NULL, regio = "",
-  width = NULL, height = NULL)
+boxAgeGenderLowerJaw(
+  data,
+  type,
+  jaartallen = NULL,
+  regio = "",
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

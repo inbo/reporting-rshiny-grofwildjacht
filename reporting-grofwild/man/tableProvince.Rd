@@ -4,9 +4,13 @@
 \alias{tableProvince}
 \title{Create summary table for specific species}
 \usage{
-tableProvince(data, assignedData, jaar = NULL,
+tableProvince(
+  data,
+  assignedData,
+  jaar = NULL,
   categorie = c("leeftijd", "typeAantal", "typePercent"),
-  minForTrend = 50)
+  minForTrend = 50
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}

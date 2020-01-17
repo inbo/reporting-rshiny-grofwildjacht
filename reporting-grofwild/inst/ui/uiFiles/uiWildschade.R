@@ -184,8 +184,23 @@ tagList(
         conditionalPanel("input.schade_linkTable1 % 2 == 1",
                 tableModuleUI(id = "gewas", includeTotal = TRUE),
                 tags$hr()
-        )
+        ),
 
+        ## tableSchadeCode
+        actionLink(inputId = "schade_linkTable2",
+            label = h3("TABEL: Gerapporteerde aantal schadegevallen per type schade ")),
+        conditionalPanel("input.schade_linkTable2 % 2 == 1",
+            fixedRow(
+                
+                column(4,
+                    optionsModuleUI(id = "schade_table2", showYear = TRUE, showType = TRUE, exportData = TRUE),
+                    tags$p("Tekstje")
+                ),
+                column(8, datatableModuleUI(id = "schade_table2"))
+            
+            ),
+            tags$hr()
+        )
 
 
 )

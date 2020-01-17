@@ -207,6 +207,22 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
     
 }
 
+#' Interactive table generated with datatable (ui-side)
+#' @inheritParams tableModuleUI
+#' @return ui object 
+#' @author Eva Adriaensen
+#' @importFrom shinycssloaders withSpinner
+#' @importFrom shiny NS
+#' @importFrom DT dataTableOutput
+#' @export
+datatableModuleUI <- function(id) {
+  
+    ns <- NS(id)
+    
+    tagList(withSpinner(DT::dataTableOutput(ns("table"))))
+	
+}
+
 
 #' Interactive plot or table (server-side)
 #' @param input shiny input variable for specific namespace
@@ -223,6 +239,8 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' defined externally for large map
 #' @param unit character, defines whether absolute or relative frequencies are reported;
 #' defined externally for large map
+#' @param schade boolean, indicates whether module is used for schadeData; default is FALSE
+#' @param datatable boolean, indicates whether module should be used to output a datatable object for table 
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
@@ -231,7 +249,8 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 plotModuleServer <- function(input, output, session, plotFunction, 
         data, openingstijdenData, toekenningsData = NULL,
         categorie = NULL, bioindicator = NULL,
-        locaties = NULL, timeRange = NULL, unit = NULL) {
+        locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
+        datatable = FALSE) {
     
     subData <- reactive({
                 
@@ -299,7 +318,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
                             list(regio = input$region),
                         if (!is.null(input$type))
                             list(type = input$type),
-                        if (!is.null(input$type) & !is.null(input$year))
+                        if (!is.null(input$type) & !is.null(input$year) & isFALSE(schade))
                             list(openingstijdenData = openingstijdenData()),
                         if (!is.null(subToekenningsData()))
                             list(assignedData = subToekenningsData()),
@@ -383,11 +402,20 @@ plotModuleServer <- function(input, output, session, plotFunction,
             }
     )
     
-    output$table <- renderTable({
-                
-                return(resultFct())
-                
-            }, digits = 0)
+    if (datatable == TRUE) {
+    	output$table <- DT::renderDataTable({
+            
+            return(resultFct())
+            
+          })
+    } else {
+      output$table <- renderTable({
+            
+            return(resultFct())
+            
+          }, digits = 0)
+    }
+
     
 }
 

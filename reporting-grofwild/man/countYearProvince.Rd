@@ -4,8 +4,13 @@
 \alias{countYearProvince}
 \title{Create interactive plot for counts per province and year}
 \usage{
-countYearProvince(data, jaartallen = NULL, type = c("provinces",
-  "flanders", "faunabeheerzones"), width = NULL, height = NULL)
+countYearProvince(
+  data,
+  jaartallen = NULL,
+  type = c("provinces", "flanders", "faunabeheerzones"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

@@ -4,9 +4,15 @@
 \alias{percentageYearlyShotAnimals}
 \title{Create interactive plot to represent yearly percentage killed}
 \usage{
-percentageYearlyShotAnimals(data, openingstijdenData = NULL,
-  type = NULL, jaartallen = NULL, jaar = NULL, width = NULL,
-  height = NULL)
+percentageYearlyShotAnimals(
+  data,
+  openingstijdenData = NULL,
+  type = NULL,
+  jaartallen = NULL,
+  jaar = NULL,
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

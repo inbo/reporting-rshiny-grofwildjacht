@@ -221,8 +221,7 @@ results$schade_textPopup <- reactive({
             validate(need(results$schade_summarySpaceData(), "Geen data beschikbaar"))
             
             regionNames <- results$schade_summarySpaceData()$locatie
-            titleText <- paste("Gerapporteerd",
-                    if (input$schade_unit == "absolute") "aantal beschadigde percelen" else "aantal schadegevallen", 
+            titleText <- paste("Gerapporteerd aantal schadegevallen", 
                     "in", input$schade_year)
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
@@ -386,8 +385,7 @@ observe({
 output$schade_title <- renderUI({
             
             
-            h3(paste("Gerapporteerd", 
-                            if (input$schade_unit == "absolute") "aantal beschadigde percelen" else "aantal schadegevallen", 
+            h3(paste("Gerapporteerd aantal schadegevallen", 
                             "voor", paste(tolower(input$schade_species), collapse = ", "),
                             "in", input$schade_year))
             
@@ -443,8 +441,7 @@ output$schade_downloadData <- downloadHandler(
             
             myData <- results$schade_summarySpaceData()
             # change variable names
-            names(myData)[names(myData) == "freq"] <- if (input$schade_unit == "absolute")
-                        "aantal beschadigde percelen" else "aantal schadegevallen"
+            names(myData)[names(myData) == "freq"] <- "aantal schadegevallen"
             names(myData)[names(myData) == "group"] <- "groep"
             
             ## write data to exported file
@@ -558,7 +555,7 @@ output$schade_time2 <- renderUI({
 output$schade_titlePerceel <- renderUI({
             
             
-            h3(paste("Gerapporteerd aantal beschadigde percelen", 
+            h3(paste("Gerapporteerd aantal schadegevallen", 
                             "voor", paste(tolower(input$schade_species), collapse = ", "),
                             #jaartallen
                             paste0("(", 

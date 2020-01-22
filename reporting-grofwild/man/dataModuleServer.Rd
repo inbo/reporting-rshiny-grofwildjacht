@@ -4,7 +4,7 @@
 \alias{dataModuleServer}
 \title{Display formatted frequency table of data (ui-side)}
 \usage{
-dataModuleServer(input, output, session, data, variableLabel)
+dataModuleServer(input, output, session, data, variable)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}

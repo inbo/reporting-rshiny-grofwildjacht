@@ -5,12 +5,12 @@ Title: Grof Wild analysis for INBO
 Type: Package
 Author: Machteld Varewyck, Laure Cougnaud
 Description: Data visualization of grof wild in Vlaanderen.
-Version: 0.1.1
-Date: 2019-11-20
+Version: 0.1.2
+Date: 2020-01-17
 Imports:
-    shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster, leaflet
+    shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster, leaflet,  magrittr, DT
 Depends: maptools
 Suggests:
 	testthat, mapview, RColorBrewer
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2

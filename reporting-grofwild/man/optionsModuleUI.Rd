@@ -4,10 +4,18 @@
 \alias{optionsModuleUI}
 \title{User input for controlling specific plot (ui-side)}
 \usage{
-optionsModuleUI(id, showLegend = FALSE, showTime = FALSE,
-  showYear = FALSE, showType = FALSE, regionLevels = NULL,
-  summarizeBy = NULL, exportData = FALSE, showDataSource = FALSE,
-  doWellPanel = TRUE)
+optionsModuleUI(
+  id,
+  showLegend = FALSE,
+  showTime = FALSE,
+  showYear = FALSE,
+  showType = FALSE,
+  regionLevels = NULL,
+  summarizeBy = NULL,
+  exportData = FALSE,
+  showDataSource = FALSE,
+  doWellPanel = TRUE
+)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}

@@ -4,8 +4,9 @@
 \alias{loadToekenningen}
 \title{Read toekenningen (Ree) data}
 \usage{
-loadToekenningen(dataDir = system.file("extdata", package =
-  "reportingGrofwild"))
+loadToekenningen(
+  dataDir = system.file("extdata", package = "reportingGrofwild")
+)
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the data files}

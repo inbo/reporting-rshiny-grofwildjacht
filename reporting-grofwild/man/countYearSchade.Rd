@@ -4,8 +4,14 @@
 \alias{countYearSchade}
 \title{Create interactive barplot for wildschade data variable of interest ifo year}
 \usage{
-countYearSchade(data, jaartallen = NULL, type = NULL,
-  summarizeBy = c("count", "percent"), width = NULL, height = NULL)
+countYearSchade(
+  data,
+  jaartallen = NULL,
+  type = NULL,
+  summarizeBy = c("count", "percent"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

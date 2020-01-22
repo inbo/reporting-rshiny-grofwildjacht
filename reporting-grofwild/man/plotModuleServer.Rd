@@ -4,10 +4,22 @@
 \alias{plotModuleServer}
 \title{Interactive plot or table (server-side)}
 \usage{
-plotModuleServer(input, output, session, plotFunction, data,
-  openingstijdenData, toekenningsData = NULL, categorie = NULL,
-  bioindicator = NULL, locaties = NULL, timeRange = NULL,
-  unit = NULL)
+plotModuleServer(
+  input,
+  output,
+  session,
+  plotFunction,
+  data,
+  openingstijdenData,
+  toekenningsData = NULL,
+  categorie = NULL,
+  bioindicator = NULL,
+  locaties = NULL,
+  timeRange = NULL,
+  unit = NULL,
+  schade = FALSE,
+  datatable = FALSE
+)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -38,6 +50,10 @@ defined externally for large map}
 
 \item{unit}{character, defines whether absolute or relative frequencies are reported;
 defined externally for large map}
+
+\item{schade}{boolean, indicates whether module is used for schadeData; default is FALSE}
+
+\item{datatable}{boolean, indicates whether module should be used to output a datatable object for table}
 }
 \value{
 no return value; plot output object is created

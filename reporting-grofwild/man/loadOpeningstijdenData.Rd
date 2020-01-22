@@ -4,8 +4,9 @@
 \alias{loadOpeningstijdenData}
 \title{read openingstijden data}
 \usage{
-loadOpeningstijdenData(dataDir = system.file("extdata", package =
-  "reportingGrofwild"))
+loadOpeningstijdenData(
+  dataDir = system.file("extdata", package = "reportingGrofwild")
+)
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the data files}

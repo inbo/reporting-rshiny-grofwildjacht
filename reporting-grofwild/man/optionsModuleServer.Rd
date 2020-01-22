@@ -4,9 +4,18 @@
 \alias{optionsModuleServer}
 \title{User input for controlling specific plot (server-side)}
 \usage{
-optionsModuleServer(input, output, session, data, types = NULL,
-  labelTypes = "Type", typesDefault = types, timeRange = NULL,
-  timeLabel = "Periode", multipleTypes = FALSE)
+optionsModuleServer(
+  input,
+  output,
+  session,
+  data,
+  types = NULL,
+  labelTypes = "Type",
+  typesDefault = types,
+  timeRange = NULL,
+  timeLabel = "Periode",
+  multipleTypes = FALSE
+)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}

@@ -400,6 +400,7 @@ results$schade_finalMap <- reactive({
             
             newMap <- mapFlanders(
                     regionLevel = input$schade_regionLevel, 
+                    species = input$schade_species,
                     allSpatialData = spatialData,
                     summaryData = results$schade_summarySpaceData(),
                     colorScheme = results$schade_colorScheme(),
@@ -423,7 +424,7 @@ output$schade_downloadMap <- downloadHandler(
         filename = function()
             nameFile(species = input$schade_species,
                     year = input$schade_year, 
-                    content = "kaart", fileExt = "png"),
+                    content = "kaartSchade", fileExt = "png"),
         content = function(file) {
             
             mapview::mapshot(x = results$schade_finalMap(), file = file,
@@ -515,7 +516,8 @@ output$schade_timeTitle <- renderUI({
                     "provinces" = "Provincie",
                     "faunabeheerzones" = "Faunabeheerzones",
                     "communes" = "Gemeente (binnen provincie)",
-                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)")
+                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
+                    "utm5" = "5x5 UTM")
             
             
             h3("Regio-schaal:", regionLevel)

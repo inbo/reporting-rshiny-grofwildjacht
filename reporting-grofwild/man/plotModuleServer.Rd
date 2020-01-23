@@ -53,7 +53,7 @@ defined externally for large map}
 
 \item{schade}{boolean, indicates whether module is used for schadeData; default is FALSE}
 
-\item{datatable}{boolean, indicates whether module should be used to output a datatable object for table}
+\item{datatable}{boolean, indicates whether module should be used to output a datatable object for table; default is FALSE}
 }
 \value{
 no return value; plot output object is created

@@ -36,7 +36,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' @param year integer, year of interest
 #' @param species character, species of interest
 #' @param regionLevel character, regional level of interest should be one of 
-#' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}
+#' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
 #' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
 #' should be reported
 #' @return data.frame
@@ -99,7 +99,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
                 provinces = plotData$provincie, 
                 communes = plotData$gemeente_afschot_locatie,
                 faunabeheerzones = plotData$FaunabeheerZone,
-                fbz_gemeentes = plotData$fbz_gemeente
+                fbz_gemeentes = plotData$fbz_gemeente,
+                utm5 = plotData$UTM5code
         )
         
         # Exclude data with missing time or space
@@ -198,7 +199,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
-        regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes"), 
+        regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5"), 
         species, 
         allSpatialData, summaryData, colorScheme, 
         legend = "none", addGlobe = FALSE) {

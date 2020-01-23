@@ -6,7 +6,7 @@
 \usage{
 mapFlanders(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
-    "fbz_gemeentes"),
+    "fbz_gemeentes", "utm5"),
   species,
   allSpatialData,
   summaryData,
@@ -17,7 +17,7 @@ mapFlanders(
 }
 \arguments{
 \item{regionLevel}{character, regional level of interest should be one of 
-\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}}
+\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{species}{character, species of interest}
 

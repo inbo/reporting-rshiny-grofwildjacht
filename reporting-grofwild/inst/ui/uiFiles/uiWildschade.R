@@ -64,7 +64,8 @@ tagList(
                                                         "Provincie" = "provinces", 
                                                         "Faunabeheerzones" = "faunabeheerzones",
                                                         "Gemeente (binnen provincie)" = "communes",
-                                                        "Gemeente (binnen faunabeheerzone)" = "fbz_gemeentes"
+                                                        "Gemeente (binnen faunabeheerzone)" = "fbz_gemeentes",
+                                                        "5x5 UTM" = "utm5"
                                                 ),
                                                 selected = "communes")),
                                 column(8, uiOutput("schade_region"))

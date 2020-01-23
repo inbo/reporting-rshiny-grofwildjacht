@@ -694,6 +694,7 @@ results$finalMap <- reactive({
             
             newMap <- mapFlanders(
                     regionLevel = input$map_regionLevel, 
+                    species = input$wild_species,
                     allSpatialData = spatialData,
                     summaryData = results$map_summarySpaceData(),
                     colorScheme = results$map_colorScheme(),

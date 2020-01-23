@@ -4,11 +4,12 @@
 #' Note, if used outside shiny app, this will cause an error; if FALSE progress
 #' is printed in the console
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
-#' larger values will impose stronger simplification; default value is 0.01
+#' larger values will impose stronger simplification; default value is 0.001
 #' @return save to dataDir object spatialData, i.e. a list with for each 
 #' spatial level a SpatialPolygonsDataFrame object, 
 #' with polygons and data as provided in the dataDir; spatial levels are 
-#' flanders, provinces, communes and provincesVoeren (Voeren as separate province)
+#' flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
+#' and provincesVoeren (Voeren as separate province)
 #' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
 #' @importFrom methods slot
 #' @importFrom maptools unionSpatialPolygons spRbind
@@ -22,7 +23,8 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
     
     
     allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
-            "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes")
+            "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
+            "UTM5" = "utm5")
     
     ## New code for geojson files
     spatialData <- lapply(allLevels, function(iLevel) {
@@ -54,6 +56,10 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
                     # Create fbz_gemeente
                     shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
                     
+                } else if (iLevel == "utm5") {
+                  
+                    shapeData$NAAM <- factor(shapeData$TAG)
+                  
                 } 
                 
                 
@@ -109,7 +115,7 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
                 iData@data$AREA <- raster::area(iData)/1e06
                 
                 # No simplification
-                if (iName == "fbz_gemeentes")
+                if (iName %in% c("fbz_gemeentes", "utm5"))
                     return(iData)
                 
                 simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
@@ -355,7 +361,7 @@ loadRawData <- function(
                         "IndieningSchadeBasisCode", "IndieningSchadeCode",
                         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
                         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
-                        "PolyLocatieWKT", "x", "y")]
+                        "UTM5", "PolyLocatieWKT", "x", "y")]
         
         # format date
         rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
@@ -366,7 +372,7 @@ loadRawData <- function(
                 "schadeBasisCode", "schadeCode",
                 "SoortNaam", "wildsoort", "afschot_datum",
                 "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
-                "perceelPolygon", "x", "y")
+                "UTM5code", "perceelPolygon", "x", "y")
         
         # Match on NISCODE: otherwise mismatch with spatialData locatie
         rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 

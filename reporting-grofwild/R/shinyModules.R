@@ -240,7 +240,7 @@ datatableModuleUI <- function(id) {
 #' @param unit character, defines whether absolute or relative frequencies are reported;
 #' defined externally for large map
 #' @param schade boolean, indicates whether module is used for schadeData; default is FALSE
-#' @param datatable boolean, indicates whether module should be used to output a datatable object for table 
+#' @param datatable boolean, indicates whether module should be used to output a datatable object for table; default is FALSE 
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck

@@ -23,7 +23,7 @@ createTrendData(
 \item{species}{character, species of interest}
 
 \item{regionLevel}{character, regional level of interest should be one of 
-\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}}
+\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
 should be reported}

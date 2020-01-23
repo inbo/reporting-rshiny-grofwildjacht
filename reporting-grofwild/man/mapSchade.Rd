@@ -17,7 +17,7 @@ mapSchade(
 wildschade and descriptives in data.frame}
 
 \item{regionLevel}{character, regional level of interest should be one of 
-\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}}
+\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 

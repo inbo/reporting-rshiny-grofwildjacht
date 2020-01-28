@@ -39,11 +39,13 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
 #' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
 #' should be reported
+#' @inheritParams readShapeData
 #' @return data.frame
 #' @author mvarewyck
 #' @export
 createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
-        unit = c("absolute", "relative", "absoluteCases")) {
+        unit = c("absolute", "relative", "absoluteCases"),
+        dataDir = system.file("extdata", package = "reportingGrofwild")) {
     
     
     # To prevent warnings with R CMD check
@@ -77,7 +79,11 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
                 NISCODE = fullData$NISCODE, 
                 allSpatialData = allSpatialData)
         
-        fullData$NISCODE <- NULL
+        # keep NIS for communes data
+        if (regionLevel == "fbz_gemeentes") {
+          fullData$NISCODE <- NULL
+       
+        }
         
     }
     
@@ -178,6 +184,17 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     # remove redundant variables
     summaryData2$AREA <- NULL
     summaryData2$wildsoort <- paste(species, collapse = ", ")
+    
+    # Add (hoofd)postcode
+    if (regionLevel == "communes") {
+     
+      gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+          header = TRUE, sep = ",")
+      summaryData2$postcode <- gemeenteData$Postcode[match(summaryData2$NISCODE, gemeenteData$NIS.code)]
+      summaryData2 <- summaryData2[c(c("locatie", "postcode"), setdiff(names(summaryData2), c("locatie", "postcode")))]
+      
+      
+    }
     
     return(summaryData2)
     

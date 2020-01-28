@@ -179,14 +179,6 @@ tagList(
                 tags$hr()
         ),
         
-        ## tableGewas
-        actionLink(inputId = "schade_linkTable1",
-                label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
-        conditionalPanel("input.schade_linkTable1 % 2 == 1",
-                tableModuleUI(id = "gewas", includeTotal = TRUE),
-                tags$hr()
-        ),
-
         ## tableSchadeCode
         actionLink(inputId = "schade_linkTable2",
             label = h3("TABEL: Gerapporteerde aantal schadegevallen per type schade ")),
@@ -200,6 +192,14 @@ tagList(
                 column(8, datatableModuleUI(id = "schade_table2"))
             
             ),
+            tags$hr()
+        ),
+        
+        ## tableGewas
+        actionLink(inputId = "schade_linkTable1",
+            label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
+        conditionalPanel("input.schade_linkTable1 % 2 == 1",
+            tableModuleUI(id = "gewas", includeTotal = TRUE),
             tags$hr()
         )
 

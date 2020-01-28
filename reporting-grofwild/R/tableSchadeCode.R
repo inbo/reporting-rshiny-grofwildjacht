@@ -32,8 +32,14 @@ tableSchadeCode <- function(data, jaar = NULL,
           provinces = allData$provincie,
           faunabeheerzones = allData$FaunabeheerZone)
   
-  allData$locatie <- as.factor(allData$locatie)    
-  levelsLocatie <- levels(allData$locatie)
+  # Force all fbz's in the summary table even if never occured    
+  if (type == "faunabeheerzones") {
+    allData$locatie <- factor(allData$locatie, levels = as.character(c(1:10)))    
+    levelsLocatie <- levels(allData$locatie)
+  } else {
+    allData$locatie <- as.factor(allData$locatie)    
+    levelsLocatie <- levels(allData$locatie)
+  }
   
   allData$schadeCode <- as.factor(allData$schadeCode)    
   levelsSchadeCode <- levels(allData$schadeCode)
@@ -118,7 +124,7 @@ tableSchadeCode <- function(data, jaar = NULL,
 
   summaryTableDT <- datatable(summaryTable, rownames = FALSE, container = tableHeader,
               selection = "single",
-              options = list(dom = 'ltirp')) %>%
+              options = list(dom = 't', pageLength = -1)) %>%
               formatRound(colnames(summaryTable), digits = 0)
           
 

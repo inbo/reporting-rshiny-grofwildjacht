@@ -42,9 +42,11 @@ output$schade_subcode <- renderUI({
 # Filter data upon user choices
 results$schade_data <- reactive({
             
-            # Select species & code
+            # Select species & code & exclude data before 2018
+            # TODO: keep 2018 hardcoded?
             toRetain <- schadeData@data$wildsoort %in% req(input$schade_species) &
-                    schadeData@data$schadeBasisCode %in% req(input$schade_code)
+                    schadeData@data$schadeBasisCode %in% req(input$schade_code) &
+                    schadeData@data$afschotjaar >= 2018
             
             # Filter gewas
             if ("GEWAS" %in% input$schade_code) {

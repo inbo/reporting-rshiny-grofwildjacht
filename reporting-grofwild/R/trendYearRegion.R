@@ -1,12 +1,14 @@
 #' Create data for plotting trend over years in \code{\link{trendYearFlanders}}
 #' @inheritParams createSpaceData
 #' @inheritParams trendYearRegion
+#' @inheritParams readShapeData
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
 #' @export
 createTrendData <- function(data, allSpatialData, 
-        timeRange, species, regionLevel, unit = c("absolute", "relative")) {
+        timeRange, species, regionLevel, unit = c("absolute", "relative"),
+        dataDir = system.file("extdata", package = "reportingGrofwild")) {
     
     
     # To prevent warnings R CMD check
@@ -68,6 +70,23 @@ createTrendData <- function(data, allSpatialData,
     
     allData$afschotjaar <- as.factor(allData$afschotjaar)
     allData$wildsoort <- paste(species, collapse = ", ")
+    
+
+    if (regionLevel == "communes") {
+      # add NIS (naam -> NIS)
+      allData <- merge(allData, spatialData@data[, c("NAAM", "NISCODE")],
+          by.x = "locatie", by.y = "NAAM", sort = FALSE)
+      names(allData)[names(allData) == "NISCODE"] <- "niscode"
+      # order columns and rows
+      allData <- allData[order(allData$afschotjaar),]
+      allData <- allData[c("afschotjaar", setdiff(names(allData), "afschotjaar"))]
+      
+      # add (hoofd)postcode (NIS -> postcode)
+      gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+          header = TRUE, sep = ",")
+      allData$postcode <- gemeenteData$Postcode[match(allData$niscode, gemeenteData$NIS.code)]
+      
+    }
     
     return(allData)
     

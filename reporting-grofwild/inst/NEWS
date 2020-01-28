@@ -1,3 +1,7 @@
+0.1.4
+	o download data includes postcode and nis
+	o excluded wildschade data prior to 2018
+	o refine table wildschade by type of schade
 0.1.3
 	o include 5x5 UTM data for wildschade
 	o fixed image downloads map

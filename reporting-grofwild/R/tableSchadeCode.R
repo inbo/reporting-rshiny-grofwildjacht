@@ -13,18 +13,17 @@
 #' @author Eva Adriaensen
 #' @importFrom reshape2 dcast
 #' @importFrom plyr count
-#' @importFrom DT datatable formatRound
 #' @importFrom magrittr "%>%"
 #' @importFrom utils tail
 #' @export
-tableSchadeCode <- function(data, jaar = NULL,
+tableSchadeCode <- function(data, jaartallen = NULL,
         type = c("provinces", "flanders", "faunabeheerzones")) {
   
   type = match.arg(type)
   schadeNaam <- unique(data$schadeCode)
   
-  if (is.null(jaar))
-    stop("Gelieve jaartal te selecteren")
+  if (is.null(jaartallen))
+    jaartallen <- unique(data$afschotjaar)
   
   allData <- data
   allData$locatie <- switch(type,
@@ -43,22 +42,22 @@ tableSchadeCode <- function(data, jaar = NULL,
   
   allData$schadeCode <- as.factor(allData$schadeCode)    
   levelsSchadeCode <- levels(allData$schadeCode)
-  
-  if (!jaar %in% allData$afschotjaar)
-    stop("Niet beschikbaar: Geen data voor het gekozen jaar")
-  
+    
   # Select data
-  tableData <- allData[allData$afschotjaar == jaar, c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")]
-  # Exclude records with provincie = NA, jaar = NA
+  tableData <- allData[allData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")]
+    
+  if (nrow(tableData) == 0)
+    stop("Niet beschikbaar: Geen data voor de gekozen periode")
+  
+  # Exclude records with provincie = NA, afschotjaar = NA
   tableData <- tableData[!is.na(tableData$afschotjaar) & !is.na(tableData$locatie), ]
     
   # Summary of the data
-  summaryData <- count(tableData, vars = names(tableData))
+  summaryData <- count(tableData, vars = setdiff(names(tableData), "afschotjaar"))
   
   # Include all possible locations
   # TODO include all possible schadecodes as well?
   fullData <- expand.grid(
-      afschotjaar = jaar,
       locatie = levelsLocatie,
       schadeCode = unique(allData$schadeCode)
       )
@@ -77,11 +76,12 @@ tableSchadeCode <- function(data, jaar = NULL,
   # group by schadeBasisCode
   headerCombinations <- headerCombinations[order(headerCombinations$schadeBasisCode),]
   headerCombinations$schadeCode <- as.character(headerCombinations$schadeCode, stringsAsFactors = FALSE)
+  
   # number of schadeCodes by schadeBasisCode
   columsPerSchadeBasisCode <- table(headerCombinations$schadeBasisCode)
   
   # group columns together from same schadeBasisCode
-  summaryTable <- summaryTable[, c(colnames(summaryTable)[1],headerCombinations$schadeCode)]
+  summaryTable <- summaryTable[, c(colnames(summaryTable)[1],fullNames(headerCombinations$schadeCode))]
   
   
   # Add row and column sum
@@ -98,11 +98,9 @@ tableSchadeCode <- function(data, jaar = NULL,
   # Rename locatie
   names(summaryTable)[names(summaryTable) == "locatie"] <- "Locatie"
   
-  # Nice column names
-  # TODO: nice column names currently don't work due to how table header is build up
-
-#  columnFullNames <- fullNames(colnames(summaryTable))
-#  colnames(summaryTable)[!is.na(columnFullNames)] <- names(columnFullNames)[!is.na(columnFullNames)]
+  # Full column names
+  columnFullNames <- names(fullNames(colnames(summaryTable)))
+  colnames(summaryTable)[!is.na(columnFullNames)] <- columnFullNames[!is.na(columnFullNames)]
 
   # Manage table header with multiline
   tableHeader <- tags$table(
@@ -111,24 +109,19 @@ tableSchadeCode <- function(data, jaar = NULL,
           tags$tr(
             tags$th(rowspan = 2, names(summaryTable)[1]) ,
             lapply(names(columsPerSchadeBasisCode), function(iName) {
-           	  tags$th(colspan = columsPerSchadeBasisCode[iName], iName)
+           	  tags$th(colspan = columsPerSchadeBasisCode[iName], names(fullNames(iName)))
             }),
             tags$th(rowspan = 2, tail(names(summaryTable), n=1))
           ),
           tags$tr(
-              lapply(names(summaryTable)[names(summaryTable) %in% headerCombinations$schadeCode], tags$th)
+              #TODO
+              lapply(names(summaryTable)[names(summaryTable) %in% names(fullNames(headerCombinations$schadeCode))], tags$th)
           )
       )
    )
-  
 
-  summaryTableDT <- datatable(summaryTable, rownames = FALSE, container = tableHeader,
-              selection = "single",
-              options = list(dom = 't', pageLength = -1)) %>%
-              formatRound(colnames(summaryTable), digits = 0)
-          
 
-  return(summaryTableDT)
+  return(list(data = summaryTable, header = tableHeader))
   
 
 

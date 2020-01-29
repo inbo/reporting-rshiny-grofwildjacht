@@ -10,7 +10,8 @@ createSpaceData(
   year,
   species,
   regionLevel,
-  unit = c("absolute", "relative", "absoluteCases")
+  unit = c("absolute", "relative", "absoluteCases"),
+  dataDir = system.file("extdata", package = "reportingGrofwild")
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ createSpaceData(
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
 should be reported}
+
+\item{dataDir}{character vector, defines the path to the data files}
 }
 \value{
 data.frame

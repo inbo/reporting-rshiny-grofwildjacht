@@ -162,7 +162,7 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	pl$elementId <- NULL
 	
 	# change variable names
-	names(data)[names(data) == "freq"] <- if (unit == "absolute")
+	names(plotData)[names(plotData) == "freq"] <- if (unit == "absolute")
 				"aantal" else "aantal/100ha"
 	
 	

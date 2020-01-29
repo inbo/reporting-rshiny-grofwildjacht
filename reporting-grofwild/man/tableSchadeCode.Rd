@@ -7,14 +7,12 @@ The table created is a datatable.}
 \usage{
 tableSchadeCode(
   data,
-  jaar = NULL,
+  jaartallen = NULL,
   type = c("provinces", "flanders", "faunabeheerzones")
 )
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}
-
-\item{jaar}{year of interest}
 
 \item{type}{character, defines the region variable of interest in the table}
 }

@@ -53,7 +53,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$locatie), ]
 	
 	# Exclude unused provinces
-    plotData$locatie <- as.factor(plotData$locatie)    
+  plotData$locatie <- as.factor(plotData$locatie)    
 	plotData$locatie <- droplevels(plotData$locatie)
 	
 	# Summarize data per province and year
@@ -67,7 +67,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	
 	# For optimal displaying in the plot
-    summaryData$locatie <- as.factor(summaryData$locatie)
+  summaryData$locatie <- as.factor(summaryData$locatie)
 	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
 	
@@ -94,8 +94,11 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
-	
-	
+  
+  # Change variable name
+  names(summaryData)[names(summaryData) == "value"] <- "aantal"
+  
+  
 	return(list(plot = pl, data = summaryData))
 	
 }

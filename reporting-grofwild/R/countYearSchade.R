@@ -126,9 +126,18 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
             )
     ]
     
+
+    summaryDataFinal <- summaryData[, colsFinal]
+    
+    # Change variable name
+    if ("freq" %in% names(summaryDataFinal)) {
+      names(summaryDataFinal)[names(summaryDataFinal) == "freq"] <- "aantal"
+      
+    }
+    
     # To prevent warnings in UI
     toPlot$elementId <- NULL
     
     
-    return(list(plot = toPlot, data = summaryData[, colsFinal]))
+    return(list(plot = toPlot, data = summaryDataFinal))
 }

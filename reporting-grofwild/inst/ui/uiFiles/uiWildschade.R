@@ -186,7 +186,7 @@ tagList(
             fixedRow(
                 
                 column(4,
-                    optionsModuleUI(id = "schade_table2", showYear = TRUE, showType = TRUE, exportData = TRUE),
+                    optionsModuleUI(id = "schade_table2", showTime = TRUE, showType = TRUE, exportData = TRUE),
                     tags$p("Tekstje")
                 ),
                 column(8, datatableModuleUI(id = "schade_table2"))

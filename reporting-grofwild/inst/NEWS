@@ -1,5 +1,9 @@
+0.1.5
+	o table wildschade update
+	o rename freq to aantal
+	o temp fix file naming for download
 0.1.4
-	o grofwild - download data of map includes postcode and nis
+	o download data of map includes postcode and nis
 	o excluded wildschade data prior to 2018
 	o refine table wildschade by type of schade and table gewas
 0.1.3

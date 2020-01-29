@@ -430,7 +430,7 @@ loadRawData <- function(
 nameFile <- function(species, year, content, fileExt) {
     
     paste0(
-            gsub(pattern = " ", replacement = "_", x = species), "_",
+            paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_",
             if (length(year) > 1) paste(year, collapse = "-") else year, "_",
             content, 
             ".", fileExt

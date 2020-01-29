@@ -10,7 +10,8 @@ createTrendData(
   timeRange,
   species,
   regionLevel,
-  unit = c("absolute", "relative")
+  unit = c("absolute", "relative"),
+  dataDir = system.file("extdata", package = "reportingGrofwild")
 )
 }
 \arguments{
@@ -27,6 +28,8 @@ createTrendData(
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
 should be reported}
+
+\item{dataDir}{character vector, defines the path to the data files}
 }
 \value{
 data.frame, summary of number of animals per species, region and year.

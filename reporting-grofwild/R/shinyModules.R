@@ -245,6 +245,7 @@ datatableModuleUI <- function(id) {
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
+#' @importFrom DT datatable formatRound renderDataTable
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
@@ -387,7 +388,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
         validate(
             need(resFct, "Niet beschikbaar"),
             need(
-                if(is.data.frame(resFct))	resFct	else	resFct$plot,
+                if(is.data.frame(resFct))	resFct	
+                else if (is.data.frame(resFct$data)) resFct$data
+                else	resFct$plot,
                 "Niet beschikbaar"
             )
         )
@@ -405,7 +408,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
   if (datatable == TRUE) {
     output$table <- DT::renderDataTable({
           
-          return(resultFct())
+          DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
+              selection = "single",
+              options = list(dom = 't', pageLength = -1)) %>%
+              formatRound(colnames(resultFct()$data), digits = 0)
           
         })
   } else {

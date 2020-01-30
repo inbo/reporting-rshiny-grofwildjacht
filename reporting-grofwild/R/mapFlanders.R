@@ -270,11 +270,12 @@ mapFlanders <- function(
     
     
     # Add black borders
-    if (regionLevel %in% c("communes", "fbz_gemeentes")) {
+    if (regionLevel %in% c("communes", "fbz_gemeentes", "utm5")) {
         
         borderRegion <- switch(regionLevel,
                 "communes" = "provinces",
-                "fbz_gemeentes" = "faunabeheerzones")  
+                "fbz_gemeentes" = "faunabeheerzones",
+                "utm5" = "provinces")  
         
         myMap <- addPolylines(map = myMap,
                 data = allSpatialData[[borderRegion]], 

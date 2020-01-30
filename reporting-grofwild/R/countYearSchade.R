@@ -108,7 +108,12 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
                     xaxis = list(title = "Jaar"), 
                     yaxis = list(title = if (summarizeBy == "count") "Aantal" else "Percentage"),
                     barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
+                    # hardcode graph size to prevent legend overlapping plot
+                    autosize = FALSE,
+                    width = 800, 
+                    height = 700,
                     margin = list(b = 120, t = 100),
+                    legend = list(y = 0.1),
                     annotations = list(
                             x = totalCount$jaar, 
                             y = if (summarizeBy == "count") totalCount$totaal else 100, 

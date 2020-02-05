@@ -57,9 +57,9 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
                     shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
                     
                 } else if (iLevel == "utm5") {
-                  
+                    
                     shapeData$NAAM <- factor(shapeData$TAG)
-                  
+                    
                 } 
                 
                 
@@ -333,24 +333,24 @@ loadRawData <- function(
 #		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
 #						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
         
-        # TODO temporary fix - this should be done by Sander (data cleaning) in the future
-        # see also global.R
-        if (any(rawData$onderkaaklengte_comp[rawData$ageGender == "Geit"] > 200)) {
-            
-            toExclude <- ifelse(rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200,
-                    TRUE, FALSE)
-            toExclude[is.na(toExclude)] <- FALSE
-            ids <- rawData$ID[toExclude]
-            
-            
-            rawData <- rawData[!toExclude, ]
-            
-            warning(sum(toExclude), 
-                    " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
-            attr(rawData, "excluded") <- ids
-            
-            
-        }
+#        # Temporary fix - this should be done by Sander (data cleaning) in the future
+#        # see also global.R
+#        toExclude <- (rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200)
+#        toExclude[is.na(toExclude)] <- FALSE
+#        
+#        if (any(toExclude)) {
+#            
+#            ids <- rawData$ID[toExclude]
+#            
+#            
+#            rawData <- rawData[!toExclude, ]
+#            
+#            warning(sum(toExclude), 
+#                    " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
+#            attr(rawData, "excluded") <- ids
+#            
+#            
+#        }
         
     }
     
@@ -384,7 +384,7 @@ loadRawData <- function(
         rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
         rawData$provincie <- droplevels(rawData$provincie)
         
-              
+        
         # Define fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
                 NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))

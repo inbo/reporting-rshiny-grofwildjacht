@@ -18,7 +18,10 @@ plotModuleServer(
   timeRange = NULL,
   unit = NULL,
   schade = FALSE,
-  datatable = FALSE
+  datatable = FALSE,
+  schadeChoices = NULL,
+  schadeChoicesVrtg = NULL,
+  schadeChoicesGewas = NULL
 )
 }
 \arguments{
@@ -54,6 +57,12 @@ defined externally for large map}
 \item{schade}{boolean, indicates whether module is used for schadeData; default is FALSE}
 
 \item{datatable}{boolean, indicates whether module should be used to output a datatable object for table; default is FALSE}
+
+\item{schadeChoices}{character, chosen schade types (basisCode) to filter on, optional}
+
+\item{schadeChoicesVrtg}{character, chosen schade types related to "VRTG" to filter on, optional}
+
+\item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
 }
 \value{
 no return value; plot output object is created

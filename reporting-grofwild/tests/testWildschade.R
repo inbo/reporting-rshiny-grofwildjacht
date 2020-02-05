@@ -15,9 +15,13 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 load(file = file.path(dataDir, "spatialData.RData"))
 
 schadeData <- loadRawData(type = "wildschade")
-wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree")[1])
+wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[4])
 
 species <- unique(schadeData$wildsoort)
+#  [1] "vos"         "wild zwijn"  "houtduif"    "smient"      "konijn"     
+#  [6] "edelhert"    "haas"        "grauwe gans" "wilde eend"  "wolf"       
+# [11] "ree"         "fazant"     
+
 
 
 ## THE MAP
@@ -26,7 +30,7 @@ species <- unique(schadeData$wildsoort)
 
 xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 
-for (regionLevel in names(spatialData)[1:5]) {
+for (regionLevel in names(spatialData)[1:6]) {
     
     for (iSpecies in species) {
     
@@ -46,7 +50,7 @@ for (regionLevel in names(spatialData)[1:5]) {
     trendData <- createTrendData(
             data = schadeData@data,
             allSpatialData = spatialData,
-            timeRange = c(2006, 2019),
+            timeRange = c(2018, 2019),
             species = iSpecies,
             regionLevel = regionLevel,
             unit = "absolute")
@@ -65,11 +69,11 @@ for (regionLevel in names(spatialData)[1:5]) {
         if (regionLevel == "flanders")
             trendPlot <- trendYearFlanders(
                     data = trendData,
-                    timeRange = c(2006, 2019),
+                    timeRange = c(2018, 2019),
                     unit = "absolute") else 
             trendPlot <- trendYearRegion(
                     data = trendData,
-                    timeRange = c(2014, 2018),
+                    timeRange = c(2018, 2018),
                     unit = "absolute",
                     locaties = trendData$locatie[1:3])
         
@@ -106,13 +110,13 @@ for (iSpecies in species) {
 
 allPlots <- lapply(species, function(iSpecies) {
             
-            plotData <- subset(schadeData, wildsoort == iSpecies)
+            plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
             timeRange <- min(plotData$afschotjaar):max(plotData$afschotjaar)
             
             res <- countYearProvince(data = plotData@data, jaartallen = timeRange)
             
             expect_equal(names(res), c("plot", "data"))
-            expect_equal(names(res$data), c("afschotjaar", "locatie", "value"))
+            expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
             
             res
             
@@ -121,15 +125,67 @@ allPlots <- lapply(species, function(iSpecies) {
 
 # Some special cases
 countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
-countYearProvince(data = wildSchadeData, jaartallen = 2006:2019, type = "flanders")
+countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders")
 
 
 ## PLOT 2: Counts per year and variable of interest ##
 
 # count
-countYearSchade(data = wildSchadeData, type = "SoortNaam")$plot
-countYearSchade(data = schadeData@data, type = "wildsoort")$plot
-countYearSchade(data = schadeData@data, type = "schadeCode")$plot
+countYearSchade(data = wildSchadeData, jaartallen = 2018:2019, type = "SoortNaam")$plot
+countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "wildsoort")$plot
+countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode")$plot
 
 # percent
-countYearSchade(data = schadeData@data, type = "schadeCode", summarizeBy = "percent")$plot
+countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
+    summarizeBy = "percent")$plot
+
+
+### 4. Descriptive tables
+
+## TABLE 1: Counts per type schade ##
+
+# generate all tables
+allSchadeTables <- lapply(species, function(iSpecies) {
+      
+              choicesSchadecode <- c("GEWAS", "VRTG", "ANDERE")[1:3]
+              choicesSchadeGewas <- c("VRTSCHD", "WLSCHD")[1:2]
+              choicesSchadeVrtg <- c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:3]
+              
+              plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
+              
+              schadeTable <- tableSchadeCode(data = plotData@data,
+#                  type = c("provinces", "flanders", "faunabeheerzones")[1],
+                  schadeChoices = choicesSchadecode,
+                  schadeChoicesVrtg = choicesSchadeVrtg, 
+                  schadeChoicesGewas = choicesSchadeGewas)
+              
+              # some tests
+              expect_equal(names(schadeTable), c("data", "header"))
+              expect_equal(names(schadeTable$data)[1], "Locatie")
+              expect_equal(tail(names(schadeTable$data), n = 1), "Totaal")
+              if ("ANDERE" %in% choicesSchadecode)
+                expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
+              if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
+                expect("Onbekend" %in% names(schadeTable$data), "columns do not match user choices")
+              
+              DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
+                            selection = "single", options = list(dom = 't', pageLength = -1))
+              
+            })
+
+# use for special cases
+schadeTable <- tableSchadeCode(data = wildSchadeData,
+    schadeChoices = c("GEWAS", "VRTG", "ANDERE")[3],
+    schadeChoicesVrtg = c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:2], 
+    schadeChoicesGewas = c("VRTSCHD", "WLSCHD")[1:2])
+
+# testing
+expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
+
+DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
+    selection = "single", options = list(dom = 't', pageLength = -1))
+
+## TABLE 2: Counts per type gewas ##
+
+#TBC
+

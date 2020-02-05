@@ -8,7 +8,11 @@
 #' Create summary table for schadeCode by region.
 #' The table created is a datatable.
 #' @param type character, defines the region variable of interest in the table
+#' @param schadeChoices character, chosen schade types (basisCode) to filter on
+#' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
+#' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
+#' @inheritParams countYearProvince
 #' @return data.frame, number of observations per region \code{locaties} and per schadeCode
 #' @author Eva Adriaensen
 #' @importFrom reshape2 dcast
@@ -17,10 +21,21 @@
 #' @importFrom utils tail
 #' @export
 tableSchadeCode <- function(data, jaartallen = NULL,
-        type = c("provinces", "flanders", "faunabeheerzones")) {
+        type = c("provinces", "flanders", "faunabeheerzones"),
+        schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL) {
   
+  if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
+    stop("Niet beschikbaar")
+  }    
   type = match.arg(type)
-  schadeNaam <- unique(data$schadeCode)
+  
+  if (!"GEWAS" %in% schadeChoices)
+    schadeChoicesGewas <- NULL
+  
+  if (!"VRTG" %in% schadeChoices)
+    schadeChoicesVrtg <- NULL
+
+  schadeSubchoices <- c(schadeChoicesVrtg, schadeChoicesGewas)
   
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
@@ -39,10 +54,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     allData$locatie <- as.factor(allData$locatie)    
     levelsLocatie <- levels(allData$locatie)
   }
-  
-  allData$schadeCode <- as.factor(allData$schadeCode)    
-  levelsSchadeCode <- levels(allData$schadeCode)
-    
+     
   # Select data
   tableData <- allData[allData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")]
     
@@ -55,15 +67,19 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   # Summary of the data
   summaryData <- count(tableData, vars = setdiff(names(tableData), "afschotjaar"))
   
-  # Include all possible locations
-  # TODO include all possible schadecodes as well?
+  # Include all possible locations and selected schadeCodes
   fullData <- expand.grid(
       locatie = levelsLocatie,
-      schadeCode = unique(allData$schadeCode)
-      )
+      schadeCode = if ("ANDERE" %in% schadeChoices) {
+            unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
+            
+      } else {
+        unique(c(schadeSubchoices, as.character(unique(allData$schadeCode))))
+
+      }
+)
   
   summaryData <- merge(summaryData, fullData, all = TRUE)
-  summaryVariables <- "freq"
   
   # Long to wide table
   summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq")
@@ -72,28 +88,44 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   summaryTable[is.na(summaryTable)] <- 0
   
   # Extract header info and counts
-  headerCombinations <- unique(allData[c("schadeBasisCode", "schadeCode")])
-  # group by schadeBasisCode
-  headerCombinations <- headerCombinations[order(headerCombinations$schadeBasisCode),]
-  headerCombinations$schadeCode <- as.character(headerCombinations$schadeCode, stringsAsFactors = FALSE)
+  comb <- data.frame(rbind(
+  if ("VRTG" %in% schadeChoices)
+    expand.grid("VRTG", schadeChoicesVrtg, stringsAsFactors = FALSE),
+  if ("GEWAS" %in% schadeChoices)
+    expand.grid("GEWAS", schadeChoicesGewas, stringsAsFactors = FALSE),
+  if ("ANDERE" %in% schadeChoices) {
+    df2 <- unique(allData[allData$schadeBasisCode == "ANDERE", c("schadeBasisCode", "schadeCode")])
+    if (nrow(df2) == 0L)
+    	df2 <- data.frame(cbind("ANDERE", "ANDERE"), stringsAsFactors=FALSE)
+#    df2 <- unique(allData[c("schadeBasisCode", "schadeCode")])
+#    df2 <- df2[df2$schadeBasisCode == "ANDERE",]
+    names(df2) <- c("Var1", "Var2")
+    df2
+  }))
+
+  allSchadeCode <- unique(comb$Var2)
   
   # number of schadeCodes by schadeBasisCode
-  columsPerSchadeBasisCode <- table(headerCombinations$schadeBasisCode)
-  
+  columsPerSchadeBasisCode <- rev(table(comb$Var1))
+
   # group columns together from same schadeBasisCode
-  summaryTable <- summaryTable[, c(colnames(summaryTable)[1],fullNames(headerCombinations$schadeCode))]
+  summaryTable <- summaryTable[, c(colnames(summaryTable)[1],fullNames(comb$Var2))]
   
   
   # Add row and column sum
-  levels(summaryTable$locatie) <- c(levels(summaryTable$locatie), "Vlaanderen")
+  levels(summaryTable[,"locatie"]) <- c(levels(summaryTable[,"locatie"]),"Vlaanderen")
   
   if (type != "flanders") {
+    newRow <- as.list(apply(as.matrix(summaryTable[, allSchadeCode]), 2, sum)) # causes error
+    # assign names manually; needed in case of allSchadeCode
+    if (is.null(names(newRow)) & length(allSchadeCode) == 1L)
+      names(newRow) <- allSchadeCode
     summaryTable <- rbind(summaryTable, 
-      c(locatie = "Vlaanderen", as.list(apply(summaryTable[, levelsSchadeCode], 2, sum))))
+      c(locatie = "Vlaanderen", newRow))
   }
 
   summaryTable <- cbind(summaryTable, 
-      Totaal = apply(summaryTable[, levelsSchadeCode], 1, sum))
+      Totaal = apply(as.matrix(summaryTable[, setdiff(names(summaryTable), "locatie")]), 1, sum))
   
   # Rename locatie
   names(summaryTable)[names(summaryTable) == "locatie"] <- "Locatie"
@@ -115,7 +147,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
           ),
           tags$tr(
               #TODO
-              lapply(names(summaryTable)[names(summaryTable) %in% names(fullNames(headerCombinations$schadeCode))], tags$th)
+              lapply(names(summaryTable)[names(summaryTable) %in% names(fullNames(comb$Var2))], tags$th)
           )
       )
    )

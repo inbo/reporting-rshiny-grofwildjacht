@@ -8,13 +8,25 @@ The table created is a datatable.}
 tableSchadeCode(
   data,
   jaartallen = NULL,
-  type = c("provinces", "flanders", "faunabeheerzones")
+  type = c("provinces", "flanders", "faunabeheerzones"),
+  schadeChoices = NULL,
+  schadeChoicesVrtg = NULL,
+  schadeChoicesGewas = NULL
 )
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}
 
+\item{jaartallen}{integer vector, defines the year(s) that should be considered
+in the plot; if NULL no selection on year(s) is made}
+
 \item{type}{character, defines the region variable of interest in the table}
+
+\item{schadeChoices}{character, chosen schade types (basisCode) to filter on}
+
+\item{schadeChoicesVrtg}{character, chosen schade types related to "VRTG" to filter on, optional}
+
+\item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
 }
 \value{
 data.frame, number of observations per region \code{locaties} and per schadeCode

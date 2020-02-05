@@ -648,5 +648,8 @@ callModule(module = optionsModuleServer, id = "schade_table2",
 callModule(module = plotModuleServer, id = "schade_table2",
     plotFunction = "tableSchadeCode", 
     data = reactive(results$schade_data()@data),
+    schadeChoices = reactive(input$schade_code),
+    schadeChoicesVrtg = reactive(input$schade_voertuig),
+    schadeChoicesGewas = reactive(input$schade_gewas),
     schade = TRUE,
     datatable = TRUE)

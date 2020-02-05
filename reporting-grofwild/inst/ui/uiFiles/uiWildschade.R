@@ -199,7 +199,15 @@ tagList(
         actionLink(inputId = "schade_linkTable1",
             label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
         conditionalPanel("input.schade_linkTable1 % 2 == 1",
-            tableModuleUI(id = "gewas", includeTotal = TRUE),
+            fixedRow(
+                
+                column(4, 
+                    optionsModuleUI(id = "gewas", showType = TRUE),
+                    tags$p("Tekstje")
+                ),
+                column(8, tableModuleUI(id = "gewas", includeTotal = TRUE))
+            ),
+            
             tags$hr()
         )
 

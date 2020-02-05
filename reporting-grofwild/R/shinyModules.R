@@ -255,7 +255,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     categorie = NULL, bioindicator = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
     datatable = FALSE, schadeChoices = NULL, schadeChoicesVrtg = NULL,
-    schadeChoicesGewas = NULL) {
+    schadeChoicesGewas = NULL, variable = NULL) {
   
   subData <- reactive({
         
@@ -346,7 +346,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if (!is.null(schadeChoicesVrtg))
               list(schadeChoicesVrtg = schadeChoicesVrtg()),
             if (!is.null(schadeChoicesGewas))
-              list(schadeChoicesGewas = schadeChoicesGewas())
+              list(schadeChoicesGewas = schadeChoicesGewas()),
+            if (!is.null(variable))
+              list(variable = variable)
         
         )
         

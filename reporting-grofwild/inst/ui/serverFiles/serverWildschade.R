@@ -629,12 +629,7 @@ callModule(module = plotModuleServer, id = "schade_plot2",
         data = reactive(results$schade_data()@data))
 
 
-# Table 1: Frequency table gewas
-callModule(dataModuleServer, id = "gewas",
-        data = results$schade_data,
-        variable = "SoortNaam")
-
-# Table 2: Frequency table schadeCode
+# Table Frequency table schadeCode
 callModule(module = optionsModuleServer, id = "schade_table2", 
     data = reactive(results$schade_data()@data),
     types = reactive(c(
@@ -653,3 +648,25 @@ callModule(module = plotModuleServer, id = "schade_table2",
     schadeChoicesGewas = reactive(input$schade_gewas),
     schade = TRUE,
     datatable = TRUE)
+
+# Table Frequency table gewas
+callModule(module = optionsModuleServer, id = "gewas",
+    data = results$schade_data()@data,
+    types = reactive(c(
+            "Vlaanderen" = "flanders",
+            "Provincie" = "provinces", 
+            "Faunabeheerzones" = "faunabeheerzones"
+        )), 
+    labelTypes = "Regio", 
+    typesDefault = reactive("provinces"))
+
+#callModule(dataModuleServer, id = "gewas",
+#    data = results$schade_data,
+#    variable = "SoortNaam")
+
+callModule(plotModuleServer, id = "gewas",
+    plotFunction = "tableGewas",
+    data = reactive(results$schade_data()@data),
+    variable = "SoortNaam")
+
+

@@ -15,7 +15,7 @@ dataModuleServer(input, output, session, data, variable)
 
 \item{data, }{character vector, values for which frequency table should be generated}
 
-\item{variableLabel}{character, label of the variable that is summarized}
+\item{variable}{character, name of the variable that is summarized}
 }
 \value{
 ui object (tagList)

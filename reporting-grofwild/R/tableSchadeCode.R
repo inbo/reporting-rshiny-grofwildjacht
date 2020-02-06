@@ -6,14 +6,14 @@
 
 
 #' Create summary table for schadeCode by region.
-#' The table created is a datatable.
 #' @param type character, defines the region variable of interest in the table
 #' @param schadeChoices character, chosen schade types (basisCode) to filter on
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
 #' @inheritParams countYearProvince
-#' @return data.frame, number of observations per region \code{locaties} and per schadeCode
+#' @return a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
+#' specifying multicolumn column names 
 #' @author Eva Adriaensen
 #' @importFrom reshape2 dcast
 #' @importFrom plyr count

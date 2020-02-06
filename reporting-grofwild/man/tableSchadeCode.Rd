@@ -2,8 +2,7 @@
 % Please edit documentation in R/tableSchadeCode.R
 \name{tableSchadeCode}
 \alias{tableSchadeCode}
-\title{Create summary table for schadeCode by region.
-The table created is a datatable.}
+\title{Create summary table for schadeCode by region.}
 \usage{
 tableSchadeCode(
   data,
@@ -29,11 +28,11 @@ in the plot; if NULL no selection on year(s) is made}
 \item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
 }
 \value{
-data.frame, number of observations per region \code{locaties} and per schadeCode
+a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
+specifying multicolumn column names
 }
 \description{
 Create summary table for schadeCode by region.
-The table created is a datatable.
 }
 \author{
 Eva Adriaensen

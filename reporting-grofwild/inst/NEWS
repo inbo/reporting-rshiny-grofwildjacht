@@ -1,6 +1,5 @@
 0.1.8
-	o extend schadetable per gewas with regio choices
-	o extend tests
+	o extend schadetable per gewas with user choices and data download
 0.1.7
 	o schadetable columns upon user choices
 	o update and extend tests

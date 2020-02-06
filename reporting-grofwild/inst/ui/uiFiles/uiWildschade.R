@@ -202,10 +202,10 @@ tagList(
             fixedRow(
                 
                 column(4, 
-                    optionsModuleUI(id = "gewas", showType = TRUE),
+                    optionsModuleUI(id = "gewas", showTime = TRUE, showType = TRUE, exportData = TRUE),
                     tags$p("Tekstje")
                 ),
-                column(8, tableModuleUI(id = "gewas", includeTotal = TRUE))
+                column(8, tableModuleUI(id = "gewas"))
             ),
             
             tags$hr()

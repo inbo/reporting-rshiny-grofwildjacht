@@ -244,6 +244,7 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoices character, chosen schade types (basisCode) to filter on, optional
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
+#' @param variable character, defines which variable is of interest for the table
 #' @inheritParams plotBioindicator
 #' @return no return value; plot output object is created
 #' @author mvarewyck
@@ -423,7 +424,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
           DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
               selection = "single",
               options = list(dom = 't', pageLength = -1)) %>%
-              formatRound(colnames(resultFct()$data), digits = 0)
+              formatRound(colnames(resultFct()$data), digits = 0, mark = "")
           
         })
   } else {
@@ -442,7 +443,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' Display formatted frequency table of data (ui-side)
 #' @inheritParams plotModuleServer
 #' @param data, character vector, values for which frequency table should be generated
-#' @param variableLabel character, label of the variable that is summarized
+#' @param variable character, name of the variable that is summarized
 #' @return ui object (tagList)
 #' @export
 dataModuleServer <- function(input, output, session, data, variable) {

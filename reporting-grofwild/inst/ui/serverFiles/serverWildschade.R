@@ -658,7 +658,8 @@ callModule(module = optionsModuleServer, id = "gewas",
             "Faunabeheerzones" = "faunabeheerzones"
         )), 
     labelTypes = "Regio", 
-    typesDefault = reactive("provinces"))
+    typesDefault = reactive("provinces"),
+    timeRange = results$schade_timeRange)
 
 #callModule(dataModuleServer, id = "gewas",
 #    data = results$schade_data,

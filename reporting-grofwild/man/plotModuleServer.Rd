@@ -21,7 +21,8 @@ plotModuleServer(
   datatable = FALSE,
   schadeChoices = NULL,
   schadeChoicesVrtg = NULL,
-  schadeChoicesGewas = NULL
+  schadeChoicesGewas = NULL,
+  variable = NULL
 )
 }
 \arguments{
@@ -63,6 +64,8 @@ defined externally for large map}
 \item{schadeChoicesVrtg}{character, chosen schade types related to "VRTG" to filter on, optional}
 
 \item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
+
+\item{variable}{character, defines which variable is of interest for the table}
 }
 \value{
 no return value; plot output object is created

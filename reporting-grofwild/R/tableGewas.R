@@ -65,7 +65,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   # add col and row sum 
   if (type != "flanders") {
     summaryTable <- cbind(summaryTable, 
-        Totaal = apply(subset(summaryTable, select = -1), 1, sum))
+        Vlaanderen = apply(subset(summaryTable, select = -1), 1, sum))
   }
   summaryTable <- rbind(summaryTable,
       c(varOfInterest = "Alle", as.list(apply(subset(summaryTable, select = -1), 2, sum))))   

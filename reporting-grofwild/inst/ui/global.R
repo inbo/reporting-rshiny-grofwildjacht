@@ -19,6 +19,11 @@ library(shinycssloaders)   # for busy indicator
 # Specify directory with data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 
+# Specify currently used wildsoorten
+schadeSoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
+                      "Klein wild" = c("haas", "fazant", "konijn"),
+                      "Waterwild" = c("wilde eend", "smient", "grauwe gans"),
+                      "Overig" = c("houtduif", "vos", "wolf"))
 
 
 
@@ -42,7 +47,12 @@ schadeData <- loadRawData(dataDir = dataDir, type = "wildschade")
 if (!is.null(attr(ecoData, "excluded")))
     geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 
-
+# check for wildsoorten to add to schadeSoorten
+if (any(!unique(schadeData$wildsoort) %in% unlist(schadeSoorten))) {
+	warning("Nieuwe wildsoorten gedetecteerd in raw data: ", 
+          paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeSoorten)), collapse = ", "),
+          "\nUpdate schadeSoorten aub")
+}
 
 
 

@@ -15,7 +15,7 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 load(file = file.path(dataDir, "spatialData.RData"))
 
 schadeData <- loadRawData(type = "wildschade")
-wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[4])
+wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])
 
 species <- unique(schadeData$wildsoort)
 #  [1] "vos"         "wild zwijn"  "houtduif"    "smient"      "konijn"     
@@ -172,6 +172,8 @@ allSchadeTables <- lapply(species, function(iSpecies) {
                             selection = "single", options = list(dom = 't', pageLength = -1))
               
             })
+        
+names(allSchadeTables) <- species
 
 # use for special cases
 schadeTable <- tableSchadeCode(data = wildSchadeData,
@@ -179,7 +181,7 @@ schadeTable <- tableSchadeCode(data = wildSchadeData,
     schadeChoicesVrtg = c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:2], 
     schadeChoicesGewas = c("VRTSCHD", "WLSCHD")[1:2])
 
-# testing
+# testing for special cases
 expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
 
 DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
@@ -187,5 +189,38 @@ DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header
 
 ## TABLE 2: Counts per type gewas ##
 
-#TBC
+typeOptions <- c("provinces", "flanders", "faunabeheerzones")
 
+# loop over all species-location combinations
+allGewasTables <- lapply(typeOptions, function(iType) {
+	allTablesPerLocation <- lapply(species, function(iSpecies) {
+        
+        subData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
+        timeRange <- min(subData@data$afschotjaar):max(subData@data$afschotjaar)
+        
+        res <- tableGewas(data = subData@data, jaartallen = timeRange,
+                          type = iType,
+                          variable = "SoortNaam")
+        
+        if (!is.null(res)) {
+        	expect(nrow(res) > 0, "table with 0 rows detected")
+          expect("Gewas" %in% names(res), "colnames table faulty")
+          expect("Alle" %in% res$Gewas, "colnames table faulty")
+          if (!"Vlaams Gewest" %in% names(res)) {
+            expect("Vlaanderen" %in% names(res), "colnames table faulty")
+          }
+        }
+  
+        
+        res
+        
+      })
+  
+  names(allTablesPerLocation) <- species
+  allTablesPerLocation
+})
+
+names(allGewasTables) <- typeOptions
+
+
+#lapply(1:length(species))

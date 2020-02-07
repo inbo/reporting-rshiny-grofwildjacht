@@ -18,7 +18,7 @@ tagList(
                 
                 tags$p("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
                 
-                tags$p("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). Binnen elk type schade  kan je verder kiezen uit enkele subcategorieën. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."),
+                tags$p("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). Binnen elk type schade  kan je verder kiezen uit enkele subcategorie\u00EBn. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."),
                 
                 tags$p("Opgelet: De gekozen filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
                 
@@ -67,7 +67,7 @@ tagList(
                 
                 h2("Landkaart 1"),
                 
-                tags$p("De eerste kaart toont de geografische spreiding van de gemelde schadegevallen in Vlaanderen. De schadegevallen zijn hier telkens gegroepeerd weergegeven voor een bepaalde regio-schaal (Vlaanderen, provincies, faunabeheerzones, gemeenten, 5x5 km UTM-hok,…)."),
+                tags$p("De eerste kaart toont de geografische spreiding van de gemelde schadegevallen in Vlaanderen. De schadegevallen zijn hier telkens gegroepeerd weergegeven voor een bepaalde regio-schaal (Vlaanderen, provincies, faunabeheerzones, gemeenten, 5x5 km UTM-hok, ...)."),
                 tags$p("De getoonde schadetypes hangen af van je keuze in het hoofdmenu."),
                 tags$p("Je kan zelf nog kiezen welk jaar, schaalniveau en eenheid (absoluut aantal of aantal per 100 ha) je op de kaart weergegeven wil zien."),
                 tags$p("Je kan op de kaart interactief een of meerdere deelgebieden selecteren waarvoor de gegevens dan in de onderstaande grafiek worden weergegeven. Ook de periode waarvoor informatie in de grafieken wordt weergegeven, kan je hier selecteren."),
@@ -192,7 +192,7 @@ tagList(
                                 optionsModuleUI(id = "schade_plot2", 
                                         summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                                         showTime = TRUE, showType = TRUE, exportData = TRUE),
-                                tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina het aantal schadegevallen weer in functie van het veld dat je kiest bij “variabele”. Je kan kiezen tussen het ", tags$i("gewas"), "(indien gekozen werd voor gewasschade), de ", tags$i("wildsoort(en)"), " binnen de gekozen dataset, of de ", tags$i("subcategorie type schade"), "(bv. verkeersongelukken met of zonder personenletsels). Je kan een keuze maken tussen het absoluut aantal schadegevallen per categorie en het relatief aantal schadegevallen."),
+                                tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina het aantal schadegevallen weer in functie van het veld dat je kiest bij Variabele. Je kan kiezen tussen het ", tags$i("gewas"), "(indien gekozen werd voor gewasschade), de ", tags$i("wildsoort(en)"), " binnen de gekozen dataset, of de ", tags$i("subcategorie type schade"), "(bv. verkeersongelukken met of zonder personenletsels). Je kan een keuze maken tussen het absoluut aantal schadegevallen per categorie en het relatief aantal schadegevallen."),
                                 tags$p("Wanneer je als periode meerdere jaren kiest, worden de verschillende subcategorieën per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden ze naast elkaar weergegeven.")
                         ),
                         column(8, plotModuleUI(id = "schade_plot2"))

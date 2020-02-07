@@ -33,28 +33,28 @@ xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 for (regionLevel in names(spatialData)[1:6]) {
     
     for (iSpecies in species) {
-    
-    spaceData <- createSpaceData(
-            data = schadeData@data, 
-            allSpatialData = spatialData,
-            year = 2018,
-            species = iSpecies,
-            regionLevel = regionLevel,
-            unit = "absolute"
-    )
-    
-    cat("*", regionLevel, "\n")
-    cat("*", iSpecies, "\n")
-    print(sum(spaceData$freq))
-    
-    trendData <- createTrendData(
-            data = schadeData@data,
-            allSpatialData = spatialData,
-            timeRange = c(2018, 2019),
-            species = iSpecies,
-            regionLevel = regionLevel,
-            unit = "absolute")
-    
+        
+        spaceData <- createSpaceData(
+                data = schadeData@data, 
+                allSpatialData = spatialData,
+                year = 2020,
+                species = iSpecies,
+                regionLevel = regionLevel,
+                unit = "absolute"
+        )
+        
+        cat("*", regionLevel, "\n")
+        cat("*", iSpecies, "\n")
+        print(sum(spaceData$freq))
+        
+        trendData <- createTrendData(
+                data = schadeData@data,
+                allSpatialData = spatialData,
+           	 timeRange = c(2018, 2019),
+                species = iSpecies,
+                regionLevel = regionLevel,
+                unit = "absolute")
+        
         mapPlot <- mapFlanders(
                 allSpatialData = spatialData, 
                 regionLevel = regionLevel, 
@@ -137,7 +137,7 @@ countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCo
 
 # percent
 countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
-    summarizeBy = "percent")$plot
+        summarizeBy = "percent")$plot
 
 
 ### 4. Descriptive tables
@@ -146,46 +146,46 @@ countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCo
 
 # generate all tables
 allSchadeTables <- lapply(species, function(iSpecies) {
-      
-              choicesSchadecode <- c("GEWAS", "VRTG", "ANDERE")[1:3]
-              choicesSchadeGewas <- c("VRTSCHD", "WLSCHD")[1:2]
-              choicesSchadeVrtg <- c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:3]
-              
-              plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
-              
-              schadeTable <- tableSchadeCode(data = plotData@data,
+            
+            choicesSchadecode <- c("GEWAS", "VRTG", "ANDERE")[1:3]
+            choicesSchadeGewas <- c("VRTSCHD", "WLSCHD")[1:2]
+            choicesSchadeVrtg <- c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:3]
+            
+            plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
+            
+            schadeTable <- tableSchadeCode(data = plotData@data,
 #                  type = c("provinces", "flanders", "faunabeheerzones")[1],
-                  schadeChoices = choicesSchadecode,
-                  schadeChoicesVrtg = choicesSchadeVrtg, 
-                  schadeChoicesGewas = choicesSchadeGewas)
-              
-              # some tests
-              expect_equal(names(schadeTable), c("data", "header"))
-              expect_equal(names(schadeTable$data)[1], "Locatie")
-              expect_equal(tail(names(schadeTable$data), n = 1), "Totaal")
-              if ("ANDERE" %in% choicesSchadecode)
+                    schadeChoices = choicesSchadecode,
+                    schadeChoicesVrtg = choicesSchadeVrtg, 
+                    schadeChoicesGewas = choicesSchadeGewas)
+            
+            # some tests
+            expect_equal(names(schadeTable), c("data", "header"))
+            expect_equal(names(schadeTable$data)[1], "Locatie")
+            expect_equal(tail(names(schadeTable$data), n = 1), "Totaal")
+            if ("ANDERE" %in% choicesSchadecode)
                 expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
-              if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
+            if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
                 expect("Onbekend" %in% names(schadeTable$data), "columns do not match user choices")
-              
-              DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
-                            selection = "single", options = list(dom = 't', pageLength = -1))
-              
-            })
-        
+            
+            DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
+                    selection = "single", options = list(dom = 't', pageLength = -1))
+            
+        })
+
 names(allSchadeTables) <- species
 
 # use for special cases
 schadeTable <- tableSchadeCode(data = wildSchadeData,
-    schadeChoices = c("GEWAS", "VRTG", "ANDERE")[3],
-    schadeChoicesVrtg = c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:2], 
-    schadeChoicesGewas = c("VRTSCHD", "WLSCHD")[1:2])
+        schadeChoices = c("GEWAS", "VRTG", "ANDERE")[3],
+        schadeChoicesVrtg = c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:2], 
+        schadeChoicesGewas = c("VRTSCHD", "WLSCHD")[1:2])
 
 # testing for special cases
 expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
 
 DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
-    selection = "single", options = list(dom = 't', pageLength = -1))
+        selection = "single", options = list(dom = 't', pageLength = -1))
 
 ## TABLE 2: Counts per type gewas ##
 
@@ -193,32 +193,32 @@ typeOptions <- c("provinces", "flanders", "faunabeheerzones")
 
 # loop over all species-location combinations
 allGewasTables <- lapply(typeOptions, function(iType) {
-	allTablesPerLocation <- lapply(species, function(iSpecies) {
-        
-        subData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
-        timeRange <- min(subData@data$afschotjaar):max(subData@data$afschotjaar)
-        
-        res <- tableGewas(data = subData@data, jaartallen = timeRange,
-                          type = iType,
-                          variable = "SoortNaam")
-        
-        if (!is.null(res)) {
-        	expect(nrow(res) > 0, "table with 0 rows detected")
-          expect("Gewas" %in% names(res), "colnames table faulty")
-          expect("Alle" %in% res$Gewas, "colnames table faulty")
-          if (!"Vlaams Gewest" %in% names(res)) {
-            expect("Vlaanderen" %in% names(res), "colnames table faulty")
-          }
-        }
-  
-        
-        res
-        
-      })
-  
-  names(allTablesPerLocation) <- species
-  allTablesPerLocation
-})
+            allTablesPerLocation <- lapply(species, function(iSpecies) {
+                        
+                        subData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
+                        timeRange <- min(subData@data$afschotjaar):max(subData@data$afschotjaar)
+                        
+                        res <- tableGewas(data = subData@data, jaartallen = timeRange,
+                                type = iType,
+                                variable = "SoortNaam")
+                        
+                        if (!is.null(res)) {
+                            expect(nrow(res) > 0, "table with 0 rows detected")
+                            expect("Gewas" %in% names(res), "colnames table faulty")
+                            expect("Alle" %in% res$Gewas, "colnames table faulty")
+                            if (!"Vlaams Gewest" %in% names(res)) {
+                                expect("Vlaanderen" %in% names(res), "colnames table faulty")
+                            }
+                        }
+                        
+                        
+                        res
+                        
+                    })
+            
+            names(allTablesPerLocation) <- species
+            allTablesPerLocation
+        })
 
 names(allGewasTables) <- typeOptions
 

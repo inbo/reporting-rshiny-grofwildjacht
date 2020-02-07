@@ -14,7 +14,7 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 load(file = file.path(dataDir, "spatialData.RData"))
 
 ecoData <- loadRawData(type = "eco")
-geoData <- loadRawData(type = "geo", shapeData = spatialData)
+geoData <- loadRawData(type = "geo")
 geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 
 expect_equal(nrow(ecoData), nrow(geoData))

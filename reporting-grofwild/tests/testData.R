@@ -10,6 +10,20 @@ library(testthat)
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 
 
+## 0. Update Shape Data
+## --------------------
+
+# This will update 
+# (1) spatialData.RData, shape data and
+# (2) gemeentecodes.csv, file for matching NIS to NAAM
+# Next, install the package for the latest files to be available from the extdata folder
+
+#readShapeData()   # created shape data
+
+# Load the shape data
+load(file = file.path(dataDir, "spatialData.RData"))
+
+
 
 
 ## 1. Ecological Data
@@ -65,8 +79,6 @@ dev.off()
 ## 2. Geographical Data
 ## --------------------
 
-#readShapeData()  # create shape data
-load(file = file.path(dataDir, "spatialData.RData"))
 
 pdf(file.path(tempdir(), "checkGeoData.pdf"))
 for (iLevel in names(spatialData))
@@ -75,11 +87,12 @@ dev.off()
 
 
 # Can we combine data sources? 
-geoData <- loadRawData(type = "geo", shapeData = spatialData)
+geoData <- loadRawData(type = "geo")
 tmp <- merge(geoData, ecoData)
 
-
-
+# Correct names for commune shape data?
+notMatching <- which(!geoData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
+expect_equal(0, length(notMatching[!is.na(geoData$gemeente_afschot_locatie[notMatching])]))
 
 
 ## 3. Wildschade
@@ -96,9 +109,12 @@ dev.off()
 
 
 # Can we combine data sources? 
-wildschadeData <- loadRawData(type = "wildschade", shapeData = spatialData)
+wildschadeData <- loadRawData(type = "wildschade")
 
 dim(wildschadeData)
 head(wildschadeData)
 
+# Correct names for commune shape data?
+notMatching <- which(!wildschadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
+expect_equal(0, length(notMatching[!is.na(wildschadeData$gemeente_afschot_locatie[notMatching])]))
 

@@ -37,11 +37,9 @@ toekenningsData <- loadToekenningen(dataDir = dataDir)
 load(file = file.path(dataDir, "spatialData.RData"))
 
 # Data with observations and geographical information
-ecoData <- loadRawData(dataDir = dataDir, type = "eco")
-geoData <- loadRawData(dataDir = dataDir, type = "geo", 
-    shapeData = spatialData)
-
-schadeData <- loadRawData(dataDir = dataDir, type = "wildschade")
+ecoData <- loadRawData(type = "eco")
+geoData <- loadRawData(type = "geo")
+schadeData <- loadRawData(type = "wildschade")
 
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))

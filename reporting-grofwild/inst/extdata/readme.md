@@ -50,7 +50,7 @@ Conversion of data from source to geojson (in terminal)
 
 ## R data files
 
-The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), FBZ (faunabeheerzones) and DFBZ (deel-faunabeheerzones). When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`.
+The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), FBZ (faunabeheerzones) and DFBZ (deel-faunabeheerzones). When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`. Next, install the package such that the latest shape data are available in the extdata folder.
 The object `spatialData` can easily be loaded in R by
 
 `dataDir <- system.file("extdata", package = "reportingGrofwild")`

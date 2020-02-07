@@ -137,6 +137,18 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
     names(spatialData) <- newNames
     
     
+    # Update commune names for later matching: geo/wildschade data with shape data
+    # Note: You can use gemeentecode.csv for matching NIS to NAAM
+    # First install the package again!
+    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+            header = TRUE, sep = ",",stringsAsFactors = FALSE)
+    
+    communeData <- spatialData$communes@data
+    gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
+    write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"))
+    
+    
+    
     save(spatialData, file = file.path(dataDir, "spatialData.RData"))
     
 }
@@ -210,9 +222,6 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' Read ecology or geography data
 #' @inheritParams readShapeData
 #' @param type data type, "eco" for ecology data and "geo" for geography data
-#' @param shapeData list with objects of class SpatialPolygonsDataFrame as 
-#' returned by \code{\link{readShapeData}}; if not NULL, commune names are 
-#' matched between geography (raw) data and spatial (shape) data 
 #' @return data.frame, loaded ecology or geography data; 
 #' and attribute 'Date', the date that this data file was created
 #' @author mvarewyck
@@ -222,7 +231,7 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' @export
 loadRawData <- function(
         dataDir = system.file("extdata", package = "reportingGrofwild"),
-        type = c("eco", "geo", "wildschade"), shapeData = NULL) {
+        type = c("eco", "geo", "wildschade")) {
     
     type <- match.arg(type)
     
@@ -273,23 +282,20 @@ loadRawData <- function(
     }
     
     
-    ## Mismatch names with spatial (shape) data for multiple communes - geodata
-    if (type == "geo" & !is.null(shapeData)) {
+    if (type == "geo") {
+        ## GEO data for grofwild
         
-        communeData <- shapeData$communes@data
-        
-        # Determine gemeente: postcode -> NISCODE -> gemeente
-        geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
-        
-        rawData$gemeente_afschot_locatie <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 
+        # Match on Postcode: otherwise mismatch with spatialData locatie
+        rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
         
         # Create fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
                 NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
         
-    }
-    
-    if (type == "eco") {
+        
+    } else if (type == "eco") {
+    ## ECO data for grofwild
+   
         
         
         # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
@@ -352,9 +358,9 @@ loadRawData <- function(
 #            
 #        }
         
-    }
+    } else if (type == "wildschade") {
+    ## Wildschade data
     
-    if (type == "wildschade") {
         
         # variables to keep
         rawData <- rawData[, c("UUID", "IndieningID", "Jaartal", 

@@ -118,3 +118,4 @@ head(wildschadeData)
 notMatching <- which(!wildschadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
 expect_equal(0, length(notMatching[!is.na(wildschadeData$gemeente_afschot_locatie[notMatching])]))
 
+

@@ -16,7 +16,7 @@ shinyServer(function(input, output, session) {
                         
                         if (is.null(input$debug_console))
                             return(NULL)
-                        
+
                         if (input$debug_console > 0) {
                             
                             options(browserNLdisabled = TRUE)
@@ -77,15 +77,5 @@ shinyServer(function(input, output, session) {
                         
                     })
             
-            
-#            # At start -> redirect to grofwild panel
-#            observe({
-#                        
-##                         isGrofwild <- grepl("grofwild", parseQueryString(session$clientData$url_hostname))
-#                        if (isGrofwild) 
-#                            updateNavbarPage(session = session, "tabs", selected = "tab-grofwild")
-#                            
-#                    })
-            
-            
+         
         })

@@ -4,11 +4,11 @@
 #' 'ontweid_gewicht', or 'aantal_embryos'
 #' @param sourceIndicator character, defines the data source to be used for
 #' bioindicator 'onderkaaklengte'
-#' @param type animal type, used to filter \code{data} ('ageGender' column)
+#' @param type animal type, used to filter \code{data} ('type_comp' column)
 #' If NULL (by default), for bioindicator set to:
 #' \itemize{
 #' \item{'aantal_embryos': }{only animals with age/gender type: "Smalree" "Geit" are considered}
-#' \item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{ageGender} set to '')}
+#' \item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{type_comp} set to '')}
 #' }
 #' @inheritParams countYearAge
 #' @import plotly
@@ -67,7 +67,7 @@ plotBioindicator <- function(data,
 	if (is.null(type))
 		type <- if (bioindicator == "aantal_embryos")
 					c("Smalree", "Geit") else
-					levels(data$ageGender)[levels(data$ageGender) != ""]
+					levels(data$type_comp)[levels(data$type_comp) != ""]
 	
 	# Bioindicator 'onderkaaklengte' depends on data source
 	# bron == "both" -> onderkaaklengte_comp
@@ -93,10 +93,10 @@ plotBioindicator <- function(data,
 	}
 	
 	# Select data of specified years
-	plotData <- data[data$afschotjaar %in% jaartallen & data$ageGender %in% type,
+	plotData <- data[data$afschotjaar %in% jaartallen & data$type_comp %in% type,
 			c("afschotjaar", bioindicator, 
 					if (bioindicator == "onderkaaklengte") "bron" else NULL, 
-					"ageGender", "provincie")]
+					"type_comp", "provincie")]
 	
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
 		stop("Niet beschikbaar: Gelieve periode met minstens 3 jaren te selecteren")

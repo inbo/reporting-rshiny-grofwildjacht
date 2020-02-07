@@ -10,6 +10,8 @@
 #' @param data data.frame with raw data for plotting
 #' @param jaartallen integer vector, defines the year(s) that should be considered
 #' in the plot; if NULL no selection on year(s) is made
+#' @param type character, regional level of interest should be one of 
+#' \code{c("provinces", "flanders", "faunabeheerzones")}
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
@@ -19,7 +21,7 @@
 #' \item{'data': }{data displayed in the plot, as data.frame with:
 #' \itemize{
 #' \item{'afschotjaar': }{year at which the animals was shot}
-#' \item{'provincie': }{province name}
+#' \item{'locatie': }{location name, could be province, flanders or fbz name}
 #' \item{'value': }{counts of animals}
 #' }
 #' }
@@ -29,20 +31,30 @@
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
+        type = c("provinces", "flanders", "faunabeheerzones"),
 		width = NULL, height = NULL) {
 	
 	
-	wildNaam <- unique(data$wildsoort)
+    type <- match.arg(type)
+	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
+    plotData <- data
+    plotData$locatie <- switch(type,
+            flanders = "Vlaams Gewest",
+            provinces = plotData$provincie,
+            faunabeheerzones = plotData$FaunabeheerZone
+    )
+    
 	# Select data
-	plotData <- data[data$afschotjaar %in% jaartallen, c("afschotjaar", "provincie")]
-	plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$provincie), ]
+	plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie")]
+	plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$locatie), ]
 	
 	# Exclude unused provinces
-	plotData$provincie <- droplevels(plotData$provincie)
+  plotData$locatie <- as.factor(plotData$locatie)    
+	plotData$locatie <- droplevels(plotData$locatie)
 	
 	# Summarize data per province and year
 	plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
@@ -55,10 +67,11 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	
 	# For optimal displaying in the plot
-	summaryData$provincie <- factor(summaryData$provincie, levels = rev(levels(summaryData$provincie)))
+  summaryData$locatie <- as.factor(summaryData$locatie)
+	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
 	
-	colors <- rev(inbo.2015.colours(n = nlevels(summaryData$provincie)))
+	colors <- rev(inbo.2015.colours(n = nlevels(summaryData$locatie)))
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
@@ -66,7 +79,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	
 	# Create plot
-	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~provincie,
+	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~locatie,
 					colors = colors, type = "bar",  width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Jaar"), 
@@ -81,8 +94,11 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
-	
-	
+  
+  # Change variable name
+  names(summaryData)[names(summaryData) == "value"] <- "aantal"
+  
+  
 	return(list(plot = pl, data = summaryData))
 	
 }

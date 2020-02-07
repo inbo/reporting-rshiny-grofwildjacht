@@ -4,8 +4,11 @@
 \alias{readShapeData}
 \title{Read all shape data from geojson files}
 \usage{
-readShapeData(dataDir = system.file("extdata", package =
-  "reportingGrofwild"), showProgress = FALSE, tolerance = 0.001)
+readShapeData(
+  dataDir = system.file("extdata", package = "reportingGrofwild"),
+  showProgress = FALSE,
+  tolerance = 0.001
+)
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the data files}
@@ -15,13 +18,14 @@ Note, if used outside shiny app, this will cause an error; if FALSE progress
 is printed in the console}
 
 \item{tolerance}{numeric, defines the tolerance in the Douglas-Peuker algorithm;
-larger values will impose stronger simplification; default value is 0.01}
+larger values will impose stronger simplification; default value is 0.001}
 }
 \value{
 save to dataDir object spatialData, i.e. a list with for each 
 spatial level a SpatialPolygonsDataFrame object, 
 with polygons and data as provided in the dataDir; spatial levels are 
-flanders, provinces, communes and provincesVoeren (Voeren as separate province)
+flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
+and provincesVoeren (Voeren as separate province)
 }
 \description{
 Read all shape data from geojson files

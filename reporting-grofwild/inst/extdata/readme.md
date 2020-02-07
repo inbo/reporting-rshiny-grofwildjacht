@@ -33,13 +33,14 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 
 ## GIS data files
 
-The `*.geojson` files are providing GIS data for the grofwild reporting at three geographical levels
+The `*.geojson` files are providing GIS data for the grofwild reporting at the geographical levels
 
 * flanders (gewesten): Vlaams Gewest
 * provinces (provincies): West-Vlaanderen, Oost-Vlaanderen, Antwerpen, Vlaams Brabant, Limburg
 * communes (gemeenten): 308 communes following "referentiebestand gemeentegrenzen 2016-01-29"
 * faunabeheerzones: 11 meaningful regions defined by natural and unnatural borders
 * fbz_gemeentes: overlap of faunabeheerzones and communes
+* utm5: 5 x 5 UTM squares
 
 Data projection is EPSG:31370. 
 Source: [www.geopunt.be](http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen)
@@ -49,7 +50,7 @@ Conversion of data from source to geojson (in terminal)
 
 ## R data files
 
-The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), FBZ (faunabeheerzones) and DFBZ (deel-faunabeheerzones). When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`.
+The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), FBZ (faunabeheerzones) and DFBZ (deel-faunabeheerzones). When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`. Next, install the package such that the latest shape data are available in the extdata folder.
 The object `spatialData` can easily be loaded in R by
 
 `dataDir <- system.file("extdata", package = "reportingGrofwild")`

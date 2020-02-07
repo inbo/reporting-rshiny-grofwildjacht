@@ -4,19 +4,25 @@
 \alias{plotBioindicator}
 \title{Create interactive plot for bioindicator versus year}
 \usage{
-plotBioindicator(data, type = NULL, jaartallen = NULL, regio = "",
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht",
-  "aantal_embryos"), sourceIndicator = c("inbo", "meldingsformulier",
-  "both"), width = NULL, height = NULL)
+plotBioindicator(
+  data,
+  type = NULL,
+  jaartallen = NULL,
+  regio = "",
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos"),
+  sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
-\item{type}{animal type, used to filter \code{data} ('type_comp' column)
+\item{type}{animal type, used to filter \code{data} ('ageGender' column)
 If NULL (by default), for bioindicator set to:
 \itemize{
 \item{'aantal_embryos': }{only animals with age/gender type: "Smalree" "Geit" are considered}
-\item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{type_comp} set to '')}
+\item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{ageGender} set to '')}
 }}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered

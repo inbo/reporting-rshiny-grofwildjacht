@@ -9,11 +9,22 @@ library(shinycssloaders)   # for busy indicator
 # mapview
 
 
+
+### General
+### ------------
+
 `%then%` <- shiny:::`%OR%`
 
 
 # Specify directory with data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
+
+# Specify currently used wildsoorten
+schadeSoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
+                      "Klein wild" = c("haas", "fazant", "konijn"),
+                      "Waterwild" = c("wilde eend", "smient", "grauwe gans"),
+                      "Overig" = c("houtduif", "vos", "wolf"))
+
 
 
 ### Load all data
@@ -26,23 +37,28 @@ toekenningsData <- loadToekenningen(dataDir = dataDir)
 load(file = file.path(dataDir, "spatialData.RData"))
 
 # Data with observations and geographical information
-ecoData <- loadRawData(dataDir = dataDir, type = "eco")
-geoData <- loadRawData(dataDir = dataDir, type = "geo", 
-    shapeData = spatialData)
+ecoData <- loadRawData(type = "eco")
+geoData <- loadRawData(type = "geo")
+schadeData <- loadRawData(type = "wildschade")
 
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))
     geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 
+# check for wildsoorten to add to schadeSoorten
+if (any(!unique(schadeData$wildsoort) %in% unlist(schadeSoorten))) {
+	warning("Nieuwe wildsoorten gedetecteerd in raw data: ", 
+          paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeSoorten)), collapse = ", "),
+          "\nUpdate schadeSoorten aub")
+}
 
-## Reactive values
-#results <- reactiveValues(
-#    showSpecies = "Wild zwijn" # For which species should summaries be shown?
-#)
-results <- list()
 
 
-## Debugging
+
+
+### Debugging
+### -----------
+
 onStop(function() {
 			if (file.exists(".RDuetConsole"))
 				file.remove(".RDuetConsole")

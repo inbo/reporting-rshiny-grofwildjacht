@@ -4,14 +4,22 @@
 \alias{countYearProvince}
 \title{Create interactive plot for counts per province and year}
 \usage{
-countYearProvince(data, jaartallen = NULL, width = NULL,
-  height = NULL)
+countYearProvince(
+  data,
+  jaartallen = NULL,
+  type = c("provinces", "flanders", "faunabeheerzones"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}
+
+\item{type}{character, regional level of interest should be one of 
+\code{c("provinces", "flanders", "faunabeheerzones")}}
 
 \item{width}{plot width (optional)}
 
@@ -25,7 +33,7 @@ per year and per province is plotted in a stacked bar chart}
 \item{'data': }{data displayed in the plot, as data.frame with:
 \itemize{
 \item{'afschotjaar': }{year at which the animals was shot}
-\item{'provincie': }{province name}
+\item{'locatie': }{location name, could be province, flanders or fbz name}
 \item{'value': }{counts of animals}
 }
 }

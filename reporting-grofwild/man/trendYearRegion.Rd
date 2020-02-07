@@ -4,8 +4,14 @@
 \alias{trendYearRegion}
 \title{Create interactive plot for counts per selected communes and years}
 \usage{
-trendYearRegion(data, locaties = NULL, timeRange = NULL,
-  unit = c("absolute", "relative"), width = NULL, height = NULL)
+trendYearRegion(
+  data,
+  locaties = NULL,
+  timeRange = NULL,
+  unit = c("absolute", "relative"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

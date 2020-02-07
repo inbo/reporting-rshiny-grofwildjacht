@@ -4,8 +4,15 @@
 \alias{createSpaceData}
 \title{Create summary data of geographical data for selected year, species and region level}
 \usage{
-createSpaceData(data, allSpatialData, year, species, regionLevel,
-  unit = c("absolute", "relative"))
+createSpaceData(
+  data,
+  allSpatialData,
+  year,
+  species,
+  regionLevel,
+  unit = c("absolute", "relative", "absoluteCases"),
+  dataDir = system.file("extdata", package = "reportingGrofwild")
+)
 }
 \arguments{
 \item{data}{data.frame, geographical data}
@@ -17,10 +24,12 @@ createSpaceData(data, allSpatialData, year, species, regionLevel,
 \item{species}{character, species of interest}
 
 \item{regionLevel}{character, regional level of interest should be one of 
-\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}}
+\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
 should be reported}
+
+\item{dataDir}{character vector, defines the path to the data files}
 }
 \value{
 data.frame

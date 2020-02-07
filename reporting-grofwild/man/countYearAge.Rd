@@ -4,8 +4,14 @@
 \alias{countYearAge}
 \title{Create interactive plot for counts per age category and year}
 \usage{
-countYearAge(data, jaartallen = NULL, regio = "",
-  summarizeBy = c("count", "percent"), width = NULL, height = NULL)
+countYearAge(
+  data,
+  jaartallen = NULL,
+  regio = "",
+  summarizeBy = c("count", "percent"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}

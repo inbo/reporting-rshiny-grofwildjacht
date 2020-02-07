@@ -1,0 +1,47 @@
+0.1.11
+    o fix mismatch commune names shape data
+0.1.10
+	o final updates: new wildschade data
+	o fix special characters in texts
+0.1.9
+	o include test for schadetable per gewas
+	o monitor new wildsoorten
+	o include texts
+0.1.8
+	o extend schadetable per gewas with user choices and data download
+0.1.7
+	o schadetable columns upon user choices
+	o update and extend tests
+0.1.6
+	o 5x5 utm includes province borders
+	o legend overlap plot is fixed
+0.1.5
+	o table wildschade update
+	o rename freq to aantal
+	o temp fix file naming for download
+0.1.4
+	o download data of map includes postcode and nis
+	o excluded wildschade data prior to 2018
+	o refine table wildschade by type of schade and table gewas
+0.1.3
+	o include 5x5 UTM data for wildschade
+	o fixed image downloads map
+0.1.2
+	o include table wildschade by type of schade
+0.1.1
+    o include page wildschade
+0.1.0
+	o fix multiple bugs, see GIT
+	o update source data 092019
+0.0.5
+	o review of the app by INBO (December 2017)
+	o for details: see GIT
+0.0.4
+	o first version of the app, for internal use by INBO (June 2017)
+    o for details: see GIT 
+0.0.3
+	o include runWildApp.R to start the app
+0.0.2
+	o separated R files for each createPlot function
+0.0.1
+    o initial version: interactive map + line plot

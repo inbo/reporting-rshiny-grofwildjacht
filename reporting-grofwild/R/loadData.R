@@ -4,11 +4,12 @@
 #' Note, if used outside shiny app, this will cause an error; if FALSE progress
 #' is printed in the console
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
-#' larger values will impose stronger simplification; default value is 0.01
+#' larger values will impose stronger simplification; default value is 0.001
 #' @return save to dataDir object spatialData, i.e. a list with for each 
 #' spatial level a SpatialPolygonsDataFrame object, 
 #' with polygons and data as provided in the dataDir; spatial levels are 
-#' flanders, provinces, communes and provincesVoeren (Voeren as separate province)
+#' flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
+#' and provincesVoeren (Voeren as separate province)
 #' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
 #' @importFrom methods slot
 #' @importFrom maptools unionSpatialPolygons spRbind
@@ -22,7 +23,8 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
     
     
     allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
-            "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes")
+            "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
+            "UTM5" = "utm5")
     
     ## New code for geojson files
     spatialData <- lapply(allLevels, function(iLevel) {
@@ -53,6 +55,10 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
                     
                     # Create fbz_gemeente
                     shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
+                    
+                } else if (iLevel == "utm5") {
+                    
+                    shapeData$NAAM <- factor(shapeData$TAG)
                     
                 } 
                 
@@ -109,7 +115,7 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
                 iData@data$AREA <- raster::area(iData)/1e06
                 
                 # No simplification
-                if (iName == "fbz_gemeentes")
+                if (iName %in% c("fbz_gemeentes", "utm5"))
                     return(iData)
                 
                 simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
@@ -129,6 +135,18 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
             })
     
     names(spatialData) <- newNames
+    
+    
+    # Update commune names for later matching: geo/wildschade data with shape data
+    # Note: You can use gemeentecode.csv for matching NIS to NAAM
+    # First install the package again!
+    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+            header = TRUE, sep = ",",stringsAsFactors = FALSE)
+    
+    communeData <- spatialData$communes@data
+    gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
+    write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"))
+    
     
     
     save(spatialData, file = file.path(dataDir, "spatialData.RData"))
@@ -204,23 +222,24 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' Read ecology or geography data
 #' @inheritParams readShapeData
 #' @param type data type, "eco" for ecology data and "geo" for geography data
-#' @param shapeData list with objects of class SpatialPolygonsDataFrame as 
-#' returned by \code{\link{readShapeData}}; if not NULL, commune names are 
-#' matched between geography (raw) data and spatial (shape) data 
 #' @return data.frame, loaded ecology or geography data; 
 #' and attribute 'Date', the date that this data file was created
 #' @author mvarewyck
 #' @importFrom utils read.csv
+#' @importFrom sp CRS proj4string
+#' @importFrom raster coordinates
 #' @export
-loadRawData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-        type = c("eco", "geo"), shapeData = NULL) {
+loadRawData <- function(
+        dataDir = system.file("extdata", package = "reportingGrofwild"),
+        type = c("eco", "geo", "wildschade")) {
     
     type <- match.arg(type)
     
     
     dataFile <- file.path(dataDir, switch(type,
                     "eco" = "rshiny_reporting_data_ecology.csv",
-                    "geo" = "rshiny_reporting_data_geography.csv"))
+                    "geo" = "rshiny_reporting_data_geography.csv",
+                    "wildschade" = "WildSchade_georef.csv"))
     
     rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
@@ -240,44 +259,43 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
     ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
     rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
                     "Vlaams Brabant", as.character(rawData$provincie)))
-#  xtabs( ~ provincie + wildsoort, data = rawData)
+#	xtabs( ~ provincie + wildsoort, data = rawData)
     
-    ## Mismatch names with spatial (shape) data for multiple communes
-    if (type == "geo" & !is.null(shapeData)) {
+    # Gemeente & NIS & postcode
+    # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
+    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
+            header = TRUE, sep = ",")
+    
+    
+    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
+    ## Re-order factor levels for plots
+    if ("wildsoort" %in% names(rawData)) {
         
-        communeData <- shapeData$communes@data
-        # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
-        gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-                header = TRUE, sep = ",")
+        rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
+                        as.character(rawData$provincie), 
+                        ifelse(rawData$provincie == "Voeren", 
+                                "Limburg", 
+                                as.character(rawData$provincie))),
+                levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
+#   xtabs( ~ provincie + wildsoort, data = rawData)
         
-        geoNis <- gemeenteData$NIS.code[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)]
-        geoName <- as.character(communeData$NAAM)[match(geoNis, communeData$NISCODE)] 
+    }
+    
+    
+    if (type == "geo") {
+        ## GEO data for grofwild
         
-#    tmpData <- data.frame(old = as.character(rawData$gemeente_afschot_locatie), 
-#        new = geoName, stringsAsFactors = FALSE)
-#    tmpData[which(tmpData$old != tmpData$new), ]
-        
-        rawData$gemeente_afschot_locatie <- geoName
+        # Match on Postcode: otherwise mismatch with spatialData locatie
+        rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
         
         # Create fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
                 NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
         
-    }
-    
-    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
-    ## Re-order factor levels for plots
-    rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
-                    as.character(rawData$provincie), 
-                    ifelse(rawData$provincie == "Voeren", 
-                            "Limburg", 
-                            as.character(rawData$provincie))),
-            levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
-#  xtabs( ~ provincie + wildsoort, data = rawData)
-    
-    
-    
-    if (type == "eco") {
+        
+    } else if (type == "eco") {
+    ## ECO data for grofwild
+   
         
         
         # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
@@ -332,28 +350,84 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 #		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
 #						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
         
-        # TODO temporary fix - this should be done by Sander (data cleaning) in the future
-        # see also global.R
-        if (any(rawData$onderkaaklengte_comp > 200 | rawData$onderkaaklengte_comp < 100)) {
-            
-            toExclude <- ifelse((rawData$onderkaaklengte_comp > 200 | rawData$onderkaaklengte_comp < 100) &
-                            rawData$onderkaaklengte_comp_bron == "inbo" &
-                            rawData$wildsoort == "Ree",
-                    TRUE, FALSE)
-            toExclude[is.na(toExclude)] <- FALSE
-            ids <- rawData$ID[toExclude]
-            
-            
-            rawData <- rawData[!toExclude, ]
-            
-            warning(sum(toExclude), 
-                    " Reeen with onderkaaklengte_comp outside 100 to 220 for source INBO were excluded.")
-            attr(rawData, "excluded") <- ids
-            
-            
-        }
+
+        
+    } else if (type == "wildschade") {
+    ## Wildschade data
+    
+        
+        # variables to keep
+        rawData <- rawData[, c("UUID", "IndieningID", "Jaartal", 
+                        "IndieningSchadeBasisCode", "IndieningSchadeCode",
+                        "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
+                        "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
+                        "UTM5", "PolyLocatieWKT", "x", "y")]
+        
+        # format date
+        rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
+                        format = "%Y-%m-%d"), "%d/%m/%Y")
+        
+        # new column names
+        colnames(rawData) <- c("ID", "caseID", "afschotjaar", 
+                "schadeBasisCode", "schadeCode",
+                "SoortNaam", "wildsoort", "afschot_datum",
+                "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
+                "UTM5code", "perceelPolygon", "x", "y")
+        
+        # Match on NISCODE: otherwise mismatch with spatialData locatie
+        rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
+#        all(tolower(rawData$nieuwe_locatie) == tolower(rawData$gemeente_afschot_locatie), 
+#                na.rm = TRUE)
+        rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
+        rawData$nieuwe_locatie <- NULL
+        # Remove Voeren as province
+        rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
+        rawData$provincie <- droplevels(rawData$provincie)
+        
+        
+        # Define fbz_gemeente
+        rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
+                NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
+        # Define season
+        rawData$season <- getSeason(rawData$afschot_datum)
+        # Fix for korrelmais
+        rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
+        
+        
+        # TODO what if x/y coordinates missing -> exclude
+        toExclude <- is.na(rawData$x) | is.na(rawData$y)
+        warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
+        rawData <- rawData[!toExclude, ]
+        
+        
+        # create shape data
+        coordinates(rawData) <- ~x + y
+        proj4string(rawData) <- CRS("+init=epsg:31370")
+        
+        rawData <- spTransform(rawData, CRS("+proj=longlat"))
+        
+        
+#        # Temporary fix - this should be done by Sander (data cleaning) in the future
+#        # see also global.R
+#        toExclude <- (rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200)
+#        toExclude[is.na(toExclude)] <- FALSE
+#        
+#        if (any(toExclude)) {
+#            
+#            ids <- rawData$ID[toExclude]
+#            
+#            
+#            rawData <- rawData[!toExclude, ]
+#            
+#            warning(sum(toExclude), 
+#                    " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
+#            attr(rawData, "excluded") <- ids
+#            
+#            
+#        }
         
     }
+    
     
     attr(rawData, "Date") <- file.mtime(dataFile)
     
@@ -376,7 +450,7 @@ loadRawData <- function(dataDir = system.file("extdata", package = "reportingGro
 nameFile <- function(species, year, content, fileExt) {
     
     paste0(
-            gsub(pattern = " ", replacement = "_", x = species), "_",
+            paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_",
             if (length(year) > 1) paste(year, collapse = "-") else year, "_",
             content, 
             ".", fileExt
@@ -422,3 +496,25 @@ pasteToVector <- function(x) {
 }
 
 
+#' Define season from date
+#' @param dates date vector, format \code{"d/m/Y"}
+#' @return character vector with respective season 
+#' @author mvarewyck
+#' @export
+getSeason <- function(dates) {
+    
+    winterStart <- as.Date("21/12/2012", format = "%d/%m/%Y")
+    lenteStart <- as.Date("21/3/2012", format = "%d/%m/%Y")
+    zomerStart <- as.Date("21/6/2012", format = "%d/%m/%Y")
+    herfstStart <- as.Date("21/9/2012", format = "%d/%m/%Y")
+    
+    # Convert dates from any year to 2012 dates - leap year
+    d <- as.Date(strftime(dates, format="%d/%m/2012"), format = "%d/%m/%Y")
+    
+    season <- ifelse (d >= winterStart | d < lenteStart, "winter",
+            ifelse (d >= lenteStart & d < zomerStart, "lente",
+                    ifelse (d >= zomerStart & d < herfstStart, "zomer", "herfst")))
+    
+    factor(season, levels = c("winter", "lente", "zomer", "herfst"))
+    
+}

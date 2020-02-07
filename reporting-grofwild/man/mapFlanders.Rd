@@ -4,13 +4,20 @@
 \alias{mapFlanders}
 \title{Create map for Flanders - color by incidence}
 \usage{
-mapFlanders(regionLevel = c("flanders", "provinces", "communes",
-  "faunabeheerzones", "fbz_gemeentes"), species, allSpatialData,
-  summaryData, colorScheme, legend = "none", addGlobe = FALSE)
+mapFlanders(
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
+    "fbz_gemeentes", "utm5"),
+  species,
+  allSpatialData,
+  summaryData,
+  colorScheme,
+  legend = "none",
+  addGlobe = FALSE
+)
 }
 \arguments{
 \item{regionLevel}{character, regional level of interest should be one of 
-\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes")}}
+\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{species}{character, species of interest}
 

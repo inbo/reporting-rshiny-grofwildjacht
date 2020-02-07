@@ -9,7 +9,7 @@ devtools::install_github("inbo/reporting-rshiny-grofwildjacht", subdir = "report
 
 Remark that the package itself is stored in a subfolder of the repository, which is tackled by the `subdir` command.
 
-One installed, the functionalities can be derived by loading the package:
+Once installed, the functionalities can be derived by loading the package:
 
 ``` r
 library("reportingGrofwild")

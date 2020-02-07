@@ -1,6 +1,7 @@
 
+
 #' Create interactive plot for counts in Flanders per selected years
-#' @param data data.frame, formatted data for plotting
+#' @param data data.frame, formatted data for plotting as returned by \code{\link{createTrendData}}
 #' @inheritParams createSpaceData
 #' @inheritParams trendYearRegion
 #' @return list with plot and data

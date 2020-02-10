@@ -5,6 +5,7 @@
 
 
 #' List user-friendly full names to replace R coding names
+#' @param x character, what to transform
 #' @param type character, defines how to transform short to full names
 #' @param rev boolean, whether to switch names and values
 #' @return character vector

@@ -17,6 +17,7 @@
 #' @importFrom rgeos gSimplify
 #' @importFrom shiny incProgress
 #' @importFrom raster area
+#' @importFrom utils write.csv read.csv
 #' @export
 readShapeData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
         showProgress = FALSE, tolerance = 0.001) {
@@ -309,11 +310,11 @@ loadRawData <- function(
         # Define type_comp (ageGender)
         rawData$type_comp <- as.factor(simpleCap(rawData$type_comp))
         
-        rawData$type <- ifelse(rawData$wildsoort != "Ree",
-                "", ifelse(grepl("kits", rawData$type_comp), "kits",
-                        ifelse(rawData$geslacht.MF == "Mannelijk", "bok", "geit")))
-        
-        
+#        rawData$type <- ifelse(rawData$wildsoort != "Ree",
+#                "", ifelse(grepl("kits", rawData$type_comp), "kits",
+#                        ifelse(rawData$geslacht.MF == "Mannelijk", "bok", "geit")))
+#        
+#        
 #        # for Figure 13: combine age and gender: 'type' column 
 #        # (to do the matching with the openingstijden table)
 #        idx <- which(rawData$wildsoort == "Ree")
@@ -347,6 +348,7 @@ loadRawData <- function(
 #                levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
 #        
 #		# for Figure p. 27, 28: compute cheek length
+# 		# redundant: now available in onderkaaklengte_comp_bron
 #		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
 #						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
         

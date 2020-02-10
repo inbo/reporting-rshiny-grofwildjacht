@@ -251,7 +251,7 @@ callModule(module = plotModuleServer, id = "wild_plot7",
 # Plot 8
 results$typesGender <- reactive({
             
-            types <- levels(ecoData$ageGender)
+            types <- levels(droplevels(results$wild_ecoData()$type_comp))
             types[types != ""]
             
         })
@@ -263,7 +263,7 @@ results$typesDefaultGender <- reactive({
 callModule(module = optionsModuleServer, id = "wild_plot8", 
         data = results$wild_ecoData,
         timeRange = results$wild_timeRange,
-        types = reactive(c("Geitkits", "Bokkits")),
+        types = results$typesDefaultGender,
         typesDefault = results$typesDefaultGender,
         multipleTypes = TRUE)
 callModule(module = plotModuleServer, id = "wild_plot8",
@@ -285,11 +285,11 @@ callModule(module = plotModuleServer, id = "wild_plot9",
         data = results$wild_ecoData)
 
 
-# Plot 10
+# Plot 10  -  currently not shown
 results$typesFemale <- reactive({
             
-            types <- levels(ecoData$ageGender)
-            types[!types %in% c("", "Bokkits", "Jaarlingbok", "Bok", "Geitkits")]
+            types <- levels(droplevels(results$wild_ecoData()$type_comp))
+            types[!types %in% c("", "Bokkits", "Jaarlingbok", "Reebok", "Geitkits", "Reekits")]
             
         })
 

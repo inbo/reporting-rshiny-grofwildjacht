@@ -7,6 +7,8 @@
 fullNames(x, type = c("wildschade"), rev = FALSE)
 }
 \arguments{
+\item{x}{character, what to transform}
+
 \item{type}{character, defines how to transform short to full names}
 
 \item{rev}{boolean, whether to switch names and values}

@@ -29,14 +29,14 @@ createTrendData <- function(data, allSpatialData,
     
     plotData <- data
     # Generic location name
-    plotData$locatie <- switch(regionLevel,
+    plotData$locatie <- as.character(switch(regionLevel,
             flanders = "Vlaams Gewest",
             provinces = plotData$provincie,
             communes = plotData$gemeente_afschot_locatie,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
             utm5 = plotData$UTM5code
-    )
+    ))
     
     # Select subset for time & species
     chosenTimes <- timeRange[1]:timeRange[2]
@@ -68,11 +68,12 @@ createTrendData <- function(data, allSpatialData,
     
     allData$AREA <- NULL
     
-    allData$afschotjaar <- as.factor(allData$afschotjaar)
+#    allData$afschotjaar <- as.factor(allData$afschotjaar)
     allData$wildsoort <- paste(species, collapse = ", ")
     
 
     if (regionLevel == "communes") {
+        
       # add NIS (naam -> NIS)
       allData <- merge(allData, spatialData@data[, c("NAAM", "NISCODE")],
           by.x = "locatie", by.y = "NAAM", sort = FALSE)
@@ -88,6 +89,7 @@ createTrendData <- function(data, allSpatialData,
       
     }
     
+     
     return(allData)
     
 }

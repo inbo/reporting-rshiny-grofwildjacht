@@ -3,7 +3,31 @@
 # Author: mvarewyck
 ###############################################################################
 
-
+#' Summarized data for perceelplot
+#' 
+#' Create object of type schadedata, filtered for cases within \code{timeRange}
+#' whilst retaining only a select number of columns relevant for the perceelPlot 
+#' created by \code{\link{mapSchade}} and relevant for data download.
+#' 
+#' @inheritParams mapSchade
+#' @param timeRange numeric vector, year span of interest
+#' @return a filtered spatialPointsDataFrame
+#' 
+#' @author Eva Adriaensen
+#' @export
+createSchadeSummaryData <- function(schadeData, timeRange) {
+	
+  
+  # filter columns
+  colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
+                        "provincie", "NISCODE")
+  plotData <- schadeData[, colnames(schadeData@data) %in% colnamesToRetain]
+  
+  # filter cases by timeRange
+  plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
+  
+  plotData
+}
 
 #' Create map for Wildschade percelen
 #' @param schadeData spatialPointsDataFrame contains the points where there was

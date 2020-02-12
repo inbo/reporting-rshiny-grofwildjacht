@@ -438,7 +438,7 @@ output$schade_downloadMap <- downloadHandler(
 output$schade_downloadData <- downloadHandler(
         filename = function()
             nameFile(species = input$schade_species,
-                    year = input$schade_year, 
+                    year = results$schade_timeRange(), 
                     content = "kaartData", fileExt = "csv"),
         content = function(file) {
             
@@ -559,8 +559,9 @@ output$schade_time2 <- renderUI({
 output$schade_titlePerceel <- renderUI({
             
             
-            h3(paste("Gerapporteerd aantal schadegevallen", 
-                            "voor", paste(tolower(input$schade_species), collapse = ", "),
+            h3(paste("Schadegevallen", 
+                            "van", paste(tolower(input$schade_species), collapse = ", "),
+                            "per seizoen",
                             #jaartallen
                             paste0("(", 
                                     input$schade_time2[1], 
@@ -572,16 +573,28 @@ output$schade_titlePerceel <- renderUI({
             
         })
 
+# Create data for map, summary of schade data, given year
+results$schade_summaryPerceelData <- reactive({
+          
+            validate(need(results$schade_data(), "Geen data beschikbaar"),
+                     need(input$schade_time2, "Gelieve periode te selecteren"))
+           
+            createSchadeSummaryData(
+                     schadeData = results$schade_data(),
+                     timeRange = input$schade_time2)
+    })
+
+# Map for UI
 output$schade_perceelPlot <- renderLeaflet({
             
-            validate(need(results$schade_data(), "Geen data beschikbaar"),
-                    need(input$schade_time2, "Gelieve periode te selecteren"))
+            validate(need(results$schade_spatialData(), "Geen data beschikbaar"),
+                     need(nrow(results$schade_summaryPerceelData()@data) > 0, "Geen data beschikbaar"),
+                     need(input$schade_time2, "Gelieve periode te selecteren"))
             
             
             
             mapSchade(
-                    schadeData = results$schade_data()[
-                            results$schade_data()@data$afschotjaar %in% input$schade_time2[1]:input$schade_time2[2], ],
+                    schadeData = results$schade_summaryPerceelData(),
                     regionLevel = "provinces",
                     allSpatialData = spatialData,
                     addGlobe = input$schade_globe2,
@@ -589,8 +602,62 @@ output$schade_perceelPlot <- renderLeaflet({
             
         })
 
+# Create final perceelplot map (for download)
+results$schade_perceelMap <- reactive({
+      
+      validate(need(results$schade_summaryPerceelData(), "Geen data beschikbaar"))
+      
+      
+      newPerceelMap <- mapSchade(
+          schadeData = results$schade_summaryPerceelData(),
+          regionLevel = "provinces", 
+          allSpatialData = spatialData,
+          legend = input$schade_legend2,
+          addGlobe = input$schade_globe2 %% 2 == 1
+      )
+      
+      # save the zoom level and centering
+      newPerceelMap %>%  setView(
+          lng = input$schade_perceelPlot_center$lng,
+          lat = input$schade_perceelPlot_center$lat,
+          zoom = input$schade_perceelPlot_zoom
+      )
+      
+      
+    }) 
+    
+# Download the perceeplot map
+output$schade_downloadPerceelMap <- downloadHandler(
+    filename = function()
+      nameFile(species = input$schade_species,
+          year = unique(input$schade_time2), 
+          content = "kaartSchadeSeizoen", fileExt = "png"),
+    content = function(file) {
+      
+      mapview::mapshot(x = results$schade_perceelMap(), file = file,
+          vwidth = 1000, vheight = 500, cliprect = "viewport")
+      
+    }
+)
 
-
+# Download the minimal perceeplot map data
+output$schade_downloadPerceelmapData <- downloadHandler(
+    filename = function()
+      nameFile(species = input$schade_species,
+          year = unique(input$schade_time2), 
+          content = "kaartDataSeizoen", fileExt = "csv"),
+    content = function(file) {
+      
+      myPerceelplotData <- results$schade_summaryPerceelData()@data
+      # change variable names
+#      names(myData)[names(myData) == "freq"] <- "aantal schadegevallen"
+#      names(myData)[names(myData) == "group"] <- "groep"
+      
+      ## write data to exported file
+      write.table(x = myPerceelplotData, file = file, quote = FALSE, row.names = FALSE,
+          sep = ";", dec = ",")
+      
+    })
 
 ### Descriptive Plots
 ### -----------------

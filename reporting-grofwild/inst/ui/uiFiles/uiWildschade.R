@@ -162,7 +162,9 @@ tagList(
         
         uiOutput("schade_titlePerceel"),        
         withSpinner(leafletOutput("schade_perceelPlot")),
-        
+        tags$br(),
+        downloadButton("schade_downloadPerceelMap", "Download figuur"),
+        downloadButton("schade_downloadPerceelmapData", "Download data"),
         
         ## countYearSchadeProvince: all species
         actionLink(inputId = "schade_linkPlot1",

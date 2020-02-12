@@ -264,6 +264,16 @@ countAgeGender(data = wildEcoData, jaartallen = 2016:2017)
 
 ## PLOT 7: Distribution of weight ifo age ##
 
+# Inspect age
+toInspect <- with(ecoData, which(leeftijd_comp == "Onbekend" & !is.na(leeftijd_maanden)))
+xtabs(~ afschotjaar + wildsoort, ecoData[toInspect, ])
+xtabs(~ afschotjaar + leeftijd_comp_bron, ecoData[toInspect, ], addNA = TRUE)
+
+# How many Frislings removed?
+xtabs(~ leeftijd_maanden + leeftijd_comp, ecoData[ecoData$wildsoort == "Wild zwijn", ], addNA = TRUE)
+areRemoved <- with(ecoData, which(leeftijd_comp == "Frisling" & is.na(leeftijd_maanden))) 
+length(areRemoved)
+
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
             
             plotData <- ecoData[ecoData$wildsoort == wildsoort, ]

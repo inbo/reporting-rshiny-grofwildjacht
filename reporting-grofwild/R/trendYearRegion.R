@@ -68,7 +68,7 @@ createTrendData <- function(data, allSpatialData,
     
     allData$AREA <- NULL
     
-#    allData$afschotjaar <- as.factor(allData$afschotjaar)
+    allData$afschotjaar <- as.factor(allData$afschotjaar)
     allData$wildsoort <- paste(species, collapse = ", ")
     
 

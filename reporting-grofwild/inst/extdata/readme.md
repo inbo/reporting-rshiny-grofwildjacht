@@ -28,7 +28,7 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | lengte_mm                    | int           | de onderkaaklengte gemeten door het INBO |
 | Leeftijdscategorie_onderkaak | factor        | de leeftijdscategorie door het INBO      |
 | onderkaaklengte_comp         | int           | compilatie van de onderkaaklengte: INBO indien gekend, anders jager      |
-| leeftijd_comp | factor        | compilatie voor de leeftijdscategorie: INBO indien gekend, anders jager      |
+| leeftijd_comp | factor        | compilatie voor de leeftijdscategorie: INBO indien gekend, anders jager (meldingsformulier)     |
 
 
 ## GIS data files

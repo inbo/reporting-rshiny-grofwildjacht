@@ -148,7 +148,10 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
     gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
     write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"))
     
-    
+    # IF any NIS code not in gemeenteData -> throw error
+    if (any(!spatialData$communes@data$NISCODE %in% gemeenteData$NIS.code))
+        stop("Sommige NIS codes in shape data zijn niet gekend voor matching\n",
+                "Gelieve het referentiebestand gemeentecodes.csv aan te vullen")
     
     save(spatialData, file = file.path(dataDir, "spatialData.RData"))
     

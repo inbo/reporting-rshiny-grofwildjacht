@@ -7,7 +7,17 @@
 
 tagList(
         
+        tags$div(class = "watermark container",
+                
+                tags$div(style = "margin-top: 50px",
+                        tags$em("Voorlopige versie"))
+                        
+        ),
+        
+        
         tags$div(class = "container",
+                
+                
                 
                 tags$div(align = "center",
                         h1("Welkom op de informatiepagina rond wildschade"),
@@ -27,7 +37,7 @@ tagList(
                 tags$p("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data. De figuren zelf kan je ook als .jpg downloaden."),
                 
                 tags$p("Indien je fouten ontdekt of merkt dat er data ontbreken, gelieve dit dan te melden door een email te sturen naar: ",
-                    tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie-wildschade", target="_blank", "faunabeheer@inbo.be"), " ."),
+                        tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie-wildschade", target="_blank", "faunabeheer@inbo.be"), " ."),
                 
                 tags$p("Opgelet deze data en figuren geven de doorgegeven meldingen weer. Er gebeurt geen systematische terreincontrole voor deze meldingen."),
                 
@@ -58,7 +68,6 @@ tagList(
                 uiOutput("schade_summary")
         
         ),
-        
         
         
         # Summary map
@@ -203,34 +212,34 @@ tagList(
         
         ## tableSchadeCode
         actionLink(inputId = "schade_linkTable2",
-            label = h3("TABEL: Gerapporteerde aantal schadegevallen per type schade ")),
+                label = h3("TABEL: Gerapporteerde aantal schadegevallen per type schade ")),
         conditionalPanel("input.schade_linkTable2 % 2 == 1",
-            fixedRow(
+                fixedRow(
+                        
+                        column(4,
+                                optionsModuleUI(id = "schade_table2", showTime = TRUE, showType = TRUE, exportData = TRUE),
+                                tags$p("Op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina geeft deze tabel, opgedeeld per subcategorie, het aantal schadegevallen weer. Je kan hierbij zelf de periode en het schaalniveau kiezen", tags$i("(Vlaanderen, provincie, faunabeheerzone)"), ".")
+                        ),
+                        column(8, datatableModuleUI(id = "schade_table2"))
                 
-                column(4,
-                    optionsModuleUI(id = "schade_table2", showTime = TRUE, showType = TRUE, exportData = TRUE),
-                    tags$p("Op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina geeft deze tabel, opgedeeld per subcategorie, het aantal schadegevallen weer. Je kan hierbij zelf de periode en het schaalniveau kiezen", tags$i("(Vlaanderen, provincie, faunabeheerzone)"), ".")
                 ),
-                column(8, datatableModuleUI(id = "schade_table2"))
-            
-            ),
-            tags$hr()
+                tags$hr()
         ),
         
         ## tableGewas
         actionLink(inputId = "schade_linkTable1",
-            label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
+                label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
         conditionalPanel("input.schade_linkTable1 % 2 == 1",
-            fixedRow(
-                
-                column(4, 
-                    optionsModuleUI(id = "gewas", showTime = TRUE, showType = TRUE, exportData = TRUE),
-                    tags$p("Indien je in het keuzemenu bovenaan de pagina de optie ", tags$i("Gewasschade"), " selecteerde, geeft deze tabel het aantal schadegevallen per gewas en per regio, voor de gekozen periode, weer.")
+                fixedRow(
+                        
+                        column(4, 
+                                optionsModuleUI(id = "gewas", showTime = TRUE, showType = TRUE, exportData = TRUE),
+                                tags$p("Indien je in het keuzemenu bovenaan de pagina de optie ", tags$i("Gewasschade"), " selecteerde, geeft deze tabel het aantal schadegevallen per gewas en per regio, voor de gekozen periode, weer.")
+                        ),
+                        column(8, tableModuleUI(id = "gewas"))
                 ),
-                column(8, tableModuleUI(id = "gewas"))
-            ),
-            
-            tags$hr()
+                
+                tags$hr()
         )
 
 

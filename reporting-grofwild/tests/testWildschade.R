@@ -30,7 +30,7 @@ species <- unique(schadeData$wildsoort)
 
 xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 
-for (regionLevel in names(spatialData)[1:6]) {
+for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
     
     for (iSpecies in species) {
         

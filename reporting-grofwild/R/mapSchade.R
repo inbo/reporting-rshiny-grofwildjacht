@@ -10,22 +10,31 @@
 #' created by \code{\link{mapSchade}} and relevant for data download.
 #' 
 #' @inheritParams mapSchade
+#' @inheritParams readShapeData
 #' @param timeRange numeric vector, year span of interest
 #' @return a filtered spatialPointsDataFrame
 #' 
 #' @author Eva Adriaensen
 #' @export
-createSchadeSummaryData <- function(schadeData, timeRange) {
+createSchadeSummaryData <- function(schadeData, timeRange,
+    dataDir = system.file("extdata", package = "reportingGrofwild")) {
 	
   
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
-                        "provincie", "NISCODE")
+                        "provincie")
   plotData <- schadeData[, colnames(schadeData@data) %in% colnamesToRetain]
   
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
   
+  # add postcode
+  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), header = TRUE, sep = ",")
+  
+  plotData$niscode <- gemeenteData$NIS.code[match(plotData$gemeente_afschot_locatie, 
+                                                  gemeenteData$Gemeente)]
+  plotData$postcode <- gemeenteData$Postcode[match(plotData$gemeente_afschot_locatie, 
+                                                    gemeenteData$Gemeente)]
   plotData
 }
 

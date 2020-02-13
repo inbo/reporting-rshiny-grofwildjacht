@@ -190,8 +190,13 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
      
       gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
           header = TRUE, sep = ",")
+      
       summaryData2$postcode <- gemeenteData$Postcode[match(summaryData2$NISCODE, gemeenteData$NIS.code)]
-      summaryData2 <- summaryData2[c(c("locatie", "postcode"), setdiff(names(summaryData2), c("locatie", "postcode")))]
+      names(summaryData2)[names(summaryData2) == "NISCODE"] <- "niscode"
+      
+      # re-arrange columns 
+      summaryData2 <- summaryData2[c(c("locatie", "niscode", "postcode"), 
+                                    setdiff(names(summaryData2), c("locatie", "niscode", "postcode")))]
       
       
     }

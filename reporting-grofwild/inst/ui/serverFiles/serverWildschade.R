@@ -650,9 +650,12 @@ output$schade_downloadPerceelmapData <- downloadHandler(
       
       myPerceelplotData <- results$schade_summaryPerceelData()@data
       # change variable names
-#      names(myData)[names(myData) == "freq"] <- "aantal schadegevallen"
-#      names(myData)[names(myData) == "group"] <- "groep"
-      
+      names(myPerceelplotData)[names(myPerceelplotData) == "afschotjaar"] <- "jaar"
+      names(myPerceelplotData)[names(myPerceelplotData) == "gemeente_afschot_locatie"] <- "locatie"
+      names(myPerceelplotData)[names(myPerceelplotData) == "season"] <- "seizoen"
+      # re-arrange columns
+      myPerceelplotData <- myPerceelplotData[c(c("jaar", "locatie", "niscode", "postcode"),
+                                               setdiff(names(myPerceelplotData), c("jaar", "locatie", "niscode", "postcode")))]
       ## write data to exported file
       write.table(x = myPerceelplotData, file = file, quote = FALSE, row.names = FALSE,
           sep = ";", dec = ",")

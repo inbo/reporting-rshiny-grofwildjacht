@@ -65,6 +65,8 @@ footer {
     font-size: 50pt;
     position: fixed;
     margin-top: -100px;
+    pointer-events: none;
+
 }
 
 .watermark2 {
@@ -73,5 +75,4 @@ footer {
     position: fixed;
     top: auto;
 }
-
 

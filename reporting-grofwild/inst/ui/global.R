@@ -20,12 +20,13 @@ library(shinycssloaders)   # for busy indicator
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 
 # Specify currently used wildsoorten
-schadeSoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
+schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
                       "Klein wild" = c("haas", "fazant", "konijn"),
                       "Waterwild" = c("wilde eend", "smient", "grauwe gans"),
                       "Overig" = c("houtduif", "vos", "wolf"))
 
-
+# Specify currently used type schades
+schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
 
 ### Load all data
 ### -------------
@@ -45,14 +46,19 @@ schadeData <- loadRawData(type = "wildschade")
 if (!is.null(attr(ecoData, "excluded")))
     geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 
-# check for wildsoorten to add to schadeSoorten
-if (any(!unique(schadeData$wildsoort) %in% unlist(schadeSoorten))) {
+# check for wildsoorten to add to schadeWildsoorten
+if (any(!unique(schadeData$wildsoort) %in% unlist(schadeWildsoorten))) {
 	warning("Nieuwe wildsoorten gedetecteerd in raw data: ", 
-          paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeSoorten)), collapse = ", "),
-          "\nUpdate schadeSoorten aub")
+          paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeWildsoorten)), collapse = ", "),
+          "\nUpdate schadeWildsoorten aub")
 }
 
-
+# check for schadeTypes (basiscode) to add to schadeTypes
+if (any(!unique(schadeData$schadeBasisCode) %in% schadeTypes)) {
+  warning("Nieuwe schade basiscode gedetecteerd in raw data: ", 
+      paste0(setdiff(unique(schadeData$schadeBasisCode), schadeTypes), collapse = ", "),
+      "\nUpdate schadeTypes aub")
+}
 
 
 

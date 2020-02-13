@@ -36,7 +36,7 @@ tagList(
                         fixedRow(
                                 # Select species
                                 column(4, selectInput(inputId = "schade_species", label = "Wildsoort",
-                                                choices = schadeSoorten,
+                                                choices = schadeWildsoorten,
                                                 selected = "wild zwijn",
                                                 multiple = TRUE,
                                                 width = "100%"
@@ -44,8 +44,8 @@ tagList(
                                 
                                 # Select type schade
                                 column(4, selectInput(inputId = "schade_code", label = "Type Schade",
-                                                choices = fullNames(x = c("GEWAS", "VRTG", "ANDERE")),
-                                                selected = c("GEWAS", "VRTG", "ANDERE"),
+                                                choices = fullNames(x = schadeTypes),
+                                                selected = schadeTypes,
                                                 multiple = TRUE,
                                                 width = "100%"
                                         )),

@@ -2,6 +2,7 @@
     o allow image and data download for landkaart2 wildschade
     o update download data
     o simplify postcode and niscode matching
+    o decrypt schadetype names in figure 2
 0.1.12
     o use type_comp instead of ageGender in loadRawData()
 0.1.11

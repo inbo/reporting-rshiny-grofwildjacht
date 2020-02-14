@@ -28,6 +28,9 @@ schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
 # Specify currently used type schades
 schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
 
+# Specify default year to show (and default max to show in time ranges)
+defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
+
 ### Load all data
 ### -------------
 

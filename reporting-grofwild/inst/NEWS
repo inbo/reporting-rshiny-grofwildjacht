@@ -1,8 +1,8 @@
 0.1.13
-    o allow image and data download for landkaart2 wildschade
-    o update download data
+    o default value for slider inputs (year and max of year range ) set to 'currentYear - 1'
+    o landkaart2 wildschade download update
     o simplify postcode and niscode matching
-    o decrypt schadetype names in figure 2
+    o decrypt schadetype names everywhere
 0.1.12
     o use type_comp instead of ageGender in loadRawData()
 0.1.11

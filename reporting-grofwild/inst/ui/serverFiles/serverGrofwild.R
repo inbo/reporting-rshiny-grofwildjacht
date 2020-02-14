@@ -320,7 +320,7 @@ output$map_year <- renderUI({
                                         2014 else
                                         min(results$wild_geoData()$afschotjaar),
                             max = max(results$wild_geoData()$afschotjaar),
-                            value = 2016,
+                            value = defaultYear,
                             sep = "", step = 1))
             
         })
@@ -333,8 +333,7 @@ output$map_time <- renderUI({
                         min(results$wild_geoData()$afschotjaar)
             
             sliderInput(inputId = "map_time", label = "Periode (grafiek)", 
-                    value = c(minYear, 
-                            max(results$wild_geoData()$afschotjaar)),
+                    value = c(minYear, defaultYear),
                     min = minYear,
                     max = max(results$wild_geoData()$afschotjaar),
                     step = 1,

@@ -4,13 +4,19 @@
 \alias{createSchadeSummaryData}
 \title{Summarized data for perceelplot}
 \usage{
-createSchadeSummaryData(schadeData, timeRange)
+createSchadeSummaryData(
+  schadeData,
+  timeRange,
+  dataDir = system.file("extdata", package = "reportingGrofwild")
+)
 }
 \arguments{
 \item{schadeData}{spatialPointsDataFrame contains the points where there was
 wildschade and descriptives in data.frame}
 
 \item{timeRange}{numeric vector, year span of interest}
+
+\item{dataDir}{character vector, defines the path to the data files}
 }
 \value{
 a filtered spatialPointsDataFrame

@@ -86,19 +86,22 @@ optionsModuleUI <- function(id,
 #' @param timeRange numeric vector of length 2 with time range (in year)
 #' @param timeLabel character, label for the time slider, 'Periode' by default
 #' @param multipleTypes boolean, whether multiple types can be selected or not
+#' @param definedYear numeric, single numeric value specifying the year value 
+#' (or max year value within a range) that is selected upon opening, default is
+#' \code{defaultYear} which is globally defined as \code{currentYear - 1}
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE) {
+    multipleTypes = FALSE, definedYear = defaultYear) {
   
   ns <- session$ns
   
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = timeRange(),
+            value = c(min(timeRange()), definedYear),
             min = if (!is.null(input$sourceIndicator)) {
                   if (input$sourceIndicator == "inbo") 2014 else min(timeRange())
                 } else {min(timeRange())},
@@ -113,7 +116,7 @@ optionsModuleServer <- function(input, output, session,
         
         div(class = "sliderBlank", 
             sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-                value = max(timeRange()),
+                value = definedYear,
                 min = min(timeRange()),
                 max = max(timeRange()),
                 step = 1,

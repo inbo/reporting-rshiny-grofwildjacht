@@ -28,14 +28,45 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
   
-  # add postcode
+  # add nis and postcode
   gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), header = TRUE, sep = ",")
   
   plotData$niscode <- gemeenteData$NIS.code[match(plotData$gemeente_afschot_locatie, 
                                                   gemeenteData$Gemeente)]
   plotData$postcode <- gemeenteData$Postcode[match(plotData$gemeente_afschot_locatie, 
                                                     gemeenteData$Gemeente)]
+                                            
+  # decrypte schadebasisCode names
+  plotData$schadeBasisCode <- names(fullNames(plotData$schadeBasisCode))
+                                            
   plotData
+}
+
+#' Format summary schadedata data for download with nice column names and correct column order
+#' @param summarySchadeData spatialPointsDataFrame as obtained from \code{\link{createSchadeSummaryData}}
+#' @return data.frame, dataframe with nicely formatted columnnames and specific column order  
+#' 
+#' @author Eva Adriaensen
+#' @export
+formatSchadeSummaryData <- function(summarySchadeData) {
+	
+  formatData <- summarySchadeData@data
+  
+  # change variable names
+  names(formatData)[names(formatData) == "afschotjaar"] <- "jaar"
+  names(formatData)[names(formatData) == "gemeente_afschot_locatie"] <- "locatie"
+  names(formatData)[names(formatData) == "season"] <- "seizoen"
+  names(formatData)[names(formatData) == "schadeBasisCode"] <- "typeSchade"
+  
+  # re-arrange columns
+  firstColumns <- c("jaar", "locatie", "niscode", "postcode")
+  formattedData <- cbind(
+                        formatData[na.omit(match(firstColumns, names(formatData)))],
+                        formatData[setdiff(names(formatData), firstColumns)]
+                        )
+  
+  return(formattedData)                        
+
 }
 
 #' Create map for Wildschade percelen
@@ -53,7 +84,6 @@ mapSchade <- function(
         addGlobe = FALSE,
         legend = "topright"
 ) {
-    
     
     # Color palette
     palette <- colorFactor(inbo.2015.colours(n = 4),

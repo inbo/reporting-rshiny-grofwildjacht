@@ -143,7 +143,7 @@ output$schade_year <- renderUI({
                                         2014 else
                                         min(results$schade_data()$afschotjaar),
                             max = max(results$schade_data()$afschotjaar),
-                            value = 2018,
+                            value = defaultYear,
                             sep = "", step = 1))
             
         })
@@ -157,7 +157,7 @@ output$schade_time <- renderUI({
             
             sliderInput(inputId = "schade_time", label = "Periode (grafiek)", 
                     value = c(minYear, 
-                            max(results$schade_data()$afschotjaar)),
+                              defaultYear),
                     min = minYear,
                     max = max(results$schade_data()$afschotjaar),
                     step = 1,
@@ -438,7 +438,7 @@ output$schade_downloadMap <- downloadHandler(
 output$schade_downloadData <- downloadHandler(
         filename = function()
             nameFile(species = input$schade_species,
-                    year = results$schade_timeRange(), 
+                    year = input$schade_year, 
                     content = "kaartData", fileExt = "csv"),
         content = function(file) {
             
@@ -547,7 +547,7 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
 output$schade_time2 <- renderUI({
             
             sliderInput(inputId = "schade_time2", label = "Periode", 
-                    value = results$schade_timeRange(),
+                    value = c(results$schade_timeRange()[1], defaultYear),
                     min = results$schade_timeRange()[1],
                     max = results$schade_timeRange()[2],
                     step = 1,
@@ -648,14 +648,8 @@ output$schade_downloadPerceelmapData <- downloadHandler(
           content = "kaartDataSeizoen", fileExt = "csv"),
     content = function(file) {
       
-      myPerceelplotData <- results$schade_summaryPerceelData()@data
-      # change variable names
-      names(myPerceelplotData)[names(myPerceelplotData) == "afschotjaar"] <- "jaar"
-      names(myPerceelplotData)[names(myPerceelplotData) == "gemeente_afschot_locatie"] <- "locatie"
-      names(myPerceelplotData)[names(myPerceelplotData) == "season"] <- "seizoen"
-      # re-arrange columns
-      myPerceelplotData <- myPerceelplotData[c(c("jaar", "locatie", "niscode", "postcode"),
-                                               setdiff(names(myPerceelplotData), c("jaar", "locatie", "niscode", "postcode")))]
+      myPerceelplotData <- formatSchadeSummaryData(results$schade_summaryPerceelData())
+        
       ## write data to exported file
       write.table(x = myPerceelplotData, file = file, quote = FALSE, row.names = FALSE,
           sep = ";", dec = ",")

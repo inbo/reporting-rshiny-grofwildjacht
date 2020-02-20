@@ -142,8 +142,8 @@ tagList(
         
         h2("Landkaart 2"),
         
-        tags$p("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per seizoen weer. Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het hoofdmenu."),
-        tags$p("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaald schadegeval te selecteren, krijg je verdere informatie over dit schadegeval (jaar, wildsoort, gemeente, schadetype)."),
+        tags$p("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn ", tags$i("seizoen")," en ", tags$i("type schade.")," Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het hoofdmenu."),
+        tags$p("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaald schadegeval te selecteren, krijg je verdere informatie over dit schadegeval (jaar, wildsoort, gemeente, schadetype en eventueel seizoen)."),
         
         wellPanel(
                 fixedRow(

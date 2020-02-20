@@ -561,7 +561,9 @@ output$schade_titlePerceel <- renderUI({
             
             h3(paste("Schadegevallen", 
                             "van", paste(tolower(input$schade_species), collapse = ", "),
-                            "per variabele",
+                            "per", switch(input$schade_variable2, 
+                                            season = "seizoen",
+                                            schadeCode = "schadetype"),
                             #jaartallen
                             paste0("(", 
                                     input$schade_time2[1], 

@@ -113,6 +113,9 @@ mapSchade <- function(
                             "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
                             "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
                             "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
+                            if (variable == "schadeCode") {
+                              paste0("<li><strong> Seizoen </strong>: ", schadeData$season)
+                            },
                             "</ul>"
                     )
             )

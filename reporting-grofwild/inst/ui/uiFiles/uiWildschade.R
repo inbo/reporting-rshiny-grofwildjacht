@@ -148,7 +148,10 @@ tagList(
         wellPanel(
                 fixedRow(
                         column(6, uiOutput("schade_time2")),
-                        column(6, selectInput(inputId = "schade_legend2", "Legende (kaart)",
+                        column(6, selectInput(inputId = "schade_variable2", label = "Variabele",
+                                        choices = c("Seizoen" = "season",
+                                                    "Type schade" = "schadeCode")),
+                                  selectInput(inputId = "schade_legend2", "Legende (kaart)",
                                         choices = c("Bovenaan rechts" = "topright",
                                                 "Onderaan rechts" = "bottomright",
                                                 "Bovenaan links" = "topleft",

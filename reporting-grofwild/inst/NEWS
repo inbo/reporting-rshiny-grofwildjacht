@@ -1,6 +1,8 @@
 0.1.14
     o fix INBO title next to tabs
     o update readme.md file on extdata
+    o landkaart wildschade 2 now colors points by variable
+    o update tests landkaart 2 wildschade
 0.1.13
     o default value for slider inputs (year and max of year range ) set to 'currentYear - 1'
     o landkaart2 wildschade download update

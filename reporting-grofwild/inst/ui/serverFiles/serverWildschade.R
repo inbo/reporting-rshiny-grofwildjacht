@@ -561,7 +561,7 @@ output$schade_titlePerceel <- renderUI({
             
             h3(paste("Schadegevallen", 
                             "van", paste(tolower(input$schade_species), collapse = ", "),
-                            "per seizoen",
+                            "per variabele",
                             #jaartallen
                             paste0("(", 
                                     input$schade_time2[1], 
@@ -596,6 +596,7 @@ output$schade_perceelPlot <- renderLeaflet({
             mapSchade(
                     schadeData = results$schade_summaryPerceelData(),
                     regionLevel = "provinces",
+                    variable = input$schade_variable2,
                     allSpatialData = spatialData,
                     addGlobe = input$schade_globe2,
                     legend = input$schade_legend2)
@@ -611,6 +612,7 @@ results$schade_perceelMap <- reactive({
       newPerceelMap <- mapSchade(
           schadeData = results$schade_summaryPerceelData(),
           regionLevel = "provinces", 
+          variable = input$schade_variable2,
           allSpatialData = spatialData,
           legend = input$schade_legend2,
           addGlobe = input$schade_globe2 %% 2 == 1
@@ -631,7 +633,10 @@ output$schade_downloadPerceelMap <- downloadHandler(
     filename = function()
       nameFile(species = input$schade_species,
           year = unique(input$schade_time2), 
-          content = "kaartSchadeSeizoen", fileExt = "png"),
+          content = switch(input$schade_variable2, 
+                            season = "kaartSchadeSeizoen", 
+                            schadeCode = "kaartSchadeTypeSchade"), 
+          fileExt = "png"),
     content = function(file) {
       
       mapview::mapshot(x = results$schade_perceelMap(), file = file,
@@ -645,7 +650,8 @@ output$schade_downloadPerceelmapData <- downloadHandler(
     filename = function()
       nameFile(species = input$schade_species,
           year = unique(input$schade_time2), 
-          content = "kaartDataSeizoen", fileExt = "csv"),
+          content = "kaartDataPerVariabele", 
+          fileExt = "csv"),
     content = function(file) {
       
       myPerceelplotData <- formatSchadeSummaryData(results$schade_summaryPerceelData())

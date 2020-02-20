@@ -22,7 +22,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
-                        "provincie")
+                        "schadeCode", "provincie")
   plotData <- schadeData[, colnames(schadeData@data) %in% colnamesToRetain]
   
   # filter cases by timeRange
@@ -36,9 +36,10 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   plotData$postcode <- gemeenteData$Postcode[match(plotData$gemeente_afschot_locatie, 
                                                     gemeenteData$Gemeente)]
                                             
-  # decrypte schadebasisCode names
+  # decrypte schade names
   plotData$schadeBasisCode <- names(fullNames(plotData$schadeBasisCode))
-                                            
+  plotData$schadeCode <- names(fullNames(plotData$schadeCode))
+  
   plotData
 }
 
@@ -56,7 +57,9 @@ formatSchadeSummaryData <- function(summarySchadeData) {
   names(formatData)[names(formatData) == "afschotjaar"] <- "jaar"
   names(formatData)[names(formatData) == "gemeente_afschot_locatie"] <- "locatie"
   names(formatData)[names(formatData) == "season"] <- "seizoen"
-  names(formatData)[names(formatData) == "schadeBasisCode"] <- "typeSchade"
+  names(formatData)[names(formatData) == "schadeBasisCode"] <- "basisTypeSchade"
+  names(formatData)[names(formatData) == "schadeCode"] <- "typeSchade"
+  
   
   # re-arrange columns
   firstColumns <- c("jaar", "locatie", "niscode", "postcode")
@@ -73,6 +76,8 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 #' @param schadeData spatialPointsDataFrame contains the points where there was
 #' wildschade and descriptives in data.frame
 #' @inheritParams mapFlanders 
+#' @param variable character, indicates the variable of interest to color points by. 
+#' Should be one of \code{c("season", "schadeCode")}
 #' @return leaflet map
 #' @author mvarewyck
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles
@@ -80,19 +85,26 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 mapSchade <- function(
         schadeData, 
         regionLevel, 
+        variable = c("season", "schadeCode"),
         allSpatialData,
         addGlobe = FALSE,
         legend = "topright"
 ) {
     
+    variable <- match.arg(variable)
+    schadeData$variable <- schadeData[[variable]]
+    schadeData$variable <- as.factor(schadeData$variable)
+    
+  
     # Color palette
-    palette <- colorFactor(inbo.2015.colours(n = 4),
-            c("winter", "lente", "zomer", "herfst"))
+    palette <- colorFactor(inbo.2015.colours(n = length(levels(schadeData$variable))),
+#            c("winter", "lente", "zomer", "herfst"),
+            levels(schadeData$variable))
     
     myMap <- leaflet(schadeData) %>%
             
             addCircleMarkers(
-                    fillColor = ~palette(season),
+                    fillColor = ~palette(variable),
                     stroke = TRUE, color = "black", weight = 1, 
                     fillOpacity = 0.5,
                     popup = paste0("<h4>Info</h4>",  
@@ -134,7 +146,7 @@ mapSchade <- function(
                 map = myMap,
                 position = legend,
                 pal = palette, 
-                values = ~season,
+                values = ~variable,
                 opacity = 0.8,
                 na.label = "onbekend",
                 title = "Legende",

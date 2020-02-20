@@ -90,15 +90,22 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
 ### 2. Map with exact location and description of each case
 
 for (iSpecies in species) {
-    
+  
+  schadeDataSub <- subset(schadeData, wildsoort == iSpecies)  
+  schadeDataSub <- createSchadeSummaryData(
+      schadeData = schadeDataSub,
+      timeRange = range(schadeDataSub$afschotjaar))
+  
+  for (var in c("season", "schadeCode")) {
     myPlot <- mapSchade(
-            schadeData = schadeData,
+            schadeData = schadeDataSub,
             regionLevel = "provinces",
+            variable = var,
             allSpatialData = spatialData,
             addGlobe = TRUE)
     
     print(myPlot)
-    
+  }    
 }
 
 

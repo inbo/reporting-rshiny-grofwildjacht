@@ -428,7 +428,8 @@ output$map_timeTitle <- renderUI({
                     "provinces" = "Provincie",
                     "faunabeheerzones" = "Faunabeheerzones",
                     "communes" = "Gemeente (binnen provincie)",
-                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)")
+                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
+                    "utm5" = "5x5 UTM")
             
             
             h3("Regio-schaal:", regionLevel)
@@ -708,9 +709,14 @@ results$finalMap <- reactive({
                     zoom = input$map_spacePlot_zoom
             )
             
-            
+#            # write map to temp .html file
+#            htmlwidgets::saveWidget(newMap, file = outTempFileName, selfcontained = TRUE)
+#
+#            # output is path to temp .html file containing map
+#            outTempFileName
         }) 
 
+#    observe(print(results$finalMap()))
 
 # Download the map
 output$map_download <- downloadHandler(
@@ -722,6 +728,10 @@ output$map_download <- downloadHandler(
             
             mapview::mapshot(x = results$finalMap(), file = file,
                     vwidth = 1000, vheight = 500, cliprect = "viewport")
+      
+#             # convert temp .html file to .png
+#             webshot::webshot(url = results$finalMap(), file = file,
+#                     vwidth = 1000, vheight = 500, cliprect = "viewport")
             
         }
 )

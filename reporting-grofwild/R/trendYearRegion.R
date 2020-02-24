@@ -35,7 +35,7 @@ createTrendData <- function(data, allSpatialData,
             communes = plotData$gemeente_afschot_locatie,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
-            utm5 = plotData$UTM5code
+            utm5 = plotData$UTM5
     ))
     
     # Select subset for time & species

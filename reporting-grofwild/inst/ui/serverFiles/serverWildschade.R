@@ -600,7 +600,7 @@ output$schade_perceelPlot <- renderLeaflet({
                     regionLevel = "provinces",
                     variable = input$schade_variable2,
                     allSpatialData = spatialData,
-                    addGlobe = input$schade_globe2,
+                    addGlobe = input$schade_globe2 %% 2 == 1, 
                     legend = input$schade_legend2)
             
         })

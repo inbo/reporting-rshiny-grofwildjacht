@@ -1,3 +1,6 @@
+0.1.16
+	o 2-step approach for grofwild download map to prevent time-out
+	o fix 'voeg landkaart toe'-button for landkaart 2 in wildschade 
 0.1.15
     o grofwild includes 5x5 utm regionlevel for map
 0.1.14

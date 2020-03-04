@@ -702,21 +702,23 @@ results$finalMap <- reactive({
                     addGlobe = input$map_globe %% 2 == 1
             )
             
-            # save the zoom level and centering
-            newMap %>%  setView(
+            # save the zoom level and centering to the map object
+            newMap %<>% setView(
                     lng = input$map_spacePlot_center$lng,
                     lat = input$map_spacePlot_center$lat,
                     zoom = input$map_spacePlot_zoom
             )
             
-#            # write map to temp .html file
-#            htmlwidgets::saveWidget(newMap, file = outTempFileName, selfcontained = TRUE)
-#
-#            # output is path to temp .html file containing map
-#            outTempFileName
+            # write map to temp .html file
+            htmlwidgets::saveWidget(newMap, file = outTempFileName, selfcontained = FALSE)
+            
+            # output is path to temp .html file containing map
+            outTempFileName
+            
+            
         }) 
 
-#    observe(print(results$finalMap()))
+    observe(print(results$finalMap()))
 
 # Download the map
 output$map_download <- downloadHandler(
@@ -725,13 +727,10 @@ output$map_download <- downloadHandler(
                     year = input$map_year[1], 
                     content = "kaart", fileExt = "png"),
         content = function(file) {
-            
-            mapview::mapshot(x = results$finalMap(), file = file,
-                    vwidth = 1000, vheight = 500, cliprect = "viewport")
-      
-#             # convert temp .html file to .png
-#             webshot::webshot(url = results$finalMap(), file = file,
-#                     vwidth = 1000, vheight = 500, cliprect = "viewport")
+                  
+             # convert temp .html file into .png for download
+             webshot::webshot(url = results$finalMap(), file = file,
+                     vwidth = 1000, vheight = 500, cliprect = "viewport")
             
         }
 )

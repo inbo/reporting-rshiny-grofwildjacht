@@ -14,6 +14,7 @@ library(shinycssloaders)   # for busy indicator
 ### ------------
 
 `%then%` <- shiny:::`%OR%`
+`%<>%` <- magrittr::`%<>%`
 
 
 # Specify directory with data
@@ -31,8 +32,8 @@ schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 
-# create temp html file to create grofwild landkaart
-#outTempFileName <- tempfile(fileext = ".html")
+# create temp html file to store grofwild landkaart
+outTempFileName <- tempfile(fileext = ".html")
 
 ### Load all data
 ### -------------

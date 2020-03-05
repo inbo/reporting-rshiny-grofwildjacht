@@ -718,8 +718,6 @@ results$finalMap <- reactive({
             
         }) 
 
-    observe(print(results$finalMap()))
-
 # Download the map
 output$map_download <- downloadHandler(
         filename = function()

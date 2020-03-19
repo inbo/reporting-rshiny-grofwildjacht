@@ -29,6 +29,11 @@ schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
 # Specify currently used type schades
 schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
 
+# Specify currently used types schade subcodes
+schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"), #VRTG
+                 c("WLSCHD", "VRTSCHD", "GEWASANDR"),     #GEWAS
+                 c("ANDERE", "VALWILD"))                  #ANDERE
+
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 
@@ -64,7 +69,14 @@ if (any(!unique(schadeData$wildsoort) %in% unlist(schadeWildsoorten))) {
 if (any(!unique(schadeData$schadeBasisCode) %in% schadeTypes)) {
   warning("Nieuwe schade basiscode gedetecteerd in raw data: ", 
       paste0(setdiff(unique(schadeData$schadeBasisCode), schadeTypes), collapse = ", "),
-      "\nUpdate schadeTypes aub")
+      "\nUpdate schadeTypes aub en ook de fullnames() functie.")
+}
+
+# check for schadeCodes (schadeCode) to add to schadeCodes
+if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
+  warning("Nieuwe schadeCode gedetecteerd in raw data: ", 
+      paste0(setdiff(unique(schadeData$schadeCode), schadeCodes), collapse = ", "),
+      "\nUpdate schadeCodes aub en ook de fullnames() functie.")
 }
 
 

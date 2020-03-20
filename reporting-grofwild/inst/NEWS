@@ -1,3 +1,5 @@
+0.1.19
+	o update landkaart 2 wildschade to satellite background
 0.1.18
 	o include check for new schadecodes
 	o update fullNames() to deal with non matching names

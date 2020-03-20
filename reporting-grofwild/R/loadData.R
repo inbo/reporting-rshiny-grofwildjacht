@@ -289,6 +289,9 @@ loadRawData <- function(
     if (type == "geo") {
         ## GEO data for grofwild
         
+        # Replace "N/B"
+        rawData$provincie[rawData$provincie %in% "#N/B"] <- NA
+        
         # Match on Postcode: otherwise mismatch with spatialData locatie
         rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
         

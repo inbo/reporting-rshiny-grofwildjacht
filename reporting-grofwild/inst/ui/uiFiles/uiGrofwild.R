@@ -71,7 +71,8 @@ tagList(
                                                         "Provincie" = "provinces", 
                                                         "Faunabeheerzones" = "faunabeheerzones",
                                                         "Gemeente" = "communes",
-                                                        "Gemeente per Faunabeheerzone" = "fbz_gemeentes"
+                                                        "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
+                                                        "5x5 UTM" = "utm5"
                                                 ),
                                                 selected = "communes")),
                                 column(8, uiOutput("map_region"))

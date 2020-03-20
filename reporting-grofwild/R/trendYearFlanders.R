@@ -15,7 +15,7 @@ trendYearFlanders <- function(data, timeRange, unit = c("absolute", "relative"),
 	
 	unit <- match.arg(unit)
 	wildNaam <- unique(data$wildsoort)
-	data$wildsoort <- NULL 
+#	data$wildsoort <- NULL 
 	
 	title <- paste("Gerapporteerd",
 			if (unit == "absolute") "aantal" else "aantal/100ha",

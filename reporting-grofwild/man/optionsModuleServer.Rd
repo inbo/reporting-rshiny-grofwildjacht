@@ -14,7 +14,8 @@ optionsModuleServer(
   typesDefault = types,
   timeRange = NULL,
   timeLabel = "Periode",
-  multipleTypes = FALSE
+  multipleTypes = FALSE,
+  definedYear = defaultYear
 )
 }
 \arguments{
@@ -38,6 +39,10 @@ same as \code{types} by defualt}
 \item{timeLabel}{character, label for the time slider, 'Periode' by default}
 
 \item{multipleTypes}{boolean, whether multiple types can be selected or not}
+
+\item{definedYear}{numeric, single numeric value specifying the year value 
+(or max year value within a range) that is selected upon opening, default is
+\code{defaultYear} which is globally defined as \code{currentYear - 1}}
 }
 \value{
 no return value; some output objects are created

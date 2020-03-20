@@ -3,6 +3,8 @@ In this folder, the required data is collected to create the Rshiny application.
 
 ## reporting data files
 
+### grofwild 
+
 The `rshiny_reporting_data_*.csv` are providing the raw data and numbers of the grofwild reporting, which will be updated when new data is available. 
 
 Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
@@ -21,6 +23,7 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | ontweid_gewicht              | int           | het ontweid of leeggewicht (gewicht zonder ingewanden) |
 | aantal_embryos_onbekend      | boolean           | aanduiding waar of niet of het aantal embryo's gekend is of niet |
 | aantal_embryos               | int           | het aantal embryo's                      |
+| aantal_embryos_bron          | factor        |                               |
 | onderkaaklengte_links        | int           | de onderkaaklengte van de linker kaak gemeten door de jagers |
 | onderkaaklengte_rechts       | int           | de onderkaaklengte van de rechter kaak gemeten door de jagers |
 | doodsoorzaak                 | factor        | de doodsoorzaak van het dier             |
@@ -28,7 +31,45 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | lengte_mm                    | int           | de onderkaaklengte gemeten door het INBO |
 | Leeftijdscategorie_onderkaak | factor        | de leeftijdscategorie door het INBO      |
 | onderkaaklengte_comp         | int           | compilatie van de onderkaaklengte: INBO indien gekend, anders jager      |
-| leeftijd_comp | factor        | compilatie voor de leeftijdscategorie: INBO indien gekend, anders jager      |
+| onderkaaklengte_comp_bron    | factor        |                               |
+| leeftijd_comp | factor        | compilatie voor de leeftijdscategorie: INBO indien gekend, anders jager (meldingsformulier)     |
+| leeftijd_comp_bron           | factor        |                               |
+| geslacht_comp_bron           | factor        |                               |
+| type_comp                    | factor        |                               |
+| FaunabeheerZone              | int           | de faunabeheerzone van het afschot (1 tem 10)    |
+| FaunabeheerDeelzone          | factor        |                               |
+| WBE_Naam_Georef               | factor        | (wildbeheereenheid = WBE)     |
+| KboNummer_Georef              | factor        |                               |
+| WBE_Naam_Toek                 | factor        |                               |
+| KboNummer_Toek                | factor        |                               |
+| fbz_gemeente                  | factor        |                               |
+
+
+### wildschade
+
+The `Wildschade_georef.csv` file is providing the raw data and numbers of the wildschade reporting, which will be updated when new data is available.
+
+Column metadata of the `Wildschade_georef.csv`- file after reading in is as follows:
+
+| Kolom                        | Eigenschappen | Toelichting                              |
+| ---------------------------- | ------------- | ---------------------------------------- |
+| ID                           | int           | random ID                                |
+| caseID                       | int           | ?                                        |
+| afschotjaar                  | int           | het jaar van het schadegeval (2006-2020) |
+| schadeBasisCode              | factor        | verzamel code van het type schadegeval   |
+| schadeCode                   | factor        | detail code van het type schadegeval     |
+| SoortNaam                    | factor        | het type gewas dat werd beschadigd (enkel voor GEWAS schade)  |
+| wildsoort                    | factor        | het type dier                            |
+| afschot_datum                | date          | datum van schadegeval  (DD/MM/YYYY)      |
+| provincie                    | factor        | de provincie van het schadegeval         |
+| FaunabeheerZone              | int           | de faunabeheerzone van het schadegeval (1 tem 10 or NA)  |
+| fbdz                         | factor        | ?                                        |
+| NISCODE                      | factor        | de niscode van het schadegeval           | 
+| gemeente_afschot_locatie     | factor        | de gemeente van het schadegeval          |
+| UTM5code                     | factor        | de 5 x 5 UTM code van het schadegeval    |
+| perceelPolygon               | str           | polygon coordinaten van het schadegeval  |
+| fbz_gemeente                 | factor        | de gemeente binnenin de fbz van het schadegeval |
+| season                       | factor        | het seizoen van het schadegeval          |
 
 
 ## GIS data files
@@ -50,7 +91,7 @@ Conversion of data from source to geojson (in terminal)
 
 ## R data files
 
-The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), FBZ (faunabeheerzones) and DFBZ (deel-faunabeheerzones). When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`. Next, install the package such that the latest shape data are available in the extdata folder.
+The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), faunabeheerzones, fbz_gemeentes and utm5. When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`. Next, install the package such that the latest shape data are available in the extdata folder.
 The object `spatialData` can easily be loaded in R by
 
 `dataDir <- system.file("extdata", package = "reportingGrofwild")`
@@ -64,7 +105,7 @@ The object `spatialData` can easily be loaded in R by
 
 | Kolom     | Eigenschappen | Toelichting                            |
 | --------- | ------------- | -------------------------------------- |
-| Provincie | str           | Provincie-namen                        |
+| Provincie | factor        | Provincie-namen                        |
 | Jaar      | int           | het jaar van afschot (2002-..., of NA) |
 | Labeltype | str           | het type ree                           |
 | Aantal    | int           | toegekende aantal afschot              |
@@ -75,8 +116,8 @@ The object `spatialData` can easily be loaded in R by
 | Kolom      | Eigenschappen     | Toelichting                          |
 | ---------- | ----------------- | ------------------------------------ |
 | Soort      | str               | het type wild                        |
-| Type       | int               | het type wildsoort                   |
-| Jaar       | str               | jaar van het overeenkomstige seizoen |
+| Type       | str               | het type wildsoort                   |
+| Jaar       | int               | jaar van het overeenkomstige seizoen |
 | Startdatum | date (dd/mm/yyyy) | startdatum voor dat jaar             |
 | Stopdatum  | date (dd/mm/yyyy) | einddatum voor dat jaar              |
 
@@ -87,7 +128,7 @@ The object `spatialData` can easily be loaded in R by
 
 | Kolom    | Eigenschappen | Toelichting              |
 | -------- | --------------| ------------------------ |
-| NIS code | int           | de NIS code van gemeente |
+| NIS.code | int           | de NIS code van gemeente |
 | Postcode | int           | de postcode van gemeente |
 | Gemeente | str           | de naam van gemeente     |
 

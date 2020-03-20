@@ -17,7 +17,8 @@ fullNames(x, type = c("wildschade"), rev = FALSE)
 character vector
 }
 \description{
-List user-friendly full names to replace R coding names
+Will not return NA, but rather the R coding name in case
+no match could be found.
 }
 \author{
 mvarewyck

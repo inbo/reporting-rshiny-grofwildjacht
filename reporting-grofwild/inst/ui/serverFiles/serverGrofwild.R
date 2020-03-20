@@ -320,7 +320,7 @@ output$map_year <- renderUI({
                                         2014 else
                                         min(results$wild_geoData()$afschotjaar),
                             max = max(results$wild_geoData()$afschotjaar),
-                            value = 2016,
+                            value = defaultYear,
                             sep = "", step = 1))
             
         })
@@ -333,8 +333,7 @@ output$map_time <- renderUI({
                         min(results$wild_geoData()$afschotjaar)
             
             sliderInput(inputId = "map_time", label = "Periode (grafiek)", 
-                    value = c(minYear, 
-                            max(results$wild_geoData()$afschotjaar)),
+                    value = c(minYear, defaultYear),
                     min = minYear,
                     max = max(results$wild_geoData()$afschotjaar),
                     step = 1,
@@ -429,7 +428,8 @@ output$map_timeTitle <- renderUI({
                     "provinces" = "Provincie",
                     "faunabeheerzones" = "Faunabeheerzones",
                     "communes" = "Gemeente (binnen provincie)",
-                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)")
+                    "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
+                    "utm5" = "5x5 UTM")
             
             
             h3("Regio-schaal:", regionLevel)
@@ -702,16 +702,21 @@ results$finalMap <- reactive({
                     addGlobe = input$map_globe %% 2 == 1
             )
             
-            # save the zoom level and centering
-            newMap %>%  setView(
+            # save the zoom level and centering to the map object
+            newMap %<>% setView(
                     lng = input$map_spacePlot_center$lng,
                     lat = input$map_spacePlot_center$lat,
                     zoom = input$map_spacePlot_zoom
             )
             
+            # write map to temp .html file
+            htmlwidgets::saveWidget(newMap, file = outTempFileName, selfcontained = FALSE)
+            
+            # output is path to temp .html file containing map
+            outTempFileName
+            
             
         }) 
-
 
 # Download the map
 output$map_download <- downloadHandler(
@@ -720,9 +725,10 @@ output$map_download <- downloadHandler(
                     year = input$map_year[1], 
                     content = "kaart", fileExt = "png"),
         content = function(file) {
-            
-            mapview::mapshot(x = results$finalMap(), file = file,
-                    vwidth = 1000, vheight = 500, cliprect = "viewport")
+                  
+             # convert temp .html file into .png for download
+             webshot::webshot(url = results$finalMap(), file = file,
+                     vwidth = 1000, vheight = 500, cliprect = "viewport")
             
         }
 )

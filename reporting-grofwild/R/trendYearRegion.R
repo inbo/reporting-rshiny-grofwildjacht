@@ -35,7 +35,7 @@ createTrendData <- function(data, allSpatialData,
             communes = plotData$gemeente_afschot_locatie,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
-            utm5 = plotData$UTM5code
+            utm5 = plotData$UTM5
     ))
     
     # Select subset for time & species
@@ -68,24 +68,26 @@ createTrendData <- function(data, allSpatialData,
     
     allData$AREA <- NULL
     
-#    allData$afschotjaar <- as.factor(allData$afschotjaar)
+    allData$afschotjaar <- as.factor(allData$afschotjaar)
     allData$wildsoort <- paste(species, collapse = ", ")
     
 
     if (regionLevel == "communes") {
         
-      # add NIS (naam -> NIS)
-      allData <- merge(allData, spatialData@data[, c("NAAM", "NISCODE")],
-          by.x = "locatie", by.y = "NAAM", sort = FALSE)
-      names(allData)[names(allData) == "NISCODE"] <- "niscode"
-      # order columns and rows
-      allData <- allData[order(allData$afschotjaar),]
-      allData <- allData[c("afschotjaar", setdiff(names(allData), "afschotjaar"))]
-      
-      # add (hoofd)postcode (NIS -> postcode)
+      # NOTE: match returns FIRST match, so gemeentecodes.csv should be correctly sorted
+      # in orde to obtain HOOFDpostcode. 
       gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
           header = TRUE, sep = ",")
-      allData$postcode <- gemeenteData$Postcode[match(allData$niscode, gemeenteData$NIS.code)]
+      
+      # Match gemeente NAAM to niscode and (hoofd)postcode
+      allData$niscode <- gemeenteData$NIS.code[match(allData$locatie, gemeenteData$Gemeente)]
+      allData$postcode <- gemeenteData$Postcode[match(allData$locatie, gemeenteData$Gemeente)]
+      
+      # order columns and rows
+      allData <- allData[order(allData$afschotjaar),]
+      allData <- allData[c("afschotjaar", "locatie", "niscode", "postcode", 
+                            setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
+
       
     }
     
@@ -135,7 +137,7 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	
 	# Select data
 	plotData <- subset(data, locatie %in% locaties)
-	plotData$wildsoort <- NULL
+#	plotData$wildsoort <- NULL
 	
 	colors <- rev(inbo.2015.colours(n = length(locaties)))
 	title <- paste("Gerapporteerd",

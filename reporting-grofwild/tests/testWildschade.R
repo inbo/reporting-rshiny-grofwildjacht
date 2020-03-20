@@ -30,7 +30,7 @@ species <- unique(schadeData$wildsoort)
 
 xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 
-for (regionLevel in names(spatialData)[1:6]) {
+for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
     
     for (iSpecies in species) {
         
@@ -90,15 +90,22 @@ for (regionLevel in names(spatialData)[1:6]) {
 ### 2. Map with exact location and description of each case
 
 for (iSpecies in species) {
-    
+  
+  schadeDataSub <- subset(schadeData, wildsoort == iSpecies)  
+  schadeDataSub <- createSchadeSummaryData(
+      schadeData = schadeDataSub,
+      timeRange = range(schadeDataSub$afschotjaar))
+  
+  for (var in c("season", "schadeCode")) {
     myPlot <- mapSchade(
-            schadeData = schadeData,
+            schadeData = schadeDataSub,
             regionLevel = "provinces",
+            variable = var,
             allSpatialData = spatialData,
             addGlobe = TRUE)
     
     print(myPlot)
-    
+  }    
 }
 
 
@@ -148,7 +155,7 @@ countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCo
 allSchadeTables <- lapply(species, function(iSpecies) {
             
             choicesSchadecode <- c("GEWAS", "VRTG", "ANDERE")[1:3]
-            choicesSchadeGewas <- c("VRTSCHD", "WLSCHD")[1:2]
+            choicesSchadeGewas <- c("VRTSCHD", "WLSCHD", "GEWASANDR")[1:3]
             choicesSchadeVrtg <- c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:3]
             
             plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
@@ -179,7 +186,7 @@ names(allSchadeTables) <- species
 schadeTable <- tableSchadeCode(data = wildSchadeData,
         schadeChoices = c("GEWAS", "VRTG", "ANDERE")[3],
         schadeChoicesVrtg = c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:2], 
-        schadeChoicesGewas = c("VRTSCHD", "WLSCHD")[1:2])
+        schadeChoicesGewas = c("VRTSCHD", "WLSCHD", "GEWASANDR")[1:3])
 
 # testing for special cases
 expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")

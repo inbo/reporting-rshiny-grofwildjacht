@@ -143,7 +143,7 @@ output$schade_year <- renderUI({
                                         2014 else
                                         min(results$schade_data()$afschotjaar),
                             max = max(results$schade_data()$afschotjaar),
-                            value = 2018,
+                            value = defaultYear,
                             sep = "", step = 1))
             
         })
@@ -157,7 +157,7 @@ output$schade_time <- renderUI({
             
             sliderInput(inputId = "schade_time", label = "Periode (grafiek)", 
                     value = c(minYear, 
-                            max(results$schade_data()$afschotjaar)),
+                              defaultYear),
                     min = minYear,
                     max = max(results$schade_data()$afschotjaar),
                     step = 1,
@@ -547,7 +547,7 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
 output$schade_time2 <- renderUI({
             
             sliderInput(inputId = "schade_time2", label = "Periode", 
-                    value = results$schade_timeRange(),
+                    value = c(results$schade_timeRange()[1], defaultYear),
                     min = results$schade_timeRange()[1],
                     max = results$schade_timeRange()[2],
                     step = 1,
@@ -559,8 +559,11 @@ output$schade_time2 <- renderUI({
 output$schade_titlePerceel <- renderUI({
             
             
-            h3(paste("Gerapporteerd aantal schadegevallen", 
-                            "voor", paste(tolower(input$schade_species), collapse = ", "),
+            h3(paste("Schadegevallen", 
+                            "van", paste(tolower(input$schade_species), collapse = ", "),
+                            "per", switch(input$schade_variable2, 
+                                            season = "seizoen",
+                                            schadeCode = "schadetype"),
                             #jaartallen
                             paste0("(", 
                                     input$schade_time2[1], 
@@ -572,25 +575,94 @@ output$schade_titlePerceel <- renderUI({
             
         })
 
+# Create data for map, summary of schade data, given year
+results$schade_summaryPerceelData <- reactive({
+          
+            validate(need(results$schade_data(), "Geen data beschikbaar"),
+                     need(input$schade_time2, "Gelieve periode te selecteren"))
+           
+            createSchadeSummaryData(
+                     schadeData = results$schade_data(),
+                     timeRange = input$schade_time2)
+    })
+
+# Map for UI
 output$schade_perceelPlot <- renderLeaflet({
             
-            validate(need(results$schade_data(), "Geen data beschikbaar"),
-                    need(input$schade_time2, "Gelieve periode te selecteren"))
+            validate(need(results$schade_spatialData(), "Geen data beschikbaar"),
+                     need(nrow(results$schade_summaryPerceelData()@data) > 0, "Geen data beschikbaar"),
+                     need(input$schade_time2, "Gelieve periode te selecteren"))
             
             
             
             mapSchade(
-                    schadeData = results$schade_data()[
-                            results$schade_data()@data$afschotjaar %in% input$schade_time2[1]:input$schade_time2[2], ],
+                    schadeData = results$schade_summaryPerceelData(),
                     regionLevel = "provinces",
+                    variable = input$schade_variable2,
                     allSpatialData = spatialData,
-                    addGlobe = input$schade_globe2,
+                    addGlobe = input$schade_globe2 %% 2 == 1, 
                     legend = input$schade_legend2)
             
         })
 
+# Create final perceelplot map (for download)
+results$schade_perceelMap <- reactive({
+      
+      validate(need(results$schade_summaryPerceelData(), "Geen data beschikbaar"))
+      
+      
+      newPerceelMap <- mapSchade(
+          schadeData = results$schade_summaryPerceelData(),
+          regionLevel = "provinces", 
+          variable = input$schade_variable2,
+          allSpatialData = spatialData,
+          legend = input$schade_legend2,
+          addGlobe = input$schade_globe2 %% 2 == 1
+      )
+      
+      # save the zoom level and centering
+      newPerceelMap %>%  setView(
+          lng = input$schade_perceelPlot_center$lng,
+          lat = input$schade_perceelPlot_center$lat,
+          zoom = input$schade_perceelPlot_zoom
+      )
+      
+      
+    }) 
+    
+# Download the perceeplot map
+output$schade_downloadPerceelMap <- downloadHandler(
+    filename = function()
+      nameFile(species = input$schade_species,
+          year = unique(input$schade_time2), 
+          content = switch(input$schade_variable2, 
+                            season = "kaartSchadeSeizoen", 
+                            schadeCode = "kaartSchadeTypeSchade"), 
+          fileExt = "png"),
+    content = function(file) {
+      
+      mapview::mapshot(x = results$schade_perceelMap(), file = file,
+          vwidth = 1000, vheight = 500, cliprect = "viewport")
+      
+    }
+)
 
-
+# Download the minimal perceeplot map data
+output$schade_downloadPerceelmapData <- downloadHandler(
+    filename = function()
+      nameFile(species = input$schade_species,
+          year = unique(input$schade_time2), 
+          content = "kaartDataPerVariabele", 
+          fileExt = "csv"),
+    content = function(file) {
+      
+      myPerceelplotData <- formatSchadeSummaryData(results$schade_summaryPerceelData())
+        
+      ## write data to exported file
+      write.table(x = myPerceelplotData, file = file, quote = FALSE, row.names = FALSE,
+          sep = ";", dec = ",")
+      
+    })
 
 ### Descriptive Plots
 ### -----------------

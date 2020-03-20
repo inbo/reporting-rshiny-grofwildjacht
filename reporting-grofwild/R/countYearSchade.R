@@ -70,6 +70,11 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summaryData <- merge(summaryData, totalCount)
     
     
+    # Make full schade names
+    if (type == "schadeCode") {
+      summaryData$variabele <- names(fullNames(summaryData$variabele))
+    }
+    
     # For optimal displaying in the plot
     summaryData$jaar <- as.factor(summaryData$jaar)
     
@@ -85,8 +90,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
                 "<br>Percent: ", round(summaryData$percent), "%")
         
     }
-    
-    
+        
     # TODO force color for c("Onbekend", "ONBEKEND") into gray + need more colors for eg. "SoortNaam"
     colors <- inbo.2015.colours(length(unique(summaryData$variabele)))
     names(colors) <- unique(summaryData$variabele)

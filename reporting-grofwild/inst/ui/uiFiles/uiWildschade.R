@@ -46,7 +46,7 @@ tagList(
                         fixedRow(
                                 # Select species
                                 column(4, selectInput(inputId = "schade_species", label = "Wildsoort",
-                                                choices = schadeSoorten,
+                                                choices = schadeWildsoorten,
                                                 selected = "wild zwijn",
                                                 multiple = TRUE,
                                                 width = "100%"
@@ -54,8 +54,8 @@ tagList(
                                 
                                 # Select type schade
                                 column(4, selectInput(inputId = "schade_code", label = "Type Schade",
-                                                choices = fullNames(x = c("GEWAS", "VRTG", "ANDERE")),
-                                                selected = c("GEWAS", "VRTG", "ANDERE"),
+                                                choices = fullNames(x = schadeTypes),
+                                                selected = schadeTypes,
                                                 multiple = TRUE,
                                                 width = "100%"
                                         )),
@@ -151,13 +151,16 @@ tagList(
         
         h2("Landkaart 2"),
         
-        tags$p("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per seizoen weer. Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het hoofdmenu."),
-        tags$p("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaald schadegeval te selecteren, krijg je verdere informatie over dit schadegeval (jaar, wildsoort, gemeente, schadetype)."),
+        tags$p("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn ", tags$i("seizoen")," en ", tags$i("type schade.")," Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het hoofdmenu."),
+        tags$p("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaald schadegeval te selecteren, krijg je verdere informatie over dit schadegeval (jaar, wildsoort, gemeente, schadetype en eventueel seizoen)."),
         
         wellPanel(
                 fixedRow(
                         column(6, uiOutput("schade_time2")),
-                        column(6, selectInput(inputId = "schade_legend2", "Legende (kaart)",
+                        column(6, selectInput(inputId = "schade_variable2", label = "Variabele",
+                                        choices = c("Seizoen" = "season",
+                                                    "Type schade" = "schadeCode")),
+                                  selectInput(inputId = "schade_legend2", "Legende (kaart)",
                                         choices = c("Bovenaan rechts" = "topright",
                                                 "Onderaan rechts" = "bottomright",
                                                 "Bovenaan links" = "topleft",
@@ -171,7 +174,9 @@ tagList(
         
         uiOutput("schade_titlePerceel"),        
         withSpinner(leafletOutput("schade_perceelPlot")),
-        
+        tags$br(),
+        downloadButton("schade_downloadPerceelMap", "Download figuur"),
+        downloadButton("schade_downloadPerceelmapData", "Download data"),
         
         ## countYearSchadeProvince: all species
         actionLink(inputId = "schade_linkPlot1",

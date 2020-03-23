@@ -7,12 +7,12 @@
 
 tagList(
         
-        tags$div(class = "watermark container",
-                
-                tags$div(style = "margin-top: 50px",
-                        tags$em("Voorlopige versie"))
-                        
-        ),
+#        tags$div(class = "watermark container",
+#                
+#                tags$div(style = "margin-top: 50px",
+#                        tags$em("Voorlopige versie"))
+#                        
+#        ),
         
         
         tags$div(class = "container",

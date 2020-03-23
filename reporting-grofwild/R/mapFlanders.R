@@ -40,7 +40,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
 #' should be reported
 #' @inheritParams readShapeData
-#' @return data.frame
+#' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
 #' @export
 createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
@@ -92,6 +92,12 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     # Select subset for time
     plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
     
+    #compute total number of cases to output in stats
+    statsDf <- data.frame(nTotal = as.integer(NA), 
+                          nAvailable = as.integer(NA), 
+                          percentage = as.numeric(NA)) 
+    statsDf[, "nTotal"] = nrow(plotData)
+    
     if (nrow(plotData) == 0) {
         
         allData <- fullData 
@@ -123,6 +129,14 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         allData$freq[is.na(allData$freq)] <- 0
         
     }
+    
+    ## stats
+    # compute all cases with full info available
+    statsDf[, "nAvailable"] = sum(allData$freq)
+    # compute percentage
+    statsDf[,"percentage"] = round((statsDf$nAvailable/statsDf$nTotal)*100, 1)
+
+    
     
     # Remove redundant variables
     allData$afschotjaar <- NULL
@@ -201,7 +215,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
       
     }
     
-    return(summaryData2)
+#    return(summaryData2)
+    return(list(data = summaryData2, stats = statsDf))
     
     
 }

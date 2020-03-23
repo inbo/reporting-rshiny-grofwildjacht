@@ -45,7 +45,7 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
         
         cat("*", regionLevel, "\n")
         cat("*", iSpecies, "\n")
-        print(sum(spaceData$freq))
+        print(sum(spaceData$data$freq))
         
         trendData <- createTrendData(
                 data = schadeData@data,
@@ -59,8 +59,8 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
                 allSpatialData = spatialData, 
                 regionLevel = regionLevel, 
                 colorScheme = c("white", RColorBrewer::brewer.pal(
-                                n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
-                summaryData = spaceData,
+                                n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+                summaryData = spaceData$data,
                 legend = "topright",
                 species = iSpecies
         )
@@ -173,7 +173,7 @@ allSchadeTables <- lapply(species, function(iSpecies) {
             if ("ANDERE" %in% choicesSchadecode)
                 expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
             if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
-                expect("Onbekend" %in% names(schadeTable$data), "columns do not match user choices")
+                expect("Verkeersongeluk onbekend" %in% names(schadeTable$data), "columns do not match user choices")
             
             DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
                     selection = "single", options = list(dom = 't', pageLength = -1))

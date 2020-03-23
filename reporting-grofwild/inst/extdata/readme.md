@@ -23,10 +23,6 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | provincie                    | factor        | de provincie van het afschot (Voeren afzonderlijk van Limburg behalve voor ree) |
 | FaunabeheerZone              | int           | de faunabeheerzone van het afschot (1 tem 10)    |
 | FaunabeheerDeelzone          | factor        | faunabeheerdeelzone - subset van Faunabeheerzone |
-| WBE_Naam_Georef              | factor        | wildbeheereenheid                        |
-| KboNummer_Georef             | factor        | KBO nummer voor WBE                      |
-| WBE_Naam_Toek                | factor        | wildbeheereenheid                        |
-| KboNummer_Toek               | factor        | KBO nummer voor WBE                      |
 | UTM5                         | factor        | UTM5 index                               |
 |                              |               |                                          |
 | geslacht.MF                  | factor        | compilatie voor geslacht: INBO indien gekend, anders MF |

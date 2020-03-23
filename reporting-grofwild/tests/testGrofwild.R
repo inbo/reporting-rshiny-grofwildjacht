@@ -362,14 +362,14 @@ for (regionLevel in names(spatialData)[1:5]) {
         )
         
         cat("*", regionLevel, "\n")
-        print(summary(spaceData$freq))
+        print(summary(spaceData$data$freq))
         
         myPlot <- mapFlanders(
                 allSpatialData = spatialData, 
                 regionLevel = regionLevel, 
                 colorScheme = c("white", RColorBrewer::brewer.pal(
-                                n = nlevels(spaceData$group) - 1, name = "YlOrBr")),
-                summaryData = spaceData,
+                                n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+                summaryData = spaceData$data,
                 legend = "topright",
                 species = iSpecies
         )

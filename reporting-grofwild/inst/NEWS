@@ -1,3 +1,9 @@
+0.1.20
+	o update readme.md for extdata
+	o remove default selection species/schade type in wildschade
+	o upgrade labels for schade voertuig
+	o include median, min, max in data export percentage jaarlijks afschot - grofwild 
+	o add percentage of total data map - grofwild
 0.1.19
 	o update landkaart 2 wildschade to satellite background
 0.1.18

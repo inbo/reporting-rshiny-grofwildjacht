@@ -168,7 +168,7 @@ tagList(
                                                 "<geen>" = "none"))
                         )
                 ),
-                actionLink(inputId = "schade_globe2", label = "Voeg landkaart toe",
+                actionLink(inputId = "schade_globe2", label = "Verberg landkaart",
                         icon = icon("globe"))
         ),
         

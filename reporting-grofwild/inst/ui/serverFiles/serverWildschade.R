@@ -138,10 +138,7 @@ output$schade_year <- renderUI({
             
             div(class = "sliderBlank", 
                     sliderInput(inputId = "schade_year", label = "Geselecteerd Jaar (kaart)",
-                            min = 
-                                    if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
-                                        2014 else
-                                        min(results$schade_data()$afschotjaar),
+                            min = min(results$schade_data()$afschotjaar),
                             max = max(results$schade_data()$afschotjaar),
                             value = defaultYear,
                             sep = "", step = 1))
@@ -151,9 +148,7 @@ output$schade_year <- renderUI({
 
 output$schade_time <- renderUI({
             
-            minYear <- if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
-                        2014 else
-                        min(results$schade_data()$afschotjaar)
+            minYear <- min(results$schade_data()$afschotjaar)
             
             sliderInput(inputId = "schade_time", label = "Periode (grafiek)", 
                     value = c(minYear, 
@@ -600,7 +595,7 @@ output$schade_perceelPlot <- renderLeaflet({
                     regionLevel = "provinces",
                     variable = input$schade_variable2,
                     allSpatialData = spatialData,
-                    addGlobe = input$schade_globe2 %% 2 == 1, 
+                    addGlobe = input$schade_globe2 %% 2 == 0, 
                     legend = input$schade_legend2)
             
         })
@@ -617,7 +612,7 @@ results$schade_perceelMap <- reactive({
           variable = input$schade_variable2,
           allSpatialData = spatialData,
           legend = input$schade_legend2,
-          addGlobe = input$schade_globe2 %% 2 == 1
+          addGlobe = input$schade_globe2 %% 2 == 0
       )
       
       # save the zoom level and centering

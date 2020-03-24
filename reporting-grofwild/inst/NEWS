@@ -1,3 +1,9 @@
+0.1.21
+	o update openingstijden_grofwild.csv
+	o default show map for landkaart 2 - wildschade
+	o include type in filename for data export - grofwild
+	o landkaart 1  sliders start at 2018 - wildschade
+	o bio-indicator: Onderkaaklengte per jaar - sliders correct now - grofwild 
 0.1.20
 	o update readme.md for extdata
 	o remove default selection species/schade type in wildschade

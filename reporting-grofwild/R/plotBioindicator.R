@@ -60,6 +60,11 @@ plotBioindicator <- function(data,
 			'onderkaaklengte' = "lengte onderkaak", 
 			"ontweid_gewicht" = "ontweid gewicht", 
 			"aantal_embryos" = "aantal embryo's")
+  
+  bioindicatorUnit <- switch(bioindicatorName,
+      "lengte onderkaak" = "(mm)",
+      "ontweid gewicht" = "(kg)",
+      "aantal embryo's" = "")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
@@ -213,7 +218,7 @@ plotBioindicator <- function(data,
 						colors = inbo.lichtblauw, type = "box", width = width, height = height) %>%
 				layout(title = title,
 						xaxis = list(title = "afschotjaar"), 
-						yaxis = list(title = bioindicatorName),
+						yaxis = list(title = paste(bioindicatorName, bioindicatorUnit)),
 						margin = list(b = 40, t = 100)
 				)
 		

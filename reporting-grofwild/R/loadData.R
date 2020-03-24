@@ -449,18 +449,20 @@ loadRawData <- function(
 #' Name file given content information
 #' @param species character, species of the file content
 #' @param year numeric vector, year span of the file content 
+#' @param extraInfo character, optional extra info to add e.g. type; default is NULL
 #' @param content character, more information on the file
 #' @param fileExt character, extension of the file
 #' @return character, suggested file name pasting together \code{species},
 #' \code{year}, \code{content}, \code{fileExt}
 #' @author mvarewyck
 #' @export
-nameFile <- function(species, year, content, fileExt) {
+nameFile <- function(species, year, extraInfo = NULL, content, fileExt) {
     
     paste0(
             paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_",
-            if (length(year) > 1) paste(year, collapse = "-") else year, "_",
-            content, 
+            if (length(year) > 1) paste(year, collapse = "-") else year,
+            if (!is.null(extraInfo)) {paste0("_", paste(extraInfo, collapse = "-"))}, 
+            "_", content, 
             ".", fileExt
     )
     

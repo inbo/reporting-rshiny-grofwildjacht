@@ -1,0 +1,59 @@
+#Libraries
+```{r}
+library(ggplot2)
+```
+
+
+#Dataset
+```{r}
+afschot <- read.csv('./percentageYearlyShotAnimals_dummy.csv', 
+                    header = TRUE, 
+                    sep = ";")
+
+afschot$dateHalfMonth <- factor (afschot$dateHalfMonth, levels = c("January_01", "January_02", "February_01", "February_02", "March_01", "March_02", "April_01", "April_02", "May_01", "May_02", "June_01", "June_02", "July_01", "July_02", "August_01", "August_02", "September_01", "September_02", "October_01", "October_02", "November_01", "November_02", "December_01", "December_02"))
+```
+
+#Grafiek suggestie 1
+```{r}
+percentage_jaarlijks_afschot_plot <-
+  ggplot(afschot, 
+       aes(x=dateHalfMonth,
+           y=obsYear)) +
+  geom_bar(stat = "identity", 
+           position = "stack") +
+  geom_errorbar(aes(ymin = min, 
+                   ymax = max), 
+                position = position_dodge(width=0.3),
+                width =0,
+                size=1) +
+  geom_point(aes(y=median)) +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90))
+ 
+ percentage_jaarlijks_afschot_plot
+```
+
+#Grafiek suggestie 2
+```{r}
+percentage_jaarlijks_afschot_plot2 <-
+  ggplot(afschot, 
+       aes(x=dateHalfMonth,
+           y=obsYear)) +
+  geom_bar(stat = "identity", 
+           position = "stack",
+           color = "grey32",
+           fill = "grey32") +
+  geom_ribbon(aes(x = as.numeric(dateHalfMonth),
+                  ymin = min, 
+                   ymax = max),
+              alpha = 0.3,
+              fill = "blue") +
+  geom_line(aes(x= dateHalfMonth,
+                y=median,
+                group = 1),
+            linetype = "dashed") +
+  theme(text = element_text(size=10),
+        axis.text.x = element_text(angle=90))
+ 
+ percentage_jaarlijks_afschot_plot2
+```

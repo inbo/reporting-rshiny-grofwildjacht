@@ -316,7 +316,7 @@ output$map_year <- renderUI({
             
             div(class = "sliderBlank", 
                     sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
-                            min = if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+                            min = if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes","utm5"))
                                         2014 else
                                         min(results$wild_geoData()$afschotjaar),
                             max = max(results$wild_geoData()$afschotjaar),
@@ -328,7 +328,7 @@ output$map_year <- renderUI({
 
 output$map_time <- renderUI({
             
-            minYear <- if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+            minYear <- if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
                         2014 else
                         min(results$wild_geoData()$afschotjaar)
             

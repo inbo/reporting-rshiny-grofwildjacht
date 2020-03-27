@@ -158,7 +158,8 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 					width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Jaar"), 
-					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha"),
+					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha",
+                       tickformat = if (unit == "absolute") ",d" else NULL),
 					showlegend = TRUE,
 					margin = list(b = 80, t = 100))     
 	

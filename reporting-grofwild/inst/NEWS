@@ -1,3 +1,5 @@
+0.1.22
+	o format ticks to integer in regio-schaal plot
 0.1.21
 	o update openingstijden_grofwild.csv
 	o default show map for landkaart 2 - wildschade

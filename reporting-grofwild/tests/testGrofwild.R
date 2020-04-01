@@ -386,26 +386,43 @@ for (regionLevel in names(spatialData)[1:5]) {
 for (iSpecies in species) {
     
 #    print(iSpecies)
+    unitChoice <- c("absolute", "relative")[1]
     
-    for (regionLevel in names(spatialData)[1:5]) {
+    trendData <-  createTrendData(
+        data = geoData[geoData$wildsoort == iSpecies, ],
+        allSpatialData = spatialData,
+        timeRange = c(2014, 2019),
+        species = iSpecies,
+        regionLevel = "flanders",
+        unit = unitChoice
+    )
+    
+    trendYearFlanders(
+        data = trendData,
+        timeRange = c(2014, 2019),
+        unit = unitChoice
+    )$plot
+    
+    for (regionLevel in names(spatialData)[1:6]) {
         
 #        print(regionLevel)
         
-        trendData <-  createTrendData(
-                data = geoData[geoData$wildsoort == iSpecies, ],
-                allSpatialData = spatialData,
-                timeRange = c(2014, 2019),
-                species = iSpecies,
-                regionLevel = regionLevel,
-                unit = "relative"
+        trendRegionData <- createTrendData(
+            data = geoData[geoData$wildsoort == iSpecies, ],
+            allSpatialData = spatialData,
+            timeRange = c(2014, 2019),
+            species = iSpecies,
+            regionLevel = regionLevel,
+            unit = unitChoice
         )
         
-        trendYearFlanders(
-                data = trendData,
-                timeRange = c(2014, 2019),
-                unit = "relative"
+        trendYearRegion(
+            data = trendRegionData,
+            locaties = sample(trendRegionData$locatie, 5),
+            timeRange = c(2014, 2019),
+            unit = unitChoice
         )$plot
-        
+          
     }
     
 }

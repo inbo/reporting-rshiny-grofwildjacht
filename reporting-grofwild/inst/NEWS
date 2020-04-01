@@ -1,3 +1,22 @@
+0.1.23
+	o set ymax to min 5 for absolute numbers in regio-schaal plot
+0.1.22
+	o format ticks to integer in regio-schaal plot
+0.1.21
+	o update openingstijden_grofwild.csv
+	o default show map for landkaart 2 - wildschade
+	o include type in filename for data export - grofwild
+	o landkaart 1  sliders start at 2018 - wildschade
+	o bio-indicator: Onderkaaklengte per jaar - sliders correct now - grofwild 
+	o 5UTM starts at 2014 - grofwild
+0.1.20
+	o update readme.md for extdata
+	o remove default selection species/schade type in wildschade
+	o upgrade labels for schade voertuig
+	o include median, min, max in data export percentage jaarlijks afschot - grofwild 
+	o add percentage of total data map - grofwild
+0.1.19
+	o update landkaart 2 wildschade to satellite background
 0.1.18
 	o include check for new schadecodes
 	o update fullNames() to deal with non matching names

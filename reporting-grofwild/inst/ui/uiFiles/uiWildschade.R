@@ -47,7 +47,7 @@ tagList(
                                 # Select species
                                 column(4, selectInput(inputId = "schade_species", label = "Wildsoort",
                                                 choices = schadeWildsoorten,
-                                                selected = "wild zwijn",
+                                                selected = NULL, #"wild zwijn"
                                                 multiple = TRUE,
                                                 width = "100%"
                                         )),
@@ -55,12 +55,12 @@ tagList(
                                 # Select type schade
                                 column(4, selectInput(inputId = "schade_code", label = "Type Schade",
                                                 choices = fullNames(x = schadeTypes),
-                                                selected = schadeTypes,
+                                                selected = NULL, #schadeTypes
                                                 multiple = TRUE,
                                                 width = "100%"
                                         )),
                                 
-                                # Select gewas
+                                # Select gewas & voertuig
                                 column(4, uiOutput("schade_subcode"))
                         )
                 ),
@@ -168,7 +168,7 @@ tagList(
                                                 "<geen>" = "none"))
                         )
                 ),
-                actionLink(inputId = "schade_globe2", label = "Voeg landkaart toe",
+                actionLink(inputId = "schade_globe2", label = "Verberg landkaart",
                         icon = icon("globe"))
         ),
         

@@ -225,12 +225,20 @@ percentageYearlyShotAnimals <- function(
 					margin = list(b = 70, t = 40)
 			)
 	
-	colsFinal <- c("dateHalfMonth", "obsYear")
+	colsOfInterest <- c("dateHalfMonth", "obsYear", "medianRange", "minRange", "maxRange")
+  newColNames <-    c("Datum (half-maand resolutie)", 
+                      "Geobserveerd percentage", 
+                      getNameRange("Mediaan"),
+                      getNameRange("Min"),
+                      getNameRange("Max"))
+  dataReturn <- dataPlot[, colsOfInterest]
+  colnames(dataReturn) <- newColNames
+  
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = dataPlot[, colsFinal]))
+	return(list(plot = pl, data = dataReturn))
 	
 }

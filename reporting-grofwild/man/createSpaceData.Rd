@@ -32,7 +32,7 @@ should be reported}
 \item{dataDir}{character vector, defines the path to the data files}
 }
 \value{
-data.frame
+a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 }
 \description{
 Create summary data of geographical data for selected year, species and region level

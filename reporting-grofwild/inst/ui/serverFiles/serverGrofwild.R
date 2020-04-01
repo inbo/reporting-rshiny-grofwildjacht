@@ -316,7 +316,7 @@ output$map_year <- renderUI({
             
             div(class = "sliderBlank", 
                     sliderInput(inputId = "map_year", label = "Geselecteerd Jaar (kaart)",
-                            min = if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+                            min = if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes","utm5"))
                                         2014 else
                                         min(results$wild_geoData()$afschotjaar),
                             max = max(results$wild_geoData()$afschotjaar),
@@ -328,7 +328,7 @@ output$map_year <- renderUI({
 
 output$map_time <- renderUI({
             
-            minYear <- if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
+            minYear <- if (input$map_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
                         2014 else
                         min(results$wild_geoData()$afschotjaar)
             
@@ -509,16 +509,16 @@ observe({
 # Define text to be shown in the pop-ups
 results$map_textPopup <- reactive({
             
-            validate(need(results$map_summarySpaceData(), "Geen data beschikbaar"))
+            validate(need(results$map_summarySpaceData()$data, "Geen data beschikbaar"))
             
-            regionNames <- results$map_summarySpaceData()$locatie
+            regionNames <- results$map_summarySpaceData()$data$locatie
             titleText <- paste("Gerapporteerd", 
                     if (input$map_unit == "absolute") "aantal" else "aantal/100ha",
                     "in", input$map_year[1])
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
                     "<strong>", titleText, "</strong>: ", 
-                    round(results$map_summarySpaceData()$freq, 2)
+                    round(results$map_summarySpaceData()$data$freq, 2)
             )
             
             
@@ -532,7 +532,7 @@ results$map_colorScheme <- reactive({
             
             # Might give warnings if n < 3
             suppressWarnings(c("white", RColorBrewer::brewer.pal(
-                                    n = nlevels(results$map_summarySpaceData()$group) - 1, name = "YlOrBr")))
+                                    n = nlevels(results$map_summarySpaceData()$data$group) - 1, name = "YlOrBr")))
             
         })			
 
@@ -543,13 +543,13 @@ output$map_spacePlot <- renderLeaflet({
             req(spatialData)
             
             validate(need(results$wild_spatialData(), "Geen data beschikbaar"),
-                    need(nrow(results$map_summarySpaceData()) > 0, "Geen data beschikbaar"))
+                    need(nrow(results$map_summarySpaceData()$data) > 0, "Geen data beschikbaar"))
             
             mapFlanders(
                     regionLevel = input$map_regionLevel,
                     species = input$wild_species, 
                     allSpatialData = spatialData,
-                    summaryData = results$map_summarySpaceData(),
+                    summaryData = results$map_summarySpaceData()$data,
                     colorScheme = results$map_colorScheme()
             )
             
@@ -606,7 +606,7 @@ observe({
 # Add legend
 observe({
             
-            validate(need(nrow(results$map_summarySpaceData()) > 0, "Geen data beschikbaar"))
+            validate(need(nrow(results$map_summarySpaceData()$data) > 0, "Geen data beschikbaar"))
             
             req(input$map_legend)
             
@@ -616,10 +616,10 @@ observe({
             if (input$map_legend != "none") {
                 
                 palette <- colorFactor(palette = results$map_colorScheme(), 
-                        levels = levels(results$map_summarySpaceData()$group))
+                        levels = levels(results$map_summarySpaceData()$data$group))
                 
-                valuesPalette <- results$map_summarySpaceData()[
-                        match(results$wild_spatialData()$NAAM, results$map_summarySpaceData()$locatie),
+                valuesPalette <- results$map_summarySpaceData()$data[
+                        match(results$wild_spatialData()$NAAM, results$map_summarySpaceData()$data$locatie),
                         "group"]
                 
                 
@@ -652,10 +652,10 @@ observe({
                 
                 if (!is.null(event$id)) {
                     
-                    if (event$id %in% results$map_summarySpaceData()$locatie) {
+                    if (event$id %in% results$map_summarySpaceData()$data$locatie) {
                         
                         textSelected <- results$map_textPopup()[
-                                results$map_summarySpaceData()$locatie == event$id]
+                                results$map_summarySpaceData()$data$locatie == event$id]
                         
                         isolate({
                                     
@@ -685,18 +685,27 @@ output$map_title <- renderUI({
             
         })
 
+# Statistics with map
+output$map_stats <- renderUI({
+      
+            if (input$map_regionLevel != "flanders") {
+              h5(paste0("Info beschikbaar en weergegeven voor ", results$map_summarySpaceData()$stats$percentage, 
+                        "% van de totale gegevens (", results$map_summarySpaceData()$stats$nAvailable, "/", 
+                        results$map_summarySpaceData()$stats$nTotal, ")" ))
+            }
+        })
 
 # Create final map (for download)
 results$finalMap <- reactive({
             
-            validate(need(results$map_summarySpaceData(), "Geen data beschikbaar"))
+            validate(need(results$map_summarySpaceData()$data, "Geen data beschikbaar"))
             
             
             newMap <- mapFlanders(
                     regionLevel = input$map_regionLevel, 
                     species = input$wild_species,
                     allSpatialData = spatialData,
-                    summaryData = results$map_summarySpaceData(),
+                    summaryData = results$map_summarySpaceData()$data,
                     colorScheme = results$map_colorScheme(),
                     legend = input$map_legend,
                     addGlobe = input$map_globe %% 2 == 1
@@ -740,7 +749,7 @@ output$map_downloadData <- downloadHandler(
                     content = "kaartData", fileExt = "csv"),
         content = function(file) {
             
-            myData <- results$map_summarySpaceData()
+            myData <- results$map_summarySpaceData()$data
             # change variable names
             names(myData)[names(myData) == "freq"] <- if (input$map_unit == "absolute")
                         "aantal" else "aantal/100ha"

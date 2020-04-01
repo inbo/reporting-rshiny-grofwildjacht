@@ -104,6 +104,7 @@ tagList(
                 
                 uiOutput("map_title"),
                 withSpinner(leafletOutput("map_spacePlot")),
+                tags$div(align = "center", uiOutput("map_stats")),
                 tags$br(),
                 downloadButton("map_download", "Download figuur"),
                 downloadButton("map_downloadData", "Download data"),

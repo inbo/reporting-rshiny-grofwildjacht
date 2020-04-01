@@ -30,9 +30,9 @@ fullNames <- function(x, type = c("wildschade"), rev = FALSE) {
                     "Woelschade"				= "WLSCHD",
                     "Vraatschade" 				= "VRTSCHD",
                     "Gewas - andere"    = "GEWASANDR", 
-                    "Geen personen met letsel" 	= "GNPERSLTSL",
-                    "Personen met letsel" 		= "PERSLTSL",
-                    "Onbekend" 					= "ONBEKEND",
+                    "Verkeersongeluk zonder letsel" 	= "GNPERSLTSL",
+                    "Verkeersongeluk met letsel" 		= "PERSLTSL",
+                    "Verkeersongeluk onbekend" 					= "ONBEKEND",
                     "Valwild"					= "VALWILD"
             )
     )

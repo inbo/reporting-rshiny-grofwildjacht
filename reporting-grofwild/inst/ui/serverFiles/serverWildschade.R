@@ -138,10 +138,7 @@ output$schade_year <- renderUI({
             
             div(class = "sliderBlank", 
                     sliderInput(inputId = "schade_year", label = "Geselecteerd Jaar (kaart)",
-                            min = 
-                                    if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
-                                        2014 else
-                                        min(results$schade_data()$afschotjaar),
+                            min = min(results$schade_data()$afschotjaar),
                             max = max(results$schade_data()$afschotjaar),
                             value = defaultYear,
                             sep = "", step = 1))
@@ -151,9 +148,7 @@ output$schade_year <- renderUI({
 
 output$schade_time <- renderUI({
             
-            minYear <- if (input$schade_regionLevel %in% c("faunabeheerzones", "fbz_gemeentes"))
-                        2014 else
-                        min(results$schade_data()$afschotjaar)
+            minYear <- min(results$schade_data()$afschotjaar)
             
             sliderInput(inputId = "schade_time", label = "Periode (grafiek)", 
                     value = c(minYear, 
@@ -220,15 +215,15 @@ observe({
 # Define text to be shown in the pop-ups
 results$schade_textPopup <- reactive({
             
-            validate(need(results$schade_summarySpaceData(), "Geen data beschikbaar"))
+            validate(need(results$schade_summarySpaceData()$data, "Geen data beschikbaar"))
             
-            regionNames <- results$schade_summarySpaceData()$locatie
+            regionNames <- results$schade_summarySpaceData()$data$locatie
             titleText <- paste("Gerapporteerd aantal schadegevallen", 
                     "in", input$schade_year)
             
             textPopup <- paste0("<h4>", regionNames, "</h4>",  
                     "<strong>", titleText, "</strong>: ", 
-                    round(results$schade_summarySpaceData()$freq, 2)
+                    round(results$schade_summarySpaceData()$data$freq, 2)
             )
             
             
@@ -242,7 +237,7 @@ results$schade_colorScheme <- reactive({
             
             # Might give warnings if n < 3
             suppressWarnings(c("white", RColorBrewer::brewer.pal(
-                                    n = nlevels(results$schade_summarySpaceData()$group) - 1, name = "YlOrBr")))
+                                    n = nlevels(results$schade_summarySpaceData()$data$group) - 1, name = "YlOrBr")))
             
         })			
 
@@ -253,13 +248,13 @@ output$schade_spacePlot <- renderLeaflet({
             req(spatialData)
             
             validate(need(results$schade_spatialData(), "Geen data beschikbaar"),
-                    need(nrow(results$schade_summarySpaceData()) > 0, "Geen data beschikbaar"))
+                    need(nrow(results$schade_summarySpaceData()$data) > 0, "Geen data beschikbaar"))
             
             mapFlanders(
                     regionLevel = input$schade_regionLevel,
                     species = input$schade_species, 
                     allSpatialData = spatialData,
-                    summaryData = results$schade_summarySpaceData(),
+                    summaryData = results$schade_summarySpaceData()$data,
                     colorScheme = results$schade_colorScheme()
             )
             
@@ -315,7 +310,7 @@ observe({
 # Add legend
 observe({
             
-            req(nrow(results$schade_summarySpaceData()) > 0)
+            req(nrow(results$schade_summarySpaceData()$data) > 0)
             
             req(input$schade_legend)
             
@@ -325,10 +320,10 @@ observe({
             if (input$schade_legend != "none") {
                 
                 palette <- colorFactor(palette = results$schade_colorScheme(), 
-                        levels = levels(results$schade_summarySpaceData()$group))
+                        levels = levels(results$schade_summarySpaceData()$data$group))
                 
-                valuesPalette <- results$schade_summarySpaceData()[
-                        match(results$schade_spatialData()$NAAM, results$schade_summarySpaceData()$locatie),
+                valuesPalette <- results$schade_summarySpaceData()$data[
+                        match(results$schade_spatialData()$NAAM, results$schade_summarySpaceData()$data$locatie),
                         "group"]
                 
                 
@@ -361,10 +356,10 @@ observe({
                 
                 if (!is.null(event$id)) {
                     
-                    if (event$id %in% results$schade_summarySpaceData()$locatie) {
+                    if (event$id %in% results$schade_summarySpaceData()$data$locatie) {
                         
                         textSelected <- results$schade_textPopup()[
-                                results$schade_summarySpaceData()$locatie == event$id]
+                                results$schade_summarySpaceData()$data$locatie == event$id]
                         
                         isolate({
                                     
@@ -397,14 +392,14 @@ output$schade_title <- renderUI({
 # Create final map (for download)
 results$schade_finalMap <- reactive({
             
-            validate(need(results$schade_summarySpaceData(), "Geen data beschikbaar"))
+            validate(need(results$schade_summarySpaceData()$data, "Geen data beschikbaar"))
             
             
             newMap <- mapFlanders(
                     regionLevel = input$schade_regionLevel, 
                     species = input$schade_species,
                     allSpatialData = spatialData,
-                    summaryData = results$schade_summarySpaceData(),
+                    summaryData = results$schade_summarySpaceData()$data,
                     colorScheme = results$schade_colorScheme(),
                     legend = input$schade_legend,
                     addGlobe = input$schade_globe %% 2 == 1
@@ -442,7 +437,7 @@ output$schade_downloadData <- downloadHandler(
                     content = "kaartData", fileExt = "csv"),
         content = function(file) {
             
-            myData <- results$schade_summarySpaceData()
+            myData <- results$schade_summarySpaceData()$data
             # change variable names
             names(myData)[names(myData) == "freq"] <- "aantal schadegevallen"
             names(myData)[names(myData) == "group"] <- "groep"
@@ -600,7 +595,7 @@ output$schade_perceelPlot <- renderLeaflet({
                     regionLevel = "provinces",
                     variable = input$schade_variable2,
                     allSpatialData = spatialData,
-                    addGlobe = input$schade_globe2 %% 2 == 1, 
+                    addGlobe = input$schade_globe2 %% 2 == 0, 
                     legend = input$schade_legend2)
             
         })
@@ -617,7 +612,7 @@ results$schade_perceelMap <- reactive({
           variable = input$schade_variable2,
           allSpatialData = spatialData,
           legend = input$schade_legend2,
-          addGlobe = input$schade_globe2 %% 2 == 1
+          addGlobe = input$schade_globe2 %% 2 == 0
       )
       
       # save the zoom level and centering

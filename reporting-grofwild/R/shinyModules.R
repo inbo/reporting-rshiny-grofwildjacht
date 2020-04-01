@@ -103,8 +103,10 @@ optionsModuleServer <- function(input, output, session,
         sliderInput(inputId = ns("time"), label = timeLabel, 
             value = c(min(timeRange()), definedYear),
             min = if (!is.null(input$sourceIndicator)) {
-                  if (input$sourceIndicator == "inbo") 2014 else min(timeRange())
-                } else {min(timeRange())},
+                  if (input$sourceIndicator == "inbo") { min(data()[data()$onderkaaklengte_comp_bron == "inbo" , "afschotjaar"], na.rm = TRUE) }
+                  else if (input$sourceIndicator == "meldingsformulier") { min(data()[data()$onderkaaklengte_comp_bron == "meldingsformulier" , "afschotjaar"], na.rm = TRUE) }
+                  else min(timeRange())
+                } else min(timeRange()),
             max = max(timeRange()),
             step = 1,
             sep = "")
@@ -388,6 +390,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
                   input$year else if (!is.null(input$time))
                   unique(c(input$time[1], input$time[2])) else
                   timeRange(), 
+            extraInfo = input$type,
             content = paste0(plotFunction, "_data"), fileExt = "csv"),
       content = function(file) {
         

@@ -4,12 +4,14 @@
 \alias{nameFile}
 \title{Name file given content information}
 \usage{
-nameFile(species, year, content, fileExt)
+nameFile(species, year, extraInfo = NULL, content, fileExt)
 }
 \arguments{
 \item{species}{character, species of the file content}
 
 \item{year}{numeric vector, year span of the file content}
+
+\item{extraInfo}{character, optional extra info to add e.g. type; default is NULL}
 
 \item{content}{character, more information on the file}
 

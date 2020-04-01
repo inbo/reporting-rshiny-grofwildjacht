@@ -138,7 +138,9 @@ mapSchade <- function(
     # Add world map
     if (addGlobe) {
         
-        myMap <- addProviderTiles(myMap, "Hydda.Full")
+        myMap <- myMap %>%
+                    addProviderTiles("Esri.WorldImagery") %>%
+                    addProviderTiles("Hydda.RoadsAndLabels")
         
     }
     

@@ -6,70 +6,76 @@ In this folder, the required data is collected to create the Rshiny application.
 ### grofwild 
 
 The `rshiny_reporting_data_*.csv` are providing the raw data and numbers of the grofwild reporting, which will be updated when new data is available. 
+In general "_comp" variables are computed as follows: if info from INBO is known then this is used, otherwise info from MF (meldingsformulier) is used. If both are missing, then value NA is assigned.
 
 Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 
 | Kolom                        | Eigenschappen | Toelichting                              |
 | ---------------------------- | ------------- | ---------------------------------------- |
-| ID                           | int           | random ID                                |
+| ID                           | int           | uniek ID, koppelt ecology en geography data    |
 | wildsoort                    | factor        | het type wildsoort                       |
-| afschotjaar                  | int           | het jaar van afschot (2002-2019, of NA)  |
-| afschot_datum                | date          | datum van afschot  (YYYY-MM-DD) or (DD-MM-YYYY)                      |
+| afschotjaar                  | int           | het jaar van afschot (2002-2020, of NA)  |
+| afschot_datum                | date          | datum van afschot  (YYYY-MM-DD)          |
+| doodsoorzaak                 | factor        | de doodsoorzaak van het dier (afschot)   |
+|                              |               |                                          |
 | postcode_afschot_locatie     | int           | de postcode van het afschot              |
 | gemeente_afschot_locatie     | factor        | de gemeente van het afschot              |
 | provincie                    | factor        | de provincie van het afschot (Voeren afzonderlijk van Limburg behalve voor ree) |
-| geslacht.MF                  | factor        | het geslacht zoals weergegeven op het meldingsformulier |
-| leeftijdscategorie_MF        | factor        | de leeftijdscategorie zoals weergegeven op het meldingsformulier |
-| ontweid_gewicht              | int           | het ontweid of leeggewicht (gewicht zonder ingewanden) |
-| aantal_embryos_onbekend      | boolean           | aanduiding waar of niet of het aantal embryo's gekend is of niet |
-| aantal_embryos               | int           | het aantal embryo's                      |
-| aantal_embryos_bron          | factor        |                               |
-| onderkaaklengte_links        | int           | de onderkaaklengte van de linker kaak gemeten door de jagers |
-| onderkaaklengte_rechts       | int           | de onderkaaklengte van de rechter kaak gemeten door de jagers |
-| doodsoorzaak                 | factor        | de doodsoorzaak van het dier             |
-| leeftijd_maanden             | int           | de leeftijdsbepaling in maanden door het INBO |
-| lengte_mm                    | int           | de onderkaaklengte gemeten door het INBO |
-| Leeftijdscategorie_onderkaak | factor        | de leeftijdscategorie door het INBO      |
-| onderkaaklengte_comp         | int           | compilatie van de onderkaaklengte: INBO indien gekend, anders jager      |
-| onderkaaklengte_comp_bron    | factor        |                               |
-| leeftijd_comp | factor        | compilatie voor de leeftijdscategorie: INBO indien gekend, anders jager (meldingsformulier)     |
-| leeftijd_comp_bron           | factor        |                               |
-| geslacht_comp_bron           | factor        |                               |
-| type_comp                    | factor        |                               |
 | FaunabeheerZone              | int           | de faunabeheerzone van het afschot (1 tem 10)    |
-| FaunabeheerDeelzone          | factor        |                               |
-| WBE_Naam_Georef               | factor        | (wildbeheereenheid = WBE)     |
-| KboNummer_Georef              | factor        |                               |
-| WBE_Naam_Toek                 | factor        |                               |
-| KboNummer_Toek                | factor        |                               |
-| fbz_gemeente                  | factor        |                               |
+| FaunabeheerDeelzone          | factor        | faunabeheerdeelzone - subset van Faunabeheerzone |
+| UTM5                         | factor        | UTM5 index                               |
+|                              |               |                                          |
+| geslacht.MF                  | factor        | compilatie voor geslacht: INBO indien gekend, anders MF |
+| geslacht_comp_bron           | factor        | welke bron wordt gebruikt voor geslacht.MF                           |
+|                              |               |                                          |
+| leeftijdscategorie_MF        | factor        | de leeftijdscategorie zoals weergegeven op het meldingsformulier |
+| Leeftijdscategorie_onderkaak | factor        | de leeftijdscategorie door het INBO      |
+| leeftijd_comp                | factor        | compilatie voor de leeftijdscategorie: INBO indien gekend, anders MF |
+| leeftijd_comp_bron           | factor        | welke bron wordt gebruikt voor leeftijd_comp (inbo of meldingsformulier |
+| leeftijd_maanden             | int           | de leeftijdsbepaling in maanden door het INBO |
+|                              |               |                                          |
+| ontweid_gewicht              | int           | het ontweid of leeggewicht (gewicht zonder ingewanden) |
+|                              |               |                                          |
+| aantal_embryos_onbekend      | boolean       | aanduiding TRUE/FALSE of het aantal embryo's gekend |
+| aantal_embryos               | int           | het aantal embryo's                      |
+| aantal_embryos_bron          | factor        | welke bron wordt gebruikt voor aantal_embryo's (inbo of meldingsformulier) |
+|                              |               |                                          |
+| onderkaaklengte_links        | int           | de onderkaaklengte van de linker kaak volgens MF |
+| onderkaaklengte_rechts       | int           | de onderkaaklengte van de rechter kaak volgens MF |
+| lengte_mm                    | int           | de onderkaaklengte gemeten door het INBO |
+| onderkaaklengte_comp         | int           | compilatie van de onderkaaklengte: INBO indien gekend, anders MF  |
+| onderkaaklengte_comp_bron    | factor        | welke bron wordt gebruikt voor onderkaaklengte_comp (inbo of meldingsformulier) |
+|                              |               |                                          |
+| type_comp                    | factor        | combinatie van leeftijd_comp, geslacht.MF en wildsoort |
 
 
 ### wildschade
 
 The `Wildschade_georef.csv` file is providing the raw data and numbers of the wildschade reporting, which will be updated when new data is available.
 
-Column metadata of the `Wildschade_georef.csv`- file after reading in is as follows:
+Column metadata of the `Wildschade_georef.csv`- file after filtering necessary variables is as follows:
+In the R-code we rename column variables as indicated in the "Nieuwe Naam" column.
 
-| Kolom                        | Eigenschappen | Toelichting                              |
-| ---------------------------- | ------------- | ---------------------------------------- |
-| ID                           | int           | random ID                                |
-| caseID                       | int           | ?                                        |
-| afschotjaar                  | int           | het jaar van het schadegeval (2006-2020) |
-| schadeBasisCode              | factor        | verzamel code van het type schadegeval   |
-| schadeCode                   | factor        | detail code van het type schadegeval     |
-| SoortNaam                    | factor        | het type gewas dat werd beschadigd (enkel voor GEWAS schade)  |
-| wildsoort                    | factor        | het type dier                            |
-| afschot_datum                | date          | datum van schadegeval  (DD/MM/YYYY)      |
-| provincie                    | factor        | de provincie van het schadegeval         |
-| FaunabeheerZone              | int           | de faunabeheerzone van het schadegeval (1 tem 10 or NA)  |
-| fbdz                         | factor        | ?                                        |
-| NISCODE                      | factor        | de niscode van het schadegeval           | 
-| gemeente_afschot_locatie     | factor        | de gemeente van het schadegeval          |
-| UTM5code                     | factor        | de 5 x 5 UTM code van het schadegeval    |
-| perceelPolygon               | str           | polygon coordinaten van het schadegeval  |
-| fbz_gemeente                 | factor        | de gemeente binnenin de fbz van het schadegeval |
-| season                       | factor        | het seizoen van het schadegeval          |
+| Kolom                        | Nieuwe Naam     | Eigenschappen | Toelichting                             |
+| ---------------------------- | --------------- | ------------- |---------------------------------------- |
+| UUID                         | UUID            | int           | uniek ID                                 |
+| IndieningID                  | caseID          | int           | case ID - soms meerdere UUID per case    |
+| Jaartal                      | afschotjaar     | int           | het jaar van het schadegeval (2006-2020) |
+| IndieningSchadeBasisCode     | schadeBasisCode | factor        | verzamel code van het type schadegeval (ANDERE, GEWAS, VRTG)  |
+| IndieningSchadeCode          | schadeCode      | factor        | detail code van het type schadegeval (subset van schadeBasisCode) |
+| SoortNaam                    | SoortNaam       | factor        | het type gewas dat werd beschadigd (enkel voor GEWAS schade)  |
+| DierSoortNaam                | wildsoort       | factor        | het type dier                            |
+| DatumVeroorzaakt             | afschot_datum   | date          | datum van schadegeval  (DD/MM/YYYY)      |
+| provincie                    | provincie       | factor        | de provincie van het schadegeval         |
+| fbz                          | FaunabeheerZone | int           | de faunabeheerzone van het schadegeval (1 tem 10 or NA)  |
+| fbdz                         | fbdz            | factor        | faunabeheerzone van schadegeval (subset van fbz)    |
+| NisCode_Georef               | NISCODE         | factor        | de niscode van het schadegeval           | 
+| GemNaam_Georef               | gemeente_afschot_locatie     | factor        | de gemeente van het schadegeval          |
+| UTM5                         | UTM5code        | factor        | de 5 x 5 UTM code van het schadegeval    |
+| PolyLocatieWKT               | perceelPolygon  | factor        | polygon coordinaten van het schadegeval  |
+| x                            | x               | numeric        | x-coordinaat van schadegeval locatie     |
+| y                            | y               | numeric        | y-coordinaat van schadegeval locatie     |
+
 
 
 ## GIS data files
@@ -124,7 +130,7 @@ The object `spatialData` can easily be loaded in R by
 
 ## GIS reference data
 
-* `gemeentecodes.csv`
+* `gemeentecodes.csv`: Used to match NIS.code to postcode and name for each gemeente (commune) in Flanders.
 
 | Kolom    | Eigenschappen | Toelichting              |
 | -------- | --------------| ------------------------ |

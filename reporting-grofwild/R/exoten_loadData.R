@@ -16,16 +16,42 @@ loadExotenData <- function(
   dataFile <- file.path(dataDir, switch(type,
           "indicators" = "exoten_data_input_checklist_indicators.tsv"))
   
-  rawData <- fread(dataFile, stringsAsFactors = FALSE)
+  if (type == "indicators") {
+
+    # recode missing values to NA
+    rawData <- fread(dataFile, stringsAsFactors = FALSE)
+    rawData[rawData == ""] <- NA
+                     
+    
+    ## extract necessary columns
+    rawDataFiltered <- rawData[, c(
+            # Period - slider should use first_observed
+            "first_observed", "last_observed", 
+            # Taxonomy
+            "kingdom", "phylum", "class", "order", "family",
+            # Locality
+            "locality", "locationId", "native_range",
+            # Degree establishment
+            "degree_of_establishment",
+            # Pathway
+            "pathway_level1", "pathway_level2",
+            # Habitat
+            # "habitat",  ## I think it's easier to use the 3 below / habitat is not NA, but "" when missing
+            "marine", "freshwater", "terrestrial",
+            # Source
+            "source"
+        )]
+        
+    ## exclude data before 1950
+    toExclude <- (rawDataFiltered$first_observed < 1950 & !is.na(rawDataFiltered$first_observed))
+    warning("Exoten: ", sum(toExclude), " observaties dateren van voor 1950 en zijn dus uitgesloten")
+    rawDataFiltered <- rawDataFiltered[!toExclude, ]
+    
+    
+    attr(rawDataFiltered, "Date") <- file.mtime(dataFile)
   
-  ## exclude data before 1950
-  toExclude <- (rawData$first_observed < 1950 & !is.na(rawData$first_observed))
-  warning("Exoten: ", sum(toExclude), " observaties dateren van voor 1950 en zijn dus uitgesloten")
-  rawData <- rawData[!toExclude, ]
+  }
   
-  
-  attr(rawData, "Date") <- file.mtime(dataFile)
-  
-  return(rawData)
+  return(rawDataFiltered)
   
 }

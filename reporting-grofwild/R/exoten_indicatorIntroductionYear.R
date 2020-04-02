@@ -20,7 +20,7 @@ countIntroductionYearExoten <- function(data, region = NULL){
   ## generate plot
   plot <- indicator_introduction_year(
             df = plotData, 
-            start_year_plot = min(plotData$first_observed)
+            start_year_plot = min(plotData$first_observed) - 1
           )
   
   ## convert to plotly object

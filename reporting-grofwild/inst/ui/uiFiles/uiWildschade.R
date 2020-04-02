@@ -26,22 +26,23 @@ tagList(
                 
                 tags$p(class = "lead", "Op deze pagina kan je de beschikbare gegevens over faunaschade raadplegen. Onder schade verstaan we verkeersongelukken met wilde dieren en schade aan landbouwgewassen, tuinen of sportvelden."),
                 
-                tags$p("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
-                
-                tags$p("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). Binnen elk type schade  kan je verder kiezen uit enkele subcategorie\u00EBn. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."),
-                
-                tags$p("Opgelet: De gekozen filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
-                
-                tags$p(paste0("Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(schadeData$afschot_datum, format = "%d/%m/%Y"), na.rm = TRUE), "%d/%m/%Y"), ".")),
-                
-                tags$p("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data. De figuren zelf kan je ook als .jpg downloaden."),
-                
-                tags$p("Indien je fouten ontdekt of merkt dat er data ontbreken, gelieve dit dan te melden door een email te sturen naar: ",
-                        tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie-wildschade", target="_blank", "faunabeheer@inbo.be"), " ."),
-                
-                tags$p("Opgelet deze data en figuren geven de doorgegeven meldingen weer. Er gebeurt geen systematische terreincontrole voor deze meldingen."),
-                
-                tags$h2("Filter Data"),
+                tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
+                    tags$ul(
+                        tags$li("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). 
+																 Binnen elk type schade kan je verder kiezen uit enkele subcategorieën. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."), 
+                        tags$li("Opgelet: Pas nadat je  voor de diersoort en type schade minstens een categorie hebt aangeduid, zullen de figuren en tabellen aangemaakt worden."), 
+                        tags$li("Opgelet: De filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
+                        tags$li("Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(schadeData$afschot_datum, format = "%d/%m/%Y"), na.rm = TRUE), "%d/%m/%Y"), "."),
+                        tags$li("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
+                        tags$li("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data."),
+                        tags$li("De figuren zelf kan je ook als .png downloaden."),
+                        tags$li("Opgelet: Deze data en figuren geven de meldingen weer zoals ze ingegeven werden. Er gebeurt op dit moment geen systematische terreincontrole voor deze meldingen, ook wordt er niet gecontroleerd op eventuele dubbele meldingen van hetzelfde schadegeval."),
+                        tags$li("Indien je fouten ontdekt of merkt dat er data ontbreken, gelieve dit dan te melden door een email te sturen naar: ",
+                                tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie-wildschade", target="_blank", "faunabeheer@inbo.be"), " .")
+                    )
+                ),
+                        
+                tags$h2("Keuzemenu"),
                 wellPanel(
                         fixedRow(
                                 # Select species
@@ -74,6 +75,8 @@ tagList(
         
         tags$div(class = "container",
                 
+                h2("Schademeldingen"),
+            
                 h2("Landkaart 1"),
                 
                 tags$p("De eerste kaart toont de geografische spreiding van de gemelde schadegevallen in Vlaanderen. De schadegevallen zijn hier telkens gegroepeerd weergegeven voor een bepaalde regio-schaal (Vlaanderen, provincies, faunabeheerzones, gemeenten, 5x5 km UTM-hok, ...)."),

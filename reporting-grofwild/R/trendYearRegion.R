@@ -143,13 +143,13 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 #	plotData$wildsoort <- NULL
 	
 	colors <- rev(inbo.2015.colours(n = length(locaties)))
-	title <- paste(titlePrefix,
+	title <- paste0(titlePrefix,
 			if (unit == "absolute") "" else "/100ha",
-			"voor", if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ",...") else (tolower(wildNaam)), 
-      "\n in", if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...") else paste(locaties, collapse = ", "), 
+			" voor ", if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ", ...") else (tolower(wildNaam)), 
+      "\n in ", if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...") else paste(locaties, collapse = ", "), 
 			ifelse(timeRange[1] != timeRange[2],
-					paste("van", timeRange[1], "tot", timeRange[2]),
-					paste("in", timeRange[1])
+					paste(" van", timeRange[1], "tot", timeRange[2]),
+					paste(" in", timeRange[1])
 			)
 	)
 	

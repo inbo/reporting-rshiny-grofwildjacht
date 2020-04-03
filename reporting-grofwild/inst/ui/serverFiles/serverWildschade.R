@@ -381,9 +381,9 @@ observe({
 # Title for the map
 output$schade_title <- renderUI({
             
-            
+            n_lk1 <- length(input$schade_species) 
             h3(paste("Schademeldingen", 
-                            "voor", paste(tolower(input$schade_species), collapse = ", "),
+                            "voor", if (n_lk1 > 1) paste(paste(tolower(input$schade_species)[1:n_lk1-1], collapse = ", "), "en", tolower(input$schade_species[n_lk1])) else tolower(input$schade_species),
                             "in", input$schade_year))
             
             
@@ -553,19 +553,25 @@ output$schade_time2 <- renderUI({
 
 output$schade_titlePerceel <- renderUI({
             
-            
+            n_lk2 <- length(input$schade_species)      
+      
             h3(paste("Schademeldingen", 
-                            "voor", paste(tolower(input$schade_species), collapse = ", "),
-                            "per", switch(input$schade_variable2, 
+                    "voor", if (n_lk2 > 1) paste(paste(tolower(input$schade_species)[1:n_lk2-1], collapse = ", "), "en", tolower(input$schade_species[n_lk2])) else tolower(input$schade_species),
+                    "per", switch(input$schade_variable2, 
                                             season = "seizoen",
                                             schadeCode = "schadetype"),
                             #jaartallen
-                            paste0("(", 
-                                    input$schade_time2[1], 
-                                    " tot ", 
-                                    input$schade_time2[2],
-                                    ")"
-                            )
+              ifelse(input$schade_time2[1] != input$schade_time2[2],
+                  paste0("(", input$schade_time2[1], " tot ", input$schade_time2[2], ")"),
+                  paste0("(", input$schade_time2[1], ")")
+              )#,
+              
+#                            paste0("(", 
+#                                    input$schade_time2[1], 
+#                                    " tot ", 
+#                                    input$schade_time2[2],
+#                                    ")"
+#                            )
                     ))
             
         })

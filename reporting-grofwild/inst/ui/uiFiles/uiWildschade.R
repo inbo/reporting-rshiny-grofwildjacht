@@ -30,7 +30,7 @@ tagList(
                     tags$ul(
                         tags$li("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). 
 																 Binnen elk type schade kan je verder kiezen uit enkele subcategorieën. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."), 
-                        tags$li("Opgelet: Pas nadat je  voor de diersoort en type schade minstens een categorie hebt aangeduid, zullen de figuren en tabellen aangemaakt worden."), 
+                        tags$li("Opgelet: Pas nadat je voor de diersoort en type schade minstens één categorie hebt aangeduid, zullen de figuren en tabellen aangemaakt worden."), 
                         tags$li("Opgelet: De filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
                         tags$li("Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(schadeData$afschot_datum, format = "%d/%m/%Y"), na.rm = TRUE), "%d/%m/%Y"), "."),
                         tags$li("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),

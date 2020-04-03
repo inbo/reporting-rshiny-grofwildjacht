@@ -432,7 +432,7 @@ output$map_timeTitle <- renderUI({
                     "utm5" = "5x5 UTM")
             
             
-            h3("Regio-schaal:", regionLevel)
+            h3("Evolutie gerapporteerd afschot", regionLevel)
             
         })
 
@@ -678,7 +678,7 @@ output$map_title <- renderUI({
             
             
             h3(paste("Gerapporteerd", 
-                            if (input$map_unit == "absolute") "aantal" else "aantal/100ha", 
+                            if (input$map_unit == "absolute") "afschot" else "afschot/100ha", 
                             "voor", tolower(input$wild_species),
                             "in", input$map_year[1]))
             

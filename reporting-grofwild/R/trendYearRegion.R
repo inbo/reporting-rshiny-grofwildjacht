@@ -105,6 +105,7 @@ createTrendData <- function(data, allSpatialData,
 #' @param timeRange numeric vector, time range selected for plot
 #' @inheritParams createSpaceData
 #' @inheritParams countYearProvince
+#' @inheritParams plotModuleServer
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given species the observed number 
@@ -121,7 +122,7 @@ createTrendData <- function(data, allSpatialData,
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 trendYearRegion <- function(data, locaties = NULL, timeRange = NULL, 
-        unit = c("absolute", "relative"), 
+        unit = c("absolute", "relative"), schade = FALSE,
 		width = NULL, height = NULL) {
 	
 	
@@ -130,19 +131,22 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 	
 	unit <- match.arg(unit)
 	wildNaam <- unique(data$wildsoort)
-	
+  title_wildnaam <- unlist(strsplit(wildNaam, split = ", "))
+  titlePrefix <- if (!schade) "Gerapporteerd afschot" else "Evolutie schademeldingen"
+  
 	
 	if (is.null(locaties))
 		stop("Gelieve regio('s) te selecteren")
-	
+  	
 	# Select data
 	plotData <- subset(data, locatie %in% locaties)
 #	plotData$wildsoort <- NULL
 	
 	colors <- rev(inbo.2015.colours(n = length(locaties)))
-	title <- paste("Gerapporteerd",
-			if (unit == "absolute") "aantal" else "aantal/100ha",
-			"voor", tolower(wildNaam), "\n",
+	title <- paste(titlePrefix,
+			if (unit == "absolute") "" else "/100ha",
+			"voor", if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ",...") else (tolower(wildNaam)), 
+      "\n in", if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...") else paste(locaties, collapse = ", "), 
 			ifelse(timeRange[1] != timeRange[2],
 					paste("van", timeRange[1], "tot", timeRange[2]),
 					paste("in", timeRange[1])

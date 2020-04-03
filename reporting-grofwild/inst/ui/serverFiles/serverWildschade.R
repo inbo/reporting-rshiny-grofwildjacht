@@ -382,7 +382,7 @@ observe({
 output$schade_title <- renderUI({
             
             
-            h3(paste("Gerapporteerd aantal schadegevallen", 
+            h3(paste("Schademeldingen", 
                             "voor", paste(tolower(input$schade_species), collapse = ", "),
                             "in", input$schade_year))
             
@@ -479,8 +479,8 @@ callModule(module = plotModuleServer, id = "schade_timePlotFlanders",
         plotFunction = "trendYearFlanders", 
         data = results$schade_timeDataFlanders,
         timeRange = reactive(input$schade_time),
-        unit = reactive(input$schade_unit)
-)
+        unit = reactive(input$schade_unit),
+        schade = TRUE)
 
 
 
@@ -517,7 +517,7 @@ output$schade_timeTitle <- renderUI({
                     "utm5" = "5x5 UTM")
             
             
-            h3("Regio-schaal:", regionLevel)
+            h3("Evolutie schademeldingen", regionLevel)
             
         })
 
@@ -529,8 +529,8 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
         data = results$schade_timeData,
         locaties = reactive(input$schade_region),
         timeRange = reactive(input$schade_time),
-        unit = reactive(input$schade_unit)
-)
+        unit = reactive(input$schade_unit),
+        schade = TRUE)
 
 
 
@@ -554,8 +554,8 @@ output$schade_time2 <- renderUI({
 output$schade_titlePerceel <- renderUI({
             
             
-            h3(paste("Schadegevallen", 
-                            "van", paste(tolower(input$schade_species), collapse = ", "),
+            h3(paste("Schademeldingen", 
+                            "voor", paste(tolower(input$schade_species), collapse = ", "),
                             "per", switch(input$schade_variable2, 
                                             season = "seizoen",
                                             schadeCode = "schadetype"),

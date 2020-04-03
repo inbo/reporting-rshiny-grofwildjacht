@@ -122,7 +122,7 @@ tagList(
                 
                 fixedRow(
                         column(6,
-                                h3("Referentie (Vlaanderen)"),
+                                h3("Evolutie gerapporteerd afschot Vlaanderen"),
                                 plotModuleUI(id = "map_timePlotFlanders", height = "400px"),
                                 optionsModuleUI(id = "map_timePlotFlanders", exportData = TRUE,
                                         doWellPanel = FALSE)

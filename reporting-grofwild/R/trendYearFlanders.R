@@ -9,7 +9,7 @@
 #' @author mvarewyck
 #' @import plotly
 #' @export
-trendYearFlanders <- function(data, timeRange, unit = c("absolute", "relative"), schade = FALSE, 
+trendYearFlanders <- function(data, timeRange, unit = c("absolute", "relative"), schadeTitles = FALSE, 
 		width = NULL, height = NULL) {
 	
 	
@@ -20,11 +20,16 @@ trendYearFlanders <- function(data, timeRange, unit = c("absolute", "relative"),
   
 #	data$wildsoort <- NULL 
   
-  titlePrefix <- if (!schade) "Gerapporteerd afschot" else "Evolutie schademeldingen"
+  titlePrefix <- if (!schadeTitles) "Gerapporteerd afschot" else "Evolutie schademeldingen"
 	
 	title <- paste0(titlePrefix,
 			if (unit == "relative") "/100ha",
-			" voor ", if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ", ...") else tolower(wildNaam),
+			
+      " voor ", 
+      if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ", ...") 
+      else if (length(title_wildnaam) > 1) paste0(paste(tolower(title_wildnaam[1:length(title_wildnaam)-1]), collapse = ", "), " en ", tolower(title_wildnaam[length(title_wildnaam)]) )
+      else tolower(wildNaam),
+      
       "\nin Vlaanderen ",
 			ifelse(timeRange[1] != timeRange[2],
 					paste("van", timeRange[1], "tot", timeRange[2]),

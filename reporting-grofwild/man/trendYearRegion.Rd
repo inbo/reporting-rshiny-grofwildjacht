@@ -9,7 +9,7 @@ trendYearRegion(
   locaties = NULL,
   timeRange = NULL,
   unit = c("absolute", "relative"),
-  schade = FALSE,
+  schadeTitles = FALSE,
   width = NULL,
   height = NULL
 )
@@ -24,7 +24,7 @@ trendYearRegion(
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
 should be reported}
 
-\item{schade}{boolean, indicates whether module is used for schadeData; default is FALSE}
+\item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
 
 \item{width}{plot width (optional)}
 

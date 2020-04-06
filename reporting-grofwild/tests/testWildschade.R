@@ -71,13 +71,13 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
                     data = trendData,
                     timeRange = c(2018, 2019),
                     unit = "absolute",
-                    schade = TRUE) else 
+                    schadeTitles = TRUE) else 
             trendPlot <- trendYearRegion(
                     data = trendData,
                     timeRange = c(2018, 2019),
                     unit = "absolute",
                     locaties = trendData$locatie[1:7],
-                    schade = TRUE)
+                    schadeTitles = TRUE)
         
         print(trendPlot)
         

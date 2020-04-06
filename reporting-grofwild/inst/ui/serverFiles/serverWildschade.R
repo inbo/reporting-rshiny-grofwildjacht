@@ -480,7 +480,7 @@ callModule(module = plotModuleServer, id = "schade_timePlotFlanders",
         data = results$schade_timeDataFlanders,
         timeRange = reactive(input$schade_time),
         unit = reactive(input$schade_unit),
-        schade = TRUE)
+        schadeTitles = TRUE)
 
 
 
@@ -530,7 +530,7 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
         locaties = reactive(input$schade_region),
         timeRange = reactive(input$schade_time),
         unit = reactive(input$schade_unit),
-        schade = TRUE)
+        schadeTitles = TRUE)
 
 
 

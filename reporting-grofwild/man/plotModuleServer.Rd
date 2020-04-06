@@ -22,7 +22,8 @@ plotModuleServer(
   schadeChoices = NULL,
   schadeChoicesVrtg = NULL,
   schadeChoicesGewas = NULL,
-  variable = NULL
+  variable = NULL,
+  schadeTitles = FALSE
 )
 }
 \arguments{
@@ -66,6 +67,8 @@ defined externally for large map}
 \item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
 
 \item{variable}{character, defines which variable is of interest for the table}
+
+\item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
 }
 \value{
 no return value; plot output object is created

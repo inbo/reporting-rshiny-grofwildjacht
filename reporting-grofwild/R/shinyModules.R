@@ -251,6 +251,7 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @inheritParams plotBioindicator
+#' @inheritParams trendYearRegion
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
@@ -261,7 +262,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     categorie = NULL, bioindicator = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
     datatable = FALSE, schadeChoices = NULL, schadeChoicesVrtg = NULL,
-    schadeChoicesGewas = NULL, variable = NULL) {
+    schadeChoicesGewas = NULL, variable = NULL, schadeTitles = FALSE) {
   
   subData <- reactive({
         
@@ -347,8 +348,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(timeRange = timeRange()),
             if (!is.null(unit))
               list(unit = unit()),
-            if (isTRUE(schade))
-              list(schade = schade),
+            if (isTRUE(schadeTitles))
+              list(schadeTitles = schadeTitles),
             if (!is.null(schadeChoices))
               list(schadeChoices = schadeChoices()),
             if (!is.null(schadeChoicesVrtg))

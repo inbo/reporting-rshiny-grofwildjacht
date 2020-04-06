@@ -66,6 +66,8 @@ tagList(
                         )
                 ),
                 
+                h2("Schademeldingen"),
+                
                 uiOutput("schade_summary")
         
         ),
@@ -77,7 +79,6 @@ tagList(
         
         tags$div(class = "container",
                 
-                h2("Schademeldingen"),
             
                 h2("Landkaart 1"),
                 

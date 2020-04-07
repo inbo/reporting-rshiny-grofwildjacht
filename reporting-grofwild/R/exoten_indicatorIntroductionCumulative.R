@@ -1,13 +1,13 @@
-#' Plot number of new introductions per year
+#' Cumulative plot of yearly number of new introductions
 #' 
-#' @param data 
 #' @param region
-#' @importFrom trias indicator_introduction_year
+#' @inheritParams countIntroductionYear
+#' @importFrom trias indicator_total_year
 #' @return plotly plot with attirubte "proportionInfo" indicating the proportion of 
 #' data that was used for the plot (i.e. without missing values for the )
 #' 
 #' @export
-countIntroductionYear <- function(data, region = NULL){
+cumulativeIntroductionYear <- function(data, region = NULL){
   
   ## apply region filter
 #  filteredData <- data[data$locality == region,]
@@ -18,10 +18,10 @@ countIntroductionYear <- function(data, region = NULL){
 #  plotData <- filteredData[!toExclude,]
   
   ## generate plot
-  plot <- indicator_introduction_year(
-            df = data, 
-            start_year_plot = min(data$first_observed) - 1
-          )
+  plot <- indicator_total_year(
+      df = data, 
+      start_year_plot = min(data$first_observed, na.rm = TRUE) - 1
+  )
   
   ## convert to plotly object
   p <- ggplotly(plot)

@@ -80,6 +80,10 @@ if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
 }
 
 
+### Load exoten data
+### -------------
+exotenData <- loadExotenData(type = "indicators")
+
 
 ### Debugging
 ### -----------

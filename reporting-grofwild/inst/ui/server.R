@@ -76,6 +76,12 @@ shinyServer(function(input, output, session) {
                         source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
                         
                     })
+            # Tabpanel wildschade
+            output$exoten_content <- renderUI({
+                      
+                      source(file.path("uiFiles", "uiExoten.R"), local = TRUE)$value
+                      
+                    })                
             
          
         })

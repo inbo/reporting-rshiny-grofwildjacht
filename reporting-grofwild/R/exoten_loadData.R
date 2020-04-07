@@ -47,6 +47,26 @@ loadExotenData <- function(
     warning("Exoten: ", sum(toExclude), " observaties dateren van voor 1950 en zijn dus uitgesloten")
     rawDataFiltered <- rawDataFiltered[!toExclude, ]
     
+    ## recode `source` variable
+    
+    ## Remove everything up until (jjjj)<space(s)>.<space(s)>
+    rawDataFiltered$source <- sub("(.*?)\\(\\d{4}\\)\\s*\\.\\s*", "", rawDataFiltered$source)
+    ## Remove everything after the first dot
+    rawDataFiltered$source <- sub("\\..*$", "", rawDataFiltered$source)
+    
+    ## re-define source into shorter names
+    rawDataFiltered$source[rawDataFiltered$source == "Ad hoc checklist of alien species in Belgium"] <- "Ad hoc alien species checklist"
+    rawDataFiltered$source[rawDataFiltered$source == "Checklist of alien birds of Belgium"] <- "Alien Bird Checklist"
+    rawDataFiltered$source[rawDataFiltered$source == "Checklist of non-native freshwater fishes in Flanders, Belgium"] <- "Alien Fish Flanders"
+    rawDataFiltered$source[rawDataFiltered$source == "Inventory of alien macroinvertebrates in Flanders, Belgium"] <- "Alien Macroinverts"
+    rawDataFiltered$source[rawDataFiltered$source == "Manual of the Alien Plants of Belgium"] <- "Manual of Alien Plants"
+    rawDataFiltered$source[rawDataFiltered$source == "RINSE - Pathways and vectors of biological invasions in Northwest Europe"] <- "RINSE2"
+    rawDataFiltered$source[rawDataFiltered$source == "World Register of Introduced Marine Species (WRiMS)"] <- "WRiMS"
+    
+    ## currently not in the data
+    rawDataFiltered$source[rawDataFiltered$source == "RINSE - Registry of non-native species in the Two Seas region countries (Great Britain, France, Belgium and the Netherlands)" ] <- "RINSE1"
+    rawDataFiltered$source[rawDataFiltered$source == "Registry of introduced terrestrial molluscs in Belgium"] <- "Alien Mollusc checklist"
+    rawDataFiltered$source[rawDataFiltered$source == "Catalogue of the Rust Fungi of Belgium"] <- "Belgian rust fungi"
     
     attr(rawDataFiltered, "Date") <- file.mtime(dataFile)
   

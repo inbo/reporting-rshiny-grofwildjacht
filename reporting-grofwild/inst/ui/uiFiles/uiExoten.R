@@ -30,15 +30,41 @@ tagList(
                 # Select time range
                 column(4, uiOutput("exoten_timeOptions")),
                 
-                # Select type schade
-                column(4, uiOutput("exoten_regionList"))#,
-#                
-#                # Select gewas & voertuig
-#                column(4, uiOutput("schade_subcode"))
-            )
+                # Select regio
+                column(4, uiOutput("exoten_regionOptions")),
+                
+                # show n
+                column(4, textOutput("nrows"))
+            )),
+        wellPanel(
+            fixedRow(
+                # Select bron
+                column(4, uiOutput("exoten_bronOptions")),
+                
+                # Select kingdom
+                column(4, uiOutput("exoten_kingdomOptions")),
+                
+                # show n of subchoices
+                column(4, textOutput("nrowsFinal"))
+  
+                )
         ),
         
-        textOutput("nrows")
+        
     
+    ),
+    
+    tags$div(class = "container",
+        
+        uiOutput("exoten_titleSoortenPerJaar"),        
+        plotModuleUI(id = "exoten_soortenPerJaar"),
+        tags$br(),
+        
+        uiOutput("exoten_titleSoortenCumulatiefPlot"),        
+        plotModuleUI(id = "exoten_soortenCumulatiefPlot"),
+        tags$br()
+        
+        
     )
+        
 )

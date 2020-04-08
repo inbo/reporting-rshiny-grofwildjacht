@@ -25,6 +25,8 @@ loadExotenData <- function(
     
     ## extract necessary columns
     rawDataFiltered <- rawData[, c(
+            # necessary to use trias function
+            "key",
             # Period - slider should use first_observed
             "first_observed", "last_observed", 
             # Taxonomy
@@ -46,6 +48,9 @@ loadExotenData <- function(
     toExclude <- (rawDataFiltered$first_observed < 1950 & !is.na(rawDataFiltered$first_observed))
     warning("Exoten: ", sum(toExclude), " observaties dateren van voor 1950 en zijn dus uitgesloten")
     rawDataFiltered <- rawDataFiltered[!toExclude, ]
+    
+    ## convert english to dutch names
+    rawDataFiltered$locality <- exoten_dutchNames(rawDataFiltered$locality, type = "regio")
     
     ## recode `source` variable
     

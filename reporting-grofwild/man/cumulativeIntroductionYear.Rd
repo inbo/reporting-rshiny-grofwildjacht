@@ -10,8 +10,7 @@ cumulativeIntroductionYear(data, region = NULL)
 \item{data}{}
 }
 \value{
-plotly plot with attirubte "proportionInfo" indicating the proportion of 
-data that was used for the plot (i.e. without missing values for the )
+list with plot and data
 }
 \description{
 Cumulative plot of yearly number of new introductions

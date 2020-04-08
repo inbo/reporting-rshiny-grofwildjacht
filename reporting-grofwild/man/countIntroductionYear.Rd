@@ -10,7 +10,7 @@ countIntroductionYear(data, region = NULL)
 \item{data}{}
 }
 \value{
-plotly plot with attirubte "proportionInfo" indicating the proportion of 
+list with plot and data
 data that was used for the plot (i.e. without missing values for the )
 }
 \description{

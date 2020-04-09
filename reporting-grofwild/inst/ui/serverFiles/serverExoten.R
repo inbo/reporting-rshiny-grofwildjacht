@@ -67,6 +67,51 @@ output$exoten_kingdomOptions <- renderUI({
     })
 
 
+output$exoten_phylumChoices <- renderUI({ 
+      
+              if (!is.null(req(input$exoten_kingdom)))
+                
+                selectInput(inputId = "exoten_phylum", label = "Phylum",
+                    choices = na.omit(unique(results$subExotenData()$phylum)),
+                    selected = NULL, multiple = TRUE
+                )
+    })
+output$exoten_classChoices <- renderUI({
+      
+      if (!is.null(req(input$exoten_phylum)) & !is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_class", label = "Klasse",
+            choices = na.omit(unique(results$subExotenData()$class)),
+            selected = NULL, multiple = TRUE
+        )
+    })
+
+output$exoten_orderChoices <- renderUI({
+      
+      if (!is.null(req(input$exoten_class)) & 
+          !is.null(req(input$exoten_phylum)) & 
+          !is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_order", label = "Orde",
+            choices = na.omit(unique(results$subExotenData()$order)),
+            selected = NULL, multiple = TRUE
+        )
+    })
+
+output$exoten_familyChoices <- renderUI({
+      
+      if (!is.null(req(input$exoten_order)) &
+          !is.null(req(input$exoten_class)) & 
+          !is.null(req(input$exoten_phylum)) & 
+          !is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_family", label = "Familie",
+            choices = na.omit(unique(results$subExotenData()$family)),
+            selected = NULL, multiple = TRUE
+        )
+    })
+
+
 # Filter data upon user choices
 
 results$exoten_data <- reactive({
@@ -77,11 +122,13 @@ results$exoten_data <- reactive({
       
       # filter upon user choices
       if (!is.null(input$exoten_bron)) {    
+        
         toKeepBron <- results$subExotenData()$source %in% req(input$exoten_bron)
-        toKeep <- toKeepBron
+        
       } else toKeepBron <- NULL
       
       if (!is.null(input$exoten_kingdom)) {
+        
         toKeepKingdom <- results$subExotenData()$kingdom %in% req(input$exoten_kingdom)
         
       } else toKeepKingdom <- NULL
@@ -108,10 +155,11 @@ results$exoten_data <- reactive({
 results$exoten_currentBronOptions = reactive({
       na.omit(unique(results$exoten_data()$source))
     })
-observe({
-      updateSelectInput(session, "exoten_bronOptions",
+observeEvent(results$exoten_currentBronOptions(), {
+      updateSelectInput(session, "exoten_bron",
           choices = results$exoten_currentBronOptions()
-      )})
+      )
+    })
 
 
 output$nrowsFinal <- renderText({
@@ -142,7 +190,7 @@ output$exoten_titleSoortenPerJaar <- renderUI({
 
 callModule(module = plotModuleServer, id = "exoten_soortenPerJaar",
     plotFunction = "countIntroductionYear", 
-    data = if (!is.null(results$exoten_data)) reactive(results$exoten_data()) else reactive(results(subExotenData()))
+    data = reactive(results$exoten_data())
 )
 
 ## Plot cumulative number of species per year
@@ -162,5 +210,5 @@ output$exoten_titleSoortenCumulatiefPlot <- renderUI({
 
 callModule(module = plotModuleServer, id = "exoten_soortenCumulatiefPlot",
     plotFunction = "cumulativeIntroductionYear", 
-    data = if (!is.null(results$exoten_data)) reactive(results$exoten_data()) else reactive(results(subExotenData()))
+    data = reactive(results$exoten_data())
 )

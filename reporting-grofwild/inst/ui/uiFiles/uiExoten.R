@@ -44,9 +44,15 @@ tagList(
                 # Select kingdom
                 column(4, uiOutput("exoten_kingdomOptions")),
                 
-                # show n of subchoices
-                column(4, textOutput("nrowsFinal"))
+                # show taxa subchoices
+                column(4, tagList(uiOutput("exoten_phylumChoices"),
+                                  uiOutput("exoten_classChoices"),
+                                  uiOutput("exoten_orderChoices"),
+                                  uiOutput("exoten_familyChoices")))
   
+                ),
+                
+            fixedRow(column(4, textOutput("nrowsFinal"))
                 )
         ),
         

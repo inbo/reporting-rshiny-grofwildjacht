@@ -52,7 +52,7 @@ exoten_habitat <- exoten_habitatChoices[1:length(exoten_habitatChoices)]
 
 #kingdom
 exoten_kingdomChoices <- unique(exotenData$kingdom[!is.na(exotenData$kingdom)])
-exoten_kingdom <- exoten_kingdomChoices[1] #[1:length(exoten_kingdomChoices)]
+exoten_kingdom <- exoten_kingdomChoices[3] #[1:length(exoten_kingdomChoices)]
 
 #phylum
 exoten_phylumChoices <- na.omit(unique(exotenData$phylum[exotenData$kingdom %in% exoten_kingdom]))

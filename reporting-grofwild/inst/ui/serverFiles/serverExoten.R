@@ -51,6 +51,8 @@ output$nrows <- renderText({
 
 output$exoten_bronOptions <- renderUI({ 
       
+#      subset(subExotenData)
+      
       selectInput(inputId = "exoten_bron", label = "Bron(nen)",
           choices = na.omit(unique(results$subExotenData()$source)),
           selected = NULL, multiple = TRUE)
@@ -69,16 +71,17 @@ output$exoten_kingdomOptions <- renderUI({
 
 output$exoten_phylumChoices <- renderUI({ 
       
-              if (!is.null(req(input$exoten_kingdom)))
-                
-                selectInput(inputId = "exoten_phylum", label = "Phylum",
-                    choices = na.omit(unique(results$subExotenData()$phylum)),
-                    selected = NULL, multiple = TRUE
-                )
+      if (!is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_phylum", label = "Phylum",
+            choices = na.omit(unique(results$subExotenData()$phylum)),
+            selected = NULL, multiple = TRUE
+        )
     })
 output$exoten_classChoices <- renderUI({
       
-      if (!is.null(req(input$exoten_phylum)) & !is.null(req(input$exoten_kingdom)))
+      if (!is.null(req(input$exoten_phylum)) & 
+          !is.null(req(input$exoten_kingdom)))
         
         selectInput(inputId = "exoten_class", label = "Klasse",
             choices = na.omit(unique(results$subExotenData()$class)),
@@ -179,12 +182,10 @@ output$nrowsFinal <- renderText({
 output$exoten_titleSoortenPerJaar <- renderUI({      
       
       h2(paste("Aantal geïntroduceerde uitheemse soorten per jaar", 
-              "in", vectorToTitleString(input$exoten_region),
-              ifelse(input$exoten_time[1] != input$exoten_time[2],
-                  paste("(", input$exoten_time[1], "tot", input$exoten_time[2], ")"),
-                  paste("(", input$exoten_time[1], ")")
-              ))
-      )
+                "in", vectorToTitleString(input$exoten_region),
+                yearToTitleString(input$exoten_time)
+              )
+        )
       
     })
 
@@ -198,14 +199,11 @@ callModule(module = plotModuleServer, id = "exoten_soortenPerJaar",
 output$exoten_titleSoortenCumulatiefPlot <- renderUI({      
       
       h2(paste("Cumulatief aantal geïntroduceerde uitheemse soorten", 
-              "in", vectorToTitleString(input$exoten_region),
-              ifelse(input$exoten_time[1] != input$exoten_time[2],
-                  paste("(", input$exoten_time[1], "tot", input$exoten_time[2], ")"),
-                  paste("(", input$exoten_time[1], ")")
-              ))
-      )
-      
-})
+                "in", vectorToTitleString(input$exoten_region),
+                yearToTitleString(input$exoten_time)
+              )
+        )
+   })
 
 
 callModule(module = plotModuleServer, id = "exoten_soortenCumulatiefPlot",

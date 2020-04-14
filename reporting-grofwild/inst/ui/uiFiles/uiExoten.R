@@ -28,27 +28,30 @@ tagList(
         wellPanel(
             fixedRow(
                 # Select time range
-                column(4, uiOutput("exoten_timeOptions")),
+                column(6, uiOutput("exoten_timeOptions")),
                 
                 # Select regio
-                column(4, uiOutput("exoten_regionOptions")),
+                column(6, uiOutput("exoten_regionOptions")),
                 
+            ),
+            fixedRow(
                 # show n
                 column(4, textOutput("nrows"))
-            )),
+
+                )),
         wellPanel(
             fixedRow(
                 # Select bron
                 column(4, uiOutput("exoten_bronOptions")),
                 
                 # Select kingdom
-                column(4, uiOutput("exoten_kingdomOptions")),
+                column(4, uiOutput("exoten_kingdomOptions"))#,
                 
-                # show taxa subchoices
-                column(4, tagList(uiOutput("exoten_phylumChoices"),
-                                  uiOutput("exoten_classChoices"),
-                                  uiOutput("exoten_orderChoices"),
-                                  uiOutput("exoten_familyChoices")))
+#                # show taxa subchoices
+#                column(4, tagList(uiOutput("exoten_phylumChoices"),
+#                                  uiOutput("exoten_classChoices"),
+#                                  uiOutput("exoten_orderChoices"),
+#                                  uiOutput("exoten_familyChoices")))
   
                 ),
                 

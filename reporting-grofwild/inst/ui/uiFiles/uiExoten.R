@@ -45,7 +45,9 @@ tagList(
                 column(4, uiOutput("exoten_bronOptions")),
                 
                 # Select kingdom
-                column(4, uiOutput("exoten_kingdomOptions"))#,
+                column(4, uiOutput("exoten_kingdomOptions")),
+                
+                column(4, uiOutput("exoten_pw1Options"))
                 
 #                # show taxa subchoices
 #                column(4, tagList(uiOutput("exoten_phylumChoices"),

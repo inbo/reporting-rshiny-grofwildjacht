@@ -176,7 +176,12 @@ percentageYearlyShotAnimals <- function(
 	
 	# ribbon color with transparency
 	colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
+  colorRibbonLine <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.75"), collapse = ","), ")")
+  
+  
   colorErrorbar <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "0.5"), collapse = ","), ")")
+  colorLine <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "0.75"), collapse = ","), ")")
+  
   
 	
 	# pervious plot
@@ -224,26 +229,35 @@ percentageYearlyShotAnimals <- function(
              # add bars
              add_trace(type = "bar",
                        x = ~dateHalfMonth, y = ~obsYear,
-                       marker = list(color = colorRibbon,
-                                     line = list(color = inbo.lichtblauw,
+                       marker = list(color = colorErrorbar, #colorRibbonLine
+                                     line = list(color = inbo.steun.donkerroos, #inbo.lichtblauw
                                                  width = 1.5)),
                        name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
              ) %>%
-             
-             # median
-             add_trace(x = ~dateHalfMonth, y = ~medianRange, 
-                 type = 'scatter', mode = 'markers',
-                 marker = list(color = inbo.steun.donkerroos,
-                     size = 6),
-                 name = getNameRange("Mediaan")
-             ) %>%
-             
-             # error bars
-            add_segments(x = ~dateHalfMonth, xend = ~dateHalfMonth,
-                         y = ~minRange, yend = ~maxRange, 
-                         line = list(color = colorErrorbar),
-                         name = getNameRange("Min-Max")
+                          
+            # min-max range
+      			add_ribbons(x = ~dateHalfMonth, 
+      					ymin = ~minRange, ymax = ~maxRange,
+                   #					color = 'rgba(0,100,80,0.2)',
+      					fill = 'tonexty', fillcolor = colorRibbon, #colorErrorbar
+      					line = list(color = inbo.lichtblauw), #colorLine
+      					name = getNameRange("Min-Max")
+      			) %>%
+            
+            # median
+            add_trace(x = ~dateHalfMonth, y = ~medianRange, 
+                type = 'scatter', mode = 'lines',
+                line = list(color = inbo.grijsblauw, #inbo.steun.donkerroos
+                    dash = "dot"), #size = 6, , width = 2 (default) 
+                name = getNameRange("Mediaan")
             ) %>%
+             
+#             # error bars
+#            add_segments(x = ~dateHalfMonth, xend = ~dateHalfMonth,
+#                         y = ~minRange, yend = ~maxRange, 
+#                         line = list(color = colorErrorbar),
+#                         name = getNameRange("Min-Max")
+#            ) %>%
               
               # layout
               layout(

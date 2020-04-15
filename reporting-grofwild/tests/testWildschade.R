@@ -17,11 +17,11 @@ load(file = file.path(dataDir, "spatialData.RData"))
 schadeData <- loadRawData(type = "wildschade")
 wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])
 
-species <- unique(schadeData$wildsoort)
-#  [1] "vos"         "wild zwijn"  "houtduif"    "smient"      "konijn"     
-#  [6] "edelhert"    "haas"        "grauwe gans" "wilde eend"  "wolf"       
-# [11] "ree"         "fazant"     
-
+species <- sort(unique(schadeData$wildsoort))
+#  [1] "Canadese gans" "edelhert"      "fazant"        "grauwe gans"  
+#  [5] "haas"          "houtduif"      "konijn"        "ree"          
+#  [9] "smient"        "vos"           "wild zwijn"    "wilde eend"   
+# [13] "wolf"         
 
 
 ## THE MAP

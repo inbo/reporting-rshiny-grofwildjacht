@@ -83,8 +83,12 @@ plotBioindicator <- function(data,
 		if (sourceIndicator == "both") {
 			
 			data$onderkaaklengte <- data$onderkaaklengte_comp
-			data <- subset(data, !is.na(onderkaaklengte_comp_bron))
-            colnames(data)[match("onderkaaklengte_comp_bron", colnames(data))] <- "bron" 
+      
+      # currently not done bc for some onderkaaklengte_comp values it is unclear at the
+      # moment where they were determined (mf vs inbo)
+#			data <- subset(data, !is.na(onderkaaklengte_comp_bron)) 
+    
+      colnames(data)[match("onderkaaklengte_comp_bron", colnames(data))] <- "bron" 
 			
 		} else {
 			

@@ -56,6 +56,9 @@ tagList(
 #                                  uiOutput("exoten_familyChoices")))
   
                 ),
+            fixedRow(column(4, uiOutput("exoten_habitatOptions")),
+                
+                     column(4, uiOutput("exoten_doeOptions"))),
                 
             fixedRow(column(4, textOutput("nrowsFinal"))
                 )

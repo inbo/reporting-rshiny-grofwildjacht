@@ -387,7 +387,8 @@ tagList(
                                                                     regionLevels = 1:2, exportData = TRUE,
                                                                     showDataSource = TRUE),
                                                             tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). 
-																																		Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
+																																		Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt."),
+                                                            tags$p(tags$i("Opmerking: Van de historische data (2002 - 2013) kan de bron momenteel niet achterhaald worden."))
                                                     ),
                                                     column(8, plotModuleUI(id = "wild_plot8"))
                                             ),

@@ -176,88 +176,89 @@ percentageYearlyShotAnimals <- function(
 	
 	# ribbon color with transparency
 	colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
-  colorRibbonLine <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.75"), collapse = ","), ")")
-  
-  
-  colorErrorbar <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "0.5"), collapse = ","), ")")
-  colorLine <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "0.75"), collapse = ","), ")")
+#  colorRibbonLine <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "1"), collapse = ","), ")")
+#  
+#  
+#  colorErrorbar <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "1"), collapse = ","), ")")
+#  colorLine <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "1"), collapse = ","), ")")
   
   
 	
 	# pervious plot
-#	pl <- plot_ly(dataPlot, width = width, height = height) %>%
-#			
-#			## specified range
-#			
-#			# min-max range
-#			add_ribbons(x = ~dateHalfMonth, 
-#					ymin = ~minRange, ymax = ~maxRange,
-##					color = 'rgba(0,100,80,0.2)',
-#					fill = 'tonexty', fillcolor = colorRibbon,
-#					line = list(color = inbo.lichtblauw), 
-#					name = getNameRange("Min-Max")
-#			) %>%
-#			
-#			# median
-#			add_trace(x = ~dateHalfMonth, y = ~medianRange, 
-#					type = 'scatter', mode = 'lines',
-#					line =  list(color = inbo.grijsblauw, dash = "dot"), 
-#					name = getNameRange("Mediaan")
-#			) %>%
-#			
-#			## specified year
-#			
-#			# observation
-#			add_trace(x = ~dateHalfMonth, y = ~obsYear, 
-#					type = 'scatter', mode = 'markers+lines',
-#					line = list(color = inbo.steun.donkerroos), 
-#					marker = list(color = inbo.steun.donkerroos), 
-#					name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
-#			) %>%
-#			
-#			# mean in entire year
-#			add_lines(x = ~dateHalfMonth, y = ~ meanYear,
-#					name = paste0("Uniforme verdeling (", as.character(jaar), ")"), 
-#					line = list(color = inbo.steun.donkerroos, dash = "dot")
-#			)	%>%	
-#			
-	      
-  # new version plot
-  pl <- plot_ly(data = dataPlot,
-                 width = width, height = height) %>%
-             
-             # add bars
-             add_trace(type = "bar",
-                       x = ~dateHalfMonth, y = ~obsYear,
-                       marker = list(color = colorErrorbar, #colorRibbonLine
-                                     line = list(color = inbo.steun.donkerroos, #inbo.lichtblauw
-                                                 width = 1.5)),
-                       name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
-             ) %>%
-                          
-            # min-max range
-      			add_ribbons(x = ~dateHalfMonth, 
-      					ymin = ~minRange, ymax = ~maxRange,
-                   #					color = 'rgba(0,100,80,0.2)',
-      					fill = 'tonexty', fillcolor = colorRibbon, #colorErrorbar
-      					line = list(color = inbo.lichtblauw), #colorLine
-      					name = getNameRange("Min-Max")
-      			) %>%
-            
-            # median
-            add_trace(x = ~dateHalfMonth, y = ~medianRange, 
-                type = 'scatter', mode = 'lines',
-                line = list(color = inbo.grijsblauw, #inbo.steun.donkerroos
-                    dash = "dot"), #size = 6, , width = 2 (default) 
-                name = getNameRange("Mediaan")
-            ) %>%
-             
-#             # error bars
-#            add_segments(x = ~dateHalfMonth, xend = ~dateHalfMonth,
-#                         y = ~minRange, yend = ~maxRange, 
-#                         line = list(color = colorErrorbar),
-#                         name = getNameRange("Min-Max")
+	pl <- plot_ly(dataPlot, width = width, height = height) %>%
+			
+			## specified range
+			
+			# min-max range
+			add_ribbons(x = ~dateHalfMonth, 
+					ymin = ~minRange, ymax = ~maxRange,
+#					color = 'rgba(0,100,80,0.2)',
+					fill = 'tonexty', fillcolor = colorRibbon,
+					line = list(color = inbo.lichtblauw), 
+					name = getNameRange("Min-Max")
+			) %>%
+			
+			# median
+			add_trace(x = ~dateHalfMonth, y = ~medianRange, 
+					type = 'scatter', mode = 'lines',
+					line =  list(color = inbo.grijsblauw, dash = "dot"), 
+					name = getNameRange("Mediaan")
+			) %>%
+			
+			## specified year
+			
+			# observation
+			add_trace(x = ~dateHalfMonth, y = ~obsYear, 
+					type = 'scatter', mode = 'markers+lines',
+					line = list(color = inbo.steun.donkerroos), 
+					marker = list(color = inbo.steun.donkerroos), 
+					name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
+			) %>%
+			
+			# mean in entire year
+			add_lines(x = ~dateHalfMonth, y = ~ meanYear,
+					name = paste0("Uniforme verdeling (", as.character(jaar), ")"), 
+					line = list(color = inbo.steun.donkerroos, dash = "dot")
+			)	%>%	
+			
+
+
+#  # new version plot
+#  pl <- plot_ly(data = dataPlot,
+#                 width = width, height = height) %>%
+##                         
+##            # median
+##            add_trace(x = ~dateHalfMonth, y = ~medianRange, 
+##                type = 'scatter', mode = 'lines',
+##                line = list(color = inbo.grijsblauw, #inbo.steun.donkerroos
+##                    dash = "dot"), #size = 6, , width = 2 (default) 
+##                name = getNameRange("Mediaan")
+##            ) %>%
+#            
+#            # add bars
+#            add_trace(type = "bar",
+#                x = ~dateHalfMonth, y = ~obsYear,
+#                marker = list(color = colorErrorbar, #colorRibbonLine
+#                              line = list(color = inbo.steun.donkerroos, #inbo.lichtblauw
+#                                          width = 1.5)),
+#                name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
 #            ) %>%
+#            
+#            # min-max range
+#            add_ribbons(x = ~dateHalfMonth, 
+#                ymin = ~minRange, ymax = ~maxRange,
+#                #					color = 'rgba(0,100,80,0.2)',
+#                fill = 'tonexty', fillcolor = colorRibbon, #colorErrorbar
+#                line = list(color = inbo.lichtblauw), #colorLine
+#                name = getNameRange("Min-Max")
+#            ) %>%
+#            
+##             # error bars
+##            add_segments(x = ~dateHalfMonth, xend = ~dateHalfMonth,
+##                         y = ~minRange, yend = ~maxRange, 
+##                         line = list(color = colorErrorbar),
+##                         name = getNameRange("Min-Max")
+##            ) %>%
               
               # layout
               layout(
@@ -269,8 +270,8 @@ percentageYearlyShotAnimals <- function(
                   yaxis = list(title = "Percentage jaarlijks afschot", 
                                titlefont = list(size = 18),
                                range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
-                  margin = list(b = 70, t = 90),
-                  legend = list(orientation = "h", y = 100, x = 0.1)
+                  margin = list(b = 70, t = 90)#,
+#                  legend = list(orientation = "h", y = 100, x = 0.1)
                   )
               
   colsOfInterest <- c("dateHalfMonth", "obsYear", "medianRange", "minRange", "maxRange")

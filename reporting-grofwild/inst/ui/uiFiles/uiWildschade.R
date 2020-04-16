@@ -26,22 +26,23 @@ tagList(
                 
                 tags$p(class = "lead", "Op deze pagina kan je de beschikbare gegevens over faunaschade raadplegen. Onder schade verstaan we verkeersongelukken met wilde dieren en schade aan landbouwgewassen, tuinen of sportvelden."),
                 
-                tags$p("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
-                
-                tags$p("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). Binnen elk type schade  kan je verder kiezen uit enkele subcategorie\u00EBn. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."),
-                
-                tags$p("Opgelet: De gekozen filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
-                
-                tags$p(paste0("Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(schadeData$afschot_datum, format = "%d/%m/%Y"), na.rm = TRUE), "%d/%m/%Y"), ".")),
-                
-                tags$p("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data. De figuren zelf kan je ook als .jpg downloaden."),
-                
-                tags$p("Indien je fouten ontdekt of merkt dat er data ontbreken, gelieve dit dan te melden door een email te sturen naar: ",
-                        tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie-wildschade", target="_blank", "faunabeheer@inbo.be"), " ."),
-                
-                tags$p("Opgelet deze data en figuren geven de doorgegeven meldingen weer. Er gebeurt geen systematische terreincontrole voor deze meldingen."),
-                
-                tags$h2("Filter Data"),
+                tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
+                    tags$ul(
+                        tags$li("Met het keuzemenu bovenaan de pagina kan je een keuze maken uit de diersoort(en) en de types schade (voertuig, gewas en/of andere). 
+																 Binnen elk type schade kan je verder kiezen uit enkele subcategorieën. Je krijgt na je keuzes meteen een overzicht van alle beschikbare meldingen in de volledige dataset te zien."), 
+                        tags$li("Opgelet: Pas nadat je voor de diersoort en type schade minstens één categorie hebt aangeduid, zullen de figuren en tabellen aangemaakt worden."), 
+                        tags$li("Opgelet: De filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
+                        tags$li("Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(schadeData$afschot_datum, format = "%d/%m/%Y"), na.rm = TRUE), "%d/%m/%Y"), "."),
+                        tags$li("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
+                        tags$li("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data."),
+                        tags$li("De figuren zelf kan je ook als .png downloaden."),
+                        tags$li("Opgelet: Deze data en figuren geven de meldingen weer zoals ze ingegeven werden. Er gebeurt op dit moment geen systematische terreincontrole voor deze meldingen, ook wordt er niet gecontroleerd op eventuele dubbele meldingen van hetzelfde schadegeval."),
+                        tags$li("Indien je fouten ontdekt of merkt dat er data ontbreken, gelieve dit dan te melden door een email te sturen naar: ",
+                                tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie-wildschade", target="_blank", "faunabeheer@inbo.be"), " .")
+                    )
+                ),
+                        
+                tags$h2("Keuzemenu"),
                 wellPanel(
                         fixedRow(
                                 # Select species
@@ -65,22 +66,31 @@ tagList(
                         )
                 ),
                 
+                h2("Schademeldingen"),
+                
                 uiOutput("schade_summary")
         
         ),
+        
+        tags$hr(),
         
         
         # Summary map
         
         tags$div(class = "container",
                 
+            
                 h2("Landkaart 1"),
                 
-                tags$p("De eerste kaart toont de geografische spreiding van de gemelde schadegevallen in Vlaanderen. De schadegevallen zijn hier telkens gegroepeerd weergegeven voor een bepaalde regio-schaal (Vlaanderen, provincies, faunabeheerzones, gemeenten, 5x5 km UTM-hok, ...)."),
-                tags$p("De getoonde schadetypes hangen af van je keuze in het hoofdmenu."),
-                tags$p("Je kan zelf nog kiezen welk jaar, schaalniveau en eenheid (absoluut aantal of aantal per 100 ha) je op de kaart weergegeven wil zien."),
-                tags$p("Je kan op de kaart interactief een of meerdere deelgebieden selecteren waarvoor de gegevens dan in de onderstaande grafiek worden weergegeven. Ook de periode waarvoor informatie in de grafieken wordt weergegeven, kan je hier selecteren."),
-                
+                tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
+                    tags$ul(
+                        tags$li("De eerste kaart toont de geografische spreiding van de gemelde schadegevallen in Vlaanderen. De schadegevallen zijn hier telkens gegroepeerd weergegeven voor een bepaalde regio-schaal (Vlaanderen, provincies, faunabeheerzones, gemeenten, 5x5 km UTM-hok, ...)."), 
+                        tags$li("De getoonde schadetypes hangen af van je keuze in het hoofdmenu."), 
+                        tags$li("Je kan zelf nog kiezen welk jaar, schaalniveau en eenheid (absoluut aantal of aantal per 100 ha) je op de kaart weergegeven wil zien."),
+                        tags$li("Je kan op de kaart interactief een of meerdere deelgebieden selecteren waarvoor de gegevens dan in de onderstaande grafiek worden weergegeven. Ook de periode waarvoor informatie in de grafieken wordt weergegeven, kan je hier selecteren.")
+                    )
+                ),
+                                
                 ## mapFlanders
                 wellPanel(
                         fixedRow(
@@ -132,7 +142,7 @@ tagList(
                 
                 fixedRow(
                         column(6,
-                                h3("Referentie (Vlaanderen)"),
+                                h3("Evolutie schademeldingen Vlaanderen"),
                                 plotModuleUI(id = "schade_timePlotFlanders", height = "400px"),
                                 optionsModuleUI(id = "schade_timePlotFlanders", exportData = TRUE,
                                         doWellPanel = FALSE)
@@ -151,9 +161,13 @@ tagList(
         
         h2("Landkaart 2"),
         
-        tags$p("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn ", tags$i("seizoen")," en ", tags$i("type schade.")," Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het hoofdmenu."),
-        tags$p("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaald schadegeval te selecteren, krijg je verdere informatie over dit schadegeval (jaar, wildsoort, gemeente, schadetype en eventueel seizoen)."),
-        
+        tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
+            tags$ul(
+                tags$li("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn ", tags$i("seizoen")," en ", tags$i("type schade.")," Welke schademeldingen getoond worden, hangt af van je filterkeuzes in het keuzemenu."), 
+                tags$li("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaalde schademelding te selecteren, krijg je verdere informatie over deze schademelding (jaar, wildsoort, gemeente, schadetype en eventueel seizoen).")
+            )
+        ),
+            
         wellPanel(
                 fixedRow(
                         column(6, uiOutput("schade_time2")),
@@ -178,9 +192,13 @@ tagList(
         downloadButton("schade_downloadPerceelMap", "Download figuur"),
         downloadButton("schade_downloadPerceelmapData", "Download data"),
         
+        tags$hr(),
+        
+        h2("Extra Figuren en Tabellen"),
+        
         ## countYearSchadeProvince: all species
         actionLink(inputId = "schade_linkPlot1",
-                label = h3("FIGUUR: Gerapporteerd aantal schadegevallen per jaar en per regio")),
+                label = h3("FIGUUR: Aantal schademeldingen per jaar en per regio")),
         conditionalPanel("input.schade_linkPlot1 % 2 == 1",
                 fixedRow(
                         
@@ -198,7 +216,7 @@ tagList(
         
         ## countYearSchade: all species
         actionLink(inputId = "schade_linkPlot2",
-                label = h3("FIGUUR: Gerapporteerd aantal schadegevallen per jaar en variabele")),
+                label = h3("FIGUUR: Aantal schademeldingen per jaar en variabele")),
         conditionalPanel("input.schade_linkPlot2 % 2 == 1",
                 fixedRow(
                         
@@ -206,7 +224,7 @@ tagList(
                                 optionsModuleUI(id = "schade_plot2", 
                                         summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                                         showTime = TRUE, showType = TRUE, exportData = TRUE),
-                                tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina het aantal schadegevallen weer in functie van het veld dat je kiest bij Variabele. Je kan kiezen tussen het ", tags$i("gewas"), "(indien gekozen werd voor gewasschade), de ", tags$i("wildsoort(en)"), " binnen de gekozen dataset, of de ", tags$i("subcategorie type schade"), "(bv. verkeersongelukken met of zonder personenletsels). Je kan een keuze maken tussen het absoluut aantal schadegevallen per categorie en het relatief aantal schadegevallen."),
+                                tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina het aantal schademeldingen weer in functie van het veld dat je kiest bij Variabele. Je kan kiezen tussen het ", tags$i("gewas"), "(indien gekozen werd voor gewasschade), de ", tags$i("wildsoort(en)"), " binnen de gekozen dataset, of de ", tags$i("subcategorie type schade"), "(bv. verkeersongelukken met of zonder personenletsels). Je kan een keuze maken tussen het absoluut aantal schademeldingen per categorie en het relatief aantal schademeldingen."),
                                 tags$p("Wanneer je als periode meerdere jaren kiest, worden de verschillende subcategorie\u00EBn per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden ze naast elkaar weergegeven.")
                         ),
                         column(8, plotModuleUI(id = "schade_plot2"))
@@ -217,13 +235,13 @@ tagList(
         
         ## tableSchadeCode
         actionLink(inputId = "schade_linkTable2",
-                label = h3("TABEL: Gerapporteerde aantal schadegevallen per type schade ")),
+                label = h3("TABEL: Aantal schademeldingen per type schade")),
         conditionalPanel("input.schade_linkTable2 % 2 == 1",
                 fixedRow(
                         
                         column(4,
                                 optionsModuleUI(id = "schade_table2", showTime = TRUE, showType = TRUE, exportData = TRUE),
-                                tags$p("Op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina geeft deze tabel, opgedeeld per subcategorie, het aantal schadegevallen weer. Je kan hierbij zelf de periode en het schaalniveau kiezen", tags$i("(Vlaanderen, provincie, faunabeheerzone)"), ".")
+                                tags$p("Op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina geeft deze tabel, opgedeeld per subcategorie, het aantal schademeldingen weer. Je kan hierbij zelf de periode en het schaalniveau kiezen", tags$i("(Vlaanderen, provincie, faunabeheerzone)"), ".")
                         ),
                         column(8, datatableModuleUI(id = "schade_table2"))
                 
@@ -233,13 +251,13 @@ tagList(
         
         ## tableGewas
         actionLink(inputId = "schade_linkTable1",
-                label = h3("TABEL: Gerapporteerd aantal schadegevallen per gewas")),
+                label = h3("TABEL: Aantal schademeldingen per gewas")),
         conditionalPanel("input.schade_linkTable1 % 2 == 1",
                 fixedRow(
                         
                         column(4, 
                                 optionsModuleUI(id = "gewas", showTime = TRUE, showType = TRUE, exportData = TRUE),
-                                tags$p("Indien je in het keuzemenu bovenaan de pagina de optie ", tags$i("Gewasschade"), " selecteerde, geeft deze tabel het aantal schadegevallen per gewas en per regio, voor de gekozen periode, weer.")
+                                tags$p("Indien je in het keuzemenu bovenaan de pagina de optie ", tags$i("Gewasschade"), " selecteerde, geeft deze tabel het aantal schademeldingen per gewas en per regio, voor de gekozen periode, weer.")
                         ),
                         column(8, tableModuleUI(id = "gewas"))
                 ),

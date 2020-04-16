@@ -1,3 +1,14 @@
+0.2.1
+	o fix legends for one level factors in wildschade plots 1 & 2
+0.2.0
+	o data update grofwild / wildschade 
+	o update bio-indicator plot onderkaaklengte
+	o include aesthetic "en" in titles
+	o update graph grofwild - percentage jaarlijks afschot
+0.1.24
+	o teksten grofwild adjusted
+	o teksten wildschade adjusted
+	o titles graphs adjusted
 0.1.23
 	o set ymax to min 5 for absolute numbers in regio-schaal plot
 0.1.22

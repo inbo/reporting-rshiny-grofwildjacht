@@ -8,6 +8,7 @@ trendYearFlanders(
   data,
   timeRange,
   unit = c("absolute", "relative"),
+  schadeTitles = FALSE,
   width = NULL,
   height = NULL
 )
@@ -19,6 +20,8 @@ trendYearFlanders(
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
 should be reported}
+
+\item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
 
 \item{width}{plot width (optional)}
 

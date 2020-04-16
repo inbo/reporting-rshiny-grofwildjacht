@@ -57,14 +57,27 @@ observe({
       
       currentChoices$source <- currentSelected$source <- unique(sort(results$subExotenData()$source))
       currentChoices$kingdom <- currentSelected$kingdom <- unique(sort(results$subExotenData()$kingdom))
+      currentChoices$phylum <- unique(sort(results$subExotenData()$phylum))
+        currentSelected$phylum <- NULL
+      currentChoices$class <- unique(sort(results$subExotenData()$class))
+        currentSelected$class <- NULL
+      currentChoices$order <- unique(sort(results$subExotenData()$order))
+        currentSelected$order <- NULL
+      currentChoices$family <- unique(sort(results$subExotenData()$family))
+        currentSelected$family <- NULL
       currentChoices$pw1 <- currentSelected$pw1 <- unique(sort(results$subExotenData()$pathway_level1))
+      currentChoices$pw2 <- unique(sort(results$subExotenData()$pathway_level2))
+        currentSelected$pw2 <- NULL
       currentChoices$habitat <- currentSelected$habitat <- habitats
       currentChoices$doe <- currentSelected$doe <- unique(sort(results$subExotenData()$degree_of_establishment))
       
-      
-      
     })
 
+#callModule(module = selectModuleServer,
+#    id = "kingdom",
+#    label = "kingdom test",
+#    choices = currentChoices$kingdom,
+#    selected = currentSelected$kingdom)
 
 output$exoten_bronOptions <- renderUI({
       # only update if selected or choices is no longer up to date/possible
@@ -78,10 +91,60 @@ output$exoten_kingdomOptions <- renderUI({
       selectInput("exoten_kingdom", "Kingdom", choices = currentChoices$kingdom, selected = currentSelected$kingdom, multiple = TRUE)
     })
 
+# conditional on higher taxa definitions
+output$exoten_phylumOptions <- renderUI({ 
+      
+      if (!is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_phylum", label = "Phylum", 
+            choices = currentChoices$phylum, selected = currentSelected$phylum,
+            multiple = TRUE)
+    })
+
+output$exoten_classOptions <- renderUI({
+      
+      if (!is.null(req(input$exoten_phylum)) & !is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_class", label = "Klasse",
+            choices = currentChoices$class, selected = currentSelected$class, 
+            multiple = TRUE
+        )
+    })
+
+output$exoten_orderOptions <- renderUI({
+      
+      if (!is.null(req(input$exoten_class)) & !is.null(req(input$exoten_phylum)) & !is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_order", label = "Orde",
+            choices = currentChoices$order, selected = currentSelected$order, 
+            multiple = TRUE
+        )
+    })
+
+output$exoten_familyOptions <- renderUI({
+      
+      if (!is.null(req(input$exoten_order)) & !is.null(req(input$exoten_class)) & 
+          !is.null(req(input$exoten_phylum)) & !is.null(req(input$exoten_kingdom)))
+        
+        selectInput(inputId = "exoten_family", label = "Familie",
+            choices = currentChoices$family, selected = currentSelected$family, 
+            multiple = TRUE
+        )
+    })
+
 output$exoten_pw1Options <- renderUI({
       # only update if selected or choices is no longer up to date/possible
       # if updated choices, relevant selection is shown based on previous input
       selectInput("exoten_pw1", "Pathway level 1", choices = currentChoices$pw1, selected = currentSelected$pw1, multiple = TRUE)
+    })
+
+output$exoten_pw2Options <- renderUI({
+      
+      if (!is.null(req(input$exoten_pw1)))
+      
+      # only update if selected or choices is no longer up to date/possible
+      # if updated choices, relevant selection is shown based on previous input
+      selectInput("exoten_pw2", "Pathway level 2", choices = currentChoices$pw2, selected = currentSelected$pw2, multiple = TRUE)
     })
 
 output$exoten_habitatOptions <- renderUI({

@@ -44,21 +44,30 @@ tagList(
                 # Select bron
                 column(4, uiOutput("exoten_bronOptions")),
                 
-                # Select kingdom
-                column(4, uiOutput("exoten_kingdomOptions")),
+                # Select habitat
+                column(4, uiOutput("exoten_habitatOptions")),
                 
-                column(4, uiOutput("exoten_pw1Options"))
-                
-#                # show taxa subchoices
-#                column(4, tagList(uiOutput("exoten_phylumChoices"),
-#                                  uiOutput("exoten_classChoices"),
-#                                  uiOutput("exoten_orderChoices"),
-#                                  uiOutput("exoten_familyChoices")))
+                # Selecct degree of establishment
+                column(4, tagList(uiOutput("exoten_doeOptions")#,
+#                                  selectModuleUI(id = "kingdom")
+                                  ))
   
                 ),
-            fixedRow(column(4, uiOutput("exoten_habitatOptions")),
+            fixedRow(                
+                # Select kingdom and other subsequent taxa choices
+                column(4, tagList(uiOutput("exoten_kingdomOptions"),
+                                  uiOutput("exoten_phylumOptions"),
+                                  uiOutput("exoten_classOptions"),
+                                  uiOutput("exoten_orderOptions"),
+                                  uiOutput("exoten_familyOptions"))),
                 
-                     column(4, uiOutput("exoten_doeOptions"))),
+                # Select pathway 1
+                column(4, uiOutput("exoten_pw1Options")),
+                
+                # Select subsequent pathway 2
+                column(4, uiOutput("exoten_pw2Options"))
+
+                ),
                 
             fixedRow(column(4, textOutput("nrowsFinal"))
                 )

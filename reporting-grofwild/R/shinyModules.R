@@ -430,7 +430,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
           DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
               selection = "single",
               options = list(dom = 't', pageLength = -1)) %>%
-              formatRound(colnames(resultFct()$data), digits = 0, mark = "")
+              formatRound(tail(colnames(resultFct()$data), -1), digits = 0, mark = "")
           
         })
   } else {
@@ -496,4 +496,27 @@ dataModuleServer <- function(input, output, session, data, variable) {
         helpText("Totaal:", sum(freqTable()$Aantal))
       })    
   
+}
+
+selectModuleUI <- function(id) {
+	
+  ns <- NS(id)
+  
+  uiOutput(ns("variable"))
+  
+}
+
+selectModuleServer <- function(input, output, session,
+    label, choices, 
+    selected = NULL, multiple = TRUE ) {
+	
+  ns <- session$ns
+    
+  output$variable <- renderUI({
+        
+        selectInput(inputId = ns("variable"), label = label,
+            choices = choices, 
+            selected = selected, multiple = multiple)
+        
+      })
 }

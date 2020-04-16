@@ -124,7 +124,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
                             text = paste(if (length(unique(totalCount$jaar)) == 1) "totaal:" else "", 
                                     totalCount$totaal),
                             xanchor = 'center', yanchor = 'bottom',
-                            showarrow = FALSE)
+                            showarrow = FALSE),
+                    showlegend = TRUE
             )
     
     

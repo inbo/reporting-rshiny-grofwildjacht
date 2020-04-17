@@ -412,8 +412,7 @@ loadRawData <- function(
         coordinates(rawData) <- ~x + y
         proj4string(rawData) <- CRS("+init=epsg:31370")
         
-        rawData <- spTransform(rawData, CRS("+proj=longlat"))
-        
+        rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
         
 #        # Temporary fix - this should be done by Sander (data cleaning) in the future
 #        # see also global.R

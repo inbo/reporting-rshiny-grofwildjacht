@@ -15,8 +15,25 @@ exotenData <- loadExotenData(type = "indicators")
 ##
 colnames(exotenData)
 sapply(exotenData, class)        
-sapply(exotenData, function(x) if (is.character(x)) table(x) else summary(x))
+sapply(exotenData, function(x) if (is.character(x)) table(x, exclude = NULL) else summary(x))
 sapply(exotenData, function(x) sum(is.na(x)))
+#                     key          first_observed           last_observed 
+#                       0                    8166                    8166 
+#                 kingdom                  phylum                   class 
+#                       0                       2                      11 
+#                   order                  family                locality 
+#                       4                       4                       0 
+#              locationId            native_range degree_of_establishment 
+#                       0                     603                   12486 
+#          pathway_level1          pathway_level2                  marine 
+#                       0                       0                      83 
+#              freshwater             terrestrial                  source 
+#                      83                      83                      83 
+#        native_continent 
+#                     603 
+
+
+
 #          first_observed           last_observed                 kingdom 
 #                    6403                    6403                       0 
 #                  phylum                   class                   order 
@@ -94,7 +111,7 @@ toRetain <- exotenData$first_observed %in% exoten_time &
             exotenData$locality%in% exoten_region &
             exotenData$degree_of_establishment %in% exoten_doe &
             ##habitat
-            apply(exotenData[, .SD, .SDcols = which(colnames(exotenData) %in% exoten_habitat)], 1, function(x) any(x, na.rm = TRUE))          
+            apply(exotenData[, .SD, .SDcols = which(colnames(exotenData) %in% exoten_habitat)], 1, function(x) any(x, na.rm = TRUE))       
             ## kingdom
             exotenData$kingdom %in% exoten_kingdom &
             # kingdom - dependent
@@ -127,3 +144,9 @@ cumulativeIntroductionYear(data = exoten_data)
 ## Grafiek: Aantal geïntroduceerde uitheemse soorten per pathway
 ##
 
+
+## PLOT 4
+## Grafiek: Aantal geïntroduceerde uitheemse soorten per jaar per regio van oorsprong
+##
+
+countYearNativerange(data = exoten_data, type = "native_continent", jaartallen = 2014)

@@ -259,8 +259,9 @@ output$nrowsFinal <- renderText({
 
 output$exoten_titleSoortenPerJaar <- renderUI({      
       
-      h2(paste("Aantal geïntroduceerde uitheemse soorten per jaar", 
+      h2(paste("Aantal geïntroduceerde uitheemse soorten", 
               "in", vectorToTitleString(input$exoten_region),
+              "per jaar", 
               yearToTitleString(req(input$exoten_time))
           )
       )
@@ -286,5 +287,31 @@ output$exoten_titleSoortenCumulatiefPlot <- renderUI({
 
 callModule(module = plotModuleServer, id = "exoten_soortenCumulatiefPlot",
     plotFunction = "cumulativeIntroductionYear", 
+    data = reactive(results$exoten_data())
+)
+
+## Plot number of species per year by native region
+
+output$exoten_titleSoortenPerJaarPerOorsprongregio <- renderUI({      
+      
+      h2(paste("Aantal geïntroduceerde uitheemse soorten", 
+              "in", vectorToTitleString(input$exoten_region),
+              "per jaar en per regio van oorsprong",
+              yearToTitleString(req(input$exoten_time))
+          )
+      )
+    })
+
+callModule(module = optionsModuleServer, id = "exoten_soortenPerJaarPerOorsprongregio", 
+    data = reactive(results$exoten_data()),
+    types = reactive(c(
+            "Continent van oorsprong" = "native_continent",
+            "Regio van oorsprong" = "native_range"
+        )), 
+    labelTypes = "Detail niveau", 
+    typesDefault = reactive("native_continent"))
+
+callModule(module = plotModuleServer, id = "exoten_soortenPerJaarPerOorsprongregio",
+    plotFunction = "countYearNativerange", 
     data = reactive(results$exoten_data())
 )

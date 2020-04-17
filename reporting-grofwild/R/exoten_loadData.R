@@ -14,7 +14,7 @@ loadExotenData <- function(
   type = match.arg(type)
   
   dataFile <- file.path(dataDir, switch(type,
-          "indicators" = "exoten_data_input_checklist_indicators.tsv"))
+          "indicators" = "data_input_checklist_indicators.tsv"))
   
   if (type == "indicators") {
 
@@ -44,12 +44,12 @@ loadExotenData <- function(
             "source"
         )]
         
-    ## exclude data before 1950
+    ## exclude data before 1950 - keeps values with NA for first_observed
     toExclude <- (rawDataFiltered$first_observed < 1950 & !is.na(rawDataFiltered$first_observed))
     warning("Exoten: ", sum(toExclude), " observaties dateren van voor 1950 en zijn dus uitgesloten")
     rawDataFiltered <- rawDataFiltered[!toExclude, ]
     
-    ## convert english to dutch names
+    ## convert english to dutch names for region
     rawDataFiltered$locality <- exoten_dutchNames(rawDataFiltered$locality, type = "regio")
     
     ## recode `source` variable
@@ -72,6 +72,32 @@ loadExotenData <- function(
     rawDataFiltered$source[rawDataFiltered$source == "RINSE - Registry of non-native species in the Two Seas region countries (Great Britain, France, Belgium and the Netherlands)" ] <- "RINSE1"
     rawDataFiltered$source[rawDataFiltered$source == "Registry of introduced terrestrial molluscs in Belgium"] <- "Alien Mollusc checklist"
     rawDataFiltered$source[rawDataFiltered$source == "Catalogue of the Rust Fungi of Belgium"] <- "Belgian rust fungi"
+    
+    ## regroup native_range variable into new native_continent variable
+    ## from https://en.wikipedia.org/wiki/United_Nations_geoscheme
+    
+    africa <- c("Africa", "Northern Africa", "Sub-Saharan Africa", "Subsaharan Africa", "Eastern Africa", "Middle Africa", "Southern Africa", "Western Africa")
+    americas <- c("Americas", "Latin America and the Caribbean", "Caribbean", "Central America", "South America", "Northern America")
+    asia <- c("Asia", "Central Asia", "Eastern Asia", "South-eastern Asia", "Southeastern Asia", "Southern Asia", "Western Asia")
+    europe <- c("Europe", "Eastern Europe", "Northern Europe", "Southern Europe", "Western Europe")
+    oceania <- c("Oceania", "Australia and New Zealand", "Melanesia", "Micronesia", "Polynesia")
+    
+    
+    rawDataFiltered$native_continent[rawDataFiltered$native_range %in% c(africa, tolower(africa))] <- "Africa"
+    rawDataFiltered$native_continent[rawDataFiltered$native_range %in% c(americas, tolower(americas))] <- "Americas"
+    rawDataFiltered$native_continent[rawDataFiltered$native_range %in% c(asia, tolower(asia))] <- "Asia"
+    rawDataFiltered$native_continent[rawDataFiltered$native_range %in% c(europe, tolower(europe))] <- "Europe"
+    rawDataFiltered$native_continent[rawDataFiltered$native_range %in% c(oceania, tolower(oceania))] <- "Oceania"
+    
+    # group any undefined regions in "undefined"
+    rawDataFiltered$native_continent[!(rawDataFiltered$native_range %in% c(africa, tolower(africa),
+                                                                           americas, tolower(americas),
+                                                                           asia, tolower(asia),
+                                                                           europe, tolower(europe),
+                                                                           oceania, tolower(oceania))) & 
+                                     !is.na(rawDataFiltered$native_range)] <- "undefined"
+
+    
     
     attr(rawDataFiltered, "Date") <- file.mtime(dataFile)
   

@@ -83,13 +83,14 @@ vectorToTitleString <- function(vector) {
 #' Transform numeric vector with years ready to be in title
 #' 
 #' @param year numeric, vector of length 1 or 2
+#' @param brackets logical, should the output string with years be wrapped in brackets? Defaults to TRUE 
 #' @return string Numbers of the vector are separated by 'tot' in the string, 
-#' brackets are put around. If length of vector is only one, or if both elements
+#' brackets are put around (\code{brackets = TRUE}). If length of vector is only one, or if both elements
 #' of the vector are the same, a string with the year between brackets is returned. 
 #' 
 #' @author Eva Adriaensen
 #' @export
-yearToTitleString <- function(year) {
+yearToTitleString <- function(year, brackets = TRUE) {
   
   if (!is.numeric(year) | any(is.na(year))) {
     stop("Argument is niet aanvaard.")
@@ -97,11 +98,11 @@ yearToTitleString <- function(year) {
   
 	if (length(year) == 2) {
     ifelse(year[1] != year[2],
-        paste0("(", year[1], " tot ", year[2], ")"),
-        paste0("(", year[1], ")")
+        if (brackets) paste0("(", year[1], " tot ", year[2], ")") else paste0(year[1], " tot ", year[2]),
+        if (brackets) paste0("(", year[1], ")") else paste0(year[1])
     )
 	} else if (length(year) == 1) {
-    paste0("(", year[1], ")")
+    if (brackets) paste0("(", year[1], ")") else paste0(year[1]) 
 	} else {
     stop("Kan periode niet formatteren.")
   }

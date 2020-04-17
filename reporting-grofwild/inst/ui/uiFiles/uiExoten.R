@@ -85,6 +85,13 @@ tagList(
         
         uiOutput("exoten_titleSoortenCumulatiefPlot"),        
         plotModuleUI(id = "exoten_soortenCumulatiefPlot"),
+        tags$br(), 
+        
+        uiOutput("exoten_titleSoortenPerJaarPerOorsprongregio"),    
+        fixedRow(column(4, optionsModuleUI(id = "exoten_soortenPerJaarPerOorsprongregio", showType = TRUE)),
+                 column(8, plotModuleUI(id = "exoten_soortenPerJaarPerOorsprongregio"))
+                 ),
+
         tags$br()
         
         

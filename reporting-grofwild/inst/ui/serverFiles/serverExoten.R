@@ -6,13 +6,22 @@
 ### Filter Data
 ### ---------------
 
+currentChoices <- reactiveValues()
+currentSelected <- reactiveValues()
+
+observe({
+      
+      currentChoices$locality <- unique(sort(exotenData$locality))
+      currentSelected$locality <- NULL
+      
+    })
 
 # define primary user choices 
 output$exoten_regionOptions <- renderUI({ 
       
       selectInput(inputId = "exoten_region", label = "Regio('s)",
-          choices = na.omit(unique(exotenData$locality)),
-          selected = "België", multiple = TRUE)
+          choices = currentChoices$locality,
+          selected = currentSelected$locality, multiple = TRUE)
       
     })
 
@@ -27,13 +36,21 @@ output$exoten_timeOptions <- renderUI({
       
     })
 
+## Region filter starts empty in UI which will filter out BELGIUM cases.
+## Upon a user specified choice, this initial BELGIUM selection will be overwritten
+results$exoten_filterLocality <- reactive({
+            
+      if (is.null(input$exoten_region))
+        "België" else
+        input$exoten_region
+      
+    })
+
 # define primary dataset
 results$subExotenData <- reactive({
-      
-      validate(need(input$exoten_region, "Gelieve regio te selecteren"))
-      
+            
       toRetain <- exotenData$first_observed %in% req(input$exoten_time[1]):req(input$exoten_time[2]) &
-          exotenData$locality %in% req(input$exoten_region)
+                  exotenData$locality %in% req(results$exoten_filterLocality() )
       
       exotenData[toRetain,]
       
@@ -43,20 +60,18 @@ output$nrows <- renderText({
       
       validate(need(nrow(results$subExotenData()) > 0, "Geen data beschikbaar"))
       paste("Totaal aantal:", nrow(results$subExotenData()))
-#      head(results$exoten_data)
     })
 
 
 ### Define (reactive) user choices
 ### ---------------
 
-currentChoices <- reactiveValues()
-currentSelected <- reactiveValues()
-
 observe({
       
-      currentChoices$source <- currentSelected$source <- unique(sort(results$subExotenData()$source))
-      currentChoices$kingdom <- currentSelected$kingdom <- unique(sort(results$subExotenData()$kingdom))
+      currentChoices$source <- unique(sort(results$subExotenData()$source))
+        currentSelected$source <- NULL 
+      currentChoices$kingdom <- unique(sort(results$subExotenData()$kingdom))
+        currentSelected$kingdom <- NULL 
       currentChoices$phylum <- unique(sort(results$subExotenData()$phylum))
         currentSelected$phylum <- NULL
       currentChoices$class <- unique(sort(results$subExotenData()$class))
@@ -65,11 +80,16 @@ observe({
         currentSelected$order <- NULL
       currentChoices$family <- unique(sort(results$subExotenData()$family))
         currentSelected$family <- NULL
-      currentChoices$pw1 <- currentSelected$pw1 <- unique(sort(results$subExotenData()$pathway_level1))
+      currentChoices$pw1 <- unique(sort(results$subExotenData()$pathway_level1))
+        currentSelected$pw1 <- NULL
       currentChoices$pw2 <- unique(sort(results$subExotenData()$pathway_level2))
         currentSelected$pw2 <- NULL
-      currentChoices$habitat <- currentSelected$habitat <- habitats
-      currentChoices$doe <- currentSelected$doe <- unique(sort(results$subExotenData()$degree_of_establishment))
+        ## TODO do we need to adjust habitat choices to exclude habitats for which each observation is NA in results$subExotenData() ?
+#      currentChoices$habitat <- habitats
+      currentChoices$habitat <- names(which(apply(results$subExotenData()[, .SD, .SDcols = which(colnames(results$subExotenData()) %in% habitats)], 2, function(x) any(x, na.rm = TRUE) )))
+        currentSelected$habitat <- NULL
+      currentChoices$doe <- unique(sort(results$subExotenData()$degree_of_establishment))
+        currentSelected$doe <- NULL 
       
     })
 
@@ -159,67 +179,110 @@ output$exoten_doeOptions <- renderUI({
       selectInput("exoten_doe", "Degree of establishment", choices = currentChoices$doe, selected = currentSelected$doe, multiple = TRUE)
     })
 
-## Define updated choices and selected based on all other input filters
+## Define what to filters in cases input is empty
 
-observeEvent(c(input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, input$exoten_doe, input$exoten_bron), {
-      filterData1 <- subset(results$subExotenData(), kingdom %in% input$exoten_kingdom &
-                                                     pathway_level1 %in% input$exoten_pw1 &
-                                                     degree_of_establishment %in% input$exoten_doe)
+results$exoten_filterBron <- reactive({
       
-      filterData1 <- filterData1[apply(filterData1[, .SD, .SDcols = which(colnames(filterData1) %in% input$exoten_habitat)], 1, function(x) any(x, na.rm = TRUE)), ]
-                                             
-      
-      currentChoices$source <- unique(sort(filterData1$source))
-      currentSelected$source <- input$exoten_bron[input$exoten_bron %in% currentChoices$source]
+      if (is.null(input$exoten_bron))
+        c(NA, unique(results$subExotenData()$source)) else
+        input$exoten_bron
       
     })
 
-observeEvent(c(input$exoten_bron, input$exoten_pw1, input$exoten_habitat, input$exoten_doe, input$exoten_kingdom), {
-      filterData2 <- subset(results$subExotenData(), source %in% input$exoten_bron &
-                                                     pathway_level1 %in% input$exoten_pw1 &
-                                                     degree_of_establishment %in% input$exoten_doe)
+results$exoten_filterKingdom <- reactive({
+            
+      if (is.null(input$exoten_kingdom))
+        c(NA, unique(results$subExotenData()$kingdom)) else
+        input$exoten_kingdom
       
-      filterData2 <- filterData2[apply(filterData2[, .SD, .SDcols = which(colnames(filterData2) %in% input$exoten_habitat)], 1, function(x) any(x, na.rm = TRUE)), ]
+    })
+
+results$exoten_filterPw1 <- reactive({
+            
+      if (is.null(input$exoten_pw1))
+        c(NA, unique(results$subExotenData()$pathway_level1)) else
+        input$exoten_pw1
+      
+    })
+
+results$exoten_filterHabitat <- reactive({
+            
+      if (is.null(input$exoten_habitat))
+        currentChoices$habitat else
+#        colnames(results$subExotenData())[colnames(results$subExotenData()) %in% habitats] else
+        input$exoten_habitat
+      
+    })
+
+results$exoten_filterDoe <- reactive({
+      
+      if (is.null(input$exoten_doe))
+        c(NA, unique(results$subExotenData()$degree_of_establishment)) else
+        input$exoten_doe
+      
+    })
+
+## Update choices and selected based on all other input filters
+
+observeEvent(c(input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, input$exoten_doe, input$exoten_bron), { 
+      filterData1 <- subset(results$subExotenData(), kingdom %in% results$exoten_filterKingdom() &
+                                                     pathway_level1 %in% results$exoten_filterPw1() &
+                                                     degree_of_establishment %in% results$exoten_filterDoe() )
+      
+      filterData1 <- filterData1[apply(filterData1[, .SD, .SDcols = which(colnames(filterData1) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
+                                             
+      
+      currentChoices$source <- unique(sort(filterData1$source))
+      currentSelected$source <- if (is.null(input$exoten_bron)) NULL else input$exoten_bron[input$exoten_bron %in% currentChoices$source]
+      
+    })
+
+observeEvent(c(input$exoten_bron, input$exoten_pw1, input$exoten_habitat, input$exoten_doe, input$exoten_kingdom), { 
+      filterData2 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
+                                                      pathway_level1 %in% results$exoten_filterPw1() &
+                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+      
+      filterData2 <- filterData2[apply(filterData2[, .SD, .SDcols = which(colnames(filterData2) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
                                              
       
       currentChoices$kingdom <- unique(sort(filterData2$kingdom))
-      currentSelected$kingdom <- input$exoten_kingdom[input$exoten_kingdom %in% currentChoices$kingdom]
+      currentSelected$kingdom <- if (is.null(input$exoten_kingdom)) NULL else input$exoten_kingdom[input$exoten_kingdom %in% currentChoices$kingdom]
       
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1), { 
-      filterData3 <- subset(results$subExotenData(), source %in% input$exoten_bron &
-                                                     kingdom %in% input$exoten_kingdom &
-                                                     degree_of_establishment %in% input$exoten_doe)
+      filterData3 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
+                                                      kingdom %in% results$exoten_filterKingdom() &
+                                                      degree_of_establishment %in% results$exoten_filterDoe() )
                                              
-      filterData3 <- filterData3[apply(filterData3[, .SD, .SDcols = which(colnames(filterData3) %in% input$exoten_habitat)], 1, function(x) any(x, na.rm = TRUE)), ]
+      filterData3 <- filterData3[apply(filterData3[, .SD, .SDcols = which(colnames(filterData3) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
       currentChoices$pw1 <- unique(sort(filterData3$pathway_level1))
-      currentSelected$pw1 <- input$exoten_pw1[input$exoten_pw1 %in% currentChoices$pw1]
+      currentSelected$pw1 <- if (is.null(input$exoten_pw1)) NULL else input$exoten_pw1[input$exoten_pw1 %in% currentChoices$pw1]
       
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$exoten_doe, input$exoten_habitat), { 
-      
-      filterData4 <- subset(results$subExotenData(), source %in% input$exoten_bron &
-                                                     kingdom %in% input$exoten_kingdom &
-                                                     pathway_level1 %in% input$exoten_pw1 &
-                                                     degree_of_establishment %in% input$exoten_doe)
+      filterData4 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
+                                                     kingdom %in% results$exoten_filterKingdom() &
+                                                     pathway_level1 %in% results$exoten_filterPw1() &
+                                                     degree_of_establishment %in% results$exoten_filterDoe() )
                                                        
-      currentChoices$habitat <- names(which(apply(filterData4[, .SD, .SDcols = which(colnames(filterData4) %in% habitats)], 2, function(x) any(x, na.rm = TRUE))))
-      currentSelected$habitat <- input$exoten_habitat[input$exoten_habitat %in% currentChoices$habitat]
+#      currentChoices$habitat <- names(which(apply(filterData4[, .SD, .SDcols = which(colnames(filterData4) %in% results$exoten_filterHabitat() )], 2, function(x) any(x, na.rm = TRUE))))
+      currentChoices$habitat <- names(which(apply(filterData4[, .SD, .SDcols = which(colnames(filterData4) %in% habitats)], 2, function(x) any(x, na.rm = TRUE) )))
+      currentSelected$habitat <- if (is.null(input$exoten_habitat)) NULL else input$exoten_habitat[input$exoten_habitat %in% currentChoices$habitat]
       
     })
 
-observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_pw1, input$exoten_doe), { 
-      filterData5 <- subset(results$subExotenData(), source %in% input$exoten_bron &
-                                                     kingdom %in% input$exoten_kingdom &
-                                                     pathway_level1 %in% input$exoten_pw1)
+observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, input$exoten_doe), { 
+      filterData5 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
+                                                     kingdom %in% results$exoten_filterKingdom() &
+                                                     pathway_level1 %in% results$exoten_filterPw1() )
                                              
-      filterData5 <- filterData5[apply(filterData5[, .SD, .SDcols = which(colnames(filterData5) %in% input$exoten_habitat)], 1, function(x) any(x, na.rm = TRUE)), ]
+      filterData5 <- filterData5[apply(filterData5[, .SD, .SDcols = which(colnames(filterData5) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
       currentChoices$doe <- unique(sort(filterData5$degree_of_establishment))
-      currentSelected$doe <- input$exoten_doe[input$exoten_doe %in% currentChoices$doe]
+      currentSelected$doe <- if (is.null(input$exoten_doe)) NULL else input$exoten_doe[input$exoten_doe %in% currentChoices$doe]
       
     })
 
@@ -227,18 +290,27 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
 ### Final Data set
 ### ---------------
 
+#results$exoten_selectedKingdom <- reactive({
+#      
+#      if (is.null(currentSelected$exoten_kingdom))
+#        c(NA, unique(results$subExotenData()$kingdom)) else
+#        currentSelected$exoten_kingdom
+#      
+#    })
 
 results$exoten_data <- reactive({
       
       # filter for variables
-      dataSub <- subset(results$subExotenData(), source %in% currentSelected$source & 
-                                                  kingdom %in% currentSelected$kingdom &
-                                                  pathway_level1 %in% currentSelected$pw1 &
-                                                  degree_of_establishment %in% input$exoten_doe)
+      dataSub <- subset(results$subExotenData(), source %in% results$exoten_filterBron() & 
+                                                  kingdom %in% results$exoten_filterKingdom() &
+                                                  pathway_level1 %in% results$exoten_filterPw1() &
+                                                  degree_of_establishment %in% results$exoten_filterDoe() )
 
       # filter for habitat logicals
-      dataSub[apply(dataSub[, .SD, .SDcols = which(colnames(dataSub) %in% input$exoten_habitat)], 1, function(x) any(x, na.rm = TRUE)), ]
+      if (!is.null(input$exoten_habitat))
+      dataSub <- dataSub[apply(dataSub[, .SD, .SDcols = which(colnames(dataSub) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
                 
+      dataSub
 
       
     })

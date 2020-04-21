@@ -1,6 +1,6 @@
 # Reporting Rshiny grofwildjacht
 
-This repo contains all the required scripts to run the affiliated Rshiny app of the R package *reportingGrofwild*. For most users, this will be appropriate. Besides the R package, some deploy scripts are included in this repo to support the incorporation of the Rshiny app within the shinyproxy environment.
+This repo contains all the required scripts to run the affiliated Rshiny app of the R package *reportingGrofwild*. For most users, this will be appropriate. Besides the R package, some deploy scripts are included in this repo to support the incorporation of the Rshiny app within the shinyproxy environment..
 
 ## R package
 

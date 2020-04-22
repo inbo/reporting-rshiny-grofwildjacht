@@ -55,19 +55,19 @@ tagList(
                 ),
             fixedRow(                
                 # Select kingdom and other subsequent taxa choices
-                column(4, tagList(uiOutput("exoten_kingdomOptions")#,
-#                                  uiOutput("exoten_phylumOptions"),
-#                                  uiOutput("exoten_classOptions"),
-#                                  uiOutput("exoten_orderOptions"),
-#                                  uiOutput("exoten_familyOptions")
+                column(4, tagList(uiOutput("exoten_kingdomOptions"),
+                                  uiOutput("exoten_phylumOptions"),
+                                  uiOutput("exoten_classOptions"),
+                                  uiOutput("exoten_orderOptions"),
+                                  uiOutput("exoten_familyOptions")
                                   )
                        ),
                 
                 # Select pathway 1
-                column(4, uiOutput("exoten_pw1Options"))#,
+                column(4, uiOutput("exoten_pw1Options")),
                 
                 # Select subsequent pathway 2
-#                column(4, uiOutput("exoten_pw2Options"))
+                column(4, uiOutput("exoten_pw2Options"))
 
                 ),
                 

@@ -173,7 +173,7 @@ output$exoten_pw1Options <- renderUI({
 # conditional on higher pathway definition
 output$exoten_pw2Options <- renderUI({
       
-      if (!is.null(req(input$exoten_pw1)))
+      req(input$exoten_pw1) 
       
       # only update if selected or choices is no longer up to date/possible
       # if updated choices, relevant selection is shown based on previous input
@@ -212,7 +212,8 @@ results$exoten_filterKingdom <- reactive({
 
 results$exoten_filterPhylum <- reactive({
       
-      if (is.null(input$exoten_phylum)) {
+      if (is.null(input$exoten_phylum) |
+          is.null(input$exoten_kingdom)) {
         
         subData <- subset(results$subExotenData(), kingdom %in% results$exoten_filterKingdom())
         
@@ -224,7 +225,9 @@ results$exoten_filterPhylum <- reactive({
 
 results$exoten_filterClass <- reactive({
       
-      if (is.null(input$exoten_class)) {
+      if (is.null(input$exoten_class) |
+          is.null(input$exoten_phylum) |
+          is.null(input$exoten_kingdom)) {
         
         subData <- subset(results$subExotenData(), kingdom %in% results$exoten_filterKingdom() &
                                                    phylum %in% results$exoten_filterPhylum() )
@@ -237,7 +240,10 @@ results$exoten_filterClass <- reactive({
 
 results$exoten_filterOrder <- reactive({
       
-      if (is.null(input$exoten_order)) {
+      if (is.null(input$exoten_order) |
+          is.null(input$exoten_class) |
+          is.null(input$exoten_phylum) |
+          is.null(input$exoten_kingdom)) {
         
         subData <- subset(results$subExotenData(), kingdom %in% results$exoten_filterKingdom() &
                                                    phylum %in% results$exoten_filterPhylum() &
@@ -251,7 +257,11 @@ results$exoten_filterOrder <- reactive({
 
 results$exoten_filterFamily <- reactive({
       
-      if (is.null(input$exoten_family)) {
+      if (is.null(input$exoten_family) |
+          is.null(input$exoten_order) |
+          is.null(input$exoten_class) |
+          is.null(input$exoten_phylum) |
+          is.null(input$exoten_kingdom)) {
         
         subData <- subset(results$subExotenData(), kingdom %in% results$exoten_filterKingdom() &
                                                     phylum %in% results$exoten_filterPhylum() &
@@ -274,7 +284,7 @@ results$exoten_filterPw1 <- reactive({
 
 results$exoten_filterPw2 <- reactive({
       
-      if (is.null(input$exoten_pw2)) {
+      if (is.null(input$exoten_pw2) | is.null(input$exoten_pw1)) {
         
         subData <- subset(results$subExotenData(), pathway_level1 %in% results$exoten_filterPw1() )
         
@@ -484,7 +494,7 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
       filterData10 <- filterData10[apply(filterData10[, .SD, .SDcols = which(colnames(filterData10) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
       currentChoices$pathway_level2 <- unique(sort(filterData10$pathway_level2))
-      currentSelected$pathway_level2 <- if (is.null(input$exoten_pw2)) NULL else input$exoten_pw2[input$exoten_pw2 %in% currentChoices$pathway_level2]
+      currentSelected$pathway_level2 <- if (is.null(input$exoten_pw2) | is.null(input$exoten_pw1)) NULL else input$exoten_pw2[input$exoten_pw2 %in% currentChoices$pathway_level2]
       
     })
 
@@ -505,7 +515,11 @@ results$exoten_data <- reactive({
       dataSub <- subset(results$subExotenData(), source %in% results$exoten_filterBron() & 
                                                   kingdom %in% results$exoten_filterKingdom() &
                                                   phylum %in% results$exoten_filterPhylum() &
+                                                  class %in% results$exoten_filterClass() &
+                                                  order %in% results$exoten_filterOrder() &
+                                                  family %in% results$exoten_filterFamily() &
                                                   pathway_level1 %in% results$exoten_filterPw1() &
+                                                  pathway_level2 %in% results$exoten_filterPw2() &
                                                   degree_of_establishment %in% results$exoten_filterDoe() )
 
       # filter for habitat logicals

@@ -1,3 +1,4 @@
+	o include exoten page in app
 	o include exoten functions and graphs in test script
 0.1.23
 	o set ymax to min 5 for absolute numbers in regio-schaal plot

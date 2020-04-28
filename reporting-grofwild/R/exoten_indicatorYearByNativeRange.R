@@ -66,7 +66,7 @@ countYearNativerange <- function(data, jaartallen = NULL,
           colors = colors, type = "bar",  width = width, height = height) %>%
       layout(title = title,
           xaxis = list(title = "Jaar"), 
-          yaxis = list(title = "Aantal"),
+          yaxis = list(title = "Aantal", tickformat = ",d"),
           margin = list(b = 80, t = 100), 
           barmode = ifelse(nlevels(summaryData$first_observed) == 1, "group", "stack"),
           annotations = list(x = levels(summaryData$first_observed), 

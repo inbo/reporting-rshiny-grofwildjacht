@@ -16,7 +16,7 @@
 #' 
 #' @author mvarewyck
 #' @export
-fullNames <- function(x, type = c("wildschade"), rev = FALSE) {
+fullNames <- function(x, type = c("wildschade", "maanden"), rev = FALSE) {
     
     type <- match.arg(type)
     
@@ -34,7 +34,21 @@ fullNames <- function(x, type = c("wildschade"), rev = FALSE) {
                     "Verkeersongeluk met letsel" 		= "PERSLTSL",
                     "Verkeersongeluk onbekend" 					= "ONBEKEND",
                     "Valwild"					= "VALWILD"
-            )
+            ),
+            maanden = c(
+                    "januari" = "January",
+                    "februari" = "February",
+                    "maart" = "March",
+                    "april" = "April",
+                    "mei" = "May",
+                    "juni" = "June",
+                    "juli" = "July",
+                    "augustus" = "August",
+                    "september" = "September",
+                    "oktober" = "October",
+                    "november" = "November",
+                    "december" = "December" 
+                )
     )
     
     
@@ -61,4 +75,74 @@ fullNames <- function(x, type = c("wildschade"), rev = FALSE) {
     
     return(result)
     
+}
+
+
+#' Replace english months detected in vector elements with Dutch month names
+#' 
+#' Will not return NA, but rather the original content if
+#' no match could be found. In case a factor is supplied, 
+#' a factor will be returned keeping the original order of the levels, but 
+#' with adjusted months. 
+#' 
+#' @param x character or factor, what to transform
+#' @return character or factor vector, depending on what was supplied
+#' 
+#' @author eadriaensen
+#' @export
+setMonthsInDutch <- function(x) {
+	
+  class <- class(x)
+  
+  if (class == "factor") {
+    levels <- levels(x)
+  	x <- as.character(x)
+  } else if (class != "character") {
+  	stop("This function can only work on vectors of class 'factor' or 'character'.")
+  }
+  
+  dictionary <- data.frame("english" = c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"),
+                           "nederlands" = c("januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", "september", "oktoboer", "november", "december"),
+                           stringsAsFactors = FALSE)
+  
+  result <- sapply(x, function(element) {
+        
+    matched <- sapply(dictionary[["english"]], function(englishElement) {
+  		    grepl(englishElement, element)
+  	    })
+    if (!any(matched)) {
+      
+      return(element)
+      message("Warning: the following element could not be translated and is kept as is: ", element ," Please make sure there are no typos in the supplied vector.")
+    } else {
+      ind <- which(matched)
+      gsub(dictionary[ind, "english"], dictionary[ind, "nederlands"], element)
+    }
+        
+  })
+
+  if (class == "factor") {
+    
+    levelsAdjusted <- sapply(levels, function(element) {
+          
+          matched <- sapply(dictionary[["english"]], function(englishElement) {
+                grepl(englishElement, element)
+              })
+          if (!any(matched)) {
+            
+            return(element)
+            message("Warning: the following element could not be translated and is kept as is: ", element ," Please make sure there are no typos in the supplied vector.")
+          } else {
+            ind <- which(matched)
+            gsub(dictionary[ind, "english"], dictionary[ind, "nederlands"], element)
+          }
+          
+        })
+    
+    result <- factor(result, levels = levelsAdjusted)
+    
+  }
+  
+  return(result)
+  
 }

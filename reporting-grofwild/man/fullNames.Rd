@@ -4,7 +4,7 @@
 \alias{fullNames}
 \title{List user-friendly full names to replace R coding names}
 \usage{
-fullNames(x, type = c("wildschade"), rev = FALSE)
+fullNames(x, type = c("wildschade", "maanden"), rev = FALSE)
 }
 \arguments{
 \item{x}{character, what to transform}

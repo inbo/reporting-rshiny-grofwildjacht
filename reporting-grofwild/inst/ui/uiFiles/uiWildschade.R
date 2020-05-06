@@ -163,7 +163,7 @@ tagList(
         
         tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
             tags$ul(
-                tags$li("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn ", tags$i("seizoen")," en ", tags$i("type schade.")," Welke schademeldingen getoond worden, hangt af van je filterkeuzes in het keuzemenu."), 
+                tags$li("De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn ", tags$i("seizoen, jaar")," en ", tags$i("type schade.")," Welke schademeldingen getoond worden, hangt af van je filterkeuzes in het keuzemenu."), 
                 tags$li("Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaalde schademelding te selecteren, krijg je verdere informatie over deze schademelding (jaar, wildsoort, gemeente, schadetype en eventueel seizoen).")
             )
         ),
@@ -173,6 +173,7 @@ tagList(
                         column(6, uiOutput("schade_time2")),
                         column(6, selectInput(inputId = "schade_variable2", label = "Variabele",
                                         choices = c("Seizoen" = "season",
+                                                    "Jaar" = "afschotjaar",
                                                     "Type schade" = "schadeCode")),
                                   selectInput(inputId = "schade_legend2", "Legende (kaart)",
                                         choices = c("Bovenaan rechts" = "topright",

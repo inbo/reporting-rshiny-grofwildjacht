@@ -137,7 +137,13 @@ percentageYearlyShotAnimals <- function(
 	openingSeasonHalfMonth <- allHalfMonth[do.call(':', as.list(which(allHalfMonth %in% openingSeasonYear)))]
 	# consider all half months
 #openingSeasonHalfMonth <- allHalfMonth
-	
+
+  # reformat date in data for case where afschotdatum equals a stopdatum of openingstijden
+  # in such cases format afschotdatum with dateseparation = 15 (in stead of 14 as done before)
+  # i.e. if 15/%m/%y is afschotdatum and also a stopdatum of openingstijden -> include it in first part of the month
+  indices <- which(inputDataFilter$afschot_datum_Date %in% openingstijdenData[openingstijdenData$Jaar %in% c(jaar, jaartallen), "Stopdatum_Date"])
+  afschotDatumHalfMonth[indices] <- formatDate(inputDataFilter$afschot_datum_Date[indices], 15)
+  
 # format date as factor
 	inputDataFilter$afschot_datum_halfMonth <- factor(afschotDatumHalfMonth, levels = allHalfMonth)
 	
@@ -167,6 +173,8 @@ percentageYearlyShotAnimals <- function(
 	# extract mean percentage in selected year - during opening season
 	dataPlot$meanYear <- mean(dataPlot$obsYear[dataPlot$dateHalfMonth %in% openingSeasonHalfMonth])
 	
+  # Translate english month names to dutch
+  dataPlot$dateHalfMonth <- setMonthsInDutch(dataPlot$dateHalfMonth)
 	
 	## create plot
 	

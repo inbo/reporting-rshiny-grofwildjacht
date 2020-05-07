@@ -7,7 +7,9 @@
 countIntroductionYear(data, region = NULL)
 }
 \arguments{
-\item{data}{}
+\item{data}{data.frame with raw data for plotting}
+
+\item{region}{NULL currently not implemented}
 }
 \value{
 list with plot and data

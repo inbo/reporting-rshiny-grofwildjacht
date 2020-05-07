@@ -176,8 +176,7 @@ allSchadeTables <- lapply(species, function(iSpecies) {
                 expect("Verkeersongeluk onbekend" %in% names(schadeTable$data), "columns do not match user choices")
             
             DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
-                    selection = "single", options = list(dom = 't', pageLength = -1)) %>%
-                formatRound(tail(colnames(schadeTable$data), -1), digits = 0, mark = "")
+                    selection = "single", options = list(dom = 't', pageLength = -1))
             
         })
 

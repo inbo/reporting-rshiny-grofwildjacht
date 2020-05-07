@@ -3,6 +3,7 @@
 # Author: mvarewyck, eadriaensen
 ###############################################################################
 
+library(reportingGrofwild)
 library(trias)
 
 ##

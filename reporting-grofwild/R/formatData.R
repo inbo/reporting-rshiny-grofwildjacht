@@ -115,7 +115,6 @@ yearToTitleString <- function(year, brackets = TRUE) {
 #' 
 #' @param x character, what to transform
 #' @param type character, defines how to transform short to full names
-#' @param rev boolean, whether to switch names and values
 #' @return named character vector, names are the original values
 #' 
 #' @author eadriaensen
@@ -126,10 +125,10 @@ exoten_dutchNames <- function(x, type = c("regio")) {
   
   new <- switch(type,
       regio = c(
-          "België" 	    = "Belgium",
+          "Belgi\u00EB" 	    = "Belgium",
           "Brussels Hoofdstedelijk Gewest" 	= "Brussels-Capital Region",
           "Vlaanderen" 	= "Flemish Region",
-          "Wallonië"	= "Walloon Region"
+          "Walloni\u00EB"	= "Walloon Region"
       )
   )
 

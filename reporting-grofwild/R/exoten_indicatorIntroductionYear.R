@@ -1,7 +1,7 @@
 #' Plot number of new introductions per year
 #' 
-#' @param data 
-#' @param region
+#' @param data data.frame with raw data for plotting
+#' @param region NULL currently not implemented
 #' @importFrom trias indicator_introduction_year
 #' @return list with plot and data
 #' data that was used for the plot (i.e. without missing values for the )
@@ -22,7 +22,7 @@ countIntroductionYear <- function(data, region = NULL){
             df = data, 
             start_year_plot = min(data$first_observed) - 1,
             x_lab = "Jaar",
-            y_lab = "Aantal geïntroduceerde uitheemse soorten"
+            y_lab = "Aantal ge\u00EFntroduceerde uitheemse soorten"
           )
   
   ## convert to plotly object

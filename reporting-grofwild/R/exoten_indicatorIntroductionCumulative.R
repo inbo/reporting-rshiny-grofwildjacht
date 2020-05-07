@@ -1,6 +1,5 @@
 #' Cumulative plot of yearly number of new introductions
 #' 
-#' @param region
 #' @inheritParams countIntroductionYear
 #' @importFrom trias indicator_total_year
 #' @return list with plot and data
@@ -21,7 +20,7 @@ cumulativeIntroductionYear <- function(data, region = NULL){
       df = data, 
       start_year_plot = min(data$first_observed, na.rm = TRUE) - 1,
       x_lab = "Jaar",
-      y_lab = "Aantal geïntroduceerde uitheemse soorten"
+      y_lab = "Aantal ge\u00EFntroduceerde uitheemse soorten"
   
   )
   

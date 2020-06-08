@@ -28,6 +28,7 @@ shinyUI(
                         
                         navbarPage(title = list(
                                         tags$div(paste0("v", packageVersion("reportingGrofwild")),
+                                                HTML("&emsp;"),
                                                 img(src = "logo.png", float = "top", height = "45px"),
                                                 style = "margin-top: -13px")
                                 ),

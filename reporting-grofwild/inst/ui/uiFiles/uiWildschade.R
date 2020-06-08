@@ -17,7 +17,7 @@ tagList(
         
         tags$div(class = "container",
                 
-                
+                tags$br(),
                 
                 tags$div(align = "center",
                         h1("Welkom op de informatiepagina rond wildschade")

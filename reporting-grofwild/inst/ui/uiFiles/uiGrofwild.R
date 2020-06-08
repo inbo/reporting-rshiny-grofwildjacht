@@ -9,8 +9,7 @@ tagList(
         tags$div(class = "container",
                 
                 tags$div(align = "center",
-                        h1("Welkom op de informatiepagina rond grofwildjacht"),
-                        h1("van het Instituut voor Natuur- en Bosonderzoek (INBO)")
+                        h1("Welkom op de informatiepagina rond grofwildjacht")
                 ),
                 
                 tags$p(class = "lead", "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen."),

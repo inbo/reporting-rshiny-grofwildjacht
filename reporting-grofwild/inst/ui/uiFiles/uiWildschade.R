@@ -20,8 +20,7 @@ tagList(
                 
                 
                 tags$div(align = "center",
-                        h1("Welkom op de informatiepagina rond wildschade"),
-                        h1("van het Instituut voor Natuur- en Bosonderzoek (INBO)")
+                        h1("Welkom op de informatiepagina rond wildschade")
                 ),
                 
                 tags$p(class = "lead", "Op deze pagina kan je de beschikbare gegevens over faunaschade raadplegen. Onder schade verstaan we verkeersongelukken met wilde dieren en schade aan landbouwgewassen, tuinen of sportvelden."),

@@ -26,10 +26,14 @@ shinyUI(
                 
                 tags$body(
                         
-                        navbarPage(title = list(tags$div(paste("INBO", paste0("v", packageVersion("reportingGrofwild"), sep = "\n")), 
-                                                          align = "left", style="margin-right: 30px")),
+                        navbarPage(title = list(
+                                        tags$div(paste0("v", packageVersion("reportingGrofwild")),
+                                                img(src = "logo.png", float = "top", height = "45px"),
+                                                style = "margin-top: -13px")
+                                ),
                                 windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),
                                 fluid = FALSE, id = "tabs",
+                                position = "fixed-top",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",
@@ -47,13 +51,13 @@ shinyUI(
                                 )
                         )
                 
-                ),
-                
-                
-                ## Footer
-                ## ------                        
-                
-                tags$footer(tags$div(class="container", tags$img(src="logo.png")))
+                )
+        
+        
+        ## Footer
+        ## ------                        
+        
+#                        tags$footer(tags$div(class="container", tags$img(src="logo.png")))
         
         )
 

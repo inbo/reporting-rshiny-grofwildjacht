@@ -264,7 +264,8 @@ percentageYearlyShotAnimals <- function(
             type = 'scatter', mode = 'lines',
             line = list(color = inbo.steun.donkerroos,
                 dash = "dot"), #size = 6, , width = 2 (default) 
-            name = getNameRange("Mediaan")
+            name = getNameRange("Mediaan"),
+            yaxis = 'y2'
         ) %>%
         
         # min-max range
@@ -273,7 +274,8 @@ percentageYearlyShotAnimals <- function(
             #					color = 'rgba(0,100,80,0.2)',
             fill = 'tonexty', fillcolor = colorRibbon,
             line = list(color = colorRibbonLine, width = 2),
-            name = getNameRange("Min-Max")
+            name = getNameRange("Min-Max"),
+            yaxis = 'y2'
         ) %>%
         
         # layout
@@ -285,6 +287,9 @@ percentageYearlyShotAnimals <- function(
                 titlefont = list(size = 18)), 
             yaxis = list(title = "Percentage jaarlijks afschot", 
                 titlefont = list(size = 18),
+                range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05),
+                overlaying = "y2"),
+            yaxis2 = list(title = "",
                 range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
             margin = list(b = 70, t = 90),
             legend = list(orientation = "h", y = 100, x = 0.1),

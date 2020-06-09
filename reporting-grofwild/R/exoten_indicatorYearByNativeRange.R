@@ -73,7 +73,8 @@ countYearNativerange <- function(data, jaartallen = NULL,
               y = totalCount, 
               text = paste(ifelse(nlevels(summaryData$first_observed) == 1, "totaal:", ""), ifelse(totalCount > 0, totalCount, "")),
               xanchor = 'center', yanchor = 'bottom',
-              showarrow = FALSE))  
+              showarrow = FALSE),
+          showlegend = TRUE)  
   
   # To prevent warnings in UI
   pl$elementId <- NULL

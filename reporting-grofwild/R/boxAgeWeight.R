@@ -30,7 +30,7 @@
 #' @export
 boxAgeWeight <- function(data,
 		type, jaartallen = NULL, regio = "",
-		width = NULL, height = NULL) {
+		width = NULL, height = NULL, sourceIndicator = NULL) {
 	
 	
 	wildNaam <- unique(data$wildsoort)

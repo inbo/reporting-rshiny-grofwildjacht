@@ -225,7 +225,11 @@ callModule(module = optionsModuleServer, id = "wild_plot6",
         multipleTypes = TRUE,
         timeRange = reactive(if (input$wild_species == "Ree")
                             c(2014, max(results$wild_timeRange())) else 
-                            results$wild_timeRange()))
+                            results$wild_timeRange()),
+        sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"), 
+        sourceLabel = "Data bron leeftijd",
+        sourceVariable = "leeftijd_comp_bron"
+              )
 callModule(module = plotModuleServer, id = "wild_plot6",
         plotFunction = "boxAgeWeight", 
         data = results$wild_ecoData)
@@ -265,7 +269,12 @@ callModule(module = optionsModuleServer, id = "wild_plot8",
         timeRange = results$wild_timeRange,
         types = results$typesDefaultGender,
         typesDefault = results$typesDefaultGender,
-        multipleTypes = TRUE)
+        multipleTypes = TRUE,
+        sources = c("INBO" = "inbo", 
+                    "Meldingsformulier" = "meldingsformulier",  
+                    "INBO en meldingsformulier" = "both"), 
+        sourceLabel = "Data bron voor onderkaaklengte",
+        sourceVariable = "onderkaaklengte_comp_bron")
 callModule(module = plotModuleServer, id = "wild_plot8",
         plotFunction = "plotBioindicator", 
         bioindicator = "onderkaaklengte",

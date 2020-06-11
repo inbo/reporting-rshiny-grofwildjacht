@@ -59,7 +59,7 @@ optionsModuleUI <- function(id,
         ),
       if (showDataSource)
       	uiOutput(ns("dataSource")),
-#        selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
+#        selectInput(inputId = ns("dataSource"), label = "Data bron voor onderkaaklengte",
 #            choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
 #                "INBO en meldingsformulier" = "both")),
       if(exportData)
@@ -99,7 +99,7 @@ optionsModuleServer <- function(input, output, session,
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE, definedYear = defaultYear,
-    sources = NULL, sourceLabel = "Data bron") {
+    sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL) {
   
   ns <- session$ns
   
@@ -108,9 +108,28 @@ optionsModuleServer <- function(input, output, session,
         sliderInput(inputId = ns("time"), label = timeLabel, 
             value = c(min(timeRange()), definedYear),
             min = if (!is.null(input$dataSource)) {
-                  if (input$dataSource == "inbo") { min(data()[data()$onderkaaklengte_comp_bron == "inbo" , "afschotjaar"], na.rm = TRUE) }
-                  else if (input$dataSource == "meldingsformulier") { min(data()[data()$onderkaaklengte_comp_bron == "meldingsformulier" , "afschotjaar"], na.rm = TRUE) }
-                  else min(timeRange())
+                  
+                    if (is.null(sourceVariable)) {
+                      
+                    	stop("Variable should be defined to filter for source. Please update code.")
+                    
+                    } else {
+                      
+                      if ( !(sourceVariable %in% colnames(data())) ) {
+                        
+                      	stop("Variable defined to filter for source is not detected in the data.")
+                        
+                      }
+                      
+                      switch(input$dataSource,
+                          inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                          meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                          # if both (inbo and meldingsformulier) is selected also include observations for which
+                          # sourceVariable is NA to determine year-range
+                          both = min(timeRange())
+                      )
+                    }
+                        
                 } else min(timeRange()),
             max = max(timeRange()),
             step = 1,
@@ -177,11 +196,7 @@ optionsModuleServer <- function(input, output, session,
   
   output$dataSource <- renderUI({
         
-        selectInput(inputId = ns("dataSource"), label = sourceLabel,
-            choices = sources,
-#            choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
-#                "INBO en meldingsformulier" = "both")
-        )
+        selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
         
       })
   

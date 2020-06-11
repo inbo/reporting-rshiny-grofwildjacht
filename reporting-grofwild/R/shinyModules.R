@@ -58,9 +58,10 @@ optionsModuleUI <- function(id,
             column(8, uiOutput(ns("region")))
         ),
       if (showDataSource)
-        selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
-            choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
-                "INBO en meldingsformulier" = "both")),
+      	uiOutput(ns("dataSource")),
+#        selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
+#            choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
+#                "INBO en meldingsformulier" = "both")),
       if(exportData)
         downloadButton(ns("dataDownload"), "Download data")
   
@@ -89,12 +90,16 @@ optionsModuleUI <- function(id,
 #' @param definedYear numeric, single numeric value specifying the year value 
 #' (or max year value within a range) that is selected upon opening, default is
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
+#' @param sources, defines the data sources that can be selected
+#' @param sourceLabel, character, the displayed label for the selecting source field, 
+#' 'Data bron' by default
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE, definedYear = defaultYear) {
+    multipleTypes = FALSE, definedYear = defaultYear,
+    sources = NULL, sourceLabel = "Data bron") {
   
   ns <- session$ns
   
@@ -102,9 +107,9 @@ optionsModuleServer <- function(input, output, session,
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
             value = c(min(timeRange()), definedYear),
-            min = if (!is.null(input$sourceIndicator)) {
-                  if (input$sourceIndicator == "inbo") { min(data()[data()$onderkaaklengte_comp_bron == "inbo" , "afschotjaar"], na.rm = TRUE) }
-                  else if (input$sourceIndicator == "meldingsformulier") { min(data()[data()$onderkaaklengte_comp_bron == "meldingsformulier" , "afschotjaar"], na.rm = TRUE) }
+            min = if (!is.null(input$dataSource)) {
+                  if (input$dataSource == "inbo") { min(data()[data()$onderkaaklengte_comp_bron == "inbo" , "afschotjaar"], na.rm = TRUE) }
+                  else if (input$dataSource == "meldingsformulier") { min(data()[data()$onderkaaklengte_comp_bron == "meldingsformulier" , "afschotjaar"], na.rm = TRUE) }
                   else min(timeRange())
                 } else min(timeRange()),
             max = max(timeRange()),
@@ -167,6 +172,16 @@ optionsModuleServer <- function(input, output, session,
         selectInput(inputId = ns("type"), label = labelTypes,
             choices = types(), 
             selected = typesDefault(), multiple = multipleTypes)
+        
+      })
+  
+  output$dataSource <- renderUI({
+        
+        selectInput(inputId = ns("dataSource"), label = sourceLabel,
+            choices = sources,
+#            choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
+#                "INBO en meldingsformulier" = "both")
+        )
         
       })
   
@@ -340,8 +355,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
-            if(!is.null(input$sourceIndicator))
-              list(sourceIndicator = input$sourceIndicator),
+            if(!is.null(input$dataSource))
+              list(sourceIndicator = input$dataSource),
             if (!is.null(locaties))
               list(locaties = locaties()),
             if (!is.null(timeRange))

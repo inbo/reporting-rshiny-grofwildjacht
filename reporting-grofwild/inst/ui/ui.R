@@ -29,7 +29,9 @@ shinyUI(
                         navbarPage(title = list(
                                         tags$div(paste0("v", packageVersion("reportingGrofwild")),
                                                 HTML("&emsp;"),
-                                                img(src = "logo.png", float = "top", height = "45px"),
+                                                img(src = "longINBO.png", float = "top", height = "50px"),
+                                                HTML("&emsp;&emsp;"),
+                                                img(src = "lionINBO.png", float = "top", height = "50px"),
                                                 style = "margin-top: -13px")
                                 ),
                                 windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),

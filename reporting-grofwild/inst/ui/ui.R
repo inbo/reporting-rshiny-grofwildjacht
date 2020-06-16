@@ -26,7 +26,9 @@ shinyUI(
                 
                 tags$body(
                         
-                        navbarPage(title = list(
+                        tags$div(class = "navbar1", 
+                                
+                                navbarPage(title = list(
                                         tags$div(paste0("v", packageVersion("reportingGrofwild")),
                                                 HTML("&emsp;"),
                                                 img(src = "longINBO.png", float = "top", height = "50px"),
@@ -37,6 +39,7 @@ shinyUI(
                                 windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),
                                 fluid = FALSE, id = "tabs",
                                 position = "fixed-top",
+                                theme = "navbar.css",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",
@@ -53,6 +56,8 @@ shinyUI(
                                                 ))
                                 )
                         )
+        
+                )
                 
                 )
         

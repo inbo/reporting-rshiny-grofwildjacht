@@ -1,3 +1,4 @@
+	o include missing province information data in countYearProvince plot and tableProvince
 	o include bron-filter for boxAgeWeight plot + input-dependent age categories
 	o percentage yearly shot animals grofwild: 
 		include open-ended ribbons
@@ -6,7 +7,7 @@
 	o percentage yearly shot animals grofwild: 
 		include dutch month names;
 		when afschotdatum = enddatum openingstijden, put in correct halfmonth 
-	o add 'jaar' as variable for landkaar 2 wildschade
+	o add 'jaar' as variable for landkaart 2 wildschade
 0.2.2
 	o fix location points on landkaart 2 wildschade
 0.2.1

@@ -8,7 +8,7 @@ Description: Data visualization of grof wild in Vlaanderen.
 Version: 0.2.4
 Date: 2020-06-17
 Imports:
-    shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster, leaflet,  magrittr, DT
+    shiny, sp, plotly, plyr, INBOtheme, devtools, methods, reshape2, mgcv, rgdal, rgeos, shinycssloaders, raster, leaflet,  magrittr, DT, stringr
 Depends: maptools
 Suggests:
 	testthat, mapview, RColorBrewer

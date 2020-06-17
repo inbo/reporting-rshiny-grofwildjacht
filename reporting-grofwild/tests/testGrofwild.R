@@ -277,7 +277,10 @@ length(areRemoved)
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
             
             plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-            boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak))
+            boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), sourceIndicator = "both")
+            boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
+                         sourceIndicator = "inbo")
+            
             
         })
 allPlots

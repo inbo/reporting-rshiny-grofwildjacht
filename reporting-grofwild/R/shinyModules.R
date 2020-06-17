@@ -90,9 +90,10 @@ optionsModuleUI <- function(id,
 #' @param definedYear numeric, single numeric value specifying the year value 
 #' (or max year value within a range) that is selected upon opening, default is
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
-#' @param sources, defines the data sources that can be selected
-#' @param sourceLabel, character, the displayed label for the selecting source field, 
+#' @param sources defines the data sources that can be selected
+#' @param sourceLabel character, the displayed label for the selecting source field, 
 #' 'Data bron' by default
+#' @param sourceVariable character, the variable used internally to filter for source
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
@@ -185,11 +186,29 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
+  finalTypes  <- reactive({
+      
+      finalTypes <- types()
+  
+      if (!is.null(input$dataSource)) {
+      	
+        if (input$dataSource == "both" & any(grepl("6m", finalTypes, ignore.case = TRUE))) {
+          
+          ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+        	finalTypes <- c("Frisling", "Overloper", "Volwassen")
+        }
+      }
+      
+      return(finalTypes)
+
+    })
+
+  typesDefault <- reactive(finalTypes())
   
   output$type <- renderUI({
         
         selectInput(inputId = ns("type"), label = labelTypes,
-            choices = types(), 
+            choices = finalTypes(), 
             selected = typesDefault(), multiple = multipleTypes)
         
       })

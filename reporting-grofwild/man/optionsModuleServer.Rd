@@ -15,7 +15,10 @@ optionsModuleServer(
   timeRange = NULL,
   timeLabel = "Periode",
   multipleTypes = FALSE,
-  definedYear = defaultYear
+  definedYear = defaultYear,
+  sources = NULL,
+  sourceLabel = "Data bron",
+  sourceVariable = NULL
 )
 }
 \arguments{
@@ -43,6 +46,13 @@ same as \code{types} by defualt}
 \item{definedYear}{numeric, single numeric value specifying the year value 
 (or max year value within a range) that is selected upon opening, default is
 \code{defaultYear} which is globally defined as \code{currentYear - 1}}
+
+\item{sources}{defines the data sources that can be selected}
+
+\item{sourceLabel}{character, the displayed label for the selecting source field, 
+'Data bron' by default}
+
+\item{sourceVariable}{character, the variable used internally to filter for source}
 }
 \value{
 no return value; some output objects are created

@@ -23,17 +23,18 @@ fullNames <- function(x, type = c("wildschade", "maanden"), rev = FALSE) {
     new <- switch(type,
             wildschade = c(
                     # SchadeBasisCode
-                    "Gewas" 	= "GEWAS",
-                    "Voertuig" 	= "VRTG",
-                    "Andere" 	= "ANDERE",
+                    "Gewas" 	          = "GEWAS",
+                    "Voertuig" 	        = "VRTG",
+                    "Andere" 	          = "ANDERE",
                     # SchadeCode
                     "Woelschade"				= "WLSCHD",
-                    "Vraatschade" 				= "VRTSCHD",
+                    "Vraatschade" 			= "VRTSCHD",
                     "Gewas - andere"    = "GEWASANDR", 
-                    "Verkeersongeluk zonder letsel" 	= "GNPERSLTSL",
-                    "Verkeersongeluk met letsel" 		= "PERSLTSL",
+                    "Veegschade"        = "VGSCHD",
+                    "Verkeersongeluk zonder letsel" 	  = "GNPERSLTSL",
+                    "Verkeersongeluk met letsel" 		    = "PERSLTSL",
                     "Verkeersongeluk onbekend" 					= "ONBEKEND",
-                    "Valwild"					= "VALWILD"
+                    "Valwild"					                  = "VALWILD"
             ),
             maanden = c(
                     "januari" = "January",

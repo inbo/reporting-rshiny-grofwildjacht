@@ -98,6 +98,9 @@ boxAgeWeight <- function(data,
   
   if (sourceIndicator == "inbo") {
   	
+    # To prevent error with R CMD check
+    leeftijd_bron <- NULL
+    
     # filters out NA and 'meldingsformulier'
     plotData <- subset(plotData, leeftijd_bron == "inbo")
 

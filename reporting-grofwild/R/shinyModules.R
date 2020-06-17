@@ -203,13 +203,31 @@ optionsModuleServer <- function(input, output, session,
 
     })
 
-  typesDefault <- reactive(finalTypes())
+  finalTypesDefault <- reactive({
+        
+        types <- types()
+        finalTypesDefault <- typesDefault()
+        finalTypes <- finalTypes()
+        
+        if (!is.null(input$dataSource)) {
+          
+          if (input$dataSource == "both" & any(grepl("6m", types, ignore.case = TRUE))) {
+            
+            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+            ## i.e. also update typesDefault in this case
+            finalTypesDefault <- finalTypes
+          }
+        }
+        
+        return(finalTypesDefault)
+        
+      })
   
   output$type <- renderUI({
         
         selectInput(inputId = ns("type"), label = labelTypes,
             choices = finalTypes(), 
-            selected = typesDefault(), multiple = multipleTypes)
+            selected = finalTypesDefault(), multiple = multipleTypes)
         
       })
   

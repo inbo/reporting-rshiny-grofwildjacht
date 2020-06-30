@@ -53,7 +53,7 @@ shinyUI(
                                                         tags$a(href="http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", target="_blank", "Geodata bron"),
                                                         "-", 
                                                         tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "Contact")
-                                                ))
+                                                ), style = "margin-top: 55px")
                                 )
                         )
         

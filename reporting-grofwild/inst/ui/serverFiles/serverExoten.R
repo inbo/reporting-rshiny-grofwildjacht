@@ -578,6 +578,25 @@ callModule(module = plotModuleServer, id = "exoten_soortenCumulatiefPlot",
     data = reactive(results$exoten_data())
 )
 
+## Plot number of species per pathway
+
+output$exoten_titleSoortenPerPathway <- renderUI({      
+      
+      h2(paste("Aantal geïntroduceerde uitheemse soorten", 
+              "in", ifelse(is.null(input$exoten_region), "België", vectorToTitleString(input$exoten_region)),
+              "per pathway", 
+              yearToTitleString(req(input$exoten_time))
+          )
+      )
+      
+    })
+
+callModule(module = plotModuleServer, id = "exoten_soortenPerPathway",
+    plotFunction = "countIntroductionPathway", 
+    data = reactive(results$exoten_data())
+)
+
+
 ## Plot number of species per year by native region
 
 output$exoten_titleSoortenPerJaarPerOorsprongregio <- renderUI({      
@@ -603,3 +622,4 @@ callModule(module = plotModuleServer, id = "exoten_soortenPerJaarPerOorsprongreg
     plotFunction = "countYearNativerange", 
     data = reactive(results$exoten_data())
 )
+

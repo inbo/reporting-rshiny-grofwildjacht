@@ -12,8 +12,7 @@ tagList(
         
         
         tags$div(align = "center",
-            h1("Welkom op de informatiepagina rond exoten"),
-            h1("van het Instituut voor Natuur- en Bosonderzoek (INBO)")
+            h1("Welkom op de informatiepagina rond exoten")
         ),
         
         tags$p(class = "lead", "Op deze pagina kan je ..."),
@@ -89,10 +88,15 @@ tagList(
         plotModuleUI(id = "exoten_soortenCumulatiefPlot"),
         tags$br(), 
         
+        uiOutput("exoten_titleSoortenPerPathway"),
+        plotModuleUI(id = "exoten_soortenPerPathway"),
+        tags$br(), 
+        
         uiOutput("exoten_titleSoortenPerJaarPerOorsprongregio"),    
         fixedRow(column(4, optionsModuleUI(id = "exoten_soortenPerJaarPerOorsprongregio", showType = TRUE)),
                  column(8, plotModuleUI(id = "exoten_soortenPerJaarPerOorsprongregio"))
                  ),
+                 
 
         tags$br()
         

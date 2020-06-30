@@ -145,6 +145,7 @@ cumulativeIntroductionYear(data = exoten_data)
 ## Grafiek: Aantal geïntroduceerde uitheemse soorten per pathway
 ##
 
+countIntroductionPathway(data = exoten_data)
 
 ## PLOT 4
 ## Grafiek: Aantal geïntroduceerde uitheemse soorten per jaar per regio van oorsprong

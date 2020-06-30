@@ -26,10 +26,20 @@ shinyUI(
                 
                 tags$body(
                         
-                        navbarPage(title = list(tags$div(paste("INBO", paste0("v", packageVersion("reportingGrofwild"), sep = "\n")), 
-                                                          align = "left", style="margin-right: 30px")),
+                        tags$div(class = "navbar1", 
+                                
+                                navbarPage(title = list(
+                                        tags$div(paste0("v", packageVersion("reportingGrofwild")),
+                                                HTML("&emsp;"),
+                                                img(src = "longINBO.png", float = "top", height = "50px"),
+                                                HTML("&emsp;&emsp;"),
+                                                img(src = "lionINBO.png", float = "top", height = "50px"),
+                                                style = "margin-top: -13px")
+                                ),
                                 windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),
                                 fluid = FALSE, id = "tabs",
+                                position = "fixed-top",
+                                theme = "navbar.css",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",
@@ -45,17 +55,19 @@ shinyUI(
                                                         tags$a(href="http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", target="_blank", "Geodata bron"),
                                                         "-", 
                                                         tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "Contact")
-                                                ))
+                                                ), style = "margin-top: 55px")
                                 )
                         )
+        
+                )
                 
-                ),
-                
-                
-                ## Footer
-                ## ------                        
-                
-                tags$footer(tags$div(class="container", tags$img(src="logo.png")))
+                )
+        
+        
+        ## Footer
+        ## ------                        
+        
+#                        tags$footer(tags$div(class="container", tags$img(src="logo.png")))
         
         )
 

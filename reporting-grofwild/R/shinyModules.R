@@ -186,6 +186,10 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
+  ## these two pieces of code are applicable for 
+  ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+  ## grofwild - they will have no effects on types and typesDefault in the other cases
+  
   finalTypes  <- reactive({
       
       finalTypes <- types()

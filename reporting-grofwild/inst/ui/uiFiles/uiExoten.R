@@ -63,10 +63,11 @@ tagList(
                        ),
                 
                 # Select pathway 1
-                column(4, uiOutput("exoten_pw1Options")),
+                column(4, tagList(uiOutput("exoten_pw1Options"),
+                                  uiOutput("exoten_pw2Options"))),
                 
                 # Select subsequent pathway 2
-                column(4, uiOutput("exoten_pw2Options"))
+                column(4, uiOutput("exoten_unionlistOptions"))
 
                 ),
                 
@@ -89,7 +90,7 @@ tagList(
         tags$br(), 
         
         uiOutput("exoten_titleSoortenPerPathway"),
-        plotModuleUI(id = "exoten_soortenPerPathway"),
+        plotModuleUI(id = "exoten_soortenPerPathway", height = "800px"),
         tags$br(), 
         
         uiOutput("exoten_titleSoortenPerJaarPerOorsprongregio"),    

@@ -102,6 +102,11 @@ observe({
         currentSelected$habitat <- NULL
     })
 
+observe({
+      currentChoices$unionlist <- c("All species" = "all", "EU concern species only" = "euConcern")
+      currentSelected$unionlist <- NULL
+    })
+
 #callModule(module = selectModuleServer,
 #    id = "kingdom",
 #    label = "kingdom test",
@@ -191,6 +196,10 @@ output$exoten_doeOptions <- renderUI({
       # if updated choices, relevant selection is shown based on previous input
       selectInput("exoten_doe", "Degree of establishment", choices = currentChoices$degree_of_establishment, selected = currentSelected$degree_of_establishment, multiple = TRUE)
     })
+
+output$exoten_unionlistOptions <- renderUI({
+        selectInput("exoten_unionlist", "Union list", choices = currentChoices$unionlist, selected = currentSelected$unionlist, multiple = FALSE)
+      })
 
 ## Define what to filter in cases input is empty
 
@@ -311,10 +320,31 @@ results$exoten_filterDoe <- reactive({
       
     })
 
+results$exoten_filterUnionlist <- reactive({
+      
+      if (is.null(input$exoten_unionlist) | input$exoten_unionlist %in% "all") {
+        # i.e. include all species
+        c(NA, unique(sort(results$subExotenData()$species)))
+        
+      } else if (input$exoten_unionlist %in% c("euConcern") ) {
+      	
+        # filter only species that are present in the unionlist 
+        ind <-  which(results$subExotenData()$species %in% unionlistData$scientificName)
+        unique(sort(results$subExotenData()$species[ind]))
+        
+      } else { # not current
+      	
+        input$exoten_unionlist
+      }
+      
+    })
+
+
 ## Update choices and selected based on all other input filters
 
 observeEvent(c(input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, input$exoten_doe, input$exoten_bron,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData1 <- subset(results$subExotenData(), kingdom %in% results$exoten_filterKingdom() &
                                                      phylum %in% results$exoten_filterPhylum() &
                                                      class %in% results$exoten_filterClass() &
@@ -322,7 +352,8 @@ observeEvent(c(input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, inp
                                                      family %in% results$exoten_filterFamily() &
                                                      pathway_level1 %in% results$exoten_filterPw1() &
                                                      pathway_level2 %in% results$exoten_filterPw2() &
-                                                     degree_of_establishment %in% results$exoten_filterDoe() )
+                                                     degree_of_establishment %in% results$exoten_filterDoe() &
+                                                     species %in% results$exoten_filterUnionlist() )
       
       filterData1 <- filterData1[apply(filterData1[, .SD, .SDcols = which(colnames(filterData1) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
                                              
@@ -333,8 +364,8 @@ observeEvent(c(input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, inp
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_pw1, input$exoten_habitat, input$exoten_doe, input$exoten_kingdom,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2
-        ), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData2 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
 #                                                      phylum %in% results$exoten_filterPhylum() &
 #                                                      class %in% results$exoten_filterClass() &
@@ -342,7 +373,8 @@ observeEvent(c(input$exoten_bron, input$exoten_pw1, input$exoten_habitat, input$
 #                                                      family %in% results$exoten_filterFamily() &
                                                       pathway_level1 %in% results$exoten_filterPw1() &
                                                       pathway_level2 %in% results$exoten_filterPw2() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
       
       filterData2 <- filterData2[apply(filterData2[, .SD, .SDcols = which(colnames(filterData2) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
                                              
@@ -353,7 +385,8 @@ observeEvent(c(input$exoten_bron, input$exoten_pw1, input$exoten_habitat, input$
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData3 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                       kingdom %in% results$exoten_filterKingdom() &
                                                       phylum %in% results$exoten_filterPhylum() &
@@ -361,7 +394,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
                                                       order %in% results$exoten_filterOrder() &
                                                       family %in% results$exoten_filterFamily() &
 #                                                      pathway_level2 %in% results$exoten_filterPw2() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
                                              
       filterData3 <- filterData3[apply(filterData3[, .SD, .SDcols = which(colnames(filterData3) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -371,7 +405,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$exoten_doe, input$exoten_habitat,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData4 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                      kingdom %in% results$exoten_filterKingdom() &
                                                      phylum %in% results$exoten_filterPhylum() &
@@ -380,7 +415,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$
                                                      family %in% results$exoten_filterFamily() &
                                                      pathway_level1 %in% results$exoten_filterPw1() &
                                                      pathway_level2 %in% results$exoten_filterPw2() &
-                                                     degree_of_establishment %in% results$exoten_filterDoe() )
+                                                     degree_of_establishment %in% results$exoten_filterDoe() &
+                                                     species %in% results$exoten_filterUnionlist() )
                                                        
 #      currentChoices$habitat <- names(which(apply(filterData4[, .SD, .SDcols = which(colnames(filterData4) %in% results$exoten_filterHabitat() )], 2, function(x) any(x, na.rm = TRUE))))
       currentChoices$habitat <- names(which(apply(filterData4[, .SD, .SDcols = which(colnames(filterData4) %in% habitats)], 2, function(x) any(x, na.rm = TRUE) )))
@@ -389,7 +425,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$exoten_habitat, input$exoten_doe,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData5 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                      kingdom %in% results$exoten_filterKingdom() &
                                                      phylum %in% results$exoten_filterPhylum() &
@@ -397,7 +434,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$
                                                      order %in% results$exoten_filterOrder() &
                                                      family %in% results$exoten_filterFamily() &
                                                      pathway_level1 %in% results$exoten_filterPw1() &
-                                                     pathway_level2 %in% results$exoten_filterPw2() )
+                                                     pathway_level2 %in% results$exoten_filterPw2() &
+                                                     species %in% results$exoten_filterUnionlist() )
                                              
       filterData5 <- filterData5[apply(filterData5[, .SD, .SDcols = which(colnames(filterData5) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -409,7 +447,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_pw1, input$
 ## Update choices and selected based on all other input filters for hierarchically lower variables 
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData6 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                       kingdom %in% results$exoten_filterKingdom() &
 #                                                      class %in% results$exoten_filterClass() &
@@ -417,7 +456,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
 #                                                      family %in% results$exoten_filterFamily() &
                                                       pathway_level1 %in% results$exoten_filterPw1() &
                                                       pathway_level2 %in% results$exoten_filterPw2() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
       
       filterData6 <- filterData6[apply(filterData6[, .SD, .SDcols = which(colnames(filterData6) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -427,7 +467,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData7 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                       kingdom %in% results$exoten_filterKingdom() &
                                                       phylum %in% results$exoten_filterPhylum() &
@@ -435,7 +476,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
 #                                                      family %in% results$exoten_filterFamily() &
                                                       pathway_level1 %in% results$exoten_filterPw1() &
                                                       pathway_level2 %in% results$exoten_filterPw2() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
       
       filterData7 <- filterData7[apply(filterData7[, .SD, .SDcols = which(colnames(filterData7) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -445,7 +487,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData8 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                       kingdom %in% results$exoten_filterKingdom() &
                                                       phylum %in% results$exoten_filterPhylum() &
@@ -453,7 +496,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
 #                                                      family %in% results$exoten_filterFamily() &
                                                       pathway_level1 %in% results$exoten_filterPw1() &
                                                       pathway_level2 %in% results$exoten_filterPw2() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
       
       filterData8 <- filterData8[apply(filterData8[, .SD, .SDcols = which(colnames(filterData8) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -463,7 +507,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData9 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                       kingdom %in% results$exoten_filterKingdom() &
                                                       phylum %in% results$exoten_filterPhylum() &
@@ -471,7 +516,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
                                                       order %in% results$exoten_filterOrder() &
                                                       pathway_level1 %in% results$exoten_filterPw1() &
                                                       pathway_level2 %in% results$exoten_filterPw2() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
       
       filterData9 <- filterData9[apply(filterData9[, .SD, .SDcols = which(colnames(filterData9) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -481,7 +527,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
     })
 
 observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, input$exoten_doe, input$exoten_pw1,
-               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2), { 
+               input$exoten_phylum, input$exoten_class, input$exoten_order, input$exoten_family, input$exoten_pw2,
+               input$exoten_unionlist), { 
       filterData10 <- subset(results$subExotenData(), source %in% results$exoten_filterBron() &
                                                       kingdom %in% results$exoten_filterKingdom() &
                                                       phylum %in% results$exoten_filterPhylum() &
@@ -489,7 +536,8 @@ observeEvent(c(input$exoten_bron, input$exoten_kingdom, input$exoten_habitat, in
                                                       order %in% results$exoten_filterOrder() &
                                                       family %in% results$exoten_filterFamily() &
                                                       pathway_level1 %in% results$exoten_filterPw1() &
-                                                      degree_of_establishment %in% results$exoten_filterDoe() )
+                                                      degree_of_establishment %in% results$exoten_filterDoe() &
+                                                      species %in% results$exoten_filterUnionlist() )
       
       filterData10 <- filterData10[apply(filterData10[, .SD, .SDcols = which(colnames(filterData10) %in% results$exoten_filterHabitat() )], 1, function(x) any(x, na.rm = TRUE)), ]
       
@@ -520,7 +568,8 @@ results$exoten_data <- reactive({
                                                   family %in% results$exoten_filterFamily() &
                                                   pathway_level1 %in% results$exoten_filterPw1() &
                                                   pathway_level2 %in% results$exoten_filterPw2() &
-                                                  degree_of_establishment %in% results$exoten_filterDoe() )
+                                                  degree_of_establishment %in% results$exoten_filterDoe() &
+                                                  species %in% results$exoten_filterUnionlist() )
 
       # filter for habitat logicals
       if (!is.null(input$exoten_habitat))
@@ -584,7 +633,7 @@ output$exoten_titleSoortenPerPathway <- renderUI({
       
       h2(paste("Aantal geïntroduceerde uitheemse soorten", 
               "in", ifelse(is.null(input$exoten_region), "België", vectorToTitleString(input$exoten_region)),
-              "per pathway", 
+              "per pathway", if(!is.null(input$exoten_pw1)) {paste0("(", vectorToTitleString(input$exoten_pw1), ")") } , 
               yearToTitleString(req(input$exoten_time))
           )
       )

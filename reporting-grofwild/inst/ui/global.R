@@ -83,6 +83,7 @@ if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
 ### Load exoten data
 ### -------------
 exotenData <- loadExotenData(type = "indicators")
+unionlistData <- loadExotenData(type = "unionlist")
 
 habitats <- c("marine", "freshwater", "terrestrial")
 

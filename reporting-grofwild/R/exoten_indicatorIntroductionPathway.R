@@ -33,7 +33,7 @@ countIntroductionPathway <- function(data){
 
   p <- subplot(plots, 
       nrows = ceiling(length(plots) / 2),
-      margin = 0.04) #%>%
+      margin = c(0.06, 0.06, 0.1, 0.06)) #l-r-t-d #%>%
 #      layout(xaxis = list(
 #              title = "x Axis"), 
 #            yaxis = list(title = "y"))

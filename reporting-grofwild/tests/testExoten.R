@@ -10,6 +10,7 @@ library(trias)
 ## Load exoten data
 ##
 exotenData <- loadExotenData(type = "indicators")
+unionlistData <- loadExotenData(type = "unionlist")
 
 ##
 ## Explore data
@@ -59,6 +60,23 @@ exoten_region <- exoten_regionChoices[1]
 
 exoten_doeChoices <- unique(exotenData$degree_of_establishment[!is.na(exotenData$degree_of_establishment)])
 exoten_doe <- exoten_doeChoices[1:length(exoten_doeChoices)]
+
+exoten_unionlistChoices <- c("all", "euConcern")
+exoten_unionlistChoice <- exoten_unionlistChoices[1] 
+
+exoten_unionlist <- if (exoten_unionlistChoice %in% "all") {
+        # i.e. include all species
+        c(NA, unique(sort(exotenData$species)))
+        
+      } else if (exoten_unionlistChoice %in% c("euConcern") ) {
+        
+        # filter only species that are present in the unionlist 
+        ind <-  which(exotenData$species %in% unionlistData$scientificName)
+        unique(sort(exotenData$species[ind]))
+       
+    }
+
+
 
 ## TODO: write test/warning in case of new habitat columns.
 ## these are currently manually defined
@@ -112,7 +130,10 @@ toRetain <- exotenData$first_observed %in% exoten_time &
             exotenData$locality%in% exoten_region &
             exotenData$degree_of_establishment %in% exoten_doe &
             ##habitat
-            apply(exotenData[, .SD, .SDcols = which(colnames(exotenData) %in% exoten_habitat)], 1, function(x) any(x, na.rm = TRUE))       
+            apply(exotenData[, .SD, .SDcols = which(colnames(exotenData) %in% exoten_habitat)], 1, function(x) any(x, na.rm = TRUE))    
+            
+        
+        ## additional filters
             ## kingdom
             exotenData$kingdom %in% exoten_kingdom &
             # kingdom - dependent
@@ -121,9 +142,10 @@ toRetain <- exotenData$first_observed %in% exoten_time &
             exotenData$order %in% exoten_order &
             exotenData$family %in% exoten_family &
             ## pathway
-            exotenData$pathway_level1 %in% exoten_pwLevelOne &
+            exotenData$pathway_level1 %in% exoten_pwLevelOne & #c("corridor", "escape", "contaminant") 
             # pathway - dependent
             exotenData$pathway_level2 %in% exoten_pwLevelTwo
+            exotenData$species %in% exoten_unionlist
             
 
 exoten_data <- exotenData[toRetain,]

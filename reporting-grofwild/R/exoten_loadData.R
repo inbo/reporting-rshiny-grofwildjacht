@@ -1,20 +1,28 @@
 #' Read exoten data
 #' 
-#' By default data for which \code{first_observed < 1950} is excluded.
+#' For indicator data:
+#' by default data for which \code{first_observed < 1950} is excluded.
+#' For unionlist data:
+#' only 'scientific name', 'english name' and 'kingdom' are retained
 #' @param dataDir character vector, defines the path to the data file(s)
-#' @param type data type, "indicators" for indicator data
-#' @return data.table, loaded indicator data; 
+#' @param type data type, one of:
+#' \itemize{
+#' \item{\code{"indicators"}:}{for indicator data, i.e. main data set}
+#' \item{\code{"unionlist"}:}{for union list data, i.e. }
+#' }
+#' @return data.table, loaded indicator/unionlist data; 
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom data.table fread
 #' @export
 loadExotenData <- function(
     dataDir = system.file("extdata", package = "reportingGrofwild"),
-    type = c("indicators")) {
+    type = c("indicators", "unionlist")) {
 	
   type = match.arg(type)
   
   dataFile <- file.path(dataDir, switch(type,
-          "indicators" = "data_input_checklist_indicators.tsv"))
+          "indicators" = "data_input_checklist_indicators.tsv",
+          "unionlist" = "eu_concern_species.tsv"))
   
   if (type == "indicators") {
 
@@ -41,7 +49,9 @@ loadExotenData <- function(
             # "habitat",  ## I think it's easier to use the 3 below / habitat is not NA, but "" when missing
             "marine", "freshwater", "terrestrial",
             # Source
-            "source"
+            "source",
+            # union list filtering
+            "species", "canonicalName"
         )]
         
     ## exclude data before 1950 - keeps values with NA for first_observed
@@ -96,11 +106,30 @@ loadExotenData <- function(
                                                                            europe, tolower(europe),
                                                                            oceania, tolower(oceania))) & 
                                      !is.na(rawDataFiltered$native_range)] <- "undefined"
-
+                             
+    ## replace missing "species" with "canonicalName" if available
+    # then drop "canonicalName"
+    ind <- which(is.na(rawDataFiltered$species) & !is.na(rawDataFiltered$canonicalName))
+    rawDataFiltered$species[ind] <- rawDataFiltered$canonicalName[ind]
+    rawDataFiltered$canonicalName <- NULL
+    warning("Exoten: Voor ", length(ind), " observaties is de 'specie' onbekend. 'canonicalName' wordt gebruikt in de plaats.")
     
+ 
     
     attr(rawDataFiltered, "Date") <- file.mtime(dataFile)
   
+  } else if (type == "unionlist") {
+    
+    rawData <- fread(dataFile, stringsAsFactors = FALSE)
+    rawData[rawData == ""] <- NA
+    
+    ## extract necessary columns
+    rawDataFiltered <- rawData[, c("checklist_scientificName", "english_name", "checklist_kingdom")]
+    names(rawDataFiltered) <- c("scientificName", "englishName", "kingdom")
+    
+    attr(rawDataFiltered, "Date") <- file.mtime(dataFile)
+    
+  	
   }
   
   return(rawDataFiltered)

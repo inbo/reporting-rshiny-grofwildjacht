@@ -6,18 +6,25 @@
 \usage{
 loadExotenData(
   dataDir = system.file("extdata", package = "reportingGrofwild"),
-  type = c("indicators")
+  type = c("indicators", "unionlist")
 )
 }
 \arguments{
 \item{dataDir}{character vector, defines the path to the data file(s)}
 
-\item{type}{data type, "indicators" for indicator data}
+\item{type}{data type, one of:
+\itemize{
+\item{\code{"indicators"}:}{for indicator data, i.e. main data set}
+\item{\code{"unionlist"}:}{for union list data, i.e. }
+}}
 }
 \value{
-data.table, loaded indicator data; 
+data.table, loaded indicator/unionlist data; 
 and attribute 'Date', the date that this data file was created
 }
 \description{
-By default data for which \code{first_observed < 1950} is excluded.
+For indicator data:
+by default data for which \code{first_observed < 1950} is excluded.
+For unionlist data:
+only 'scientific name', 'english name' and 'kingdom' are retained
 }

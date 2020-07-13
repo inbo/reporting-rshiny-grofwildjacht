@@ -10,13 +10,14 @@ shinyUI(
                 ## ------
                 
                 tags$head(
-                        tags$meta(charset = "utf-8"),
-                        tags$meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no"),
+#                        tags$meta(charset = "utf-8"),
+#                        tags$meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no"),
                         tags$link(rel = "stylesheet",
                                 href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
                                 integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u",
                                 crossorigin="anonymous"),
-                        tags$link(rel = "stylesheet", href = "style.css")
+                        tags$link(rel = "stylesheet", href = "style.css"),
+                        tags$link(rel = "stylesheet", href = "navbar.css")
                 ),
                 
                 
@@ -27,17 +28,18 @@ shinyUI(
                 tags$body(
                         
                         tags$div(class = "navbar1", 
-                                
-                                navbarPage(title = list(
-                                        tags$div(paste0("v", packageVersion("reportingGrofwild")),
+                                navbarPage(title = tags$div(
                                                 HTML("&emsp;"),
                                                 img(src = "logo.png", float = "top", height = "45px"),
-                                                style = "margin-top: -13px; margin-bottom: -13px")
-                                ),
+                                                style = "margin-top: -13px; margin-bottom: -13px",
+                                                tags$script(HTML(paste("var header = $('.navbar > .container');",
+                                                                        "header.append('<div style=\"float:right;\"><img src=\"damhert.jpeg\" alt=\"alt\" style=\"float:right;width:33px;height:41px;padding-top:10px;\"><span class = \"version\">", 
+                                                                        paste0("v", packageVersion("reportingGrofwild")),"</span></div>')"))
+                                                )),
                                 windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),
-                                fluid = FALSE, id = "tabs",
+                                fluid = FALSE, 
+                                id = "tabs",
                                 position = "fixed-top",
-                                theme = "navbar.css",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",

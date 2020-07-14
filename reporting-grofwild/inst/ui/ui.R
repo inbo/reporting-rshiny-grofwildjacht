@@ -33,7 +33,7 @@ shinyUI(
                                                 img(src = "logo.png", float = "top", height = "45px"),
                                                 style = "margin-top: -13px; margin-bottom: -13px",
                                                 tags$script(HTML(paste("var header = $('.navbar > .container');",
-                                                                        "header.append('<div style=\"float:right;\"><img src=\"damhert.jpeg\" alt=\"alt\" style=\"float:right;width:33px;height:41px;padding-top:10px;\"><span class = \"version\">", 
+                                                                        "header.append('<div style=\"float:right;\"><span class = \"version\">", 
                                                                         paste0("v", packageVersion("reportingGrofwild")),"</span></div>')"))
                                                 )),
                                 windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),

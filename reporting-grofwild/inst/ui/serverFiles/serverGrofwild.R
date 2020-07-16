@@ -68,7 +68,7 @@ results$wild_openingstijd <- reactive({
                         min(
                                 max(results$wild_ecoData()$afschotjaar), 
                                 max(results$wild_openingstijdenData()$Jaar)
-                        )-1
+                        )
                 )
                 
                 openingstijd

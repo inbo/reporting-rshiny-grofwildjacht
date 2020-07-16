@@ -311,6 +311,10 @@ xtabs(~ aantal_embryos + aantal_embryos_bron,
 xtabs(~ aantal_embryos_MF + aantal_embryos_bron, 
         data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
         addNA = TRUE)
+head(reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree") & 
+                        is.na(reeEcoData$aantal_embryos_bron), 
+                c("type_comp", "aantal_embryos", "aantal_embryos_onbekend", 
+                        "aantal_embryos_MF", "aantal_embryos_bron")])
 
 pl <- countEmbryos(
         data = reeEcoData,

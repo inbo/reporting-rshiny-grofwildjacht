@@ -9,6 +9,7 @@ countEmbryos(
   type = c("Smalree", "Reegeit"),
   jaartallen = NULL,
   regio = "",
+  sourceIndicator = c("inbo", "meldingsformulier", "both"),
   width = NULL,
   height = NULL
 )
@@ -36,7 +37,7 @@ list with:
 \item{'data': }{data displayed in the plot, as data.frame with:
 \itemize{
 \item{'afschotjaar': }{year at which the animal was shot}
-\item{'variable': }{age/gender category}
+\item{'embryos': }{aantal embryos}
 \item{'Freq': }{counts of females}
 \item{'percent': }{percentage of females with given number of embryos per year}
 }}

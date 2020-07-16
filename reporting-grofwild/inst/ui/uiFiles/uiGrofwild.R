@@ -423,7 +423,8 @@ tagList(
                                                             optionsModuleUI(id = "wild_plot10", showTime = TRUE, showType = TRUE,
                                                                     regionLevels = 1:2, exportData = TRUE,
                                                                     showDataSource = TRUE),
-                                                            tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2014 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
+                                                            tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.",
+                                                                    "Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
                                                             tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
                                                     column(8, plotModuleUI(id = "wild_plot10"))
                                             

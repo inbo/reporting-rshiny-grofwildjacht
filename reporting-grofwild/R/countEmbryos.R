@@ -39,6 +39,9 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
+    # Exclude records with missing source
+    data <- data[!is.na(data$aantal_embryos_bron), ]
+    
     if (sourceIndicator == "both")
         data$embryos <- data$aantal_embryos else if (sourceIndicator == "inbo") 
         data$embryos <- data$aantal_embryos_labo else
@@ -46,10 +49,12 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     
     
 	# Select data of specified years and type
-	plotData <- data[data$afschotjaar %in% jaartallen & data$type_comp %in% type,
-            c("afschotjaar", "embryos")]
+	plotData <- subset(data, data$afschotjaar %in% jaartallen & data$type_comp %in% type,
+            c("afschotjaar", "embryos"))
     nRecords <- nrow(plotData)
-	
+
+    if (nRecords == 0)
+        return(NULL)
 	
 	## For aantal_embryos
 	# remove missing
@@ -58,6 +63,9 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     # remove > 3 embryos
     plotData <- plotData[plotData$embryos <= 3, ]
 	
+    if (nCollected == 0)
+        return(NULL)
+    
 	# convert to a factor
 	newLevels <- rev(c("3", "2", "1", "0"))
 	plotData$embryos <- factor(plotData$embryos, levels = newLevels)
@@ -86,7 +94,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	
 	title <- paste0(wildNaam, " ", bioindicatorName, " ",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-			if (!all(regio == "")) paste0(" (", toString(regio), ")"))
+			if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
 	
 	
 	colors <- inbo.2015.colours(nlevels(summaryData$embryos))

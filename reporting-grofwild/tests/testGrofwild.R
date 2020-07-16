@@ -279,7 +279,7 @@ allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
             plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
             boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), sourceIndicator = "both")
             boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
-                         sourceIndicator = "inbo")
+                    sourceIndicator = "inbo")
             
             
         })
@@ -300,23 +300,33 @@ res <- boxAgeGenderLowerJaw(
         type = unique(reeEcoData$leeftijd_comp)
 )
 
-## PLOT 10: bioindicators
+## PLOT 10: Number of embryos (bio-indicator)
 
-## -- outdated -- ## 
-#indicators <- c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos")
-if (FALSE) {
-    
-    ## PLOT 11: Number of embryos (bio-indicator
-    
+xtabs(~ aantal_embryos_onbekend + aantal_embryos_bron, 
+        data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
+        addNA = TRUE)
+xtabs(~ aantal_embryos + aantal_embryos_bron, 
+        data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
+        addNA = TRUE)
+xtabs(~ aantal_embryos_MF + aantal_embryos_bron, 
+        data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
+        addNA = TRUE)
+
+pl <- countEmbryos(
+        data = reeEcoData,
+#    jaartallen = unique(reeEcoData$afschotjaar)
+        jaartallen = 2002:2010
+)
+pl$plot
+head(pl$data)
+
+for (sourceIndicator in c("inbo", "meldingsformulier", "both"))
     pl <- countEmbryos(
             data = reeEcoData,
-#    jaartallen = unique(reeEcoData$afschotjaar)
-            jaartallen = 2002:2010
-    )
-    pl$plot
-    head(pl$data)
-    
-}
+            sourceIndicator = sourceIndicator)$plot
+
+
+
 
 
 
@@ -392,18 +402,18 @@ for (iSpecies in species) {
     unitChoice <- c("absolute", "relative")[1]
     
     trendData <-  createTrendData(
-        data = geoData[geoData$wildsoort == iSpecies, ],
-        allSpatialData = spatialData,
-        timeRange = c(2014, 2019),
-        species = iSpecies,
-        regionLevel = "flanders",
-        unit = unitChoice
+            data = geoData[geoData$wildsoort == iSpecies, ],
+            allSpatialData = spatialData,
+            timeRange = c(2014, 2019),
+            species = iSpecies,
+            regionLevel = "flanders",
+            unit = unitChoice
     )
     
     trendYearFlanders(
-        data = trendData,
-        timeRange = c(2014, 2019),
-        unit = unitChoice
+            data = trendData,
+            timeRange = c(2014, 2019),
+            unit = unitChoice
     )$plot
     
     for (regionLevel in names(spatialData)[1:6]) {
@@ -411,21 +421,21 @@ for (iSpecies in species) {
 #        print(regionLevel)
         
         trendRegionData <- createTrendData(
-            data = geoData[geoData$wildsoort == iSpecies, ],
-            allSpatialData = spatialData,
-            timeRange = c(2014, 2019),
-            species = iSpecies,
-            regionLevel = regionLevel,
-            unit = unitChoice
+                data = geoData[geoData$wildsoort == iSpecies, ],
+                allSpatialData = spatialData,
+                timeRange = c(2014, 2019),
+                species = iSpecies,
+                regionLevel = regionLevel,
+                unit = unitChoice
         )
         
         trendYearRegion(
-            data = trendRegionData,
-            locaties = sample(trendRegionData$locatie, 5),
-            timeRange = c(2014, 2019),
-            unit = unitChoice
+                data = trendRegionData,
+                locaties = sample(trendRegionData$locatie, 5),
+                timeRange = c(2014, 2019),
+                unit = unitChoice
         )$plot
-          
+        
     }
     
 }

@@ -1,3 +1,5 @@
+0.2.4
+    o include plot grofwild embryos, countEmbryos()
 	o include new species and types of damage 
 	o include missing province information data in countYearProvince plot and tableProvince
 	o include bron-filter for boxAgeWeight plot + input-dependent age categories

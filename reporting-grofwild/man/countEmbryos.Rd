@@ -6,7 +6,7 @@
 \usage{
 countEmbryos(
   data,
-  type = c("Smalree", "Geit"),
+  type = c("Smalree", "Reegeit"),
   jaartallen = NULL,
   regio = "",
   width = NULL,

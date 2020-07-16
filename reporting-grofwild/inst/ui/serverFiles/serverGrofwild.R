@@ -298,7 +298,7 @@ callModule(module = plotModuleServer, id = "wild_plot9",
 results$typesFemale <- reactive({
             
             types <- levels(droplevels(results$wild_ecoData()$type_comp))
-            types[!types %in% c("", "Bokkits", "Jaarlingbok", "Reebok", "Geitkits", "Reekits")]
+            types[types %in% c("Reegeit", "Smalree")]
             
         })
 
@@ -306,7 +306,12 @@ callModule(module = optionsModuleServer, id = "wild_plot10",
         data = results$wild_ecoData,
         timeRange = results$wild_timeRange,
         types = results$typesFemale,
-        multipleTypes = TRUE)
+        multipleTypes = TRUE,
+        sources = c("INBO" = "inbo", 
+                "Meldingsformulier" = "meldingsformulier",  
+                "INBO en meldingsformulier" = "both"), 
+        sourceLabel = "Data bron voor aantal embryo's",
+        sourceVariable = "aantal_embryos_bron")
 callModule(module = plotModuleServer, id = "wild_plot10",
         plotFunction = "countEmbryos",
         data = results$wild_ecoData)

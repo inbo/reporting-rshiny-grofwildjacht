@@ -150,7 +150,7 @@ callModule(module = plotModuleServer, id = "wild_plot1",
 callModule(module = optionsModuleServer, id = "wild_plot2", 
         data = results$wild_ecoData,
         timeRange = reactive(if (input$wild_species == "Ree")
-                            c(2014, max(results$wild_timeRange())) else 
+                            c(2005, max(results$wild_timeRange())) else 
                             results$wild_timeRange()))
 callModule(module = plotModuleServer, id = "wild_plot2",
         plotFunction = "countAgeCheek", 

@@ -11,6 +11,9 @@
 #' @inheritParams countYearAge
 #' @param type animal type, used to filter \code{data},
 #' based on 'Leeftijdscategorie_onderkaak' column
+#' @param sourceIndicator character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+#' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+#' i.e. no filtering. Defaults to \code{"both"}
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given species the distribution of weight
@@ -29,10 +32,11 @@
 #' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
 #' @export
 boxAgeWeight <- function(data,
-		type, jaartallen = NULL, regio = "",
+		type, jaartallen = NULL, regio = "", sourceIndicator = c("both", "inbo"),
 		width = NULL, height = NULL) {
 	
-	
+  sourceIndicator <- match.arg(sourceIndicator)
+  
 	wildNaam <- unique(data$wildsoort)
 	
 	if (is.null(jaartallen))
@@ -40,10 +44,12 @@ boxAgeWeight <- function(data,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_maanden", "geslacht.MF",
+			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", "geslacht.MF",
 					"provincie")]
-	names(plotData) <- c("gewicht", "leeftijd", "maanden", "geslacht", "provincie")
+	names(plotData) <- c("gewicht", "leeftijd", "leeftijd_bron", "maanden", "geslacht", "provincie")
 	
+  # Filter for bron
+  
 	
 	# Percentage collected
 	nRecords <- nrow(plotData)
@@ -61,7 +67,7 @@ boxAgeWeight <- function(data,
 		stop("Geen data beschikbaar")
 	
 	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn") {  # wild zwijn
+	if (wildNaam == "Wild zwijn" & sourceIndicator == "inbo") {  # wild zwijn
 		
 		plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
 				ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
@@ -73,7 +79,11 @@ boxAgeWeight <- function(data,
 		
 		newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
 		
-	} else {  # ree
+	} else if (wildNaam == "Wild zwijn" & sourceIndicator == "both") {
+		
+    newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
+    
+	}else {  # ree
 		
 		# Exclude records with weight lower than 5 or more than 30 (unrealistic)
 		plotData <- subset(plotData, gewicht >= 5 & gewicht <= 30)
@@ -83,7 +93,18 @@ boxAgeWeight <- function(data,
 	
 	plotData$leeftijd <- factor(plotData$leeftijd, levels = newLevelsLeeftijd)
 	
+  # filters out NA leeftijd if all leeftijdlevels are passed in 'type'
 	plotData <- subset(plotData, leeftijd %in% type)
+  
+  if (sourceIndicator == "inbo") {
+  	
+    # To prevent error with R CMD check
+    leeftijd_bron <- NULL
+    
+    # filters out NA and 'meldingsformulier'
+    plotData <- subset(plotData, leeftijd_bron == "inbo")
+
+  }
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")

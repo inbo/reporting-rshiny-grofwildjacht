@@ -23,16 +23,16 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 # Specify currently used wildsoorten
 schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
                       "Klein wild" = c("haas", "fazant", "konijn"),
-                      "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans"),
-                      "Overig" = c("houtduif", "vos", "wolf"))
+                      "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
+                      "Overig" = c("houtduif", "vos", "wolf", "verwilderde kat"))
 
 # Specify currently used type schades
 schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
 
 # Specify currently used types schade subcodes
-schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"), #VRTG
-                 c("WLSCHD", "VRTSCHD", "GEWASANDR"),     #GEWAS
-                 c("ANDERE", "VALWILD"))                  #ANDERE
+schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
+                 c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD"),     #GEWAS
+                 c("ANDERE", "VALWILD"))                            #ANDERE
 
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1

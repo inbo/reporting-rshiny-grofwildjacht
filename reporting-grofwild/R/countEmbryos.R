@@ -12,51 +12,71 @@
 #' \item{'data': }{data displayed in the plot, as data.frame with:
 #' \itemize{
 #' \item{'afschotjaar': }{year at which the animal was shot}
-#' \item{'variable': }{age/gender category}
+#' \item{'embryos': }{aantal embryos}
 #' \item{'Freq': }{counts of females}
 #' \item{'percent': }{percentage of females with given number of embryos per year}
 #' }}
 #' }
 #' @author mvarewyck
 #' @export
-countEmbryos <- function(data, type = c("Smalree", "Geit"), 
-		jaartallen = NULL, regio = "", width = NULL, height = NULL) {
-	
+countEmbryos <- function(data, type = c("Smalree", "Reegeit"), 
+		jaartallen = NULL, regio = "", 
+        sourceIndicator = c("inbo", "meldingsformulier", "both"),
+        width = NULL, height = NULL) {
+    
+    
+    # to prevent warnings with R CMD check
+    embryos <- NULL  
+    Freq <- NULL
 	
 	wildNaam <- unique(data$wildsoort)
 	
-	bioindicator <- "aantal_embryos"
-	bioindicatorName <- "aantal embryo's"
-	
-	if (is.null(jaartallen))
+	bioindicator <- c("aantal_embryos", "aantal_embryos_labo", "aantal_embryos_MF")
+    bioindicatorName <- "aantal embryo's"
+    
+    sourceIndicator <- match.arg(sourceIndicator)
+    
+    if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
-	
+    # Exclude records with missing source
+    data <- data[!is.na(data$aantal_embryos_bron), ]
+    
+    if (sourceIndicator == "both")
+        data$embryos <- data$aantal_embryos else if (sourceIndicator == "inbo") 
+        data$embryos <- data$aantal_embryos_labo else
+        data$embryos <- data$aantal_embryos_MF
+    
+    
 	# Select data of specified years and type
-	plotData <- data[data$afschotjaar %in% jaartallen & data$ageGender %in% type,
-			c("afschotjaar", bioindicator)]
-	
-	colnames(plotData)[colnames(plotData) == bioindicator] <- "variable"
+	plotData <- subset(data, data$afschotjaar %in% jaartallen & data$type_comp %in% type,
+            c("afschotjaar", "embryos"))
+    nRecords <- nrow(plotData)
+
+    if (nRecords == 0)
+        return(NULL)
 	
 	## For aantal_embryos
-	# remove > 3 embryos
-	plotData <- plotData[is.na(plotData$variable) | plotData$variable <= 3, ]
+	# remove missing
+    plotData <- plotData[!is.na(plotData$embryos), ]
+    nCollected <- nrow(plotData)
+    # remove > 3 embryos
+    plotData <- plotData[plotData$embryos <= 3, ]
 	
-	# replace NA by 'Niet ingevuld', convert to a factor
-	plotData$variable[is.na(plotData$variable)] <- "Niet ingevuld"
-	newLevels <- rev(c("Niet ingevuld", "3", "2", "1", "0"))
-	plotData$variable <- factor(plotData$variable, levels = newLevels)
+    if (nCollected == 0)
+        return(NULL)
+    
+	# convert to a factor
+	newLevels <- rev(c("3", "2", "1", "0"))
+	plotData$embryos <- factor(plotData$embryos, levels = newLevels)
 	
 	plotData$afschotjaar <- as.factor(plotData$afschotjaar)
 	
 	# use table with factor to have 0 when no counts for certain year/number of embryos
-	tmpSummary <- as.data.frame(with(plotData, table(afschotjaar, variable)))
+	tmpSummary <- as.data.frame(with(plotData, table(afschotjaar, embryos)))
 	
-	# Calculate percentages excluding "niet ingezameld"
-	variable <- NULL  # to prevent warnings with R CMD check
-	Freq <- NULL
-	subData <- subset(tmpSummary, variable != "Niet ingevuld")
-	tmpPercent <- ddply(subData, "afschotjaar", transform, 
+	# Calculate percentages
+	tmpPercent <- ddply(tmpSummary, "afschotjaar", transform, 
 			percent = Freq / sum(Freq) * 100)
 	summaryData <- merge(tmpPercent, tmpSummary, all.y = TRUE)
 	
@@ -74,21 +94,21 @@ countEmbryos <- function(data, type = c("Smalree", "Geit"),
 	
 	title <- paste0(wildNaam, " ", bioindicatorName, " ",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-			if (!all(regio == "")) paste0(" (", toString(regio), ")"))
+			if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
 	
 	
-	colors <- c(inbo.2015.colours(nlevels(summaryData$variable) - 1), inbo.lichtgrijs)
+	colors <- inbo.2015.colours(nlevels(summaryData$embryos))
 	names(colors) <- newLevels
 	
 	
-	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~variable,
+	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
 					text = ~text, hoverinfo = "x+text+name",
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
 			layout(title = title,
 					xaxis = list(title = "afschotjaar"), 
 					yaxis = list(title = "Aantal vrouwelijke ree\u00EBn"),
-					margin = list(b = 40, t = 100),
+					margin = list(b = 120, t = 100, r = 200),
 					legend = list(y = 0.8, yanchor = "top"),
 					barmode = if(length(totalCounts) == 1) "group" else "stack",
 					annotations = list(x = as.numeric(names(totalCounts)), y = totalCounts, 
@@ -98,7 +118,11 @@ countEmbryos <- function(data, type = c("Smalree", "Geit"),
 			add_annotations(text = "Aantal embryo's", 
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
 					y = 0.8, yanchor = "bottom",    # Same y as legend below
-					legendtitle = TRUE, showarrow = FALSE)
+					legendtitle = TRUE, showarrow = FALSE) %>%
+            add_annotations(text = paste0(round(nCollected/nRecords, 2)*100, 
+                            "% met gekend aantal embryo's van totaal (", nCollected, "/", nRecords, ")"),
+                    xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+                    y = -0.2, yanchor = "bottom", showarrow = FALSE)
 	
 	
 	# To prevent warnings in UI

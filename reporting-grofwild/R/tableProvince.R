@@ -51,17 +51,23 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		names(assignedData) <- c("provincie", "categorie", "jaar", "totaal")
 		
 	}
-	
-	levelsProvincie <- levels(allData$provincie)
-	
+	  
 	
 	# Exclude records with provincie = NA, jaar = NA
-	allData <- allData[with(allData, !is.na(provincie) & !is.na(jaar)), ]
+#	allData <- allData[with(allData, !is.na(provincie) & !is.na(jaar)), ]
+  allData <- allData[with(allData, !is.na(jaar)), ]
+  
 	
 	# Rename categorie NA to "Onbekend"
 	allData$categorie[is.na(allData$categorie) | allData$categorie == ""] <- "Onbekend"
 	
-	
+  # Rename provincie NA to "Onbekend"
+  allData$provincie <- factor(allData$provincie, levels = levels(addNA(allData$provincie)), 
+      labels = c(levels(allData$provincie), "Onbekend"), exclude = NULL)
+  
+  levelsProvincie <- levels(allData$provincie)
+     
+  
 	
 	if (categorie == "typePercent") {
 		

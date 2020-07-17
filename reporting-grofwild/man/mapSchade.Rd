@@ -7,7 +7,7 @@
 mapSchade(
   schadeData,
   regionLevel,
-  variable = c("season", "schadeCode"),
+  variable = c("season", "schadeCode", "afschotjaar"),
   allSpatialData,
   addGlobe = FALSE,
   legend = "topright"
@@ -21,7 +21,7 @@ wildschade and descriptives in data.frame}
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{variable}{character, indicates the variable of interest to color points by. 
-Should be one of \code{c("season", "schadeCode")}}
+Should be one of \code{c("season", "schadeCode", "afschotjaar")}}
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 

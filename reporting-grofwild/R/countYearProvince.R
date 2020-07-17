@@ -29,32 +29,49 @@
 #' @import plotly
 #' @importFrom reshape2 melt
 #' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom stringr str_sort
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
 		width = NULL, height = NULL) {
 	
 	
-    type <- match.arg(type)
+  type <- match.arg(type)
 	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
-    plotData <- data
-    plotData$locatie <- switch(type,
-            flanders = "Vlaams Gewest",
-            provinces = plotData$provincie,
-            faunabeheerzones = plotData$FaunabeheerZone
-    )
+  plotData <- data
+  plotData$locatie <- switch(type,
+          flanders = "Vlaams Gewest",
+          provinces = plotData$provincie,
+          faunabeheerzones = plotData$FaunabeheerZone
+  )
     
 	# Select data
 	plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie")]
-	plotData <- plotData[!is.na(plotData$afschotjaar) & !is.na(plotData$locatie), ]
-	
-	# Exclude unused provinces
+	plotData <- plotData[!is.na(plotData$afschotjaar), ]
+  
+  # Rename provincie NA to "Onbekend" -  provincie is already factor
+  if (type == "provinces") {
+  	  plotData$locatie <- factor(plotData$locatie, levels = levels(addNA(plotData$locatie)), 
+        labels = c(levels(plotData$locatie), "Onbekend"), exclude = NULL)
+  
+  } else {
+  	
+    plotData$locatie[is.na(plotData$locatie)] <- "Onbekend"
+  }
+
+	# Exclude unused provinces/fbz's
   plotData$locatie <- as.factor(plotData$locatie)    
 	plotData$locatie <- droplevels(plotData$locatie)
+  
+  # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
+  if (type == "faunabeheerzones") {
+    plotData$locatie <- factor(plotData$locatie, levels = stringr::str_sort(levels(plotData$locatie), numeric = TRUE))
+#    levels(plotData$locatie) <- stringr::str_sort(levels(plotData$locatie), numeric = TRUE)
+  }
 	
 	# Summarize data per province and year
 	plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 

@@ -183,12 +183,12 @@ percentageYearlyShotAnimals <- function(
 		paste0(name, " (", paste(range(jaartallen), collapse = "-"), ")")
 	
 	# Error bar color with transparency
-  colorErrorbar <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.75"), collapse = ","), ")")
-  colorErrorbarLine <- paste0("rgba(", paste(c(col2rgb(inbo.grijsblauw), "0.85"), collapse = ","), ")")
+  colorErrorbar <- paste0("rgba(", paste(c(col2rgb(inbo_lichtblauw), "0.75"), collapse = ","), ")")
+  colorErrorbarLine <- paste0("rgba(", paste(c(col2rgb(inbo_grijsblauw), "0.85"), collapse = ","), ")")
   
   # ribbon color with transparency
-  colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "0.15"), collapse = ","), ")")
-  colorRibbonLine <- paste0("rgba(", paste(c(col2rgb(inbo.steun.donkerroos), "0.25"), collapse = ","), ")")
+  colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo_steun_donkerroos), "0.15"), collapse = ","), ")")
+  colorRibbonLine <- paste0("rgba(", paste(c(col2rgb(inbo_steun_donkerroos), "0.25"), collapse = ","), ")")
   
   # for open-ended ribbons include only months with non-NA data
   # and add this layer separately
@@ -212,7 +212,7 @@ percentageYearlyShotAnimals <- function(
 #            # median
 #            add_trace(x = ~dateHalfMonth, y = ~medianRange, 
 #                type = 'scatter', mode = 'lines',
-#                line = list(color = inbo.steun.donkerroos,
+#                line = list(color = inbo_steun_donkerroos,
 #                    dash = "dot"), #size = 6, , width = 2 (default) 
 #                name = getNameRange("Mediaan"),
 #                yaxis = 'y2'
@@ -262,7 +262,7 @@ percentageYearlyShotAnimals <- function(
         # median
         add_trace(inherit = FALSE, data = referenceData, x = ~dateHalfMonth, y = ~medianRange, 
             type = 'scatter', mode = 'lines',
-            line = list(color = inbo.steun.donkerroos,
+            line = list(color = inbo_steun_donkerroos,
                 dash = "dot"), #size = 6, , width = 2 (default) 
             name = getNameRange("Mediaan"),
             yaxis = 'y2'

@@ -29,7 +29,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
+#' @importFrom INBOtheme inbo.2015.colours inbo_lichtgrijs
 #' @export
 boxAgeWeight <- function(data,
 		type, jaartallen = NULL, regio = "", sourceIndicator = c("both", "inbo"),

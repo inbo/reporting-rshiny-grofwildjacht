@@ -16,7 +16,7 @@
 #' }
 #' @author Laure Cougnaud
 #' @import plotly
-#' @importFrom INBOtheme inbo.lichtgrijs
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @importFrom plyr count
 #' @export
 boxAgeGenderLowerJaw <- function(data, 

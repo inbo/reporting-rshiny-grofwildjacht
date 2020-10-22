@@ -24,7 +24,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo_2015_colours inbo_lichtgrijs
+#' @importFrom INBOtheme inbo.2015.colours inbo_lichtgrijs
 #' @export
 countYearAge <- function(data, jaartallen = NULL, regio = "",
 		summarizeBy = c("count", "percent"),
@@ -118,7 +118,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	
 	
-	colors <- c(inbo_2015_colours(3), inbo_lichtgrijs)
+	colors <- c(inbo.2015.colours(3), inbo_lichtgrijs)
 	names(colors) <- newLevelsKaak
 	
 	title <- paste0(wildNaam, " ",

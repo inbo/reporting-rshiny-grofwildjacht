@@ -5,7 +5,7 @@
 #' default is \code{c("Smalree", "Geit")}
 #' @inheritParams countYearAge
 #' @import plotly
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom INBOtheme inbo_2015_colours
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified specie and years}
@@ -97,7 +97,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 			if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
 	
 	
-	colors <- inbo.2015.colours(nlevels(summaryData$embryos))
+	colors <- inbo_2015_colours(nlevels(summaryData$embryos))
 	names(colors) <- newLevels
 	
 	

@@ -38,7 +38,7 @@
 #' }
 #' }
 #' @author Laure Cougnaud
-#' @importFrom INBOtheme inbo.lichtblauw
+#' @importFrom INBOtheme inbo_lichtblauw
 #' @export
 plotBioindicator <- function(data, 
 		type = NULL,

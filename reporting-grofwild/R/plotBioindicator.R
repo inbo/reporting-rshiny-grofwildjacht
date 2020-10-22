@@ -13,7 +13,7 @@
 #' @inheritParams countYearAge
 #' @import plotly
 #' @import mgcv
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom INBOtheme inbo_2015_colours
 #' @importFrom stats na.omit predict qnorm
 #' @return list with:
 #' \itemize{
@@ -165,7 +165,7 @@ plotBioindicator <- function(data,
 	
 	if (bioindicator == "aantal_embryos") {
 		
-		palette <- inbo.2015.colours(n = nlevels(inputPlot$variable))
+		palette <- inbo_2015_colours(n = nlevels(inputPlot$variable))
 		
 		# base plot
 #		pl <- plot_ly(inputPlot, 
@@ -219,7 +219,7 @@ plotBioindicator <- function(data,
 		
 		# create plot
 		pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
-						colors = inbo.lichtblauw, type = "box", width = width, height = height) %>%
+						colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
 				layout(title = title,
 						xaxis = list(title = "afschotjaar"), 
 						yaxis = list(title = paste(bioindicatorName, bioindicatorUnit)),
@@ -258,7 +258,7 @@ plotBioindicator <- function(data,
 		##		inputPlot$afschotjaar <- as.factor(inputPlot$afschotjaar)
 #		
 #		# ribbon color with transparency	
-#		colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
+#		colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo_lichtblauw), "0.5"), collapse = ","), ")")
 #		
 #		# base plot
 #		pl <- plot_ly(inputPlot, 
@@ -268,13 +268,13 @@ plotBioindicator <- function(data,
 #						width = width, height = height) %>%
 #				
 #				# loess fit
-#				add_lines(line = list(color = inbo.lichtblauw),
+#				add_lines(line = list(color = inbo_lichtblauw),
 #						name = "Gemiddelde") %>%
 #				
 #				# confidence interval
 #				add_ribbons(ymin = ~ciLower, ymax = ~ciUpper,
 #						fill = 'tonexty', fillcolor = colorRibbon,
-#						line = list(color = inbo.lichtblauw),
+#						line = list(color = inbo_lichtblauw),
 #						name = "95% betrouwbaarheidsinterval")  %>%
 #				
 #				# title axes and margin bottom

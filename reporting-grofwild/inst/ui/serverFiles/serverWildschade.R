@@ -381,9 +381,9 @@ observe({
 # Title for the map
 output$schade_title <- renderUI({
             
-            
-            h3(paste("Gerapporteerd aantal schadegevallen", 
-                            "voor", paste(tolower(input$schade_species), collapse = ", "),
+            n_lk1 <- length(input$schade_species) 
+            h3(paste("Schademeldingen", 
+                            "voor", if (n_lk1 > 1) paste(paste(tolower(input$schade_species)[1:n_lk1-1], collapse = ", "), "en", tolower(input$schade_species[n_lk1])) else tolower(input$schade_species),
                             "in", input$schade_year))
             
             
@@ -479,8 +479,8 @@ callModule(module = plotModuleServer, id = "schade_timePlotFlanders",
         plotFunction = "trendYearFlanders", 
         data = results$schade_timeDataFlanders,
         timeRange = reactive(input$schade_time),
-        unit = reactive(input$schade_unit)
-)
+        unit = reactive(input$schade_unit),
+        schadeTitles = TRUE)
 
 
 
@@ -517,7 +517,7 @@ output$schade_timeTitle <- renderUI({
                     "utm5" = "5x5 UTM")
             
             
-            h3("Regio-schaal:", regionLevel)
+            h3("Evolutie schademeldingen", regionLevel)
             
         })
 
@@ -529,8 +529,8 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
         data = results$schade_timeData,
         locaties = reactive(input$schade_region),
         timeRange = reactive(input$schade_time),
-        unit = reactive(input$schade_unit)
-)
+        unit = reactive(input$schade_unit),
+        schadeTitles = TRUE)
 
 
 
@@ -553,19 +553,25 @@ output$schade_time2 <- renderUI({
 
 output$schade_titlePerceel <- renderUI({
             
-            
-            h3(paste("Schadegevallen", 
-                            "van", paste(tolower(input$schade_species), collapse = ", "),
-                            "per", switch(input$schade_variable2, 
+            n_lk2 <- length(input$schade_species)      
+      
+            h3(paste("Schademeldingen", 
+                    "voor", if (n_lk2 > 1) paste(paste(tolower(input$schade_species)[1:n_lk2-1], collapse = ", "), "en", tolower(input$schade_species[n_lk2])) else tolower(input$schade_species),
+                    "per", switch(input$schade_variable2, 
                                             season = "seizoen",
                                             schadeCode = "schadetype"),
                             #jaartallen
-                            paste0("(", 
-                                    input$schade_time2[1], 
-                                    " tot ", 
-                                    input$schade_time2[2],
-                                    ")"
-                            )
+              ifelse(input$schade_time2[1] != input$schade_time2[2],
+                  paste0("(", input$schade_time2[1], " tot ", input$schade_time2[2], ")"),
+                  paste0("(", input$schade_time2[1], ")")
+              )#,
+              
+#                            paste0("(", 
+#                                    input$schade_time2[1], 
+#                                    " tot ", 
+#                                    input$schade_time2[2],
+#                                    ")"
+#                            )
                     ))
             
         })

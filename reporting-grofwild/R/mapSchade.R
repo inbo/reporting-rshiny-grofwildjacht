@@ -77,7 +77,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 #' wildschade and descriptives in data.frame
 #' @inheritParams mapFlanders 
 #' @param variable character, indicates the variable of interest to color points by. 
-#' Should be one of \code{c("season", "schadeCode")}
+#' Should be one of \code{c("season", "schadeCode", "afschotjaar")}
 #' @return leaflet map
 #' @author mvarewyck
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles
@@ -85,7 +85,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 mapSchade <- function(
         schadeData, 
         regionLevel, 
-        variable = c("season", "schadeCode"),
+        variable = c("season", "schadeCode", "afschotjaar"),
         allSpatialData,
         addGlobe = FALSE,
         legend = "topright"
@@ -113,9 +113,7 @@ mapSchade <- function(
                             "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
                             "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
                             "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
-                            if (variable == "schadeCode") {
-                              paste0("<li><strong> Seizoen </strong>: ", schadeData$season)
-                            },
+                            "<li><strong> Seizoen </strong>: ", schadeData$season,
                             "</ul>"
                     )
             )

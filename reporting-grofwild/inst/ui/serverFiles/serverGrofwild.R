@@ -68,7 +68,7 @@ results$wild_openingstijd <- reactive({
                         min(
                                 max(results$wild_ecoData()$afschotjaar), 
                                 max(results$wild_openingstijdenData()$Jaar)
-                        )-1
+                        )
                 )
                 
                 openingstijd
@@ -150,7 +150,7 @@ callModule(module = plotModuleServer, id = "wild_plot1",
 callModule(module = optionsModuleServer, id = "wild_plot2", 
         data = results$wild_ecoData,
         timeRange = reactive(if (input$wild_species == "Ree")
-                            c(2014, max(results$wild_timeRange())) else 
+                            c(2005, max(results$wild_timeRange())) else 
                             results$wild_timeRange()))
 callModule(module = plotModuleServer, id = "wild_plot2",
         plotFunction = "countAgeCheek", 
@@ -225,7 +225,11 @@ callModule(module = optionsModuleServer, id = "wild_plot6",
         multipleTypes = TRUE,
         timeRange = reactive(if (input$wild_species == "Ree")
                             c(2014, max(results$wild_timeRange())) else 
-                            results$wild_timeRange()))
+                            results$wild_timeRange()),
+        sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"), 
+        sourceLabel = "Data bron leeftijd",
+        sourceVariable = "leeftijd_comp_bron"
+              )
 callModule(module = plotModuleServer, id = "wild_plot6",
         plotFunction = "boxAgeWeight", 
         data = results$wild_ecoData)
@@ -265,7 +269,12 @@ callModule(module = optionsModuleServer, id = "wild_plot8",
         timeRange = results$wild_timeRange,
         types = results$typesDefaultGender,
         typesDefault = results$typesDefaultGender,
-        multipleTypes = TRUE)
+        multipleTypes = TRUE,
+        sources = c("INBO" = "inbo", 
+                    "Meldingsformulier" = "meldingsformulier",  
+                    "INBO en meldingsformulier" = "both"), 
+        sourceLabel = "Data bron voor onderkaaklengte",
+        sourceVariable = "onderkaaklengte_comp_bron")
 callModule(module = plotModuleServer, id = "wild_plot8",
         plotFunction = "plotBioindicator", 
         bioindicator = "onderkaaklengte",
@@ -289,7 +298,7 @@ callModule(module = plotModuleServer, id = "wild_plot9",
 results$typesFemale <- reactive({
             
             types <- levels(droplevels(results$wild_ecoData()$type_comp))
-            types[!types %in% c("", "Bokkits", "Jaarlingbok", "Reebok", "Geitkits", "Reekits")]
+            types[types %in% c("Reegeit", "Smalree")]
             
         })
 
@@ -297,7 +306,12 @@ callModule(module = optionsModuleServer, id = "wild_plot10",
         data = results$wild_ecoData,
         timeRange = results$wild_timeRange,
         types = results$typesFemale,
-        multipleTypes = TRUE)
+        multipleTypes = TRUE,
+        sources = c("INBO" = "inbo", 
+                "Meldingsformulier" = "meldingsformulier",  
+                "INBO en meldingsformulier" = "both"), 
+        sourceLabel = "Data bron voor aantal embryo's",
+        sourceVariable = "aantal_embryos_bron")
 callModule(module = plotModuleServer, id = "wild_plot10",
         plotFunction = "countEmbryos",
         data = results$wild_ecoData)
@@ -432,7 +446,7 @@ output$map_timeTitle <- renderUI({
                     "utm5" = "5x5 UTM")
             
             
-            h3("Regio-schaal:", regionLevel)
+            h3("Evolutie gerapporteerd afschot", regionLevel)
             
         })
 
@@ -678,7 +692,7 @@ output$map_title <- renderUI({
             
             
             h3(paste("Gerapporteerd", 
-                            if (input$map_unit == "absolute") "aantal" else "aantal/100ha", 
+                            if (input$map_unit == "absolute") "afschot" else "afschot/100ha", 
                             "voor", tolower(input$wild_species),
                             "in", input$map_year[1]))
             

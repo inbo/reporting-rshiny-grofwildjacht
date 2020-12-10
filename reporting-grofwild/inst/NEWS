@@ -1,5 +1,34 @@
+0.2.6
 	o include exoten page in app
 	o include exoten functions and graphs in test script
+0.2.5
+    o expand year slide for Ree (grofwild) in plot 2
+0.2.4
+    o include plot grofwild embryos, countEmbryos()
+	o include new species and types of damage 
+	o include missing province information data in countYearProvince plot and tableProvince
+	o include bron-filter for boxAgeWeight plot + input-dependent age categories
+	o percentage yearly shot animals grofwild: 
+		include open-ended ribbons
+	o fix tabs at top of page, include logo  	
+0.2.3
+	o percentage yearly shot animals grofwild: 
+		include dutch month names;
+		when afschotdatum = enddatum openingstijden, put in correct halfmonth 
+	o add 'jaar' as variable for landkaart 2 wildschade
+0.2.2
+	o fix location points on landkaart 2 wildschade
+0.2.1
+	o fix legends for one level factors in wildschade plots 1 & 2
+0.2.0
+	o data update grofwild / wildschade 
+	o update bio-indicator plot onderkaaklengte
+	o include aesthetic "en" in titles
+	o update graph grofwild - percentage jaarlijks afschot
+0.1.24
+	o teksten grofwild adjusted
+	o teksten wildschade adjusted
+	o titles graphs adjusted
 0.1.23
 	o set ymax to min 5 for absolute numbers in regio-schaal plot
 0.1.22

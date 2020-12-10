@@ -40,7 +40,7 @@ shinyServer(function(input, output, session) {
             output$debug <- renderUI({
                         
                         if (doDebug)
-                            tagList(
+                            tags$div(style = "margin-top:50px",
                                     h5(actionLink(inputId = "debug_console", label = "Connect with console"),
                                             align = "left"),
                                     verbatimTextOutput("print")

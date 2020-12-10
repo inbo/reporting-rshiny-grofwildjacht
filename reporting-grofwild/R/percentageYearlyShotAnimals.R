@@ -137,7 +137,13 @@ percentageYearlyShotAnimals <- function(
 	openingSeasonHalfMonth <- allHalfMonth[do.call(':', as.list(which(allHalfMonth %in% openingSeasonYear)))]
 	# consider all half months
 #openingSeasonHalfMonth <- allHalfMonth
-	
+
+  # reformat date in data for case where afschotdatum equals a stopdatum of openingstijden
+  # in such cases format afschotdatum with dateseparation = 15 (in stead of 14 as done before)
+  # i.e. if 15/%m/%y is afschotdatum and also a stopdatum of openingstijden -> include it in first part of the month
+  indices <- which(inputDataFilter$afschot_datum_Date %in% openingstijdenData[openingstijdenData$Jaar %in% c(jaar, jaartallen), "Stopdatum_Date"])
+  afschotDatumHalfMonth[indices] <- formatDate(inputDataFilter$afschot_datum_Date[indices], 15)
+  
 # format date as factor
 	inputDataFilter$afschot_datum_halfMonth <- factor(afschotDatumHalfMonth, levels = allHalfMonth)
 	
@@ -167,6 +173,8 @@ percentageYearlyShotAnimals <- function(
 	# extract mean percentage in selected year - during opening season
 	dataPlot$meanYear <- mean(dataPlot$obsYear[dataPlot$dateHalfMonth %in% openingSeasonHalfMonth])
 	
+  # Translate english month names to dutch
+  dataPlot$dateHalfMonth <- setMonthsInDutch(dataPlot$dateHalfMonth)
 	
 	## create plot
 	
@@ -174,58 +182,122 @@ percentageYearlyShotAnimals <- function(
 	getNameRange <- function(name)
 		paste0(name, " (", paste(range(jaartallen), collapse = "-"), ")")
 	
-	# ribbon color with transparency
-	colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo.lichtblauw), "0.5"), collapse = ","), ")")
-	
-	# base plot
-	pl <- plot_ly(dataPlot, width = width, height = height) %>%
-			
-			## specified range
-			
-			# min-max range
-			add_ribbons(x = ~dateHalfMonth, 
-					ymin = ~minRange, ymax = ~maxRange,
-#					color = 'rgba(0,100,80,0.2)',
-					fill = 'tonexty', fillcolor = colorRibbon,
-					line = list(color = inbo.lichtblauw), 
-					name = getNameRange("Min-Max")
-			) %>%
-			
-			# median
-			add_trace(x = ~dateHalfMonth, y = ~medianRange, 
-					type = 'scatter', mode = 'lines',
-					line =  list(color = inbo.grijsblauw, dash = "dot"), 
-					name = getNameRange("Mediaan")
-			) %>%
-			
-			## specified year
-			
-			# observation
-			add_trace(x = ~dateHalfMonth, y = ~obsYear, 
-					type = 'scatter', mode = 'markers+lines',
-					line = list(color = inbo.steun.donkerroos), 
-					marker = list(color = inbo.steun.donkerroos), 
-					name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
-			) %>%
-			
-			# mean in entire year
-			add_lines(x = ~dateHalfMonth, y = ~ meanYear,
-					name = paste0("Uniforme verdeling (", as.character(jaar), ")"), 
-					line = list(color = inbo.steun.donkerroos, dash = "dot")
-			)	%>%	
-			
-			## title axes and margin bottom
-			layout(
-					title = paste0(wildNaam, 
-							if (specifiedType)	paste0(" (", paste(type, collapse = ", "), ")"),
-							" percentage jaarlijks afschot in ", jaar),
-					xaxis = list(title = "openingstijd (half-maand resolutie)"), 
-					yaxis = list(title = "Percentage jaarlijks afschot", 
-							range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
-					margin = list(b = 70, t = 40)
-			)
-	
-	colsOfInterest <- c("dateHalfMonth", "obsYear", "medianRange", "minRange", "maxRange")
+	# Error bar color with transparency
+  colorErrorbar <- paste0("rgba(", paste(c(col2rgb(inbo_lichtblauw), "0.75"), collapse = ","), ")")
+  colorErrorbarLine <- paste0("rgba(", paste(c(col2rgb(inbo_grijsblauw), "0.85"), collapse = ","), ")")
+  
+  # ribbon color with transparency
+  colorRibbon <- paste0("rgba(", paste(c(col2rgb(inbo_steun_donkerroos), "0.15"), collapse = ","), ")")
+  colorRibbonLine <- paste0("rgba(", paste(c(col2rgb(inbo_steun_donkerroos), "0.25"), collapse = ","), ")")
+  
+  # for open-ended ribbons include only months with non-NA data
+  # and add this layer separately
+  referenceData <- subset(dataPlot, 
+                    subset = c(!(dataPlot$medianRange == 0 & dataPlot$maxRange == 0 &
+                                 dataPlot$ minRange == 0 & dataPlot$obsYear == 0)))
+
+  # new version plot
+#  pl2 <- plot_ly(data = dataPlot,
+#                 width = width, height = height) %>%
+#            
+#            # add bars
+#            add_trace(type = "bar",
+#                x = ~dateHalfMonth, y = ~obsYear,
+#                marker = list(color = colorErrorbar,
+#                              line = list(color = colorErrorbarLine,
+#                                          width = 1.5)),
+#                name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
+#            ) %>%
+#            
+#            # median
+#            add_trace(x = ~dateHalfMonth, y = ~medianRange, 
+#                type = 'scatter', mode = 'lines',
+#                line = list(color = inbo_steun_donkerroos,
+#                    dash = "dot"), #size = 6, , width = 2 (default) 
+#                name = getNameRange("Mediaan"),
+#                yaxis = 'y2'
+#            ) %>%
+#            
+#            # min-max range
+#            add_ribbons(x = ~dateHalfMonth, 
+#                ymin = ~minRange, ymax = ~maxRange,
+#                #					color = 'rgba(0,100,80,0.2)',
+#                fill = 'tonexty', fillcolor = colorRibbon,
+#                line = list(color = colorRibbonLine, width = 2),
+#                name = getNameRange("Min-Max"),
+#                yaxis = 'y2'
+#            ) %>%
+#             
+#              # layout
+#              layout(
+#                  title = paste0(wildNaam, 
+#                      if (specifiedType)	paste0(" (", paste(type, collapse = ", "), ")"),
+#                      " percentage jaarlijks afschot in ", jaar),
+#                  xaxis = list(title = "openingstijd (half-maand resolutie)", tickangle = -90,
+#                               titlefont = list(size = 18)), 
+#                  yaxis = list(title = "Percentage jaarlijks afschot", 
+#                               titlefont = list(size = 18),
+#                               range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05),
+#                               overlaying = "y2"),
+#                  yaxis2 = list(title = "",
+#                               range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
+#                  margin = list(b = 70, t = 90),
+#                  legend = list(orientation = "h", y = 100, x = 0.1),
+#                  showlegend = TRUE
+#                  )
+              
+    # open-ended ribbons plot
+    pl <- plot_ly(data = dataPlot,
+            width = width, height = height) %>%
+        
+        # add bars
+        add_trace(type = "bar",
+            x = ~dateHalfMonth, y = ~obsYear,
+            marker = list(color = colorErrorbar,
+                line = list(color = colorErrorbarLine,
+                    width = 1.5)),
+            name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
+        ) %>%
+        
+        # median
+        add_trace(inherit = FALSE, data = referenceData, x = ~dateHalfMonth, y = ~medianRange, 
+            type = 'scatter', mode = 'lines',
+            line = list(color = inbo_steun_donkerroos,
+                dash = "dot"), #size = 6, , width = 2 (default) 
+            name = getNameRange("Mediaan"),
+            yaxis = 'y2'
+        ) %>%
+        
+        # min-max range
+        add_ribbons(inherit = FALSE, data = referenceData, x = ~dateHalfMonth, 
+            ymin = ~minRange, ymax = ~maxRange,
+            #					color = 'rgba(0,100,80,0.2)',
+            fill = 'tonexty', fillcolor = colorRibbon,
+            line = list(color = colorRibbonLine, width = 2),
+            name = getNameRange("Min-Max"),
+            yaxis = 'y2'
+        ) %>%
+        
+        # layout
+        layout(
+            title = paste0(wildNaam, 
+                if (specifiedType)	paste0(" (", paste(type, collapse = ", "), ")"),
+                " percentage jaarlijks afschot in ", jaar),
+            xaxis = list(title = "openingstijd (half-maand resolutie)", tickangle = -90,
+                titlefont = list(size = 18)), 
+            yaxis = list(title = "Percentage jaarlijks afschot", 
+                titlefont = list(size = 18),
+                range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05),
+                overlaying = "y2"),
+            yaxis2 = list(title = "",
+                range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
+            margin = list(b = 70, t = 90),
+            legend = list(orientation = "h", y = 100, x = 0.1),
+            showlegend = TRUE
+        )
+    
+              
+  colsOfInterest <- c("dateHalfMonth", "obsYear", "medianRange", "minRange", "maxRange")
   newColNames <-    c("Datum (half-maand resolutie)", 
                       "Geobserveerd percentage", 
                       getNameRange("Mediaan"),

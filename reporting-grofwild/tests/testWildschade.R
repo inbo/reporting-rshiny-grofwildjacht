@@ -17,11 +17,11 @@ load(file = file.path(dataDir, "spatialData.RData"))
 schadeData <- loadRawData(type = "wildschade")
 wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])
 
-species <- unique(schadeData$wildsoort)
-#  [1] "vos"         "wild zwijn"  "houtduif"    "smient"      "konijn"     
-#  [6] "edelhert"    "haas"        "grauwe gans" "wilde eend"  "wolf"       
-# [11] "ree"         "fazant"     
-
+species <- sort(unique(schadeData$wildsoort))
+#  [1] "Canadese gans" "edelhert"      "fazant"        "grauwe gans"  
+#  [5] "haas"          "houtduif"      "konijn"        "ree"          
+#  [9] "smient"        "vos"           "wild zwijn"    "wilde eend"   
+# [13] "wolf"         
 
 
 ## THE MAP
@@ -50,7 +50,7 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
         trendData <- createTrendData(
                 data = schadeData@data,
                 allSpatialData = spatialData,
-           	 timeRange = c(2018, 2019),
+           	    timeRange = c(2018, 2019),
                 species = iSpecies,
                 regionLevel = regionLevel,
                 unit = "absolute")
@@ -70,12 +70,14 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
             trendPlot <- trendYearFlanders(
                     data = trendData,
                     timeRange = c(2018, 2019),
-                    unit = "absolute") else 
+                    unit = "absolute",
+                    schadeTitles = TRUE) else 
             trendPlot <- trendYearRegion(
                     data = trendData,
-                    timeRange = c(2018, 2018),
+                    timeRange = c(2018, 2019),
                     unit = "absolute",
-                    locaties = trendData$locatie[1:3])
+                    locaties = trendData$locatie[1:7],
+                    schadeTitles = TRUE)
         
         print(trendPlot)
         
@@ -96,7 +98,7 @@ for (iSpecies in species) {
       schadeData = schadeDataSub,
       timeRange = range(schadeDataSub$afschotjaar))
   
-  for (var in c("season", "schadeCode")) {
+  for (var in c("season", "schadeCode", "afschotjaar")) {
     myPlot <- mapSchade(
             schadeData = schadeDataSub,
             regionLevel = "provinces",

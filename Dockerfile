@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
     libxt-dev \
     libssl-dev \
     libssh2-1-dev \
-    libssl1.0.0 \
+    libssl1.0 \
     gdal-bin \
     libgdal-dev \
     libproj-dev \

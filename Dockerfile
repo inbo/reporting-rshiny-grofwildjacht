@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 	
 # Dependencies for rgdal and rgeos
 RUN  apt-get update && apt-get install -y software-properties-common && \
-     add-apt-repository ppa:ubuntugis/ppa
+     apt install gdal-bin
 	 
 # Dependencies for devtools
 RUN R -e "install.packages(c('gert', 'usethis'), repos='https://cloud.r-project.org/')"	 

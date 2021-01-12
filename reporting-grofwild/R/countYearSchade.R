@@ -15,6 +15,7 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
+#' @import RColorBrewer
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
@@ -92,7 +93,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     }
         
     # TODO force color for c("Onbekend", "ONBEKEND") into gray + need more colors for eg. "SoortNaam"
-    colors <- ggplot2::scale_colour_discrete(length(unique(summaryData$variabele)))
+    colors <- brewer.pal(n = length(unique(summaryData$variabele)), name = "Paired"))
     names(colors) <- unique(summaryData$variabele)
     
     title <- paste0(typeNaam, " ",
@@ -103,7 +104,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     
     
     # Create plot
-    toPlot <- plot_ly(data = summaryData, x = ~jaar, 
+    toPlot <- plot_ly(data = summaryData, x = ~jaar, s
                     y = if (summarizeBy == "count") ~freq else ~percent, 
                     color = ~variabele, text = ~text, hoverinfo = "text+name",
                     colors = colors, type = "bar",

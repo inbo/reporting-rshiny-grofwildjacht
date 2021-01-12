@@ -18,11 +18,13 @@ RUN apt-get update && apt-get install -y \
     libproj-dev \
     libgeos-dev \
     libudunits2-dev
-
-
+	
 # Dependencies for rgdal and rgeos
 RUN  apt-get update && apt-get install -y software-properties-common && \
      add-apt-repository ppa:ubuntugis/ppa
+	 
+# Dependencies for devtools
+RUN R -e "install.packages(c('libgit2-dev', 'gert', 'usethis'))	 
 
 # install imports of reporting-grofwild app that are not on cloud
 RUN R -e "install.packages(c('shiny', 'gert', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders', 'raster', 'stringr'), repos = 'https://cloud.r-project.org/')"

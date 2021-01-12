@@ -92,7 +92,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     }
         
     # TODO force color for c("Onbekend", "ONBEKEND") into gray + need more colors for eg. "SoortNaam"
-    colors <- inbo.2015.colours(length(unique(summaryData$variabele)))
+    colors <- ggplot2::scale_colour_discrete(length(unique(summaryData$variabele)))
     names(colors) <- unique(summaryData$variabele)
     
     title <- paste0(typeNaam, " ",

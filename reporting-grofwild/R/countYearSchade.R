@@ -15,8 +15,7 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
-#' @import RColorBrewer
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom RColorBrewer brewer.pal
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
         summarizeBy = c("count", "percent"),

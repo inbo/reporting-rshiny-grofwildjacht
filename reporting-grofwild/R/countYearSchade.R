@@ -104,7 +104,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     
     
     # Create plot
-    toPlot <- plot_ly(data = summaryData, x = ~jaar, s
+    toPlot <- plot_ly(data = summaryData, x = ~jaar,
                     y = if (summarizeBy == "count") ~freq else ~percent, 
                     color = ~variabele, text = ~text, hoverinfo = "text+name",
                     colors = colors, type = "bar",

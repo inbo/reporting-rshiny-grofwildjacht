@@ -93,7 +93,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     }
         
     # TODO force color for c("Onbekend", "ONBEKEND") into gray + need more colors for eg. "SoortNaam"
-    colors <- brewer.pal(n = length(unique(summaryData$variabele)), name = "Paired"))
+    colors <- brewer.pal(n = length(unique(summaryData$variabele)), name = "Paired")
     names(colors) <- unique(summaryData$variabele)
     
     title <- paste0(typeNaam, " ",

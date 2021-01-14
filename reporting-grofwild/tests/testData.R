@@ -67,7 +67,7 @@ lapply(wildsoorten, function(iSoort) {
 				
 			}
 			
-			boxplot(leeftijd_maanden ~ leeftijd_comp, data = myData, main = paste(iSoort, "- leeftijd (maanden)"))
+			boxplot(as.numeric(leeftijd_maanden) ~ leeftijd_comp, data = myData, main = paste(iSoort, "- leeftijd (maanden)"))
 			
 			xtabs(~ Leeftijdscategorie_onderkaak + leeftijdscategorie_MF + leeftijd_comp, data = myData)
 			

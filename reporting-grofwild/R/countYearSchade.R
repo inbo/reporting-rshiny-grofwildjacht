@@ -21,6 +21,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
         summarizeBy = c("count", "percent"),
         width = NULL, height = NULL) {
     
+    # For R CMD check
+    freq <- NULL
     
     typeNaam <- switch(type,
             "wildsoort" = "Wildsoort",

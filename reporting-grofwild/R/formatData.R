@@ -29,6 +29,7 @@ fullNames <- function(x, type = c("wildschade", "maanden"), rev = FALSE) {
                     # SchadeCode
                     "Woelschade"				= "WLSCHD",
                     "Vraatschade" 			= "VRTSCHD",
+                    "Graafschade"       = "GRFSCHD",
                     "Gewas - andere"    = "GEWASANDR", 
                     "Veegschade"        = "VGSCHD",
                     "Verkeersongeluk zonder letsel" 	  = "GNPERSLTSL",

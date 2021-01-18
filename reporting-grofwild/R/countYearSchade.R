@@ -15,12 +15,14 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom RColorBrewer brewer.pal
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
         summarizeBy = c("count", "percent"),
         width = NULL, height = NULL) {
     
+    # For R CMD check
+    freq <- NULL
     
     typeNaam <- switch(type,
             "wildsoort" = "Wildsoort",
@@ -90,10 +92,14 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
                 "<br>Percent: ", round(summaryData$percent), "%")
         
     }
-        
-    # TODO force color for c("Onbekend", "ONBEKEND") into gray + need more colors for eg. "SoortNaam"
-    colors <- inbo.2015.colours(length(unique(summaryData$variabele)))
+    
+    # Max. 40 colors
+    paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
+    colors <- unlist(sapply(paletteNames, function(x)
+        suppressWarnings(brewer.pal(n = 12, name = x))))[1:length(unique(summaryData$variabele))]
     names(colors) <- unique(summaryData$variabele)
+    if ("onbekend" %in% tolower(unique(summaryData$variabele)))
+      colors[tolower(names(colors)) == "onbekend"] <- "gray"
     
     title <- paste0(typeNaam, " ",
             ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
@@ -103,7 +109,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     
     
     # Create plot
-    toPlot <- plot_ly(data = summaryData, x = ~jaar, 
+    toPlot <- plot_ly(data = summaryData, x = ~jaar,
                     y = if (summarizeBy == "count") ~freq else ~percent, 
                     color = ~variabele, text = ~text, hoverinfo = "text+name",
                     colors = colors, type = "bar",

@@ -3,6 +3,7 @@
 #' Adapted version from Figure p. 30 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @param type animal type, used to filter \code{data} ('ageGender' column)
 #' default is \code{c("Smalree", "Geit")}
+#' @param sourceIndicator character, which source to be used; default value is "inbo"
 #' @inheritParams countYearAge
 #' @import plotly
 #' @importFrom INBOtheme inbo.2015.colours

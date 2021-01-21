@@ -154,7 +154,7 @@ exoten_dutchNames <- function(x, type = c("regio")) {
     
   result <- toReturn[match(x, names(toReturn))]
   
-}
+
   
   ## in case there was no match (i.e. because new schade code(s))
   ## keep the raw name anyway instead of NA
@@ -165,6 +165,7 @@ exoten_dutchNames <- function(x, type = c("regio")) {
     names(result)[naPosition] <- x[naPosition]
     
   }
+}
 #' Replace english months detected in vector elements with Dutch month names
 #' 
 #' Will not return NA, but rather the original content if

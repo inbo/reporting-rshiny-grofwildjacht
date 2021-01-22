@@ -165,6 +165,9 @@ exoten_dutchNames <- function(x, type = c("regio")) {
     names(result)[naPosition] <- x[naPosition]
     
   }
+  
+  result
+  
 }
 #' Replace english months detected in vector elements with Dutch month names
 #' 

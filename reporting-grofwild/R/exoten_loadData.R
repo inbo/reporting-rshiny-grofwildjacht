@@ -27,8 +27,7 @@ loadExotenData <- function(
   if (type == "indicators") {
 
     # recode missing values to NA
-    rawData <- fread(dataFile, stringsAsFactors = FALSE)
-    rawData[rawData == ""] <- NA
+    rawData <- fread(dataFile, stringsAsFactors = FALSE, na.strings = "")
                      
     
     ## extract necessary columns
@@ -120,8 +119,7 @@ loadExotenData <- function(
   
   } else if (type == "unionlist") {
     
-    rawData <- fread(dataFile, stringsAsFactors = FALSE)
-    rawData[rawData == ""] <- NA
+    rawData <- fread(dataFile, stringsAsFactors = FALSE, na.strings = "")
     
     ## extract necessary columns
     rawDataFiltered <- rawData[, c("checklist_scientificName", "english_name", "checklist_kingdom")]

@@ -13,7 +13,14 @@ library(shinycssloaders)   # for busy indicator
 ### General
 ### ------------
 
-`%then%` <- shiny:::`%OR%`
+`%then%` <- function(x, y) {
+  
+  if (is.null(x) || isTRUE(is.na(x)))
+    y
+  else
+    x
+  
+}
 `%<>%` <- magrittr::`%<>%`
 
 

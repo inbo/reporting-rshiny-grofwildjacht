@@ -103,10 +103,11 @@ optionsModuleServer <- function(input, output, session,
     
     ns <- session$ns
     
+    results <- reactiveValues()
+    
     output$time <- renderUI({
-                
                 sliderInput(inputId = ns("time"), label = timeLabel, 
-                        value = c(min(timeRange()), definedYear),
+                        value = if(is.null(results$time)) c(min(timeRange()), definedYear) else results$time,
                         min = if (!is.null(input$dataSource)) {
                                     
                                     if (is.null(sourceVariable)) {
@@ -135,6 +136,12 @@ optionsModuleServer <- function(input, output, session,
                         step = 1,
                         sep = "")
                 
+            })
+        
+        observe({
+              req(input$time)
+              if (length(input$time) == 2)
+                results$time <- input$time 
             })
     
     

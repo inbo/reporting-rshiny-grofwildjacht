@@ -605,7 +605,7 @@ observe({
                 
                 if (input$map_globe %% 2 == 1){
                     
-                    proxy %>% addProviderTiles("Hydda.Full")
+                    proxy %>% addProviderTiles("Stamen.Terrain")
                     
                 } else {
                     

@@ -36,16 +36,14 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	if (is.null(jaartallen))
 		stop("Gelieve jaartallen te selecteren")
 	
-	# Disable graph when only year t is selected
-	t <- 2020
-	if (all(jaartallen == t))
-		stop(paste0("Voor ", t, " werden tot nu toe onvoldoende onderkaken ingezameld om een zinvolle grafiek te maken."))
+	
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
 			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
 	names(plotData) <- c("jager", "kaak")
 	
+
 	# Percentage collected
 	nRecords <- nrow(plotData)
 	
@@ -69,7 +67,15 @@ countAgeCheek <- function(data, jaartallen = NULL,
 		
 	}
 	
-	
+  
+  # disable graph only when not all age-groups are present 
+  if (!all(sapply(newLevels, function(x) x %in% unique(plotData$kaak)))) {
+    if (length(jaartallen) >= 2) 
+      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ", min(jaartallen)," en ", max(jaartallen[2]),"!"))
+    else 
+    stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen in het jaar ", jaartallen,"!"))
+	}
+  
 	# Summarize data per province and year
 	summaryData <- count(df = plotData, vars = names(plotData))
 	freq <- NULL  # to prevent warnings with R CMD check 

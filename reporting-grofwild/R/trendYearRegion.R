@@ -102,6 +102,7 @@ createTrendData <- function(data, allSpatialData,
 #' 
 #' @param data data.frame with raw data for plotting
 #' @param locaties character vector, regions that were selected to plot
+#' @param combinatie logical, summarised view of selected regions
 #' @param timeRange numeric vector, time range selected for plot
 #' @param schadeTitles boolean, indicates whether the function should generate titles for schadeData; default is FALSE
 #' @inheritParams createSpaceData
@@ -121,7 +122,7 @@ createTrendData <- function(data, allSpatialData,
 #' @import plotly
 #' @importFrom INBOtheme inbo.2015.colours
 #' @export
-trendYearRegion <- function(data, locaties = NULL, timeRange = NULL, 
+trendYearRegion <- function(data, locaties = NULL, combinatie = NULL , timeRange = NULL, 
         unit = c("absolute", "relative"), schadeTitles = FALSE,
 		width = NULL, height = NULL) {
 	
@@ -162,10 +163,14 @@ trendYearRegion <- function(data, locaties = NULL, timeRange = NULL,
 			)
 	)
 	
-	
+  if (combinatie) {
+    plotData <- plotData[, c("afschotjaar", "freq")]
+    plotData <- aggregate(freq ~ afschotjaar, plotData, sum)
+    plotData$locatie <- "Totaal"
+  }
 	# Create plot
 	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
-					color = ~locatie, colors = colors, 
+          color = ~locatie, colors = colors, 
 					hoverinfo = "x+y+name",
 					type = "scatter", mode = "lines+markers",
 					width = width, height = height) %>%

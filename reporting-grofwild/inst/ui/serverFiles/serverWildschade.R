@@ -530,7 +530,8 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
         locaties = reactive(input$schade_region),
         timeRange = reactive(input$schade_time),
         unit = reactive(input$schade_unit),
-        schadeTitles = TRUE)
+        schadeTitles = TRUE,
+        combinatie = reactive(FALSE))
 
 
 

@@ -92,10 +92,11 @@ results$wild_timeRange <- reactive({
 
 
 ## User input for controlling the plots and create plotly
-# Table 1
+# Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
 callModule(module = optionsModuleServer, id = "wild_table1", 
         data = results$wild_ecoData,
-        timeRange = results$wild_timeRange)
+        timeRange = results$wild_timeRange
+        )
 callModule(module = plotModuleServer, id = "wild_table1",
         plotFunction = "tableProvince", 
         data = results$wild_ecoData, 
@@ -135,7 +136,7 @@ callModule(module = plotModuleServer, id = "wild_table1",
 #					})
 
 
-# Plot 1
+# Plot 1: Gerapporteerd aantal per jaar en per regio
 callModule(module = optionsModuleServer, id = "wild_plot1", 
         data = results$wild_ecoData,
         timeRange = reactive(if (input$wild_species == "Edelhert")
@@ -146,7 +147,8 @@ callModule(module = plotModuleServer, id = "wild_plot1",
         data = results$wild_ecoData)
 
 
-# Plot 2
+# Plot 2: Leeftijdscategorie op basis van onderkaak & meldingsformulier
+
 callModule(module = optionsModuleServer, id = "wild_plot2", 
         data = results$wild_ecoData,
         timeRange = reactive(if (input$wild_species == "Ree")
@@ -157,7 +159,7 @@ callModule(module = plotModuleServer, id = "wild_plot2",
         data = results$wild_ecoData)
 
 
-# Plot 3
+# Plot 3: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)
 callModule(module = optionsModuleServer, id = "wild_plot3", 
         data = results$wild_ecoData,
         timeRange = results$wild_timeRange)
@@ -165,7 +167,7 @@ callModule(module = plotModuleServer, id = "wild_plot3",
         plotFunction = "countYearAge", 
         data = results$wild_ecoData)
 
-# Plot 4
+# Plot 4: Percentage jaarlijkse afschot
 results$types <- reactive({
             
             req(results$wild_openingstijdenData())
@@ -205,7 +207,7 @@ callModule(module = plotModuleServer, id = "wild_plot4",
 #					toekenningsData = reactive(toekenningsData))
 
 
-# Plot 5
+# Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
 callModule(module = optionsModuleServer, id = "wild_plot5", 
         data = results$wild_ecoData,
         timeRange = results$wild_timeRange)
@@ -214,7 +216,7 @@ callModule(module = plotModuleServer, id = "wild_plot5",
         data = results$wild_ecoData)
 
 
-# Plot 6
+# Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 callModule(module = optionsModuleServer, id = "wild_plot6", 
         data = results$wild_ecoData,
         types = reactive(switch(input$wild_species,
@@ -235,7 +237,7 @@ callModule(module = plotModuleServer, id = "wild_plot6",
         data = results$wild_ecoData)
 
 
-# Plot 7
+# Plot 7: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 callModule(module = optionsModuleServer, id = "wild_plot7", 
         data = results$wild_ecoData,
         types = reactive(switch(input$wild_species,
@@ -252,7 +254,7 @@ callModule(module = plotModuleServer, id = "wild_plot7",
         data = results$wild_ecoData)
 
 
-# Plot 8
+# Plot 8: Onderkaaklengte per jaar
 results$typesGender <- reactive({
             
             types <- levels(droplevels(results$wild_ecoData()$type_comp))
@@ -281,7 +283,7 @@ callModule(module = plotModuleServer, id = "wild_plot8",
         data = results$wild_ecoData)
 
 
-# Plot 9
+# Plot 9: Gewicht per jaar
 callModule(module = optionsModuleServer, id = "wild_plot9", 
         data = results$wild_ecoData,
         timeRange = results$wild_timeRange,
@@ -294,7 +296,7 @@ callModule(module = plotModuleServer, id = "wild_plot9",
         data = results$wild_ecoData)
 
 
-# Plot 10  -  currently not shown
+# Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
 results$typesFemale <- reactive({
             
             types <- levels(droplevels(results$wild_ecoData()$type_comp))
@@ -458,7 +460,8 @@ callModule(module = plotModuleServer, id = "map_timePlot",
         data = results$map_timeData,
         locaties = reactive(input$map_region),
         timeRange = reactive(input$map_time),
-        unit = reactive(input$map_unit)
+        unit = reactive(input$map_unit),
+        combinatie = reactive(input$map_combinatie)
 )
 
 

@@ -340,6 +340,7 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
+#' @param combinatie logical, summarised view of selected regions
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @return no return value; plot output object is created
@@ -352,7 +353,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     categorie = NULL, bioindicator = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
     datatable = FALSE, schadeChoices = NULL, schadeChoicesVrtg = NULL,
-    schadeChoicesGewas = NULL, variable = NULL, schadeTitles = FALSE) {
+    schadeChoicesGewas = NULL, variable = NULL, combinatie = NULL, schadeTitles = FALSE) {
   
   subData <- reactive({
         
@@ -407,6 +408,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
         req(nrow(subData()) > 0)
         
+        
         argList <- c(
             list(data = subData()),
             if (!is.null(input$year))
@@ -447,7 +449,11 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if (!is.null(schadeChoicesGewas))
               list(schadeChoicesGewas = schadeChoicesGewas()),
             if (!is.null(variable))
-              list(variable = variable)
+              list(variable = variable),
+            if (plotFunction == "trendYearRegion") {
+              if (!is.null(combinatie()))
+                list(combinatie = combinatie())
+            }
         
         )
         
@@ -455,7 +461,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   resultFct <- reactive({
-        
+    
         toReturn <- tryCatch(
             do.call(plotFunction, args = argList()),
             error = function(err)
@@ -471,7 +477,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   
   output$plot <- renderPlotly({  
-        
+       
         resultFct()$plot
         
       })

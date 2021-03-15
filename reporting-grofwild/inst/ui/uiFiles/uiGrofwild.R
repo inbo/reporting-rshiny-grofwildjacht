@@ -87,7 +87,8 @@ tagList(
                                                         "5x5 UTM" = "utm5"
                                                 ),
                                                 selected = "communes")),
-                                column(8, uiOutput("map_region"))
+                                column(8, uiOutput("map_region")),
+                                
                         ),
                         
                         fixedRow(
@@ -107,7 +108,7 @@ tagList(
                                                         "Aantal/100ha" = "relative"))
                                 )
                         ),
-                        
+                        checkboxInput(inputId = "map_combinatie", label = "Combineer de geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente (binnen provincie))"),
                         actionLink(inputId = "map_globe", label = "Voeg landkaart toe",
                                 icon = icon("globe"))
                 

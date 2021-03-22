@@ -38,7 +38,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-				c("geslacht.MF", "leeftijd_comp")]
+				c("geslacht_comp", "leeftijd_comp")]
 	names(plotData) <- c("geslacht", "leeftijd")
 	
 	# Percentage collected

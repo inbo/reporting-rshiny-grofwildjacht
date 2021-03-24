@@ -228,7 +228,8 @@ callModule(module = optionsModuleServer, id = "wild_plot6",
                             results$wild_timeRange()),
         sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"), 
         sourceLabel = "Data bron leeftijd",
-        sourceVariable = "leeftijd_comp_bron"
+        sourceVariable = "leeftijd_comp_bron",
+        sourceVariable_geslacht = "geslacht_comp_bron"
               )
 callModule(module = plotModuleServer, id = "wild_plot6",
         plotFunction = "boxAgeWeight", 

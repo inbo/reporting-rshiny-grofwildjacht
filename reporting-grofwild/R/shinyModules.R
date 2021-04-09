@@ -564,11 +564,34 @@ plotModuleServer <- function(input, output, session, plotFunction,
   # percentage of data used after filtering
   output$filters <- renderUI({
         
-        noTotal <- nrow(data())
+        req(input$time)
+        req(input$region)
+        
+        allData <- data()
+        
+        # subsetting data on time 
+        if(length(input$time) == 2) {
+          
+          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
+        
+        } else {
+          
+          subsetData <- allData[allData$afshotjaar == input$time, ]  
+          
+        }
+        
+        # subsetting data on region
+        if(input$regionLevel == "provinces") {
+          
+          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
+          
+        }
+        
+        noTotal <- nrow(subsetData)
         noSubset <- nrow(resultFct()$data)
         percData <- round((noSubset / noTotal) * 100, 2)
         
-        paste0("Beschikbare data: ", percData, "%")
+        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
       })
 }
 

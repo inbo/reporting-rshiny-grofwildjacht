@@ -336,7 +336,7 @@ tagList(
                                                     
                                                     column(4,
                                                             optionsModuleUI(id = "wild_plot6", showTime = TRUE, showType = TRUE, showDataSource = TRUE,
-                                                                    regionLevels = 1:2, exportData = TRUE),
+                                                                    regionLevels = 1:2, exportData = TRUE, filter = TRUE, showDataSourceGeslacht = TRUE),
                                                             tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). 
 																																		Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                                                     ),

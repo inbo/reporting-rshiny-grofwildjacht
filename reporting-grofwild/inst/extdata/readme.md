@@ -25,8 +25,8 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | FaunabeheerDeelzone          | factor        | faunabeheerdeelzone - subset van Faunabeheerzone |
 | UTM5                         | factor        | UTM5 index                               |
 |                              |               |                                          |
-| geslacht.MF                  | factor        | compilatie voor geslacht: INBO indien gekend, anders MF |
-| geslacht_comp_bron           | factor        | welke bron wordt gebruikt voor geslacht.MF                           |
+| geslacht_comp                  | factor        | compilatie voor geslacht: INBO indien gekend, anders MF |
+| geslacht_comp_bron           | factor        | welke bron wordt gebruikt voor geslacht_comp                           |
 |                              |               |                                          |
 | leeftijdscategorie_MF        | factor        | de leeftijdscategorie zoals weergegeven op het meldingsformulier |
 | Leeftijdscategorie_onderkaak | factor        | de leeftijdscategorie door het INBO      |
@@ -46,7 +46,7 @@ Column metadata of the `rshiny_reporting_data_*.csv`- files is as follows:
 | onderkaaklengte_comp         | int           | compilatie van de onderkaaklengte: INBO indien gekend, anders MF  |
 | onderkaaklengte_comp_bron    | factor        | welke bron wordt gebruikt voor onderkaaklengte_comp (inbo of meldingsformulier) |
 |                              |               |                                          |
-| type_comp                    | factor        | combinatie van leeftijd_comp, geslacht.MF en wildsoort |
+| type_comp                    | factor        | combinatie van leeftijd_comp, geslacht_comp en wildsoort |
 
 
 ### wildschade

@@ -32,7 +32,7 @@ boxAgeGenderLowerJaw <- function(data,
 	plotData <- data[
 			# data of specified years
 			data$afschotjaar %in% jaartallen, 
-			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_maanden", "geslacht.MF", "provincie")]
+			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_maanden", "geslacht_comp", "provincie")]
 	names(plotData) <- c("onderkaaklengte", "leeftijd", "maanden", "geslacht", "provincie")
 	
 	

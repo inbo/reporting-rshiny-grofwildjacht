@@ -318,7 +318,7 @@ loadRawData <- function(
         
 #        rawData$type <- ifelse(rawData$wildsoort != "Ree",
 #                "", ifelse(grepl("kits", rawData$type_comp), "kits",
-#                        ifelse(rawData$geslacht.MF == "Mannelijk", "bok", "geit")))
+#                        ifelse(rawData$geslacht_comp == "Mannelijk", "bok", "geit")))
 #        
 #        
 #        # for Figure 13: combine age and gender: 'type' column 
@@ -327,8 +327,8 @@ loadRawData <- function(
 #        typeRee <- ifelse(
 #                rawData[idx, "leeftijd_comp"]  == "Kits", "kits",
 #                ifelse(rawData[idx, "leeftijd_comp"] %in% c("Jongvolwassen", "Volwassen"),
-#                        ifelse(rawData[idx, "geslacht.MF"] == 'Mannelijk', "bok", 
-#                                ifelse(rawData[idx, "geslacht.MF"] == 'Vrouwelijk', "geit", "")
+#                        ifelse(rawData[idx, "geslacht_comp"] == 'Mannelijk', "bok", 
+#                                ifelse(rawData[idx, "geslacht_comp"] == 'Vrouwelijk', "geit", "")
 #                        ),
 #                        ""))
 #        rawData$type2 <- ""
@@ -338,8 +338,8 @@ loadRawData <- function(
 #        
 #       
 #        # for Figure 28: combine age and gender, with subcategory for young adult
-#        male <- rawData$geslacht.MF == "Mannelijk"
-#        female <- rawData$geslacht.MF == "Vrouwelijk"
+#        male <- rawData$geslacht_comp == "Mannelijk"
+#        female <- rawData$geslacht_comp == "Vrouwelijk"
 #        ageGender <- with(rawData,
 #                ifelse(leeftijd_comp == "Kits", 
 #                        ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),

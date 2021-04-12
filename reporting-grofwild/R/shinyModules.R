@@ -20,22 +20,23 @@
 #' used for plotted bioindicator
 #' @param doWellPanel boolean, whether to display the options within a 
 #' \code{shiny::wellPanel()}
+#' @param filter boolean, if TRUE percentage of data used after applying filters is shown
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
-        showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
-        regionLevels = NULL, summarizeBy = NULL,
-        exportData = FALSE, showDataSource = FALSE,
-        doWellPanel = TRUE) {
-    
-    ns <- NS(id)
-    
-    
-    toReturn <- tagList(
-            
-            if (!is.null(summarizeBy))
-                radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
-                        choices = summarizeBy),
+    showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
+    regionLevels = NULL, summarizeBy = NULL,
+    exportData = FALSE, showDataSource = FALSE,
+    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE) {
+  
+  ns <- NS(id)
+  
+  
+  toReturn <- tagList(
+      
+      if (!is.null(summarizeBy))
+        radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
+            choices = summarizeBy),
 #          if (showLegend)
 #            selectInput(inputId = ns("legend"), "Legende",
 #                choices = c("<none>" = "none", 
@@ -44,32 +45,42 @@ optionsModuleUI <- function(id,
 #                    "Bovenaan links" = "topleft",
 #                    "Onderaan links" = "bottomleft")
 #            ),
-            if(showYear)
-                uiOutput(ns("year")),
-            if (showTime)
-                uiOutput(ns("time")),
-            if(showType)
-                uiOutput(ns("type")),
-            if (!is.null(regionLevels))
-                fluidRow(
-                        column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                                        choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                                                "Fusiegemeenten" = "communes")[regionLevels])),
-                        column(8, uiOutput(ns("region")))
-                ),
-            if (showDataSource)
-                uiOutput(ns("dataSource")),
-            if (showDataSource)
-                uiOutput(ns("dataSourceWarning")),
-            if(exportData)
+      if(showYear)
+        uiOutput(ns("year")),
+      if (showTime)
+        uiOutput(ns("time")),
+      if(showType)
+        uiOutput(ns("type")),
+      if (!is.null(regionLevels))
+        fluidRow(
+            column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+                    choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
+                        "Fusiegemeenten" = "communes")[regionLevels])),
+            column(8, uiOutput(ns("region")))
+        ),
+      if (showDataSource)
+        uiOutput(ns("dataSource")),
+      if (showDataSourceGeslacht)
+        selectInput(inputId = ns("dataSource_geslacht"), label = "Data bron geslacht", choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both")),
+      if (showDataSource)
+        uiOutput(ns("dataSourceWarning")),
+      fluidRow(
+          column(6,
+              if(exportData)
                 downloadButton(ns("dataDownload"), "Download data")
-    
-    )
-    
-    if (doWellPanel)
-        wellPanel(toReturn) else
-        toReturn
-    
+          ),
+          column(6,
+              if (filter) {
+                uiOutput(ns("filters"))
+              }
+          )
+      )
+  )
+  
+  if (doWellPanel)
+    wellPanel(toReturn) else
+    toReturn
+  
 }
 
 
@@ -90,169 +101,190 @@ optionsModuleUI <- function(id,
 #' (or max year value within a range) that is selected upon opening, default is
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
 #' @param sources defines the data sources that can be selected
-#' @param sourceLabel character, the displayed label for the selecting source field, 
+#' @param sourceLabel character, the displayed label for the selecting source field for leeftijd, 
 #' 'Data bron' by default
 #' @param sourceVariable character, the variable used internally to filter for source
+#' @param sourceVariable_geslacht character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
-        data, types = NULL, labelTypes = "Type", typesDefault = types, 
-        timeRange = NULL, timeLabel = "Periode", 
-        multipleTypes = FALSE, definedYear = defaultYear,
-        sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL) {
-    
-    ns <- session$ns
-    
-    output$time <- renderUI({
-                
-                sliderInput(inputId = ns("time"), label = timeLabel, 
-                        value = c(min(timeRange()), definedYear),
-                        min = if (!is.null(input$dataSource)) {
-                                    
-                                    if (is.null(sourceVariable)) {
-                                        
-                                        stop("Variable should be defined to filter for source. Please update code.")
-                                        
-                                    } else {
-                                        
-                                        if ( !(sourceVariable %in% colnames(data())) ) {
-                                            
-                                            stop("Variable defined to filter for source is not detected in the data.")
-                                            
-                                        }
-                                        
-                                        switch(input$dataSource,
-                                                inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
-                                                meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
-                                                # if both (inbo and meldingsformulier) is selected also include observations for which
-                                                # sourceVariable is NA to determine year-range
-                                                both = min(timeRange())
-                                        )
-                                    }
-                                    
-                                } else min(timeRange()),
-                        max = max(timeRange()),
-                        step = 1,
-                        sep = "")
-                
-            })
-    
-    
-    output$year <- renderUI({
-                
-                div(class = "sliderBlank", 
-                        sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-                                value = definedYear,
-                                min = min(timeRange()),
-                                max = max(timeRange()),
-                                step = 1,
-                                sep = "")
-                )
-                
-                
-            })
-    
-    
-    output$region <- renderUI({
-                
-                validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
-                
-                if (input$regionLevel == "flanders") {
+    data, types = NULL, labelTypes = "Type", typesDefault = types, 
+    timeRange = NULL, timeLabel = "Periode", 
+    multipleTypes = FALSE, definedYear = defaultYear,
+    sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL, 
+    sourceVariable_geslacht = NULL) {
+  
+  ns <- session$ns
+  
+  output$time <- renderUI({
+        
+        sliderInput(inputId = ns("time"), label = timeLabel, 
+            value = c(min(timeRange()), definedYear),
+            min = if (!is.null(input$dataSource)) {
+                  
+                  if (is.null(sourceVariable)) {
                     
-                    choices <- "Vlaams Gewest"
+                    stop("Variable should be defined to filter for source. Please update code.")
                     
-                } else if (input$regionLevel == "provinces") {
+                  } else {
                     
-                    choices <- levels(droplevels(factor(unique(data()$provincie), 
-                                            levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
-                                                    "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
-                    
-                } else {
-                    
-                    choices <- unique(data()$gemeente_afschot_locatie)
-                    choices <- choices[!is.na(choices)]
-                    choices <- choices[order(choices)]
-                    
-                }
-                
-                
-                if (input$regionLevel == "flanders")
-                    selected <- choices[1] else
-                    selected <- NULL
-                
-                selectInput(inputId = ns("region"), label = "Regio('s)",
-                        choices = choices, selected = selected, multiple = TRUE)
-                
-            })
-    
-    ## these two pieces of code are applicable for 
-    ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
-    ## grofwild - they will have no effects on types and typesDefault in the other cases
-    
-    finalTypes  <- reactive({
-                
-                finalTypes <- types()
-                
-                if (!is.null(input$dataSource)) {
-                    
-                    if (input$dataSource == "both" & any(grepl("6m", finalTypes, ignore.case = TRUE))) {
-                        
-                        ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
-                        finalTypes <- c("Frisling", "Overloper", "Volwassen")
+                    if ( !(sourceVariable %in% colnames(data()))) {
+                      
+                      stop("Variable defined to filter for source is not detected in the data.")
+                      
                     }
-                }
-                
-                return(finalTypes)
-                
-            })
-    
-    finalTypesDefault <- reactive({
-                
-                types <- types()
-                finalTypesDefault <- typesDefault()
-                finalTypes <- finalTypes()
-                
-                if (!is.null(input$dataSource)) {
                     
-                    if (input$dataSource == "both" & any(grepl("6m", types, ignore.case = TRUE))) {
-                        
-                        ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
-                        ## i.e. also update typesDefault in this case
-                        finalTypesDefault <- finalTypes
-                    }
-                }
-                
-                return(finalTypesDefault)
-                
-            })
-    
-    output$type <- renderUI({
-                
-                selectInput(inputId = ns("type"), label = labelTypes,
-                        choices = finalTypes(), 
-                        selected = finalTypesDefault(), multiple = multipleTypes)
-                
-            })
-    
-    output$dataSource <- renderUI({
-                
-                selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
-                
-            })
-    
-    output$dataSourceWarning <- renderUI({
-                
-                req(input$dataSource)
-                
-                if (input$dataSource %in% c("both", "meldingsformulier") &
-                        sourceVariable == "aantal_embryos_bron")
-                    tags$div(style = "margin-bottom:10px;",
-                            helpText("Observaties vóór 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
-                    )
-                
-                
-            })
-    
+                    if (!is.null(input$dataSource_geslacht)) {
+                      switch(input$dataSource,
+                          inbo = switch(input$dataSource_geslacht,
+                              inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                              both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                          ),
+                          # if both (inbo and meldingsformulier) is selected also include observations for which
+                          # sourceVariable is NA to determine year-range
+                          both = switch(input$dataSource_geslacht,
+                              inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                              both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                          )
+                      )
+                      } else {
+                        switch(input$dataSource,
+                            inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                            meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                            # if both (inbo and meldingsformulier) is selected also include observations for which
+                            # sourceVariable is NA to determine year-range
+                            both = min(timeRange())
+                        )
+                      }
+                    
+                  }
+                  
+                } else min(timeRange()),
+            max = max(timeRange()),
+            step = 1,
+            sep = "")
+        
+      })
+  
+  
+  output$year <- renderUI({
+        
+        div(class = "sliderBlank", 
+            sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
+                value = definedYear,
+                min = min(timeRange()),
+                max = max(timeRange()),
+                step = 1,
+                sep = "")
+        )
+        
+        
+      })
+  
+  
+  output$region <- renderUI({
+        
+        validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
+        
+        if (input$regionLevel == "flanders") {
+          
+          choices <- "Vlaams Gewest"
+          
+        } else if (input$regionLevel == "provinces") {
+          
+          choices <- levels(droplevels(factor(unique(data()$provincie), 
+                      levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
+                          "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
+          
+        } else {
+          
+          choices <- unique(data()$gemeente_afschot_locatie)
+          choices <- choices[!is.na(choices)]
+          choices <- choices[order(choices)]
+          
+        }
+        
+        
+        if (input$regionLevel == "flanders")
+          selected <- choices[1] else
+          selected <- NULL
+        
+        selectInput(inputId = ns("region"), label = "Regio('s)",
+            choices = choices, selected = selected, multiple = TRUE)
+        
+      })
+  
+  ## these two pieces of code are applicable for 
+  ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+  ## grofwild - they will have no effects on types and typesDefault in the other cases
+  
+  finalTypes  <- reactive({
+        
+        finalTypes <- types()
+        
+        if (!is.null(input$dataSource)) {
+          
+          if (input$dataSource == "both" & any(grepl("6m", finalTypes, ignore.case = TRUE))) {
+            
+            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+            finalTypes <- c("Frisling", "Overloper", "Volwassen")
+          }
+        }
+        
+        return(finalTypes)
+        
+      })
+  
+  finalTypesDefault <- reactive({
+        
+        types <- types()
+        finalTypesDefault <- typesDefault()
+        finalTypes <- finalTypes()
+        
+        if (!is.null(input$dataSource)) {
+          
+          if (input$dataSource == "both" & any(grepl("6m", types, ignore.case = TRUE))) {
+            
+            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+            ## i.e. also update typesDefault in this case
+            finalTypesDefault <- finalTypes
+          }
+        }
+        
+        return(finalTypesDefault)
+        
+      })
+  
+  output$type <- renderUI({
+        
+        selectInput(inputId = ns("type"), label = labelTypes,
+            choices = finalTypes(), 
+            selected = finalTypesDefault(), multiple = multipleTypes)
+        
+      })
+  
+  output$dataSource <- renderUI({
+        
+            selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
+            
+        
+      })
+  
+  output$dataSourceWarning <- renderUI({
+        
+        req(input$dataSource)
+        
+        if (input$dataSource %in% c("both", "meldingsformulier") &
+            sourceVariable == "aantal_embryos_bron")
+          tags$div(style = "margin-bottom:10px;",
+              helpText("Observaties vóór 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
+          )
+        
+        
+      })
+  
+
+  
 }
 
 
@@ -267,11 +299,11 @@ optionsModuleServer <- function(input, output, session,
 #' @importFrom shiny NS
 #' @export
 plotModuleUI <- function(id, height = "600px") {
-    
-    ns <- NS(id)
-    
-    withSpinner(plotlyOutput(ns("plot"), height = height))
-    
+  
+  ns <- NS(id)
+  
+  withSpinner(plotlyOutput(ns("plot"), height = height))
+  
 }
 
 
@@ -284,15 +316,15 @@ plotModuleUI <- function(id, height = "600px") {
 #' @importFrom shiny tableOutput NS
 #' @export
 tableModuleUI <- function(id, includeTotal = FALSE) {
-    
-    ns <- NS(id)
-    
-    tagList(
-            withSpinner(tableOutput(ns("table"))),
-            if (includeTotal)
-                uiOutput(ns("total"))
-    )
-    
+  
+  ns <- NS(id)
+  
+  tagList(
+      withSpinner(tableOutput(ns("table"))),
+      if (includeTotal)
+        uiOutput(ns("total"))
+  )
+  
 }
 
 #' Interactive table generated with datatable (ui-side)
@@ -304,11 +336,11 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @importFrom DT dataTableOutput
 #' @export
 datatableModuleUI <- function(id) {
-    
-    ns <- NS(id)
-    
-    tagList(withSpinner(DT::dataTableOutput(ns("table"))))
-    
+  
+  ns <- NS(id)
+  
+  tagList(withSpinner(DT::dataTableOutput(ns("table"))))
+  
 }
 
 
@@ -341,193 +373,226 @@ datatableModuleUI <- function(id) {
 #' @importFrom DT datatable formatRound renderDataTable
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
-        data, openingstijdenData, toekenningsData = NULL,
-        categorie = NULL, bioindicator = NULL,
-        locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
-        datatable = FALSE, schadeChoices = NULL, schadeChoicesVrtg = NULL,
-        schadeChoicesGewas = NULL, variable = NULL, schadeTitles = FALSE) {
-    
-    subData <- reactive({
-                
-                provincie <- NULL  # to prevent warnings with R CMD check
-                subData <- data()
-                
-                if (!is.null(input$regionLevel)) {
-                    
-                    validate(need(input$region, "Gelieve regio('s) te selecteren"))
-                    
-                    if (input$regionLevel == "provinces")
-                        subData <- subset(subData, provincie %in% input$region)
-                    
-                }
-                
-                
-                return(subData)
-                
-            })
-    
-    wildNaam <- reactive(unique(data()$wildsoort))
-    
-    
-    subToekenningsData <- reactive({
-                
-                if (is.null(toekenningsData))
-                    return(NULL)
-                
-                Provincie <- NULL  # to prevent warnings with R CMD check
-                Jaar <- NULL  # to prevent warnings with R CMD check
-                subData <- toekenningsData()
-                
-                if (!is.null(input$regionLevel)) {
-                    
-                    validate(need(input$region, "Gelieve regio('s) te selecteren"))
-                    
-                    if (input$regionLevel == "provinces")
-                        subData <- subset(subData, Provincie %in% input$region)
-                    
-                }
-                
-                if (!is.null(input$time))
-                    subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
-                
-                
-                return(subData)
-                
-            })
-    
-    
-    argList <- reactive({
-                
-                req(nrow(subData()) > 0)
-                
-                argList <- c(
-                        list(data = subData()),
-                        if (!is.null(input$year))
-                            list(jaar = input$year),
-                        if (!is.null(input$time))
-                            list(jaartallen = input$time[1]:input$time[2]),
-                        # Currently these options are never used
+    data, openingstijdenData, toekenningsData = NULL,
+    categorie = NULL, bioindicator = NULL,
+    locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
+    datatable = FALSE, schadeChoices = NULL, schadeChoicesVrtg = NULL,
+    schadeChoicesGewas = NULL, variable = NULL, schadeTitles = FALSE) {
+  
+  subData <- reactive({
+        
+        provincie <- NULL  # to prevent warnings with R CMD check
+        subData <- data()
+        
+        if (!is.null(input$regionLevel)) {
+          
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          
+          if (input$regionLevel == "provinces")
+            subData <- subset(subData, provincie %in% input$region)
+          
+        }
+        
+        
+        return(subData)
+        
+      })
+  
+  wildNaam <- reactive(unique(data()$wildsoort))
+  
+  
+  subToekenningsData <- reactive({
+        
+        if (is.null(toekenningsData))
+          return(NULL)
+        
+        Provincie <- NULL  # to prevent warnings with R CMD check
+        Jaar <- NULL  # to prevent warnings with R CMD check
+        subData <- toekenningsData()
+        
+        if (!is.null(input$regionLevel)) {
+          
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          
+          if (input$regionLevel == "provinces")
+            subData <- subset(subData, Provincie %in% input$region)
+          
+        }
+        
+        if (!is.null(input$time))
+          subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
+        
+        
+        return(subData)
+        
+      })
+ 
+  
+  argList <- reactive({
+               
+        req(nrow(subData()) > 0)
+        
+        argList <- c(
+            list(data = subData()),
+            if (!is.null(input$year))
+              list(jaar = input$year),
+            if (!is.null(input$time))
+              list(jaartallen = input$time[1]:input$time[2]),
+            # Currently these options are never used
 #            if (!is.null(input$legend))
 #              list(legend = input$legend), 
-                        if (!is.null(input$regionLevel))
-                            list(regio = input$region),
-                        if (!is.null(input$type))
-                            list(type = input$type),
-                        if (!is.null(input$type) & !is.null(input$year) & isFALSE(schade))
-                            list(openingstijdenData = openingstijdenData()),
-                        if (!is.null(subToekenningsData()))
-                            list(assignedData = subToekenningsData()),
-                        if (!is.null(categorie))
-                            list(categorie = categorie),
-                        if (!is.null(input$summarizeBy))
-                            list(summarizeBy = input$summarizeBy),
-                        if(!is.null(bioindicator))
-                            list(bioindicator = bioindicator),
-                        if(!is.null(input$dataSource))
-                            list(sourceIndicator = input$dataSource),
-                        if (!is.null(locaties))
-                            list(locaties = locaties()),
-                        if (!is.null(timeRange))
-                            list(timeRange = timeRange()),
-                        if (!is.null(unit))
-                            list(unit = unit()),
-                        if (isTRUE(schadeTitles))
-                            list(schadeTitles = schadeTitles),
-                        if (!is.null(schadeChoices))
-                            list(schadeChoices = schadeChoices()),
-                        if (!is.null(schadeChoicesVrtg))
-                            list(schadeChoicesVrtg = schadeChoicesVrtg()),
-                        if (!is.null(schadeChoicesGewas))
-                            list(schadeChoicesGewas = schadeChoicesGewas()),
-                        if (!is.null(variable))
-                            list(variable = variable)
-                
-                )
-                
-                
-            })
-    
-    resultFct <- reactive({
-                
-                toReturn <- tryCatch(
-                        do.call(plotFunction, args = argList()),
-                        error = function(err)
-                            validate(need(FALSE, err$message))
-                )		
-                
-                validate(need(!is.null(toReturn), "Niet beschikbaar"))
-                
-                return(toReturn)
-                
-                
-            })
-    
-    
-    output$plot <- renderPlotly({  
-                
-                resultFct()$plot
-                
-            })
-    
-    
-    output$dataDownload <- downloadHandler(
-            filename = function() nameFile(species = wildNaam(),
-                        year = if (!is.null(input$year)) 
-                                    input$year else if (!is.null(input$time))
-                                    unique(c(input$time[1], input$time[2])) else
-                                    timeRange(), 
-                        extraInfo = input$type,
-                        content = paste0(plotFunction, "_data"), fileExt = "csv"),
-            content = function(file) {
-                
-                resFct <- resultFct()
-                
-                ## checks
-                
-                # Note: a data.frame is a list!
-                isDataPresent <- ifelse(!is.null(resFct),
-                        ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
-                        FALSE
-                )
-                
-                validate(
-                        need(resFct, "Niet beschikbaar"),
-                        need(
-                                if(is.data.frame(resFct))	resFct	
-                                        else if (is.data.frame(resFct$data)) resFct$data
-                                        else	resFct$plot,
-                                "Niet beschikbaar"
-                        )
-                )
-                
-                ## extract data to export
-                dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
-                
-                ## write data to exported file
-                write.table(x = dataPlot, file = file, quote = FALSE, row.names = FALSE,
-                        sep = ";", dec = ",")
-                
-            }
-    )
-    
-    if (datatable == TRUE) {
-        output$table <- DT::renderDataTable({
-                    
-                    DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
-                                    selection = "single",
-                                    options = list(dom = 't', pageLength = -1)) %>%
-                            formatRound(colnames(resultFct()$data), digits = 0, mark = "")
-                    
-                })
-    } else {
-        output$table <- renderTable({
-                    
-                    return(resultFct())
-                    
-                }, digits = 0)
-    }
-    
-    
+            if (!is.null(input$regionLevel))
+              list(regio = input$region),
+            if (!is.null(input$type))
+              list(type = input$type),
+            if (!is.null(input$type) & !is.null(input$year) & isFALSE(schade))
+              list(openingstijdenData = openingstijdenData()),
+            if (!is.null(subToekenningsData()))
+              list(assignedData = subToekenningsData()),
+            if (!is.null(categorie))
+              list(categorie = categorie),
+            if (!is.null(input$summarizeBy))
+              list(summarizeBy = input$summarizeBy),
+            if(!is.null(bioindicator))
+              list(bioindicator = bioindicator),
+            if(!is.null(input$dataSource))
+              list(sourceIndicator = input$dataSource),
+            if(!is.null(input$dataSource_geslacht))
+              list(sourceIndicator_geslacht = input$dataSource_geslacht),
+            if (!is.null(locaties))
+              list(locaties = locaties()),
+            if (!is.null(timeRange))
+              list(timeRange = timeRange()),
+            if (!is.null(unit))
+              list(unit = unit()),
+            if (isTRUE(schadeTitles))
+              list(schadeTitles = schadeTitles),
+            if (!is.null(schadeChoices))
+              list(schadeChoices = schadeChoices()),
+            if (!is.null(schadeChoicesVrtg))
+              list(schadeChoicesVrtg = schadeChoicesVrtg()),
+            if (!is.null(schadeChoicesGewas))
+              list(schadeChoicesGewas = schadeChoicesGewas()),
+            if (!is.null(variable))
+              list(variable = variable)
+        
+        )
+        
+        
+      })
+  
+  resultFct <- reactive({
+        
+        toReturn <- tryCatch(
+            do.call(plotFunction, args = argList()),
+            error = function(err)
+              validate(need(FALSE, err$message))
+        )		
+        
+        validate(need(!is.null(toReturn), "Niet beschikbaar"))
+        
+        return(toReturn)
+        
+        
+      })
+  
+  
+  output$plot <- renderPlotly({  
+        
+        resultFct()$plot
+        
+      })
+  
+  
+  output$dataDownload <- downloadHandler(
+      filename = function() nameFile(species = wildNaam(),
+            year = if (!is.null(input$year)) 
+                  input$year else if (!is.null(input$time))
+                  unique(c(input$time[1], input$time[2])) else
+                  timeRange(), 
+            extraInfo = input$type,
+            content = paste0(plotFunction, "_data"), fileExt = "csv"),
+      content = function(file) {
+        
+        resFct <- resultFct()
+        
+        ## checks
+        
+        # Note: a data.frame is a list!
+        isDataPresent <- ifelse(!is.null(resFct),
+            ifelse(is.data.frame(resFct), !is.null(resFct), !is.null(resFct$plot)),
+            FALSE
+        )
+        
+        validate(
+            need(resFct, "Niet beschikbaar"),
+            need(
+                if(is.data.frame(resFct))	resFct	
+                    else if (is.data.frame(resFct$data)) resFct$data
+                    else	resFct$plot,
+                "Niet beschikbaar"
+            )
+        )
+        
+        ## extract data to export
+        dataPlot <- if(is.data.frame(resFct))	resFct	else	resFct$data
+        
+        ## write data to exported file
+        write.table(x = dataPlot, file = file, quote = FALSE, row.names = FALSE,
+            sep = ";", dec = ",")
+        
+      }
+  )
+  
+  if (datatable == TRUE) {
+    output$table <- DT::renderDataTable({
+          
+          DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
+                  selection = "single",
+                  options = list(dom = 't', pageLength = -1)) %>%
+              formatRound(colnames(resultFct()$data), digits = 0, mark = "")
+          
+        })
+  } else {
+    output$table <- renderTable({
+          
+          return(resultFct())
+          
+        }, digits = 0)
+  }
+  
+  # percentage of data used after filtering
+  output$filters <- renderUI({
+        
+        req(input$time)
+        req(input$region)
+        
+        allData <- data()
+        
+        # subsetting data on time 
+        if(length(input$time) == 2) {
+          
+          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
+        
+        } else {
+          
+          subsetData <- allData[allData$afshotjaar == input$time, ]  
+          
+        }
+        
+        # subsetting data on region
+        if(input$regionLevel == "provinces") {
+          
+          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
+          
+        }
+        
+        noTotal <- nrow(subsetData)
+        noSubset <- nrow(resultFct()$data)
+        percData <- round((noSubset / noTotal) * 100, 2)
+        
+        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
+      })
 }
 
 
@@ -539,47 +604,47 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' @return ui object (tagList)
 #' @export
 dataModuleServer <- function(input, output, session, data, variable) {
-    
-    
-    # TODO include in formatLabels()
-    
-    freqTable <- reactive({
-                
-                myTable <- as.data.frame(table(data()@data[, variable]), stringsAsFactors = FALSE)
-                if (nrow(myTable) == 0)
-                    return(NULL)
-                myTable <- myTable[rev(order(myTable$Freq)), ]
-                
-                if (nrow(myTable) == 0)
-                    return(NULL)
-                
-                variableLabel <- switch(variable,
-                        wildsoort = "Wildsoort",
-                        schadeBasisCode = "Type Schade",
-                        schadeCode = "Type Subschade",
-                        SoortNaam = "Gewas")
-                
-                colnames(myTable) <- c(variableLabel, "Aantal")
-                if (!variable %in% c("wildsoort", "SoortNaam"))
-                    myTable[, variableLabel] <- names(fullNames(myTable[, variableLabel]))
-                
-                myTable
-                
-            })
-    
-    # Frequency table
-    output$table <- renderTable({
-                
-                validate(need(freqTable(), "Geen data beschikbaar"))
-                return(freqTable())
-                
-            }, digits = 0)
-    
-    # Total number of records
-    output$total <- renderUI({
-                
-                req(freqTable())
-                helpText("Totaal:", sum(freqTable()$Aantal))
-            })    
-    
+  
+  
+  # TODO include in formatLabels()
+  
+  freqTable <- reactive({
+        
+        myTable <- as.data.frame(table(data()@data[, variable]), stringsAsFactors = FALSE)
+        if (nrow(myTable) == 0)
+          return(NULL)
+        myTable <- myTable[rev(order(myTable$Freq)), ]
+        
+        if (nrow(myTable) == 0)
+          return(NULL)
+        
+        variableLabel <- switch(variable,
+            wildsoort = "Wildsoort",
+            schadeBasisCode = "Type Schade",
+            schadeCode = "Type Subschade",
+            SoortNaam = "Gewas")
+        
+        colnames(myTable) <- c(variableLabel, "Aantal")
+        if (!variable %in% c("wildsoort", "SoortNaam"))
+          myTable[, variableLabel] <- names(fullNames(myTable[, variableLabel]))
+        
+        myTable
+        
+      })
+  
+  # Frequency table
+  output$table <- renderTable({
+        
+        validate(need(freqTable(), "Geen data beschikbaar"))
+        return(freqTable())
+        
+      }, digits = 0)
+  
+  # Total number of records
+  output$total <- renderUI({
+        
+        req(freqTable())
+        helpText("Totaal:", sum(freqTable()$Aantal))
+      })    
+  
 }

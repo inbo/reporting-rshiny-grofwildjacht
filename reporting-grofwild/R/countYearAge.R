@@ -40,7 +40,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("afschotjaar", "Leeftijdscategorie_onderkaak", "geslacht.MF")]
+			c("afschotjaar", "Leeftijdscategorie_onderkaak", "geslacht_comp")]
 	names(plotData) <- c("jaar", "kaak", "geslacht")
 	
 	# Percentage collected

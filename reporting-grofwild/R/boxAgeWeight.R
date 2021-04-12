@@ -14,6 +14,9 @@
 #' @param sourceIndicator character, source used to filter \code{data} ('leeftijd_comp_bron' column)
 #' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
 #' i.e. no filtering. Defaults to \code{"both"}
+#' @param sourceIndicator_geslacht character, source used to filter \code{data} ('geslacht_comp_bron' column)
+#' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+#' i.e. no filtering. Defaults to \code{"both"}
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given species the distribution of weight
@@ -33,9 +36,11 @@
 #' @export
 boxAgeWeight <- function(data,
 		type, jaartallen = NULL, regio = "", sourceIndicator = c("both", "inbo"),
-		width = NULL, height = NULL) {
+		sourceIndicator_geslacht = c("both","inbo"), width = NULL, height = NULL) {
 	
   sourceIndicator <- match.arg(sourceIndicator)
+  sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)
+  
   
 	wildNaam <- unique(data$wildsoort)
 	
@@ -44,9 +49,9 @@ boxAgeWeight <- function(data,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", "geslacht.MF",
-					"provincie")]
-	names(plotData) <- c("gewicht", "leeftijd", "leeftijd_bron", "maanden", "geslacht", "provincie")
+			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", "geslacht_comp",
+					"provincie", "geslacht_comp_bron")]
+	names(plotData) <- c("gewicht", "leeftijd", "leeftijd_bron", "maanden", "geslacht", "provincie", "geslacht_bron")
 	
   # Filter for bron
   
@@ -104,6 +109,22 @@ boxAgeWeight <- function(data,
     # filters out NA and 'meldingsformulier'
     plotData <- subset(plotData, leeftijd_bron == "inbo")
 
+  }
+  
+  if (sourceIndicator_geslacht == "inbo") {
+    # To prevent error with R CMD check
+    geslacht_bron <- NULL
+    
+    # filters out NA and 'meldingsformulier' en 'onbekend'
+    plotData <- subset(plotData, geslacht_bron == "inbo")
+    
+  } else if (sourceIndicator_geslacht == "both"){
+    # To prevent error with R CMD check
+    geslacht_bron <- NULL
+    
+    # filters out NA and 'onbekend'
+    plotData <- subset(plotData, !is.na(geslacht_bron) & geslacht_bron != "onbekend")
+    
   }
 	
 	if (nrow(plotData) == 0)

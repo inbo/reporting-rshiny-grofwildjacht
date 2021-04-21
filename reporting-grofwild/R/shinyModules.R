@@ -116,10 +116,12 @@ optionsModuleServer <- function(input, output, session,
   
   ns <- session$ns
   
+  results <- reactiveValues()
+  
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = c(min(timeRange()), definedYear),
+            value = if(is.null(results$time)) c(min(timeRange()), definedYear) else results$time,
             min = if (!is.null(input$dataSource)) {
                   
                   if (is.null(sourceVariable)) {
@@ -147,15 +149,15 @@ optionsModuleServer <- function(input, output, session,
                               both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
                           )
                       )
-                      } else {
-                        switch(input$dataSource,
-                            inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
-                            meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
-                            # if both (inbo and meldingsformulier) is selected also include observations for which
-                            # sourceVariable is NA to determine year-range
-                            both = min(timeRange())
-                        )
-                      }
+                    } else {
+                      switch(input$dataSource,
+                          inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                          meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                          # if both (inbo and meldingsformulier) is selected also include observations for which
+                          # sourceVariable is NA to determine year-range
+                          both = min(timeRange())
+                      )
+                    }
                     
                   }
                   
@@ -164,6 +166,13 @@ optionsModuleServer <- function(input, output, session,
             step = 1,
             sep = "")
         
+      })
+  
+  
+  observe({
+        req(input$time)
+        if (length(input$time) == 2)
+          results$time <- input$time 
       })
   
   
@@ -180,6 +189,52 @@ optionsModuleServer <- function(input, output, session,
         
         
       })
+  
+  
+  output$region <- renderUI({
+        
+        validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
+        
+        if (input$regionLevel == "flanders") {
+          
+          stop("Variable should be defined to filter for source. Please update code.")
+          
+        } else {
+          
+          if ( !(sourceVariable %in% colnames(data()))) {
+            
+            stop("Variable defined to filter for source is not detected in the data.")
+            
+          }
+          
+          if (!is.null(input$dataSource_geslacht)) {
+            switch(input$dataSource,
+                inbo = switch(input$dataSource_geslacht,
+                    inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                    both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                ),
+                # if both (inbo and meldingsformulier) is selected also include observations for which
+                # sourceVariable is NA to determine year-range
+                both = switch(input$dataSource_geslacht,
+                    inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                    both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                )
+            )
+          } else {
+            switch(input$dataSource,
+                inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                # if both (inbo and meldingsformulier) is selected also include observations for which
+                # sourceVariable is NA to determine year-range
+                both = min(timeRange())
+            )
+          }
+          
+        }
+        
+        
+      })
+  
   
   
   output$region <- renderUI({
@@ -265,8 +320,8 @@ optionsModuleServer <- function(input, output, session,
   
   output$dataSource <- renderUI({
         
-            selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
-            
+        selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
+        
         
       })
   
@@ -283,7 +338,7 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
-
+  
   
 }
 
@@ -426,10 +481,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
         return(subData)
         
       })
- 
+  
   
   argList <- reactive({
-               
+        
         req(nrow(subData()) > 0)
         
         argList <- c(
@@ -573,7 +628,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         if(length(input$time) == 2) {
           
           subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
-        
+          
         } else {
           
           subsetData <- allData[allData$afshotjaar == input$time, ]  

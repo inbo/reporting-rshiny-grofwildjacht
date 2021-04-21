@@ -28,6 +28,7 @@ optionsModuleUI <- function(id,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, showDataSource = FALSE,
     doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE) {
+
   
   ns <- NS(id)
   
@@ -75,6 +76,7 @@ optionsModuleUI <- function(id,
               }
           )
       )
+
   )
   
   if (doWellPanel)
@@ -236,39 +238,6 @@ optionsModuleServer <- function(input, output, session,
       })
   
   
-  
-  output$region <- renderUI({
-        
-        validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
-        
-        if (input$regionLevel == "flanders") {
-          
-          choices <- "Vlaams Gewest"
-          
-        } else if (input$regionLevel == "provinces") {
-          
-          choices <- levels(droplevels(factor(unique(data()$provincie), 
-                      levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
-                          "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
-          
-        } else {
-          
-          choices <- unique(data()$gemeente_afschot_locatie)
-          choices <- choices[!is.na(choices)]
-          choices <- choices[order(choices)]
-          
-        }
-        
-        
-        if (input$regionLevel == "flanders")
-          selected <- choices[1] else
-          selected <- NULL
-        
-        selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices, selected = selected, multiple = TRUE)
-        
-      })
-  
   ## these two pieces of code are applicable for 
   ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
   ## grofwild - they will have no effects on types and typesDefault in the other cases
@@ -337,9 +306,7 @@ optionsModuleServer <- function(input, output, session,
         
         
       })
-  
-  
-  
+    
 }
 
 
@@ -375,7 +342,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   ns <- NS(id)
   
   tagList(
-      withSpinner(tableOutput(ns("table"))),
+      withSpinner(DT::dataTableOutput(ns("table"))),
       if (includeTotal)
         uiOutput(ns("total"))
   )
@@ -511,7 +478,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
             if(!is.null(input$dataSource))
-              list(sourceIndicator = input$dataSource),
+              list(sourceIndicator = input$dataSource),            
             if(!is.null(input$dataSource_geslacht))
               list(sourceIndicator_geslacht = input$dataSource_geslacht),
             if (!is.null(locaties))
@@ -559,6 +526,42 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
+
+  
+  # percentage of data used after filtering
+  output$filters <- renderUI({
+        
+        req(input$time)
+        req(input$region)
+        
+        allData <- data()
+        
+        # subsetting data on time 
+        if(length(input$time) == 2) {
+          
+          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
+          
+        } else {
+          
+          subsetData <- allData[allData$afshotjaar == input$time, ]  
+          
+        }
+        
+        # subsetting data on region
+        if(input$regionLevel == "provinces") {
+          
+          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
+          
+        }
+        
+        noTotal <- nrow(subsetData)
+        noSubset <- nrow(resultFct()$data)
+        percData <- round((noSubset / noTotal) * 100, 2)
+        
+        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
+      })
+
+ 
   output$dataDownload <- downloadHandler(
       filename = function() nameFile(species = wildNaam(),
             year = if (!is.null(input$year)) 
@@ -609,45 +612,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
           
         })
   } else {
-    output$table <- renderTable({
+    output$table <- DT::renderDataTable({
           
-          return(resultFct())
+          DT::datatable(resultFct(), rownames = FALSE,
+              options = list(dom = 't', pageLength = -1)) 
           
-        }, digits = 0)
+        })
   }
   
-  # percentage of data used after filtering
-  output$filters <- renderUI({
-        
-        req(input$time)
-        req(input$region)
-        
-        allData <- data()
-        
-        # subsetting data on time 
-        if(length(input$time) == 2) {
-          
-          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
-          
-        } else {
-          
-          subsetData <- allData[allData$afshotjaar == input$time, ]  
-          
-        }
-        
-        # subsetting data on region
-        if(input$regionLevel == "provinces") {
-          
-          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
-          
-        }
-        
-        noTotal <- nrow(subsetData)
-        noSubset <- nrow(resultFct()$data)
-        percData <- round((noSubset / noTotal) * 100, 2)
-        
-        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
-      })
+ 
 }
 
 
@@ -688,12 +661,13 @@ dataModuleServer <- function(input, output, session, data, variable) {
       })
   
   # Frequency table
-  output$table <- renderTable({
+  output$table <- DT::renderDataTable({
         
         validate(need(freqTable(), "Geen data beschikbaar"))
-        return(freqTable())
+        DT::datatable(freqTable(), rownames = FALSE,
+            options = list(dom = 't', pageLength = -1))
         
-      }, digits = 0)
+      })
   
   # Total number of records
   output$total <- renderUI({

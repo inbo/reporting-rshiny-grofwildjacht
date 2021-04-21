@@ -76,7 +76,6 @@ optionsModuleUI <- function(id,
               }
           )
       )
-
   )
   
   if (doWellPanel)
@@ -192,7 +191,7 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
-  
+
   output$region <- renderUI({
         
         validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
@@ -241,7 +240,7 @@ optionsModuleServer <- function(input, output, session,
   ## these two pieces of code are applicable for 
   ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
   ## grofwild - they will have no effects on types and typesDefault in the other cases
-  
+
   finalTypes  <- reactive({
         
         finalTypes <- types()
@@ -258,7 +257,7 @@ optionsModuleServer <- function(input, output, session,
         return(finalTypes)
         
       })
-  
+ 
   finalTypesDefault <- reactive({
         
         types <- types()
@@ -533,6 +532,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   
 
+
   
   # percentage of data used after filtering
   output$filters <- renderUI({
@@ -567,7 +567,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
       })
 
- 
+
   output$dataDownload <- downloadHandler(
       filename = function() nameFile(species = wildNaam(),
             year = if (!is.null(input$year)) 
@@ -627,6 +627,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
   }
   
  
+
 }
 
 

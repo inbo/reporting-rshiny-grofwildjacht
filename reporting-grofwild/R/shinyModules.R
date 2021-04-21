@@ -28,7 +28,7 @@ optionsModuleUI <- function(id,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, showDataSource = FALSE,
     doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE) {
-
+  
   
   ns <- NS(id)
   
@@ -191,47 +191,36 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
-
+  
   output$region <- renderUI({
         
         validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
         
         if (input$regionLevel == "flanders") {
           
-          stop("Variable should be defined to filter for source. Please update code.")
+          choices <- "Vlaams Gewest"
+          
+        } else if (input$regionLevel == "provinces") {
+          
+          choices <- levels(droplevels(factor(unique(data()$provincie), 
+                      levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
+                          "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
           
         } else {
           
-          if ( !(sourceVariable %in% colnames(data()))) {
-            
-            stop("Variable defined to filter for source is not detected in the data.")
-            
-          }
-          
-          if (!is.null(input$dataSource_geslacht)) {
-            switch(input$dataSource,
-                inbo = switch(input$dataSource_geslacht,
-                    inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
-                    both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
-                ),
-                # if both (inbo and meldingsformulier) is selected also include observations for which
-                # sourceVariable is NA to determine year-range
-                both = switch(input$dataSource_geslacht,
-                    inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
-                    both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
-                )
-            )
-          } else {
-            switch(input$dataSource,
-                inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
-                meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
-                # if both (inbo and meldingsformulier) is selected also include observations for which
-                # sourceVariable is NA to determine year-range
-                both = min(timeRange())
-            )
-          }
+          choices <- unique(data()$gemeente_afschot_locatie)
+          choices <- choices[!is.na(choices)]
+          choices <- choices[order(choices)]
           
         }
+        
+        
+        if (input$regionLevel == "flanders")
+          selected <- choices[1] else
+          selected <- NULL
+        
+        selectInput(inputId = ns("region"), label = "Regio('s)",
+            choices = choices, selected = selected, multiple = TRUE)
         
         
       })
@@ -240,7 +229,7 @@ optionsModuleServer <- function(input, output, session,
   ## these two pieces of code are applicable for 
   ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
   ## grofwild - they will have no effects on types and typesDefault in the other cases
-
+  
   finalTypes  <- reactive({
         
         finalTypes <- types()
@@ -257,7 +246,7 @@ optionsModuleServer <- function(input, output, session,
         return(finalTypes)
         
       })
- 
+  
   finalTypesDefault <- reactive({
         
         types <- types()
@@ -305,7 +294,7 @@ optionsModuleServer <- function(input, output, session,
         
         
       })
-    
+  
 }
 
 
@@ -509,7 +498,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   resultFct <- reactive({
-    
+        
         toReturn <- tryCatch(
             do.call(plotFunction, args = argList()),
             error = function(err)
@@ -525,14 +514,14 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   
   output$plot <- renderPlotly({  
-       
+        
         resultFct()$plot
         
       })
   
   
-
-
+  
+  
   
   # percentage of data used after filtering
   output$filters <- renderUI({
@@ -566,8 +555,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
         paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
       })
-
-
+  
+  
   output$dataDownload <- downloadHandler(
       filename = function() nameFile(species = wildNaam(),
             year = if (!is.null(input$year)) 
@@ -626,8 +615,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
         })
   }
   
- 
-
+  
+  
 }
 
 

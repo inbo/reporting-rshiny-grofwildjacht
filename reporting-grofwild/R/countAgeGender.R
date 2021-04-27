@@ -24,7 +24,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
+#' @importFrom INBOtheme inbo.2015.colours inbo_lichtgrijs
 #' @author mvarewyck
 #' @export
 countAgeGender <- function(data, jaartallen = NULL, 
@@ -38,7 +38,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-				c("geslacht.MF", "leeftijd_comp")]
+				c("geslacht_comp", "leeftijd_comp")]
 	names(plotData) <- c("geslacht", "leeftijd")
 	
 	# Percentage collected
@@ -97,7 +97,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 					legend = list(y = 0.8, yanchor = "top"),
 					margin = list(b = 120, t = 100), 
 					barmode = "stack",
-					shapes = list(type = "line", line = list(color = inbo.lichtgrijs, dash = "dash"), 
+					shapes = list(type = "line", line = list(color = inbo_lichtgrijs, dash = "dash"), 
 							xref = "paper", x0 = 0, x1 = 1, y0 = 50, y1 = 50),
 					annotations = list(x = levels(summaryData$leeftijd), y = -10, 
 							text = totalCount, xanchor = 'center', yanchor = 'bottom', 

@@ -12,20 +12,24 @@ RUN apt-get update && apt-get install -y \
     libxt-dev \
     libssl-dev \
     libssh2-1-dev \
-    libssl1.0.0 \
+    libssl1.0 \
     gdal-bin \
     libgdal-dev \
     libproj-dev \
     libgeos-dev \
-    libudunits2-dev
-
-
+    libudunits2-dev \
+	libgit2-dev
+	
 # Dependencies for rgdal and rgeos
 RUN  apt-get update && apt-get install -y software-properties-common && \
-     add-apt-repository ppa:ubuntugis/ppa
+     apt install gdal-bin
+	 
+# Dependencies for devtools
+RUN R -e "install.packages(c('gert', 'usethis'), repos='https://cloud.r-project.org/')"	 
 
 # install imports of reporting-grofwild app that are not on cloud
-RUN R -e "install.packages(c('shiny', 'sp', 'plotly', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders', 'raster'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'gert', 'sp', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders', 'raster', 'stringr'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "devtools::install_version('plotly', version = '4.9.2.1', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 RUN R -e "install.packages('https://cran.r-project.org/src/contrib/Archive/DT/DT_0.12.tar.gz', repos = NULL, type = 'source')"
 

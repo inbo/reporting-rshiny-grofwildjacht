@@ -20,13 +20,14 @@
 #' used for plotted bioindicator
 #' @param doWellPanel boolean, whether to display the options within a 
 #' \code{shiny::wellPanel()}
+#' @param filter boolean, if TRUE percentage of data used after applying filters is shown
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, showDataSource = FALSE,
-    doWellPanel = TRUE) {
+    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE) {
   
   ns <- NS(id)
   
@@ -58,12 +59,22 @@ optionsModuleUI <- function(id,
             column(8, uiOutput(ns("region")))
         ),
       if (showDataSource)
-        selectInput(inputId = ns("sourceIndicator"), label = "Data bron voor onderkaaklengte",
-            choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", 
-                "INBO en meldingsformulier" = "both")),
-      if(exportData)
-        downloadButton(ns("dataDownload"), "Download data")
-  
+        uiOutput(ns("dataSource")),
+      if (showDataSourceGeslacht)
+        selectInput(inputId = ns("dataSource_geslacht"), label = "Data bron geslacht", choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both")),
+      if (showDataSource)
+        uiOutput(ns("dataSourceWarning")),
+      fluidRow(
+          column(6,
+              if(exportData)
+                downloadButton(ns("dataDownload"), "Download data")
+          ),
+          column(6,
+              if (filter) {
+                uiOutput(ns("filters"))
+              }
+          )
+      )
   )
   
   if (doWellPanel)
@@ -89,12 +100,19 @@ optionsModuleUI <- function(id,
 #' @param definedYear numeric, single numeric value specifying the year value 
 #' (or max year value within a range) that is selected upon opening, default is
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
+#' @param sources defines the data sources that can be selected
+#' @param sourceLabel character, the displayed label for the selecting source field for leeftijd, 
+#' 'Data bron' by default
+#' @param sourceVariable character, the variable used internally to filter for source
+#' @param sourceVariable_geslacht character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE, definedYear = defaultYear) {
+    multipleTypes = FALSE, definedYear = defaultYear,
+    sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL, 
+    sourceVariable_geslacht = NULL) {
   
   ns <- session$ns
   
@@ -102,10 +120,45 @@ optionsModuleServer <- function(input, output, session,
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
             value = c(min(timeRange()), definedYear),
-            min = if (!is.null(input$sourceIndicator)) {
-                  if (input$sourceIndicator == "inbo") { min(data()[data()$onderkaaklengte_comp_bron == "inbo" , "afschotjaar"], na.rm = TRUE) }
-                  else if (input$sourceIndicator == "meldingsformulier") { min(data()[data()$onderkaaklengte_comp_bron == "meldingsformulier" , "afschotjaar"], na.rm = TRUE) }
-                  else min(timeRange())
+            min = if (!is.null(input$dataSource)) {
+                  
+                  if (is.null(sourceVariable)) {
+                    
+                    stop("Variable should be defined to filter for source. Please update code.")
+                    
+                  } else {
+                    
+                    if ( !(sourceVariable %in% colnames(data()))) {
+                      
+                      stop("Variable defined to filter for source is not detected in the data.")
+                      
+                    }
+                    
+                    if (!is.null(input$dataSource_geslacht)) {
+                      switch(input$dataSource,
+                          inbo = switch(input$dataSource_geslacht,
+                              inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                              both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                          ),
+                          # if both (inbo and meldingsformulier) is selected also include observations for which
+                          # sourceVariable is NA to determine year-range
+                          both = switch(input$dataSource_geslacht,
+                              inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                              both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                          )
+                      )
+                      } else {
+                        switch(input$dataSource,
+                            inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                            meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                            # if both (inbo and meldingsformulier) is selected also include observations for which
+                            # sourceVariable is NA to determine year-range
+                            both = min(timeRange())
+                        )
+                      }
+                    
+                  }
+                  
                 } else min(timeRange()),
             max = max(timeRange()),
             step = 1,
@@ -161,14 +214,76 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
+  ## these two pieces of code are applicable for 
+  ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+  ## grofwild - they will have no effects on types and typesDefault in the other cases
+  
+  finalTypes  <- reactive({
+        
+        finalTypes <- types()
+        
+        if (!is.null(input$dataSource)) {
+          
+          if (input$dataSource == "both" & any(grepl("6m", finalTypes, ignore.case = TRUE))) {
+            
+            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+            finalTypes <- c("Frisling", "Overloper", "Volwassen")
+          }
+        }
+        
+        return(finalTypes)
+        
+      })
+  
+  finalTypesDefault <- reactive({
+        
+        types <- types()
+        finalTypesDefault <- typesDefault()
+        finalTypes <- finalTypes()
+        
+        if (!is.null(input$dataSource)) {
+          
+          if (input$dataSource == "both" & any(grepl("6m", types, ignore.case = TRUE))) {
+            
+            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+            ## i.e. also update typesDefault in this case
+            finalTypesDefault <- finalTypes
+          }
+        }
+        
+        return(finalTypesDefault)
+        
+      })
   
   output$type <- renderUI({
         
         selectInput(inputId = ns("type"), label = labelTypes,
-            choices = types(), 
-            selected = typesDefault(), multiple = multipleTypes)
+            choices = finalTypes(), 
+            selected = finalTypesDefault(), multiple = multipleTypes)
         
       })
+  
+  output$dataSource <- renderUI({
+        
+            selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
+            
+        
+      })
+  
+  output$dataSourceWarning <- renderUI({
+        
+        req(input$dataSource)
+        
+        if (input$dataSource %in% c("both", "meldingsformulier") &
+            sourceVariable == "aantal_embryos_bron")
+          tags$div(style = "margin-bottom:10px;",
+              helpText("Observaties vóór 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
+          )
+        
+        
+      })
+  
+
   
 }
 
@@ -311,10 +426,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
         return(subData)
         
       })
-  
+ 
   
   argList <- reactive({
-        
+               
         req(nrow(subData()) > 0)
         
         argList <- c(
@@ -340,8 +455,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
-            if(!is.null(input$sourceIndicator))
-              list(sourceIndicator = input$sourceIndicator),
+            if(!is.null(input$dataSource))
+              list(sourceIndicator = input$dataSource),
+            if(!is.null(input$dataSource_geslacht))
+              list(sourceIndicator_geslacht = input$dataSource_geslacht),
             if (!is.null(locaties))
               list(locaties = locaties()),
             if (!is.null(timeRange))
@@ -411,8 +528,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
             need(resFct, "Niet beschikbaar"),
             need(
                 if(is.data.frame(resFct))	resFct	
-                else if (is.data.frame(resFct$data)) resFct$data
-                else	resFct$plot,
+                    else if (is.data.frame(resFct$data)) resFct$data
+                    else	resFct$plot,
                 "Niet beschikbaar"
             )
         )
@@ -431,8 +548,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     output$table <- DT::renderDataTable({
           
           DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
-              selection = "single",
-              options = list(dom = 't', pageLength = -1)) %>%
+                  selection = "single",
+                  options = list(dom = 't', pageLength = -1)) %>%
               formatRound(colnames(resultFct()$data), digits = 0, mark = "")
           
         })
@@ -444,7 +561,38 @@ plotModuleServer <- function(input, output, session, plotFunction,
         }, digits = 0)
   }
   
-  
+  # percentage of data used after filtering
+  output$filters <- renderUI({
+        
+        req(input$time)
+        req(input$region)
+        
+        allData <- data()
+        
+        # subsetting data on time 
+        if(length(input$time) == 2) {
+          
+          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
+        
+        } else {
+          
+          subsetData <- allData[allData$afshotjaar == input$time, ]  
+          
+        }
+        
+        # subsetting data on region
+        if(input$regionLevel == "provinces") {
+          
+          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
+          
+        }
+        
+        noTotal <- nrow(subsetData)
+        noSubset <- nrow(resultFct()$data)
+        percData <- round((noSubset / noTotal) * 100, 2)
+        
+        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
+      })
 }
 
 

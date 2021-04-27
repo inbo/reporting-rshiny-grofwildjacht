@@ -77,15 +77,17 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 #' wildschade and descriptives in data.frame
 #' @inheritParams mapFlanders 
 #' @param variable character, indicates the variable of interest to color points by. 
-#' Should be one of \code{c("season", "schadeCode")}
+#' Should be one of \code{c("season", "schadeCode", "afschotjaar")}
 #' @return leaflet map
 #' @author mvarewyck
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom INBOtheme inbo.2015.colours
 #' @export
 mapSchade <- function(
         schadeData, 
         regionLevel, 
-        variable = c("season", "schadeCode"),
+        variable = c("season", "schadeCode", "afschotjaar"),
         allSpatialData,
         addGlobe = FALSE,
         legend = "topright"
@@ -97,9 +99,17 @@ mapSchade <- function(
     
   
     # Color palette
-    palette <- colorFactor(inbo.2015.colours(n = length(levels(schadeData$variable))),
-#            c("winter", "lente", "zomer", "herfst"),
-            levels(schadeData$variable))
+    nColors <- length(levels(schadeData$variable))
+    colors <- if (nColors < 10) {
+        inbo.2015.colours(n = nColors) 
+      } else {
+        paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
+        unlist(sapply(paletteNames, function(x)
+              suppressWarnings(brewer.pal(n = 12, name = x))))[1:nColors]
+      }
+
+    palette <- colorFactor(colors, levels(schadeData$variable))
+          
     
     myMap <- leaflet(schadeData) %>%
             
@@ -113,9 +123,7 @@ mapSchade <- function(
                             "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
                             "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
                             "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
-                            if (variable == "schadeCode") {
-                              paste0("<li><strong> Seizoen </strong>: ", schadeData$season)
-                            },
+                            "<li><strong> Seizoen </strong>: ", schadeData$season,
                             "</ul>"
                     )
             )

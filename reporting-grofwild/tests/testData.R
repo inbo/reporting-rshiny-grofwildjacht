@@ -49,7 +49,7 @@ lapply(wildsoorten, function(iSoort) {
 			
 			hist(myData$afschotjaar, main = paste(iSoort, "- afschotjaar"))
 			barplot(table(myData$provincie), main = paste(iSoort, "- provincie"))
-			barplot(table(myData$geslacht.MF), main = paste(iSoort, "- geslacht"))
+			barplot(table(myData$geslacht_comp), main = paste(iSoort, "- geslacht"))
 			
 			hist(myData$ontweid_gewicht, main = paste(iSoort, "- ontweid_gewicht"))
 #			if (iSoort == "Wild zwijn")
@@ -67,7 +67,7 @@ lapply(wildsoorten, function(iSoort) {
 				
 			}
 			
-			boxplot(leeftijd_maanden ~ leeftijd_comp, data = myData, main = paste(iSoort, "- leeftijd (maanden)"))
+			boxplot(as.numeric(leeftijd_maanden) ~ leeftijd_comp, data = myData, main = paste(iSoort, "- leeftijd (maanden)"))
 			
 			xtabs(~ Leeftijdscategorie_onderkaak + leeftijdscategorie_MF + leeftijd_comp, data = myData)
 			

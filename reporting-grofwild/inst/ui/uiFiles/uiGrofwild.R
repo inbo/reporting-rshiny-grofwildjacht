@@ -8,9 +8,10 @@ tagList(
         
         tags$div(class = "container",
                 
+                tags$br(),
+                            
                 tags$div(align = "center",
-                        h1("Welkom op de informatiepagina rond grofwildjacht"),
-                        h1("van het Instituut voor Natuur- en Bosonderzoek (INBO)")
+                        h1("Welkom op de informatiepagina rond grofwildjacht")
                 ),
                 
                 tags$p(class = "lead", "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen."),
@@ -334,12 +335,10 @@ tagList(
                                             fixedRow(
                                                     
                                                     column(4,
-                                                            optionsModuleUI(id = "wild_plot6", showTime = TRUE, showType = TRUE,
-                                                                    regionLevels = 1:2, exportData = TRUE),
+                                                            optionsModuleUI(id = "wild_plot6", showTime = TRUE, showType = TRUE, showDataSource = TRUE,
+                                                                    regionLevels = 1:2, exportData = TRUE, filter = TRUE, showDataSourceGeslacht = TRUE),
                                                             tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). 
-																																		Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt."),
-                                                            conditionalPanel("input.wild_species == 'Ree'",
-                                                                    "Voor ree: geen data beschikbaar voor 2014.")
+																																		Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                                                     ),
                                                     column(8, plotModuleUI(id = "wild_plot6"))
                                             
@@ -386,9 +385,7 @@ tagList(
                                                             optionsModuleUI(id = "wild_plot8", showTime = TRUE, showType = TRUE,
                                                                     regionLevels = 1:2, exportData = TRUE,
                                                                     showDataSource = TRUE),
-                                                            tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). 
-																																		Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt."),
-                                                            tags$p(tags$i("Opmerking: Van de historische data (2002 - 2013) kan de bron momenteel niet achterhaald worden."))
+                                                            tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                                                     ),
                                                     column(8, plotModuleUI(id = "wild_plot8"))
                                             ),
@@ -410,26 +407,28 @@ tagList(
                                             
                                             ),
                                             tags$hr()
+                                    ),
+                            
+                                    actionLink(inputId = "wild_linkPlot10",
+                                            label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
+                                    ),
+                                    conditionalPanel("input.wild_linkPlot10 % 2 == 1",
+                                            fixedRow(
+                                                    
+                                                    column(4,
+                                                            optionsModuleUI(id = "wild_plot10", showTime = TRUE, showType = TRUE,
+                                                                    regionLevels = 1:2, exportData = TRUE,
+                                                                    showDataSource = TRUE),
+                                                            tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.",
+                                                                    "Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
+                                                            tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
+                                                    column(8, plotModuleUI(id = "wild_plot10"))
+                                            
+                                            )
                                     )
                             
-#                          actionLink(inputId = "wild_linkPlot10",
-#                              label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")
-#                          ),
-#                          conditionalPanel("input.wild_linkPlot10 % 2 == 1",
-#                              fixedRow(
-#
-#                                  column(4,
-#                                      optionsModuleUI(id = "wild_plot10", showTime = TRUE, showType = TRUE,
-#                                          regionLevels = 1:2, exportData = TRUE),
-#                                      tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Voor 2014 kon nul embryo's niet ingevuld worden, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
-#                                      tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
-#                                  column(8, plotModuleUI(id = "wild_plot10"))
-#
-#                              )
-#                          )
-                            
                             )
-                            
+                        
                         })
         
         

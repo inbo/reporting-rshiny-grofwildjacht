@@ -98,7 +98,8 @@ for (iSpecies in species) {
       schadeData = schadeDataSub,
       timeRange = range(schadeDataSub$afschotjaar))
   
-  for (var in c("season", "schadeCode")) {
+  for (var in c("season", "schadeCode", "afschotjaar")) {
+    
     myPlot <- mapSchade(
             schadeData = schadeDataSub,
             regionLevel = "provinces",

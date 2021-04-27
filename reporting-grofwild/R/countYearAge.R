@@ -24,7 +24,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo.2015.colours inbo.lichtgrijs
+#' @importFrom INBOtheme inbo.2015.colours inbo_lichtgrijs
 #' @export
 countYearAge <- function(data, jaartallen = NULL, regio = "",
 		summarizeBy = c("count", "percent"),
@@ -40,7 +40,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("afschotjaar", "Leeftijdscategorie_onderkaak", "geslacht.MF")]
+			c("afschotjaar", "Leeftijdscategorie_onderkaak", "geslacht_comp")]
 	names(plotData) <- c("jaar", "kaak", "geslacht")
 	
 	# Percentage collected
@@ -118,7 +118,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	
 	
-	colors <- c(inbo.2015.colours(3), inbo.lichtgrijs)
+	colors <- c(inbo.2015.colours(3), inbo_lichtgrijs)
 	names(colors) <- newLevelsKaak
 	
 	title <- paste0(wildNaam, " ",

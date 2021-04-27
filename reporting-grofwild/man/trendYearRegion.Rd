@@ -7,6 +7,7 @@
 trendYearRegion(
   data,
   locaties = NULL,
+  combinatie = NULL,
   timeRange = NULL,
   unit = c("absolute", "relative"),
   schadeTitles = FALSE,
@@ -18,6 +19,8 @@ trendYearRegion(
 \item{data}{data.frame with raw data for plotting}
 
 \item{locaties}{character vector, regions that were selected to plot}
+
+\item{combinatie}{logical, summarised view of selected regions}
 
 \item{timeRange}{numeric vector, time range selected for plot}
 

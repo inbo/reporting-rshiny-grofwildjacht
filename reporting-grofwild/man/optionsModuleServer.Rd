@@ -18,7 +18,8 @@ optionsModuleServer(
   definedYear = defaultYear,
   sources = NULL,
   sourceLabel = "Data bron",
-  sourceVariable = NULL
+  sourceVariable = NULL,
+  sourceVariable_geslacht = NULL
 )
 }
 \arguments{
@@ -49,10 +50,12 @@ same as \code{types} by defualt}
 
 \item{sources}{defines the data sources that can be selected}
 
-\item{sourceLabel}{character, the displayed label for the selecting source field, 
+\item{sourceLabel}{character, the displayed label for the selecting source field for leeftijd, 
 'Data bron' by default}
 
 \item{sourceVariable}{character, the variable used internally to filter for source}
+
+\item{sourceVariable_geslacht}{character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')}
 }
 \value{
 no return value; some output objects are created

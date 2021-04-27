@@ -26,6 +26,8 @@ in the plot; if NULL no selection on year(s) is made}
 \item{regio}{character vector, names of the selected regions in \code{data}
 to be shown in the plot title}
 
+\item{sourceIndicator}{character, which source to be used; default value is "inbo"}
+
 \item{width}{plot width (optional)}
 
 \item{height}{plot height (optional)}

@@ -289,7 +289,7 @@ optionsModuleServer <- function(input, output, session,
         if (input$dataSource %in% c("both", "meldingsformulier") &
             sourceVariable == "aantal_embryos_bron")
           tags$div(style = "margin-bottom:10px;",
-              helpText("Observaties vóór 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
+              helpText("Observaties vÃ³Ã³r 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
           )
         
         
@@ -381,7 +381,7 @@ datatableModuleUI <- function(id) {
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
-#' @importFrom DT datatable formatRound renderDataTable
+#' @importFrom DT datatable formatRound renderDataTable formatStyle styleEqual
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
@@ -610,7 +610,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
     output$table <- DT::renderDataTable({
           
           DT::datatable(resultFct(), rownames = FALSE,
-              options = list(dom = 't', pageLength = -1)) 
+                  options = list(dom = 't', pageLength = -1)) %>%
+              formatStyle(
+                  colnames(resultFct())[1],
+                  target = "row",
+                  fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
+              )
           
         })
   }

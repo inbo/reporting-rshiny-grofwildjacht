@@ -189,9 +189,12 @@ tagList(
         uiOutput("schade_titlePerceel"),        
         withSpinner(leafletOutput("schade_perceelPlot")),
         tags$br(),
-        downloadButton("schade_downloadPerceelMap", "Download figuur"),
+        actionButton("schade_genereerMap", "Download figuur", icon = icon("download")),
+        singleton(
+            tags$head(tags$script(src = "triggerDownload.js"))
+        ),
         downloadButton("schade_downloadPerceelmapData", "Download data"),
-        
+        downloadLink("schade_downloadPerceelMap", " "),
         tags$hr(),
         
         h2("Extra Figuren en Tabellen"),

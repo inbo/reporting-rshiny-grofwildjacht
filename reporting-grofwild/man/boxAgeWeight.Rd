@@ -10,6 +10,7 @@ boxAgeWeight(
   jaartallen = NULL,
   regio = "",
   sourceIndicator = c("both", "inbo"),
+  sourceIndicator_geslacht = c("both", "inbo"),
   width = NULL,
   height = NULL
 )
@@ -27,6 +28,10 @@ in the plot; if NULL no selection on year(s) is made}
 to be shown in the plot title}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+i.e. no filtering. Defaults to \code{"both"}}
+
+\item{sourceIndicator_geslacht}{character, source used to filter \code{data} ('geslacht_comp_bron' column)
 should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
 i.e. no filtering. Defaults to \code{"both"}}
 

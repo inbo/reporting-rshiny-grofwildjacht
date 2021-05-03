@@ -530,7 +530,8 @@ callModule(module = plotModuleServer, id = "schade_timePlot",
         locaties = reactive(input$schade_region),
         timeRange = reactive(input$schade_time),
         unit = reactive(input$schade_unit),
-        schadeTitles = TRUE)
+        schadeTitles = TRUE,
+        combinatie = reactive(FALSE))
 
 
 
@@ -629,7 +630,25 @@ results$schade_perceelMap <- reactive({
       )
       
       
-    }) 
+    })
+
+# Generating image outside of downloadHandler
+map <- reactiveVal()
+observeEvent(input$schade_genereerMap, {
+      map(NULL)
+      idNote <- showNotification("Aanvraag wordt verwerkt... Even geduld.", type = "message", duration = NULL)
+      
+      file <- tempfile(fileext = ".png")
+      map(file)
+      
+      mapview::mapshot(x = results$schade_perceelMap(), file = file,
+          vwidth = 1000, vheight = 500, cliprect = "viewport")
+      
+      removeNotification(id = idNote)
+      
+      session$sendCustomMessage(type = "imageReady", 
+          message = list(id = "schade_downloadPerceelMap"))
+    })
     
 # Download the perceeplot map
 output$schade_downloadPerceelMap <- downloadHandler(
@@ -642,9 +661,7 @@ output$schade_downloadPerceelMap <- downloadHandler(
           fileExt = "png"),
     content = function(file) {
       
-      mapview::mapshot(x = results$schade_perceelMap(), file = file,
-          vwidth = 1000, vheight = 500, cliprect = "viewport")
-      
+      file.copy(map(), file, overwrite = TRUE)
     }
 )
 

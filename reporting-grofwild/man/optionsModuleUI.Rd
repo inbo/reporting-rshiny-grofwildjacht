@@ -14,7 +14,9 @@ optionsModuleUI(
   summarizeBy = NULL,
   exportData = FALSE,
   showDataSource = FALSE,
-  doWellPanel = TRUE
+  doWellPanel = TRUE,
+  filter = FALSE,
+  showDataSourceGeslacht = FALSE
 )
 }
 \arguments{
@@ -41,6 +43,8 @@ used for plotted bioindicator}
 
 \item{doWellPanel}{boolean, whether to display the options within a 
 \code{shiny::wellPanel()}}
+
+\item{filter}{boolean, if TRUE percentage of data used after applying filters is shown}
 }
 \value{
 ui object (tagList)

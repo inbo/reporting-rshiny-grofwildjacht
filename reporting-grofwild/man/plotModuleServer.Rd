@@ -23,6 +23,7 @@ plotModuleServer(
   schadeChoicesVrtg = NULL,
   schadeChoicesGewas = NULL,
   variable = NULL,
+  combinatie = NULL,
   schadeTitles = FALSE
 )
 }
@@ -67,6 +68,8 @@ defined externally for large map}
 \item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
 
 \item{variable}{character, defines which variable is of interest for the table}
+
+\item{combinatie}{logical, summarised view of selected regions}
 
 \item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
 }

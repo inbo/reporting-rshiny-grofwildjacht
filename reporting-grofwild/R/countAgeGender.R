@@ -24,7 +24,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo.2015.colours inbo_lichtgrijs
+#' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @author mvarewyck
 #' @export
 countAgeGender <- function(data, jaartallen = NULL, 
@@ -80,7 +80,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 	totalCount <- count(df = summaryData, vars = "leeftijd", wt_var = "freq")$freq
 	
-	colors <- inbo.2015.colours(n = nlevels(as.factor(summaryData$geslacht)))
+	colors <- inbo_palette(n = nlevels(as.factor(summaryData$geslacht)))
 	title <- paste(wildNaam, paste0("(", 
 					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 							jaartallen), ")"))

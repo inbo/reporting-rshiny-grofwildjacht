@@ -75,7 +75,7 @@ boxAgeGenderLowerJaw <- function(data,
 	
 	
 	# For optimal displaying in the plot
-	colors <- inbo.2015.colours(n = 2)
+	colors <- inbo_palette(n = 2)
 	names(colors) <- unique(plotData$geslacht)
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))

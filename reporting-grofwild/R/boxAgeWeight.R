@@ -32,7 +32,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo.2015.colours inbo_lichtgrijs
+#' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @export
 boxAgeWeight <- function(data,
 		type, jaartallen = NULL, regio = "", sourceIndicator = c("both", "inbo"),
@@ -131,7 +131,7 @@ boxAgeWeight <- function(data,
 		stop("Geen data beschikbaar")
 	
 	# For optimal displaying in the plot
-	colors <- inbo.2015.colours(n = 2)
+	colors <- inbo_palette(n = 2)
 	names(colors) <- unique(plotData$geslacht)
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))

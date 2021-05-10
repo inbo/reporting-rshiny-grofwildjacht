@@ -13,7 +13,7 @@
 #' @inheritParams countYearAge
 #' @import plotly
 #' @import mgcv
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom INBOtheme inbo_palette
 #' @importFrom stats na.omit predict qnorm
 #' @return list with:
 #' \itemize{
@@ -165,7 +165,7 @@ plotBioindicator <- function(data,
 	
 	if (bioindicator == "aantal_embryos") {
 		
-		palette <- inbo.2015.colours(n = nlevels(inputPlot$variable))
+		palette <- inbo_palette(n = nlevels(inputPlot$variable))
 		
 		# base plot
 #		pl <- plot_ly(inputPlot, 

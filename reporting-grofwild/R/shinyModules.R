@@ -312,8 +312,10 @@ plotModuleUI <- function(id, height = "600px") {
   
   ns <- NS(id)
   
-  withSpinner(plotlyOutput(ns("plot"), height = height))
-  
+  tagList(
+    withSpinner(plotlyOutput(ns("plot"), height = height)),
+    span(textOutput(outputId = ns("warning")), style="color:red")
+  )
 }
 
 
@@ -520,7 +522,11 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
-  
+  output$warning <- renderText({
+        
+        resultFct()$warning
+        
+      })
   
   
   # percentage of data used after filtering

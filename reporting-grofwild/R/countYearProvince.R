@@ -28,7 +28,7 @@
 #' }
 #' @import plotly
 #' @importFrom reshape2 melt
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom INBOtheme inbo_palette
 #' @importFrom stringr str_sort
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
@@ -88,7 +88,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
 	
-	colors <- rev(inbo.2015.colours(n = nlevels(summaryData$locatie)))
+	colors <- rev(inbo_palette(n = nlevels(summaryData$locatie)))
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)

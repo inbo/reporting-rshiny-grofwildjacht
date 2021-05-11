@@ -605,11 +605,16 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   if (datatable == TRUE) {
     output$table <- DT::renderDataTable({
-          
+         
           DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
                   selection = "single",
                   options = list(dom = 't', pageLength = -1)) %>%
-              formatRound(colnames(resultFct()$data), digits = 0, mark = "")
+              formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
+              formatStyle(
+                  colnames(resultFct()$data)[1],
+                  target = "row",
+                  fontWeight = styleEqual(tail(resultFct()$data[, 1], n = 1), "bold")
+              )
           
         })
   } else {

@@ -24,7 +24,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom INBOtheme inbo_palette
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
@@ -94,7 +94,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	
 	totalCount <- count(df = summaryData, vars = "kaak", wt_var = "freq")$freq
 	
-	colors <- rev(inbo.2015.colours(n = nlevels(summaryData$jager)))
+	colors <- rev(inbo_palette(n = nlevels(summaryData$jager)))
 	title <- paste(wildNaam, paste0("(", 
 					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 							jaartallen), ")"))

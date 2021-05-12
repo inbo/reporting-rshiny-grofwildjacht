@@ -82,7 +82,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 #' @author mvarewyck
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles
 #' @importFrom RColorBrewer brewer.pal
-#' @importFrom INBOtheme inbo.2015.colours
+#' @importFrom INBOtheme inbo_palette
 #' @export
 mapSchade <- function(
         schadeData, 
@@ -101,7 +101,7 @@ mapSchade <- function(
     # Color palette
     nColors <- length(levels(schadeData$variable))
     colors <- if (nColors < 10) {
-        inbo.2015.colours(n = nColors) 
+        inbo_palette(n = nColors) 
       } else {
         paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
         unlist(sapply(paletteNames, function(x)

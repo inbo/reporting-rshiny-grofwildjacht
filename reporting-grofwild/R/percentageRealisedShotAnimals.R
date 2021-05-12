@@ -110,7 +110,7 @@ percentageRealisedShotAnimals <- function(data, assignedData,
 	
 	
 	
-	colors <- c(inbo.2015.colours(1), inbo_lichtgrijs)
+	colors <- c(inbo_palette(1), inbo_lichtgrijs)
 	names(colors) <- levels(allData$class)
 	
 	title <- paste0(wildNaam, " (", paste(type, collapse = ", "), ") ",

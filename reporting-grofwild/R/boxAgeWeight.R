@@ -145,7 +145,9 @@ boxAgeWeight <- function(data,
 			if (!all(regio == "")) 
 				paste0(" (", toString(regio), ")"))
 	
-	
+  # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
+	plotData$leeftijd <- factor(plotData$leeftijd, levels = type)
+  
 	# Create plot
 	# Prevent Warning: 'layout' objects don't have these attributes: 'boxmode'
 	pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~gewicht, 

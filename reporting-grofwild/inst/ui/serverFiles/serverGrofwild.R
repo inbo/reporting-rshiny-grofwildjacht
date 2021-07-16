@@ -319,7 +319,13 @@ callModule(module = plotModuleServer, id = "wild_plot10",
     plotFunction = "countEmbryos",
     data = results$wild_ecoData)
 
-
+# Plot 11: Afschot per jachtmethode
+callModule(module = optionsModuleServer, id = "wild_plot11", 
+    data = results$wild_ecoData,
+    timeRange = reactive(c(2014, results$wild_timeRange()[2])))
+callModule(module = plotModuleServer, id = "wild_plot11",
+    plotFunction = "countHuntingMethod", 
+    data = results$wild_ecoData)
 
 
 

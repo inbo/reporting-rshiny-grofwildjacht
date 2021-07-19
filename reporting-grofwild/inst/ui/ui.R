@@ -36,7 +36,7 @@ shinyUI(
                                                                         "header.append('<div style=\"float:right;\"><span class = \"version\">", 
                                                                         paste0("v", packageVersion("reportingGrofwild")),"</span></div>')"))
                                                 )),
-                                windowTitle = paste0("INBO v", packageVersion("reportingGrofwild")),
+                                windowTitle = "Wildbeheer statistiek",
                                 fluid = FALSE, 
                                 id = "tabs",
                                 position = "fixed-top",

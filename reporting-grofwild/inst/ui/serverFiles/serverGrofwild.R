@@ -327,6 +327,15 @@ callModule(module = plotModuleServer, id = "wild_plot11",
     plotFunction = "countHuntingMethod", 
     data = results$wild_ecoData)
 
+# Plot 12: Verdeling afschot over de jaren
+callModule(module = optionsModuleServer, id = "wild_plot12", 
+    data = results$wild_ecoData,
+    timeRange = results$wild_timeRange,
+    intervals = c("Per maand", "Per seizoen", "Per twee weken"))
+callModule(module = plotModuleServer, id = "wild_plot12",
+    plotFunction = "countYearShotAnimals", 
+    data = results$wild_ecoData)
+
 
 
 ### The MAP

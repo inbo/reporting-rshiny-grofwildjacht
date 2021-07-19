@@ -21,13 +21,14 @@
 #' @param doWellPanel boolean, whether to display the options within a 
 #' \code{shiny::wellPanel()}
 #' @param filter boolean, if TRUE percentage of data used after applying filters is shown
+#' @param showInterval boolean, if TRUE gives user option to select interval
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, showDataSource = FALSE,
-    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE) {
+    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE, showInterval = FALSE) {
   
   
   ns <- NS(id)
@@ -65,6 +66,8 @@ optionsModuleUI <- function(id,
         selectInput(inputId = ns("dataSource_geslacht"), label = "Data bron geslacht", choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both")),
       if (showDataSource)
         uiOutput(ns("dataSourceWarning")),
+      if(showInterval)
+        uiOutput(ns("interval")),
       fluidRow(
           column(6,
               if(exportData)
@@ -106,6 +109,7 @@ optionsModuleUI <- function(id,
 #' 'Data bron' by default
 #' @param sourceVariable character, the variable used internally to filter for source
 #' @param sourceVariable_geslacht character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')
+#' @param intervals defines the intervals that can be selected
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
@@ -113,7 +117,7 @@ optionsModuleServer <- function(input, output, session,
     timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE, definedYear = defaultYear,
     sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL, 
-    sourceVariable_geslacht = NULL) {
+    sourceVariable_geslacht = NULL, intervals = NULL) {
   
   ns <- session$ns
   
@@ -292,6 +296,12 @@ optionsModuleServer <- function(input, output, session,
               helpText("Observaties vÃ³Ã³r 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
           )
         
+        
+      })
+  
+  output$interval <- renderUI({
+        
+        selectInput(inputId = ns("interval"), label = "Interval", choices = intervals)
         
       })
   
@@ -492,7 +502,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if (plotFunction == "trendYearRegion") {
               if (!is.null(combinatie()))
                 list(combinatie = combinatie())
-            }
+            },
+            if (!is.null(input$interval))
+              list(interval = input$interval)
         
         )
         

@@ -12,6 +12,9 @@
 #' @export 
 countYearShotAnimals <- function(data, regio, locaties, jaartallen, width = NULL, height = NULL, interval = NULL) {
   
+  ## plotly gives a warning: Warning: 'layout' objects don't have these attributes: 'bargroupgap'
+  ## This is save to ignore: https://github.com/ropensci/plotly/issues/994
+  
   pl <- NULL
   plotData <- data
   
@@ -126,8 +129,8 @@ countYearShotAnimals <- function(data, regio, locaties, jaartallen, width = NULL
             xaxis = list(title = "Jaar"), 
             yaxis = list(title = "Aantal"),
             margin = list(b = 80, t = 100), 
-            barmode = "group", bargap = 0.15, bargroupgap = 0.1,
-            showlegend = FALSE)  
+            barmode = "group", bargap = 0.15,  bargroupgap = 0.1,
+            showlegend = FALSE)
     
   } else if(interval == "Per twee weken") {
     
@@ -171,7 +174,7 @@ countYearShotAnimals <- function(data, regio, locaties, jaartallen, width = NULL
             yaxis = list(title = "Aantal"),
             margin = list(b = 80, t = 100), 
             barmode = "group", bargap = 0.15, bargroupgap = 0.1,
-            showlegend = FALSE)  
+           showlegend = FALSE)  
   }
   
   

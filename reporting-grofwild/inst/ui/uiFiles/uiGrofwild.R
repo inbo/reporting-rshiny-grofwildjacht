@@ -84,7 +84,8 @@ tagList(
                                                         "Faunabeheerzones" = "faunabeheerzones",
                                                         "Gemeente" = "communes",
                                                         "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
-                                                        "5x5 UTM" = "utm5"
+                                                        "5x5 UTM" = "utm5",
+                                                        "wildbeheereenheid" = "WBE_binnengrenzen_2020"
                                                 ),
                                                 selected = "communes")),
                                 column(8, uiOutput("map_region"))

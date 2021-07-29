@@ -29,7 +29,7 @@ results$wild_geoData <- reactive({
 results$wild_spatialData <- reactive({
             
             req(spatialData)
-            
+         
             if (req(input$wild_species) == "Wild zwijn" & req(input$map_regionLevel) == "provinces") {
                 
                 spatialData$provincesVoeren

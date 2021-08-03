@@ -289,23 +289,23 @@ tagList(
                           ),
                           column(8, plotModuleUI(id = "wild_plot3"))
                       ),
-                      actionLink(inputId = "wild_linkPlot12",
-                          label = h3("FIGUUR: Verdeling afschot over de jaren")),
-                      conditionalPanel("input.wild_linkPlot12 % 2 == 1",
-                          fixedRow(
-                              
-                              column(4,
-                                  optionsModuleUI(id = "wild_plot12",
-                                      showTime = TRUE,
-                                      regionLevels = 1:2, exportData = TRUE, showInterval = TRUE),
-                                  tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
-                              ),
-                              column(8, plotModuleUI(id = "wild_plot12"))
-                          )
+                      tags$hr(),
+                  ),
+                  actionLink(inputId = "wild_linkPlot12",
+                      label = h3("FIGUUR: Verdeling afschot over de jaren")),
+                  conditionalPanel("input.wild_linkPlot12 % 2 == 1",
+                      fixedRow(
+                          
+                          column(4,
+                              optionsModuleUI(id = "wild_plot12",
+                                  showTime = TRUE,
+                                  regionLevels = 1:2, exportData = TRUE, showInterval = TRUE),
+                              tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
+                          ),
+                          column(8, plotModuleUI(id = "wild_plot12"))
                       ),
                       tags$hr(),
                   ),
-                  
                   
                   actionLink(inputId = "wild_linkPlot4",
                       label = h3("FIGUUR: Percentage jaarlijks afschot")),

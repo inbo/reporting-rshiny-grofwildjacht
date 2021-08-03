@@ -331,7 +331,9 @@ callModule(module = plotModuleServer, id = "wild_plot11",
 callModule(module = optionsModuleServer, id = "wild_plot12", 
     data = results$wild_ecoData,
     timeRange = results$wild_timeRange,
-    intervals = c("Per maand", "Per seizoen", "Per twee weken"))
+    intervals = c("Per maand", "Per seizoen", "Per twee weken"),
+    types = results$types,
+    multipleTypes = FALSE)
 callModule(module = plotModuleServer, id = "wild_plot12",
     plotFunction = "countYearShotAnimals", 
     data = results$wild_ecoData)

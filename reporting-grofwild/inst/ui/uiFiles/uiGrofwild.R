@@ -299,7 +299,10 @@ tagList(
                           column(4,
                               optionsModuleUI(id = "wild_plot12",
                                   showTime = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE, showInterval = TRUE),
+                                  regionLevels = 1:2, 
+                                  exportData = TRUE,
+                                  showType = TRUE,
+                                  showInterval = TRUE),
                               tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
                           ),
                           column(8, plotModuleUI(id = "wild_plot12"))

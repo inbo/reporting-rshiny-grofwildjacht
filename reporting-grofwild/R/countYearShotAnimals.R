@@ -6,11 +6,12 @@
 #' Interactive barplot to show the distribution of the hunted animals in a certain interval
 #' @inheritParams countHuntingMethod
 #' @param interval character, data shown in intervals monthly, biweekly..
+#' @param type character, used to filter the data
 #' 
 #' @importFrom INBOtheme inbo_palette
 #' @author dbemelmans
 #' @export 
-countYearShotAnimals <- function(data, regio, locaties, jaartallen, width = NULL, height = NULL, interval = NULL) {
+countYearShotAnimals <- function(data, regio, locaties, jaartallen, width = NULL, height = NULL, interval = NULL, type = NULL) {
   
   ## plotly gives a warning: Warning: 'layout' objects don't have these attributes: 'bargroupgap'
   ## This is save to ignore: https://github.com/ropensci/plotly/issues/994
@@ -29,9 +30,25 @@ countYearShotAnimals <- function(data, regio, locaties, jaartallen, width = NULL
     plotData <- plotData[plotData$FaunabeheerZone %in% locaties, ]
   }
   # Select on years
-  plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "afschot_datum")]
+  plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
+      c("afschotjaar", "afschot_datum", 
+          "type_comp", "geslacht_comp", "wildsoort")]
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
   plotData <- plotData[!is.na(plotData$afschot_datum), ]
+  
+  # only retains animals of specified type
+  specifiedType <- !is.null(type) && type != "all"
+  if(specifiedType){
+    
+    plotData$type <- ifelse(plotData$wildsoort != "Ree",
+        "", ifelse(grepl("kits", plotData$type_comp), "kits",
+            ifelse(plotData$geslacht_comp == "Mannelijk", "bok", "geit")))
+    
+    plotData <- plotData[plotData$type %in% type, ]
+  }
+  
+  plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
+      c("afschotjaar", "afschot_datum")]
   
   # Summarize data per province and year
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 

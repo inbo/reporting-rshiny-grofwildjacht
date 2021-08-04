@@ -458,7 +458,7 @@ tagList(
                 fixedRow(
                     
                     column(4,
-                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
+                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, regionLevels = c(1:2,4), exportData = TRUE),
                         tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
                     ),
                     column(8, plotModuleUI(id = "wild_plot11"))

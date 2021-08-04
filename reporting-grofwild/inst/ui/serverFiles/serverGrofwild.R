@@ -321,11 +321,11 @@ callModule(module = plotModuleServer, id = "wild_plot10",
 
 # Plot 11: Afschot per jachtmethode
 callModule(module = optionsModuleServer, id = "wild_plot11", 
-    data = results$wild_ecoData,
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}),
     timeRange = reactive(c(2014, results$wild_timeRange()[2])))
 callModule(module = plotModuleServer, id = "wild_plot11",
     plotFunction = "countHuntingMethod", 
-    data = results$wild_ecoData)
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}))
 
 # Plot 12: Verdeling afschot over de jaren
 callModule(module = optionsModuleServer, id = "wild_plot12", 

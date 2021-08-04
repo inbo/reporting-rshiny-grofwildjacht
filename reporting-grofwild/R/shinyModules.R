@@ -57,7 +57,7 @@ optionsModuleUI <- function(id,
         fluidRow(
             column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                     choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                        "Fusiegemeenten" = "communes")[regionLevels])),
+                        "Fusiegemeenten" = "communes", "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
             column(8, uiOutput(ns("region")))
         ),
       if (showDataSource)
@@ -210,6 +210,11 @@ optionsModuleServer <- function(input, output, session,
                       levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
                           "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
           
+        } else if (input$regionLevel == "faunabeheerzones") {
+          
+          choices <- levels(droplevels(factor(unique(data()$FaunabeheerZone), 
+                      levels = c(1:10))))
+        
         } else {
           
           choices <- unique(data()$gemeente_afschot_locatie)
@@ -408,12 +413,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
         subData <- data()
         
         if (!is.null(input$regionLevel)) {
-          
+         
           validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
-          if (input$regionLevel == "provinces")
+          # filtering regions
+          if (input$regionLevel == "provinces") {
             subData <- subset(subData, provincie %in% input$region)
-          
+          } else if (input$regionLevel == "faunabeheerzones") {   
+            subData <- subset(subData, FaunabeheerZone %in% as.numeric(input$region))
+          }
         }
         
         

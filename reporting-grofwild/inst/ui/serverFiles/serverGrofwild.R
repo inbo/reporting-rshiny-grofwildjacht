@@ -329,14 +329,14 @@ callModule(module = plotModuleServer, id = "wild_plot11",
 
 # Plot 12: Verdeling afschot over de jaren
 callModule(module = optionsModuleServer, id = "wild_plot12", 
-    data = results$wild_ecoData,
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}),
     timeRange = results$wild_timeRange,
     intervals = c("Per maand", "Per seizoen", "Per twee weken"),
     types = results$types,
     multipleTypes = FALSE)
 callModule(module = plotModuleServer, id = "wild_plot12",
     plotFunction = "countYearShotAnimals", 
-    data = results$wild_ecoData)
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}))
 
 
 

@@ -299,7 +299,7 @@ tagList(
                           column(4,
                               optionsModuleUI(id = "wild_plot12",
                                   showTime = TRUE,
-                                  regionLevels = 1:2, 
+                                  regionLevels = c(1:2,4), 
                                   exportData = TRUE,
                                   showType = TRUE,
                                   showInterval = TRUE),

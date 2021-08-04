@@ -28,8 +28,9 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
       c("afschotjaar", "afschot_datum", 
           "type_comp", "geslacht_comp", "wildsoort")]
+  
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
-  plotData <- plotData[!is.na(plotData$afschot_datum), ]
+  
   
   # only retains animals of specified type
   specifiedType <- !is.null(type) && type != "all"
@@ -42,12 +43,17 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
     plotData <- plotData[plotData$type %in% type, ]
   }
   
-  plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
+  plotData <- plotData[, 
       c("afschotjaar", "afschot_datum")]
+  
+  noRecords <- plotData
+  plotData <- plotData[!is.na(plotData$afschot_datum), ]
+  
   
   # Summarize data per province and year
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
               min(jaartallen):max(jaartallen)))
+  
   
   if(interval == "Per maand") {
     
@@ -84,6 +90,7 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
         ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
             jaartallen))
     
+    
     # Create plot
     pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~maand, 
             colors = c(rep(colors, 12)),
@@ -91,9 +98,12 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
         layout(title = title,
             xaxis = list(title = "Jaar"), 
             yaxis = list(title = "Aantal"),
-            margin = list(b = 80, t = 100), 
+            margin = list(b = 120, t = 100), 
             barmode = "group", bargap = 0.15, bargroupgap = 0.1,
-            showlegend = FALSE)  
+            showlegend = FALSE)%>% add_annotations(text = paste0(round(nrow(plotData)/nrow(noRecords), 2)*100, 
+                "% met gekende afschotdatum (", nrow(plotData), "/", nrow(noRecords), ")"),
+            xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+            y = -0.2, yanchor = "bottom", showarrow = FALSE)
     
     
   } else if (interval == "Per seizoen") {
@@ -140,10 +150,12 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
         layout(title = title,
             xaxis = list(title = "Jaar"), 
             yaxis = list(title = "Aantal"),
-            margin = list(b = 80, t = 100), 
+            margin = list(b = 120, t = 100), 
             barmode = "group", bargap = 0.15,  bargroupgap = 0.1,
-            showlegend = FALSE)
-    
+            showlegend = FALSE) %>% add_annotations(text = paste0(round(nrow(plotData)/nrow(noRecords), 2)*100, 
+                "% met gekende afschotdatum (", nrow(plotData), "/", nrow(noRecords), ")"),
+            xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+            y = -0.2, yanchor = "bottom", showarrow = FALSE)
   } else if(interval == "Per twee weken") {
     
     plotData$maand <- sapply(plotData$afschot_datum, function(datum) {
@@ -184,14 +196,18 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
         layout(title = title,
             xaxis = list(title = "Jaar"), 
             yaxis = list(title = "Aantal"),
-            margin = list(b = 80, t = 100), 
+            margin = list(b = 120, t = 100), 
             barmode = "group", bargap = 0.15, bargroupgap = 0.1,
-           showlegend = FALSE)  
+           showlegend = FALSE) %>% add_annotations(text = paste0(round(nrow(plotData)/nrow(noRecords), 2)*100, 
+               "% met gekende afschotdatum (", nrow(plotData), "/", nrow(noRecords), ")"),
+           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+           y = -0.2, yanchor = "bottom", showarrow = FALSE)
+       
+          
   }
   
   
-  
-  
+ 
   
   
   # To prevent warnings in UI

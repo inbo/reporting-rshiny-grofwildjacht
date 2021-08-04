@@ -35,7 +35,8 @@ countHuntingMethod <- function(data, regio, locaties, jaartallen, width = NULL, 
   
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "jachtmethode_comp")]
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
-  plotData <- plotData[!is.na(plotData$jachtmethode_comp), ]
+  
+  plotData$jachtmethode_comp[is.na(plotData$jachtmethode_comp)] <- "onbekende jachtmethode"
   
   
   # Summarize data per province and year

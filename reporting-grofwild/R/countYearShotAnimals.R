@@ -176,13 +176,45 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
             base + 1
           }
           
-        }) 
+        })
     
-    plotData <- plotData[, c("afschotjaar", "tweewekelijks")]
-    summaryData <- melt(table(plotData), id.vars = c("afschotjaar", "tweewekelijks"))
-    summaryData$tweewekelijks <- as.factor(summaryData$tweewekelijks)
-    summaryData$tweewekelijks <- factor(summaryData$tweewekelijks, levels = rev(levels(summaryData$tweewekelijks)))
+    
+      plotData$tweewekelijks_datum <- sapply(plotData$tweewekelijks, function(x) { 
+          switch(as.character(x),
+              "1" = "01/01-15/01",
+              "2" = "16/01-31/01",
+              "3" = "01/02-15/02",
+              "4" = "16/02-28/02 or 29/02",
+              "5" = "01/03-15/03",
+              "6" = "16/03-31/03",
+              "7" = "01/04-15/04",
+              "8" = "16/04-30/04",
+              "9" = "01/05-15/05",
+              "10" = "16/05-31/05",
+              "11" = "01/06-15/06",
+              "12" = "16/06-30/06",
+              "13" = "01/07-15/07",
+              "14" = "16/07-31/07",
+              "15" = "01/08-15/08",
+              "16" = "16/08-31/08",
+              "17" = "01/09-15/09",
+              "18" = "16/09-30/09",
+              "19" = "01/10-15/10",
+              "20" = "16/10-31/10",
+              "21" = "01/11-15/11",
+              "22" = "16/11-30/11",
+              "23" = "01/12-15/12",
+              "24" = "16/12-31/12"
+              )
+        })
+    
+    plotData <- plotData[, c("afschotjaar", "tweewekelijks_datum")]
+    summaryData <- melt(table(plotData), id.vars = c("afschotjaar", "tweewekelijks_datum"))
+    summaryData$tweewekelijks_datum <- as.factor(summaryData$tweewekelijks_datum)
+    summaryData$tweewekelijks_datum <- factor(summaryData$tweewekelijks_datum, levels = rev(levels(summaryData$tweewekelijks_datum)))
     summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+    
+    summaryData <- summaryData[order(summaryData$tweewekelijks_datum),]
     
     colors <- rev(inbo_palette(n = 1))
     title <- paste0("Afschot van ",
@@ -190,7 +222,7 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
             jaartallen))
     
     # Create plot
-    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~tweewekelijks, 
+    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~tweewekelijks_datum, 
             colors = c(rep(colors, 24)),
             type = "bar",  width = width, height = height) %>%
         layout(title = title,

@@ -50,10 +50,10 @@ tagList(
             radioButtons(inputId = "wild_species", label = "", inline = TRUE,
                 choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
                 choiceNames = list(
-                    HTML("<p><b>Wild zwijn</b></p><img src='wildZwijn.jpeg' width = '400px' title = 'Foto: Vildaphoto'>"),
-                    HTML("<p><b>Ree</b></p><img src='ree.jpeg' width = '400px' title = 'Foto: Vildaphoto'>"),
-                    HTML("<p><b>Damhert</b></p><img src='damhert.jpeg' width = '400px' title = 'Foto: Vildaphoto'>"),
-                    HTML("<p><b>Edelhert</b></p><img src='edelhert.jpeg' width = '400px' title = 'Foto: Vildaphoto'>"))
+                    HTML("<div class='fotoTitel'>Wild zwijn</div><div id='wildZwijnFoto'></div>"),
+                    HTML("<div class='fotoTitel'>Ree</div><div id='reeFoto'></div>"),
+                    HTML("<div class='fotoTitel'>Damhert</div><div id='damhertFoto'></div>"),
+                    HTML("<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>"))
             )
         )
     ),
@@ -119,8 +119,8 @@ tagList(
         withSpinner(leafletOutput("map_spacePlot")),
         tags$div(align = "center", uiOutput("map_stats")),
         tags$br(),
-        downloadButton("map_download", "Download figuur"),
-        downloadButton("map_downloadData", "Download data"),
+        downloadButton("map_download", "Download figuur", class = "downloadButton"),
+        downloadButton("map_downloadData", "Download data", class = "downloadButton"),
         
         fixedRow(
             column(6,

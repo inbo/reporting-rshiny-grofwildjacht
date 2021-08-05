@@ -71,7 +71,7 @@ optionsModuleUI <- function(id,
       fluidRow(
           column(6,
               if(exportData)
-                downloadButton(ns("dataDownload"), "Download data")
+                downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
           ),
           column(6,
               if (filter) {

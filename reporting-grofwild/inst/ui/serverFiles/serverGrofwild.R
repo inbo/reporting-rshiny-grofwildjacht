@@ -647,7 +647,7 @@ observe({
         
         if (input$map_globe %% 2 == 1){
           
-          proxy %>% addProviderTiles("Stamen.Terrain")
+          proxy %>% addProviderTiles("OpenStreetMap.HOT")
           
         } else {
           

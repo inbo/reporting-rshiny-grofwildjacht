@@ -126,47 +126,8 @@ optionsModuleServer <- function(input, output, session,
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = if(is.null(results$time)) c(min(timeRange()), definedYear) else results$time,
-            min = if (!is.null(input$dataSource)) {
-                  
-                  if (is.null(sourceVariable)) {
-                    
-                    stop("Variable should be defined to filter for source. Please update code.")
-                    
-                  } else {
-                    
-                    if ( !(sourceVariable %in% colnames(data()))) {
-                      
-                      stop("Variable defined to filter for source is not detected in the data.")
-                      
-                    }
-                    
-                    if (!is.null(input$dataSource_geslacht)) {
-                      switch(input$dataSource,
-                          inbo = switch(input$dataSource_geslacht,
-                              inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
-                              both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
-                          ),
-                          # if both (inbo and meldingsformulier) is selected also include observations for which
-                          # sourceVariable is NA to determine year-range
-                          both = switch(input$dataSource_geslacht,
-                              inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
-                              both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
-                          )
-                      )
-                    } else {
-                      switch(input$dataSource,
-                          inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
-                          meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
-                          # if both (inbo and meldingsformulier) is selected also include observations for which
-                          # sourceVariable is NA to determine year-range
-                          both = min(timeRange())
-                      )
-                    }
-                    
-                  }
-                  
-                } else min(timeRange()),
+            value = c(min(timeRange()), definedYear),
+            min = min(timeRange()),
             max = max(timeRange()),
             step = 1,
             sep = "")
@@ -174,10 +135,55 @@ optionsModuleServer <- function(input, output, session,
       })
   
   
+  
   observe({
-        req(input$time)
-        if (length(input$time) == 2)
-          results$time <- input$time 
+        req(input$dataSource)
+        
+        results$time <- input$time
+        
+        updateSliderInput(session, inputId = "time", 
+            value = results$time,
+            min =
+                if (is.null(sourceVariable)) {
+                  
+                  stop("Variable should be defined to filter for source. Please update code.")
+                  
+                } else {
+                  
+                  if ( !(sourceVariable %in% colnames(data()))) {
+                    
+                    stop("Variable defined to filter for source is not detected in the data.")
+                    
+                  }
+                  
+                  if (!is.null(input$dataSource_geslacht)) {
+                    switch(input$dataSource,
+                        inbo = switch(input$dataSource_geslacht,
+                            inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                            both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                        ),
+                        # if both (inbo and meldingsformulier) is selected also include observations for which
+                        # sourceVariable is NA to determine year-range
+                        both = switch(input$dataSource_geslacht,
+                            inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                            both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                        )
+                    )
+                  } else {
+                    switch(input$dataSource,
+                        inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                        meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                        # if both (inbo and meldingsformulier) is selected also include observations for which
+                        # sourceVariable is NA to determine year-range
+                        both = min(timeRange())
+                    )
+                  }
+                  
+                }
+        
+        )
+        
+        
       })
   
   

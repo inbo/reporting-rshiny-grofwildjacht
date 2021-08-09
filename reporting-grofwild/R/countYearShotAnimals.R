@@ -66,7 +66,7 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
     summaryData <- melt(table(plotData), id.vars = c("afschotjaar", "maand"))
     
     # For optimal displaying in the plot
-    summaryData$maand <- sapply(summaryData$maand, function(x) {
+    summaryData$maandChar <- sapply(summaryData$maand, function(x) {
           switch(as.character(x),
               "1" = "januari",
               "2" = "februari",
@@ -81,8 +81,10 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
               "11" = "november",
               "12" = "december")
         })
-    summaryData$maand <- as.factor(summaryData$maand)
-    summaryData$maand <- factor(summaryData$maand, levels = rev(levels(summaryData$maand)))
+    
+    
+    summaryData$maandChar <- as.factor(summaryData$maandChar)
+    summaryData$maandChar <- factor(summaryData$maandChar, levels = rev(levels(summaryData$maandChar)))
     summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
     
     colors <- rev(inbo_palette(n = 1))
@@ -90,9 +92,14 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
         ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
             jaartallen))
     
+    summaryData$maandChar <- factor(summaryData$maandChar, levels = c("januari", 
+            "februari", "maart", "april", "mei", "juni", 
+            "juli", "augustus", "september", "oktober", 
+            "november", "december"))
     
+   
     # Create plot
-    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~maand, 
+    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~maandChar, 
             colors = c(rep(colors, 12)),
             type = "bar",  width = width, height = height) %>%
         layout(title = title,
@@ -142,6 +149,9 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
     title <- paste0("Afschot van ",
         ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
             jaartallen))
+    
+    summaryData$seizoen <- factor(summaryData$seizoen, levels = c("lente",
+            "zomer", "herfst", "winter"))
     
     # Create plot
     pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~seizoen, 
@@ -214,12 +224,37 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
     summaryData$tweewekelijks_datum <- factor(summaryData$tweewekelijks_datum, levels = rev(levels(summaryData$tweewekelijks_datum)))
     summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
     
-    summaryData <- summaryData[order(summaryData$tweewekelijks_datum),]
+    
     
     colors <- rev(inbo_palette(n = 1))
     title <- paste0("Afschot van ",
         ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
             jaartallen))
+    
+    summaryData$tweewekelijks_datum <- factor(summaryData$tweewekelijks_datum, levels = c("01/01-15/01",
+            "16/01-31/01",
+            "01/02-15/02",
+            "16/02-28/02 or 29/02",
+            "01/03-15/03",
+            "16/03-31/03",
+            "01/04-15/04",
+            "16/04-30/04",
+            "01/05-15/05",
+            "16/05-31/05",
+            "01/06-15/06",
+            "16/06-30/06",
+            "01/07-15/07",
+            "16/07-31/07",
+            "01/08-15/08",
+            "16/08-31/08",
+            "01/09-15/09",
+            "16/09-30/09",
+            "01/10-15/10",
+            "16/10-31/10",
+            "01/11-15/11",
+            "16/11-30/11",
+            "01/12-15/12",
+            "16/12-31/12"))
     
     # Create plot
     pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~tweewekelijks_datum, 

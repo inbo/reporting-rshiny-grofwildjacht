@@ -1,3 +1,13 @@
+@font-face {
+font-family: "FlandersArtSans";
+src: url("FlandersArtSans-Regular.ttf");
+}
+
+*{
+  color: #595959;
+  font-family: FlandersArtSans, sans-serif;
+  font-size: 16px;
+}
 
 .sliderBlank .irs-bar-edge, .sliderBlank .irs-bar {
 background: none;
@@ -23,7 +33,7 @@ footer {
 	border-top: 1px solid #eee;
 	height: 150px;
 	padding: 20px 0;
-	margin-top: 20px
+	margin-top: 20px;
 }
 
 
@@ -35,20 +45,104 @@ footer {
       }
 
 .noButton .radio-inline {
-	border: 2px solid gray;
-	border-radius: 20px;
-	padding-right: 20px;
-	padding-bottom: 20px;
 	margin-bottom: 10px;
 	margin-left: 0px;
 	margin-right: 10px;
+	padding-left: 0;
       }
+      
+.radio-inline input:checked ~ span div {
+  background-image: url("blue-white-pattern.jpg");
+  background-size: 260px 80px;
+}
 
-.noButton input[type='radio']+span {
-	color: gray;
-      }
+.radio-inline:hover {
+  box-shadow: 10px 5px 5px #888888;
+}
+      
+h1, h2, h3, h4 {
+  color: #356196;
+}
 
-.noButton input[type='radio']:checked+span {
-	color: #843860;
-	font-size: 20pt;
-      }
+      
+a, a:visited, a:hover, a:active, a:focus {
+  color: #c1c443;
+}
+
+#wild_linkTable1, #wild_linkPlot1, #wild_linkPlot2, #wild_linkPlot3, #wild_linkPlot4, #wild_linkPlot5, #wild_linkPlot6, #wild_linkPlot7, #wild_linkPlot8, #wild_linkPlot9, #wild_linkPlot10, #wild_linkPlot11, #wild_linkPlot12, #schade_linkPlot1, #schade_linkTable2, #schade_linkPlot2, #schade_linkTable1 {
+ font-size: 22px;
+ color: #356196;
+}
+
+#geodataBron, #contact {
+  font-size: 14px;
+  line-height: 20px;
+  color: #595959
+}
+
+#wildZwijnFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("wildZwijn.jpeg");
+  background-size: 260px 186px;
+}
+
+#reeFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("ree.jpeg");
+  background-size: 260px 186px;
+}
+
+#edelhertFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("edelhert.jpeg");
+  background-size: 260px 186px;
+}
+
+#damhertFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("damhert.jpeg");
+  background-size: 260px 186px;
+}
+
+.fotoTitel {
+  font-size: 20px;
+  font-weight: bold;
+  height: 80px;
+  color: #fff;
+  background-color: #c04384;
+  padding-top: 25px;
+}
+
+.downloadButton {
+  display: inline-block;
+  background-color: #356196;
+  text-transform: uppercase;
+  color: #fff;
+  font-family: 'flanders_art_sansmedium',sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  text-decoration: none;
+  padding: 7px 17px;
+  box-sizing: border-box;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.downloadButton:hover {
+  background-color: #264870;
+  color: #fff; 
+}
+
+.fa-download {
+ color: #fff;
+}
+
+p, li, label {
+ font-size: 16px
+}
+

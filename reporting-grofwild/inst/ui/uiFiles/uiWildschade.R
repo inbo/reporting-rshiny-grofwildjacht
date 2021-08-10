@@ -136,8 +136,8 @@ tagList(
                 uiOutput("schade_title"),
                 withSpinner(leafletOutput("schade_spacePlot")),
                 tags$br(),
-                downloadButton("schade_downloadMap", "Download figuur"),
-                downloadButton("schade_downloadData", "Download data"),
+                downloadButton("schade_downloadMap", "Download figuur", class = "downloadButton"),
+                downloadButton("schade_downloadData", "Download data", class = "downloadButton"),
                 
                 fixedRow(
                         column(6,
@@ -189,11 +189,11 @@ tagList(
         uiOutput("schade_titlePerceel"),        
         withSpinner(leafletOutput("schade_perceelPlot")),
         tags$br(),
-        actionButton("schade_genereerMap", "Download figuur", icon = icon("download")),
+        actionButton("schade_genereerMap", "Download figuur", icon = icon("download"), class = "downloadButton"),
         singleton(
             tags$head(tags$script(src = "triggerDownload.js"))
         ),
-        downloadButton("schade_downloadPerceelmapData", "Download data"),
+        downloadButton("schade_downloadPerceelmapData", "Download data", class = "downloadButton"),
         downloadLink("schade_downloadPerceelMap", " "),
         tags$hr(),
         

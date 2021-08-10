@@ -21,13 +21,14 @@
 #' @param doWellPanel boolean, whether to display the options within a 
 #' \code{shiny::wellPanel()}
 #' @param filter boolean, if TRUE percentage of data used after applying filters is shown
+#' @param showInterval boolean, if TRUE gives user option to select interval
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, showDataSource = FALSE,
-    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE) {
+    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE, showInterval = FALSE) {
   
   
   ns <- NS(id)
@@ -56,7 +57,7 @@ optionsModuleUI <- function(id,
         fluidRow(
             column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                     choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                        "Fusiegemeenten" = "communes")[regionLevels])),
+                        "Fusiegemeenten" = "communes", "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
             column(8, uiOutput(ns("region")))
         ),
       if (showDataSource)
@@ -65,10 +66,12 @@ optionsModuleUI <- function(id,
         selectInput(inputId = ns("dataSource_geslacht"), label = "Data bron geslacht", choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both")),
       if (showDataSource)
         uiOutput(ns("dataSourceWarning")),
+      if(showInterval)
+        uiOutput(ns("interval")),
       fluidRow(
           column(6,
               if(exportData)
-                downloadButton(ns("dataDownload"), "Download data")
+                downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
           ),
           column(6,
               if (filter) {
@@ -106,6 +109,7 @@ optionsModuleUI <- function(id,
 #' 'Data bron' by default
 #' @param sourceVariable character, the variable used internally to filter for source
 #' @param sourceVariable_geslacht character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')
+#' @param intervals defines the intervals that can be selected
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
@@ -113,7 +117,7 @@ optionsModuleServer <- function(input, output, session,
     timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE, definedYear = defaultYear,
     sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL, 
-    sourceVariable_geslacht = NULL) {
+    sourceVariable_geslacht = NULL, intervals = NULL) {
   
   ns <- session$ns
   
@@ -122,47 +126,8 @@ optionsModuleServer <- function(input, output, session,
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = if(is.null(results$time)) c(min(timeRange()), definedYear) else results$time,
-            min = if (!is.null(input$dataSource)) {
-                  
-                  if (is.null(sourceVariable)) {
-                    
-                    stop("Variable should be defined to filter for source. Please update code.")
-                    
-                  } else {
-                    
-                    if ( !(sourceVariable %in% colnames(data()))) {
-                      
-                      stop("Variable defined to filter for source is not detected in the data.")
-                      
-                    }
-                    
-                    if (!is.null(input$dataSource_geslacht)) {
-                      switch(input$dataSource,
-                          inbo = switch(input$dataSource_geslacht,
-                              inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
-                              both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
-                          ),
-                          # if both (inbo and meldingsformulier) is selected also include observations for which
-                          # sourceVariable is NA to determine year-range
-                          both = switch(input$dataSource_geslacht,
-                              inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
-                              both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
-                          )
-                      )
-                    } else {
-                      switch(input$dataSource,
-                          inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
-                          meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
-                          # if both (inbo and meldingsformulier) is selected also include observations for which
-                          # sourceVariable is NA to determine year-range
-                          both = min(timeRange())
-                      )
-                    }
-                    
-                  }
-                  
-                } else min(timeRange()),
+            value = c(min(timeRange()), definedYear),
+            min = min(timeRange()),
             max = max(timeRange()),
             step = 1,
             sep = "")
@@ -170,10 +135,55 @@ optionsModuleServer <- function(input, output, session,
       })
   
   
+  
   observe({
-        req(input$time)
-        if (length(input$time) == 2)
-          results$time <- input$time 
+        req(input$dataSource)
+        
+        results$time <- input$time
+        
+        updateSliderInput(session, inputId = "time", 
+            value = results$time,
+            min =
+                if (is.null(sourceVariable)) {
+                  
+                  stop("Variable should be defined to filter for source. Please update code.")
+                  
+                } else {
+                  
+                  if ( !(sourceVariable %in% colnames(data()))) {
+                    
+                    stop("Variable defined to filter for source is not detected in the data.")
+                    
+                  }
+                  
+                  if (!is.null(input$dataSource_geslacht)) {
+                    switch(input$dataSource,
+                        inbo = switch(input$dataSource_geslacht,
+                            inbo = min(data()[data()[[sourceVariable]] == "inbo" & data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                            both = min(data()[data()[[sourceVariable]] == "inbo" & !is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                        ),
+                        # if both (inbo and meldingsformulier) is selected also include observations for which
+                        # sourceVariable is NA to determine year-range
+                        both = switch(input$dataSource_geslacht,
+                            inbo = min(data()[data()[[sourceVariable_geslacht]] == "inbo", "afschotjaar"], na.rm = TRUE),
+                            both = min(data()[!is.na(data()[[sourceVariable_geslacht]]) & data()[[sourceVariable_geslacht]] != "onbekend", "afschotjaar"], na.rm = TRUE)
+                        )
+                    )
+                  } else {
+                    switch(input$dataSource,
+                        inbo = min(data()[data()[[sourceVariable]] == "inbo" , "afschotjaar"], na.rm = TRUE),
+                        meldingsformulier = min(data()[data()[[sourceVariable]] == "meldingsformulier" , "afschotjaar"], na.rm = TRUE),
+                        # if both (inbo and meldingsformulier) is selected also include observations for which
+                        # sourceVariable is NA to determine year-range
+                        both = min(timeRange())
+                    )
+                  }
+                  
+                }
+        
+        )
+        
+        
       })
   
   
@@ -206,6 +216,11 @@ optionsModuleServer <- function(input, output, session,
                       levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
                           "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
           
+        } else if (input$regionLevel == "faunabeheerzones") {
+          
+          choices <- levels(droplevels(factor(unique(data()$FaunabeheerZone), 
+                      levels = c(1:10))))
+        
         } else {
           
           choices <- unique(data()$gemeente_afschot_locatie)
@@ -292,6 +307,12 @@ optionsModuleServer <- function(input, output, session,
               helpText("Observaties vÃ³Ã³r 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
           )
         
+        
+      })
+  
+  output$interval <- renderUI({
+        
+        selectInput(inputId = ns("interval"), label = "Interval", choices = intervals)
         
       })
   
@@ -398,12 +419,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
         subData <- data()
         
         if (!is.null(input$regionLevel)) {
-          
+         
           validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
-          if (input$regionLevel == "provinces")
+          # filtering regions
+          if (input$regionLevel == "provinces") {
             subData <- subset(subData, provincie %in% input$region)
-          
+          } else if (input$regionLevel == "faunabeheerzones") {   
+            subData <- subset(subData, FaunabeheerZone %in% as.numeric(input$region))
+          }
         }
         
         
@@ -492,7 +516,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if (plotFunction == "trendYearRegion") {
               if (!is.null(combinatie()))
                 list(combinatie = combinatie())
-            }
+            },
+            if (!is.null(input$interval))
+              list(interval = input$interval)
         
         )
         

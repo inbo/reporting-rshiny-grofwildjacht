@@ -319,7 +319,24 @@ callModule(module = plotModuleServer, id = "wild_plot10",
     plotFunction = "countEmbryos",
     data = results$wild_ecoData)
 
+# Plot 11: Afschot per jachtmethode
+callModule(module = optionsModuleServer, id = "wild_plot11", 
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}),
+    timeRange = reactive(c(2014, results$wild_timeRange()[2])))
+callModule(module = plotModuleServer, id = "wild_plot11",
+    plotFunction = "countHuntingMethod", 
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}))
 
+# Plot 12: Verdeling afschot over de jaren
+callModule(module = optionsModuleServer, id = "wild_plot12", 
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}),
+    timeRange = results$wild_timeRange,
+    intervals = c("Per maand", "Per seizoen", "Per twee weken"),
+    types = results$types,
+    multipleTypes = FALSE)
+callModule(module = plotModuleServer, id = "wild_plot12",
+    plotFunction = "countYearShotAnimals", 
+    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}))
 
 
 
@@ -630,7 +647,7 @@ observe({
         
         if (input$map_globe %% 2 == 1){
           
-          proxy %>% addProviderTiles("Stamen.Terrain")
+          proxy %>% addProviderTiles("OpenStreetMap.HOT")
           
         } else {
           

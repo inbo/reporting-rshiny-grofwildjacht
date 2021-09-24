@@ -358,7 +358,7 @@ tagList(
                               tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). 
                                       Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                           ),
-                          column(8, plotModuleUI(id = "wild_plot6"))
+                          column(8, plotModuleUI(id = "wild_plot6", filter = TRUE))
                       
                       ),
                       tags$hr()

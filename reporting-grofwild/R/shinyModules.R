@@ -68,17 +68,11 @@ optionsModuleUI <- function(id,
         uiOutput(ns("dataSourceWarning")),
       if(showInterval)
         uiOutput(ns("interval")),
-      fluidRow(
-          column(6,
-              if(exportData)
-                downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
-          ),
-          column(6,
-              if (filter) {
-                uiOutput(ns("filters"))
-              }
-          )
-      )
+      if(exportData) {
+        downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
+      }
+  
+  
   )
   
   if (doWellPanel)
@@ -220,7 +214,7 @@ optionsModuleServer <- function(input, output, session,
           
           choices <- levels(droplevels(factor(unique(data()$FaunabeheerZone), 
                       levels = c(1:10))))
-        
+          
         } else {
           
           choices <- unique(data()$gemeente_afschot_locatie)
@@ -329,13 +323,21 @@ optionsModuleServer <- function(input, output, session,
 #' @importFrom plotly plotlyOutput
 #' @importFrom shiny NS
 #' @export
-plotModuleUI <- function(id, height = "600px") {
+plotModuleUI <- function(id, height = "600px", filter = FALSE) {
   
   ns <- NS(id)
   
   tagList(
-    withSpinner(plotlyOutput(ns("plot"), height = height)),
-    span(textOutput(outputId = ns("warning")), style="color:red")
+      tags$div(align = "center",
+          withSpinner(plotlyOutput(ns("plot"), height = height))
+      ),
+      if (filter) {
+        tags$div(style = "margin-top: 30px;",
+            align = "center",
+            uiOutput(ns("filters"))
+        )
+      },
+      span(textOutput(outputId = ns("warning")), style="color:red")
   )
 }
 
@@ -419,7 +421,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         subData <- data()
         
         if (!is.null(input$regionLevel)) {
-         
+          
           validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
           # filtering regions
@@ -631,7 +633,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   if (datatable == TRUE) {
     output$table <- DT::renderDataTable({
-         
+          
           DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
                   selection = "single",
                   options = list(dom = 't', pageLength = -1)) %>%

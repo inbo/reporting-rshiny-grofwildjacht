@@ -365,7 +365,7 @@ loadRawData <- function(
     
         
         # variables to keep
-        rawData <- rawData[, c("UUID", "IndieningID", "Jaartal", 
+        rawData <- rawData[, c("UUID", "IndieningID", "IndieningType", "Jaartal", 
                         "IndieningSchadeBasisCode", "IndieningSchadeCode",
                         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
                         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
@@ -376,7 +376,7 @@ loadRawData <- function(
                         format = "%Y-%m-%d"), "%d/%m/%Y")
         
         # new column names
-        colnames(rawData) <- c("ID", "caseID", "afschotjaar", 
+        colnames(rawData) <- c("ID", "caseID", "indieningType", "afschotjaar", 
                 "schadeBasisCode", "schadeCode",
                 "SoortNaam", "wildsoort", "afschot_datum",
                 "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",

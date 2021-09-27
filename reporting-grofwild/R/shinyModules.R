@@ -298,7 +298,7 @@ optionsModuleServer <- function(input, output, session,
         if (input$dataSource %in% c("both", "meldingsformulier") &
             sourceVariable == "aantal_embryos_bron")
           tags$div(style = "margin-bottom:10px;",
-              helpText("Observaties vÃ³Ã³r 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
+              helpText("Observaties vóór 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
           )
         
         

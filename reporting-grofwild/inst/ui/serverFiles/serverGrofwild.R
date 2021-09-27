@@ -647,9 +647,17 @@ observe({
         
         if (input$map_globe %% 2 == 1){
           
+          updateActionLink(session, 
+              inputId = "map_globe", 
+              label = "Verberg landkaart")
+          
           proxy %>% addProviderTiles("OpenStreetMap.HOT")
           
         } else {
+          
+          updateActionLink(session, 
+              inputId = "map_globe", 
+              label = "Voeg landkaart toe")
           
           proxy %>% clearTiles()
           

@@ -777,8 +777,8 @@ callModule(module = plotModuleServer, id = "schade_table2",
     datatable = TRUE)
 
 # Table Frequency table gewas
-callModule(module = optionsModuleServer, id = "gewas",
-    data = results$schade_data()@data,
+callModule(module = optionsModuleServer, id = "schade_gewas",
+    data = reactive(results$schade_data()@data),
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 
@@ -786,13 +786,15 @@ callModule(module = optionsModuleServer, id = "gewas",
         )), 
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"),
-    timeRange = results$schade_timeRange)
+    timeRange = results$schade_timeRange,
+    sources = names(sourcesSchade),
+    sourceVariable = "indieningType")
 
 #callModule(dataModuleServer, id = "gewas",
 #    data = results$schade_data,
 #    variable = "SoortNaam")
 
-callModule(plotModuleServer, id = "gewas",
+callModule(plotModuleServer, id = "schade_gewas",
     plotFunction = "tableGewas",
     data = reactive(results$schade_data()@data),
     variable = "SoortNaam")

@@ -285,10 +285,14 @@ tagList(
         fixedRow(
             
             column(4, 
-                optionsModuleUI(id = "gewas", showTime = TRUE, showType = TRUE, exportData = TRUE),
+                optionsModuleUI(id = "schade_gewas", 
+                    showTime = TRUE, 
+                    showType = TRUE,
+                    showDataSource = TRUE,
+                    exportData = TRUE),
                 tags$p("Indien je in het keuzemenu bovenaan de pagina de optie ", tags$i("Gewasschade"), " selecteerde, geeft deze tabel het aantal schademeldingen per gewas en per regio, voor de gekozen periode, weer.")
             ),
-            column(8, tableModuleUI(id = "gewas"))
+            column(8, tableModuleUI(id = "schade_gewas"))
         ),
         
         tags$hr()

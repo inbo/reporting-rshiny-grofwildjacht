@@ -134,7 +134,7 @@ optionsModuleServer <- function(input, output, session,
         req(input$dataSource)
         
         results$time <- input$time
-        
+       
         updateSliderInput(session, inputId = "time", 
             value = results$time,
             min =

@@ -136,6 +136,8 @@ output$schade_region <- renderUI({
 # Data-dependent input fields
 output$schade_year <- renderUI({
       
+      req(results$schade_data()$afschotjaar)
+      
       div(class = "sliderBlank", 
           sliderInput(inputId = "schade_year", label = "Geselecteerd Jaar (kaart)",
               min = min(results$schade_data()$afschotjaar),
@@ -147,6 +149,8 @@ output$schade_year <- renderUI({
 
 
 output$schade_time <- renderUI({
+      
+      req(results$schade_data()$afschotjaar)
       
       minYear <- min(results$schade_data()$afschotjaar)
       

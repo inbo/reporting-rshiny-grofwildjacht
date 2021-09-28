@@ -265,7 +265,11 @@ tagList(
         fixedRow(
             
             column(4,
-                optionsModuleUI(id = "schade_table2", showTime = TRUE, showType = TRUE, exportData = TRUE),
+                optionsModuleUI(id = "schade_table2", 
+                    showTime = TRUE, 
+                    showType = TRUE,
+                    showDataSource = TRUE,
+                    exportData = TRUE),
                 tags$p("Op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina geeft deze tabel, opgedeeld per subcategorie, het aantal schademeldingen weer. Je kan hierbij zelf de periode en het schaalniveau kiezen", tags$i("(Vlaanderen, provincie, faunabeheerzone)"), ".")
             ),
             column(8, datatableModuleUI(id = "schade_table2"))

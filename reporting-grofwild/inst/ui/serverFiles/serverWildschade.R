@@ -764,7 +764,9 @@ callModule(module = optionsModuleServer, id = "schade_table2",
         )), 
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
-    timeRange = results$schade_timeRange)
+    timeRange = results$schade_timeRange,
+    sources = names(sourcesSchade),
+    sourceVariable = "indieningType")
 callModule(module = plotModuleServer, id = "schade_table2",
     plotFunction = "tableSchadeCode", 
     data = reactive(results$schade_data()@data),

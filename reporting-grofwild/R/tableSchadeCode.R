@@ -21,7 +21,7 @@
 #' @importFrom utils tail
 #' @export
 tableSchadeCode <- function(data, jaartallen = NULL,
-        type = c("provinces", "flanders", "faunabeheerzones"),
+        type = c("provinces", "flanders", "faunabeheerzones"), sourceIndicator = NULL,
         schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL) {
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
@@ -41,6 +41,21 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     jaartallen <- unique(data$afschotjaar)
   
   allData <- data
+  
+  # filter for source
+  if(!is.null(sourceIndicator)) {
+    
+    sources <- c()
+    for(source in sourceIndicator) {
+      sources <- c(sources, sourcesSchade[[source]])
+    }
+    allData <- allData[allData$indieningType %in% sources, ]
+    
+    if(nrow(allData) == 0) {
+      stop(paste0("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, "."))
+    }
+  }
+  
   allData$locatie <- switch(type,
           flanders = "Vlaams Gewest",
           provinces = allData$provincie,

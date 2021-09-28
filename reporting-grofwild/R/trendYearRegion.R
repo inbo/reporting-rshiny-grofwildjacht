@@ -8,6 +8,7 @@
 #' @export
 createTrendData <- function(data, allSpatialData, 
         timeRange, species, regionLevel, unit = c("absolute", "relative"),
+        sourceIndicator = NULL, 
         dataDir = system.file("extdata", package = "reportingGrofwild")) {
     
     
@@ -28,6 +29,21 @@ createTrendData <- function(data, allSpatialData,
     }
     
     plotData <- data
+    
+    
+    # filter sources 
+    if(!is.null(sourceIndicator)) {
+      
+      sources <- sourcesSchade[[sourceIndicator]]
+      plotData <- plotData[plotData$indieningType %in% sources, ]
+      
+      if(nrow(plotData) == 0) {
+        stop(paste0("Geen data beschickbaar voor de data bron: ", sourceIndicator, "."))
+      }
+      
+    }
+    
+    
     # Generic location name
     plotData$locatie <- as.character(switch(regionLevel,
             flanders = "Vlaams Gewest",

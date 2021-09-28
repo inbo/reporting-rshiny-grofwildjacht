@@ -174,7 +174,8 @@ results$schade_summarySpaceData <- reactive({
           year = input$schade_year,
           species = input$schade_species,
           regionLevel = input$schade_regionLevel,
-          unit = input$schade_unit
+          unit = input$schade_unit,
+          sourceIndicator = input$schade_bron1
       )
       
     })
@@ -476,7 +477,8 @@ results$schade_timeDataFlanders <- reactive({
           timeRange = input$schade_time,
           species = input$schade_species,
           regionLevel = "flanders",
-          unit = input$schade_unit
+          unit = input$schade_unit,
+          sourceIndicator = input$schade_bron1
       )
       
     })
@@ -509,7 +511,8 @@ results$schade_timeData <- reactive({
           timeRange = input$schade_time,
           species = input$schade_species,
           regionLevel = input$schade_regionLevel,
-          unit = input$schade_unit
+          unit = input$schade_unit,
+          sourceIndicator = input$schade_bron1
       )
       
     })

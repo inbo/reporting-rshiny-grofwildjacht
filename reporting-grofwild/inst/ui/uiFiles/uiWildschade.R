@@ -128,7 +128,9 @@ tagList(
                 column(4,
                     selectInput(inputId = "schade_bron1",
                         label = "Data bron",
-                        choices = names(sourcesSchade))
+                        choices = names(sourcesSchade),
+                        selected = "E-loket",
+                        multiple = TRUE)
                 )
             ),
             

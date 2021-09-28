@@ -142,7 +142,7 @@ optionsModuleServer <- function(input, output, session,
                   
                   stop("Variable should be defined to filter for source. Please update code.")
                   
-                } else {
+                } else if (!grepl("schade", ns("test"))) {
                   
                   if ( !(sourceVariable %in% colnames(data()))) {
                     
@@ -286,7 +286,10 @@ optionsModuleServer <- function(input, output, session,
   
   output$dataSource <- renderUI({
         
-        selectInput(inputId = ns("dataSource"), label = sourceLabel, choices = sources)
+        selectInput(inputId = ns("dataSource"), 
+            label = sourceLabel,
+            choices = sources,
+            multiple = TRUE)
         
         
       })

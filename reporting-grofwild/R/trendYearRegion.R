@@ -34,7 +34,10 @@ createTrendData <- function(data, allSpatialData,
     # filter sources 
     if(!is.null(sourceIndicator)) {
       
-      sources <- sourcesSchade[[sourceIndicator]]
+      sources <- c()
+      for(source in sourceIndicator) {
+        sources <- c(sources, sourcesSchade[[source]])
+      }
       plotData <- plotData[plotData$indieningType %in% sources, ]
       
       if(nrow(plotData) == 0) {

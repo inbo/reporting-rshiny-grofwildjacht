@@ -95,7 +95,10 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
   
   if(!is.null(sourceIndicator)) {
-    sources <- sourcesSchade[[sourceIndicator]]
+    sources <- c()
+    for(source in sourceIndicator) {
+      sources <- c(sources, sourcesSchade[[source]])
+    }
     plotData <- subset(plotData, subset = indieningType %in% sources)
   }
   

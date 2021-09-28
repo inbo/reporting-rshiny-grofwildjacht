@@ -481,7 +481,8 @@ results$schade_timeDataFlanders <- reactive({
       
     })
 
-callModule(module = optionsModuleServer, id = "schade_timePlotFlanders", 
+callModule(module = optionsModuleServer, 
+    id = "schade_timePlotFlanders", 
     data = results$schade_timeDataFlanders)
 callModule(module = plotModuleServer, id = "schade_timePlotFlanders",
     plotFunction = "trendYearFlanders", 
@@ -721,7 +722,9 @@ callModule(module = optionsModuleServer, id = "schade_plot1",
         )), 
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
-    timeRange = results$schade_timeRange)
+    timeRange = results$schade_timeRange,
+    sources = names(sourcesSchade),
+    sourceVariable = "indieningType")
 
 callModule(module = plotModuleServer, id = "schade_plot1",
     plotFunction = "countYearProvince", 

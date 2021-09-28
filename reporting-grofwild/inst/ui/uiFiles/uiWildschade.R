@@ -207,7 +207,10 @@ tagList(
                         
                         column(4,
                                 optionsModuleUI(id = "schade_plot1", 
-                                        showTime = TRUE, showType = TRUE, exportData = TRUE),
+                                        showTime = TRUE, 
+                                        showType = TRUE,
+                                        showDataSource = TRUE,
+                                        exportData = TRUE),
                                 tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina, het aantal schadegevallen weer per gekozen schaalniveau (keuzevak regio: ", tags$i("Vlaanderen, provincies"), " of ", tags$i("faunabeheerzones"), ")."),
                                 tags$p("Wanneer je als periode meerdere jaren kiest, worden de verschillende deelgebieden per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden de verschillende geografische deelgebieden naast elkaar weergegeven.")
                         ),

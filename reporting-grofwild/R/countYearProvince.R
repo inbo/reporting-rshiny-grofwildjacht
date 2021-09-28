@@ -12,6 +12,8 @@
 #' in the plot; if NULL no selection on year(s) is made
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
+#' @param sourceInidicator character, source used to filter \code{data} ('indieningType' column)
+#' should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
@@ -33,6 +35,7 @@
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
+        sourceIndicator = NULL,
 		width = NULL, height = NULL) {
 	
 	
@@ -43,15 +46,33 @@ countYearProvince <- function(data, jaartallen = NULL,
 		jaartallen <- unique(data$afschotjaar)
 	
   plotData <- data
+  
+  # filter for source
+  if(!is.null(sourceIndicator)) {
+    
+    sources <- sourcesSchade[[sourceIndicator]]
+    plotData <- plotData[plotData$indieningType %in% sources, ]
+    
+    if(nrow(plotData) == 0) {
+      stop(paste0("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, "."))
+    }
+  }
+  
   plotData$locatie <- switch(type,
           flanders = "Vlaams Gewest",
           provinces = plotData$provincie,
           faunabeheerzones = plotData$FaunabeheerZone
   )
+  if(nrow(plotData) == 0) {
+    stop(paste0("Geen data beschikbaar voor de geselecteerde locatie: ", type, "."))
+  }
     
 	# Select data
 	plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie")]
 	plotData <- plotData[!is.na(plotData$afschotjaar), ]
+  if(nrow(plotData) == 0) {
+    stop(paste0("Geen data beschikbaar voor de geselecteerde afschotjaren: ", jaartallen, "."))
+  }
   
   # Rename provincie NA to "Onbekend" -  provincie is already factor
   if (type == "provinces") {

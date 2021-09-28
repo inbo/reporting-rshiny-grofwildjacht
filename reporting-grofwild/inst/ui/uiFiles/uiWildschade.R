@@ -129,7 +129,6 @@ tagList(
                     selectInput(inputId = "schade_bron1",
                         label = "Data bron",
                         choices = names(sourcesSchade),
-                        selected = "E-loket",
                         multiple = TRUE)
                 )
             ),
@@ -180,15 +179,25 @@ tagList(
             column(6, selectInput(inputId = "schade_variable2", label = "Variabele",
                     choices = c("Seizoen" = "season",
                         "Jaar" = "afschotjaar",
-                        "Type schade" = "schadeCode")),
-                selectInput(inputId = "schade_legend2", "Legende (kaart)",
+                        "Type schade" = "schadeCode"))
+            )
+        ),
+        fixedRow(
+            column(6,
+                selectInput(inputId = "schade_bron2",
+                    label = "Data bron",
+                    choices = names(sourcesSchade),
+                    multiple = TRUE)
+            ),
+            column(6, selectInput(inputId = "schade_legend2", "Legende (kaart)",
                     choices = c("Bovenaan rechts" = "topright",
                         "Onderaan rechts" = "bottomright",
                         "Bovenaan links" = "topleft",
                         "Onderaan links" = "bottomleft",
-                        "<geen>" = "none"))
-            )
+                        "<geen>" = "none")))
+        
         ),
+        
         actionLink(inputId = "schade_globe2", label = "Verberg landkaart",
             icon = icon("globe"))
     ),

@@ -597,7 +597,8 @@ results$schade_summaryPerceelData <- reactive({
       
       createSchadeSummaryData(
           schadeData = results$schade_data(),
-          timeRange = input$schade_time2)
+          timeRange = input$schade_time2,
+          sourceIndicator = input$schade_bron2)
     })
 
 # Map for UI

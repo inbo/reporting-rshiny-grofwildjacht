@@ -17,13 +17,31 @@
 #' @author Eva Adriaensen
 #' @export
 createSchadeSummaryData <- function(schadeData, timeRange,
-    dataDir = system.file("extdata", package = "reportingGrofwild")) {
+    dataDir = system.file("extdata", package = "reportingGrofwild"),
+    sourceIndicator = NULL) {
 	
+  
+  plotData <- schadeData
+  
+  # filter sources 
+  if(!is.null(sourceIndicator)) {
+    
+    sources <- c()
+    for(source in sourceIndicator) {
+      sources <- c(sources, sourcesSchade[[source]])
+    }
+    plotData <- plotData[plotData$indieningType %in% sources, ]
+    
+    if(nrow(plotData) == 0) {
+      return(plotData)
+    }
+    
+  }
   
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
                         "schadeCode", "provincie")
-  plotData <- schadeData[, colnames(schadeData@data) %in% colnamesToRetain]
+  plotData <- plotData[, colnames(plotData@data) %in% colnamesToRetain]
   
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]

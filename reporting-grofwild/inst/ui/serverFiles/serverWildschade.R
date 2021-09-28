@@ -741,7 +741,9 @@ callModule(module = optionsModuleServer, id = "schade_plot2",
         )), 
     labelTypes = "Variabele", 
     typesDefault = reactive("wildsoort"), 
-    timeRange = results$schade_timeRange)
+    timeRange = results$schade_timeRange,
+    sources = names(sourcesSchade),
+    sourceVariable = "indieningType")
 
 callModule(module = plotModuleServer, id = "schade_plot2",
     plotFunction = "countYearSchade", 

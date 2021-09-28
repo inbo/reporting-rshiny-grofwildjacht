@@ -229,7 +229,10 @@ tagList(
                         column(4,
                                 optionsModuleUI(id = "schade_plot2", 
                                         summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
-                                        showTime = TRUE, showType = TRUE, exportData = TRUE),
+                                        showTime = TRUE, 
+                                        showType = TRUE, 
+                                        showDataSource = TRUE,
+                                        exportData = TRUE),
                                 tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina het aantal schademeldingen weer in functie van het veld dat je kiest bij Variabele. Je kan kiezen tussen het ", tags$i("gewas"), "(indien gekozen werd voor gewasschade), de ", tags$i("wildsoort(en)"), " binnen de gekozen dataset, of de ", tags$i("subcategorie type schade"), "(bv. verkeersongelukken met of zonder personenletsels). Je kan een keuze maken tussen het absoluut aantal schademeldingen per categorie en het relatief aantal schademeldingen."),
                                 tags$p("Wanneer je als periode meerdere jaren kiest, worden de verschillende subcategorie\u00EBn per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden ze naast elkaar weergegeven.")
                         ),

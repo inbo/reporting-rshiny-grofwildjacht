@@ -30,7 +30,6 @@
 #' }
 #' @import plotly
 #' @importFrom reshape2 melt
-#' @importFrom INBOtheme inbo_palette
 #' @importFrom stringr str_sort
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
@@ -112,7 +111,8 @@ countYearProvince <- function(data, jaartallen = NULL,
 	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
 	
-	colors <- rev(inbo_palette(n = nlevels(summaryData$locatie)))
+ 
+ colorList <- replicateColors(nColors = nlevels(summaryData$locatie))
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
@@ -121,7 +121,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~locatie,
-					colors = colors, type = "bar",  width = width, height = height) %>%
+					colors = colorList$colors, type = "bar",  width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Jaar"), 
 					yaxis = list(title = "Aantal"),
@@ -141,6 +141,6 @@ countYearProvince <- function(data, jaartallen = NULL,
   names(summaryData)[names(summaryData) == "value"] <- "aantal"
   
   
-	return(list(plot = pl, data = summaryData))
+	return(list(plot = pl, data = summaryData, warning = colorList$warning))
 	
 }

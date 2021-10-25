@@ -162,10 +162,13 @@ plotBioindicator <- function(data,
 						")\n"),
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
 			if (!all(regio == "")) paste0(" (", toString(regio), ")"))
+ 
+ colorList <- NULL
 	
 	if (bioindicator == "aantal_embryos") {
 		
-		palette <- inbo_palette(n = nlevels(inputPlot$variable))
+		colorList <- replicateColors(nColors = nlevels(inputPlot$variable))
+  palette <- colorList$colors
 		
 		# base plot
 #		pl <- plot_ly(inputPlot, 
@@ -301,6 +304,6 @@ plotBioindicator <- function(data,
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = returnedData))
+	return(list(plot = pl, data = returnedData, warning = colorList$warning))
 	
 }

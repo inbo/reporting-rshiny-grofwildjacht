@@ -301,7 +301,7 @@ optionsModuleServer <- function(input, output, session,
         if (input$dataSource %in% c("both", "meldingsformulier") &
             sourceVariable == "aantal_embryos_bron")
           tags$div(style = "margin-bottom:10px;",
-              helpText("Observaties vóór 2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
+              helpText("Observaties", HTML("v&#x00F3;&#x00F3;r"), "2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
           )
         
         
@@ -340,7 +340,7 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
             uiOutput(ns("filters"))
         )
       },
-      span(textOutput(outputId = ns("warning")), style="color:red")
+      uiOutput(outputId = ns("warning"))
   )
 }
 
@@ -553,9 +553,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
-  output$warning <- renderText({
+  output$warning <- renderUI({
         
-        resultFct()$warning
+      tags$em(resultFct()$warning)
         
       })
   

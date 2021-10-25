@@ -139,9 +139,8 @@ createTrendData <- function(data, allSpatialData,
 #' }
 #' }
 #' @import plotly
-#' @importFrom INBOtheme inbo_palette
 #' @export
-trendYearRegion <- function(data, locaties = NULL, combinatie = NULL , timeRange = NULL, 
+trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange = NULL, 
         unit = c("absolute", "relative"), schadeTitles = FALSE,
 		width = NULL, height = NULL) {
 	
@@ -162,25 +161,8 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = NULL , timeRange
 	plotData <- subset(data, locatie %in% locaties)
 #	plotData$wildsoort <- NULL
 	
-  noLocaties <- length(locaties)
-  rest <- length(locaties)%%9
-  times <- (noLocaties - rest)/9
+  colorList <- replicateColors(nColors = length(locaties))
   
-  colors <- c()
-  
-  if(times != 0) {
-    colors <- rep(rev(inbo_palette(n = 9)), times)
-  }
-  if(rest != 0)
-    colors <- c(colors, rev(inbo_palette(n = rest)))
-  
-  # warning if noLocaties exceeds 9 colours
-  if(noLocaties > 9) {
-    warning <- "Door het hoog aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
-								Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."
-  } else {
-    warning <- NULL
-  }
   
 	title <- paste0(titlePrefix,
 			if (unit == "absolute") "" else "/100ha",
@@ -208,7 +190,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = NULL , timeRange
   }
 	# Create plot
 	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
-          color = ~locatie, colors = colors, 
+          color = ~locatie, colors = colorList$colors, 
 					hoverinfo = "x+y+name",
 					type = "scatter", mode = "lines+markers",
 					width = width, height = height) %>%
@@ -229,7 +211,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = NULL , timeRange
 				"aantal" else "aantal/100ha"
 	
 	
-	return(list(plot = pl, data = plotData, warning = warning))
+	return(list(plot = pl, data = plotData, warning = colorList$warning))
 	
 }
 

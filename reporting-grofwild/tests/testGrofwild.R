@@ -91,7 +91,7 @@ allPlots <- lapply(species, function(iSoort) {
             
             res <- countYearProvince(data = plotData, jaartallen = timeRange)
             
-            expect_equal(names(res), c("plot", "data"))
+            expect_equal(names(res), c("plot", "data", "warning"))
             expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
             
             res

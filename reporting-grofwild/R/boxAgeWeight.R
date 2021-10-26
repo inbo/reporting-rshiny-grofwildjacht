@@ -55,9 +55,7 @@ boxAgeWeight <- function(data,
 					"provincie", "geslacht_comp_bron")]
 	names(plotData) <- c("gewicht", "leeftijd", "leeftijd_bron", "maanden", "geslacht", "provincie", "geslacht_bron")
 	
-  # Filter for bron
   
-	
 	# Percentage collected
 	nRecords <- nrow(plotData)
 	
@@ -103,35 +101,11 @@ boxAgeWeight <- function(data,
   # filters out NA leeftijd if all leeftijdlevels are passed in 'type'
 	plotData <- subset(plotData, leeftijd %in% type)
   
-  if (sourceIndicator == "inbo") {
-  	
-    # To prevent error with R CMD check
-    leeftijd_bron <- NULL
-    
-    # filters out NA and 'meldingsformulier'
-    plotData <- subset(plotData, leeftijd_bron == "inbo")
-
-  }
-  
-  if (sourceIndicator_geslacht == "inbo") {
-    # To prevent error with R CMD check
-    geslacht_bron <- NULL
-    
-    # filters out NA and 'meldingsformulier' en 'onbekend'
-    plotData <- subset(plotData, geslacht_bron == "inbo")
-    
-  } else if (sourceIndicator_geslacht == "both"){
-    # To prevent error with R CMD check
-    geslacht_bron <- NULL
-    
-    # filters out NA and 'onbekend'
-    plotData <- subset(plotData, !is.na(geslacht_bron) & geslacht_bron != "onbekend")
-    
-  }
-	
-	if (nrow(plotData) == 0)
-		stop("Geen data beschikbaar")
-	
+ plotData <- filterLeeftijdGeslacht(plotData = plotData, 
+   sourceIndicator = sourceIndicator, 
+   sourceIndicator_geslacht = sourceIndicator_geslacht)
+ 
+ 
 	# For optimal displaying in the plot
 	colors <- inbo_palette(n = 2)
 	names(colors) <- unique(plotData$geslacht)

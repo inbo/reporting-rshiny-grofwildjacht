@@ -2,6 +2,7 @@
 #' 
 #' Figure p.17 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
+#' @inheritParams boxAgeWeight
 #' @param type animal type, used to filter \code{data}, based on 'ageGender' column
 #' @return list with:
 #' \itemize{
@@ -20,7 +21,13 @@
 #' @importFrom plyr count
 #' @export
 boxAgeGenderLowerJaw <- function(data, 
-		type, jaartallen = NULL, regio = "", width = NULL, height = NULL) {
+		type, jaartallen = NULL, regio = "",
+  sourceIndicator = c("both", "inbo"),
+  sourceIndicator_geslacht = c("both","inbo"), 
+  width = NULL, height = NULL) {
+  
+  sourceIndicator <- match.arg(sourceIndicator)
+  sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)
 	
 	
 	wildNaam <- unique(data$wildsoort)	
@@ -32,8 +39,10 @@ boxAgeGenderLowerJaw <- function(data,
 	plotData <- data[
 			# data of specified years
 			data$afschotjaar %in% jaartallen, 
-			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_maanden", "geslacht_comp", "provincie")]
-	names(plotData) <- c("onderkaaklengte", "leeftijd", "maanden", "geslacht", "provincie")
+			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", 
+     "geslacht_comp", "provincie", "geslacht_comp_bron")]
+	names(plotData) <- c("onderkaaklengte", "leeftijd", "leeftijd_bron", "maanden",
+   "geslacht", "provincie", "geslacht_bron")
 	
 	
 	# Percentage collected
@@ -51,28 +60,35 @@ boxAgeGenderLowerJaw <- function(data,
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
 	
-	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn") {  # wild zwijn
-		
-		plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
-				ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
-						"Frisling (<6m)", "Frisling (>6m)")
-		
-		newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
-		
-	} else {  # ree
-		
-		newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
-		
-	}
+
+# Define names and ordering of factor levels
+  # NOTE: Redundant for wild zwijn (not shown in app)
+if (wildNaam == "Wild zwijn" & sourceIndicator == "inbo") {  # wild zwijn
+  
+  plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
+    ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
+      "Frisling (<6m)", "Frisling (>6m)")
+  
+  newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
+  
+} else if (wildNaam == "Wild zwijn" & sourceIndicator == "both") {
+  
+  newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
+  
+}else {  # ree
+  
+  # Exclude records with weight lower than 5 or more than 30 (unrealistic)
+  newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
+  
+}
 	
 	plotData$leeftijd <- factor(plotData$leeftijd, levels = newLevelsLeeftijd)
 	
 	plotData <- subset(plotData, leeftijd %in% type)
-	
-	if (nrow(plotData) == 0)
-		stop("Geen data beschikbaar")
-	
+ 
+ plotData <- filterLeeftijdGeslacht(plotData = plotData, 
+   sourceIndicator = sourceIndicator, 
+   sourceIndicator_geslacht = sourceIndicator_geslacht)
 	
 	# For optimal displaying in the plot
 	colors <- inbo_palette(n = 2)

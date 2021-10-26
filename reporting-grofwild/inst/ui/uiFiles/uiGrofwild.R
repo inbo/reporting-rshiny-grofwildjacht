@@ -352,9 +352,10 @@ tagList(
                   conditionalPanel("input.wild_linkPlot6 % 2 == 1",
                       fixedRow(
                           
-                          column(4,
-                              optionsModuleUI(id = "wild_plot6", showTime = TRUE, showType = TRUE, showDataSource = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE, filter = TRUE, showDataSourceGeslacht = TRUE),
+                        column(4,
+                          optionsModuleUI(id = "wild_plot6", showTime = TRUE,
+                            showType = TRUE, regionLevels = 1:2, exportData = TRUE,
+                            showDataSource = TRUE, showDataSourceGeslacht = TRUE),
                               tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). 
                                       Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                           ),
@@ -375,16 +376,17 @@ tagList(
               
               tagList(
                   actionLink(inputId = "wild_linkPlot7",
-                      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
+                      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
                   conditionalPanel("input.wild_linkPlot7 % 2 == 1",
                       fixedRow(
                           
                           column(4,
                               optionsModuleUI(id = "wild_plot7", showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE),
+                                  regionLevels = 1:2, exportData = TRUE,
+                                  showDataSource = TRUE, showDataSourceGeslacht = TRUE),
                               tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
                                       Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
-                          column(8, plotModuleUI(id = "wild_plot7"))
+                          column(8, plotModuleUI(id = "wild_plot7", filter = TRUE))
                       
                       ),
                       tags$hr()
@@ -402,7 +404,8 @@ tagList(
                 fixedRow(
                     
                     column(4,
-                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, regionLevels = c(1:2,4), exportData = TRUE),
+                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, 
+                          regionLevels = c(1:2,4), exportData = TRUE),
                         tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
                     ),
                     column(8, plotModuleUI(id = "wild_plot11"))

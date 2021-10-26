@@ -12,6 +12,7 @@
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
 #' @inheritParams countYearProvince
+#' @inheritParams filterSource
 #' @return a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
 #' specifying multicolumn column names 
 #' @author Eva Adriaensen
@@ -21,7 +22,8 @@
 #' @importFrom utils tail
 #' @export
 tableSchadeCode <- function(data, jaartallen = NULL,
-        type = c("provinces", "flanders", "faunabeheerzones"), sourceIndicator = NULL,
+        type = c("provinces", "flanders", "faunabeheerzones"), 
+        sourceIndicator = NULL, 
         schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL) {
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
@@ -40,21 +42,9 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  allData <- data
-  
   # filter for source
-  if(!is.null(sourceIndicator)) {
-    
-    sources <- c()
-    for(source in sourceIndicator) {
-      sources <- c(sources, sourcesSchade[[source]])
-    }
-    allData <- allData[allData$indieningType %in% sources, ]
-    
-    if(nrow(allData) == 0) {
-      stop(paste0("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, "."))
-    }
-  }
+  allData <- filterSource(plotData = data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
   
   allData$locatie <- switch(type,
           flanders = "Vlaams Gewest",

@@ -348,7 +348,7 @@ tagList(
                   
                   
                   actionLink(inputId = "wild_linkPlot6",
-                      label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
+                      label = h3("FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
                   conditionalPanel("input.wild_linkPlot6 % 2 == 1",
                       fixedRow(
                           

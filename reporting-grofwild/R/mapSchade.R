@@ -3,6 +3,9 @@
 # Author: mvarewyck
 ###############################################################################
 
+
+
+
 #' Summarized data for perceelplot
 #' 
 #' Create object of type schadedata, filtered for cases within \code{timeRange}
@@ -11,6 +14,7 @@
 #' 
 #' @inheritParams mapSchade
 #' @inheritParams readShapeData
+#' @inheritParams filterSource
 #' @param timeRange numeric vector, year span of interest
 #' @return a filtered spatialPointsDataFrame
 #' 
@@ -21,23 +25,9 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     sourceIndicator = NULL) {
 	
   
-  plotData <- schadeData
-  
-  # filter sources 
-  if(!is.null(sourceIndicator)) {
+  plotData <- filterSource(plotData = schadeData,
+    sourceIndicator = sourceIndicator, returnStop = "message")
     
-    sources <- c()
-    for(source in sourceIndicator) {
-      sources <- c(sources, sourcesSchade[[source]])
-    }
-    plotData <- plotData[plotData$indieningType %in% sources, ]
-    
-    if(nrow(plotData) == 0) {
-      return(plotData)
-    }
-    
-  }
-  
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
                         "schadeCode", "provincie")
@@ -165,8 +155,7 @@ mapSchade <- function(
     if (addGlobe) {
         
         myMap <- myMap %>%
-                    addProviderTiles("Esri.WorldImagery") %>%
-                    addProviderTiles("Hydda.RoadsAndLabels")
+                    addProviderTiles("OpenStreetMap.HOT")
         
     }
     

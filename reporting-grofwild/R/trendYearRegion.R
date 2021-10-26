@@ -8,7 +8,7 @@
 #' @export
 createTrendData <- function(data, allSpatialData, 
         timeRange, species, regionLevel, unit = c("absolute", "relative"),
-        sourceIndicator = NULL, 
+        sourceIndicator = NULL,
         dataDir = system.file("extdata", package = "reportingGrofwild")) {
     
     
@@ -28,23 +28,10 @@ createTrendData <- function(data, allSpatialData,
         
     }
     
-    plotData <- data
     
-    
-    # filter sources 
-    if(!is.null(sourceIndicator)) {
-      
-      sources <- c()
-      for(source in sourceIndicator) {
-        sources <- c(sources, sourcesSchade[[source]])
-      }
-      plotData <- plotData[plotData$indieningType %in% sources, ]
-      
-      if(nrow(plotData) == 0) {
-        stop(paste0("Geen data beschickbaar voor de data bron: ", sourceIndicator, "."))
-      }
-      
-    }
+    # filter for source
+    plotData <- filterSource(plotData = data, sourceIndicator = sourceIndicator,
+      returnStop = "message")
     
     
     # Generic location name
@@ -139,6 +126,7 @@ createTrendData <- function(data, allSpatialData,
 #' }
 #' }
 #' @import plotly
+#' @importFrom stats aggregate
 #' @export
 trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange = NULL, 
         unit = c("absolute", "relative"), schadeTitles = FALSE,

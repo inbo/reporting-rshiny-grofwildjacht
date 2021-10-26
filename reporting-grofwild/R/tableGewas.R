@@ -13,7 +13,8 @@
 #' @importFrom plyr count
 #' @importFrom reshape2 dcast
 #' @export
-tableGewas <- function(data, jaartallen = NULL, variable, sourceIndicator = NULL,
+tableGewas <- function(data, jaartallen = NULL, variable, 
+  sourceIndicator = NULL, 
     type = c("provinces", "flanders", "faunabeheerzones")) {
   
   type = match.arg(type)
@@ -24,18 +25,8 @@ tableGewas <- function(data, jaartallen = NULL, variable, sourceIndicator = NULL
   allData <- data
   
   # filter for source
-  if(!is.null(sourceIndicator)) {
-    
-    sources <- c()
-    for(source in sourceIndicator) {
-      sources <- c(sources, sourcesSchade[[source]])
-    }
-    allData <- allData[allData$indieningType %in% sources, ]
-    
-    if(nrow(allData) == 0) {
-      stop(paste0("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, "."))
-    }
-  }
+  allData <- filterSource(plotData = data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
   
   allData$locatie <- switch(type,
       flanders = as.factor("Vlaams Gewest"),

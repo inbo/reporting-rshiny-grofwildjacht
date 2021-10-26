@@ -290,7 +290,10 @@ boxAgeWeight(data = wildEcoData, jaartallen = 2016,
         type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
 boxAgeWeight(data = wildEcoData, jaartallen = 2016:2017,
         type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
-
+boxAgeWeight(data = wildEcoData, jaartallen = 2006:2020,
+  type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
+        sourceIndicator = "both",
+        sourceIndicator_geslacht = "inbo")
 
 ## PLOT 9: Distribution of cheek length vs class ##
 

@@ -16,19 +16,22 @@
 #' @param summarizeBy character, choices to be shown as summary statistics
 #' (expect count or percent)
 #' @param exportData boolean, whether a download button for the data is shown
-#' @param showDataSource boolean, whether to show choices of data source to be 
-#' used for plotted bioindicator
+#' @param showDataSourceSchade boolean, whether to show choices of data source to be 
+#' used for schade data
 #' @param doWellPanel boolean, whether to display the options within a 
 #' \code{shiny::wellPanel()}
 #' @param filter boolean, if TRUE percentage of data used after applying filters is shown
+#' @param showDataSource boolean, whether to show option to select leeftijd source
+#' @param showDataSourceGeslacht boolean, whether to show option to select geslacht source
 #' @param showInterval boolean, if TRUE gives user option to select interval
 #' @return ui object (tagList)
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     regionLevels = NULL, summarizeBy = NULL,
-    exportData = FALSE, showDataSource = FALSE,
-    doWellPanel = TRUE, filter = FALSE, showDataSourceGeslacht = FALSE, showInterval = FALSE) {
+    exportData = FALSE, showDataSourceSchade = FALSE,
+    doWellPanel = TRUE, filter = FALSE, 
+    showDataSource = FALSE, showDataSourceGeslacht = FALSE, showInterval = FALSE) {
   
   
   ns <- NS(id)
@@ -60,10 +63,12 @@ optionsModuleUI <- function(id,
                         "Fusiegemeenten" = "communes", "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
             column(8, uiOutput(ns("region")))
         ),
+      if (showDataSourceSchade)
+        uiOutput(ns("dataSourceSchade")),
       if (showDataSource)
         uiOutput(ns("dataSource")),
       if (showDataSourceGeslacht)
-        selectInput(inputId = ns("dataSource_geslacht"), label = "Data bron geslacht", choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both")),
+        uiOutput(ns("dataSourceGeslacht")),
       if (showDataSource)
         uiOutput(ns("dataSourceWarning")),
       if(showInterval)
@@ -101,8 +106,9 @@ optionsModuleUI <- function(id,
 #' @param sources defines the data sources that can be selected
 #' @param sourceLabel character, the displayed label for the selecting source field for leeftijd, 
 #' 'Data bron' by default
-#' @param sourceVariable character, the variable used internally to filter for source
-#' @param sourceVariable_geslacht character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')
+#' @param sourceVariable_schade character, selected levels to filter for \code{indieningType} for schadeData
+#' @param sourceVariable character, variable to filter for \code{data}
+#' @param sourceVariable_geslacht character, selected levels to filter for \code{geslacht_comp_bron}
 #' @param intervals defines the intervals that can be selected
 #' @return no return value; some output objects are created
 #' @export
@@ -110,8 +116,9 @@ optionsModuleServer <- function(input, output, session,
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE, definedYear = defaultYear,
-    sources = NULL, sourceLabel = "Data bron", sourceVariable = NULL, 
-    sourceVariable_geslacht = NULL, intervals = NULL) {
+    sources = NULL, sourceLabel = "Data bron", 
+    sourceVariable_schade = NULL, sourceVariable = NULL, sourceVariable_geslacht = NULL,
+    intervals = NULL) {
   
   ns <- session$ns
   
@@ -142,7 +149,7 @@ optionsModuleServer <- function(input, output, session,
                   
                   stop("Variable should be defined to filter for source. Please update code.")
                   
-                } else if (!grepl("schade", ns("test"))) {
+                } else {
                   
                   if ( !(sourceVariable %in% colnames(data()))) {
                     
@@ -284,13 +291,30 @@ optionsModuleServer <- function(input, output, session,
         
       })
   
-  output$dataSource <- renderUI({
+  output$dataSourceSchade <- renderUI({
         
-        selectInput(inputId = ns("dataSource"), 
+        selectInput(inputId = ns("dataSource_schade"), 
             label = sourceLabel,
             choices = sources,
             multiple = TRUE)
         
+      })
+    
+    output$dataSource <- renderUI({
+        
+        selectInput(inputId = ns("dataSource"), 
+          label = sourceLabel, 
+          choices = sources
+        )
+        
+      })
+    
+    output$dataSourceGeslacht <- renderUI({
+        
+        selectInput(inputId = ns("dataSource_geslacht"), 
+          label = "Data bron geslacht", 
+          choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both")
+        )
         
       })
   
@@ -320,6 +344,7 @@ optionsModuleServer <- function(input, output, session,
 #' Interactive plot (ui-side)
 #' @param id character, module id, unique name per plot
 #' @param height character, plot height, default is "600px" 
+#' @param filter boolean, whether to display filters UI
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
@@ -406,6 +431,7 @@ datatableModuleUI <- function(id) {
 #' @param combinatie logical, summarised view of selected regions
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
+#' @inheritParams createSpaceData
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
@@ -415,8 +441,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
     data, openingstijdenData, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
-    datatable = FALSE, schadeChoices = NULL, schadeChoicesVrtg = NULL,
-    schadeChoicesGewas = NULL, variable = NULL, combinatie = NULL, schadeTitles = FALSE) {
+    datatable = FALSE,  
+    schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
+    variable = NULL, combinatie = NULL, schadeTitles = FALSE) {
   
   subData <- reactive({
         
@@ -431,7 +458,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
           if (input$regionLevel == "provinces") {
             subData <- subset(subData, provincie %in% input$region)
           } else if (input$regionLevel == "faunabeheerzones") {   
-            subData <- subset(subData, FaunabeheerZone %in% as.numeric(input$region))
+            subData <- subData[subData$FaunabeheerZone %in% as.numeric(input$region), ]
           }
         }
         
@@ -498,8 +525,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
+            if(!is.null(input$dataSource_schade))
+              list(sourceIndicator = input$dataSource_schade),            
             if(!is.null(input$dataSource))
-              list(sourceIndicator = input$dataSource),            
+              list(sourceIndicator = input$dataSource),
             if(!is.null(input$dataSource_geslacht))
               list(sourceIndicator_geslacht = input$dataSource_geslacht),
             if (!is.null(locaties))

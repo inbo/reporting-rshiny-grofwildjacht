@@ -19,7 +19,7 @@ trendYearFlanders(
 \item{timeRange}{numeric vector, time range selected for plot}
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
-should be reported}
+should be reported,}
 
 \item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
 

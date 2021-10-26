@@ -35,8 +35,10 @@
 #' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @export
 boxAgeWeight <- function(data,
-		type, jaartallen = NULL, regio = "", sourceIndicator = c("both", "inbo"),
-		sourceIndicator_geslacht = c("both","inbo"), width = NULL, height = NULL) {
+		type, jaartallen = NULL, regio = "", 
+  sourceIndicator = c("both", "inbo"),
+		sourceIndicator_geslacht = c("both","inbo"), 
+  width = NULL, height = NULL) {
 	
   sourceIndicator <- match.arg(sourceIndicator)
   sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)
@@ -86,7 +88,7 @@ boxAgeWeight <- function(data,
 		
 	} else if (wildNaam == "Wild zwijn" & sourceIndicator == "both") {
 		
-    newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
+   newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
     
 	}else {  # ree
 		

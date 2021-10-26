@@ -30,6 +30,39 @@ getProvince <- function(NISCODE, allSpatialData) {
 }
 
 
+
+#' Filter \code{plotData} based on the \code{indieningType} if required
+#' @param plotData data.frame, to be filtered
+#' @param sourceIndicator character, source used to filter \code{data} ('indieningType' column)
+#' should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.
+#' @param returnStop character, should be one of \code{c("message", "data")}
+#' what needs to be returned if the filtered data has no rows left
+#' @return data.frame, filtered version of \code{plotData}
+#' 
+#' @author mvarewyck
+#' @export
+filterSource <- function(plotData, sourceIndicator = NULL,
+  returnStop = c("message", "data")) {
+  
+  returnStop <- match.arg(returnStop)
+  
+  if (!is.null(sourceIndicator)) {
+    
+    sources <- unlist(sapply(sourceIndicator, function(source) sourcesSchade()[[source]]))
+    plotData <- plotData[plotData$indieningType %in% sources, ]
+    
+    if (nrow(plotData) == 0) {
+      if (returnStop == "message")
+        stop(paste0("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, ". "))
+    }
+  }
+  
+  return(plotData)
+  
+}
+
+
+
 #' Create summary data of geographical data for selected year, species and region level
 #' @param data data.frame, geographical data
 #' @param allSpatialData list of sp, spatial data for all spatial levels
@@ -39,14 +72,14 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
 #' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
 #' should be reported,
-#' @param sourceInidicator character, source used to filter \code{data} ('indieningType' column)
-#' should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.
+#' @inheritParams filterSource
 #' @inheritParams readShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
 #' @export
 createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
-    unit = c("absolute", "relative", "absoluteCases"), sourceIndicator = NULL,
+    unit = c("absolute", "relative", "absoluteCases"), 
+    sourceIndicator = NULL, 
     dataDir = system.file("extdata", package = "reportingGrofwild")) {
   
   
@@ -94,13 +127,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   # Select subset for time
   plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
   
-  if(!is.null(sourceIndicator)) {
-    sources <- c()
-    for(source in sourceIndicator) {
-      sources <- c(sources, sourcesSchade[[source]])
-    }
-    plotData <- subset(plotData, subset = indieningType %in% sources)
-  }
+  plotData <- filterSource(plotData = plotData, sourceIndicator = sourceIndicator,
+    returnStop = "data")
   
   #compute total number of cases to output in stats
   statsDf <- data.frame(nTotal = as.integer(NA), 
@@ -319,7 +347,7 @@ mapFlanders <- function(
   
   if (addGlobe) {
     
-    myMap <- addProviderTiles(myMap, "Hydda.Full")
+    myMap <- addProviderTiles(myMap, "OpenStreetMap.HOT")
     
   }
   

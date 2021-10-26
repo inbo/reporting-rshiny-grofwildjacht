@@ -4,12 +4,14 @@
 \alias{plotModuleUI}
 \title{Interactive plot (ui-side)}
 \usage{
-plotModuleUI(id, height = "600px")
+plotModuleUI(id, height = "600px", filter = FALSE)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
 
 \item{height}{character, plot height, default is "600px"}
+
+\item{filter}{boolean, whether to display filters UI}
 }
 \value{
 ui object

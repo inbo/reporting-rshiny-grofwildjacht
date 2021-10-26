@@ -8,6 +8,7 @@ countYearProvince(
   data,
   jaartallen = NULL,
   type = c("provinces", "flanders", "faunabeheerzones"),
+  sourceIndicator = NULL,
   width = NULL,
   height = NULL
 )
@@ -20,6 +21,9 @@ in the plot; if NULL no selection on year(s) is made}
 
 \item{type}{character, regional level of interest should be one of 
 \code{c("provinces", "flanders", "faunabeheerzones")}}
+
+\item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
+should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
 
 \item{width}{plot width (optional)}
 

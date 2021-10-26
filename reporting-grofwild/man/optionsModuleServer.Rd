@@ -18,8 +18,10 @@ optionsModuleServer(
   definedYear = defaultYear,
   sources = NULL,
   sourceLabel = "Data bron",
+  sourceVariable_schade = NULL,
   sourceVariable = NULL,
-  sourceVariable_geslacht = NULL
+  sourceVariable_geslacht = NULL,
+  intervals = NULL
 )
 }
 \arguments{
@@ -53,9 +55,13 @@ same as \code{types} by defualt}
 \item{sourceLabel}{character, the displayed label for the selecting source field for leeftijd, 
 'Data bron' by default}
 
-\item{sourceVariable}{character, the variable used internally to filter for source}
+\item{sourceVariable_schade}{character, selected levels to filter for \code{indieningType} for schadeData}
 
-\item{sourceVariable_geslacht}{character, the variable used internally to filter for source (can only be 'geslacht_comp_bron')}
+\item{sourceVariable}{character, variable to filter for \code{data}}
+
+\item{sourceVariable_geslacht}{character, selected levels to filter for \code{geslacht_comp_bron}}
+
+\item{intervals}{defines the intervals that can be selected}
 }
 \value{
 no return value; some output objects are created

@@ -731,7 +731,7 @@ callModule(module = optionsModuleServer, id = "schade_plot1",
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
     timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade),
+    sources = names(sourcesSchade()),
     sourceVariable = "indieningType")
 
 callModule(module = plotModuleServer, id = "schade_plot1",
@@ -750,7 +750,7 @@ callModule(module = optionsModuleServer, id = "schade_plot2",
     labelTypes = "Variabele", 
     typesDefault = reactive("wildsoort"), 
     timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade),
+    sources = names(sourcesSchade()),
     sourceVariable = "indieningType")
 
 callModule(module = plotModuleServer, id = "schade_plot2",
@@ -769,7 +769,7 @@ callModule(module = optionsModuleServer, id = "schade_table2",
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
     timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade),
+    sources = names(sourcesSchade()),
     sourceVariable = "indieningType")
 callModule(module = plotModuleServer, id = "schade_table2",
     plotFunction = "tableSchadeCode", 
@@ -791,7 +791,7 @@ callModule(module = optionsModuleServer, id = "schade_gewas",
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"),
     timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade),
+    sources = names(sourcesSchade()),
     sourceVariable = "indieningType")
 
 #callModule(dataModuleServer, id = "gewas",

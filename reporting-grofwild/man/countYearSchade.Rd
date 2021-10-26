@@ -9,6 +9,7 @@ countYearSchade(
   jaartallen = NULL,
   type = NULL,
   summarizeBy = c("count", "percent"),
+  sourceIndicator = NULL,
   width = NULL,
   height = NULL
 )
@@ -22,6 +23,9 @@ in the plot; if NULL no selection on year(s) is made}
 \item{type}{character, variable name in \code{data} of interest}
 
 \item{summarizeBy}{character, whether to summarize data in terms of counts or percentages}
+
+\item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
+should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
 
 \item{width}{plot width (optional)}
 

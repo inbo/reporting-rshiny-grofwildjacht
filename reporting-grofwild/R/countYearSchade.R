@@ -8,8 +8,7 @@
 #' Create interactive barplot for wildschade data variable of interest ifo year
 #' @inheritParams countYearAge
 #' @param type character, variable name in \code{data} of interest
-#' @param sourceInidicator character, source used to filter \code{data} ('indieningType' column)
-#' should be one of \code{c("E-loker", "HVV", "Natuurpunt")}. 
+#' @inheritParams filterSource 
 #' @return list with
 #' \itemize{
 #' \item{'plot': }{plotly object}
@@ -20,8 +19,8 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
-    summarizeBy = c("count", "percent"), sourceIndicator = NULL,
-    width = NULL, height = NULL) {
+    summarizeBy = c("count", "percent"), 
+    sourceIndicator = NULL, width = NULL, height = NULL) {
   
   # For R CMD check
   freq <- NULL
@@ -38,21 +37,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  plotData <- data
-  
-  # filter for source
-  if(!is.null(sourceIndicator)) {
-    
-    sources <- c()
-    for(source in sourceIndicator) {
-      sources <- c(sources, sourcesSchade[[source]])
-    }
-    plotData <- plotData[plotData$indieningType %in% sources, ]
-    
-    if(nrow(plotData) == 0) {
-      stop(paste0("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, "."))
-    }
-  }  
+  plotData <- filterSource(plotData= data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
   
   # Select data
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 

@@ -228,8 +228,8 @@ callModule(module = optionsModuleServer, id = "wild_plot6",
     timeRange = reactive(if (input$wild_species == "Ree")
               c(2014, max(results$wild_timeRange())) else 
               results$wild_timeRange()),
-    sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"), 
-    sourceLabel = "Data bron leeftijd",
+        sourceLabel = "Data bron leeftijd",
+        sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
     sourceVariable = "leeftijd_comp_bron",
     sourceVariable_geslacht = "geslacht_comp_bron"
 )

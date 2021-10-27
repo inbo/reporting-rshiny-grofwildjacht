@@ -29,9 +29,9 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 
 # Specify currently used wildsoorten
 schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
-                      "Klein wild" = c("haas", "fazant", "konijn"),
+                      "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
                       "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
-                      "Overig" = c("houtduif", "vos", "wolf", "verwilderde kat"))
+                      "Overig" = c("houtduif", "vos", "verwilderde kat"))
 
 # Specify currently used type schades
 schadeTypes <- c("GEWAS", "VRTG", "ANDERE")

@@ -14,7 +14,7 @@
 #' 
 #' @inheritParams mapSchade
 #' @inheritParams readShapeData
-#' @inheritParams filterSource
+#' @inheritParams filterSchade
 #' @param timeRange numeric vector, year span of interest
 #' @return a filtered spatialPointsDataFrame
 #' 
@@ -25,7 +25,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     sourceIndicator = NULL) {
 	
   
-  plotData <- filterSource(plotData = schadeData,
+  plotData <- filterSchade(plotData = schadeData,
     sourceIndicator = sourceIndicator, returnStop = "message")
     
   # filter columns

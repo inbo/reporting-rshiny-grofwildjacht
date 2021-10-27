@@ -225,7 +225,7 @@ tagList(
                 optionsModuleUI(id = "schade_plot1", 
                     showTime = TRUE, 
                     showType = TRUE,
-                    showDataSourceSchade = TRUE,
+                    showDataSource = "schade",
                     exportData = TRUE),
                 tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina, het aantal schadegevallen weer per gekozen schaalniveau (keuzevak regio: ", tags$i("Vlaanderen, provincies"), " of ", tags$i("faunabeheerzones"), ")."),
                 tags$p("Wanneer je als periode meerdere jaren kiest, worden de verschillende deelgebieden per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden de verschillende geografische deelgebieden naast elkaar weergegeven.")
@@ -247,7 +247,7 @@ tagList(
                     summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                     showTime = TRUE, 
                     showType = TRUE, 
-                    showDataSourceSchade = TRUE,
+                    showDataSource = "schade",
                     exportData = TRUE),
                 tags$p("Deze figuur geeft op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina het aantal schademeldingen weer in functie van het veld dat je kiest bij Variabele. Je kan kiezen tussen het ", tags$i("gewas"), "(indien gekozen werd voor gewasschade), de ", tags$i("wildsoort(en)"), " binnen de gekozen dataset, of de ", tags$i("subcategorie type schade"), "(bv. verkeersongelukken met of zonder personenletsels). Je kan een keuze maken tussen het absoluut aantal schademeldingen per categorie en het relatief aantal schademeldingen."),
                 tags$p("Wanneer je als periode meerdere jaren kiest, worden de verschillende subcategorie\u00EBn per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden ze naast elkaar weergegeven.")
@@ -268,7 +268,7 @@ tagList(
                 optionsModuleUI(id = "schade_table2", 
                     showTime = TRUE, 
                     showType = TRUE,
-                    showDataSourceSchade = TRUE,
+                    showDataSource = "schade",
                     exportData = TRUE),
                 tags$p("Op basis van de filterkeuzes uit het keuzemenu bovenaan de pagina geeft deze tabel, opgedeeld per subcategorie, het aantal schademeldingen weer. Je kan hierbij zelf de periode en het schaalniveau kiezen", tags$i("(Vlaanderen, provincie, faunabeheerzone)"), ".")
             ),
@@ -288,7 +288,7 @@ tagList(
                 optionsModuleUI(id = "schade_gewas", 
                     showTime = TRUE, 
                     showType = TRUE,
-                    showDataSourceSchade = TRUE,
+                    showDataSource = "schade",
                     exportData = TRUE),
                 tags$p("Indien je in het keuzemenu bovenaan de pagina de optie ", tags$i("Gewasschade"), " selecteerde, geeft deze tabel het aantal schademeldingen per gewas en per regio, voor de gekozen periode, weer.")
             ),

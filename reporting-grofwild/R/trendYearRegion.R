@@ -30,7 +30,7 @@ createTrendData <- function(data, allSpatialData,
     
     
     # filter for source
-    plotData <- filterSource(plotData = data, sourceIndicator = sourceIndicator,
+    plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
       returnStop = "message")
     
     

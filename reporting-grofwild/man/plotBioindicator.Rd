@@ -9,8 +9,10 @@ plotBioindicator(
   type = NULL,
   jaartallen = NULL,
   regio = "",
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos"),
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht"),
   sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  sourceIndicator_leeftijd = NULL,
+  sourceIndicator_geslacht = NULL,
   width = NULL,
   height = NULL
 )
@@ -36,7 +38,11 @@ with bioindicator, either 'onderkaaklengte',
 'ontweid_gewicht', or 'aantal_embryos'}
 
 \item{sourceIndicator}{character, defines the data source to be used for
-bioindicator 'onderkaaklengte'}
+bioindicator 'onderkaak_comp_bron' or 'aantal_embryos_bron'}
+
+\item{sourceIndicator_leeftijd}{character, levels of \code{leeftijd_comp_bron} to select on}
+
+\item{sourceIndicator_geslacht}{character, levels of \code{geslacht_comp_bron} to select on}
 
 \item{width}{plot width (optional)}
 

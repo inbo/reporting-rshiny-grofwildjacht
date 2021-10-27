@@ -12,7 +12,7 @@
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
 #' @inheritParams countYearProvince
-#' @inheritParams filterSource
+#' @inheritParams filterSchade
 #' @return a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
 #' specifying multicolumn column names 
 #' @author Eva Adriaensen
@@ -43,7 +43,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     jaartallen <- unique(data$afschotjaar)
   
   # filter for source
-  allData <- filterSource(plotData = data, sourceIndicator = sourceIndicator,
+  allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   allData$locatie <- switch(type,

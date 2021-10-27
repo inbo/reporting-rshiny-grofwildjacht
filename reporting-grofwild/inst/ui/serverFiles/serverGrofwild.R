@@ -227,11 +227,7 @@ callModule(module = optionsModuleServer, id = "wild_plot6",
     multipleTypes = TRUE,
     timeRange = reactive(if (input$wild_species == "Ree")
               c(2014, max(results$wild_timeRange())) else 
-              results$wild_timeRange()),
-    sourceLabel = "Data bron leeftijd",
-    sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
-    sourceVariable = "leeftijd_comp_bron",
-    sourceVariable_geslacht = "geslacht_comp_bron"
+              results$wild_timeRange())
 )
 callModule(module = plotModuleServer, id = "wild_plot6",
     plotFunction = "boxAgeWeight", 
@@ -249,11 +245,8 @@ callModule(module = optionsModuleServer, id = "wild_plot7",
     multipleTypes = TRUE,
     timeRange = reactive(if (input$wild_species == "Ree")
               c(2014, max(results$wild_timeRange())) else 
-              results$wild_timeRange()),
-    sourceLabel = "Data bron leeftijd",
-    sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
-    sourceVariable = "leeftijd_comp_bron",
-    sourceVariable_geslacht = "geslacht_comp_bron")
+              results$wild_timeRange())
+  )
 callModule(module = plotModuleServer, id = "wild_plot7",
     plotFunction = "boxAgeGenderLowerJaw", 
     data = results$wild_ecoData)
@@ -276,12 +269,7 @@ callModule(module = optionsModuleServer, id = "wild_plot8",
     timeRange = results$wild_timeRange,
     types = results$typesDefaultGender,
     typesDefault = results$typesDefaultGender,
-    multipleTypes = TRUE,
-    sources = c("INBO" = "inbo", 
-        "Meldingsformulier" = "meldingsformulier",  
-        "INBO en meldingsformulier" = "both"), 
-    sourceLabel = "Data bron voor onderkaaklengte",
-    sourceVariable = "onderkaaklengte_comp_bron")
+    multipleTypes = TRUE)
 callModule(module = plotModuleServer, id = "wild_plot8",
     plotFunction = "plotBioindicator", 
     bioindicator = "onderkaaklengte",
@@ -313,12 +301,7 @@ callModule(module = optionsModuleServer, id = "wild_plot10",
     data = results$wild_ecoData,
     timeRange = results$wild_timeRange,
     types = results$typesFemale,
-    multipleTypes = TRUE,
-    sources = c("INBO" = "inbo", 
-        "Meldingsformulier" = "meldingsformulier",  
-        "INBO en meldingsformulier" = "both"), 
-    sourceLabel = "Data bron voor aantal embryo's",
-    sourceVariable = "aantal_embryos_bron")
+    multipleTypes = TRUE)
 callModule(module = plotModuleServer, id = "wild_plot10",
     plotFunction = "countEmbryos",
     data = results$wild_ecoData)

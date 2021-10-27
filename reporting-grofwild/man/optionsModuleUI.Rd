@@ -13,11 +13,8 @@ optionsModuleUI(
   regionLevels = NULL,
   summarizeBy = NULL,
   exportData = FALSE,
-  showDataSourceSchade = FALSE,
+  showDataSource = NULL,
   doWellPanel = TRUE,
-  filter = FALSE,
-  showDataSource = FALSE,
-  showDataSourceGeslacht = FALSE,
   showInterval = FALSE
 )
 }
@@ -40,17 +37,12 @@ region levels: 1 = flanders, 2 = provinces, 3 = communes}
 
 \item{exportData}{boolean, whether a download button for the data is shown}
 
-\item{showDataSourceSchade}{boolean, whether to show choices of data source to be 
-used for schade data}
+\item{showDataSource}{character vector, for which variables to show choices 
+of data source levels. 
+Should be one or more of \code{c("schade", "leeftijd", "geslacht", "onderkaak", "embryos")}}
 
 \item{doWellPanel}{boolean, whether to display the options within a 
 \code{shiny::wellPanel()}}
-
-\item{filter}{boolean, if TRUE percentage of data used after applying filters is shown}
-
-\item{showDataSource}{boolean, whether to show option to select leeftijd source}
-
-\item{showDataSourceGeslacht}{boolean, whether to show option to select geslacht source}
 
 \item{showInterval}{boolean, if TRUE gives user option to select interval}
 }

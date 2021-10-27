@@ -10,6 +10,8 @@ countEmbryos(
   jaartallen = NULL,
   regio = "",
   sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  sourceIndicator_leeftijd = NULL,
+  sourceIndicator_geslacht = NULL,
   width = NULL,
   height = NULL
 )
@@ -27,6 +29,10 @@ in the plot; if NULL no selection on year(s) is made}
 to be shown in the plot title}
 
 \item{sourceIndicator}{character, which source to be used; default value is "inbo"}
+
+\item{sourceIndicator_leeftijd}{character, levels of \code{leeftijd_comp_bron} to select on}
+
+\item{sourceIndicator_geslacht}{character, levels of \code{geslacht_comp_bron} to select on}
 
 \item{width}{plot width (optional)}
 

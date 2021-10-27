@@ -3,7 +3,7 @@
 #' with bioindicator, either 'onderkaaklengte',
 #' 'ontweid_gewicht', or 'aantal_embryos'
 #' @param sourceIndicator character, defines the data source to be used for
-#' bioindicator 'onderkaaklengte'
+#' bioindicator 'onderkaak_comp_bron' or 'aantal_embryos_bron'
 #' @param type animal type, used to filter \code{data} ('type_comp' column)
 #' If NULL (by default), for bioindicator set to:
 #' \itemize{
@@ -11,6 +11,7 @@
 #' \item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{type_comp} set to '')}
 #' }
 #' @inheritParams countYearAge
+#' @inheritParams filterGrofwild
 #' @import plotly
 #' @import mgcv
 #' @importFrom INBOtheme inbo_palette
@@ -43,13 +44,12 @@
 plotBioindicator <- function(data, 
 		type = NULL,
 		jaartallen = NULL, regio = "",
-		bioindicator = c("onderkaaklengte", "ontweid_gewicht", "aantal_embryos"),
+		bioindicator = c("onderkaaklengte", "ontweid_gewicht"),
 		sourceIndicator = c("inbo", "meldingsformulier", "both"),
+  sourceIndicator_leeftijd = NULL,
+  sourceIndicator_geslacht = NULL,
 		width = NULL, height = NULL){
-	
-	
-    # To prevent warnings with R CMD check
-    onderkaaklengte_comp_bron <- NULL
+	  
 	
 	wildNaam <- unique(data$wildsoort)
 	
@@ -73,46 +73,37 @@ plotBioindicator <- function(data,
 		type <- if (bioindicator == "aantal_embryos")
 					c("Smalree", "Geit") else
 					levels(data$type_comp)[levels(data$type_comp) != ""]
-	
-	# Bioindicator 'onderkaaklengte' depends on data source
-	# bron == "both" -> onderkaaklengte_comp
-	# bron == "inbo" -> lengte_mm
-	# bron == "meldingsformulier" -> mean(onderkaaklengte_links, onderkaaklengte_rechts)
-	if (bioindicator == "onderkaaklengte") {
-		
-		if (sourceIndicator == "both") {
-			
-			data$onderkaaklengte <- data$onderkaaklengte_comp
-      
-      # currently not done bc for some onderkaaklengte_comp values it is unclear at the
-      # moment where they were determined (mf vs inbo)
-#			data <- subset(data, !is.na(onderkaaklengte_comp_bron)) 
-    
-      colnames(data)[match("onderkaaklengte_comp_bron", colnames(data))] <- "bron" 
-			
-		} else {
-			
-			data$bron <- sourceIndicator
-			
-			if (sourceIndicator == "inbo") 
-				data$onderkaaklengte <- data$lengte_mm else
-				data$onderkaaklengte <- rowMeans(data[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
-		}
-		
-	}
+
+# Filter on bron
+if (bioindicator == "onderkaaklengte") {
+  
+  plotData <- filterGrofwild(plotData = data, 
+    sourceIndicator_leeftijd = sourceIndicator_leeftijd, 
+    sourceIndicator_geslacht = sourceIndicator_geslacht,
+    sourceIndicator_onderkaak = sourceIndicator)
+  
+} else {
+  
+  plotData <- filterGrofwild(plotData = data, 
+    sourceIndicator_leeftijd = sourceIndicator_leeftijd, 
+    sourceIndicator_geslacht = sourceIndicator_geslacht)
+  
+}
+
 	
 	# Select data of specified years
-	plotData <- data[data$afschotjaar %in% jaartallen & data$type_comp %in% type,
+	plotData <- plotData[plotData$afschotjaar %in% jaartallen & plotData$type_comp %in% type,
 			c("afschotjaar", bioindicator, 
-					if (bioindicator == "onderkaaklengte") "bron" else NULL, 
-					"type_comp", "provincie")]
-	
+					if (bioindicator == "onderkaaklengte") "onderkaaklengte_comp_bron" else NULL, 
+					"type_comp", "provincie", "leeftijd_comp_bron", "geslacht_comp_bron")]
+ 
 	if(bioindicator != "aantal_embryos" && length(unique(plotData$afschotjaar)) <= 2)
 		stop("Niet beschikbaar: Gelieve periode met minstens 3 jaren te selecteren")
 	
 	if(bioindicator != "aantal_embryos")
 		plotData <- plotData[!is.na(plotData[, bioindicator]), ]
-	
+
+
 	colnames(plotData)[colnames(plotData) == bioindicator] <- "variable"
 	
 	

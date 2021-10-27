@@ -40,7 +40,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
 #' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
 #' should be reported,
-#' @inheritParams filterSource
+#' @inheritParams filterSchade
 #' @inheritParams readShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
@@ -95,7 +95,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   # Select subset for time
   plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
   
-  plotData <- filterSource(plotData = plotData, sourceIndicator = sourceIndicator,
+  plotData <- filterSchade(plotData = plotData, sourceIndicator = sourceIndicator,
     returnStop = "data")
   
   #compute total number of cases to output in stats

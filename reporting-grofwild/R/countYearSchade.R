@@ -8,7 +8,7 @@
 #' Create interactive barplot for wildschade data variable of interest ifo year
 #' @inheritParams countYearAge
 #' @param type character, variable name in \code{data} of interest
-#' @inheritParams filterSource 
+#' @inheritParams filterSchade 
 #' @return list with
 #' \itemize{
 #' \item{'plot': }{plotly object}
@@ -37,7 +37,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  plotData <- filterSource(plotData= data, sourceIndicator = sourceIndicator,
+  plotData <- filterSchade(plotData= data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   # Select data

@@ -25,7 +25,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   allData <- data
   
   # filter for source
-  allData <- filterSource(plotData = data, sourceIndicator = sourceIndicator,
+  allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   allData$locatie <- switch(type,

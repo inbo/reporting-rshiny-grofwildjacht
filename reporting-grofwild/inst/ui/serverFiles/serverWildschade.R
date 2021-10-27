@@ -730,9 +730,7 @@ callModule(module = optionsModuleServer, id = "schade_plot1",
         )), 
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
-    timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade()),
-    sourceVariable = "indieningType")
+    timeRange = results$schade_timeRange)
 
 callModule(module = plotModuleServer, id = "schade_plot1",
     plotFunction = "countYearProvince", 
@@ -749,9 +747,7 @@ callModule(module = optionsModuleServer, id = "schade_plot2",
         )), 
     labelTypes = "Variabele", 
     typesDefault = reactive("wildsoort"), 
-    timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade()),
-    sourceVariable = "indieningType")
+    timeRange = results$schade_timeRange)
 
 callModule(module = plotModuleServer, id = "schade_plot2",
     plotFunction = "countYearSchade", 
@@ -768,9 +764,7 @@ callModule(module = optionsModuleServer, id = "schade_table2",
         )), 
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
-    timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade()),
-    sourceVariable = "indieningType")
+    timeRange = results$schade_timeRange)
 callModule(module = plotModuleServer, id = "schade_table2",
     plotFunction = "tableSchadeCode", 
     data = reactive(results$schade_data()@data),
@@ -790,9 +784,7 @@ callModule(module = optionsModuleServer, id = "schade_gewas",
         )), 
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"),
-    timeRange = results$schade_timeRange,
-    sources = names(sourcesSchade()),
-    sourceVariable = "indieningType")
+    timeRange = results$schade_timeRange)
 
 #callModule(dataModuleServer, id = "gewas",
 #    data = results$schade_data,

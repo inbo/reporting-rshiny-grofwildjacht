@@ -41,12 +41,7 @@ schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
                  c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD", "GRFSCHD"),     #GEWAS
                  c("ANDERE", "VALWILD"))                            #ANDERE
 
-# sources schadegevallen (indieningType column)
-sourcesSchade <- list("E-loket" = c("E_Loket_Meldpunt Jacht", "E_Loket_Meldpunt Schade_Punt", "E_Loket_Meldpunt Schade_Poly"),
-    "Natuurpunt" = c("Natuurpunt_copied_observation", "Natuurpunt_ifbl", "Natuurpunt_losse_waarneming", "Natuurpunt_ObsMapp", "Natuurpunt_via_wnpda", 
-                      "Natuurpunt_WinObs", "Natuurpunt_Dieren_onder_de_wielen_2.0", "Natuurpunt_iObs", "Natuurpunt_NA", "Natuurpunt_Site", 
-                      "Natuurpunt_Webobs_html5", "Natuurpunt_zoogdiertelling_be"),
-                  "HVV" = c("HVV_Wilder"))
+
              
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
@@ -93,12 +88,11 @@ if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
       "\nUpdate schadeCodes aub en ook de fullnames() functie.")
 }
 
-# check for new sources schade
-if(any(!unique(schadeData$indieningType) %in% as.vector(unlist(sourcesSchade)))) {
-  warning("Niewe schade bronnen gedetecteed in raw data: ",
-      paste0(setdiff(unique(schadeData$indieningType), as.vector(unlist(sourcesSchade))), collapse = ", "),
-      "\nUpdate sourcesSchade.")
-}
+# sources schadegevallen (indieningType column)
+sourcesSchade <- list(
+  "E-loket" = grep("E_Loket", unique(schadeData$indieningType), value = TRUE),
+  "Natuurpunt" = grep("Natuurpunt", unique(schadeData$indieningType), value = TRUE), 
+  "HVV" = grep("HVV", unique(schadeData$indieningType), value = TRUE))
 
 
 

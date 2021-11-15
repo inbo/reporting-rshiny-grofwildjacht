@@ -401,6 +401,8 @@ loadRawData <- function(
         # Fix for korrelmais
         rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
         
+        # fix for ANDERE within GEWAS
+        rawData$schadeCode[rawData$schadeBasisCode == "GEWAS" & rawData$schadeCode == "ANDERE"] <- "GEWASANDR"
         
         # TODO what if x/y coordinates missing -> exclude
         toExclude <- is.na(rawData$x) | is.na(rawData$y)

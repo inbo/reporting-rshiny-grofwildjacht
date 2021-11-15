@@ -412,6 +412,15 @@ output$map_region <- renderUI({
           selected = selected, multiple = TRUE)
       
     })
+  
+  
+observeEvent(input$map_regionLevel, {
+    
+    updateCheckboxInput(session = session, inputId = "map_combinatie",
+      label = paste0("Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot ", 
+        results$map_regionLevelName(), ")"))
+    
+  })  
 
 
 ## Time plot for Flanders (reference) ##
@@ -464,18 +473,21 @@ results$map_timeData <- reactive({
     })
 
 # Title for selected region level
+results$map_regionLevelName <- reactive({
+    
+    switch(input$map_regionLevel,
+      "flanders" = "Vlaanderen",
+      "provinces" = "Provincie",
+      "faunabeheerzones" = "Faunabeheerzones",
+      "communes" = "Gemeente (binnen provincie)",
+      "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
+      "utm5" = "5x5 UTM")
+    
+  })
+
 output$map_timeTitle <- renderUI({
       
-      regionLevel <- switch(input$map_regionLevel,
-          "flanders" = "Vlaanderen",
-          "provinces" = "Provincie",
-          "faunabeheerzones" = "Faunabeheerzones",
-          "communes" = "Gemeente (binnen provincie)",
-          "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
-          "utm5" = "5x5 UTM")
-      
-      
-      h3("Evolutie gerapporteerd afschot", regionLevel)
+      h3("Evolutie gerapporteerd afschot",results$map_regionLevelName())
       
     })
 

@@ -108,7 +108,8 @@ tagList(
                             "Aantal/100ha" = "relative"))
                 )
             ),
-            checkboxInput(inputId = "map_combinatie", label = "Combineer de geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot geselecteerde Regio - schaal)"),
+            checkboxInput(inputId = "map_combinatie", 
+              label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)"),
             actionLink(inputId = "map_globe", label = "Voeg landkaart toe",
                 icon = icon("globe"))
         

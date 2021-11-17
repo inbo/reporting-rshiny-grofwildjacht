@@ -12,6 +12,7 @@
 #' in the plot; if NULL no selection on year(s) is made
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
+#' @inheritParams filterSchade
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
@@ -28,30 +29,38 @@
 #' }
 #' @import plotly
 #' @importFrom reshape2 melt
-#' @importFrom INBOtheme inbo_palette
 #' @importFrom stringr str_sort
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
-		width = NULL, height = NULL) {
-	
-	
+        sourceIndicator = NULL, width = NULL, height = NULL) {
+  
+  
   type <- match.arg(type)
-	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
+	 wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
 	
-  plotData <- data
+  # filter for source
+  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
+  
   plotData$locatie <- switch(type,
           flanders = "Vlaams Gewest",
           provinces = plotData$provincie,
           faunabeheerzones = plotData$FaunabeheerZone
   )
+  if(nrow(plotData) == 0) {
+    stop(paste0("Geen data beschikbaar voor de geselecteerde locatie: ", type, ". "))
+  }
     
 	# Select data
 	plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie")]
 	plotData <- plotData[!is.na(plotData$afschotjaar), ]
+  if(nrow(plotData) == 0) {
+    stop(paste0("Geen data beschikbaar voor de geselecteerde afschotjaren: ", jaartallen, "."))
+  }
   
   # Rename provincie NA to "Onbekend" -  provincie is already factor
   if (type == "provinces") {
@@ -88,7 +97,8 @@ countYearProvince <- function(data, jaartallen = NULL,
 	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
 	
-	colors <- rev(inbo_palette(n = nlevels(summaryData$locatie)))
+ 
+ colorList <- replicateColors(nColors = nlevels(summaryData$locatie))
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
@@ -97,7 +107,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~locatie,
-					colors = colors, type = "bar",  width = width, height = height) %>%
+					colors = colorList$colors, type = "bar",  width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Jaar"), 
 					yaxis = list(title = "Aantal"),
@@ -117,6 +127,6 @@ countYearProvince <- function(data, jaartallen = NULL,
   names(summaryData)[names(summaryData) == "value"] <- "aantal"
   
   
-	return(list(plot = pl, data = summaryData))
+	return(list(plot = pl, data = summaryData, warning = colorList$warning))
 	
 }

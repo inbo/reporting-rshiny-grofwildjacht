@@ -72,8 +72,6 @@ shinyServer(function(input, output, session) {
       
       # Tabpanel wildschade
       output$schade_content <- renderUI({
-            # disclaimer 
-            showNotification("Door technische problemen bij de doorstroom van wildschade data van het e-loket naar deze website ontbreekt de recentste wildsschade data van het e-loket", type = "error", duration = NULL)
             source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
             
           })

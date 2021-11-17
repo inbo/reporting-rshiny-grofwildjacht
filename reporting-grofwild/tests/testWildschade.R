@@ -7,7 +7,7 @@
 library(reportingGrofwild)
 library(testthat)
 
-
+doPrint <- FALSE
 
 # Load all data
 #readShapeData()  # create shape data
@@ -22,7 +22,6 @@ species <- sort(unique(schadeData$wildsoort))
 #  [5] "haas"          "houtduif"      "konijn"        "ree"          
 #  [9] "smient"        "vos"           "wild zwijn"    "wilde eend"   
 # [13] "wolf"         
-
 
 ## THE MAP
 
@@ -64,23 +63,25 @@ for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
                 legend = "topright",
                 species = iSpecies
         )
-        print(mapPlot)
+        if (doPrint)
+          print(mapPlot)
         
         if (regionLevel == "flanders")
-            trendPlot <- trendYearFlanders(
-                    data = trendData,
-                    timeRange = c(2018, 2019),
-                    unit = "absolute",
-                    schadeTitles = TRUE) else 
-            trendPlot <- trendYearRegion(
-                    data = trendData,
-                    timeRange = c(2018, 2019),
-                    unit = "absolute",
-                    locaties = trendData$locatie[1:7],
-                    schadeTitles = TRUE)
+          trendPlot <- trendYearFlanders(
+            data = trendData,
+            timeRange = c(2018, 2019),
+            unit = "absolute",
+            schadeTitles = TRUE) else 
+          trendPlot <- trendYearRegion(
+            data = trendData,
+            timeRange = c(2018, 2019),
+            unit = "absolute",
+            locaties = trendData$locatie[1:7],
+            schadeTitles = TRUE)
         
-        print(trendPlot)
-        
+        if (doPrint)
+          print(trendPlot)
+      
         
         
     }
@@ -101,13 +102,14 @@ for (iSpecies in species) {
   for (var in c("season", "schadeCode", "afschotjaar")) {
     
     myPlot <- mapSchade(
-            schadeData = schadeDataSub,
-            regionLevel = "provinces",
-            variable = var,
-            allSpatialData = spatialData,
-            addGlobe = TRUE)
+      schadeData = schadeDataSub,
+      regionLevel = "provinces",
+      variable = var,
+      allSpatialData = spatialData,
+      addGlobe = TRUE)
     
-    print(myPlot)
+    if (doPrint)
+      print(myPlot)
   }    
 }
 
@@ -119,13 +121,16 @@ for (iSpecies in species) {
 ## PLOT 1: Counts per year and province ##
 
 allPlots <- lapply(species, function(iSpecies) {
+    
+    if (doPrint)
+      print(iSpecies)
             
             plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
             timeRange <- min(plotData$afschotjaar):max(plotData$afschotjaar)
             
             res <- countYearProvince(data = plotData@data, jaartallen = timeRange)
             
-            expect_equal(names(res), c("plot", "data"))
+            expect_equal(names(res), c("plot", "data", "warning"))
             expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
             
             res
@@ -137,6 +142,8 @@ allPlots <- lapply(species, function(iSpecies) {
 countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
 countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders")
 
+countYearProvince(data = wildSchadeData, jaartallen = 2018:2020, type = "provinces",
+  sourceIndicator = "E-loket")$plot
 
 ## PLOT 2: Counts per year and variable of interest ##
 

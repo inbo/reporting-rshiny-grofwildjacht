@@ -13,7 +13,8 @@
 #' @importFrom plyr count
 #' @importFrom reshape2 dcast
 #' @export
-tableGewas <- function(data, jaartallen = NULL, variable,
+tableGewas <- function(data, jaartallen = NULL, variable, 
+  sourceIndicator = NULL, 
     type = c("provinces", "flanders", "faunabeheerzones")) {
   
   type = match.arg(type)
@@ -22,7 +23,11 @@ tableGewas <- function(data, jaartallen = NULL, variable,
     jaartallen <- unique(data$afschotjaar)
   
   allData <- data
-
+  
+  # filter for source
+  allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
+  
   allData$locatie <- switch(type,
       flanders = as.factor("Vlaams Gewest"),
       provinces = allData$provincie,

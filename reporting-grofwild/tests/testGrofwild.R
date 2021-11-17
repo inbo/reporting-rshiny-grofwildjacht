@@ -91,7 +91,7 @@ allPlots <- lapply(species, function(iSoort) {
             
             res <- countYearProvince(data = plotData, jaartallen = timeRange)
             
-            expect_equal(names(res), c("plot", "data"))
+            expect_equal(names(res), c("plot", "data", "warning"))
             expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
             
             res
@@ -277,9 +277,10 @@ length(areRemoved)
 allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
             
             plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-            boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), sourceIndicator = "both")
+            boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), 
+              sourceIndicator_leeftijd = "both")
             boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
-                    sourceIndicator = "inbo")
+                    sourceIndicator_leeftijd = "inbo")
             
             
         })
@@ -290,7 +291,10 @@ boxAgeWeight(data = wildEcoData, jaartallen = 2016,
         type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
 boxAgeWeight(data = wildEcoData, jaartallen = 2016:2017,
         type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
-
+tmp <- boxAgeWeight(data = wildEcoData, jaartallen = 2006:2020,
+  type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
+        sourceIndicator_leeftijd = "both",
+        sourceIndicator_geslacht = "both")$plot
 
 ## PLOT 9: Distribution of cheek length vs class ##
 

@@ -28,19 +28,21 @@ library(shinycssloaders)   # for busy indicator
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 
 # Specify currently used wildsoorten
-schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree"),
-                      "Klein wild" = c("haas", "fazant", "konijn"),
+schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
+                      "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
                       "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
-                      "Overig" = c("houtduif", "vos", "wolf", "verwilderde kat"))
+                      "Overig" = c("houtduif", "vos", "verwilderde kat"))
 
 # Specify currently used type schades
 schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
 
 # Specify currently used types schade subcodes
 schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
-                 c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD"),     #GEWAS
+                 c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD", "GRFSCHD"),     #GEWAS
                  c("ANDERE", "VALWILD"))                            #ANDERE
 
+
+             
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 
@@ -85,6 +87,12 @@ if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
       paste0(setdiff(unique(schadeData$schadeCode), schadeCodes), collapse = ", "),
       "\nUpdate schadeCodes aub en ook de fullnames() functie.")
 }
+
+# sources schadegevallen (indieningType column)
+sourcesSchade <- list(
+  "E-loket" = grep("E_Loket", unique(schadeData$indieningType), value = TRUE),
+  "Natuurpunt" = grep("Natuurpunt", unique(schadeData$indieningType), value = TRUE), 
+  "HVV" = grep("HVV", unique(schadeData$indieningType), value = TRUE))
 
 
 

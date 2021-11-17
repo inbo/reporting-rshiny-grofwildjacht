@@ -12,6 +12,7 @@
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
 #' @inheritParams countYearProvince
+#' @inheritParams filterSchade
 #' @return a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
 #' specifying multicolumn column names 
 #' @author Eva Adriaensen
@@ -21,7 +22,8 @@
 #' @importFrom utils tail
 #' @export
 tableSchadeCode <- function(data, jaartallen = NULL,
-        type = c("provinces", "flanders", "faunabeheerzones"),
+        type = c("provinces", "flanders", "faunabeheerzones"), 
+        sourceIndicator = NULL, 
         schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL) {
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
@@ -40,7 +42,10 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  allData <- data
+  # filter for source
+  allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
+  
   allData$locatie <- switch(type,
           flanders = "Vlaams Gewest",
           provinces = allData$provincie,

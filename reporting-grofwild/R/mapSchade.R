@@ -3,6 +3,9 @@
 # Author: mvarewyck
 ###############################################################################
 
+
+
+
 #' Summarized data for perceelplot
 #' 
 #' Create object of type schadedata, filtered for cases within \code{timeRange}
@@ -11,19 +14,24 @@
 #' 
 #' @inheritParams mapSchade
 #' @inheritParams readShapeData
+#' @inheritParams filterSchade
 #' @param timeRange numeric vector, year span of interest
 #' @return a filtered spatialPointsDataFrame
 #' 
 #' @author Eva Adriaensen
 #' @export
 createSchadeSummaryData <- function(schadeData, timeRange,
-    dataDir = system.file("extdata", package = "reportingGrofwild")) {
+    dataDir = system.file("extdata", package = "reportingGrofwild"),
+    sourceIndicator = NULL) {
 	
   
+  plotData <- filterSchade(plotData = schadeData,
+    sourceIndicator = sourceIndicator, returnStop = "message")
+    
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
                         "schadeCode", "provincie")
-  plotData <- schadeData[, colnames(schadeData@data) %in% colnamesToRetain]
+  plotData <- plotData[, colnames(plotData@data) %in% colnamesToRetain]
   
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
@@ -147,8 +155,7 @@ mapSchade <- function(
     if (addGlobe) {
         
         myMap <- myMap %>%
-                    addProviderTiles("Esri.WorldImagery") %>%
-                    addProviderTiles("Hydda.RoadsAndLabels")
+                    addProviderTiles("OpenStreetMap.HOT")
         
     }
     

@@ -108,7 +108,8 @@ tagList(
                             "Aantal/100ha" = "relative"))
                 )
             ),
-            checkboxInput(inputId = "map_combinatie", label = "Combineer de geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente (binnen provincie))"),
+            checkboxInput(inputId = "map_combinatie", 
+              label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)"),
             actionLink(inputId = "map_globe", label = "Voeg landkaart toe",
                 icon = icon("globe"))
         
@@ -348,17 +349,18 @@ tagList(
                   
                   
                   actionLink(inputId = "wild_linkPlot6",
-                      label = h3("FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
+                      label = h3("FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
                   conditionalPanel("input.wild_linkPlot6 % 2 == 1",
                       fixedRow(
                           
-                          column(4,
-                              optionsModuleUI(id = "wild_plot6", showTime = TRUE, showType = TRUE, showDataSource = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE, filter = TRUE, showDataSourceGeslacht = TRUE),
+                        column(4,
+                          optionsModuleUI(id = "wild_plot6", showTime = TRUE,
+                            showType = TRUE, regionLevels = 1:2, exportData = TRUE,
+                            showDataSource = c("leeftijd", "geslacht")),
                               tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). 
                                       Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                           ),
-                          column(8, plotModuleUI(id = "wild_plot6"))
+                          column(8, plotModuleUI(id = "wild_plot6", filter = TRUE))
                       
                       ),
                       tags$hr()
@@ -375,16 +377,17 @@ tagList(
               
               tagList(
                   actionLink(inputId = "wild_linkPlot7",
-                      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht")),
+                      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
                   conditionalPanel("input.wild_linkPlot7 % 2 == 1",
                       fixedRow(
                           
                           column(4,
                               optionsModuleUI(id = "wild_plot7", showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE),
+                                  regionLevels = 1:2, exportData = TRUE,
+                                  showDataSource = c("leeftijd", "geslacht")),
                               tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
                                       Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
-                          column(8, plotModuleUI(id = "wild_plot7"))
+                          column(8, plotModuleUI(id = "wild_plot7", filter = TRUE))
                       
                       ),
                       tags$hr()
@@ -402,7 +405,8 @@ tagList(
                 fixedRow(
                     
                     column(4,
-                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, regionLevels = c(1:2,4), exportData = TRUE),
+                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, 
+                          regionLevels = c(1:2,4), exportData = TRUE),
                         tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
                     ),
                     column(8, plotModuleUI(id = "wild_plot11"))
@@ -418,14 +422,14 @@ tagList(
                   tags$p("Bio-indicatoren zijn ecologische parameters, die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
                           In dit geval dus de relatie tussen het aantal reeën in een gebied en de draagkracht van dat gebied. Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen."),
                   actionLink(inputId = "wild_linkPlot8",
-                      label = h3("FIGUUR: Onderkaaklengte per jaar")),
+                      label = h3("FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier)")),
                   conditionalPanel("input.wild_linkPlot8 % 2 == 1",
                       fixedRow(
                           
                           column(4,
                               optionsModuleUI(id = "wild_plot8", showTime = TRUE, showType = TRUE,
                                   regionLevels = 1:2, exportData = TRUE,
-                                  showDataSource = TRUE),
+                                  showDataSource = c("onderkaak", "leeftijd", "geslacht")),
                               tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
                           ),
                           column(8, plotModuleUI(id = "wild_plot8"))
@@ -440,7 +444,8 @@ tagList(
                           column(4,
                               optionsModuleUI(id = "wild_plot9",
                                   showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE),
+                                  regionLevels = 1:2, exportData = TRUE,
+                                  showDataSource = c("leeftijd", "geslacht")),
                               tags$p("Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types."),
                               tags$p(tags$i("Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur."))
                           ),
@@ -459,7 +464,7 @@ tagList(
                           column(4,
                               optionsModuleUI(id = "wild_plot10", showTime = TRUE, showType = TRUE,
                                   regionLevels = 1:2, exportData = TRUE,
-                                  showDataSource = TRUE),
+                                  showDataSource = c("embryos", "leeftijd", "geslacht")),
                               tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.",
                                   "Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
                               tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),

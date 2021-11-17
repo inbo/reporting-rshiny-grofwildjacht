@@ -11,10 +11,10 @@
 #' @importFrom INBOtheme inbo_palette
 #' @author dbemelmans
 #' @export 
-countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen, width = NULL, height = NULL, interval = NULL, type = NULL) {
+countYearShotAnimals <- function(data, regio, jaartallen, width = NULL, height = NULL, interval = NULL, type = NULL) {
   
   ## plotly gives a warning: Warning: 'layout' objects don't have these attributes: 'bargroupgap'
-  ## This is save to ignore: https://github.com/ropensci/plotly/issues/994
+  ## This is safe to ignore: https://github.com/ropensci/plotly/issues/994
   
   pl <- NULL
   plotData <- data
@@ -22,7 +22,7 @@ countYearShotAnimals <- function(data, regionLevel, regio, locaties, jaartallen,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  # regions get alreaddy filtered out in the plotModuleServer 
+  # regions get already filtered out in the plotModuleServer 
   
   # Select on years
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 

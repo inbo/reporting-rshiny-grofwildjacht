@@ -227,11 +227,7 @@ callModule(module = optionsModuleServer, id = "wild_plot6",
     multipleTypes = TRUE,
     timeRange = reactive(if (input$wild_species == "Ree")
               c(2014, max(results$wild_timeRange())) else 
-              results$wild_timeRange()),
-    sources = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"), 
-    sourceLabel = "Data bron leeftijd",
-    sourceVariable = "leeftijd_comp_bron",
-    sourceVariable_geslacht = "geslacht_comp_bron"
+              results$wild_timeRange())
 )
 callModule(module = plotModuleServer, id = "wild_plot6",
     plotFunction = "boxAgeWeight", 
@@ -249,7 +245,8 @@ callModule(module = optionsModuleServer, id = "wild_plot7",
     multipleTypes = TRUE,
     timeRange = reactive(if (input$wild_species == "Ree")
               c(2014, max(results$wild_timeRange())) else 
-              results$wild_timeRange()))
+              results$wild_timeRange())
+  )
 callModule(module = plotModuleServer, id = "wild_plot7",
     plotFunction = "boxAgeGenderLowerJaw", 
     data = results$wild_ecoData)
@@ -272,12 +269,7 @@ callModule(module = optionsModuleServer, id = "wild_plot8",
     timeRange = results$wild_timeRange,
     types = results$typesDefaultGender,
     typesDefault = results$typesDefaultGender,
-    multipleTypes = TRUE,
-    sources = c("INBO" = "inbo", 
-        "Meldingsformulier" = "meldingsformulier",  
-        "INBO en meldingsformulier" = "both"), 
-    sourceLabel = "Data bron voor onderkaaklengte",
-    sourceVariable = "onderkaaklengte_comp_bron")
+    multipleTypes = TRUE)
 callModule(module = plotModuleServer, id = "wild_plot8",
     plotFunction = "plotBioindicator", 
     bioindicator = "onderkaaklengte",
@@ -309,12 +301,7 @@ callModule(module = optionsModuleServer, id = "wild_plot10",
     data = results$wild_ecoData,
     timeRange = results$wild_timeRange,
     types = results$typesFemale,
-    multipleTypes = TRUE,
-    sources = c("INBO" = "inbo", 
-        "Meldingsformulier" = "meldingsformulier",  
-        "INBO en meldingsformulier" = "both"), 
-    sourceLabel = "Data bron voor aantal embryo's",
-    sourceVariable = "aantal_embryos_bron")
+    multipleTypes = TRUE)
 callModule(module = plotModuleServer, id = "wild_plot10",
     plotFunction = "countEmbryos",
     data = results$wild_ecoData)
@@ -425,6 +412,15 @@ output$map_region <- renderUI({
           selected = selected, multiple = TRUE)
       
     })
+  
+  
+observeEvent(input$map_regionLevel, {
+    
+    updateCheckboxInput(session = session, inputId = "map_combinatie",
+      label = paste0("Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot ", 
+        results$map_regionLevelName(), ")"))
+    
+  })  
 
 
 ## Time plot for Flanders (reference) ##
@@ -477,18 +473,21 @@ results$map_timeData <- reactive({
     })
 
 # Title for selected region level
+results$map_regionLevelName <- reactive({
+    
+    switch(input$map_regionLevel,
+      "flanders" = "Vlaanderen",
+      "provinces" = "Provincie",
+      "faunabeheerzones" = "Faunabeheerzones",
+      "communes" = "Gemeente (binnen provincie)",
+      "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
+      "utm5" = "5x5 UTM")
+    
+  })
+
 output$map_timeTitle <- renderUI({
       
-      regionLevel <- switch(input$map_regionLevel,
-          "flanders" = "Vlaanderen",
-          "provinces" = "Provincie",
-          "faunabeheerzones" = "Faunabeheerzones",
-          "communes" = "Gemeente (binnen provincie)",
-          "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
-          "utm5" = "5x5 UTM")
-      
-      
-      h3("Evolutie gerapporteerd afschot", regionLevel)
+      h3("Evolutie gerapporteerd afschot",results$map_regionLevelName())
       
     })
 
@@ -647,9 +646,17 @@ observe({
         
         if (input$map_globe %% 2 == 1){
           
+          updateActionLink(session, 
+              inputId = "map_globe", 
+              label = "Verberg landkaart")
+          
           proxy %>% addProviderTiles("OpenStreetMap.HOT")
           
         } else {
+          
+          updateActionLink(session, 
+              inputId = "map_globe", 
+              label = "Voeg landkaart toe")
           
           proxy %>% clearTiles()
           

@@ -7,6 +7,7 @@
 #' @param data data.frame with raw data for plotting
 #' @param regio character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
+#' @param locaties character vector, selected set of \code{regio} to be retained
 #' @param jaartallen integer vector, defines the year(s) that should be considered
 #' in the plot; if NULL no selection on year(s) is made
 #' @param width plot width (optional)
@@ -15,6 +16,8 @@
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given specie the observed number 
 #' per year and per province is plotted in a stacked bar chart}
+#' \item{'data': }{data.frame, summary data for download}
+#' }
 #' @import plotly
 #' @importFrom INBOtheme inbo_palette
 #' @export

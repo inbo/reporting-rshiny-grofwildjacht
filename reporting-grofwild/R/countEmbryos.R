@@ -5,6 +5,7 @@
 #' default is \code{c("Smalree", "Geit")}
 #' @param sourceIndicator character, which source to be used; default value is "inbo"
 #' @inheritParams countYearAge
+#' @inheritParams filterGrofwild
 #' @import plotly
 #' @importFrom INBOtheme inbo_palette
 #' @return list with:
@@ -23,6 +24,8 @@
 countEmbryos <- function(data, type = c("Smalree", "Reegeit"), 
 		jaartallen = NULL, regio = "", 
         sourceIndicator = c("inbo", "meldingsformulier", "both"),
+        sourceIndicator_leeftijd = NULL,
+        sourceIndicator_geslacht = NULL,
         width = NULL, height = NULL) {
     
     
@@ -32,31 +35,32 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	
 	wildNaam <- unique(data$wildsoort)
 	
-	bioindicator <- c("aantal_embryos", "aantal_embryos_labo", "aantal_embryos_MF")
-    bioindicatorName <- "aantal embryo's"
-    
-    sourceIndicator <- match.arg(sourceIndicator)
-    
-    if (is.null(jaartallen))
-		jaartallen <- unique(data$afschotjaar)
-	
-    # Exclude records with missing source
-    data <- data[!is.na(data$aantal_embryos_bron), ]
-    
-    if (sourceIndicator == "both")
-        data$embryos <- data$aantal_embryos else if (sourceIndicator == "inbo") 
-        data$embryos <- data$aantal_embryos_labo else
-        data$embryos <- data$aantal_embryos_MF
-    
-    
-	# Select data of specified years and type
-	plotData <- subset(data, data$afschotjaar %in% jaartallen & data$type_comp %in% type,
-            c("afschotjaar", "embryos"))
-    nRecords <- nrow(plotData)
+ bioindicator <- c("aantal_embryos", "aantal_embryos_labo", "aantal_embryos_MF")
+ bioindicatorName <- "aantal embryo's"
+ 
+ sourceIndicator <- match.arg(sourceIndicator)
+ 
+ if (is.null(jaartallen))
+   jaartallen <- unique(data$afschotjaar)
+ 
+ 
+ # Select data of specified years and type
+ plotData <- subset(data, data$afschotjaar %in% jaartallen & data$type_comp %in% type,
+   c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
+     "leeftijd_comp_bron", "geslacht_comp_bron"))
+ 
+ nRecords <- nrow(plotData)
 
-    if (nRecords == 0)
-        return(NULL)
-	
+ if (nRecords == 0)
+   return(NULL)
+ 
+ # Filter on source & rename to embryos
+ plotData <- filterGrofwild(plotData = plotData, 
+   sourceIndicator_embryos = sourceIndicator,
+   sourceIndicator_leeftijd = sourceIndicator_leeftijd,
+   sourceIndicator_geslacht = sourceIndicator_geslacht)
+ 
+      
 	## For aantal_embryos
 	# remove missing
     plotData <- plotData[!is.na(plotData$embryos), ]
@@ -94,12 +98,19 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	
 	
 	title <- paste0(wildNaam, " ", bioindicatorName, " ",
-			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
+   paste0("(", 
+         switch(sourceIndicator,
+           inbo = "INBO",
+           meldingsformulier = "Meldingsformulier",
+           both = "INBO en meldingsformulier"),
+         ")\n"),
+   ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
 			if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
 	
 	
-	colors <- inbo_palette(nlevels(summaryData$embryos))
-	names(colors) <- newLevels
+ colorList <- replicateColors(nColors = nlevels(summaryData$embryos))
+ colors <- colorList$colors
+	names(colors) <- rev(newLevels)
 	
 	
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
@@ -132,6 +143,6 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	summaryData$text <- NULL
 	
 	
-	return(list(plot = pl, data = summaryData))
+	return(list(plot = pl, data = summaryData, warning = colorList$warning))
 	
 }

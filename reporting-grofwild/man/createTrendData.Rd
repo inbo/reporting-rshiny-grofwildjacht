@@ -11,6 +11,7 @@ createTrendData(
   species,
   regionLevel,
   unit = c("absolute", "relative"),
+  sourceIndicator = NULL,
   dataDir = system.file("extdata", package = "reportingGrofwild")
 )
 }
@@ -27,7 +28,10 @@ createTrendData(
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
-should be reported}
+should be reported,}
+
+\item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
+should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
 
 \item{dataDir}{character vector, defines the path to the data files}
 }

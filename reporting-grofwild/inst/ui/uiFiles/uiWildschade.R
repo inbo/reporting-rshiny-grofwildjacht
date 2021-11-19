@@ -32,7 +32,7 @@ tagList(
                 tags$li("Opgelet: Pas nadat je voor de diersoort en type schade minstens één categorie hebt aangeduid, zullen de figuren en tabellen aangemaakt worden."), 
                 tags$li("Opgelet: De filterkeuzes hebben een impact op alle volgende figuren en tabellen op deze pagina."),
                 tags$li("Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(schadeData$afschot_datum, format = "%d/%m/%Y"), na.rm = TRUE), "%d/%m/%Y"), "."),
-                tags$li("Deze gegevens komen uit het Meldpunt-schaderegistratie van het Agentschap voor Natuur en Bos (E-loket), het project Dieren onder de wielen (Natuurpunt) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
+                tags$li("Deze gegevens komen uit het Meldpunt-schaderegistratie van het e-loket fauna en flora (Agentschap voor Natuur en Bos), het project Dieren onder de wielen (Natuurpunt), Wilder (Limburgse Jagervereniging vzw) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen."),
                 tags$li("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data."),
                 tags$li("De figuren zelf kan je ook als .png downloaden."),
                 tags$li("Opgelet: Deze data en figuren geven de meldingen weer zoals ze ingegeven werden. Er gebeurt op dit moment geen systematische terreincontrole voor deze meldingen, ook wordt er niet gecontroleerd op eventuele dubbele meldingen van hetzelfde schadegeval."),

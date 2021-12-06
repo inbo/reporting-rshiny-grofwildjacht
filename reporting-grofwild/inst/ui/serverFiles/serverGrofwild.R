@@ -408,7 +408,7 @@ output$map_region <- renderUI({
         selected <- NULL
       
       selectInput(inputId = "map_region", label = "Regio('s)",
-          choices = levels(droplevels(results$wild_spatialData()$NAAM)),
+          choices = sort(unique(results$wild_spatialData()$NAAM)),
           selected = selected, multiple = TRUE)
       
     })

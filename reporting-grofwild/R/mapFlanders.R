@@ -118,7 +118,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         communes = plotData$gemeente_afschot_locatie,
         faunabeheerzones = plotData$FaunabeheerZone,
         fbz_gemeentes = plotData$fbz_gemeente,
-        utm5 = plotData$UTM5
+        utm5 = plotData$UTM5,
+        WBE_binnengrenzen_2020 = plotData$PartijNummer
     )
     
     # Exclude data with missing time or space
@@ -166,8 +167,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
       otherBreaks <- unique(sort(ceiling(summaryData2$freq*100)/100))
     
     summaryData2$group <- cut(x = summaryData2$freq, 
-        breaks = c(-Inf, otherBreaks),
-        labels = otherBreaks) 
+      breaks = c(-Inf, otherBreaks),
+      labels = otherBreaks) 
     
   } else if (regionLevel == "faunabeheerzones" & "Ree" %in% species) {
     
@@ -242,7 +243,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
-    regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5"), 
+    regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE"),  
     species, 
     allSpatialData, summaryData, colorScheme, 
     legend = "none", addGlobe = FALSE) {

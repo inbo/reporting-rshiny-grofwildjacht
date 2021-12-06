@@ -42,7 +42,6 @@ results$wild_spatialData <- reactive({
       
     })
 
-
 results$wild_openingstijdenData <- reactive({
       
       openingstijdenData[openingstijdenData$Soort == input$wild_species, ]

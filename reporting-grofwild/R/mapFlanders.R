@@ -62,6 +62,10 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     
     spatialData <- allSpatialData[["provincesVoeren"]]
     
+  } else if (regionLevel == "WBE_binnengrenzen") {
+    
+    spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
+    
   } else {
     
     spatialData <- allSpatialData[[regionLevel]]
@@ -70,8 +74,15 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   
   # Framework for summary data
   fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes"))
-        spatialData@data[, c("NAAM", "AREA", "NISCODE")] else
-        spatialData@data[, c("NAAM", "AREA")]
+      spatialData@data[, c("NAAM", "AREA", "NISCODE")] else if (regionLevel == "WBE_binnengrenzen") {
+      tmpData <- spatialData@data[, c("NAAM", "AREA")]
+      tmpData[tmpData$NAAM %in% unique(data$PartijNummer), , drop = FALSE]
+    } else
+      spatialData@data[, c("NAAM", "AREA")]
+  
+  if (nrow(fullData) == 0)
+    return(NULL)
+  
   colnames(fullData)[1] <- "locatie"
   
   
@@ -102,7 +113,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   statsDf <- data.frame(nTotal = as.integer(NA), 
       nAvailable = as.integer(NA), 
       percentage = as.numeric(NA)) 
-  statsDf[, "nTotal"] = nrow(plotData)
+  statsDf[, "nTotal"] <- nrow(plotData)
   
   if (nrow(plotData) == 0) {
     
@@ -119,7 +130,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
         faunabeheerzones = plotData$FaunabeheerZone,
         fbz_gemeentes = plotData$fbz_gemeente,
         utm5 = plotData$UTM5,
-        WBE_binnengrenzen_2020 = plotData$PartijNummer
+        WBE_binnengrenzen = plotData$PartijNummer
     )
     
     # Exclude data with missing time or space
@@ -253,6 +264,10 @@ mapFlanders <- function(
   if ("Wild zwijn" %in% species & regionLevel == "provinces") {
     
     spatialData <- allSpatialData[["provincesVoeren"]]
+    
+  } else if (regionLevel == "WBE_binnengrenzen") {
+    
+    spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
     
   } else {
     

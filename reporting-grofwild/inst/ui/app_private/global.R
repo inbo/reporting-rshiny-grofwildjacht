@@ -46,9 +46,20 @@ ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
 
-# TODO temporary fix
-if (!is.null(attr(ecoData, "excluded")))
-    geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
+
+### WBE configuration
+### -----------
+
+if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
+  
+  currentKbo <- "445465768"
+    
+} else {
+  # Inside shinyProxy
+  
+  currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
+    
+}
 
 
 

@@ -59,15 +59,6 @@ tagList(
     ),
     
     
-    # TODO create nice buttons? https://stackoverflow.com/questions/44841346/adding-an-image-to-shiny-action-button
-#						tags$button(
-#								id = "web_button",
-#								class = "btn action_button",
-#								label = "Wild zwijn",
-#								img(src = "wildZwijn.jpeg", width = "400px")
-#						),
-    
-    
     # Map with according line plot
     
     tags$div(class = "container",

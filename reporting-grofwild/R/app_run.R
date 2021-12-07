@@ -9,19 +9,20 @@
 #' in the Suggests field of DESCRIPTION; default value is FALSE
 #' @param copyFiles boolean, whether to copy files for the app from the inst/ui
 #' to a temporary directory which is writeable
+#' @param public boolean, whether to start the public or private version of the app
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny
 #' @importFrom devtools install_github dev_package_deps
 #' @importFrom stats update
 #' @export
-runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, ...) {
+runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, public = TRUE, ...) {
   
   # (1) Install all suggested R packages (see DESCRIPTION)
   if (installDependencies) {
     
     ## (a) CRAN packages
-    update(dev_package_deps(pkgdir = system.file("ui", package = "reportingGrofwild"), 
+    update(dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
             dependencies = "Suggests"))
     
     
@@ -36,13 +37,16 @@ runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, ...) {
   
   # (2) Copy the UI files & folders from "inst/ui" for local use
   
+  if (public)
+    uiDir <- system.file("ui/app_public", package = "reportingGrofwild") else
+    uiDir <- system.file("ui/app_private", package = "reportingGrofwild")
+  
   if (copyFiles) {
     
     appDir <- tempdir()
     oldDir <- setwd(appDir)
     on.exit(setwd(oldDir))
     
-    uiDir <- system.file("ui", package = "reportingGrofwild")
     uiFiles <- list.files(path = uiDir, full.names = FALSE, recursive = TRUE)
     
     sapply(uiFiles, function(from) {
@@ -63,7 +67,7 @@ runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, ...) {
     
   } else {
     
-    appDir <- system.file("ui", package = "reportingGrofwild")  
+    appDir <- uiDir
     
   }
   
@@ -72,5 +76,3 @@ runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, ...) {
   runApp(appDir = appDir, ...)
   
 }
-
-

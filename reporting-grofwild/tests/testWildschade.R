@@ -29,7 +29,7 @@ species <- sort(unique(schadeData$wildsoort))
 
 xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
 
-for (regionLevel in setdiff(names(spatialData), "provincesVoeren")) {
+for (regionLevel in setdiff(names(spatialData), c("provincesVoeren", "WBE_binnengrenzen_2020"))) {
     
     for (iSpecies in species) {
         

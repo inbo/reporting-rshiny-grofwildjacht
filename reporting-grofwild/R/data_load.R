@@ -1,8 +1,5 @@
 #' Read all shape data from geojson files
 #' @param dataDir character vector, defines the path to the data files
-#' @param showProgress boolean, whether to show progress window in the shiny app;
-#' Note, if used outside shiny app, this will cause an error; if FALSE progress
-#' is printed in the console
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
 #' @return save to dataDir object spatialData, i.e. a list with for each 
@@ -20,29 +17,24 @@
 #' @importFrom utils write.csv read.csv
 #' @export
 readShapeData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-    showProgress = FALSE, tolerance = 0.001) {
+    tolerance = 0.0001) {
   
   
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
       "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
-      "UTM5" = "utm5", "WBE" = "WBE_binnengrenzen_2020")
-  
-  
+      "UTM5" = "utm5")
+   # WBE per year
+  wbeLevels <- gsub(".geojson", "", list.files(path = system.file("extdata", package = "reportingGrofwild"), pattern = "WBE_binnengrenzen_"))
+  allLevels <- c(allLevels, wbeLevels)  
   
   
   ## New code for geojson files
   spatialData <- lapply(allLevels, function(iLevel) {
         
-        if (showProgress)
-          incProgress(1/length(allLevels), 
-              detail = paste0("Geo Data: ", 
-                  names(allLevels)[allLevels == iLevel], 
-                  " (", which(allLevels == iLevel), "/", length(allLevels), ")"))
-        
         file <- file.path(dataDir, paste0(iLevel, ".geojson"))
 #        # Check whether we can use readOGR()
 #        "GeoJSON" %in% rgdal::ogrDrivers()$name
-        shapeData <- readOGR(dsn = file, verbose = !showProgress)
+        shapeData <- readOGR(dsn = file, verbose = TRUE)
         shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
         
         # Create factor for region names
@@ -64,7 +56,7 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
           
           shapeData$NAAM <- factor(shapeData$TAG)
           
-        } else if (iLevel == "WBE_binnengrenzen_2020") {
+        } else if (grepl("WBE_binnengrenzen", iLevel)) {
           
           shapeData$NAAM <- factor(shapeData$WBE_NR)
           
@@ -151,7 +143,7 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
   
   communeData <- spatialData$communes@data
   gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
-  write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"))
+  write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"), row.names = FALSE)
   
   # IF any NIS code not in gemeenteData -> throw error
   if (any(!spatialData$communes@data$NISCODE %in% gemeenteData$NIS.code))

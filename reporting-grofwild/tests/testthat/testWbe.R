@@ -34,8 +34,6 @@ geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 
 test_that("The map", {
     
-    skip("under development")
-    
     for (iYear in years) {
       
       if (doPrint)
@@ -71,5 +69,32 @@ test_that("The map", {
         }
       }
     }
+    
+  })
+
+
+
+
+test_that("Trend plot", {
+    
+    for (iSpecies in species) {
+      
+      trendRegionData <- createTrendData(
+        data = geoData[geoData$wildsoort == iSpecies, ],
+        allSpatialData = spatialData,
+        timeRange = range(years),
+        species = iSpecies,
+        regionLevel = "WBE_binnengrenzen",
+        unit = "relative"
+      )
+      
+      trendYearRegion(
+        data = trendRegionData,
+        locaties = 441,
+        timeRange = range(years),
+        unit = "relative"
+      )$plot
+      
+    }  
     
   })

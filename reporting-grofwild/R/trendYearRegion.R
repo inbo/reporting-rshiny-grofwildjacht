@@ -18,16 +18,11 @@ createTrendData <- function(data, allSpatialData,
     
     
     # Select correct spatial data
-    if ("Wild zwijn" %in% species & regionLevel == "provinces") {
-        
-        spatialData <- allSpatialData[["provincesVoeren"]]
-        
-    } else {
-        
-        spatialData <- allSpatialData[[regionLevel]]
-        
-    }
-    
+    spatialData <- filterSpatial(
+      allSpatialData = allSpatialData,
+      species = species,
+      regionLevel = regionLevel,
+      year = year)    
     
     # filter for source
     plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
@@ -41,7 +36,8 @@ createTrendData <- function(data, allSpatialData,
             communes = plotData$gemeente_afschot_locatie,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
-            utm5 = plotData$UTM5            
+            utm5 = plotData$UTM5,
+            WBE_binnengrenzen = plotData$PartijNummer
     ))
     
     # Select subset for time & species

@@ -49,7 +49,7 @@ test_that("The map", {
           year = iYear,
           species = iSpecies,
           regionLevel = "WBE_binnengrenzen",
-          unit = c("absolute", "relative")[2]
+          unit = "relative"
         )
         
         if (doPrint)
@@ -59,7 +59,8 @@ test_that("The map", {
           
           myPlot <- mapFlanders(
             allSpatialData = spatialData, 
-            regionLevel = regionLevel, 
+            regionLevel = "WBE_binnengrenzen", 
+            year = iYear,
             colorScheme = c("white", RColorBrewer::brewer.pal(
                 n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
             summaryData = spaceData$data,

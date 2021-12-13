@@ -30,16 +30,13 @@ results$wild_spatialData <- reactive({
       
       req(spatialData)
       
-      if (req(input$wild_species) == "Wild zwijn" & req(input$map_regionLevel) == "provinces") {
-        
-        spatialData$provincesVoeren
-        
-      } else {
-        
-        spatialData[[input$map_regionLevel]]
-        
-      }
-      
+      spatialData <- filterSpatial(
+        allSpatialData = spatialData, 
+        species = req(input$wild_species), 
+        regionLevel = req(input$map_regionLevel), 
+        year = input$map_year
+      )
+    
     })
 
 
@@ -384,23 +381,7 @@ output$map_time <- renderUI({
       
     })
 
-# show borders in map if gemeente -> province or fbz
-output$map_border <- renderUI({
-      
-      conditionalPanel("input.map_regionLevel == 'communes'",
-          selectInput(
-              inputId = "map_border",
-              label = "Boorden (kaart)",
-              choices = c(
-                  "Faunabeheerzones" = "faunabeheerzones",
-                  "Provincies" = "provinces",
-                  "")
-          )
-      )
-      
-    })
-
-
+  
 output$map_region <- renderUI({
       
       if (input$map_regionLevel == "flanders")
@@ -760,7 +741,7 @@ output$map_stats <- renderUI({
     })
 
 # Create final map (for download)
-results$finalMap <- reactive({
+results$wild_finalMap <- reactive({
       
       validate(need(results$map_summarySpaceData()$data, "Geen data beschikbaar"))
       
@@ -800,7 +781,7 @@ output$map_download <- downloadHandler(
     content = function(file) {
       
       # convert temp .html file into .png for download
-      webshot::webshot(url = results$finalMap(), file = file,
+      webshot::webshot(url = results$wild_finalMap(), file = file,
           vwidth = 1000, vheight = 500, cliprect = "viewport")
       
     }

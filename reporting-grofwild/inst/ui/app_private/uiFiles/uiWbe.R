@@ -47,7 +47,7 @@ tagList(
     
     align = "center", 
     tags$div(class = "noButton",
-      radioButtons(inputId = "wild_species", label = "", inline = TRUE,
+      radioButtons(inputId = "wbe_species", label = "", inline = TRUE,
         choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
         choiceNames = list(
           HTML("<div class='fotoTitel'>Wild zwijn</div><div id='wildZwijnFoto'></div>"),
@@ -56,6 +56,46 @@ tagList(
           HTML("<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>"))
       )
     )
-  )
+  ),
+  
+  
+  # Map with according line plot
+  
+  tags$div(class = "container",
+    
+    h2("Landkaart"),
+    
+    ## countMap: all species
+    wellPanel(
+      
+      fixedRow(
+        column(6,
+          uiOutput("wbe_year")
+        ),
+        column(6, 
+          selectInput(inputId = "wbe_legend", "Legende (kaart)",
+            choices = c("Bovenaan rechts" = "topright",
+              "Onderaan rechts" = "bottomright",
+              "Bovenaan links" = "topleft",
+              "Onderaan links" = "bottomleft",
+              "<geen>" = "none"))
+        )
+      ),
+      actionLink(inputId = "wbe_globe", label = "Voeg landkaart toe",
+        icon = icon("globe"))
+    
+    ),
+    
+    
+    uiOutput("wbe_title"),
+    withSpinner(leafletOutput("wbe_spacePlot")),
+    tags$div(align = "center", uiOutput("wbe_stats")),
+    tags$br(),
+    downloadButton("wbe_download", "Download figuur", class = "downloadButton"),
+    downloadButton("wbe_downloadData", "Download data", class = "downloadButton")
+  
+    ),
+    
+    tags$hr()
   
   )

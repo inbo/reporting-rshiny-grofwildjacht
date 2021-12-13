@@ -58,19 +58,8 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   unit <- match.arg(unit)
   
   # Select correct spatial data
-  if ("Wild zwijn" %in% species & regionLevel == "provinces") {
-    
-    spatialData <- allSpatialData[["provincesVoeren"]]
-    
-  } else if (regionLevel == "WBE_binnengrenzen") {
-    
-    spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
-    
-  } else {
-    
-    spatialData <- allSpatialData[[regionLevel]]
-    
-  }
+  spatialData <- filterSpatial(allSpatialData = allSpatialData, 
+    species = species, regionLevel = regionLevel, year = year)
   
   # Framework for summary data
   fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes"))
@@ -254,26 +243,14 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
-    regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE"),  
-    species, 
-    allSpatialData, summaryData, colorScheme, 
-    legend = "none", addGlobe = FALSE) {
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE"),  
+  species, year = NA,
+  allSpatialData, summaryData, colorScheme,
+  legend = "none", addGlobe = FALSE) {
   
   
-  # Select correct spatial data
-  if ("Wild zwijn" %in% species & regionLevel == "provinces") {
-    
-    spatialData <- allSpatialData[["provincesVoeren"]]
-    
-  } else if (regionLevel == "WBE_binnengrenzen") {
-    
-    spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
-    
-  } else {
-    
-    spatialData <- allSpatialData[[regionLevel]]
-    
-  }
+  spatialData <- filterSpatial(allSpatialData = allSpatialData, 
+    species = species, regionLevel = regionLevel, year = year)
   
   palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
   

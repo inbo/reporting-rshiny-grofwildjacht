@@ -5,3 +5,320 @@
 
 
 
+
+## Filter Data ##
+
+results$wbe_geoData <- reactive({
+    
+    subset(geoData, wildsoort == req(input$wbe_species))
+    
+  })
+
+
+results$wbe_spatialData <- reactive({
+    
+    spatialData <- filterSpatial(
+      allSpatialData = spatialData, 
+      species = req(input$wbe_species), 
+      regionLevel = "WBE_binnengrenzen", 
+      year = req(input$wbe_year)
+    )
+    
+    req(spatialData)
+    validate(need(any(currentWbe %in% spatialData@data$NAAM), "Geen data beschikbaar"))
+    
+    spatialData
+    
+  })
+
+
+
+### The MAP
+### -------------
+
+# Data-dependent input fields
+output$wbe_year <- renderUI({
+    
+    div(class = "sliderBlank", 
+      sliderInput(inputId = "wbe_year", label = "Geselecteerd Jaar (kaart)",
+        min = min(results$wbe_geoData()$afschotjaar),
+        max = max(results$wbe_geoData()$afschotjaar),
+        value = defaultYear,
+        sep = "", step = 1))
+    
+  })
+
+
+## Map for Flanders ##
+
+# Create data for map, summary of ecological data, given year, species and regionLevel
+results$wbe_summarySpaceData <- reactive({
+    
+    validate(need(results$wbe_geoData(), "Geen data beschikbaar"),
+      need(input$wbe_year, "Gelieve jaar te selecteren"))
+    
+    
+    createSpaceData(
+      data = geoData, 
+      allSpatialData = spatialData,
+      year = input$wbe_year,
+      species = input$wbe_species,
+      regionLevel = "WBE_binnengrenzen",
+      unit = "relative"
+    )
+    
+  })
+
+
+# Define text to be shown in the pop-ups
+results$wbe_textPopup <- reactive({
+    
+    validate(need(results$wbe_summarySpaceData()$data, "Geen data beschikbaar"))
+    
+    regionNames <- results$wbe_summarySpaceData()$data$locatie
+    titleText <- paste("Gerapporteerd aantal/100ha in", input$wbe_year)
+    
+    textPopup <- paste0("<h4>", regionNames, "</h4>",  
+      "<strong>", titleText, "</strong>: ", 
+      round(results$wbe_summarySpaceData()$data$freq, 2)
+    )
+    
+    
+    return(textPopup)
+    
+  })
+
+
+# Define colors for the polygons
+results$wbe_colorScheme <- reactive({
+    
+    # Might give warnings if n < 3
+    suppressWarnings(c("white", RColorBrewer::brewer.pal(
+          n = nlevels(results$wbe_summarySpaceData()$data$group) - 1, name = "YlOrBr")))
+    
+  })			
+
+
+# Send map to the UI
+output$wbe_spacePlot <- renderLeaflet({
+    
+    validate(need(results$wbe_spatialData(), "Geen data beschikbaar"),
+      need(nrow(results$wbe_summarySpaceData()$data) > 0, "Geen data beschikbaar"))
+    
+    mapFlanders(
+      regionLevel = "WBE_binnengrenzen",
+      species = input$wbe_species, 
+      year = input$wbe_year,
+      allSpatialData = spatialData,
+      summaryData = results$wbe_summarySpaceData()$data,
+      colorScheme = results$wbe_colorScheme()
+    )
+    
+    
+  })
+
+
+# Plot thick border for selected regions
+observe({
+    
+      validate(need(results$wbe_spatialData(), "Geen data beschikbaar"))
+      
+      selectedPolygons <- subset(results$wbe_spatialData(), 
+        results$wbe_spatialData()$NAAM %in% currentWbe)
+      
+      leafletProxy("wbe_spacePlot", data = results$wbe_spatialData()) %>%
+        
+        clearGroup(group = "regionLines") %>%
+        
+        addPolylines(data = selectedPolygons, color = "gray", weight = 5,
+          group = "regionLines")
+        
+  })
+
+
+# Add world map
+observe({
+    
+    validate(need(results$wbe_spatialData(), "Geen data beschikbaar"))
+    
+    proxy <- leafletProxy("wbe_spacePlot", data = results$wbe_spatialData())
+    
+    if (!is.null(input$wbe_globe) & !is.null(proxy)){
+      
+      if (input$wbe_globe %% 2 == 1){
+        
+        updateActionLink(session, 
+          inputId = "wbe_globe", 
+          label = "Verberg landkaart")
+        
+        proxy %>% addProviderTiles("OpenStreetMap.HOT")
+        
+      } else {
+        
+        updateActionLink(session, 
+          inputId = "wbe_globe", 
+          label = "Voeg landkaart toe")
+        
+        proxy %>% clearTiles()
+        
+      }
+      
+    }
+    
+  })
+
+
+# Add legend
+observe({
+    
+    validate(need(nrow(results$wbe_summarySpaceData()$data) > 0, "Geen data beschikbaar"))
+    
+    req(input$wbe_legend)
+    
+    proxy <- leafletProxy("wbe_spacePlot", data = results$wbe_spatialData())
+    proxy %>% removeControl(layerId = "legend")
+    
+    if (input$wbe_legend != "none") {
+      
+      palette <- colorFactor(palette = results$wbe_colorScheme(), 
+        levels = levels(results$wbe_summarySpaceData()$data$group))
+      
+      valuesPalette <- results$wbe_summarySpaceData()$data[
+        match(results$wbe_spatialData()$NAAM, results$wbe_summarySpaceData()$data$locatie),
+        "group"]
+      
+      
+      proxy %>% addLegend(
+        position = input$wbe_legend,
+        pal = palette, 
+        values = valuesPalette,
+        opacity = 0.8,
+        title = "Legende",
+        layerId = "legend"
+      )                      
+      
+    }
+    
+  })
+
+
+# Add popups
+observe({
+    
+    validate(need(results$wbe_spatialData(), "Geen data beschikbaar"),
+      need(results$wbe_textPopup(), "Geen data beschikbaar"))
+    
+    currentMap <- leafletProxy("wbe_spacePlot", data = results$wbe_spatialData()) 
+    currentMap %>% clearPopups()
+    
+    event <- input$wbe_spacePlot_shape_click
+    
+    if (!is.null(event)) {
+      
+      if (!is.null(event$id)) {
+        
+        if (event$id %in% results$wbe_summarySpaceData()$data$locatie) {
+          
+          textSelected <- results$wbe_textPopup()[
+            results$wbe_summarySpaceData()$data$locatie == event$id]
+          
+          isolate({
+              
+              currentMap %>% 
+                addPopups(event$lng, event$lat, popup = textSelected)
+              
+            }) 
+          
+        }
+        
+      }
+      
+    }
+    
+  })
+
+
+# Title for the map
+output$wbe_title <- renderUI({
+    
+    
+    h3(paste("Gerapporteerd afschot/100ha voor", tolower(input$wbe_species),
+        "in", input$wbe_year))
+    
+    
+  })
+
+# Statistics with map
+output$wbe_stats <- renderUI({
+    
+    h5(paste0("Info beschikbaar en weergegeven voor ", results$wbe_summarySpaceData()$stats$percentage, 
+          "% van de totale gegevens (", results$wbe_summarySpaceData()$stats$nAvailable, "/", 
+          results$wbe_summarySpaceData()$stats$nTotal, ")" ))
+   
+  })
+
+# Create final map (for download)
+results$wbe_finalMap <- reactive({
+    
+    validate(need(results$wbe_summarySpaceData()$data, "Geen data beschikbaar"))
+    
+    
+    newMap <- mapFlanders(
+      regionLevel = "WBE_binnengrenzen", 
+      species = input$wbe_species,
+      allSpatialData = spatialData,
+      summaryData = results$wbe_summarySpaceData()$data,
+      colorScheme = results$wbe_colorScheme(),
+      legend = input$wbe_legend,
+      addGlobe = input$wbe_globe %% 2 == 1
+    )
+    
+    # save the zoom level and centering to the map object
+    newMap %<>% setView(
+      lng = input$wbe_spacePlot_center$lng,
+      lat = input$wbe_spacePlot_center$lat,
+      zoom = input$wbe_spacePlot_zoom
+    )
+    
+    # write map to temp .html file
+    htmlwidgets::saveWidget(newMap, file = outTempFileName, selfcontained = FALSE)
+    
+    # output is path to temp .html file containing map
+    outTempFileName
+    
+    
+  }) 
+
+# Download the map
+output$wbe_download <- downloadHandler(
+  filename = function()
+    nameFile(species = input$wbe_species,
+      year = input$wbe_year, 
+      content = "kaart", fileExt = "png"),
+  content = function(file) {
+    
+    # convert temp .html file into .png for download
+    webshot::webshot(url = results$wbe_finalMap(), file = file,
+      vwidth = 1000, vheight = 500, cliprect = "viewport")
+    
+  }
+)
+
+output$wbe_downloadData <- downloadHandler(
+  filename = function()
+    nameFile(species = input$wbe_species,
+      year = input$wbe_year, 
+      content = "kaartData", fileExt = "csv"),
+  content = function(file) {
+    
+    myData <- results$wbe_summarySpaceData()$data
+    # change variable names
+    names(myData)[names(myData) == "freq"] <- "aantal/100ha"
+    names(myData)[names(myData) == "group"] <- "groep"
+    
+    ## write data to exported file
+    write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,
+      sep = ";", dec = ",")
+    
+  })
+

@@ -140,3 +140,45 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
   return(plotData)
   
 }
+
+
+
+
+
+#' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
+#' @param allSpatialData list with SpatialPolygonsDataFrame as loaded by 
+#' \code{load(file = file.path(system.file("extdata", package = "reportingGrofwild"), "spatialData.RData"))}
+#' @param species character, animal species
+#' @param regionLevel character, region level. Should be one of 
+#' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}
+#' @param year integer, year of interest. Only relevant when \code{regionLevel}
+#' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
+#' @return single SpatialPolygonsDataFrame
+#' 
+#' @author mvarewyck
+#' @export
+filterSpatial <- function(allSpatialData, species, 
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen"), 
+  year) {
+  
+  
+  regionLevel <- match.arg(regionLevel)
+  
+  # Select correct spatial data
+  if ("Wild zwijn" %in% species & regionLevel == "provinces") {
+    
+    spatialData <- allSpatialData[["provincesVoeren"]]
+    
+  } else if (regionLevel == "WBE_binnengrenzen") {
+    
+    spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
+    
+  } else {
+    
+    spatialData <- allSpatialData[[regionLevel]]
+    
+  }
+  
+  return(spatialData)
+  
+}

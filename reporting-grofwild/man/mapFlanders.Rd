@@ -8,6 +8,7 @@ mapFlanders(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
     "fbz_gemeentes", "utm5", "WBE"),
   species,
+  year = NA,
   allSpatialData,
   summaryData,
   colorScheme,
@@ -20,6 +21,8 @@ mapFlanders(
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{species}{character, species of interest}
+
+\item{year}{integer, year of interest}
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 

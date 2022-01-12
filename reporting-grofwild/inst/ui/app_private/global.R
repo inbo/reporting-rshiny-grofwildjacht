@@ -31,7 +31,8 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 
 # Specify default year to show (and default max to show in time ranges)
-defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
+#defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
+defaultYear <- 2020
 
 # create temp html file to store grofwild landkaart
 outTempFileName <- tempfile(fileext = ".html")
@@ -49,6 +50,8 @@ ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
 
+# Background WBE data
+wbeData <- loadWbeHabitats(dataDir = dataDir)
 
 ### WBE configuration
 ### -----------

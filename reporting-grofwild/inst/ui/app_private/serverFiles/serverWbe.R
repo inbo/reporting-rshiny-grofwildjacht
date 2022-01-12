@@ -329,3 +329,53 @@ output$wbe_downloadData <- downloadHandler(
     
   })
 
+
+
+### Extra Graphs/Tables
+### -------------
+
+
+
+# Line Plot
+
+output$wbe_period <- renderUI({
+    
+    minYear <- min(results$wbe_geoData()$afschotjaar)
+    
+    sliderInput(inputId = "wbe_period", label = "Periode (grafiek)", 
+      min = minYear,
+      max = max(results$wbe_geoData()$afschotjaar),
+      value = c(minYear, defaultYear),
+      step = 1,
+      sep = "")
+    
+  })
+
+
+# Create data for map, time plot
+results$wbe_timeData <- reactive({
+    
+    validate(need(results$wbe_geoData(), "Geen data beschikbaar"),
+      need(input$wbe_period, "Gelieve periode te selecteren"))
+    
+    createTrendData(
+      data = results$wbe_geoData(),
+      allSpatialData = spatialData,
+      timeRange = input$wbe_period,
+      species = input$wbe_species,
+      regionLevel = "WBE_binnengrenzen",
+      unit = input$wbe_unit
+    )
+        
+  })
+
+callModule(module = optionsModuleServer, id = "wbe_timePlot", 
+  data = results$wbe_timeData)
+callModule(module = plotModuleServer, id = "wbe_timePlot",
+  plotFunction = "trendYearRegion", 
+  data = results$wbe_timeData,
+  locaties = reactive(currentWbe),
+  timeRange = reactive(input$wbe_period),
+  unit = reactive(input$wbe_unit),
+  combinatie = reactive(input$wbe_combinatie)
+)

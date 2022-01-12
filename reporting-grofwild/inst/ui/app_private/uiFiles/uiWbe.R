@@ -59,7 +59,7 @@ tagList(
   ),
   
   
-  # Map with according line plot
+  # Map
   
   tags$div(class = "container",
     
@@ -95,7 +95,32 @@ tagList(
     downloadButton("wbe_downloadData", "Download data", class = "downloadButton")
   
     ),
+   
+    tags$hr(),
+    
+    
+    # Line plot
+    fluidRow(
+      column(6, 
+        wellPanel(
+          uiOutput("wbe_period"),
+          selectInput(inputId = "wbe_unit", "Eenheid",
+            choices = c("Aantal" = "absolute", 
+              "Aantal/100ha" = "relative")),
+          checkboxInput(inputId = "wbe_combinatie", 
+            label = "Combineer alle geselecteerde regio's"),
+        )
+      ),
+      
+      column(6,
+        uiOutput("wbe_timeTitle"),
+        plotModuleUI(id = "wbe_timePlot", height = "400px"),
+        optionsModuleUI(id = "wbe_timePlot", exportData = TRUE,
+          doWellPanel = FALSE)
+      )
+    ),
     
     tags$hr()
+   
   
   )

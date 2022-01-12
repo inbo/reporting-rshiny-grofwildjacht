@@ -58,7 +58,8 @@ wbeData <- loadWbeHabitats(dataDir = dataDir)
 
 if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
   
-  currentKbo <- "445465768"
+#  currentKbo <- "445465768"  ## 441 - fixed AREA
+  currentKbo <- "450506996"   ## 101 - evolving AREA
     
 } else {
   # Inside shinyProxy

@@ -18,11 +18,16 @@ createTrendData <- function(data, allSpatialData,
     
     
     # Select correct spatial data
-    spatialData <- filterSpatial(
-      allSpatialData = allSpatialData,
-      species = species,
-      regionLevel = regionLevel,
-      year = year)    
+    chosenTimes <- timeRange[1]:timeRange[2]
+    spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
+          tmpData <- filterSpatial(
+            allSpatialData = allSpatialData,
+            species = species,
+            regionLevel = regionLevel,
+            year = iYear)@data
+          tmpData$YEAR <- iYear
+          tmpData
+        }))
     
     # filter for source
     plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
@@ -41,7 +46,6 @@ createTrendData <- function(data, allSpatialData,
     ))
     
     # Select subset for time & species
-    chosenTimes <- timeRange[1]:timeRange[2]
     plotData <- subset(plotData, 
             subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
             select = c("afschotjaar", "locatie"))
@@ -56,10 +60,10 @@ createTrendData <- function(data, allSpatialData,
     # Add names & times with 0 observations
     fullData <- cbind(expand.grid(
                     afschotjaar = chosenTimes,
-                    locatie = unique(spatialData@data$NAAM)))
+                    locatie = unique(spatialData$NAAM)))
     # add Area
-    fullData <- merge(fullData, spatialData@data[, c("NAAM", "AREA")],
-            by.x = "locatie", by.y = "NAAM")
+    fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
+            by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
     
     allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
     allData$freq[is.na(allData$freq)] <- 0

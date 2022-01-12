@@ -442,6 +442,30 @@ loadRawData <- function(
 }
 
 
+#' Load WBE Habitats (Background) data
+#' @inheritParams loadToekenningen 
+#' @return data.frame
+#' 
+#' @author mvarewyck
+#' @export
+loadWbeHabitats <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  
+  allFiles <- list.files(dataDir, pattern = "WBE_habitats", full.names = TRUE)
+  wbeHabitats <- do.call(rbind, lapply(allFiles, function(iFile) {
+        
+        iYear <- as.numeric(strsplit(gsub("WBE_habitats_", "", basename(iFile)), "\\.")[[1]][1])
+        iData <- read.csv(file = iFile)
+        iData$year <- iYear
+        
+        iData
+        
+      }))
+  
+  return(wbeHabitats)
+  
+}
+
+
 
 #' List with all possible choices for indieningType per schadeChoice
 #' @return list

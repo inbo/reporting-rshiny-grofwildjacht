@@ -78,9 +78,16 @@ results$wbe_textPopup <- reactive({
     regionNames <- results$wbe_summarySpaceData()$data$locatie
     titleText <- paste("Gerapporteerd aantal/100ha in", input$wbe_year)
     
+    wbeInfo <- subset(wbeData, year == input$wbe_year & WBE_NR %in% regionNames)
+    
     textPopup <- paste0("<h4>", regionNames, "</h4>",  
       "<strong>", titleText, "</strong>: ", 
-      round(results$wbe_summarySpaceData()$data$freq, 2)
+      round(results$wbe_summarySpaceData()$data$freq, 2),
+      "</br><strong> Totale oppervlakte (km2) </strong>: ", 
+      round(wbeInfo$Area_km2, 2),
+      "</br><strong> Percentages (%) </strong></br>",
+      paste(sapply(grep("perc", colnames(wbeInfo), value = TRUE), function(x)
+          paste(gsub("perc_", "", x), ":", round(wbeInfo[, x]*100, 2))), collapse = "</br>")
     )
     
     

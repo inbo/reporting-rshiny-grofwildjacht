@@ -5,20 +5,23 @@
 
 #' Interactive barplot to show the distribution of the hunted animals in a certain interval
 #' @inheritParams countHuntingMethod
+#' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
 #' @param interval character, data shown in intervals monthly, biweekly..
 #' @param type character, used to filter the data
 #' 
 #' @importFrom INBOtheme inbo_palette
 #' @author dbemelmans
 #' @export 
-countYearShotAnimals <- function(data, regio, jaartallen, width = NULL, height = NULL, interval = NULL, type = NULL) {
+countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
+  interval = c("Per maand", "Per seizoen", "Per twee weken"), type = NULL) {
   
   ## plotly gives a warning: Warning: 'layout' objects don't have these attributes: 'bargroupgap'
   ## This is safe to ignore: https://github.com/ropensci/plotly/issues/994
   
+  interval <- match.arg(interval)
   pl <- NULL
   plotData <- data
-  
+ 
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
@@ -34,6 +37,7 @@ countYearShotAnimals <- function(data, regio, jaartallen, width = NULL, height =
   
   # only retains animals of specified type
   specifiedType <- !is.null(type) && type != "all"
+  
   if(specifiedType){
     
     plotData$type <- ifelse(plotData$wildsoort != "Ree",

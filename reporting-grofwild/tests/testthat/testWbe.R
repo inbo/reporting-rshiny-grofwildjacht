@@ -104,11 +104,8 @@ test_that("Trend plot", {
 
 
 
-
-
 test_that("Summary Table", {
     
-    # For count with type 
     for (iSpecies in species) {
       
       combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
@@ -121,4 +118,21 @@ test_that("Summary Table", {
     
     }  
     
+  })
+
+
+test_that("Verdeling afschot over de jaren", {
+    
+    for (iSpecies in species) {
+      
+      combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
+        ecoData, by = commonNames, all.x = TRUE)
+      
+      countYearShotAnimals(data = combinedData,
+        jaartallen = 2019:2020,
+        interval = c("Per maand", "Per seizoen", "Per twee weken")[3]
+      )
+      
+    }
+  
   })

@@ -50,9 +50,27 @@ results$wbe_spatialData <- reactive({
 
 results$wbe_timeRange <- reactive({
     
-    range(c(results$wbe_geoData()$afschotjaar, results$wbe_ecoData()$afschotjaar))
+    jaartallenGeo <- range(results$wbe_geoData()$afschotjaar)
+    jaartallenEco <- range(results$wbe_ecoData()$afschotjaar)
+    c(max(jaartallenGeo[1], jaartallenEco[1]), min(jaartallenGeo[2], jaartallenEco[2]))
     
   })  
+
+results$types <- reactive({
+    
+    types <- switch(req(input$wbe_species), 
+      "Wild zwijn" = "", 
+      "Ree" = c("kits", "geit", "bok"), 
+      "Damhert" = "", 
+      "Edelhert" = ""
+    )
+    
+    if (length(types) == 1 && types == "")
+      return(c("alle" = "all")) else 
+      return(types)
+    
+  })
+
 
 
 
@@ -359,7 +377,7 @@ output$wbe_downloadData <- downloadHandler(
 
 
 
-# Line Plot
+# Plot1: Line Plot
 
 output$wbe_period <- renderUI({
     
@@ -405,7 +423,7 @@ callModule(module = plotModuleServer, id = "wbe_plot1",
 
 
 
-# Species Table
+# Table1: Species Table
 
 ## User input for controlling the plots and create plotly
 # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
@@ -415,4 +433,16 @@ callModule(module = optionsModuleServer, id = "wbe_table1",
 )
 callModule(module = plotModuleServer, id = "wbe_table1",
   plotFunction = "tableSpecies", 
+  data = results$wbe_combinedData)
+
+
+# Plot2: Verdeling afschot over de jaren
+callModule(module = optionsModuleServer, id = "wbe_plot2", 
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange,
+  intervals = c("Per maand", "Per seizoen", "Per twee weken"),
+  types = results$types,
+  multipleTypes = FALSE)
+callModule(module = plotModuleServer, id = "wbe_plot2",
+  plotFunction = "countYearShotAnimals", 
   data = results$wbe_combinedData)

@@ -22,14 +22,17 @@ currentYear <- 2020
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
+# Filter data
+
+tmpData <- ecoData[, c("type_comp", "geslacht_comp", "leeftijd_comp")]
+tmpData[!duplicated(tmpData), ]
+
+ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 
-#for (iVar in c("WBE_Naam_Toek", "WBE_Naam_Georef", "KboNummer_Toek", "KboNummer_Georef", "PartijNummer")) {
-#  
-#  print(iVar)
-#  print(head(unique(geoData[, iVar])))
-#  
-#}
+# Combine data
+commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
+
 
 
 test_that("The map", {
@@ -95,6 +98,27 @@ test_that("Trend plot", {
         unit = "relative"
       )$plot
       
+    }  
+    
+  })
+
+
+
+
+
+test_that("Summary Table", {
+    
+    # For count with type 
+    for (iSpecies in species) {
+      
+      combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
+        ecoData, by = commonNames, all.x = TRUE)
+      
+      tableSpecies(
+        data = combinedData, 
+        jaar = 2020
+      )  
+    
     }  
     
   })

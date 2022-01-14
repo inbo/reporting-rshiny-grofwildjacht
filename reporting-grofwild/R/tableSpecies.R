@@ -1,0 +1,130 @@
+# Summary table for species
+# 
+# Author: mvarewyck
+###############################################################################
+
+
+
+#' Create summary table for specific species per WBE
+#' @param data data.frame with raw data for summary table
+#' @inheritParams percentageYearlyShotAnimals 
+#' @param minForTrend numeric, the minimum number of records needed before
+#' a trend is being reported
+#' @return data.frame, number or percentage of observations 
+#' per province and per \code{categorie}
+#' @author mvarewyck
+#' @importFrom reshape2 dcast
+#' @importFrom plyr count join
+#' @export
+tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
+  
+  wildNaam <- unique(data$wildsoort)  
+  
+  if (is.null(jaar))
+    stop("Gelieve jaartal te selecteren")
+  
+  if (wildNaam == "Wild zwijn")
+    allData <- data[, c("PartijNummer", "leeftijd_comp", "afschotjaar")] else
+    allData <- data[, c("PartijNummer", "type_comp", "afschotjaar")]
+  names(allData) <- c("locatie", "categorie", "jaar")
+  
+  
+  # Exclude records with jaar = NA
+  allData <- allData[with(allData, !is.na(jaar)), ]
+  
+  if (!jaar %in% allData$jaar)
+      stop("Niet beschikbaar: Geen data voor het gekozen jaar")
+  
+  
+  # A. Current Year
+  
+  # Select data
+  tableData <- allData[allData$jaar == jaar, ]
+ 
+  # Define names and ordering of factor levels
+  if (wildNaam == "Wild zwijn") {  # wild zwijn for leeftijd
+    
+    levelsCategorie <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
+    
+  } else if (wildNaam == "Ree") {  # ree for leeftijd
+    
+    levelsCategorie <- c("Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Reegeit", "Reebok", "Onbekend")
+    
+  }
+  # Rename categorie extra levels/NA to Onbekend
+  tableData$categorie <- factor(tableData$categorie, levels = levelsCategorie)
+  tableData$categorie[is.na(tableData$categorie)] <- tail(levelsCategorie, n = 1)
+  
+  
+  # Summary of the data
+  summaryData <- count(tableData, vars = names(tableData))
+  nTotal <- sum(summaryData$freq)
+  summaryData$percent <- summaryData$freq / nTotal * 100
+  summaryData$current <- summaryData$freq
+  summaryData$freq <- NULL
+  
+  # Add province/categorie with 0 observations
+  fullData <- expand.grid(
+    locatie = unique(allData$locatie),
+    categorie = levelsCategorie,
+    jaar = jaar)
+  summaryTable <- merge(summaryData, fullData, all = TRUE)
+  summaryTable$percent <- ifelse(is.na(summaryTable$percent), "", 
+    paste0(gsub(pattern = "\\.", "\\,", sprintf("%.1f", summaryTable$percent)), "%"))
+  summaryTable[is.na(summaryTable)] <- 0
+  
+  
+  # B. Calculate differences with 1, 5, 10 years ago
+  
+  finalTable <- summaryTable
+  
+  
+  # Select data
+  for (yearsBack in c(1, 5, 10)) {
+    
+    freqBack <- count(allData[allData$jaar == (jaar - yearsBack), ], 
+      vars = "categorie")
+    
+    # Only calculate trend if relevant
+    if (nrow(freqBack) > 0) {
+      
+      # Add provinces with 0 observations
+      freqBack <- merge(x = fullData[, "categorie", drop = FALSE],
+        y = freqBack, all = TRUE)
+      freqBack$freq[is.na(freqBack$freq)] <- 0
+      
+      # Calculate trend
+      finalTable <- join(x = finalTable, y = freqBack, by = "categorie")
+      finalTable[, paste0("Verandering tov ", yearsBack, " jaar (", jaar - yearsBack, ")")] <- 
+        ifelse(finalTable$current > minForTrend & 
+            finalTable$freq > minForTrend, {
+          value <- round((finalTable$current/finalTable$freq - 1)*100, 1)
+            charValue <- sprintf("%.1f", value)
+            ifelse(value > 0, paste0("+", gsub(pattern = "\\.", "\\,", charValue), "%"), 
+              paste0(gsub(pattern = "\\.", "\\,", charValue), "%"))},
+          "")
+      
+      finalTable[is.na(finalTable)] <- ""
+      
+    }
+    
+  }
+  
+  
+  # Order rows and columns
+  toReturn <- finalTable[match(levelsCategorie, finalTable$categorie), c("categorie", "current", "percent", 
+      names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))])]
+  # Calculate total
+  totaal <- toReturn[1, , drop = FALSE]
+  suppressWarnings(totaal[!is.na(totaal)] <- "")
+  totaal$categorie <- "Totaal"
+  totaal$current <- sum(toReturn$current)
+  toReturn <- suppressWarnings(rbind(toReturn, totaal))
+ 
+  # Rename columns
+  colnames(toReturn)[1:3] <- c("Categorie", "Afschot", "Afschot relatief")
+  
+  return(toReturn)
+  
+}
+

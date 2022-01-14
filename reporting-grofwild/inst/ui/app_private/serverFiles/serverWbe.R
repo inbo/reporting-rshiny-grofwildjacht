@@ -8,12 +8,28 @@
 
 ## Filter Data ##
 
+results$wbe_ecoData <- reactive({
+    
+    subset(ecoData, wildsoort == req(input$wbe_species))
+    
+  })
+
 results$wbe_geoData <- reactive({
     
     subset(geoData, wildsoort == req(input$wbe_species))
     
   })
 
+results$wbe_combinedData <- reactive({
+    
+    # Combine data
+    commonNames <- names(results$wbe_ecoData())[
+      names(results$wbe_ecoData()) %in% names(results$wbe_geoData())]
+    combinedData <- merge(results$wbe_geoData(), results$wbe_ecoData(), 
+      by = commonNames, all.x = TRUE)
+    
+    
+  })
 
 results$wbe_spatialData <- reactive({
     
@@ -30,6 +46,13 @@ results$wbe_spatialData <- reactive({
     spatialData
     
   })
+
+
+results$wbe_timeRange <- reactive({
+    
+    range(c(results$wbe_geoData()$afschotjaar, results$wbe_ecoData()$afschotjaar))
+    
+  })  
 
 
 
@@ -369,9 +392,9 @@ results$wbe_timeData <- reactive({
         
   })
 
-callModule(module = optionsModuleServer, id = "wbe_timePlot", 
+callModule(module = optionsModuleServer, id = "wbe_plot1", 
   data = results$wbe_timeData)
-callModule(module = plotModuleServer, id = "wbe_timePlot",
+callModule(module = plotModuleServer, id = "wbe_plot1",
   plotFunction = "trendYearRegion", 
   data = results$wbe_timeData,
   locaties = reactive(currentWbe),
@@ -379,3 +402,17 @@ callModule(module = plotModuleServer, id = "wbe_timePlot",
   unit = reactive(input$wbe_unit),
   combinatie = reactive(input$wbe_combinatie)
 )
+
+
+
+# Species Table
+
+## User input for controlling the plots and create plotly
+# Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
+callModule(module = optionsModuleServer, id = "wbe_table1", 
+  data = results$wbe_ecoData,
+  timeRange = results$wbe_timeRange
+)
+callModule(module = plotModuleServer, id = "wbe_table1",
+  plotFunction = "tableSpecies", 
+  data = results$wbe_combinedData)

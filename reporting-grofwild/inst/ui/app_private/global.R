@@ -38,6 +38,24 @@ defaultYear <- 2020
 outTempFileName <- tempfile(fileext = ".html")
 
 
+
+### WBE configuration
+### -----------
+
+if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
+  
+  currentKbo <- "445465768"  ## 441 - fixed AREA
+#  currentKbo <- "450506996"   ## 101 - evolving AREA
+  
+} else {
+  # Inside shinyProxy
+  
+  currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
+  
+}
+
+
+
 ### Load all data
 ### -------------
 
@@ -47,29 +65,12 @@ load(file = file.path(dataDir, "spatialData.RData"))
 
 # Data with observations and geographical information
 ecoData <- loadRawData(type = "eco")
+ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
+
 geoData <- loadRawData(type = "geo")
-schadeData <- loadRawData(type = "wildschade")
-
-# Background WBE data
-wbeData <- loadWbeHabitats(dataDir = dataDir)
-
-### WBE configuration
-### -----------
-
-if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
-  
-#  currentKbo <- "445465768"  ## 441 - fixed AREA
-  currentKbo <- "450506996"   ## 101 - evolving AREA
-    
-} else {
-  # Inside shinyProxy
-  
-  currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
-    
-}
-
-# Filter on KBO
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
+
+wbeData <- loadWbeHabitats(dataDir = dataDir)
 
 currentWbe <- unique(geoData$PartijNummer)
 currentWbe <- currentWbe[!is.na(currentWbe)]

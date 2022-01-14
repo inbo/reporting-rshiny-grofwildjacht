@@ -300,8 +300,6 @@ loadRawData <- function(
   } else if (type == "eco") {
     ## ECO data for grofwild
     
-    
-    
     # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"

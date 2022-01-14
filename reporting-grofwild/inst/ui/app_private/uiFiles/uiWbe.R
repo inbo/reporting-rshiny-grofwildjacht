@@ -16,7 +16,7 @@ tagList(
     ),
     
     tags$p(class = "lead", "Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris."),
-    
+  
 #    tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
 #      tags$ul(
 #        tags$li("Bovenaan deze pagina krijgt u, in functie van de gekozen wildsoort, de regio-schaal en de gewenste jaren en periodes, een kaart met de geografische 
@@ -94,37 +94,37 @@ tagList(
     downloadButton("wbe_download", "Download figuur", class = "downloadButton"),
     downloadButton("wbe_downloadData", "Download data", class = "downloadButton")
   
-    ),
-   
-    tags$hr(),
-     
-    # Line plot
-    fluidRow(
-      column(6, 
-        wellPanel(
-          uiOutput("wbe_period"),
-          selectInput(inputId = "wbe_unit", "Eenheid",
-            choices = c("Aantal" = "absolute", 
-              "Aantal/100ha" = "relative")),
-          checkboxInput(inputId = "wbe_combinatie", 
-            label = "Combineer alle geselecteerde regio's"),
-        )
-      ),
-      
-      column(6,
-        uiOutput("wbe_timeTitle"),
-        plotModuleUI(id = "wbe_plot1", height = "400px"),
-        optionsModuleUI(id = "wbe_plot1", exportData = TRUE,
-          doWellPanel = FALSE)
+  ),
+  
+  tags$hr(),
+  
+  # Line plot
+  fluidRow(
+    column(6, 
+      wellPanel(
+        uiOutput("wbe_period"),
+        selectInput(inputId = "wbe_unit", "Eenheid",
+          choices = c("Aantal" = "absolute", 
+            "Aantal/100ha" = "relative")),
+        checkboxInput(inputId = "wbe_combinatie", 
+          label = "Combineer alle geselecteerde regio's"),
       )
     ),
     
-    tags$hr(),
-   
-    tags$div(class = "container",
-      
-      h2("Extra Figuren en Tabellen"),
-      
+    column(6,
+      uiOutput("wbe_timeTitle"),
+      plotModuleUI(id = "wbe_plot1", height = "400px"),
+      optionsModuleUI(id = "wbe_plot1", exportData = TRUE,
+        doWellPanel = FALSE)
+    )
+  ),
+  
+  tags$hr(),
+  
+  tags$div(class = "container",
+    
+    h2("Extra Figuren en Tabellen"),
+    
     ## tableSpecies: wild zwijn and ree
     conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
         
@@ -144,12 +144,32 @@ tagList(
             
             ),
             tags$hr()
+          ),
+          
+          
+          actionLink(inputId = "wbe_linkPlot2",
+            label = h3("FIGUUR: Verdeling afschot over de jaren")),
+          conditionalPanel("input.wbe_linkPlot2 % 2 == 1",
+            fixedRow(
+              
+              column(4,
+                optionsModuleUI(id = "wbe_plot2",
+                  showTime = TRUE,
+                  exportData = TRUE,
+                  showType = TRUE,
+                  showInterval = TRUE),
+                tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
+              ),
+              column(8, plotModuleUI(id = "wbe_plot2"))
+            ),
+            tags$hr(),
           )
-        )
         
-      }),
+        ) 
+        
+      })
   
   )
-   
-  
-  )
+
+
+)

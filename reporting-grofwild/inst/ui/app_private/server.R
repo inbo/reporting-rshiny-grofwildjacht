@@ -25,7 +25,7 @@ shinyServer(function(input, output, session) {
       
       output$print <- renderPrint({
             
-#                        names(session$clientData)
+                        results$types()
             
           })
       

@@ -123,16 +123,12 @@ test_that("Summary Table", {
 
 test_that("Verdeling afschot over de jaren", {
     
-    for (iSpecies in species) {
-      
-      combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
+      combinedData <- merge(geoData[geoData$wildsoort == "Ree", ], 
         ecoData, by = commonNames, all.x = TRUE)
       
       countYearShotAnimals(data = combinedData,
         jaartallen = 2019:2020,
         interval = c("Per maand", "Per seizoen", "Per twee weken")[3]
       )
-      
-    }
-  
+    
   })

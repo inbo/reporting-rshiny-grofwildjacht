@@ -446,3 +446,13 @@ callModule(module = optionsModuleServer, id = "wbe_plot2",
 callModule(module = plotModuleServer, id = "wbe_plot2",
   plotFunction = "countYearShotAnimals", 
   data = results$wbe_combinedData)
+
+
+# Plot3: Afschot per jachtmethode
+callModule(module = optionsModuleServer, id = "wbe_plot3", 
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange)
+callModule(module = plotModuleServer, id = "wbe_plot3",
+  plotFunction = "countHuntingMethod", 
+  data = results$wbe_combinedData)
+

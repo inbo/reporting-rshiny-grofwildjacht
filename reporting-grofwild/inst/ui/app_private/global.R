@@ -70,6 +70,9 @@ ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- loadRawData(type = "geo")
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 
+# TODO filter on KBO
+schadeData <- loadRawData(type = "wildschade")
+
 wbeData <- loadWbeHabitats(dataDir = dataDir)
 
 currentWbe <- unique(geoData$PartijNummer)

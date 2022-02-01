@@ -465,19 +465,42 @@ loadWbeHabitats <- function(dataDir = system.file("extdata", package = "reportin
 
 
 
-#' List with all possible choices for indieningType per schadeChoice
-#' @return list
+#' Specify currently used type schades
+#' @return character vector 
 #' 
 #' @author mvarewyck
 #' @export
-sourcesSchade <- function() {
+loadMetaSchade <- function() {
   
-  list(
+  # Specify currently used wildsoorten
+  schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
+    "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
+    "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
+    "Overig" = c("houtduif", "vos", "verwilderde kat"))
+  
+  # Specify currently used type schades
+  schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
+  
+  # Specify currently used types schade subcodes
+  schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
+    c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD", "GRFSCHD"),     #GEWAS
+    c("ANDERE", "VALWILD"))                            #ANDERE
+  
+  # List with all possible choices for indieningType per schadeChoice
+  sourcesSchade <-  list(
     "E-loket" = c("E_Loket_Meldpunt Jacht", "E_Loket_Meldpunt Schade_Punt", "E_Loket_Meldpunt Schade_Poly"),
     "Natuurpunt" = c("Natuurpunt_copied_observation", "Natuurpunt_ifbl", "Natuurpunt_losse_waarneming", "Natuurpunt_ObsMapp", "Natuurpunt_via_wnpda", 
       "Natuurpunt_WinObs", "Natuurpunt_Dieren_onder_de_wielen_2.0", "Natuurpunt_iObs", "Natuurpunt_NA", "Natuurpunt_Site", 
       "Natuurpunt_Webobs_html5", "Natuurpunt_zoogdiertelling_be"),
     "HVV" = c("HVV_Wilder")
+  )
+  
+  
+  list(
+    wildsoorten = schadeWildsoorten,
+    types = schadeTypes,
+    codes = schadeCodes,
+    sources = sourcesSchade
   )
   
 }

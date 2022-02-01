@@ -174,12 +174,18 @@ observe({
       selectedPolygons <- subset(results$wbe_spatialData(), 
         results$wbe_spatialData()$NAAM %in% currentWbe)
       
+      coordData <- ggplot2::fortify(selectedPolygons)
+      centerView <- c(range(coordData$long), range(coordData$lat))
+      
       leafletProxy("wbe_spacePlot", data = results$wbe_spatialData()) %>%
         
         clearGroup(group = "regionLines") %>%
         
         addPolylines(data = selectedPolygons, color = "gray", weight = 5,
-          group = "regionLines")
+          group = "regionLines") %>%
+        
+        fitBounds(lng1 = centerView[1], lng2 = centerView[2],
+          lat1 = centerView[3], lat2 = centerView[4])
         
   })
 

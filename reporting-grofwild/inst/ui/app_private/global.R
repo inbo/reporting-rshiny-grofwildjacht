@@ -72,6 +72,7 @@ geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 
 # TODO filter on KBO
 schadeData <- loadRawData(type = "wildschade")
+schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 
 wbeData <- loadWbeHabitats(dataDir = dataDir)
 

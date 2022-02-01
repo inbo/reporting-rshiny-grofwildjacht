@@ -456,3 +456,13 @@ callModule(module = plotModuleServer, id = "wbe_plot3",
   plotFunction = "countHuntingMethod", 
   data = results$wbe_combinedData)
 
+
+# Plot4: Schademeldingen
+
+mapSchadeServer(id = "wbe_mapSchade",
+  schadeData = schadeData, 
+  allSpatialData = spatialData, 
+  timeRange = reactive(c(max(2018, results$wbe_timeRange()[1]), results$wbe_timeRange()[2])), 
+  defaultYear = defaultYear, 
+  species = reactive(input$wbe_species))
+

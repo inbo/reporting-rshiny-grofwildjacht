@@ -7,18 +7,17 @@
 countYearShotAnimals(
   data,
   regio,
-  jaartallen,
+  jaartallen = NULL,
   width = NULL,
   height = NULL,
-  interval = NULL,
+  interval = c("Per maand", "Per seizoen", "Per twee weken"),
   type = NULL
 )
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
-\item{regio}{character, regional level of interest should be one of 
-\code{c("provinces", "flanders", "faunabeheerzones")}}
+\item{regio, }{empty function argument needed for generalization in \code{\link{plotModuleServer}}}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

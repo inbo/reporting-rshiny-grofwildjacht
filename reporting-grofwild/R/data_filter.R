@@ -22,14 +22,16 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   
   returnStop <- match.arg(returnStop)
   
+  sourcesSchade <- loadMetaSchade()$sources
+  
   if (!is.null(sourceIndicator)) {
     
-    sources <- unlist(sapply(sourceIndicator, function(source) sourcesSchade()[[source]]))
+    sources <- unlist(sapply(sourceIndicator, function(source) sourcesSchade[[source]]))
     plotData <- plotData[plotData$indieningType %in% sources, ]
     
     if (nrow(plotData) == 0) {
       if (returnStop == "message")
-        stop("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, ". ")
+        stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
     }
   }
   

@@ -104,6 +104,18 @@ tagList(
   
   tags$hr(),
   
+  fixedRow(
+    
+    column(4,
+      optionsModuleUI(id = "wbe_table1", showYear = TRUE, exportData = TRUE),
+      tags$p("Het gerapporteerd aantal geschoten dieren per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren. 
+          Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
+    ),
+    column(8, tableModuleUI(id = "wbe_table1"))
+  
+  ),
+  tags$hr(),
+  
   tags$div(class = "container",
     
     h2("Extra Figuren en Tabellen"),
@@ -112,24 +124,7 @@ tagList(
     conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
         
         tagList(
-          actionLink(inputId = "wbe_linkTable1",
-            label = h3("TABEL: Gerapporteerd afschot per leeftijdscategorie")),
-          conditionalPanel("input.wbe_linkTable1 % 2 == 1",
-            
-            fixedRow(
-              
-              column(4,
-                optionsModuleUI(id = "wbe_table1", showYear = TRUE, exportData = TRUE),
-                tags$p("Het gerapporteerd aantal geschoten dieren per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren. 
-                    Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
-              ),
-              column(8, tableModuleUI(id = "wbe_table1"))
-            
-            ),
-            tags$hr()
-          ),
-          
-          
+                 
           actionLink(inputId = "wbe_linkPlot2",
             label = h3("FIGUUR: Verdeling afschot over de jaren")),
           conditionalPanel("input.wbe_linkPlot2 % 2 == 1",
@@ -173,7 +168,18 @@ tagList(
         )
       )
       
-    })
+    }),
+  
+      tagList(
+        actionLink(inputId = "wbe_linkPlot4", label =
+            h3("FIGUUR: Schademeldingen")),
+        conditionalPanel("input.wbe_linkPlot4 % 2 == 1",
+          mapSchadeUI(id = "wbe_mapSchade", filterCode = TRUE, filterSubcode = TRUE)
+          
+          ),
+          tags$hr()
+        )
+  
   
   )
 

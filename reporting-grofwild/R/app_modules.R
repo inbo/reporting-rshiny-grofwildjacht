@@ -121,6 +121,8 @@ optionsModuleServer <- function(input, output, session,
   
   results <- reactiveValues()
   
+  sourcesSchade <- loadMetaSchade()$sources
+  
   output$time <- renderUI({
         
         sliderInput(inputId = ns("time"), label = timeLabel, 
@@ -250,7 +252,7 @@ optionsModuleServer <- function(input, output, session,
         
         selectInput(inputId = ns("dataSource_schade"), 
             label = "Data bron",
-            choices = names(sourcesSchade()),
+            choices = names(sourcesSchade),
             multiple = TRUE)
         
       })

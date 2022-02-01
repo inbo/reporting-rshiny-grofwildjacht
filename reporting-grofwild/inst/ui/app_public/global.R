@@ -30,20 +30,12 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 # Link to www folder
 addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 
-# Specify currently used wildsoorten
-schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
-                      "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
-                      "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
-                      "Overig" = c("houtduif", "vos", "verwilderde kat"))
+metaSchade <- loadMetaSchade()
 
-# Specify currently used type schades
-schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
-
-# Specify currently used types schade subcodes
-schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
-                 c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD", "GRFSCHD"),     #GEWAS
-                 c("ANDERE", "VALWILD"))                            #ANDERE
-
+schadeWildsoorten <- metaSchade$wildsoorten
+schadeTypes <- metaSchade$types
+schadeCodes <- metaSchade$codes
+sourcesSchade <- metaSchade$sources
 
              
 # Specify default year to show (and default max to show in time ranges)

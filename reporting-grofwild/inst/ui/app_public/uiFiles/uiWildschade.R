@@ -128,7 +128,7 @@ tagList(
                 column(4,
                     selectInput(inputId = "schade_bron1",
                         label = "Data bron",
-                        choices = names(sourcesSchade()),
+                        choices = names(sourcesSchade),
                         multiple = TRUE)
                 )
             ),
@@ -186,7 +186,7 @@ tagList(
             column(6,
                 selectInput(inputId = "schade_bron2",
                     label = "Data bron",
-                    choices = names(sourcesSchade()),
+                    choices = names(sourcesSchade),
                     multiple = TRUE)
             ),
             column(6, selectInput(inputId = "schade_legend2", "Legende (kaart)",
@@ -207,7 +207,7 @@ tagList(
     tags$br(),
     actionButton("schade_genereerMap", "Download figuur", icon = icon("download"), class = "downloadButton"),
     singleton(
-        tags$head(tags$script(src = "triggerDownload.js"))
+        tags$head(tags$script(src = "www/triggerDownload.js"))
     ),
     downloadButton("schade_downloadPerceelmapData", "Download data", class = "downloadButton"),
     downloadLink("schade_downloadPerceelMap", " "),

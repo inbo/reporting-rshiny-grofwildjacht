@@ -88,7 +88,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 #' Should be one of \code{c("season", "schadeCode", "afschotjaar")}
 #' @return leaflet map
 #' @author mvarewyck
-#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles
+#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_palette
 #' @export
@@ -118,6 +118,7 @@ mapSchade <- function(
 
     palette <- colorFactor(colors, levels(schadeData$variable))
           
+    centerView <- as.numeric(apply(coordinates(schadeData), 2, range))
     
     myMap <- leaflet(schadeData) %>%
             
@@ -134,7 +135,10 @@ mapSchade <- function(
                             "<li><strong> Seizoen </strong>: ", schadeData$season,
                             "</ul>"
                     )
-            )
+            ) %>%
+            
+            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
+              lat1 = centerView[3], lat2 = centerView[4])
     
     # Add black borders
     if (!is.null(regionLevel)) {
@@ -288,7 +292,6 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
             toRetain <- toRetain &
               (schadeData@data$schadeBasisCode %in% otherCodes |
                 schadeData@data$schadeCode %in% input$voertuig)
-            print(sum(toRetain))
           }
           
           schadeData[toRetain, ]
@@ -347,6 +350,12 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
             addGlobe = input$globe %% 2 == 0
           )
           
+          print(list(
+              lng = input$perceelPlot_center$lng,
+              lat = input$perceelPlot_center$lat,
+              zoom = input$perceelPlot_zoom
+            ))
+          
           # save the zoom level and centering
           newPerceelMap %>%  setView(
             lng = input$perceelPlot_center$lng,
@@ -354,16 +363,23 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
             zoom = input$perceelPlot_zoom
           )
           
+         
+          
           
         })
       
+      # Add world map
       observeEvent(input$globe, {
           
-          if(input$globe %% 2 == 0) {
+          proxy <- leafletProxy("perceelPlot")
+          
+          if (input$globe %% 2 == 0) {
             
             updateActionLink(session, 
               inputId = "globe",
               label = "Verberg landkaart")
+            
+            proxy %>% addProviderTiles("OpenStreetMap.HOT")
             
           } else {
             
@@ -371,9 +387,12 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
               inputId = "globe",
               label = "Voeg landkaart toe")
             
+            proxy %>% clearTiles()
+            
           }
           
         })
+      
       
       # Generating image outside of downloadHandler
       map <- reactiveVal()

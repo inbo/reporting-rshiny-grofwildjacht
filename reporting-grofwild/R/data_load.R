@@ -363,7 +363,7 @@ loadRawData <- function(
                         "IndieningSchadeBasisCode", "IndieningSchadeCode",
                         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
                         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
-                        "UTM5", "PolyLocatieWKT", "x", "y")]
+                        "UTM5", "KboNummer", "PolyLocatieWKT", "x", "y")]
         
         # format date
         rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
@@ -374,7 +374,7 @@ loadRawData <- function(
                 "schadeBasisCode", "schadeCode",
                 "SoortNaam", "wildsoort", "afschot_datum",
                 "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
-                "UTM5", "perceelPolygon", "x", "y")
+                "UTM5", "KboNummer", "perceelPolygon", "x", "y")
         
         # Match on NISCODE: otherwise mismatch with spatialData locatie
         rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 

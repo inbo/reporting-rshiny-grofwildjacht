@@ -8,12 +8,6 @@
 
 ## Filter Data ##
 
-results$wbe_ecoData <- reactive({
-    
-    subset(ecoData, wildsoort == req(input$wbe_species))
-    
-  })
-
 results$wbe_geoData <- reactive({
     
     subset(geoData, wildsoort == req(input$wbe_species))
@@ -22,12 +16,12 @@ results$wbe_geoData <- reactive({
 
 results$wbe_combinedData <- reactive({
     
-    # Combine data
-    commonNames <- names(results$wbe_ecoData())[
-      names(results$wbe_ecoData()) %in% names(results$wbe_geoData())]
-    combinedData <- merge(results$wbe_geoData(), results$wbe_ecoData(), 
-      by = commonNames, all.x = TRUE)
+    ecoData <- subset(ecoData, wildsoort == req(input$wbe_species))
     
+    # Combine data
+    commonNames <- names(ecoData)[names(ecoData) %in% names(results$wbe_geoData())]
+    combinedData <- merge(results$wbe_geoData(), ecoData, 
+      by = commonNames, all.x = TRUE)
     
   })
 
@@ -50,10 +44,10 @@ results$wbe_spatialData <- reactive({
 
 results$wbe_timeRange <- reactive({
     
-    jaartallenGeo <- range(results$wbe_geoData()$afschotjaar)
-    jaartallenEco <- range(results$wbe_ecoData()$afschotjaar)
-    c(max(jaartallenGeo[1], jaartallenEco[1]), min(jaartallenGeo[2], jaartallenEco[2]))
+    req(nrow(results$wbe_combinedData()) > 0)
     
+    range(results$wbe_combinedData()$afschotjaar)
+        
   })  
 
 results$types <- reactive({
@@ -434,7 +428,7 @@ callModule(module = plotModuleServer, id = "wbe_plot1",
 ## User input for controlling the plots and create plotly
 # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
 callModule(module = optionsModuleServer, id = "wbe_table1", 
-  data = results$wbe_ecoData,
+  data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange
 )
 callModule(module = plotModuleServer, id = "wbe_table1",
@@ -464,11 +458,16 @@ callModule(module = plotModuleServer, id = "wbe_plot3",
 
 
 # Plot4: Schademeldingen
-
-mapSchadeServer(id = "wbe_mapSchade",
+mapSchadeServer(id = "wbe",
   schadeData = schadeData, 
   allSpatialData = spatialData, 
   timeRange = reactive(c(max(2018, results$wbe_timeRange()[1]), results$wbe_timeRange()[2])), 
   defaultYear = defaultYear, 
   species = reactive(input$wbe_species))
+
+
+# Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
+countAgeGenderServer(id = "wbe",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange)
 

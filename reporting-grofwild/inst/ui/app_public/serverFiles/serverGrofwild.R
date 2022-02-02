@@ -205,12 +205,9 @@ callModule(module = plotModuleServer, id = "wild_plot4",
 
 
 # Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
-callModule(module = optionsModuleServer, id = "wild_plot5", 
-    data = results$wild_ecoData,
-    timeRange = results$wild_timeRange)
-callModule(module = plotModuleServer, id = "wild_plot5",
-    plotFunction = "countAgeGender", 
-    data = results$wild_ecoData)
+countAgeGenderServer(id = "wild",
+  data = results$wild_ecoData,
+  timeRange = results$wild_timeRange)
 
 
 # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht

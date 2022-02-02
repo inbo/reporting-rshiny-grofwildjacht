@@ -320,24 +320,7 @@ tagList(
                       tags$hr()
                   ),
                   
-                  
-                  actionLink(inputId = "wild_linkPlot5",
-                      label = h3("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie")),
-                  conditionalPanel("input.wild_linkPlot5 % 2 == 1",
-                      
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot5", showTime = TRUE, exportData = TRUE),
-                              tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. 
-                                      Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot5"))
-                      
-                      ),
-                      tags$hr()
-                  ),
-                  
+                  countAgeGenderUI(id = "wild"),
                   
                   actionLink(inputId = "wild_linkPlot6",
                       label = h3("FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),

@@ -89,6 +89,7 @@ tagList(
         selectInput(inputId = "wbe_unit", "Eenheid",
           choices = c("Aantal" = "absolute", 
             "Aantal/100ha" = "relative")),
+        if (length(currentKbo) > 1)
         checkboxInput(inputId = "wbe_combinatie", 
           label = "Combineer alle geselecteerde regio's"),
       )
@@ -170,15 +171,9 @@ tagList(
       
     }),
   
-      tagList(
-        actionLink(inputId = "wbe_linkPlot4", label =
-            h3("FIGUUR: Schademeldingen")),
-        conditionalPanel("input.wbe_linkPlot4 % 2 == 1",
-          mapSchadeUI(id = "wbe_mapSchade", filterCode = TRUE, filterSubcode = TRUE)
-          
-          ),
-          tags$hr()
-        )
+  mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE),
+  
+  countAgeGenderUI(id = "wbe")
   
   
   )

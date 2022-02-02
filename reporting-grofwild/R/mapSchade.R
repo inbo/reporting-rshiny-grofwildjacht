@@ -468,65 +468,75 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE) {
   metaSchade <- loadMetaSchade()
   
   tagList(
-    wellPanel(
-      if (filterCode || filterSubcode)
-        tagList(
-        fixedRow(  
-          # Select type schade
-          column(6, selectInput(inputId = ns("code"), label = "Type Schade",
-              choices = fullNames(x = metaSchade$types),
-              selected = metaSchade$types,
-              multiple = TRUE,
-              width = "100%"
-            )),
-          
-          # Select gewas & voertuig
-          column(6, uiOutput(ns("subcode")))
+    
+    actionLink(inputId = ns("linkMapSchade"), label =
+        h3("FIGUUR: Schademeldingen")),
+    conditionalPanel("input.linkMapSchade % 2 == 1", ns = ns,
+      
+      wellPanel(
+        if (filterCode || filterSubcode)
+          tagList(
+            fixedRow(  
+              # Select type schade
+              column(6, selectInput(inputId = ns("code"), label = "Type Schade",
+                  choices = fullNames(x = metaSchade$types),
+                  selected = metaSchade$types,
+                  multiple = TRUE,
+                  width = "100%"
+                )),
+              
+              # Select gewas & voertuig
+              column(6, uiOutput(ns("subcode")))
+            ),
+            uiOutput(ns("nFilter"))
           ),
-          uiOutput(ns("nFilter"))
+        
+        
+        fixedRow(
+          column(6, uiOutput(ns("time"))),
+          column(6, selectInput(inputId = ns("variable"), label = "Variabele",
+              choices = c(
+                "Seizoen" = "season",
+                "Jaar" = "afschotjaar",
+                "Type schade" = "schadeCode"))
+          )
+        ),
+        fixedRow(
+          column(6,
+            selectInput(inputId = ns("bron"),
+              label = "Data bron",
+              choices = names(metaSchade$sources),
+              multiple = TRUE)
+          ),
+          column(6, selectInput(inputId = ns("legend"), "Legende (kaart)",
+              choices = c("Bovenaan rechts" = "topright",
+                "Onderaan rechts" = "bottomright",
+                "Bovenaan links" = "topleft",
+                "Onderaan links" = "bottomleft",
+                "<geen>" = "none")))
+        
         ),
         
-      
-      fixedRow(
-        column(6, uiOutput(ns("time"))),
-        column(6, selectInput(inputId = ns("variable"), label = "Variabele",
-            choices = c(
-              "Seizoen" = "season",
-              "Jaar" = "afschotjaar",
-              "Type schade" = "schadeCode"))
-        )
-      ),
-      fixedRow(
-        column(6,
-          selectInput(inputId = ns("bron"),
-            label = "Data bron",
-            choices = names(metaSchade$sources),
-            multiple = TRUE)
-        ),
-        column(6, selectInput(inputId = ns("legend"), "Legende (kaart)",
-            choices = c("Bovenaan rechts" = "topright",
-              "Onderaan rechts" = "bottomright",
-              "Bovenaan links" = "topleft",
-              "Onderaan links" = "bottomleft",
-              "<geen>" = "none")))
-      
+        actionLink(inputId = ns("globe"), label = "Verberg landkaart",
+          icon = icon("globe"))
       ),
       
-      actionLink(inputId = ns("globe"), label = "Verberg landkaart",
-        icon = icon("globe"))
-    ),
+      uiOutput(ns("titlePerceel")),        
+      withSpinner(leafletOutput(ns("perceelPlot"))),
+      tags$br(),
+      actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
+      singleton(
+        tags$head(tags$script(src = "www/triggerDownload.js"))
+      ),
+      downloadButton(ns("downloadPerceelmapData"), "Download data", class = "downloadButton"),
+      downloadLink(ns("downloadPerceelMap"), " "),
+      
+      tags$hr()
     
-    uiOutput(ns("titlePerceel")),        
-    withSpinner(leafletOutput(ns("perceelPlot"))),
-    tags$br(),
-    actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
-    singleton(
-      tags$head(tags$script(src = "www/triggerDownload.js"))
-    ),
-    downloadButton(ns("downloadPerceelmapData"), "Download data", class = "downloadButton"),
-    downloadLink(ns("downloadPerceelMap"), " ")
-  )
+    )
   
+  )
+
   
 }
 

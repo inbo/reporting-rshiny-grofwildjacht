@@ -477,3 +477,23 @@ countAgeCheekServer(id = "wbe",
   timeRange = results$wbe_timeRange
 )
 
+# Plot 7: Gewicht per jaar
+results$wbe_typesGender <- reactive({
+    
+    types <- levels(droplevels(results$wbe_combinedData()$type_comp))
+    types[types != ""]
+    
+  })
+
+results$wbe_typesDefaultGender <- reactive({
+    grep("kits", results$wbe_typesGender(), value = TRUE)
+  })
+
+plotBioindicatorServer(id = "wbe_gewicht",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange,
+  types = results$wbe_typesGender,
+  typesDefault = results$wbe_typesDefaultGender,
+  bioindicator = "ontweid_gewicht")
+
+

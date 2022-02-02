@@ -248,20 +248,7 @@ tagList(
         conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
               
               tagList(
-                  actionLink(inputId = "wild_linkPlot2", label =
-                          h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier")),
-                  conditionalPanel("input.wild_linkPlot2 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot2", showTime = TRUE, exportData = TRUE),
-                              tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.")
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot2"))
-                      
-                      ),
-                      tags$hr()
-                  ),
+                  countAgeCheekUI(id = "wild"),
                   
                   
                   actionLink(inputId = "wild_linkPlot3",

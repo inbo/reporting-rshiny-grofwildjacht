@@ -129,3 +129,66 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"]))
 	
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{countAgeCheek}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countAgeCheekServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Leeftijdscategorie op basis van onderkaak & meldingsformulier
+      callModule(module = optionsModuleServer, id = "ageCheek", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "ageCheek",
+        plotFunction = "countAgeCheek", 
+        data = data)
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
+#' @inheritParams countAgeCheekServer
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countAgeCheekUI <- function(id) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkAgeCheek"), 
+      label = h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier")),
+    conditionalPanel("input.linkAgeCheek % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
+          tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.")
+        ),
+        column(8, 
+          plotModuleUI(id = ns("ageCheek"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+}

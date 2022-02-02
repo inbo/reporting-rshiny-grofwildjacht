@@ -145,15 +145,12 @@ callModule(module = plotModuleServer, id = "wild_plot1",
 
 
 # Plot 2: Leeftijdscategorie op basis van onderkaak & meldingsformulier
-
-callModule(module = optionsModuleServer, id = "wild_plot2", 
-    data = results$wild_ecoData,
-    timeRange = reactive(if (input$wild_species == "Ree")
-              c(2005, max(results$wild_timeRange())) else 
-              results$wild_timeRange()))
-callModule(module = plotModuleServer, id = "wild_plot2",
-    plotFunction = "countAgeCheek", 
-    data = results$wild_ecoData)
+countAgeCheekServer(id = "wild",
+  data = results$wild_ecoData,
+  timeRange = reactive(if (input$wild_species == "Ree")
+        c(2005, max(results$wild_timeRange())) else 
+        results$wild_timeRange())
+)
 
 
 # Plot 3: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)

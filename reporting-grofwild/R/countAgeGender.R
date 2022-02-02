@@ -128,7 +128,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
 #' @param id character, unique identifier for the module
-#' @param data data.frame for the plot, see \code{\link{countAgeGender}}
+#' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @return no return value
 #' 
@@ -180,8 +180,8 @@ countAgeGenderUI <- function(id) {
           tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. 
               Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
         ),
-        column(8, plotModuleUI(id = ns("ageGender"))
-        
+        column(8, 
+          plotModuleUI(id = ns("ageGender"))
         ),
         tags$hr()
       )

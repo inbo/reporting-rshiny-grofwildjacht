@@ -173,7 +173,9 @@ tagList(
   
   mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE),
   
-  countAgeGenderUI(id = "wbe")
+  countAgeGenderUI(id = "wbe"),
+  
+  countAgeCheekUI(id = "wbe")
   
   
   )

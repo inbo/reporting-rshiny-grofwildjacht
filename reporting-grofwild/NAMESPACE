@@ -3,6 +3,8 @@
 export(boxAgeGenderLowerJaw)
 export(boxAgeWeight)
 export(countAgeCheek)
+export(countAgeCheekServer)
+export(countAgeCheekUI)
 export(countAgeGender)
 export(countAgeGenderServer)
 export(countAgeGenderUI)

@@ -471,3 +471,9 @@ countAgeGenderServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange)
 
+# Plot 6: Leeftijdscategorie op basis van onderkaak & meldingsformulier
+countAgeCheekServer(id = "wbe",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange
+)
+

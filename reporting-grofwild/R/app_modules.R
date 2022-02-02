@@ -594,9 +594,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
   output$accuracy <- flexdashboard::renderGauge({
       
         flexdashboard::gauge(
-          value = resultFct()$accuracy,
+          value = resultFct()$accuracy$value,
           min = 0, max = 100, 
           symbol = "%",
+          label = paste0("(totaal ", resultFct()$accuracy$total, ")"),
           sectors = flexdashboard::gaugeSectors(
             success = c(50, 100), 
             warning = c(30, 50),

@@ -174,7 +174,7 @@ tagList(
   mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE),
   
   countAgeGenderUI(id = "wbe"),
-  countAgeCheekUI(id = "wbe"),
+  countAgeCheekUI(id = "wbe", showAccuracy = TRUE),
   
   conditionalPanel("input.wbe_species == 'Ree'", {
       tagList(

@@ -298,3 +298,84 @@ if (bioindicator == "onderkaaklengte") {
 	return(list(plot = pl, data = returnedData, warning = colorList$warning))
 	
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams optionsModuleServer 
+#' @inheritParams plotBioindicator
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht")) {
+  
+  bioindicator <- match.arg(bioindicator)
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Bioindicator plot
+      callModule(module = optionsModuleServer, id = "plotBioindicator", 
+        data = data,
+        timeRange = timeRange,
+        types = types,
+        typesDefault = typesDefault,
+        multipleTypes = TRUE)
+      callModule(module = plotModuleServer, id = "plotBioindicator",
+        plotFunction = "plotBioindicator", 
+        bioindicator = bioindicator,
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
+#' @inheritParams plotBioindicatorServer
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht")) {
+  
+  bioindicator <- match.arg(bioindicator)
+  
+  ns <- NS(id)
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkPlotBioindicator"), 
+      label = if (bioindicator == "ontweid_gewicht") 
+        h3("FIGUUR: Gewicht per jaar")),
+    conditionalPanel("input.linkPlotBioindicator % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("plotBioindicator"),
+            showTime = TRUE, showType = TRUE,
+            regionLevels = 1:2, exportData = TRUE,
+            showDataSource = c("leeftijd", "geslacht")),
+          if (bioindicator == "ontweid_gewicht")
+            tagList(
+              tags$p("Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types."),
+              tags$p(tags$i("Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur."))
+            )
+        ),
+        column(8, 
+          plotModuleUI(id = ns("plotBioindicator"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+
+}

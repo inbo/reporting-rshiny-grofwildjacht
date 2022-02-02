@@ -268,16 +268,13 @@ callModule(module = plotModuleServer, id = "wild_plot8",
 
 
 # Plot 9: Gewicht per jaar
-callModule(module = optionsModuleServer, id = "wild_plot9", 
-    data = results$wild_ecoData,
-    timeRange = results$wild_timeRange,
-    types = results$typesGender,
-    typesDefault = results$typesDefaultGender,
-    multipleTypes = TRUE)
-callModule(module = plotModuleServer, id = "wild_plot9",
-    plotFunction = "plotBioindicator", 
-    bioindicator = "ontweid_gewicht",
-    data = results$wild_ecoData)
+plotBioindicatorServer(id = "wild_gewicht",
+  data = results$wild_ecoData,
+  timeRange = results$wild_timeRange,
+  types = results$typesGender,
+  typesDefault = results$typesDefaultGender,
+  bioindicator = "ontweid_gewicht")
+
 
 
 # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar

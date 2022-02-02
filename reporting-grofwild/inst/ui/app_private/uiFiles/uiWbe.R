@@ -174,8 +174,16 @@ tagList(
   mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE),
   
   countAgeGenderUI(id = "wbe"),
-  
-  countAgeCheekUI(id = "wbe")
+  countAgeCheekUI(id = "wbe"),
+    
+  conditionalPanel("input.wbe_species == 'Ree'", {
+      tagList(
+        
+        h2("Bio-indicatoren"),
+        plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht"),
+      
+      )
+    })
   
   
   )

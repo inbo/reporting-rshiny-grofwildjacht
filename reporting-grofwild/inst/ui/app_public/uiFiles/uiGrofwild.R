@@ -398,23 +398,7 @@ tagList(
                       tags$hr()
                   ),
                   
-                  actionLink(inputId = "wild_linkPlot9", label = h3("FIGUUR: Gewicht per jaar")),
-                  conditionalPanel("input.wild_linkPlot9 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot9",
-                                  showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE,
-                                  showDataSource = c("leeftijd", "geslacht")),
-                              tags$p("Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types."),
-                              tags$p(tags$i("Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur."))
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot9"))
-                      
-                      ),
-                      tags$hr()
-                  ),
+                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht"),
                   
                   actionLink(inputId = "wild_linkPlot10",
                       label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")

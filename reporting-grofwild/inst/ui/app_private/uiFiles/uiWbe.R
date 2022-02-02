@@ -181,7 +181,7 @@ tagList(
         
         h2("Bio-indicatoren"),
         plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht"),
-      
+        countEmbryosUI("wbe", regionLevels = NULL)
       )
     })
   

@@ -285,14 +285,10 @@ results$typesFemale <- reactive({
       
     })
 
-callModule(module = optionsModuleServer, id = "wild_plot10", 
+countEmbryosServer(id = "wild",
     data = results$wild_ecoData,
     timeRange = results$wild_timeRange,
-    types = results$typesFemale,
-    multipleTypes = TRUE)
-callModule(module = plotModuleServer, id = "wild_plot10",
-    plotFunction = "countEmbryos",
-    data = results$wild_ecoData)
+    types = results$typesFemale)
 
 # Plot 11: Afschot per jachtmethode
 callModule(module = optionsModuleServer, id = "wild_plot11", 

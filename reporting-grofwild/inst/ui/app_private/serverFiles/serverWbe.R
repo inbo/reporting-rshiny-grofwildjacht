@@ -497,3 +497,14 @@ plotBioindicatorServer(id = "wbe_gewicht",
   bioindicator = "ontweid_gewicht")
 
 
+# Plot 8: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
+countEmbryosServer(id = "wbe",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange,
+  types = reactive({
+      types <- levels(droplevels(results$wbe_combinedData()$type_comp))
+      types[types %in% c("Reegeit", "Smalree")]
+    })
+)
+
+

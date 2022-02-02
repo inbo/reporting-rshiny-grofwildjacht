@@ -4,7 +4,11 @@
 \alias{plotBioindicatorUI}
 \title{Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side}
 \usage{
-plotBioindicatorUI(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"))
+plotBioindicatorUI(
+  id,
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht"),
+  regionLevels
+)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
@@ -12,6 +16,9 @@ plotBioindicatorUI(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"))
 \item{bioindicator}{string with column of \code{data}
 with bioindicator, either 'onderkaaklengte',
 'ontweid_gewicht', or 'aantal_embryos'}
+
+\item{regionLevels}{numeric vector, if not NULL, defines the choices for 
+region levels: 1 = flanders, 2 = provinces, 3 = communes}
 }
 \value{
 UI object

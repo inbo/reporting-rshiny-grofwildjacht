@@ -32,6 +32,7 @@ RUN R -e "install.packages(c('shiny', 'gert', 'sp', 'plyr', 'devtools', 'methods
 RUN R -e "devtools::install_version('plotly', version = '4.9.2.1', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 RUN R -e "install.packages('https://cran.r-project.org/src/contrib/Archive/DT/DT_0.12.tar.gz', repos = NULL, type = 'source')"
+RUN R -e "install.packages(c('flexdashboard'), repos='https://cloud.r-project.org/')"
 
 # install depends of reporting-grofwild app
 RUN R -e "install.packages(c('maptools'), repos='https://cloud.r-project.org/')"

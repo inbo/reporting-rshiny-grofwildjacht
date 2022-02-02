@@ -8,6 +8,7 @@
 #' 
 #' Figure p. 9 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
+#' @param currentYear numeric, current year to calculate accuracy for
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given species the percentage per age category
@@ -28,7 +29,8 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
-		width = NULL, height = NULL) {
+  currentYear = as.numeric(format(Sys.Date(), "%Y")),
+  width = NULL, height = NULL) {
 	
 	
 	wildNaam <- unique(data$wildsoort)
@@ -40,13 +42,23 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
-	names(plotData) <- c("jager", "kaak")
-	
+			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak", "afschotjaar")] 
+	names(plotData) <- c("jager", "kaak", "jaar")
 
 	# Percentage collected
 	nRecords <- nrow(plotData)
-	
+ 
+  # Calculate accuracy
+  tmpData <- subset(plotData, subset = jaar == currentYear)
+  if (nrow(tmpData) > 0) {
+    nRecords2 <- nrow(tmpData)
+    tmpData <- tmpData[with(tmpData, !is.na(jager) & !jager %in% "Onbekend" &
+          !is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
+    accuracy <- round((nrow(tmpData)/nRecords2) * 100)
+  } else accuracy <- 0
+  plotData$jaar <- NULL
+ 
+ 
 	# Remove some categories
 	plotData <- plotData[with(plotData, !is.na(jager) & !jager %in% "Onbekend" &
 							!is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
@@ -55,6 +67,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 		stop("Geen data beschikbaar")
 	
 	percentCollected <- nrow(plotData)/nRecords
+
 	
 	# Define names and ordering of factor levels
 	if (wildNaam == "Wild zwijn") {  # wild zwijn
@@ -126,7 +139,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"]))
+	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], accuracy = accuracy))
 	
 }
 
@@ -154,6 +167,7 @@ countAgeCheekServer <- function(id, data, timeRange) {
       callModule(module = plotModuleServer, id = "ageCheek",
         plotFunction = "countAgeCheek", 
         data = data)
+      
     })
   
 } 
@@ -181,7 +195,8 @@ countAgeCheekUI <- function(id) {
         
         column(4,
           optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
-          tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.")
+          tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn."),
+          accuracyModuleUI(id = ns("ageCheek")),
         ),
         column(8, 
           plotModuleUI(id = ns("ageCheek"))

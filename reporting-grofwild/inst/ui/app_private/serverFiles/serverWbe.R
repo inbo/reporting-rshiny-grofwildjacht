@@ -477,7 +477,8 @@ countAgeCheekServer(id = "wbe",
   timeRange = results$wbe_timeRange
 )
 
-# Plot 7: Gewicht per jaar
+
+# Plot 7: Onderkaaklengte per jaar
 results$wbe_typesGender <- reactive({
     
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))
@@ -489,6 +490,14 @@ results$wbe_typesDefaultGender <- reactive({
     grep("kits", results$wbe_typesGender(), value = TRUE)
   })
 
+plotBioindicatorServer(id = "wbe_onderkaak",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange,
+  types = results$wbe_typesDefaultGender,
+  typesDefault = results$wbe_typesDefaultGender,
+  bioindicator = "onderkaaklengte")
+
+# Plot 8: Gewicht per jaar
 plotBioindicatorServer(id = "wbe_gewicht",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
@@ -497,7 +506,7 @@ plotBioindicatorServer(id = "wbe_gewicht",
   bioindicator = "ontweid_gewicht")
 
 
-# Plot 8: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
+# Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
 countEmbryosServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
@@ -507,7 +516,7 @@ countEmbryosServer(id = "wbe",
     })
 )
 
-# Plot 9: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+# Plot 10: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 ageGenderLowerJawServer(id = "wbe",
   data = results$wbe_combinedData,
   types = reactive(switch(input$wbe_species,

@@ -339,12 +339,13 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @inheritParams plotBioindicatorServer
+#' @inheritParams optionsModuleUI
 #' @return UI object
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht")) {
+plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), regionLevels) {
   
   bioindicator <- match.arg(bioindicator)
   
@@ -353,8 +354,11 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
   tagList(
     
     actionLink(inputId = ns("linkPlotBioindicator"), 
-      label = if (bioindicator == "ontweid_gewicht") 
-        h3("FIGUUR: Gewicht per jaar")),
+      label = h3(switch(bioindicator,
+          ontweid_gewicht = "FIGUUR: Gewicht per jaar",
+          onderkaaklengte = "FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier)"
+        ))
+    ),
     conditionalPanel("input.linkPlotBioindicator % 2 == 1", ns = ns,
       
       fixedRow(
@@ -362,13 +366,18 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
         column(4,
           optionsModuleUI(id = ns("plotBioindicator"),
             showTime = TRUE, showType = TRUE,
-            regionLevels = 1:2, exportData = TRUE,
-            showDataSource = c("leeftijd", "geslacht")),
-          if (bioindicator == "ontweid_gewicht")
-            tagList(
+            regionLevels = regionLevels, exportData = TRUE,
+            showDataSource = switch(bioindicator,
+              ontweid_gewicht = c("leeftijd", "geslacht"),
+              onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
+            )),
+          switch(bioindicator,
+            ontweid_gewicht = tagList(
               tags$p("Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types."),
               tags$p(tags$i("Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur."))
-            )
+            ),
+            onderkaaklengte = tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
+          )
         ),
         column(8, 
           plotModuleUI(id = ns("plotBioindicator"))

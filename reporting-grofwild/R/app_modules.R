@@ -352,6 +352,26 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
 }
 
 
+#' Accuracy gauge - UI side
+#' @inheritParams plotModuleUI 
+#' @return ui object
+#' 
+#' @author mvarewyck
+#' @importFrom flexdashboard gaugeOutput
+#' @export
+accuracyModuleUI <- function(id) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    tags$div(style = "text-align:center", tags$h4("Accuraatheid huidig jaar")),
+    flexdashboard::gaugeOutput(outputId = ns("accuracy"))
+  )
+  
+}
+
+
+
 #' Interactive table (ui-side)
 #' @param id character, module id, unique name per plot
 #' @param includeTotal boolean, whether include text with total number of records in table
@@ -418,6 +438,7 @@ datatableModuleUI <- function(id) {
 #' @author mvarewyck
 #' @importFrom utils write.table
 #' @importFrom DT datatable formatRound renderDataTable formatStyle styleEqual
+#' @importFrom flexdashboard renderGauge gauge gaugeSectors
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
@@ -567,6 +588,20 @@ plotModuleServer <- function(input, output, session, plotFunction,
   output$plot <- renderPlotly({  
         
         resultFct()$plot
+        
+      })
+    
+  output$accuracy <- flexdashboard::renderGauge({
+      
+        flexdashboard::gauge(
+          value = resultFct()$accuracy,
+          min = 0, max = 100, 
+          symbol = "%",
+          sectors = flexdashboard::gaugeSectors(
+            success = c(50, 100), 
+            warning = c(30, 50),
+            danger = c(0, 30)),
+        )
         
       })
   

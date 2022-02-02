@@ -4,10 +4,12 @@
 \alias{countAgeCheekUI}
 \title{Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side}
 \usage{
-countAgeCheekUI(id)
+countAgeCheekUI(id, showAccuracy = FALSE)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
+
+\item{showAccuracy}{boolean, whether to show gauge for accuracy}
 }
 \value{
 UI object

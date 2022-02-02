@@ -7,7 +7,7 @@
 countAgeCheek(
   data,
   jaartallen = NULL,
-  currentYear = as.numeric(format(Sys.Date(), "\%Y")),
+  currentYear = as.numeric(format(Sys.Date(), "\%Y")) - 1,
   width = NULL,
   height = NULL
 )

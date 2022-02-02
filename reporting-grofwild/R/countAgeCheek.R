@@ -29,7 +29,7 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
-  currentYear = as.numeric(format(Sys.Date(), "%Y")),
+  currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
   width = NULL, height = NULL) {
 	
 	
@@ -49,13 +49,12 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	nRecords <- nrow(plotData)
  
   # Calculate accuracy
-  tmpData <- subset(plotData, subset = jaar == currentYear)
-  if (nrow(tmpData) > 0) {
-    nRecords2 <- nrow(tmpData)
-    tmpData <- tmpData[with(tmpData, !is.na(jager) & !jager %in% "Onbekend" &
-          !is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
-    accuracy <- round((nrow(tmpData)/nRecords2) * 100)
-  } else accuracy <- 0
+  accData <- subset(plotData, jaar == currentYear & 
+        !is.na(jager) & !jager %in% "Onbekend" &
+        !is.na(kaak) & !kaak %in% "Niet ingezameld")
+  accuracy <- if (nrow(accData) > 0)
+    round(sum(accData$jager == accData$kaak)/nrow(accData) * 100) else
+    0
   plotData$jaar <- NULL
  
  
@@ -139,7 +138,8 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], accuracy = accuracy))
+	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], 
+     accuracy = list(value = accuracy, total = nrow(accData))))
 	
 }
 
@@ -176,12 +176,13 @@ countAgeCheekServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
 #' @inheritParams countAgeCheekServer
+#' @param showAccuracy boolean, whether to show gauge for accuracy
 #' @return UI object
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countAgeCheekUI <- function(id) {
+countAgeCheekUI <- function(id, showAccuracy = FALSE) {
   
   ns <- NS(id)
   
@@ -196,7 +197,8 @@ countAgeCheekUI <- function(id) {
         column(4,
           optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
           tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn."),
-          accuracyModuleUI(id = ns("ageCheek")),
+          if (showAccuracy)
+            accuracyModuleUI(id = ns("ageCheek")),
         ),
         column(8, 
           plotModuleUI(id = ns("ageCheek"))

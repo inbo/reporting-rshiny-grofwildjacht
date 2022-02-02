@@ -182,9 +182,9 @@ countAgeGenderUI <- function(id) {
         ),
         column(8, 
           plotModuleUI(id = ns("ageGender"))
-        ),
-        tags$hr()
-      )
+        )
+      ),
+      tags$hr()
     )
   )
   

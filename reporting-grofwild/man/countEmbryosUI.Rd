@@ -4,7 +4,7 @@
 \alias{countEmbryosUI}
 \title{Shiny module for creating the plot \code{\link{countEmbryos}} - UI side}
 \usage{
-countEmbryosUI(id)
+countEmbryosUI(id, regionLevels)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}

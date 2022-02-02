@@ -334,27 +334,9 @@ tagList(
         
         ## boxAgeGenderLowerJaw
         ## - Ree
-        conditionalPanel("input.wild_species == 'Ree'", {
-              
-              tagList(
-                  actionLink(inputId = "wild_linkPlot7",
-                      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
-                  conditionalPanel("input.wild_linkPlot7 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot7", showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE,
-                                  showDataSource = c("leeftijd", "geslacht")),
-                              tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
-                                      Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
-                          column(8, plotModuleUI(id = "wild_plot7", filter = TRUE))
-                      
-                      ),
-                      tags$hr()
-                  )
-              )
-            }),
+        conditionalPanel("input.wild_species == 'Ree'", 
+          ageGenderLowerJawUI(id = "wild", regionLevels = 1:2)
+        ),
         
         ## plot 11: Afschot per jachtmethode
         ## Voorlopig enkel voor Wild zwijn

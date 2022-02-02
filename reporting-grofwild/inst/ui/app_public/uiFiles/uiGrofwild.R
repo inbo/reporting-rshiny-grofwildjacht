@@ -364,23 +364,10 @@ tagList(
                   h2("Bio-indicatoren"),
                   tags$p("Bio-indicatoren zijn ecologische parameters, die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
                           In dit geval dus de relatie tussen het aantal reeën in een gebied en de draagkracht van dat gebied. Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen."),
-                  actionLink(inputId = "wild_linkPlot8",
-                      label = h3("FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier)")),
-                  conditionalPanel("input.wild_linkPlot8 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot8", showTime = TRUE, showType = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE,
-                                  showDataSource = c("onderkaak", "leeftijd", "geslacht")),
-                              tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot8"))
-                      ),
-                      tags$hr()
-                  ),
                   
-                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht"),
+                  plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2),
+                      
+                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2),
                   
                   countEmbryosUI("wild", regionLevels = 1:2)
               

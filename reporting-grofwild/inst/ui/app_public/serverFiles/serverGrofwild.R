@@ -240,26 +240,22 @@ ageGenderLowerJawServer(id = "wild",
 
 # Plot 8: Onderkaaklengte per jaar
 results$typesGender <- reactive({
-      
-      types <- levels(droplevels(results$wild_ecoData()$type_comp))
-      types[types != ""]
-      
-    })
+    
+    types <- levels(droplevels(results$wild_ecoData()$type_comp))
+    types[types != ""]
+    
+  })
 
 results$typesDefaultGender <- reactive({
-      grep("kits", results$typesGender(), value = TRUE)
-    })
+    grep("kits", results$typesGender(), value = TRUE)
+  })
 
-callModule(module = optionsModuleServer, id = "wild_plot8", 
-    data = results$wild_ecoData,
-    timeRange = results$wild_timeRange,
-    types = results$typesDefaultGender,
-    typesDefault = results$typesDefaultGender,
-    multipleTypes = TRUE)
-callModule(module = plotModuleServer, id = "wild_plot8",
-    plotFunction = "plotBioindicator", 
-    bioindicator = "onderkaaklengte",
-    data = results$wild_ecoData)
+plotBioindicatorServer(id = "wild_onderkaak",
+  data = results$wild_ecoData,
+  timeRange = results$wild_timeRange,
+  types = results$typesDefaultGender,
+  typesDefault = results$typesDefaultGender,
+  bioindicator = "onderkaaklengte")
 
 
 # Plot 9: Gewicht per jaar

@@ -226,21 +226,16 @@ callModule(module = plotModuleServer, id = "wild_plot6",
 
 
 # Plot 7: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
-callModule(module = optionsModuleServer, id = "wild_plot7", 
-    data = results$wild_ecoData,
-    types = reactive(switch(input$wild_species,
-            "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
-            Ree = c("Kits", "Jongvolwassen", "Volwassen")									
-        )),
-    labelTypes = "Leeftijdscategorie",
-    multipleTypes = TRUE,
-    timeRange = reactive(if (input$wild_species == "Ree")
-              c(2014, max(results$wild_timeRange())) else 
-              results$wild_timeRange())
-  )
-callModule(module = plotModuleServer, id = "wild_plot7",
-    plotFunction = "boxAgeGenderLowerJaw", 
-    data = results$wild_ecoData)
+ageGenderLowerJawServer(id = "wild",
+  data = results$wild_ecoData,
+  types = reactive(switch(input$wild_species,
+      "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
+      Ree = c("Kits", "Jongvolwassen", "Volwassen")									
+    )),
+  timeRange = reactive(if (input$wild_species == "Ree")
+        c(2014, max(results$wild_timeRange())) else 
+        results$wild_timeRange())
+)
 
 
 # Plot 8: Onderkaaklengte per jaar

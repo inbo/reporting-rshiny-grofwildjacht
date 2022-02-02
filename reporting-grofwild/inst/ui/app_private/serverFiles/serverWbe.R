@@ -507,4 +507,17 @@ countEmbryosServer(id = "wbe",
     })
 )
 
+# Plot 9: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+ageGenderLowerJawServer(id = "wbe",
+  data = results$wbe_combinedData,
+  types = reactive(switch(input$wbe_species,
+      "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
+      Ree = c("Kits", "Jongvolwassen", "Volwassen")									
+    )),
+  timeRange = reactive(if (input$wbe_species == "Ree")
+        c(2014, max(results$wbe_timeRange())) else 
+        results$wbe_timeRange())
+)
+
+
 

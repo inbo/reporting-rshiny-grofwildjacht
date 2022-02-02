@@ -582,7 +582,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
   output$filters <- renderUI({
         
         req(input$time)
-        req(input$region)
         
         allData <- data()
         
@@ -598,7 +597,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
         }
         
         # subsetting data on region
-        if(input$regionLevel == "provinces") {
+        if (!is.null(input$regionLevel) && input$regionLevel == "provinces") {
+          
+          req(input$region)
           
           subsetData <- subsetData[subsetData$provincie %in% input$region, ]
           

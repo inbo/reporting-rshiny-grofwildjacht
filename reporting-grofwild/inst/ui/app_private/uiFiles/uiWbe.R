@@ -175,10 +175,10 @@ tagList(
   
   countAgeGenderUI(id = "wbe"),
   countAgeCheekUI(id = "wbe"),
-    
+  
   conditionalPanel("input.wbe_species == 'Ree'", {
       tagList(
-        
+        ageGenderLowerJawUI(id = "wbe", regionLevels = NULL),    
         h2("Bio-indicatoren"),
         plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht"),
         countEmbryosUI("wbe", regionLevels = NULL)

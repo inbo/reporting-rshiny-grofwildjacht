@@ -133,3 +133,76 @@ if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwi
 	))
 	
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - server side
+#' @inheritParams countAgeGenderServer
+#' @inheritParams optionsModuleServer
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+ageGenderLowerJawServer <- function(id, data, types, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+      callModule(module = optionsModuleServer, id = "ageGenderLowerJaw", 
+        data = data,
+        types = types,
+        labelTypes = "Leeftijdscategorie",
+        multipleTypes = TRUE,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "ageGenderLowerJaw",
+        plotFunction = "boxAgeGenderLowerJaw", 
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - UI side
+#' @inheritParams ageGenderLowerJawServer 
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+ageGenderLowerJawUI <- function(id, regionLevels) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    actionLink(inputId = ns("linkAgeGenderLowerJaw"),
+      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
+    conditionalPanel("input.linkAgeGenderLowerJaw % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
+            regionLevels = regionLevels, exportData = TRUE,
+            showDataSource = c("leeftijd", "geslacht")),
+          tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
+              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
+        column(8, 
+          plotModuleUI(id = ns("ageGenderLowerJaw"), filter = TRUE)
+        )
+      ),
+      tags$hr()
+    )
+  )
+  
+}
+
+
+
+
+

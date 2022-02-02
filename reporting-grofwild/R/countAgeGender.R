@@ -124,3 +124,72 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 }
 
+
+
+#' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
+#' @param id character, unique identifier for the module
+#' @param data data.frame for the plot, see \code{\link{countAgeGender}}
+#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countAgeGenderServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Geslachtsverdeling binnen het afschot per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "ageGender", 
+        data = data, 
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "ageGender",
+        plotFunction = "countAgeGender", 
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
+#' @inheritParams countAgeGenderServer 
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countAgeGenderUI <- function(id) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkAgeGender"),
+      label = h3("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie")),
+    conditionalPanel("input.linkAgeGender % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("ageGender"), showTime = TRUE, exportData = TRUE),
+          tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. 
+              Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
+        ),
+        column(8, plotModuleUI(id = ns("ageGender"))
+        
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+}
+  
+  
+  
+

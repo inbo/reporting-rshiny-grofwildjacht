@@ -132,3 +132,15 @@ test_that("Verdeling afschot over de jaren", {
       )
     
   })
+
+
+test_that("Realisatie afschot", {
+    
+    combinedData <- merge(geoData[geoData$wildsoort == "Ree", ], 
+      ecoData, by = commonNames, all.x = TRUE)
+    
+    assignedData <- loadToekenningen()
+    
+    countYearRealizedShot(data = combinedData, assignedData = assignedData)
+    
+  })

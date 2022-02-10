@@ -39,16 +39,18 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		
 	} else if (categorie == "typeAantal") {
 		
-		allData <- data[, c("provincie", "type", "afschotjaar")]
+		allData <- data[, c("provincie", "labeltype", "afschotjaar")]
 		names(allData) <- c("provincie", "categorie", "jaar")
 		
 	} else {
 		
-		allData <- data[, c("provincie", "type", "afschotjaar")]
+		allData <- data[, c("provincie", "labeltype", "afschotjaar")]
 		names(allData) <- c("provincie", "categorie", "jaar")
-		
-		assignedData <- assignedData[, c("Provincie", "Labeltype", "Jaar", "Aantal")]
+    
+		assignedData <- assignedData[, c("provincie_toek", "labeltype", "labeljaar", "toegekend")]
 		names(assignedData) <- c("provincie", "categorie", "jaar", "totaal")
+    # summarize per province
+    assignedData <- aggregate(totaal ~ jaar + provincie + categorie, data = assignedData, sum)
 		
 	}
 	  
@@ -103,7 +105,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		
 	} else if (grepl("type", categorie) & wildNaam == "Ree") {  # ree for type
 		
-		levelsCategorie <- c("geit", "bok", "kits")
+		levelsCategorie <- c("REEGEIT", "REEBOK", "REEKITS")
 		
 	}
 	
@@ -114,6 +116,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	if (categorie == "typePercent") {
 		
 		summaryData <- merge(x = summaryData, y = tableAssignedData, all = TRUE)
+    summaryData$totaal[is.na(summaryData$totaal)] <- 0
 		summaryData$percent <- summaryData$freq/summaryData$totaal
 		
 	} 
@@ -241,10 +244,14 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		return(NULL)
 	
 	
-	if (categorie == "typePercent")
-		toReturn[, c(levelsCategorie, "Totaal")] <- 
-				sapply(toReturn[, c(levelsCategorie, "Totaal")], function(x)
-							paste0(round(x*100), "%")) 
+	if (categorie == "typePercent") {
+    toReturn[, c(levelsCategorie, "Totaal")] <- 
+      sapply(toReturn[, c(levelsCategorie, "Totaal")], function(x)
+          paste0(round(as.numeric(x)*100), "%"))
+    
+    
+    toReturn <- toReturn[toReturn$provincie != "Onbekend", ]
+      }
 	
 	# Rename provincie
 	names(toReturn)[names(toReturn) == "provincie"] <- "Provincie"

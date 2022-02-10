@@ -170,6 +170,7 @@ ageGenderLowerJawServer <- function(id, data, types, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - UI side
 #' @inheritParams ageGenderLowerJawServer 
+#' @param regionLevels character, choices for region
 #' @return UI object
 #' 
 #' @author mvarewyck

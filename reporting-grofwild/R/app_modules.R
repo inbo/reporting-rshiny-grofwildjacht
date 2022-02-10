@@ -353,18 +353,19 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
 
 
 #' Accuracy gauge - UI side
-#' @inheritParams plotModuleUI 
+#' @inheritParams plotModuleUI
+#' @param title character, title to be displayed above the gauge 
 #' @return ui object
 #' 
 #' @author mvarewyck
 #' @importFrom flexdashboard gaugeOutput
 #' @export
-accuracyModuleUI <- function(id) {
+accuracyModuleUI <- function(id, title) {
   
   ns <- NS(id)
   
   tagList(
-    tags$div(style = "text-align:center", tags$h4("Accuraatheid huidig jaar")),
+    tags$div(style = "text-align:center", tags$h4(title)),
     flexdashboard::gaugeOutput(outputId = ns("accuracy"))
   )
   
@@ -478,8 +479,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
         if (is.null(toekenningsData))
           return(NULL)
         
-        Provincie <- NULL  # to prevent warnings with R CMD check
-        Jaar <- NULL  # to prevent warnings with R CMD check
+        provincie_toek <- NULL  # to prevent warnings with R CMD check
+        labeljaar <- NULL  # to prevent warnings with R CMD check
         subData <- toekenningsData()
         
         if (!is.null(input$regionLevel)) {
@@ -487,12 +488,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
           validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
           if (input$regionLevel == "provinces")
-            subData <- subset(subData, Provincie %in% input$region)
+            subData <- subset(subData, provincie_toek %in% input$region)
           
         }
         
         if (!is.null(input$time))
-          subData <- subset(subData, Jaar >= input$time[1] & Jaar <= input$time[2])
+          subData <- subset(subData, labeljaar >= input$time[1] & labeljaar <= input$time[2])
         
         
         return(subData)

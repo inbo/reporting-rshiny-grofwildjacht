@@ -394,19 +394,6 @@ test_that("Number of embryos (bio-indicator)", {
   })
 
 
-## PLOT 12: Percentage realised afschot
-test_that("Percentage realised afschot", {
-    
-    skip("outdated, not shown anymore")
-    
-    percentageRealisedShotAnimals(data = reeEcoData, assignedData = toekenningsData,
-      type = NULL, summarizeBy = "count")
-    percentageRealisedShotAnimals(data = reeEcoData, assignedData = toekenningsData,
-      type = NULL, summarizeBy = "percent")
-    
-  })
-
-
 ## THE MAP
 
 test_that("The interactive map", {

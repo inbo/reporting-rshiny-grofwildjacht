@@ -181,6 +181,7 @@ countEmbryosServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
 #' @inheritParams countEmbryosServer
+#' @param regionLevels character, choices for region
 #' @return UI object
 #' 
 #' @author mvarewyck
@@ -203,7 +204,7 @@ countEmbryosUI <- function(id, regionLevels) {
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("embryos", "leeftijd", "geslacht")),
           tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.",
-            "Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
+            "V\u00F3\u00F3r 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
           tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
         column(8, 
           plotModuleUI(id = ns("countEmbryos"))

@@ -141,6 +141,6 @@ test_that("Realisatie afschot", {
     
     assignedData <- loadToekenningen()
     
-    countYearRealizedShot(data = combinedData, assignedData = assignedData)
+    percentageRealisedShot(data = assignedData[assignedData$KboNummer_Toek %in% currentKbo, ])
     
   })

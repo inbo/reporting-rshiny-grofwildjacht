@@ -178,7 +178,10 @@ tagList(
   
   conditionalPanel("input.wbe_species == 'Ree'", {
       tagList(
+        
         ageGenderLowerJawUI(id = "wbe", regionLevels = NULL),    
+        percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE),    
+        
         h2("Bio-indicatoren"),
         tags$p("Bio-indicatoren zijn ecologische parameters, die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
             In dit geval dus de relatie tussen het aantal reeën in een gebied en de draagkracht van dat gebied. Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen."),

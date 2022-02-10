@@ -76,6 +76,9 @@ schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 
 wbeData <- loadWbeHabitats(dataDir = dataDir)
 
+toekenningsData <- loadToekenningen(dataDir = dataDir)
+toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
+
 currentWbe <- unique(geoData$PartijNummer)
 currentWbe <- currentWbe[!is.na(currentWbe)]
 

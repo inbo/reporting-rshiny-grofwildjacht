@@ -529,4 +529,9 @@ ageGenderLowerJawServer(id = "wbe",
 )
 
 
-
+# Plot 11: Gerealiseerd afschot
+percentageRealisedShotServer(id = "wbe",
+  data = reactive(toekenningsData),
+  types = reactive(unique(toekenningsData$labeltype)),
+  timeRange = reactive(range(toekenningsData$labeljaar))
+)

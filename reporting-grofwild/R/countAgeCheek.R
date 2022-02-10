@@ -29,7 +29,7 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
-  currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
+  currentYear = as.numeric(format(Sys.Date(), "%Y")),
   width = NULL, height = NULL) {
 	
 	
@@ -198,7 +198,7 @@ countAgeCheekUI <- function(id, showAccuracy = FALSE) {
           optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
           tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn."),
           if (showAccuracy)
-            accuracyModuleUI(id = ns("ageCheek")),
+            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid huidig jaar"),
         ),
         column(8, 
           plotModuleUI(id = ns("ageCheek"))

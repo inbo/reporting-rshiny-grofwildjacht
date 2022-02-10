@@ -8,6 +8,8 @@ countEmbryosUI(id, regionLevels)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
+
+\item{regionLevels}{character, choices for region}
 }
 \value{
 UI object

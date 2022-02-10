@@ -14,10 +14,14 @@ loadToekenningen(
 \value{
 data.frame with columns:
 \itemize{
-\item{'Provincie': }{character, province}
-\item{'Jaar': }{integer, year}
-\item{'Labeltype': }{character, type of Ree, one of \code{c("Geiten", "Bokken", "Kitsen")}}
-\item{'Aantal': }{integer, frequencie per categorie}
+\item{'labeltype': }{character, type of Ree, one of \code{c("geit", "bok", "kits")}}
+\item{'WBE_Naam': }{character, WBE name}
+\item{'labeljaar': }{integer, year}
+\item{'provincie_toek': }{character, province}
+\item{'toegekend': }{integer, no. of assigned animals}
+\item{'verwezenlijkt': }{integer, no. of shot animals} 
+\item{'percentage_verwezenlijkt': }{numeric, percentage shot animals}
+\item{'KboNummer_Toek': }{character, WBE KBO number}
 }
 and attribute 'Date', the date that this data file was created
 }

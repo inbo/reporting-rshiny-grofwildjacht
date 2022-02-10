@@ -4,10 +4,12 @@
 \alias{accuracyModuleUI}
 \title{Accuracy gauge - UI side}
 \usage{
-accuracyModuleUI(id)
+accuracyModuleUI(id, title)
 }
 \arguments{
 \item{id}{character, module id, unique name per plot}
+
+\item{title}{character, title to be displayed above the gauge}
 }
 \value{
 ui object

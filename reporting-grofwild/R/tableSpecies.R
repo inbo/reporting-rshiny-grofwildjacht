@@ -128,3 +128,65 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
   
 }
 
+
+
+
+#' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
+#' @param id character, unique identifier for the module
+#' @param data data.frame for the plot function
+#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+tableSpeciesServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Gerapporteerd afschot per regio en per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "tableSpecies", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "tableSpecies",
+        plotFunction = "tableSpecies", 
+        data = data)
+           
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
+#' @inheritParams countAgeGenderServer 
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+tableSpeciesUI <- function(id) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    
+    fixedRow(
+      
+      column(4,
+        optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, exportData = TRUE),
+        tags$p("Het gerapporteerd aantal geschoten dieren per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren. 
+            Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
+      ),
+      column(8, tableModuleUI(id = ns("tableSpecies")))
+    
+    ),
+    tags$hr()
+    
+  )
+    
+}
+

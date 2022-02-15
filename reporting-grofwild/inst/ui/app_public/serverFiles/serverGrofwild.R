@@ -281,25 +281,25 @@ countEmbryosServer(id = "wild",
     timeRange = results$wild_timeRange,
     types = results$typesFemale)
 
+results$wild_combinedData <- reactive({
+    
+    merge(
+      results$wild_ecoData(), 
+      results$wild_geoData()[, c("ID", "FaunabeheerZone")], 
+      by = "ID")
+    
+  })  
+  
 # Plot 11: Afschot per jachtmethode
-callModule(module = optionsModuleServer, id = "wild_plot11", 
-    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}),
-    timeRange = reactive(c(2014, results$wild_timeRange()[2])))
-callModule(module = plotModuleServer, id = "wild_plot11",
-    plotFunction = "countHuntingMethod", 
-    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}))
+countHuntingMethodServer(id = "wild",
+  data = results$wild_combinedData,
+  timeRange = reactive(c(2014, results$wild_timeRange()[2])))
 
 # Plot 12: Verdeling afschot over de jaren
-callModule(module = optionsModuleServer, id = "wild_plot12", 
-    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}),
-    timeRange = results$wild_timeRange,
-    intervals = c("Per maand", "Per seizoen", "Per twee weken"),
-    types = results$types,
-    multipleTypes = FALSE)
-callModule(module = plotModuleServer, id = "wild_plot12",
-    plotFunction = "countYearShotAnimals", 
-    data = reactive({merge(results$wild_ecoData(), results$wild_geoData()[, c("ID", "FaunabeheerZone")], by = "ID")}))
-
+countYearShotServer(id = "wild",
+  data = results$wild_combinedData,
+  timeRange = results$wild_timeRange,
+  types = results$types)
 
 
 ### The MAP

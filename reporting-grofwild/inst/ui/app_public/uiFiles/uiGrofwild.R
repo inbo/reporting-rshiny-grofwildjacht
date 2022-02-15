@@ -270,24 +270,7 @@ tagList(
                       ),
                       tags$hr(),
                   ),
-                  actionLink(inputId = "wild_linkPlot12",
-                      label = h3("FIGUUR: Verdeling afschot over de jaren")),
-                  conditionalPanel("input.wild_linkPlot12 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot12",
-                                  showTime = TRUE,
-                                  regionLevels = c(1:2,4), 
-                                  exportData = TRUE,
-                                  showType = TRUE,
-                                  showInterval = TRUE),
-                              tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot12"))
-                      ),
-                      tags$hr(),
-                  ),
+                  countYearShotUI(id = "wild", regionLevels = c(1:2,4)),
                   
                   actionLink(inputId = "wild_linkPlot4",
                       label = h3("FIGUUR: Percentage jaarlijks afschot")),
@@ -339,25 +322,8 @@ tagList(
         ),
         
         ## plot 11: Afschot per jachtmethode
-        ## Voorlopig enkel voor Wild zwijn
+        countHuntingMethodUI(id = "wild", regionLevels = c(1:2,4)),
         
-        tagList(
-            actionLink(inputId = "wild_linkPlot11", label =
-                    h3("FIGUUR: Afschot per jachtmethode")),
-            conditionalPanel("input.wild_linkPlot11 % 2 == 1",
-                fixedRow(
-                    
-                    column(4,
-                        optionsModuleUI(id = "wild_plot11", showTime = TRUE, 
-                          regionLevels = c(1:2,4), exportData = TRUE),
-                        tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
-                    ),
-                    column(8, plotModuleUI(id = "wild_plot11"))
-                
-                ),
-                tags$hr()
-            )
-        ),
         conditionalPanel("input.wild_species == 'Ree'", {
               tagList(
                   

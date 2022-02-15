@@ -7,7 +7,7 @@
 percentageRealisedShot(
   data,
   type = NULL,
-  currentYear = as.numeric(format(Sys.Date(), "\%Y")),
+  currentYear = as.numeric(format(Sys.Date(), "\%Y")) - 1,
   jaartallen = NULL,
   width = NULL,
   height = NULL

@@ -21,7 +21,7 @@
 #' @import plotly
 #' @importFrom INBOtheme inbo_palette
 #' @export
-countHuntingMethod <- function(data, regio, locaties, jaartallen, width = NULL, height = NULL) {
+countHuntingMethod <- function(data, regio = NULL, locaties = NULL, jaartallen, width = NULL, height = NULL) {
   
   plotData <- data
   
@@ -30,11 +30,14 @@ countHuntingMethod <- function(data, regio, locaties, jaartallen, width = NULL, 
   
   
   # Select data
-  if(regio == "provinces") {
+  if (is.null(regio)) {
+    plotData <- plotData 
+  } else if(regio == "provinces") {
     plotData <- plotData[plotData$provincie %in% locaties, ]
   } else if(regio == "faunabeheerzones") {
     plotData <- plotData[plotData$FaunabeheerZone %in% locaties, ]
-  }
+  } else
+    plotData <- plotData
   
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "jachtmethode_comp")]
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
@@ -82,4 +85,75 @@ countHuntingMethod <- function(data, regio, locaties, jaartallen, width = NULL, 
   
   return(list(plot = pl, data = summaryData))
 }
+
+
+
+
+#' Shiny module for creating the plot \code{\link{countHuntingMethod}} - server side
+#' @param id character, unique identifier for the module
+#' @param data data.frame for the plot function
+#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countHuntingMethodServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Afschot per jachtmethode
+      callModule(module = optionsModuleServer, id = "huntingMethod", 
+        data = data,
+        timeRange = timeRange)
+      callModule(module = plotModuleServer, id = "huntingMethod",
+        plotFunction = "countHuntingMethod", 
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countHuntingMethod}} - UI side
+#' @inheritParams countHuntingMethodServer 
+#' @param regionLevels numeric vector, region level choices
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countHuntingMethodUI <- function(id, regionLevels = NULL) {
+  
+  ns <- NS(id)
+  
+  
+  tagList(
+    actionLink(inputId = ns("linkHuntingMethod"), 
+      label = h3("FIGUUR: Afschot per jachtmethode")),
+    conditionalPanel("input.linkHuntingMethod % 2 == 1", ns = ns,
+
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("huntingMethod"), showTime = TRUE, 
+            regionLevels = regionLevels, exportData = TRUE),
+          tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
+        ),
+        column(8, plotModuleUI(id = ns("huntingMethod")))
+      
+      ),
+      tags$hr()
+    )
+  )
+  
+}
+
+
+
+
+
 

@@ -288,3 +288,72 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
 }
 
 
+
+#' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - server side
+#' @param id character, unique identifier for the module
+#' @param data data.frame for the plot function
+#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @param types character vector
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearShotServer <- function(id, data, timeRange, types) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Verdeling afschot over de jaren
+      callModule(module = optionsModuleServer, id = "countYearShot", 
+        data = data,
+        timeRange = timeRange,
+        intervals = c("Per maand", "Per seizoen", "Per twee weken"),
+        types = types,
+        multipleTypes = FALSE)
+      callModule(module = plotModuleServer, id = "countYearShot",
+        plotFunction = "countYearShotAnimals", 
+        data = data)
+           
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
+#' @inheritParams countAgeGenderServer 
+#' @param regionLevels numeric vector, region level choices
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearShotUI <- function(id, regionLevels = NULL) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearShot"),
+      label = h3("FIGUUR: Verdeling afschot over de jaren")),
+    conditionalPanel("input.linkYearShot % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
+            regionLevels = regionLevels, exportData = TRUE,
+            showType = TRUE, showInterval = TRUE),
+          tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
+        ),
+        column(8, plotModuleUI(id = ns("countYearShot")))
+      ),
+      tags$hr(),
+    )
+  
+  ) 
+  
+}
+

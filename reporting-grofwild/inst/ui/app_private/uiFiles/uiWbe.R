@@ -105,17 +105,7 @@ tagList(
   
   tags$hr(),
   
-  fixedRow(
-    
-    column(4,
-      optionsModuleUI(id = "wbe_table1", showYear = TRUE, exportData = TRUE),
-      tags$p("Het gerapporteerd aantal geschoten dieren per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren. 
-          Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
-    ),
-    column(8, tableModuleUI(id = "wbe_table1"))
-  
-  ),
-  tags$hr(),
+  tableSpeciesUI(id = "wbe"),
   
   tags$div(class = "container",
     
@@ -124,50 +114,14 @@ tagList(
     ## tableSpecies: wild zwijn and ree
     conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
         
-        tagList(
-                 
-          actionLink(inputId = "wbe_linkPlot2",
-            label = h3("FIGUUR: Verdeling afschot over de jaren")),
-          conditionalPanel("input.wbe_linkPlot2 % 2 == 1",
-            fixedRow(
-              
-              column(4,
-                optionsModuleUI(id = "wbe_plot2",
-                  showTime = TRUE,
-                  exportData = TRUE,
-                  showType = TRUE,
-                  showInterval = TRUE),
-                tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
-              ),
-              column(8, plotModuleUI(id = "wbe_plot2"))
-            ),
-            tags$hr(),
-          )
-        
-        ) 
+        countYearShotUI(id = "wbe")
         
       }),
       
       
       conditionalPanel("input.wbe_species == 'Ree'", {
         
-      tagList(
-        actionLink(inputId = "wbe_linkPlot3", label =
-            h3("FIGUUR: Afschot per jachtmethode")),
-        conditionalPanel("input.wbe_linkPlot3 % 2 == 1",
-          fixedRow(
-            
-            column(4,
-              optionsModuleUI(id = "wbe_plot3", showTime = TRUE, 
-                regionLevels = c(1:2,4), exportData = TRUE),
-              tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
-            ),
-            column(8, plotModuleUI(id = "wbe_plot3"))
-          
-          ),
-          tags$hr()
-        )
-      )
+          countHuntingMethodUI(id = "wbe")
       
     }),
   

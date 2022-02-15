@@ -6,8 +6,8 @@
 \usage{
 countHuntingMethod(
   data,
-  regio,
-  locaties,
+  regio = NULL,
+  locaties = NULL,
   jaartallen,
   width = NULL,
   height = NULL

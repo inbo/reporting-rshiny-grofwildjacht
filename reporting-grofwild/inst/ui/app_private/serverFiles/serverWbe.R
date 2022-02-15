@@ -427,34 +427,22 @@ callModule(module = plotModuleServer, id = "wbe_plot1",
 
 ## User input for controlling the plots and create plotly
 # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
-callModule(module = optionsModuleServer, id = "wbe_table1", 
+tableSpeciesServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange
-)
-callModule(module = plotModuleServer, id = "wbe_table1",
-  plotFunction = "tableSpecies", 
-  data = results$wbe_combinedData)
+  timeRange = results$wbe_timeRange)
 
 
 # Plot2: Verdeling afschot over de jaren
-callModule(module = optionsModuleServer, id = "wbe_plot2", 
+countYearShotServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  intervals = c("Per maand", "Per seizoen", "Per twee weken"),
-  types = results$types,
-  multipleTypes = FALSE)
-callModule(module = plotModuleServer, id = "wbe_plot2",
-  plotFunction = "countYearShotAnimals", 
-  data = results$wbe_combinedData)
+  types = results$types)
 
 
 # Plot3: Afschot per jachtmethode
-callModule(module = optionsModuleServer, id = "wbe_plot3", 
+countHuntingMethodServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange)
-callModule(module = plotModuleServer, id = "wbe_plot3",
-  plotFunction = "countHuntingMethod", 
-  data = results$wbe_combinedData)
 
 
 # Plot4: Schademeldingen

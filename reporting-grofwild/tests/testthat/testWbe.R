@@ -14,6 +14,9 @@ years <- as.numeric(gsub("WBE_binnengrenzen_", "", grep("WBE_binnengrenzen_", na
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
+schadeData <- loadRawData(type = "wildschade")
+toekenningsData <- loadToekenningen(dataDir = dataDir)
+
 
 currentKbo <- 445465768
 #currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
@@ -29,9 +32,13 @@ tmpData[!duplicated(tmpData), ]
 
 ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
+schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
+toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 
 # Combine data
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
+combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ], 
+  ecoData, by = commonNames, all.x = TRUE)
 
 
 
@@ -121,26 +128,51 @@ test_that("Summary Table", {
   })
 
 
-test_that("Verdeling afschot over de jaren", {
+test_that("Map schade", {
     
-      combinedData <- merge(geoData[geoData$wildsoort == "Ree", ], 
-        ecoData, by = commonNames, all.x = TRUE)
+    schadeDataSub <- subset(schadeData, wildsoort == "ree")  
+    schadeDataSub <- createSchadeSummaryData(
+      schadeData = schadeDataSub,
+      timeRange = range(schadeDataSub$afschotjaar))
+    
+    for (var in c("season", "schadeCode", "afschotjaar")) {
       
-      countYearShotAnimals(data = combinedData,
-        jaartallen = 2019:2020,
-        interval = c("Per maand", "Per seizoen", "Per twee weken")[3]
-      )
+      myPlot <- mapSchade(
+        schadeData = schadeDataSub,
+        regionLevel = "provinces",
+        variable = var,
+        allSpatialData = spatialData,
+        addGlobe = TRUE)
+      
+    }
     
   })
 
 
-test_that("Realisatie afschot", {
+test_that("Additional plots", {
     
-    combinedData <- merge(geoData[geoData$wildsoort == "Ree", ], 
-      ecoData, by = commonNames, all.x = TRUE)
+    countYearShotAnimals(data = combinedRee,
+      jaartallen = 2019:2020,
+      interval = c("Per maand", "Per seizoen", "Per twee weken")[3]
+    )
     
-    assignedData <- loadToekenningen()
+    countHuntingMethod(data = combinedRee, jaartallen = 2009:2020)
+        
+    countAgeGender(data = combinedRee)
     
-    percentageRealisedShot(data = assignedData[assignedData$KboNummer_Toek %in% currentKbo, ])
+    countAgeCheek(data = combinedRee, 
+      jaartallen = 2009:2020)
+    
+    boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))
+    
+    percentageRealisedShot(data = toekenningsData,
+      type = unique(toekenningsData$labeltype),
+      jaartallen = 2009:2020)
+    
+    plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")
+    
+    plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
+    
+    countEmbryos(data = combinedRee, jaartallen = 2009:2020)
     
   })

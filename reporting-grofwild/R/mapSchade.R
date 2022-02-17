@@ -189,8 +189,7 @@ mapSchade <- function(
 
 #' Shiny module for creating map on schade data - server side
 #' @param id character, unique identifier for module
-#' @param schadeData object as returned by 
-#' \code{\link{loadRawData(type = "wildschade")}}
+#' @param schadeData object as returned by \code{loadRawData(type = "wildschade")}
 #' @inheritParams mapSchade 
 #' @param timeRange integer vector, relevant period that can be selected for the map
 #' @param defaultYear integer, current (default) end year of the selected period
@@ -200,6 +199,7 @@ mapSchade <- function(
 #' @author mvarewyck
 #' @import shiny
 #' @importFrom mapview mapshot
+#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
 #' @export
 mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYear, species) {
   
@@ -460,6 +460,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
 #' 
 #' @author mvarewyck
 #' @import shiny
+#' @importFrom leaflet leafletOutput
 #' @export
 mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE) {
   

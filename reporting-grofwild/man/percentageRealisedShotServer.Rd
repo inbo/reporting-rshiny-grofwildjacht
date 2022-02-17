@@ -2,7 +2,7 @@
 % Please edit documentation in R/percentageRealisedShotAnimals.R
 \name{percentageRealisedShotServer}
 \alias{percentageRealisedShotServer}
-\title{Shiny module for creating the plot \code{\link{countYearRealizedShot}} - server side}
+\title{Shiny module for creating the plot \code{\link{percentageRealisedShot}} - server side}
 \usage{
 percentageRealisedShotServer(id, data, timeRange, types)
 }
@@ -19,7 +19,7 @@ percentageRealisedShotServer(id, data, timeRange, types)
 no return value
 }
 \description{
-Shiny module for creating the plot \code{\link{countYearRealizedShot}} - server side
+Shiny module for creating the plot \code{\link{percentageRealisedShot}} - server side
 }
 \author{
 mvarewyck

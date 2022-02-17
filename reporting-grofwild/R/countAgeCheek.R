@@ -33,6 +33,11 @@ countAgeCheek <- function(data, jaartallen = NULL,
   width = NULL, height = NULL) {
 	
 	
+  # R CMD check notes
+  jaar <- NULL
+  jager <- NULL
+  kaak <- NULL
+  
 	wildNaam <- unique(data$wildsoort)
 	
 	if (is.null(jaartallen))

@@ -243,7 +243,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE"),  
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen"),  
   species, year = NA,
   allSpatialData, summaryData, colorScheme,
   legend = "none", addGlobe = FALSE) {

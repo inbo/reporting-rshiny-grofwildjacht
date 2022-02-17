@@ -29,6 +29,8 @@ percentageRealisedShot <- function(data, type = NULL,
   jaartallen = NULL, 
   width = NULL, height = NULL){
   
+  # R CMD check notes
+  jaar <- NULL
   
   kboNaam <- unique(data$WBE_Naam_Toek)
   
@@ -108,7 +110,7 @@ percentageRealisedShot <- function(data, type = NULL,
 
 
 
-#' Shiny module for creating the plot \code{\link{countYearRealizedShot}} - server side
+#' Shiny module for creating the plot \code{\link{percentageRealisedShot}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams optionsModuleServer 
 #' @inheritParams percentageRealisedShot

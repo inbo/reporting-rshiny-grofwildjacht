@@ -31,7 +31,6 @@ Depends:
     maptools, 
     plotly
 Suggests:
-	mapview,
 	testthat
 Encoding: UTF-8
 RoxygenNote: 7.1.2

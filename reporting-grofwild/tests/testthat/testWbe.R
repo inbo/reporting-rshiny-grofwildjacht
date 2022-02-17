@@ -65,6 +65,8 @@ test_that("The map", {
         
         if (!is.null(spaceData) && nrow(spaceData$data) && !all(spaceData$freq == 0)) {
           
+          expect_is(spaceData, "data.frame")
+          
           myPlot <- mapFlanders(
             allSpatialData = spatialData, 
             regionLevel = "WBE_binnengrenzen", 
@@ -75,6 +77,8 @@ test_that("The map", {
             legend = "topright",
             species = iSpecies
           )
+          
+          expect_is(myPlot, "plotly")
           
         }
       }
@@ -98,12 +102,14 @@ test_that("Trend plot", {
         unit = "relative"
       )
       
-      trendYearRegion(
+      myPlot <- trendYearRegion(
         data = trendRegionData,
         locaties = 441,
         timeRange = range(years),
         unit = "relative"
       )$plot
+      
+      expect_is(myPlot, "plotly")
       
     }  
     
@@ -118,10 +124,16 @@ test_that("Summary Table", {
       combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
         ecoData, by = commonNames, all.x = TRUE)
       
-      tableSpecies(
+      if (nrow(combinedData) > 0) {
+        
+      myTable <- tableSpecies(
         data = combinedData, 
         jaar = 2020
-      )  
+      ) 
+      
+      expect_is(myTable, "data.frame")
+      
+    }
     
     }  
     

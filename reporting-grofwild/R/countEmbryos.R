@@ -194,7 +194,7 @@ countEmbryosUI <- function(id, regionLevels) {
   tagList(
     
     actionLink(inputId = ns("countEmbryos"),
-      label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar")),
+      label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke ree\u00EBn per jaar")),
     conditionalPanel("input.countEmbryos % 2 == 1", ns = ns,
       
       fixedRow(

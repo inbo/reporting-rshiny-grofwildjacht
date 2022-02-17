@@ -16,8 +16,7 @@ mapSchadeServer(
 \arguments{
 \item{id}{character, unique identifier for module}
 
-\item{schadeData}{object as returned by 
-\code{\link{loadRawData(type = "wildschade")}}}
+\item{schadeData}{object as returned by \code{loadRawData(type = "wildschade")}}
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 

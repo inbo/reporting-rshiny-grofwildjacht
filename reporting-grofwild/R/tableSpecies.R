@@ -179,7 +179,8 @@ tableSpeciesUI <- function(id) {
       column(4,
         optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, exportData = TRUE),
         tags$p("Het gerapporteerd aantal geschoten dieren per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren. 
-            Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
+            Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald."),
+        tags$p("Trends worden pas weergegeven wanneer deze een grens van 10 geschoten dieren overschrijden, dit geldt zowel voor het referentie jaar als voor het weergave jaar.")
       ),
       column(8, tableModuleUI(id = ns("tableSpecies")))
     

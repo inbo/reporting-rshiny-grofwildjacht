@@ -64,7 +64,7 @@ tagList(
               "<geen>" = "none"))
         )
       ),
-      actionLink(inputId = "wbe_globe", label = "Voeg landkaart toe",
+      actionLink(inputId = "wbe_globe", label = "Verberg landkaart",
         icon = icon("globe"))
     
     ),

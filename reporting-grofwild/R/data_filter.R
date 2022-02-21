@@ -161,7 +161,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @export
 filterSpatial <- function(allSpatialData, species, 
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen"), 
-  year) {
+  year, locaties = NULL) {
   
   
   regionLevel <- match.arg(regionLevel)
@@ -174,6 +174,8 @@ filterSpatial <- function(allSpatialData, species,
   } else if (regionLevel == "WBE_binnengrenzen") {
     
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
+    if (!is.null(locaties))
+      spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
     
   } else {
     

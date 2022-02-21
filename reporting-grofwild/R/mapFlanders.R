@@ -250,7 +250,8 @@ mapFlanders <- function(
   
   
   spatialData <- filterSpatial(allSpatialData = allSpatialData, 
-    species = species, regionLevel = regionLevel, year = year)
+    species = species, regionLevel = regionLevel, year = year, 
+    locaties = summaryData$locatie)
   
   palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
   

@@ -193,7 +193,7 @@ observe({
     
     if (!is.null(input$wbe_globe) & !is.null(proxy)){
       
-      if (input$wbe_globe %% 2 == 1){
+      if (input$wbe_globe %% 2 == 0){
         
         updateActionLink(session, 
           inputId = "wbe_globe", 
@@ -318,7 +318,7 @@ results$wbe_finalMap <- reactive({
       summaryData = results$wbe_summarySpaceData()$data,
       colorScheme = results$wbe_colorScheme(),
       legend = input$wbe_legend,
-      addGlobe = input$wbe_globe %% 2 == 1
+      addGlobe = input$wbe_globe %% 2 == 0
     )
     
     # save the zoom level and centering to the map object

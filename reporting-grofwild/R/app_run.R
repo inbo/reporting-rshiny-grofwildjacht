@@ -7,16 +7,17 @@
 #' Run the reporting-grofwild application
 #' @param installDependencies boolean, whether to first install packages listed
 #' in the Suggests field of DESCRIPTION; default value is FALSE
-#' @param copyFiles boolean, whether to copy files for the app from the inst/ui
-#' to a temporary directory which is writeable
 #' @param public boolean, whether to start the public or private version of the app
+#' @param kbo numeric, specific KBO number for which to show the WBE (private) app;
+#' only relevant if \code{public} is FALSE
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny
 #' @importFrom devtools install_github dev_package_deps
 #' @importFrom stats update
 #' @export
-runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, public = TRUE, ...) {
+runWildApp <- function(installDependencies = FALSE, 
+  public = TRUE, kbo = NULL, ...) {
   
   # (1) Install all suggested R packages (see DESCRIPTION)
   if (installDependencies) {
@@ -38,41 +39,18 @@ runWildApp <- function(installDependencies = FALSE, copyFiles = FALSE, public = 
   # (2) Copy the UI files & folders from "inst/ui" for local use
   
   if (public)
-    uiDir <- system.file("ui/app_public", package = "reportingGrofwild") else
-    uiDir <- system.file("ui/app_private", package = "reportingGrofwild")
-  
-  if (copyFiles) {
-    
-    appDir <- tempdir()
-    oldDir <- setwd(appDir)
-    on.exit(setwd(oldDir))
-    
-    uiFiles <- list.files(path = uiDir, full.names = FALSE, recursive = TRUE)
-    
-    sapply(uiFiles, function(from) {
-          
-          to <- file.path(appDir, from)
-          toDir <- dirname(to)
-          
-          if (!dir.exists(toDir)) {
-            
-            dir.create(path = toDir, recursive = TRUE)
-            
-          }
-          
-          file.copy(from = file.path(uiDir, from), to = to, overwrite = TRUE)
-          
-        })  
-    
-    
-  } else {
-    
-    appDir <- uiDir
-    
-  }
+    appDir <- system.file("ui/app_public", package = "reportingGrofwild") else
+    appDir <- system.file("ui/app_private", package = "reportingGrofwild")
   
   
-  # (3) Run the application
+  # (3) Specific WBE
+  # WARNING: This overrides the kbo read from shinyproxy
+  if (!is.null(kbo))
+    Sys.setenv("SHINYPROXY_USERNAME" = kbo)
+  
+  
+  
+  # (4) Run the application
   runApp(appDir = appDir, ...)
   
 }

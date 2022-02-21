@@ -28,7 +28,7 @@ RUN  apt-get update && apt-get install -y software-properties-common && \
 RUN R -e "install.packages(c('gert', 'usethis'), repos='https://cloud.r-project.org/')"	 
 
 # install imports of reporting-grofwild app that are not on cloud
-RUN R -e "install.packages(c('shiny', 'gert', 'sp', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'shinycssloaders', 'raster', 'stringr'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('shiny', 'sp', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr'), repos = 'https://cloud.r-project.org/')"
 RUN R -e "devtools::install_version('plotly', version = '4.9.2.1', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 RUN R -e "install.packages('https://cran.r-project.org/src/contrib/Archive/DT/DT_0.12.tar.gz', repos = NULL, type = 'source')"
@@ -39,6 +39,9 @@ RUN R -e "install.packages(c('maptools'), repos='https://cloud.r-project.org/')"
 
 # install suggests of reporting-grofwild app
 RUN R -e "install.packages(c('leaflet', 'mapview'), repos='https://cloud.r-project.org/')"
+
+# to prevent bobbing with shinycssloaders
+RUN R -e "remotes::install_github('daattali/shinycssloaders')"
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!

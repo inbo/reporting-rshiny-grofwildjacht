@@ -4,16 +4,16 @@
 \alias{runWildApp}
 \title{Run the reporting-grofwild application}
 \usage{
-runWildApp(installDependencies = FALSE, copyFiles = FALSE, public = TRUE, ...)
+runWildApp(installDependencies = FALSE, public = TRUE, kbo = NULL, ...)
 }
 \arguments{
 \item{installDependencies}{boolean, whether to first install packages listed
 in the Suggests field of DESCRIPTION; default value is FALSE}
 
-\item{copyFiles}{boolean, whether to copy files for the app from the inst/ui
-to a temporary directory which is writeable}
-
 \item{public}{boolean, whether to start the public or private version of the app}
+
+\item{kbo}{numeric, specific KBO number for which to show the WBE (private) app;
+only relevant if \code{public} is FALSE}
 
 \item{...}{further arguments that can be passed to \code{\link[shiny]{runApp}}}
 }

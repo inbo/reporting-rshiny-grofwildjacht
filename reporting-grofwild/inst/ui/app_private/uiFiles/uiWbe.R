@@ -12,7 +12,7 @@ tagList(
     tags$br(),
     
     tags$div(align = "center",
-      h1("Welkom op de wildbeheereenheid pagina.")
+      uiOutput("wbe_title")
     ),
     
     tags$p(class = "lead", "Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris."),
@@ -44,66 +44,8 @@ tagList(
   
   # Map
   
-  tags$div(class = "container",
-    
-    h2("Landkaart"),
-    
-    ## countMap: all species
-    wellPanel(
-      
-      fixedRow(
-        column(6,
-          uiOutput("wbe_year")
-        ),
-        column(6, 
-          selectInput(inputId = "wbe_legend", "Legende (kaart)",
-            choices = c("Bovenaan rechts" = "topright",
-              "Onderaan rechts" = "bottomright",
-              "Bovenaan links" = "topleft",
-              "Onderaan links" = "bottomleft",
-              "<geen>" = "none"))
-        )
-      ),
-      actionLink(inputId = "wbe_globe", label = "Verberg landkaart",
-        icon = icon("globe"))
-    
-    ),
-    
-    
-    uiOutput("wbe_title"),
-    withSpinner(leafletOutput("wbe_spacePlot")),
-    tags$div(align = "center", uiOutput("wbe_stats")),
-    tags$br(),
-    downloadButton("wbe_download", "Download figuur", class = "downloadButton"),
-    downloadButton("wbe_downloadData", "Download data", class = "downloadButton")
-  
-  ),
-  
-  tags$hr(),
-  
-  # Line plot
-  fluidRow(
-    column(6, 
-      wellPanel(
-        uiOutput("wbe_period"),
-        selectInput(inputId = "wbe_unit", "Eenheid",
-          choices = c("Aantal" = "absolute", 
-            "Aantal/100ha" = "relative")),
-        if (length(currentKbo) > 1)
-        checkboxInput(inputId = "wbe_combinatie", 
-          label = "Combineer alle geselecteerde regio's"),
-      )
-    ),
-    
-    column(6,
-      uiOutput("wbe_timeTitle"),
-      plotModuleUI(id = "wbe_plot1", height = "400px"),
-      optionsModuleUI(id = "wbe_plot1", exportData = TRUE,
-        doWellPanel = FALSE)
-    )
-  ),
-  
-  tags$hr(),
+  mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
+    plotDetails = c("region", "biotoop")),
   
   tableSpeciesUI(id = "wbe"),
   

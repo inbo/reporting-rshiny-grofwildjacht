@@ -16,6 +16,7 @@ ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
 toekenningsData <- loadToekenningen(dataDir = dataDir)
+wbeData <- loadWbeHabitats(dataDir = dataDir)
 
 
 currentKbo <- 445465768
@@ -34,6 +35,7 @@ ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
+wbeData <- wbeData[wbeData$WBE_NR == unique(geoData$PartijNummer), ]
 
 # Combine data
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
@@ -112,6 +114,14 @@ test_that("Trend plot", {
       expect_is(myPlot, "plotly")
       
     }  
+    
+  })
+
+
+
+test_that("Biotoop", {
+    
+    barBiotoop(data = wbeData, jaar = 2020)
     
   })
 

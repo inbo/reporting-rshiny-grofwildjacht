@@ -46,6 +46,7 @@ trendYearFlanders <- function(data, timeRange, unit = c("absolute", "relative"),
 					xaxis = list(title = "Jaar"), 
 					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha",
                        tickformat = if (unit == "absolute") ",d" else NULL,
+                       range = c(0, ~max(freq)*1.05),
                        rangemode = "nonnegative"),
 					showlegend = TRUE,
 					margin = list(b = 80, t = 100))

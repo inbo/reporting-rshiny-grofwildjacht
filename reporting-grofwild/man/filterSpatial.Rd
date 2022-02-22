@@ -9,7 +9,8 @@ filterSpatial(
   species,
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
     "fbz_gemeentes", "utm5", "WBE_binnengrenzen"),
-  year
+  year,
+  locaties = NULL
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ filterSpatial(
 
 \item{year}{integer, year of interest. Only relevant when \code{regionLevel}
 is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years}
+
+\item{locaties}{character vector, only relevant when \code{regionLevel} is 
+"WBE_binnengrenzen"; it selects the relevant WBE only; default is NULL}
 }
 \value{
 single SpatialPolygonsDataFrame

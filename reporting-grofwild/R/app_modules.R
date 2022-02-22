@@ -654,8 +654,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
       filename = function() nameFile(species = wildNaam(),
             year = if (!is.null(input$year)) 
                   input$year else if (!is.null(input$time))
-                  unique(c(input$time[1], input$time[2])) else
-                  timeRange(), 
+                  unique(c(input$time[1], input$time[2])) else if (!is.null(timeRange))
+                  timeRange() else
+                  unique(data()$year), 
             extraInfo = input$type,
             content = paste0(plotFunction, "_data"), fileExt = "csv"),
       content = function(file) {

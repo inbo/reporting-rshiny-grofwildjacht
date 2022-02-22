@@ -71,17 +71,18 @@ ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- loadRawData(type = "geo")
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 
-# TODO filter on KBO
 schadeData <- loadRawData(type = "wildschade")
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 
+currentWbe <- unique(geoData$PartijNummer)
+currentWbe <- currentWbe[!is.na(currentWbe)]
+
 wbeData <- loadWbeHabitats(dataDir = dataDir)
+wbeData <- wbeData[wbeData$WBE_NR %in% currentWbe, ]
 
 toekenningsData <- loadToekenningen(dataDir = dataDir)
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 
-currentWbe <- unique(geoData$PartijNummer)
-currentWbe <- currentWbe[!is.na(currentWbe)]
 
 
 

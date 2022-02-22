@@ -42,7 +42,7 @@ createTrendData <- function(data, allSpatialData,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
             utm5 = plotData$UTM5,
-            WBE_binnengrenzen = plotData$PartijNummer
+            WBE_binnengrenzen = plotData$WBE_Naam_Toek
     ))
     
     # Select subset for time & species
@@ -186,7 +186,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
 					xaxis = list(title = "Jaar"), 
 					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha",
                        tickformat = if (unit == "absolute") ",d" else NULL,
-                       range = if (unit == "absolute") c(~min(freq), ~max(5.1, sum(max(freq), 0.5))) else NULL,
+                       range = c(0, ~max(freq)*1.05),
                        rangemode = "nonnegative"),
 					showlegend = TRUE,
 					margin = list(b = 80, t = 100))     

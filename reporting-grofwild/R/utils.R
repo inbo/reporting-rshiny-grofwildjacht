@@ -163,7 +163,8 @@ setMonthsInDutch <- function(x) {
 nameFile <- function(species, year, extraInfo = NULL, content, fileExt) {
   
   paste0(
-    paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_",
+    if (length(species) > 0)
+      paste0(paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_"),
     if (length(year) > 1) paste(year, collapse = "-") else year,
     if (!is.null(extraInfo)) {paste0("_", paste(extraInfo, collapse = "-"))}, 
     "_", content, 

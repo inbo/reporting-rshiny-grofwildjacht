@@ -155,6 +155,8 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}
 #' @param year integer, year of interest. Only relevant when \code{regionLevel}
 #' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
+#' @param locaties character vector, only relevant when \code{regionLevel} is 
+#' "WBE_binnengrenzen"; it selects the relevant WBE only; default is NULL
 #' @return single SpatialPolygonsDataFrame
 #' 
 #' @author mvarewyck

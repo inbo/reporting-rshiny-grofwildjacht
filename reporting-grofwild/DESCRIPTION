@@ -11,6 +11,7 @@ Imports:
     devtools, 
     DT, 
     flexdashboard,
+    ggplot2,
     INBOtheme, 
     leaflet, 
     magrittr,

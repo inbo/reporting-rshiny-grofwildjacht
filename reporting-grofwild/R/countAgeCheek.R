@@ -54,7 +54,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	nRecords <- nrow(plotData)
  
   # Calculate accuracy
-  accData <- subset(plotData, jaar == currentYear & 
+  accData <- subset(plotData, jaar %in% jaartallen & 
         !is.na(jager) & !jager %in% "Onbekend" &
         !is.na(kaak) & !kaak %in% "Niet ingezameld")
   accuracy <- if (nrow(accData) > 0)
@@ -141,8 +141,8 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
-	
-	
+  
+ 
 	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], 
      accuracy = list(value = accuracy, total = nrow(accData))))
 	
@@ -203,7 +203,7 @@ countAgeCheekUI <- function(id, showAccuracy = FALSE) {
           optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
           tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn."),
           if (showAccuracy)
-            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid huidig jaar"),
+            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode"),
         ),
         column(8, 
           plotModuleUI(id = ns("ageCheek"))

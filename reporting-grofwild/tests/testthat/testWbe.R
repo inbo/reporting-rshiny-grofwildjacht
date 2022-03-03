@@ -121,7 +121,10 @@ test_that("Trend plot", {
 
 test_that("Biotoop", {
     
-    barBiotoop(data = wbeData, jaar = 2020)
+    result <- barBiotoop(data = wbeData, jaar = 2020)
+    
+    epect_equal(sum(result$data$Waarde[-(1:2)]), 100)
+    
     
   })
 

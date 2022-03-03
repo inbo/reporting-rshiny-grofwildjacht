@@ -507,6 +507,7 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE) {
             selectInput(inputId = ns("bron"),
               label = "Data bron",
               choices = names(metaSchade$sources),
+              selected = names(metaSchade$sources),
               multiple = TRUE)
           ),
           column(6, selectInput(inputId = ns("legend"), "Legende (kaart)",

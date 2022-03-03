@@ -36,12 +36,9 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
       stop("Niet beschikbaar: Geen data voor het gekozen jaar")
   
   
-  # A. Current Year
   
-  # Select data
-  tableData <- allData[allData$jaar == jaar, ]
- 
-  # Define names and ordering of factor levels
+  
+  # Redefine names and ordering of factor levels
   if (wildNaam == "Wild zwijn") {  # wild zwijn for leeftijd
     
     levelsCategorie <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
@@ -52,9 +49,12 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
     
   }
   # Rename categorie extra levels/NA to Onbekend
-  tableData$categorie <- factor(tableData$categorie, levels = levelsCategorie)
-  tableData$categorie[is.na(tableData$categorie)] <- tail(levelsCategorie, n = 1)
+  allData$categorie <- factor(allData$categorie, levels = levelsCategorie)
+  allData$categorie[is.na(allData$categorie)] <- tail(levelsCategorie, n = 1)
   
+  # A. Current Year
+  
+  tableData <- allData[allData$jaar == jaar, ]
   
   # Summary of the data
   summaryData <- count(tableData, vars = names(tableData))
@@ -63,7 +63,10 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
   summaryData$current <- summaryData$freq
   summaryData$freq <- NULL
   
-  # Add province/categorie with 0 observations
+  # Add 'totaal'
+  levelsCategorie <- c(levelsCategorie, "Totaal")
+  
+  # Add categorie with 0 observations
   fullData <- expand.grid(
     locatie = unique(allData$locatie),
     categorie = levelsCategorie,
@@ -72,6 +75,10 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
   summaryTable$percent <- ifelse(is.na(summaryTable$percent), "", 
     paste0(gsub(pattern = "\\.", "\\,", sprintf("%.1f", summaryTable$percent)), "%"))
   summaryTable[is.na(summaryTable)] <- 0
+  
+  # Calculate total
+  summaryTable$current[summaryTable$categorie == "Totaal"] <- sum(summaryTable$current)
+ 
   
   
   # B. Calculate differences with 1, 5, 10 years ago
@@ -88,10 +95,13 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
     # Only calculate trend if relevant
     if (nrow(freqBack) > 0) {
       
-      # Add provinces with 0 observations
+      # Add categorie with 0 observations
       freqBack <- merge(x = fullData[, "categorie", drop = FALSE],
         y = freqBack, all = TRUE)
       freqBack$freq[is.na(freqBack$freq)] <- 0
+      
+      # Add row for Totaal
+      freqBack$freq[freqBack$categorie == "Totaal"] <- sum(freqBack$freq, na.rm = TRUE)
       
       # Calculate trend
       finalTable <- join(x = finalTable, y = freqBack, by = "categorie")
@@ -104,7 +114,11 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
               paste0(gsub(pattern = "\\.", "\\,", charValue), "%"))},
           "")
       
+      print(finalTable)
+      
       finalTable[is.na(finalTable)] <- ""
+      
+      finalTable$freq <- NULL
       
     }
     
@@ -114,13 +128,8 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
   # Order rows and columns
   toReturn <- finalTable[match(levelsCategorie, finalTable$categorie), c("categorie", "current", "percent", 
       names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))])]
-  # Calculate total
-  totaal <- toReturn[1, , drop = FALSE]
-  suppressWarnings(totaal[!is.na(totaal)] <- "")
-  totaal$categorie <- "Totaal"
-  totaal$current <- sum(toReturn$current)
-  toReturn <- suppressWarnings(rbind(toReturn, totaal))
- 
+  
+  
   # Rename columns
   colnames(toReturn)[1:3] <- c("Categorie", "Afschot", "Afschot relatief")
   

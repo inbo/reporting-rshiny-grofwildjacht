@@ -312,7 +312,7 @@ countYearShotServer <- function(id, data, timeRange, types) {
         timeRange = timeRange,
         intervals = c("Per maand", "Per seizoen", "Per twee weken"),
         types = types,
-        multipleTypes = FALSE)
+        multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
         data = data)

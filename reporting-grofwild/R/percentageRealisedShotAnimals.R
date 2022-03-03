@@ -165,8 +165,10 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE) {
           optionsModuleUI(id = ns("percentageRealisedShot"),
             showTime = TRUE, showType = TRUE,
             exportData = TRUE),
-            tags$p("TO ADD"),
-            if (showAccuracy)
+          tags$p("Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.",
+              "Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.",
+              "Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels."),
+          if (showAccuracy)
               accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie huidig jaar"),
         ),
         column(8, 

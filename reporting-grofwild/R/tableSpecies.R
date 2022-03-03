@@ -114,8 +114,6 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
               paste0(gsub(pattern = "\\.", "\\,", charValue), "%"))},
           "")
       
-      print(finalTable)
-      
       finalTable[is.na(finalTable)] <- ""
       
       finalTable$freq <- NULL

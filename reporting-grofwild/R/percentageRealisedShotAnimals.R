@@ -54,10 +54,14 @@ percentageRealisedShot <- function(data, type = NULL,
     by = list(jaar = plotData$labeljaar), sum)
   
   # Calculate accuracy
-  accData <- subset(plotData, jaar == currentYear)
-  accuracy <- if (nrow(accData) > 0)
-      round(accData$verwezenlijkt / accData$toegekend * 100) else
+  accData <- colSums(subset(plotData, jaar %in% jaartallen))
+  accuracy <- if (length(accData) > 0)
+      round(accData[names(accData) == "verwezenlijkt"] / 
+          accData[names(accData) == "toegekend"] * 100) else
       0
+  totalAccuracy <- accData[names(accData) == "toegekend"]
+  names(totalAccuracy) <- NULL
+  names(accuracy) <- NULL
   
   
   plotData$jaar <- as.factor(plotData$jaar)
@@ -104,7 +108,7 @@ percentageRealisedShot <- function(data, type = NULL,
   
   
   return(list(plot = pl, data = plotData,
-      accuracy = list(value = accuracy, total = accData$toegekend)))
+      accuracy = list(value = accuracy, total = totalAccuracy)))
   
 }
 
@@ -169,7 +173,7 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE) {
               "Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.",
               "Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels."),
           if (showAccuracy)
-              accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie huidig jaar"),
+              accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
         ),
         column(8, 
           plotModuleUI(id = ns("percentageRealisedShot"))

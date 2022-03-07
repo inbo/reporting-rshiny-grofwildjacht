@@ -5,6 +5,7 @@
 \title{Read all shape data from geojson files}
 \usage{
 readShapeData(
+  jsonDir,
   dataDir = system.file("extdata", package = "reportingGrofwild"),
   tolerance = 1e-04
 )

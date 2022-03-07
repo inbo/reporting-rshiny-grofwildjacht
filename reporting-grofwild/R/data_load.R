@@ -16,22 +16,25 @@
 #' @importFrom raster area
 #' @importFrom utils write.csv read.csv
 #' @export
-readShapeData <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
+readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "reportingGrofwild"),
     tolerance = 0.0001) {
   
   
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
       "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
       "UTM5" = "utm5")
-   # WBE per year
-  wbeLevels <- gsub(".geojson", "", list.files(path = system.file("extdata", package = "reportingGrofwild"), pattern = "WBE_binnengrenzen_"))
-  allLevels <- c(allLevels, wbeLevels)  
   
+  # WBE per year
+  wbeLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "WBE_binnengrenzen_"))
+  # jachtterein per shared year
+  jachtLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "Jachtter_"))
+  
+  allLevels <- c(allLevels, wbeLevels, jachtLevels)
   
   ## New code for geojson files
   spatialData <- lapply(allLevels, function(iLevel) {
         
-        file <- file.path(dataDir, paste0(iLevel, ".geojson"))
+        file <- file.path(jsonDir, paste0(iLevel, ".geojson"))
 #        # Check whether we can use readOGR()
 #        "GeoJSON" %in% rgdal::ogrDrivers()$name
         shapeData <- readOGR(dsn = file, verbose = TRUE)
@@ -60,7 +63,12 @@ readShapeData <- function(dataDir = system.file("extdata", package = "reportingG
           
           shapeData$NAAM <- factor(shapeData$WBE_NR)
           
+        } else if (grepl("Jachtter_", iLevel)) {
+          
+          shapeData$NAAM <- factor(shapeData$WBENR)
+          
         }
+        
         return(shapeData)
         
       })

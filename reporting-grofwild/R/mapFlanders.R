@@ -662,7 +662,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Add world map
       observe({
           
-          validate(need(spatialData(), "Geen data beschikbaar"))
+          validate(need(spatialData(), "Geen data beschikbaar"),
+            # update when new plot proxy data
+            need(nrow(results$summarySpaceData()$data) > 0, "Geen data beschikbaar"))
           
           proxy <- leafletProxy("spacePlot", data = spatialData())
           

@@ -7,10 +7,11 @@
 createSpaceData(
   data,
   allSpatialData,
+  biotoopData,
   year,
   species,
   regionLevel,
-  unit = c("absolute", "relative", "absoluteCases"),
+  unit = c("absolute", "relative", "absoluteCases", "relativeDekking"),
   sourceIndicator = NULL,
   dataDir = system.file("extdata", package = "reportingGrofwild")
 )
@@ -20,6 +21,8 @@ createSpaceData(
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 
+\item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadWbeHabitats}}
+
 \item{year}{integer, year of interest}
 
 \item{species}{character, species of interest}
@@ -27,7 +30,8 @@ createSpaceData(
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
-\item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
+\item{unit}{character, whether absolute frequencies, relative frequencies (aantal/100ha),
+absolute cases, or relative bos freq (aantal/100ha bos & natuur)  
 should be reported,}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)

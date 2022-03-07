@@ -34,19 +34,22 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' Create summary data of geographical data for selected year, species and region level
 #' @param data data.frame, geographical data
 #' @param allSpatialData list of sp, spatial data for all spatial levels
+#' @param biotoopData data.frame, background data for the WBE, as read from \code{loadWbeHabitats}
 #' @param year integer, year of interest
 #' @param species character, species of interest
 #' @param regionLevel character, regional level of interest should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
-#' @param unit character, whether absolute or relative frequencies (aantal/100ha) 
+#' @param unit character, whether absolute frequencies, relative frequencies (aantal/100ha),
+#' absolute cases, or relative bos freq (aantal/100ha bos & natuur)  
 #' should be reported,
 #' @inheritParams filterSchade
 #' @inheritParams readShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
 #' @export
-createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
-    unit = c("absolute", "relative", "absoluteCases"), 
+createSpaceData <- function(data, allSpatialData, biotoopData, 
+    year, species, regionLevel,
+    unit = c("absolute", "relative", "absoluteCases", "relativeDekking"), 
     sourceIndicator = NULL, 
     dataDir = system.file("extdata", package = "reportingGrofwild")) {
   
@@ -62,12 +65,25 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
     species = species, regionLevel = regionLevel, year = year)
   
   # Framework for summary data
-  fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes"))
-      spatialData@data[, c("NAAM", "AREA", "NISCODE")] else if (regionLevel == "WBE_binnengrenzen") {
-      tmpData <- spatialData@data[, c("NAAM", "AREA")]
+  fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes")) {
+    
+      spatialData@data[, c("NAAM", "AREA", "NISCODE")]
+      
+    } else if (regionLevel == "WBE_binnengrenzen") {
+      
+      if (unit == "relativeDekking") {
+        tmpData <- biotoopData[biotoopData$year %in% year, c("WBE_NR", "Area_hab_km2_bos")]
+        colnames(tmpData) <- c("NAAM", "AREA")
+      } else {
+        tmpData <- spatialData@data[, c("NAAM", "AREA")]        
+      }
       tmpData[tmpData$NAAM %in% unique(data$PartijNummer), , drop = FALSE]
-    } else
+      
+    } else {
+  
       spatialData@data[, c("NAAM", "AREA")]
+    
+    }
   
   if (nrow(fullData) == 0)
     return(NULL)
@@ -155,7 +171,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   
   
   # unit taken into account
-  if (unit == "relative")
+  if (grepl("relative", unit))
     summaryData2$freq <- summaryData2$freq/summaryData2$AREA 
   
   
@@ -510,6 +526,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
+            biotoopData = wbeData,
             year = input$year,
             species = species(),
             regionLevel = results$regionLevel(),
@@ -876,6 +893,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           createTrendData(
             data = geoData(),
             allSpatialData = allSpatialData,
+            biotoopData = wbeData,
             timeRange = input$period,
             species = species(),
             regionLevel = results$regionLevel(),
@@ -936,6 +954,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' @inheritParams mapFlandersServer 
 #' @param showRegion boolean, whether to show choices for regionLevel and selected region(s)
 #' @param showCombine boolean, whether to show option to combine selected regions
+#' @param unitChoices named character vector, choices for unit option;
+#' default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}
 #' @param plotDetails character vector, detail plots to be shown below the map;
 #' should be subset of \code{c("flanders", "region", "biotoop")}
 #' @return UI object
@@ -944,6 +964,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' @import shiny
 #' @export
 mapFlandersUI <- function(id, showRegion = TRUE, showCombine = TRUE,
+  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
   plotDetails = c("flanders", "region")) {
   
   ns <- NS(id)
@@ -985,8 +1006,7 @@ mapFlandersUI <- function(id, showRegion = TRUE, showCombine = TRUE,
         column(6, 
           uiOutput(ns("period")),
           selectInput(inputId = ns("unit"), label = "Eenheid",
-            choices = c("Aantal" = "absolute", 
-              "Aantal/100ha" = "relative"))
+            choices = unitChoices)
         )
       ),
       if (showCombine)

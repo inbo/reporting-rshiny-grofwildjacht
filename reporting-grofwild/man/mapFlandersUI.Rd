@@ -8,6 +8,7 @@ mapFlandersUI(
   id,
   showRegion = TRUE,
   showCombine = TRUE,
+  unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative"),
   plotDetails = c("flanders", "region")
 )
 }
@@ -17,6 +18,9 @@ mapFlandersUI(
 \item{showRegion}{boolean, whether to show choices for regionLevel and selected region(s)}
 
 \item{showCombine}{boolean, whether to show option to combine selected regions}
+
+\item{unitChoices}{named character vector, choices for unit option;
+default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}}
 
 \item{plotDetails}{character vector, detail plots to be shown below the map;
 should be subset of \code{c("flanders", "region", "biotoop")}}

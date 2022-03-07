@@ -46,6 +46,8 @@ combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ],
 
 test_that("The map", {
     
+    unit <- c("absolute", "relative", "relativeDekking")[3]
+    
     for (iYear in years) {
       
       if (doPrint)
@@ -56,10 +58,11 @@ test_that("The map", {
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
+          biotoopData = wbeData,
           year = iYear,
           species = iSpecies,
           regionLevel = "WBE_binnengrenzen",
-          unit = "relative"
+          unit = unit
         )
         
         if (doPrint)
@@ -93,22 +96,25 @@ test_that("The map", {
 
 test_that("Trend plot", {
     
+    unit <- c("absolute", "relative", "relativeDekking")[3]
+    
     for (iSpecies in species) {
       
       trendRegionData <- createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
         allSpatialData = spatialData,
+        biotoopData = wbeData,
         timeRange = range(years),
         species = iSpecies,
         regionLevel = "WBE_binnengrenzen",
-        unit = "relative"
+        unit = unit
       )
       
       myPlot <- trendYearRegion(
         data = trendRegionData,
-        locaties = 441,
+        locaties = unique(geoData$WBE_Naam_Toek[geoData$KboNummer_Toek == currentKbo]),
         timeRange = range(years),
-        unit = "relative"
+        unit = unit
       )$plot
       
       expect_is(myPlot, "plotly")

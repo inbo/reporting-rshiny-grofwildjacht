@@ -41,10 +41,13 @@ barBiotoop <- function(data, jaar = NULL,
     name = gsub("perc_", "", percVars),
     value = round(unlist(wbeInfo[, percVars]*100), 2)
   )
-  # For correct display in plot
-  plotData$name <- factor(plotData$name, levels = rev(plotData$name))
-  plotData <- plotData[nrow(plotData):1, ]
   
+  # For correct display in plot
+  plotData$name[plotData$name == "bos"] <- "bos & natuur"
+  plotData$name <- factor(plotData$name, 
+    levels = c("andere", "bebouwd", "water", "landbouw", "grasland", "bos & natuur"))
+  plotData <- plotData[match(plotData$name, levels(plotData$name)), ]
+  plotData <- plotData[match(plotData$name, levels(plotData$name)), ]
   
   totalCounts <- data.frame(
     name = c("Totale oppervlakte (ha)", "Totale oppervlakte (km2)"),
@@ -55,8 +58,8 @@ barBiotoop <- function(data, jaar = NULL,
   
  
   # Create plot
-  pl <- plot_ly(data = plotData, x = ~value, y = ~name, color = "Percentage", 
-      colors = colors,
+  pl <- plot_ly(data = plotData, x = ~value, y = ~name, 
+      color = "Percentage", colors = colors,
       type = "bar", orientation = 'h', width = width, height = height) %>%
     
     layout(title = paste0("Totale oppervlakte: ", totalCounts$value[2], " km\U00B2"),

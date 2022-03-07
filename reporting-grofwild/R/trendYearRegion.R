@@ -42,9 +42,14 @@ createTrendData <- function(data, allSpatialData,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
             utm5 = plotData$UTM5,
-            WBE_binnengrenzen = plotData$WBE_Naam_Toek
+            WBE_binnengrenzen = plotData$PartijNummer
     ))
+    # Need to match partijNummer to WBE_Naam_Toek later
+    if (regionLevel == "WBE_binnengrenzen") 
+      matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
     
+   
+  
     # Select subset for time & species
     plotData <- subset(plotData, 
             subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
@@ -95,6 +100,10 @@ createTrendData <- function(data, allSpatialData,
                             setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
 
       
+    } else if (regionLevel == "WBE_binnengrenzen") {
+      
+      allData$locatie <- matchLocaties$WBE_Naam_Toek[match(allData$locatie, matchLocaties$PartijNummer)]
+      
     }
     
      
@@ -135,8 +144,8 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
 	
 	# To prevent warnings with R CMD check
 	locatie <- NULL
-	
-	unit <- match.arg(unit)
+  
+  unit <- match.arg(unit)
 	wildNaam <- unique(data$wildsoort)
   title_wildnaam <- unlist(strsplit(wildNaam, split = ", "))
   titlePrefix <- if (!schadeTitles) "Gerapporteerd afschot" else "Evolutie schademeldingen"

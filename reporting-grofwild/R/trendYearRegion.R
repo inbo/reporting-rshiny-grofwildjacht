@@ -6,8 +6,9 @@
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
 #' @export
-createTrendData <- function(data, allSpatialData, 
-        timeRange, species, regionLevel, unit = c("absolute", "relative"),
+createTrendData <- function(data, allSpatialData, biotoopData = NULL,
+        timeRange, species, regionLevel, 
+        unit = c("absolute", "relative", "relativeDekking"),
         sourceIndicator = NULL,
         dataDir = system.file("extdata", package = "reportingGrofwild")) {
     
@@ -15,6 +16,8 @@ createTrendData <- function(data, allSpatialData,
     # To prevent warnings R CMD check
     afschotjaar <- NULL
     wildsoort <- NULL
+    
+    unit <- match.arg(unit)
     
     
     # Select correct spatial data
@@ -66,15 +69,25 @@ createTrendData <- function(data, allSpatialData,
     fullData <- cbind(expand.grid(
                     afschotjaar = chosenTimes,
                     locatie = unique(spatialData$NAAM)))
-    # add Area
-    fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
-            by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
+    
+    if (regionLevel == "WBE_binnengrenzen" & unit == "relativeDekking") {
+      # add dekkingsgraad 100ha bos&natuur if WBE      
+      fullData <- merge(fullData, biotoopData[, c("WBE_NR", "Area_hab_km2_bos", "year")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("WBE_NR", "year"))
+      names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
+      
+    } else {
+      # add Area
+      fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
+      
+    }
     
     allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
     allData$freq[is.na(allData$freq)] <- 0
     
     # unit taken into account
-    if (unit == "relative")
+    if (grepl("relative", unit))
         allData$freq <- allData$freq/allData$AREA 
     
     allData$AREA <- NULL
@@ -138,7 +151,7 @@ createTrendData <- function(data, allSpatialData,
 #' @importFrom stats aggregate
 #' @export
 trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange = NULL, 
-        unit = c("absolute", "relative"), schadeTitles = FALSE,
+        unit = c("absolute", "relative", "relativeDekking"), schadeTitles = FALSE,
 		width = NULL, height = NULL) {
 	
 	
@@ -162,7 +175,11 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
   
   
 	title <- paste0(titlePrefix,
-			if (unit == "absolute") "" else "/100ha",
+			switch(unit,
+        "absolute" = "",
+        "relative" = "/100ha",
+        "relativeDekking" = "/100ha bos & natuur"
+      ),
 			
       " voor ", 
       if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ", ...")
@@ -186,26 +203,33 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
     plotData$locatie <- "Totaal"
   }
 	# Create plot
-	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
-          color = ~locatie, colors = colorList$colors, 
-					hoverinfo = "x+y+name",
-					type = "scatter", mode = "lines+markers",
-					width = width, height = height) %>%
-			layout(title = title,
-					xaxis = list(title = "Jaar"), 
-					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha",
-                       tickformat = if (unit == "absolute") ",d" else NULL,
-                       range = c(0, ~max(freq)*1.05),
-                       rangemode = "nonnegative"),
-					showlegend = TRUE,
-					margin = list(b = 80, t = 100))     
+  pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
+      color = ~locatie, colors = colorList$colors, 
+      hoverinfo = "x+y+name",
+      type = "scatter", mode = "lines+markers",
+      width = width, height = height) %>%
+    layout(title = title,
+      xaxis = list(title = "Jaar"), 
+      yaxis = list(title = switch(unit,
+          "absolute" = "Aantal",
+          "relative" = "Aantal/100ha",
+          "relativeDekking" = "Aantal/100ha bos & natuur"
+        ),
+        tickformat = if (unit == "absolute") ",d" else NULL,
+        range = c(0, ~max(freq)*1.05),
+        rangemode = "nonnegative"),
+      showlegend = TRUE,
+      margin = list(b = 80, t = 100))     
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
 	
 	# change variable names
-	names(plotData)[names(plotData) == "freq"] <- if (unit == "absolute")
-				"aantal" else "aantal/100ha"
+	names(plotData)[names(plotData) == "freq"] <- switch(unit,
+    "absolute" = "aantal",
+    "relative" = "aantal/100ha",
+    "relativeDekking" = "aantal/100ha bos & natuur",
+  )
 	
 	
 	return(list(plot = pl, data = plotData, warning = colorList$warning))

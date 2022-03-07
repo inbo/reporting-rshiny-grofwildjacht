@@ -45,6 +45,9 @@ tagList(
   # Map
   
   mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
+    unitChoices = c("Aantal" = "absolute", 
+      "Aantal/100ha" = "relative", 
+      "Aantal/100ha bos & natuur" = "relativeDekking"),
     plotDetails = c("region", "biotoop")),
   
   tableSpeciesUI(id = "wbe"),

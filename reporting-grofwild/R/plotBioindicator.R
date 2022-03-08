@@ -342,24 +342,23 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @inheritParams plotBioindicatorServer
 #' @inheritParams optionsModuleUI
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), regionLevels) {
+plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
+  regionLevels, uiText) {
   
   bioindicator <- match.arg(bioindicator)
   
   ns <- NS(id)
   
+  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", bioindicator), ]
+  
   tagList(
     
     actionLink(inputId = ns("linkPlotBioindicator"), 
-      label = h3(switch(bioindicator,
-          ontweid_gewicht = "FIGUUR: Gewicht per jaar",
-          onderkaaklengte = "FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier)"
-        ))
+      label = h3(HTML(uiText$title))
     ),
     conditionalPanel("input.linkPlotBioindicator % 2 == 1", ns = ns,
       
@@ -373,13 +372,7 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
               ontweid_gewicht = c("leeftijd", "geslacht"),
               onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
             )),
-          switch(bioindicator,
-            ontweid_gewicht = tagList(
-              tags$p("Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types."),
-              tags$p(tags$i("Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur."))
-            ),
-            onderkaaklengte = tags$p("Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
-          )
+          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
         ),
         column(8, 
           plotModuleUI(id = ns("plotBioindicator"))

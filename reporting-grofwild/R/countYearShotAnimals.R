@@ -323,21 +323,21 @@ countYearShotServer <- function(id, data, timeRange, types) {
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
-#' @inheritParams countAgeGenderServer 
 #' @param regionLevels numeric vector, region level choices
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-countYearShotUI <- function(id, regionLevels = NULL) {
+countYearShotUI <- function(id, regionLevels = NULL, uiText) {
   
   ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     
     actionLink(inputId = ns("linkYearShot"),
-      label = h3("FIGUUR: Verdeling afschot over de jaren")),
+      label = h3(HTML(uiText$title))),
     conditionalPanel("input.linkYearShot % 2 == 1", ns = ns,
       
       fixedRow(
@@ -346,7 +346,7 @@ countYearShotUI <- function(id, regionLevels = NULL) {
           optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
             regionLevels = regionLevels, exportData = TRUE,
             showType = TRUE, showInterval = TRUE),
-          tags$p("Verdeling van afschot over de jaren heen opgesplitst per interval"),
+          tags$p(HTML(uiText[, id])),
         ),
         column(8, plotModuleUI(id = ns("countYearShot")))
       ),

@@ -15,8 +15,8 @@ tagList(
       uiOutput("wbe_title")
     ),
     
-    tags$p(class = "lead", "Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris."),
-   
+    welcomeSection(id = "wbe", uiText = uiText)
+    
   ),
   
   # Select species
@@ -50,7 +50,8 @@ tagList(
       "Aantal/100ha bos & natuur" = "relativeDekking"),
     plotDetails = c("region", "biotoop")),
   
-  tableSpeciesUI(id = "wbe"),
+  
+  tableSpeciesUI(id = "wbe", uiText = uiText),
   
   tags$div(class = "container",
     
@@ -59,37 +60,33 @@ tagList(
     ## tableSpecies: wild zwijn and ree
     conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
         
-        countYearShotUI(id = "wbe")
+        countYearShotUI(id = "wbe", uiText = uiText)
         
       }),
       
       
       conditionalPanel("input.wbe_species == 'Ree'", {
         
-          countHuntingMethodUI(id = "wbe")
+          countHuntingMethodUI(id = "wbe", uiText = uiText)
       
     }),
   
-  mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE),
+  mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText),
   
-  countAgeGenderUI(id = "wbe"),
-  countAgeCheekUI(id = "wbe", showAccuracy = TRUE),
+  countAgeGenderUI(id = "wbe", uiText = uiText),
+  countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
   
   conditionalPanel("input.wbe_species == 'Ree'", {
       tagList(
         
-        ageGenderLowerJawUI(id = "wbe", regionLevels = NULL),    
-        percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE),    
+        ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
+        percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),    
         
-        h2("Bio-indicatoren"),
-        tags$p("Bio-indicatoren zijn ecologische parameters, die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
-            In dit geval dus de relatie tussen het aantal reeën in een gebied en de draagkracht van dat gebied. Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen."),
+        bioindicatorSection(id = "wbe", uiText = uiText),
         
-        plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL),
-        
-        plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL),
-        
-        countEmbryosUI("wbe", regionLevels = NULL)
+        plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
+        plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText),
+        countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText)
       )
     })
   

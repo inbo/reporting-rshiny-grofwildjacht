@@ -451,27 +451,26 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
 
 
 #' Shiny module for creating map on schade data - UI side
-#' @inheritParams mapSchadeServer 
 #' @param filterCode boolean whether to include the option to filter on schade code;
 #' default value is FALSE
 #' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
 #' default value is FALSE
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @importFrom leaflet leafletOutput
 #' @export
-mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE) {
+mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
   
   ns <- NS(id)
   
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   metaSchade <- loadMetaSchade()
   
   tagList(
     
     actionLink(inputId = ns("linkMapSchade"), label =
-        h3("FIGUUR: Schademeldingen")),
+        h3(HTML(uiText$title))),
     conditionalPanel("input.linkMapSchade % 2 == 1", ns = ns,
       
       wellPanel(
@@ -522,6 +521,8 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE) {
         actionLink(inputId = ns("globe"), label = "Verberg landkaart",
           icon = icon("globe"))
       ),
+      
+      tags$p(HTML(uiText[, id])),
       
       uiOutput(ns("titlePerceel")),        
       withSpinner(leafletOutput(ns("perceelPlot"))),

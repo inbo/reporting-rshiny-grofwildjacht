@@ -145,21 +145,21 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
 
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
-#' @inheritParams optionsModuleUI
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-percentageRealisedShotUI <- function(id, showAccuracy = FALSE) {
+percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
   
   ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     
     actionLink(inputId = ns("linkPlotRealisedShot"), 
-      label = h3("FIGUUR: Gerealiseerd afschot per jaar")
+      label = h3(HTML(uiText$title))
     ),
     conditionalPanel("input.linkPlotRealisedShot % 2 == 1", ns = ns,
       
@@ -169,9 +169,7 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE) {
           optionsModuleUI(id = ns("percentageRealisedShot"),
             showTime = TRUE, showType = TRUE,
             exportData = TRUE),
-          tags$p("Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.",
-              "Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.",
-              "Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels."),
+          tags$p(HTML(uiText[, id])),
           if (showAccuracy)
               accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
         ),

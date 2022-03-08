@@ -157,28 +157,27 @@ countAgeGenderServer <- function(id, data, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
-#' @inheritParams countAgeGenderServer 
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-countAgeGenderUI <- function(id) {
+countAgeGenderUI <- function(id, uiText) {
   
   ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     
     actionLink(inputId = ns("linkAgeGender"),
-      label = h3("FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie")),
+      label = h3(HTML(uiText$title))),
     conditionalPanel("input.linkAgeGender % 2 == 1", ns = ns,
       
       fixedRow(
         
         column(4,
           optionsModuleUI(id = ns("ageGender"), showTime = TRUE, exportData = TRUE),
-          tags$p("Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. 
-              Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
+          tags$p(HTML(uiText[, id]))
         ),
         column(8, 
           plotModuleUI(id = ns("ageGender"))

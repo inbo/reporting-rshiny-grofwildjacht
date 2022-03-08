@@ -60,7 +60,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 ### Load all data
 ### -------------
 
-
+# TODO load only spatial data of specific WBE
 # Load object called spatialData
 load(file = file.path(dataDir, "spatialData.RData"))
 
@@ -83,6 +83,11 @@ wbeData <- wbeData[wbeData$WBE_NR %in% currentWbe, ]
 toekenningsData <- loadToekenningen(dataDir = dataDir)
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 
+uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wbe")]
+uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
+if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
+  warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
+    paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
 
 
 

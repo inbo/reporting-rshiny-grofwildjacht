@@ -180,28 +180,28 @@ countAgeCheekServer <- function(id, data, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
-#' @inheritParams countAgeCheekServer
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-countAgeCheekUI <- function(id, showAccuracy = FALSE) {
+countAgeCheekUI <- function(id, showAccuracy = FALSE, uiText) {
   
   ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     
     actionLink(inputId = ns("linkAgeCheek"), 
-      label = h3("FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier")),
+      label = h3(HTML(uiText$title))),
     conditionalPanel("input.linkAgeCheek % 2 == 1", ns = ns,
       
       fixedRow(
         
         column(4,
           optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
-          tags$p("Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn."),
+          tags$p(HTML(uiText[, id])),
           if (showAccuracy)
             accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode"),
         ),

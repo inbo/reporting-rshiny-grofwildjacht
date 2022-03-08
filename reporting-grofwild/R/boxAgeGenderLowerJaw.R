@@ -169,20 +169,20 @@ ageGenderLowerJawServer <- function(id, data, types, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - UI side
-#' @inheritParams ageGenderLowerJawServer 
 #' @param regionLevels character, choices for region
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-ageGenderLowerJawUI <- function(id, regionLevels) {
+ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
   
   ns <- NS(id)
   
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
   tagList(
     actionLink(inputId = ns("linkAgeGenderLowerJaw"),
-      label = h3("FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
+      label = h3(HTML(uiText$title))),
     conditionalPanel("input.linkAgeGenderLowerJaw % 2 == 1", ns = ns,
       
       fixedRow(
@@ -191,8 +191,7 @@ ageGenderLowerJawUI <- function(id, regionLevels) {
           optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("leeftijd", "geslacht")),
-          tags$p("Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
-              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")),
+          tags$p(HTML(uiText[, id]))),
         column(8, 
           plotModuleUI(id = ns("ageGenderLowerJaw"), filter = TRUE)
         )

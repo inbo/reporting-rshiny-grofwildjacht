@@ -180,21 +180,21 @@ countEmbryosServer <- function(id, data, timeRange, types) {
 
 
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
-#' @inheritParams countEmbryosServer
 #' @param regionLevels character, choices for region
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-countEmbryosUI <- function(id, regionLevels) {
+countEmbryosUI <- function(id, regionLevels, uiText) {
   
   ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     
     actionLink(inputId = ns("countEmbryos"),
-      label = h3("FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke ree\u00EBn per jaar")),
+      label = h3(HTML(uiText$title))),
     conditionalPanel("input.countEmbryos % 2 == 1", ns = ns,
       
       fixedRow(
@@ -203,9 +203,7 @@ countEmbryosUI <- function(id, regionLevels) {
           optionsModuleUI(id = ns("countEmbryos"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("embryos", "leeftijd", "geslacht")),
-          tags$p("Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types.",
-            "V\u00F3\u00F3r 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld."),
-          tags$p("Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.")),
+          tags$p(HTML(uiText[, id]))),
         column(8, 
           plotModuleUI(id = ns("countEmbryos"))
         ),

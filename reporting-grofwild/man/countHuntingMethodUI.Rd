@@ -4,15 +4,17 @@
 \alias{countHuntingMethodUI}
 \title{Shiny module for creating the plot \code{\link{countHuntingMethod}} - UI side}
 \usage{
-countHuntingMethodUI(id, regionLevels = NULL)
+countHuntingMethodUI(id, regionLevels = NULL, uiText = uiText)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{regionLevels}{numeric vector, region level choices}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 }
 \value{
-UI object
+HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{countHuntingMethod}} - UI side

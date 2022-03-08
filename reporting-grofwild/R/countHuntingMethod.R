@@ -119,21 +119,20 @@ countHuntingMethodServer <- function(id, data, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{countHuntingMethod}} - UI side
-#' @inheritParams countHuntingMethodServer 
 #' @param regionLevels numeric vector, region level choices
-#' @return UI object
+#' @template moduleUI
 #' 
 #' @author mvarewyck
-#' @import shiny
 #' @export
-countHuntingMethodUI <- function(id, regionLevels = NULL) {
+countHuntingMethodUI <- function(id, regionLevels = NULL, uiText = uiText) {
   
   ns <- NS(id)
   
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     actionLink(inputId = ns("linkHuntingMethod"), 
-      label = h3("FIGUUR: Afschot per jachtmethode")),
+      label = h3(HTML(uiText$title))),
     conditionalPanel("input.linkHuntingMethod % 2 == 1", ns = ns,
 
       fixedRow(
@@ -141,7 +140,7 @@ countHuntingMethodUI <- function(id, regionLevels = NULL) {
         column(4,
           optionsModuleUI(id = ns("huntingMethod"), showTime = TRUE, 
             regionLevels = regionLevels, exportData = TRUE),
-          tags$p("Aandeel van afschot per jachtmethode over de jaren heen.")
+          tags$p(HTML(uiText[, id]))
         ),
         column(8, plotModuleUI(id = ns("huntingMethod")))
       

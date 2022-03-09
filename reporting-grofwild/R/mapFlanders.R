@@ -69,7 +69,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     
       spatialData@data[, c("NAAM", "AREA", "NISCODE")]
       
-    } else if (regionLevel == "WBE_binnengrenzen") {
+    } else if (regionLevel == "WBE") {
       
       if (unit == "relativeDekking") {
         tmpData <- biotoopData[biotoopData$year %in% year, c("WBE_NR", "Area_hab_km2_bos")]
@@ -135,7 +135,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
         faunabeheerzones = plotData$FaunabeheerZone,
         fbz_gemeentes = plotData$fbz_gemeente,
         utm5 = plotData$UTM5,
-        WBE_binnengrenzen = plotData$PartijNummer
+        WBE = plotData$PartijNummer
     )
     
     # Exclude data with missing time or space
@@ -259,7 +259,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen"),  
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE"),  
   species, year = NA,
   allSpatialData, summaryData, colorScheme,
   legend = "none", addGlobe = FALSE) {
@@ -288,6 +288,7 @@ mapFlanders <- function(
           layerId = spatialData$NAAM,
           group = "region"
       ) 
+   
   
   # Add legend
   if (legend != "none") { 
@@ -306,15 +307,18 @@ mapFlanders <- function(
   
   
   # Add black borders
-  if (regionLevel %in% c("communes", "fbz_gemeentes", "utm5")) {
+  if (regionLevel %in% c("communes", "fbz_gemeentes", "utm5", "WBE")) {
     
     borderRegion <- switch(regionLevel,
         "communes" = "provinces",
         "fbz_gemeentes" = "faunabeheerzones",
-        "utm5" = "provinces")  
+        "utm5" = "provinces",
+        "WBE" = "WBE_buitengrenzen"
+      )  
     
     myMap <- addPolylines(map = myMap,
-        data = allSpatialData[[borderRegion]], 
+        data = filterSpatial(allSpatialData = allSpatialData, species = species,
+          regionLevel = borderRegion, year = year, locaties = summaryData$locatie), 
         color = "black", 
         weight = 3,
         opacity = 0.8,
@@ -385,7 +389,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       results$regionLevel <- reactive({
           
           if (!is.null(currentWbe))
-            "WBE_binnengrenzen" else
+            "WBE" else
             req(input$regionLevel)
           
         })
@@ -402,7 +406,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             "communes" = "Gemeente (binnen provincie)",
             "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
             "utm5" = "5x5 UTM",
-            "WBE_binnengrenzen" = unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe)]))
+            "WBE" = unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe)]))
           
         })
       
@@ -539,7 +543,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Define text to be shown in the pop-ups
       results$textPopup <- reactive({
           
-          if (results$regionLevel() == "WBE_binnengrenzen")
+          if (results$regionLevel() == "WBE")
             return(NULL)
           
           validate(need(results$summarySpaceData()$data, "Geen data beschikbaar"))

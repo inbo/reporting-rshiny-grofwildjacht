@@ -23,11 +23,14 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     # Select correct spatial data
     chosenTimes <- timeRange[1]:timeRange[2]
     spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
-          tmpData <- filterSpatial(
+          tmp <- filterSpatial(
             allSpatialData = allSpatialData,
             species = species,
             regionLevel = regionLevel,
-            year = iYear)@data
+            year = iYear)
+          if (!is.null(tmp))
+            tmpData <- tmp@data else
+            return(NULL)
           tmpData$YEAR <- iYear
           tmpData
         }))
@@ -45,10 +48,10 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
             utm5 = plotData$UTM5,
-            WBE_binnengrenzen = plotData$PartijNummer
+            WBE = plotData$PartijNummer
     ))
     # Need to match partijNummer to WBE_Naam_Toek later
-    if (regionLevel == "WBE_binnengrenzen") 
+    if (regionLevel == "WBE") 
       matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
     
    
@@ -70,7 +73,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
                     afschotjaar = chosenTimes,
                     locatie = unique(spatialData$NAAM)))
     
-    if (regionLevel == "WBE_binnengrenzen" & unit == "relativeDekking") {
+    if (regionLevel == "WBE" & unit == "relativeDekking") {
       # add dekkingsgraad 100ha bos&natuur if WBE      
       fullData <- merge(fullData, biotoopData[, c("WBE_NR", "Area_hab_km2_bos", "year")],
         by.x = c("locatie", "afschotjaar"), by.y = c("WBE_NR", "year"))
@@ -113,7 +116,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
                             setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
 
       
-    } else if (regionLevel == "WBE_binnengrenzen") {
+    } else if (regionLevel == "WBE") {
       
       allData$locatie <- matchLocaties$WBE_Naam_Toek[match(allData$locatie, matchLocaties$PartijNummer)]
       
@@ -202,6 +205,11 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
     plotData <- aggregate(freq ~ afschotjaar, plotData, sum)
     plotData$locatie <- "Totaal"
   }
+  
+  # Filter NA's
+  plotData <- plotData[!is.na(plotData$freq), ]
+  
+  
 	# Create plot
   pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
       color = ~locatie, colors = colorList$colors, 

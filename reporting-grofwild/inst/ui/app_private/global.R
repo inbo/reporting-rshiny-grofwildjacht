@@ -63,6 +63,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 # TODO load only spatial data of specific WBE
 # Load object called spatialData
 load(file = file.path(dataDir, "spatialData.RData"))
+gc()
 
 # Data with observations and geographical information
 ecoData <- loadRawData(type = "eco")
@@ -82,6 +83,8 @@ wbeData <- wbeData[wbeData$WBE_NR %in% currentWbe, ]
 
 toekenningsData <- loadToekenningen(dataDir = dataDir)
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
+
+gc()
 
 uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wbe")]
 uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])

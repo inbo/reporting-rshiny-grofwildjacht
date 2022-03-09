@@ -506,11 +506,11 @@ loadMetaSchade <- function() {
   
   # List with all possible choices for indieningType per schadeChoice
   sourcesSchade <-  list(
-    "E-loket" = c("E_Loket_Meldpunt Jacht", "E_Loket_Meldpunt Schade_Punt", "E_Loket_Meldpunt Schade_Poly"),
-    "Natuurpunt" = c("Natuurpunt_copied_observation", "Natuurpunt_ifbl", "Natuurpunt_losse_waarneming", "Natuurpunt_ObsMapp", "Natuurpunt_via_wnpda", 
+    "Dieren onder de wielen (NP)" = c("Natuurpunt_copied_observation", "Natuurpunt_ifbl", "Natuurpunt_losse_waarneming", "Natuurpunt_ObsMapp", "Natuurpunt_via_wnpda", 
       "Natuurpunt_WinObs", "Natuurpunt_Dieren_onder_de_wielen_2.0", "Natuurpunt_iObs", "Natuurpunt_NA", "Natuurpunt_Site", 
       "Natuurpunt_Webobs_html5", "Natuurpunt_zoogdiertelling_be"),
-    "HVV" = c("HVV_Wilder")
+    "Wilder (LJV)" = c("HVV_Wilder"),
+    "E-loket (ANB)" = c("E_Loket_Meldpunt Jacht", "E_Loket_Meldpunt Schade_Punt", "E_Loket_Meldpunt Schade_Poly")
   )
   
   

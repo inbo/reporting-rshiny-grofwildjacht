@@ -162,18 +162,20 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @author mvarewyck
 #' @export
 filterSpatial <- function(allSpatialData, species, 
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen"), 
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", 
+    "WBE", "WBE_buitengrenzen"), 
   year, locaties = NULL) {
   
   
   regionLevel <- match.arg(regionLevel)
+  
   
   # Select correct spatial data
   if ("Wild zwijn" %in% species & regionLevel == "provinces") {
     
     spatialData <- allSpatialData[["provincesVoeren"]]
     
-  } else if (regionLevel == "WBE_binnengrenzen") {
+  } else if (grepl("WBE", regionLevel)) {
     
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
     if (!is.null(locaties))

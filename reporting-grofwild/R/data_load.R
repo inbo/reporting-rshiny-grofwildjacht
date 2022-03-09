@@ -72,6 +72,12 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
         return(shapeData)
         
       })
+    
+  # Rename WBE levels  
+  allLevels <- gsub("WBE_binnengrenzen", "WBE_buitengrenzen", allLevels)
+  allLevels[grepl("Jachtter", allLevels)] <- 
+    sapply(strsplit(allLevels[grepl("Jachtter", allLevels)], split = "-"), function(x) x[1])
+  allLevels <- gsub("Jachtter", "WBE", allLevels)
   
   names(spatialData) <- allLevels
   

@@ -9,7 +9,7 @@ context("Test WBE")
 
 # Load all data
 load(file = file.path(dataDir, "spatialData.RData"))
-years <- as.numeric(gsub("WBE_binnengrenzen_", "", grep("WBE_binnengrenzen_", names(spatialData), value = TRUE)))
+years <- as.numeric(gsub("WBE_buitengrenzen_", "", grep("WBE_buitengrenzen", names(spatialData), value = TRUE)))
 
 
 ecoData <- loadRawData(type = "eco")
@@ -28,9 +28,6 @@ species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
 # Filter data
 
-tmpData <- ecoData[, c("type_comp", "geslacht_comp", "leeftijd_comp")]
-tmpData[!duplicated(tmpData), ]
-
 ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
@@ -46,7 +43,7 @@ combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ],
 
 test_that("The map", {
     
-    unit <- c("absolute", "relative", "relativeDekking")[3]
+    unit <- c("absolute", "relative", "relativeDekking")[2]
     
     for (iYear in years) {
       
@@ -61,7 +58,7 @@ test_that("The map", {
           biotoopData = wbeData,
           year = iYear,
           species = iSpecies,
-          regionLevel = "WBE_binnengrenzen",
+          regionLevel = "WBE",
           unit = unit
         )
         
@@ -74,7 +71,7 @@ test_that("The map", {
           
           myPlot <- mapFlanders(
             allSpatialData = spatialData, 
-            regionLevel = "WBE_binnengrenzen", 
+            regionLevel = "WBE", 
             year = iYear,
             colorScheme = c("white", RColorBrewer::brewer.pal(
                 n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
@@ -106,7 +103,7 @@ test_that("Trend plot", {
         biotoopData = wbeData,
         timeRange = range(years),
         species = iSpecies,
-        regionLevel = "WBE_binnengrenzen",
+        regionLevel = "WBE",
         unit = unit
       )
       

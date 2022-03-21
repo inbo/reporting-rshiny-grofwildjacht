@@ -48,10 +48,10 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
             utm5 = plotData$UTM5,
-            WBE = plotData$PartijNummer
+            WBE_buitengrenzen = plotData$PartijNummer
     ))
     # Need to match partijNummer to WBE_Naam_Toek later
-    if (regionLevel == "WBE") 
+    if (regionLevel == "WBE_buitengrenzen") 
       matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
     
    
@@ -73,7 +73,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
                     afschotjaar = chosenTimes,
                     locatie = unique(spatialData$NAAM)))
     
-    if (regionLevel == "WBE" & unit == "relativeDekking") {
+    if (regionLevel == "WBE_buitengrenzen" & unit == "relativeDekking") {
       # add dekkingsgraad 100ha bos&natuur if WBE      
       fullData <- merge(fullData, biotoopData[, c("WBE_NR", "Area_hab_km2_bos", "year")],
         by.x = c("locatie", "afschotjaar"), by.y = c("WBE_NR", "year"))
@@ -116,7 +116,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
                             setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
 
       
-    } else if (regionLevel == "WBE") {
+    } else if (regionLevel == "WBE_buitengrenzen") {
       
       allData$locatie <- matchLocaties$WBE_Naam_Toek[match(allData$locatie, matchLocaties$PartijNummer)]
       

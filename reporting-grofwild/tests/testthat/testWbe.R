@@ -58,20 +58,20 @@ test_that("The map", {
           biotoopData = wbeData,
           year = iYear,
           species = iSpecies,
-          regionLevel = "WBE",
+          regionLevel = "WBE_buitengrenzen",
           unit = unit
         )
         
         if (doPrint)
         cat("*", iSpecies, "\n")
         
-        if (!is.null(spaceData) && nrow(spaceData$data) && !all(spaceData$freq == 0)) {
+        if (!is.null(spaceData) && nrow(spaceData$data) && !all(spaceData$data$freq == 0)) {
           
-          expect_is(spaceData, "data.frame")
+          expect_is(spaceData$data, "data.frame")
           
           myPlot <- mapFlanders(
             allSpatialData = spatialData, 
-            regionLevel = "WBE", 
+            regionLevel = "WBE_buitengrenzen", 
             year = iYear,
             colorScheme = c("white", RColorBrewer::brewer.pal(
                 n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
@@ -103,7 +103,7 @@ test_that("Trend plot", {
         biotoopData = wbeData,
         timeRange = range(years),
         species = iSpecies,
-        regionLevel = "WBE",
+        regionLevel = "WBE_buitengrenzen",
         unit = unit
       )
       

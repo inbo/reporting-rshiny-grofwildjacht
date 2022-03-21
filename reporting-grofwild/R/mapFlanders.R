@@ -938,7 +938,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Title for selected region level
       output$biotoopTitle <- renderUI({
           
-          h3("Biotoop beschrijving", tags$br(), results$regionLevelName())
+          h3("Biotoop beschrijving", tags$br(), 
+            results$regionLevelName(), "in", input$year)
           
         })
       

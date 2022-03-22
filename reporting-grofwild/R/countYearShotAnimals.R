@@ -4,19 +4,24 @@
 ###############################################################################
 
 #' Interactive barplot to show the distribution of the hunted animals in a certain interval
-#' @inheritParams countHuntingMethod
+#' @inheritParams countYearAge
 #' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
-#' @param interval character, data shown in intervals monthly, biweekly..
+#' @param interval character, data shown in intervals
+#' should be one of \code{c("Per maand", "Per seizoen", "Per twee weken")}
+#' @param groupVariable character, variable name in \code{data} for 
+#' which colored bars should be plot
 #' @param type character, used to filter the data
 #' 
-#' @importFrom INBOtheme inbo_palette
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @author dbemelmans
 #' @export 
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
-  interval = c("Per maand", "Per seizoen", "Per twee weken"), type = NULL) {
+  interval = c("Per maand", "Per seizoen", "Per twee weken"), 
+  groupVariable, type = NULL) {
   
   
   interval <- match.arg(interval)
+  
   plotData <- data
  
   if (is.null(jaartallen))
@@ -26,30 +31,35 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   # Select on years
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
-      c("afschotjaar", "afschot_datum", "labeltype")]
+      c("afschotjaar", "afschot_datum", groupVariable)]
   
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
-  
+  plotData[is.na(plotData[, groupVariable]), groupVariable] <- "onbekend"
   
   # only retains animals of specified type
   if (!is.null(type) && type != "all") {
     
-    plotData <- plotData[plotData$labeltype %in% type, ]
+    plotData <- plotData[plotData[, groupVariable] %in% type, ]
     
   }
   
   noRecords <- nrow(plotData)
-  plotData <- plotData[!is.na(plotData$afschot_datum), c("afschotjaar", "afschot_datum", "labeltype")]
+  plotData <- plotData[!is.na(plotData$afschot_datum), ]
   
   
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
         min(jaartallen):max(jaartallen)))
   
-  colorList <- replicateColors(nColors = length(unique(plotData$labeltype)))
+  colors <- replicateColors(nColors = length(unique(plotData[, groupVariable])))$colors
+  if (any("onbekend" %in% plotData[, groupVariable]))
+    colors[length(colors)] <- inbo_lichtgrijs
   
   title <- paste0("Afschot van ",
     ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
       jaartallen))
+  
+  # Summarize data per year
+  totalCount <- table(plotData$afschotjaar)
   
   # Extract month/day
   plotData$maand <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
@@ -75,14 +85,14 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       "november",
       "december")
     
-    plotData$group <- plotData$maand
+    plotData$timeGroup <- plotData$maand
         
        
   } else if (interval == "Per seizoen") {
     
     newLevels <- c("lente", "zomer", "herfst", "winter")
     
-    plotData$group <- with(plotData, ifelse(maand %in% 1:2 | maand == 12 & dag >= 21 | maand == 3 & dag < 21,
+    plotData$timeGroup <- with(plotData, ifelse(maand %in% 1:2 | maand == 12 & dag >= 21 | maand == 3 & dag < 21,
             4, ifelse(maand == 3 & dag >= 21 | maand %in% 4:5 | maand == 6 & dag <= 21,
             1, ifelse(maand == 6 & dag >= 21 | maand %in% 7:8 | maand == 9 & dag <= 21,
             2, 3))))
@@ -90,7 +100,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         
   } else if(interval == "Per twee weken") {
     
-     plotData$group <- (plotData$maand-1)*2 + (plotData$dag > 15) + 1 
+     plotData$timeGroup <- (plotData$maand-1)*2 + (plotData$dag > 15) + 1 
          
      newLevels <- c(
         "01/01-15/01",
@@ -120,22 +130,28 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             
   }
   
-  summaryData <- melt(table(plotData[, c("afschotjaar", "group", "labeltype")]), 
-    id.vars = c("afschotjaar", "group", "labeltype"))
+  summaryData <- melt(table(plotData[, c("afschotjaar", "timeGroup", groupVariable)]), 
+    id.vars = c("afschotjaar", "timeGroup", groupVariable))
   
   # For optimal displaying in the plot
-  summaryData$groupChar <- factor(newLevels[summaryData$group], levels = newLevels)
+  summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
+  summaryData[, groupVariable] <- as.factor(summaryData[, groupVariable])
+  summaryData[, groupVariable] <- factor(summaryData[, groupVariable], 
+    levels = levels(summaryData[, groupVariable]))
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   # Create plot per year
   allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
       iYear <- levels(summaryData$afschotjaar)[i]
-      plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
-        x = ~groupChar, y = ~value, type = "bar", 
-        color = ~labeltype, colors = colorList$colors,
-        legendgroup = ~labeltype, showlegend = i == 1,
+      tmp <- plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
+        x = ~timeChar, y = ~value, type = "bar", 
+        color = ~get(groupVariable), colors = colors,
+        legendgroup = ~get(groupVariable), showlegend = i == 1,
         width = width, height = height) %>%
-      layout(xaxis = list(title = iYear, showticklabels = FALSE))
+      layout(xaxis = list(
+          title = paste0(iYear, "<br>", "(n= ", totalCount[names(totalCount) == iYear], ")"), 
+          showticklabels = FALSE)
+    )
     })
   
   # Combine all plots
@@ -149,7 +165,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = -0.2, yanchor = "bottom", showarrow = FALSE)
  
-  colnames(summaryData)[colnames(summaryData) == "groupChar"] <- gsub("Per ", "", interval) 
+  colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
   summaryData$group <- NULL
   
   
@@ -166,12 +182,13 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @param types character vector
+#' @inheritParams countYearShotAnimals
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearShotServer <- function(id, data, timeRange, types) {
+countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -187,6 +204,7 @@ countYearShotServer <- function(id, data, timeRange, types) {
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
+        groupVariable = groupVariable,
         data = data)
            
     })
@@ -196,15 +214,16 @@ countYearShotServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
 #' @param regionLevels numeric vector, region level choices
+#' @inheritParams countYearShotAnimals
 #' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @export
-countYearShotUI <- function(id, regionLevels = NULL, uiText) {
+countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", groupVariable), ]
   
   tagList(
     
@@ -218,7 +237,7 @@ countYearShotUI <- function(id, regionLevels = NULL, uiText) {
           optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
             regionLevels = regionLevels, exportData = TRUE,
             showType = TRUE, showInterval = TRUE),
-          tags$p(HTML(uiText[, id])),
+          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
         ),
         column(8, plotModuleUI(id = ns("countYearShot")))
       ),

@@ -39,6 +39,7 @@ commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
 combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ], 
   ecoData, by = commonNames, all.x = TRUE)
 
+gc()
 
 
 test_that("The map", {
@@ -181,11 +182,16 @@ test_that("Additional plots", {
     
     countYearShotAnimals(data = combinedRee,
       jaartallen = 2019:2020,
-      interval = c("Per maand", "Per seizoen", "Per twee weken")[3]
-    )
+      groupVariable = "labeltype",
+      interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
+    )$plot
     
-    countHuntingMethod(data = combinedRee, jaartallen = 2009:2020)
-        
+    countYearShotAnimals(data = combinedRee,
+      jaartallen = 2019:2020,
+      groupVariable = "jachtmethode_comp",
+      interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
+    )$plot
+    
     countAgeGender(data = combinedRee)
     
     countAgeCheek(data = combinedRee, 

@@ -55,7 +55,7 @@ results$wbe_timeRange <- reactive({
         
   })  
 
-results$types <- reactive({
+results$labeltypes <- reactive({
     
     types <- switch(req(input$wbe_species), 
       "Wild zwijn" = "", 
@@ -67,6 +67,15 @@ results$types <- reactive({
     if (length(types) == 1 && types == "")
       return(c("alle" = "all")) else 
       return(types)
+    
+  })
+
+results$jachttypes <- reactive({
+    
+    choices <- unique(results$wbe_combinedData()$jachtmethode_comp)
+    choices[is.na(choices)] <- "onbekend"
+    
+    sort(choices)
     
   })
 
@@ -101,16 +110,19 @@ tableSpeciesServer(id = "wbe",
 
 
 # Plot2: Verdeling afschot over de jaren
-countYearShotServer(id = "wbe",
+countYearShotServer(id = "wbe_labeltype",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  types = results$types)
+  groupVariable = "labeltype",
+  types = results$labeltypes)
 
 
 # Plot3: Afschot per jachtmethode
-countHuntingMethodServer(id = "wbe",
+countYearShotServer(id = "wbe_jachtmethode",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange)
+  timeRange = results$wbe_timeRange,
+  groupVariable = "jachtmethode_comp",
+  types = results$jachttypes)
 
 
 # Plot4: Schademeldingen

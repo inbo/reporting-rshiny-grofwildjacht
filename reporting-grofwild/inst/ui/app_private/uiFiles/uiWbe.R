@@ -16,7 +16,7 @@ tagList(
     ),
     
     welcomeSection(id = "wbe", uiText = uiText)
-    
+  
   ),
   
   # Select species
@@ -60,35 +60,35 @@ tagList(
     ## tableSpecies: wild zwijn and ree
     conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
         
-        countYearShotUI(id = "wbe", uiText = uiText)
+        countYearShotUI(id = "wbe_labeltype", groupVariable = "labeltype", uiText = uiText)
         
       }),
-      
-      
-      conditionalPanel("input.wbe_species == 'Ree'", {
+    
+    
+    conditionalPanel("input.wbe_species == 'Ree'", {
         
-          countHuntingMethodUI(id = "wbe", uiText = uiText)
-      
-    }),
-  
-  mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText),
-  
-  countAgeGenderUI(id = "wbe", uiText = uiText),
-  countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
-  
-  conditionalPanel("input.wbe_species == 'Ree'", {
-      tagList(
+        countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText)
         
-        ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
-        percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),    
-        
-        bioindicatorSection(id = "wbe", uiText = uiText),
-        
-        plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
-        plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText),
-        countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText)
-      )
-    })
+      }),
+    
+    mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText),
+    
+    countAgeGenderUI(id = "wbe", uiText = uiText),
+    countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
+    
+    conditionalPanel("input.wbe_species == 'Ree'", {
+        tagList(
+          
+          ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
+          percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),    
+          
+          bioindicatorSection(id = "wbe", uiText = uiText),
+          
+          plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
+          plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText),
+          countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText)
+        )
+      })
   
   
   )

@@ -443,7 +443,7 @@ datatableModuleUI <- function(id) {
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
-    categorie = NULL, bioindicator = NULL,
+    categorie = NULL, bioindicator = NULL, groupVariable = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
@@ -512,9 +512,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(jaar = input$year),
             if (!is.null(input$time))
               list(jaartallen = input$time[1]:input$time[2]),
-            # Currently these options are never used
-#            if (!is.null(input$legend))
-#              list(legend = input$legend), 
             if (!is.null(input$regionLevel))
               list(regio = input$region),
             if (!is.null(input$type))
@@ -529,6 +526,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
+            if(!is.null(groupVariable))
+              list(groupVariable = groupVariable),
+            
             
             # Sources
             if(!is.null(input$dataSource_schade))

@@ -198,7 +198,8 @@ tagList(
                       ),
                       tags$hr(),
                   ),
-                  countYearShotUI(id = "wild", regionLevels = c(1:2,4), uiText = uiText),
+                  countYearShotUI(id = "wild_labeltype", groupVariable = "labeltype",
+                    regionLevels = c(1:2,4), uiText = uiText),
                   
                   actionLink(inputId = "wild_linkPlot4",
                       label = h3("FIGUUR: Percentage jaarlijks afschot")),
@@ -250,7 +251,8 @@ tagList(
         ),
         
         ## plot 11: Afschot per jachtmethode
-        countHuntingMethodUI(id = "wild", regionLevels = c(1:2,4), uiText = uiText),
+        countYearShotUI(id = "wild_jachtmethode", groupVariable = "jachtmethode_comp",
+          regionLevels = c(1:2,4), uiText = uiText),
         
         conditionalPanel("input.wild_species == 'Ree'", {
               tagList(

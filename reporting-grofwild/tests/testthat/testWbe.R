@@ -207,6 +207,7 @@ test_that("Additional plots", {
     
     plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
     
-    countEmbryos(data = combinedRee, jaartallen = 2009:2020)
+    countEmbryos(data = combinedRee, jaartallen = 2009:2020,
+      sourceIndicator = "inbo", sourceIndicator_leeftijd = "both", sourceIndicator_geslacht = "both")
     
   })

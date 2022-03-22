@@ -7,7 +7,6 @@
 #' @inheritParams countYearAge
 #' @inheritParams filterGrofwild
 #' @import plotly
-#' @importFrom INBOtheme inbo_palette
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified specie and years}
@@ -49,31 +48,26 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
      "leeftijd_comp_bron", "geslacht_comp_bron"))
  
- nRecords <- nrow(plotData)
-
- if (nRecords == 0)
-   return(NULL)
- 
  # Filter on source & rename to embryos
  plotData <- filterGrofwild(plotData = plotData, 
    sourceIndicator_embryos = sourceIndicator,
    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
    sourceIndicator_geslacht = sourceIndicator_geslacht)
- 
       
-	## For aantal_embryos
-	# remove missing
-    plotData <- plotData[!is.na(plotData$embryos), ]
-    nCollected <- nrow(plotData)
-    # remove > 3 embryos
-    plotData <- plotData[plotData$embryos <= 3, ]
-	
-    if (nCollected == 0)
-        return(NULL)
+	# remove > 3 embryos
+  plotData <- plotData[plotData$embryos <= 3, ]
+  # remove missing
+  nCollected <- sum(!is.na(plotData$embryos))
+  nRecords <- nrow(plotData)
+  plotData <- plotData[!is.na(plotData$embryos), ]
+  
+  ## For aantal_embryos
+  if (nRecords == 0 | nCollected == 0)
+    return(NULL)
     
 	# convert to a factor
-	newLevels <- rev(c("3", "2", "1", "0"))
-	plotData$embryos <- factor(plotData$embryos, levels = newLevels)
+	newLevels <- c("3", "2", "1", "0")
+	plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
 	
 	plotData$afschotjaar <- as.factor(plotData$afschotjaar)
 	
@@ -97,20 +91,20 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	totalCounts <- table(plotData$afschotjaar)
 	
 	
-	title <- paste0(wildNaam, " ", bioindicatorName, " ",
-   paste0("(", 
-         switch(sourceIndicator,
-           inbo = "INBO",
-           meldingsformulier = "Meldingsformulier",
-           both = "INBO en meldingsformulier"),
-         ")\n"),
-   ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-			if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
-	
-	
- colorList <- replicateColors(nColors = nlevels(summaryData$embryos))
- colors <- colorList$colors
-	names(colors) <- rev(newLevels)
+  title <- paste0(wildNaam, " ", bioindicatorName, " ",
+    paste0("(", 
+      switch(sourceIndicator,
+        inbo = "INBO",
+        meldingsformulier = "Meldingsformulier",
+        both = "INBO en meldingsformulier"),
+      ")\n"),
+    ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
+    if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
+  
+  
+  colorList <- replicateColors(nColors = nlevels(summaryData$embryos))
+  colors <- colorList$colors
+  names(colors) <- newLevels
 	
 	
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,

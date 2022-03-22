@@ -58,6 +58,9 @@ ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
 
+gc()
+
+
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))
     geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
@@ -82,6 +85,14 @@ if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
       paste0(setdiff(unique(schadeData$schadeCode), schadeCodes), collapse = ", "),
       "\nUpdate schadeCodes aub en ook de fullnames() functie.")
 }
+
+# UI text for each plot/table
+uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wild", "schade")]
+uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
+if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
+  warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
+    paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
+
 
 
 ### Debugging

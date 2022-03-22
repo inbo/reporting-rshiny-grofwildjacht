@@ -15,8 +15,6 @@
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
   interval = c("Per maand", "Per seizoen", "Per twee weken"), type = NULL) {
   
-  ## plotly gives a warning: Warning: 'layout' objects don't have these attributes: 'bargroupgap'
-  ## This is safe to ignore: https://github.com/ropensci/plotly/issues/994
   
   interval <- match.arg(interval)
   plotData <- data
@@ -139,6 +137,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         width = width, height = height) %>%
       layout(xaxis = list(title = iYear, showticklabels = FALSE))
     })
+  
   # Combine all plots
   pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE) %>%
     layout(barmode = 'stack', showlegend = TRUE,

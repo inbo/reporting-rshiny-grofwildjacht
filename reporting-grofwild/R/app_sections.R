@@ -26,7 +26,6 @@ welcomeSection <- function(id, uiText) {
 
 #' Section title and text for bio-indicator
 #' 
-#' @inheritParams welcomeSection
 #' @template moduleUI 
 #' 
 #' @author mvarewyck

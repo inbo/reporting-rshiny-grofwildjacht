@@ -4,10 +4,13 @@
 \alias{countYearShotUI}
 \title{Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side}
 \usage{
-countYearShotUI(id, regionLevels = NULL, uiText)
+countYearShotUI(id, groupVariable, regionLevels = NULL, uiText)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
+
+\item{groupVariable}{character, variable name in \code{data} for 
+which colored bars should be plot}
 
 \item{regionLevels}{numeric vector, region level choices}
 

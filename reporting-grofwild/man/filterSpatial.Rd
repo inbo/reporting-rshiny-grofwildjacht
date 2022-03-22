@@ -8,7 +8,7 @@ filterSpatial(
   allSpatialData,
   species,
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
-    "fbz_gemeentes", "utm5", "WBE_binnengrenzen"),
+    "fbz_gemeentes", "utm5", "WBE", "WBE_buitengrenzen"),
   year,
   locaties = NULL
 )

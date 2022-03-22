@@ -148,7 +148,7 @@ callModule(module = plotModuleServer, id = "wild_plot3",
     data = results$wild_ecoData)
 
 # Plot 4: Percentage jaarlijkse afschot
-results$types <- reactive({
+results$labeltypes <- reactive({
       
       req(results$wild_openingstijdenData())
       
@@ -165,7 +165,7 @@ callModule(module = optionsModuleServer, id = "wild_plot4",
     data = results$wild_ecoData,
     timeRange = results$wild_openingstijd,
     timeLabel = "Referentieperiode",
-    types = results$types,
+    types = results$labeltypes,
     multipleTypes = FALSE)
 
 callModule(module = plotModuleServer, id = "wild_plot4",
@@ -274,18 +274,30 @@ results$wild_combinedData <- reactive({
       results$wild_geoData()[, c("ID", "FaunabeheerZone")], 
       by = "ID")
     
-  })  
+  }) 
+
+results$jachttypes <- reactive({
+    
+    choices <- unique(results$wild_combinedData()$jachtmethode_comp)
+    choices[is.na(choices)] <- "onbekend"
+    
+    sort(choices)
+    
+  })
   
 # Plot 11: Afschot per jachtmethode
-countHuntingMethodServer(id = "wild",
+countYearShotServer(id = "wild_jachtmethode",
   data = results$wild_combinedData,
-  timeRange = reactive(c(2014, results$wild_timeRange()[2])))
+  timeRange = reactive(c(2014, results$wild_timeRange()[2])),
+  groupVariable = "jachtmethode_comp",
+  types = results$jachttypes)
 
 # Plot 12: Verdeling afschot over de jaren
-countYearShotServer(id = "wild",
+countYearShotServer(id = "wild_labeltype",
   data = results$wild_combinedData,
   timeRange = results$wild_timeRange,
-  types = results$types)
+  groupVariable = "labeltype",
+  types = results$labeltypes)
 
 
 ### The MAP

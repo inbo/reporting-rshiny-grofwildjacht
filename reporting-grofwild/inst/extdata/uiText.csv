@@ -14,8 +14,8 @@ Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is wordt dez
 countEmbryosUI,FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar,"Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld. 
 </br><i>Opmerking: Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.</i>",,"Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld. 
 </br><i>Opmerking: Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.</i>"
-countHuntingMethodUI,FIGUUR: Afschot per jachtmethode,Aandeel van afschot per jachtmethode over de jaren heen.,,Aandeel van afschot per jachtmethode over de jaren heen.
-countYearShotUI,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.
+countYearShotUI-jachtmethode_comp,FIGUUR: Afschot per jachtmethode,Aandeel van afschot per jachtmethode over de jaren heen.,,Aandeel van afschot per jachtmethode over de jaren heen.
+countYearShotUI-labeltype,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.
 mapSchadeUI,FIGUUR: Schademeldingen,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,,,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.

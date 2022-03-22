@@ -4,7 +4,7 @@
 \alias{countYearShotServer}
 \title{Shiny module for creating the plot \code{\link{countYearShotAnimals}} - server side}
 \usage{
-countYearShotServer(id, data, timeRange, types)
+countYearShotServer(id, data, timeRange, types, groupVariable)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
@@ -14,6 +14,9 @@ countYearShotServer(id, data, timeRange, types)
 \item{timeRange}{numeric vector of length 2, min and max year to subset data}
 
 \item{types}{character vector}
+
+\item{groupVariable}{character, variable name in \code{data} for 
+which colored bars should be plot}
 }
 \value{
 no return value

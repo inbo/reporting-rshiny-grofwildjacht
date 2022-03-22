@@ -14,7 +14,7 @@ tagList(
             h1("Welkom op de informatiepagina rond grofwildjacht")
         ),
         
-        tags$p(class = "lead", "Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen."),
+        welcomeSection(id = "wild", uiText = uiText),
         
         tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
             tags$ul(
@@ -176,7 +176,7 @@ tagList(
         conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
               
               tagList(
-                  countAgeCheekUI(id = "wild"),
+                  countAgeCheekUI(id = "wild", uiText = uiText),
                   
                   
                   actionLink(inputId = "wild_linkPlot3",
@@ -198,7 +198,7 @@ tagList(
                       ),
                       tags$hr(),
                   ),
-                  countYearShotUI(id = "wild", regionLevels = c(1:2,4)),
+                  countYearShotUI(id = "wild", regionLevels = c(1:2,4), uiText = uiText),
                   
                   actionLink(inputId = "wild_linkPlot4",
                       label = h3("FIGUUR: Percentage jaarlijks afschot")),
@@ -218,7 +218,7 @@ tagList(
                       tags$hr()
                   ),
                   
-                  countAgeGenderUI(id = "wild"),
+                  countAgeGenderUI(id = "wild", uiText = uiText),
                   
                   actionLink(inputId = "wild_linkPlot6",
                       label = h3("FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
@@ -246,24 +246,22 @@ tagList(
         ## boxAgeGenderLowerJaw
         ## - Ree
         conditionalPanel("input.wild_species == 'Ree'", 
-          ageGenderLowerJawUI(id = "wild", regionLevels = 1:2)
+          ageGenderLowerJawUI(id = "wild", regionLevels = 1:2, uiText = uiText)
         ),
         
         ## plot 11: Afschot per jachtmethode
-        countHuntingMethodUI(id = "wild", regionLevels = c(1:2,4)),
+        countHuntingMethodUI(id = "wild", regionLevels = c(1:2,4), uiText = uiText),
         
         conditionalPanel("input.wild_species == 'Ree'", {
               tagList(
                   
-                  h2("Bio-indicatoren"),
-                  tags$p("Bio-indicatoren zijn ecologische parameters, die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
-                          In dit geval dus de relatie tussen het aantal reeën in een gebied en de draagkracht van dat gebied. Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen."),
+                  bioindicatorSection(id = "wild", uiText = uiText),
                   
-                  plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2),
+                  plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
                       
-                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2),
+                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
                   
-                  countEmbryosUI("wild", regionLevels = 1:2)
+                  countEmbryosUI("wild", regionLevels = 1:2, uiText = uiText)
               
               )
               

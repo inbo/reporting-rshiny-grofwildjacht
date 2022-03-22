@@ -125,8 +125,8 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
   
   if (!is.null(sourceIndicator_embryos)) {
     
-    # Exclude records with missing source
-    plotData <- plotData[!is.na(plotData$aantal_embryos_bron), ]
+    # Exclude records with missing source - NOT for countEmbryos()
+#    plotData <- plotData[!is.na(plotData$aantal_embryos_bron), ]
     
     if (sourceIndicator_embryos == "both")
       plotData$embryos <- plotData$aantal_embryos else if (sourceIndicator_embryos == "inbo") 

@@ -7,6 +7,7 @@
 #' @inheritParams countYearAge
 #' @inheritParams filterGrofwild
 #' @import plotly
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified specie and years}
@@ -55,18 +56,19 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
    sourceIndicator_geslacht = sourceIndicator_geslacht)
       
 	# remove > 3 embryos
-  plotData <- plotData[plotData$embryos <= 3, ]
-  # remove missing
-  nCollected <- sum(!is.na(plotData$embryos))
-  nRecords <- nrow(plotData)
-  plotData <- plotData[!is.na(plotData$embryos), ]
+  plotData <- plotData[plotData$embryos <= 3 | is.na(plotData$embryos), ]
+  # rename missing
+  plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
   
+ 
   ## For aantal_embryos
-  if (nRecords == 0 | nCollected == 0)
+  nCollected <- sum(plotData$embryos != "onbekend")
+  nRecords <- nrow(plotData)
+  if (nRecords == 0)
     return(NULL)
     
 	# convert to a factor
-	newLevels <- c("3", "2", "1", "0")
+	newLevels <- c("onbekend", "3", "2", "1", "0")
 	plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
 	
 	plotData$afschotjaar <- as.factor(plotData$afschotjaar)
@@ -103,7 +105,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   
   
   colorList <- replicateColors(nColors = nlevels(summaryData$embryos))
-  colors <- colorList$colors
+  colors <- c(inbo_lichtgrijs, colorList$colors)[1:nlevels(summaryData$embryos)]
   names(colors) <- newLevels
 	
 	

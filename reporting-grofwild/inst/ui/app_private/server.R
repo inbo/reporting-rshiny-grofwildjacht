@@ -12,20 +12,12 @@ shinyServer(function(input, output, session) {
       # -------------
       
       
-      observe({
-            
-            if (is.null(input$debug_console))
-              return(NULL)
-            
-            if (input$debug_console > 0)
-              browser()
-            
-          })
+      observeEvent(input$debug_console, browser())
       
       
       output$print <- renderPrint({
             
-                        results$types()
+                        results$labeltypes()
             
           })
       

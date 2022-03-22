@@ -12,22 +12,7 @@ shinyServer(function(input, output, session) {
       # -------------
       
       
-      observe({
-            
-            if (is.null(input$debug_console))
-              return(NULL)
-            
-            if (input$debug_console > 0) {
-              
-              options(browserNLdisabled = TRUE)
-              saved_console <- ".RDuetConsole"
-              if (file.exists(saved_console)) {load(saved_console)}
-              isolate(browser())
-              save(file = saved_console, list = ls(environment()))
-              
-            }
-            
-          })
+      observeEvent(input$debug_console, browser())
       
       
       output$print <- renderPrint({
@@ -75,6 +60,10 @@ shinyServer(function(input, output, session) {
             source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
             
           })
-      
+        
+        observeEvent(input$tabs, {
+            if (input$tabs == "WBE")
+              browseURL("https://grofwildjacht.inbo.be/WBE")
+          })
       
     })

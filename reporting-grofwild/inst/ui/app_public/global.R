@@ -27,6 +27,9 @@ library(shinycssloaders)   # for busy indicator
 # Specify directory with data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 
+# Link to www folder
+addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
+
 # Specify currently used wildsoorten
 schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
                       "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
@@ -88,21 +91,9 @@ if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
       "\nUpdate schadeCodes aub en ook de fullnames() functie.")
 }
 
-# sources schadegevallen (indieningType column)
-sourcesSchade <- list(
-  "E-loket" = grep("E_Loket", unique(schadeData$indieningType), value = TRUE),
-  "Natuurpunt" = grep("Natuurpunt", unique(schadeData$indieningType), value = TRUE), 
-  "HVV" = grep("HVV", unique(schadeData$indieningType), value = TRUE))
-
-
 
 ### Debugging
 ### -----------
-
-onStop(function() {
-			if (file.exists(".RDuetConsole"))
-				file.remove(".RDuetConsole")
-		})
 
 if (!exists("doDebug"))
 	doDebug <- FALSE

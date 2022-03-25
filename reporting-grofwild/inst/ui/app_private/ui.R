@@ -16,8 +16,8 @@ shinyUI(
                                 href = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css",
                                 integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u",
                                 crossorigin="anonymous"),
-                        tags$link(rel = "stylesheet", href = "style.css"),
-                        tags$link(rel = "stylesheet", href = "navbar.css")
+                        tags$link(rel = "stylesheet", href = "www/style.css"),
+                        tags$link(rel = "stylesheet", href = "www/navbar.css")
                 ),
                 
                 
@@ -30,7 +30,7 @@ shinyUI(
                         tags$div(class = "navbar1", 
                                 navbarPage(title = tags$div(
                                                 HTML("&emsp;"),
-                                                img(src = "logo.png", float = "top", height = "45px"),
+                                                img(src = "www/logo.png", float = "top", height = "45px"),
                                                 style = "margin-top: -13px; margin-bottom: -13px",
                                                 tags$script(HTML(paste("var header = $('.navbar > .container');",
                                                                         "header.append('<div style=\"float:right;\"><span class = \"version\">", 
@@ -42,10 +42,8 @@ shinyUI(
                                 position = "fixed-top",
                                 
                                 # Main content
-                                tabPanel(title = "Grofwild", id = "tab-grofwild",
-                                        uiOutput("grof_content")),
-                                tabPanel(title = "Wildschade", id = "tab-wildschade",
-                                        uiOutput("schade_content")),
+                                tabPanel(title = "WBE", id = "tab-wbe",
+                                        uiOutput("wbe_content")),
                                 
                                 # Shape data source + contact e-mail
                                 header = tags$header(tags$div(align = "right",

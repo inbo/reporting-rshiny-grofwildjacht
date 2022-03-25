@@ -186,30 +186,39 @@ loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "r
 #' @inheritParams readShapeData
 #' @return data.frame with columns:
 #' \itemize{
-#' \item{'Provincie': }{character, province}
-#' \item{'Jaar': }{integer, year}
-#' \item{'Labeltype': }{character, type of Ree, one of \code{c("Geiten", "Bokken", "Kitsen")}}
-#' \item{'Aantal': }{integer, frequencie per categorie}
+#' \item{'labeltype': }{character, type of Ree, one of \code{c("geit", "bok", "kits")}}
+#' \item{'WBE_Naam': }{character, WBE name}
+#' \item{'labeljaar': }{integer, year}
+#' \item{'provincie_toek': }{character, province}
+#' \item{'toegekend': }{integer, no. of assigned animals}
+#' \item{'verwezenlijkt': }{integer, no. of shot animals} 
+#' \item{'percentage_verwezenlijkt': }{numeric, percentage shot animals}
+#' \item{'KboNummer_Toek': }{character, WBE KBO number}
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
 loadToekenningen <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
   
-  pathFile <- file.path(dataDir, "Toekenningen_ree.csv")
+  pathFile <- file.path(dataDir, "Verwezenlijkt_categorie_per_afschotplan.csv")
   
   rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
   
   # Rename LabelType to non-plural
-  rawData$Labeltype[rawData$Labeltype == "Geiten"] <- "geit"
-  rawData$Labeltype[rawData$Labeltype == "Bokken"] <- "bok"
-  rawData$Labeltype[rawData$Labeltype == "Kitsen"] <- "kits"
+  rawData$labeltype[rawData$labeltype == "Geiten"] <- "Geit"
+  rawData$labeltype[rawData$labeltype == "Bokken"] <- "Bok"
+  rawData$labeltype[rawData$labeltype == "Kitsen"] <- "Kits"
+  
+  rawData$wildsoort <- "Ree"
+  
+  # Change variable class
+  rawData$KboNummer_Toek <- as.character(rawData$KboNummer_Toek)
   
   # Rename provinces
-  rawData$Provincie[rawData$Provincie == "Vlaams-Brabant"] <- "Vlaams Brabant"
-  rawData$Provincie <- factor(rawData$Provincie,
-      levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant",
-          "Antwerpen", "Limburg"))
+  rawData$provincie_toek[rawData$provincie_toek == "Vlaams-Brabant"] <- "Vlaams Brabant"
+  rawData$provincie_toek <- factor(rawData$provincie_toek,
+    levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant",
+      "Antwerpen", "Limburg"))
   
   attr(rawData, "Date") <- file.mtime(pathFile)
   
@@ -310,6 +319,7 @@ loadRawData <- function(
     
     # Define type_comp (ageGender)
     rawData$type_comp <- as.factor(simpleCap(rawData$type_comp))
+    rawData$labeltype <- tolower(gsub("REE", "", rawData$labeltype))
     
 #        rawData$type <- ifelse(rawData$wildsoort != "Ree",
 #                "", ifelse(grepl("kits", rawData$type_comp), "kits",

@@ -130,3 +130,70 @@ countYearProvince <- function(data, jaartallen = NULL,
 	return(list(plot = pl, data = summaryData, warning = colorList$warning))
 	
 }
+
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearProvince}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams countYearProvince
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearProvinceServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "yearProvince", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "yearProvince",
+        plotFunction = "countYearProvince", 
+        data = data)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearProvince}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countYearProvinceUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearProvince"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkYearProvince % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("yearProvince"), 
+            showTime = TRUE, exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("yearProvince"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+}

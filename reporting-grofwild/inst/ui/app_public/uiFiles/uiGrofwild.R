@@ -71,104 +71,13 @@ tagList(
         ## tableProvince for "leeftijd": wild zwijn and ree
         conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
               
-              tagList(
-                  actionLink(inputId = "wild_linkTable1",
-                      label = h3("TABEL: Gerapporteerd afschot per regio en per leeftijdscategorie")),
-                  conditionalPanel("input.wild_linkTable1 % 2 == 1",
-                      
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_table1", showYear = TRUE, exportData = TRUE),
-                              tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren. 
-                                      Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.")
-                          ),
-                          column(8, tableModuleUI(id = "wild_table1"))
-                      
-                      ),
-                      tags$hr()
-                  )
-              )
+             tableProvinceUI(id = "wild", uiText = uiText)
               
             }),
         
-#			# tableProvince for "type": ree
-#			conditionalPanel("input.wild_species == 'Ree'", {
-#						
-#						tagList(
-#								
-#								actionLink(inputId = "wild_linkTable2",
-#										label = h3("TABEL: Gerapporteerd afschot per regio en per type")),
-#								conditionalPanel("input.wild_linkTable2 % 2 == 1",
-#										fixedRow(
-#												
-#												column(4,
-#														optionsModuleUI(id = "table2", showYear = TRUE, exportData = TRUE),
-#														tags$p("Het gerapporteerd aantal geschoten dieren per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
-#												),
-#												column(8, tableModuleUI(id = "table2"))
-#										
-#										),
-#										tags$hr()
-#								),
-#								
-#								actionLink(inputId = "wild_linkTable3",
-#										label = h3("TABEL: Percentage gerealiseerd afschot per regio en per type")),
-#								conditionalPanel("input.wild_linkTable3 % 2 == 1",
-#										
-#										fixedRow(
-#												
-#												column(4,
-#														optionsModuleUI(id = "table3", showYear = TRUE, exportData = TRUE),
-#														tags$p("Realisatiegraad per provincie en per labeltype voor het geselecteerde jaar in combinatie met de trend over de voorbije 1, 5 of 10 jaren.")
-#												),
-#												column(8, tableModuleUI(id = "table3"))
-#										
-#										),
-#										tags$hr()
-#								),
-#								
-#								
-#								actionLink(inputId = "wild_linkPlot4b",
-#										label = h3("FIGUUR: Percentage gerealiseerd afschot per jaar en per type")),
-#								conditionalPanel("input.wild_linkPlot4b % 2 == 1",
-#										fixedRow(
-#												
-#												column(4,
-#														optionsModuleUI(id = "wild_plot4b",
-#																summarizeBy = c("Aantal" = "count",
-#																		"Percentage" = "percent"),
-#																showTime = TRUE,
-#																showType = TRUE, regionLevels = 1:2,
-#																exportData = TRUE),
-#														tags$p("Evolutie van de realisatiegraad doorheen de jaren voor geselecteerde regio('s) en labeltype.")
-#												),
-#												column(8, plotModuleUI(id = "wild_plot4b"))
-#										
-#										),
-#										tags$hr()
-#								)
-#						)
-#						
-#					}),
-        
-        
+
         ## countYearProvince: all species
-        actionLink(inputId = "wild_linkPlot1",
-            label = h3("FIGUUR: Gerapporteerd aantal per jaar en per regio")),
-        conditionalPanel("input.wild_linkPlot1 % 2 == 1",
-            fixedRow(
-                
-                column(4,
-                    optionsModuleUI(id = "wild_plot1", showTime = TRUE, exportData = TRUE),
-                    tags$p("Het gerapporteerd aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totaal aantal voor dat jaar weer).")
-                ),
-                column(8, plotModuleUI(id = "wild_plot1"))
-            
-            ),
-            tags$hr()
-        ),
-        
+        countYearProvinceUI(id = "wild", uiText = uiText),
         
         ## countAgeCheek & countYearAge & percentageYearlyShotAnimals
         ## countAgeGender & boxAgeWeight
@@ -178,67 +87,16 @@ tagList(
               tagList(
                   countAgeCheekUI(id = "wild", uiText = uiText),
                   
+                  countYearAgeUI(id = "wild", uiText = uiText),
                   
-                  actionLink(inputId = "wild_linkPlot3",
-                      label = h3("FIGUUR: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)")),
-                  conditionalPanel("input.wild_linkPlot3 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot3",
-                                  summarizeBy = c("Aantal (alle data)" = "count",
-                                      "Percentage (enkel ingezamelde onderkaken)" = "percent"),
-                                  showTime = TRUE,
-                                  regionLevels = 1:2, exportData = TRUE),
-                              tags$p("Evolutie van de verdeling van het afschot over de verschillende leeftijdscategorieën doorheen de jaren op basis van de ingezamelde onderkaken."),
-                              conditionalPanel("input.wild_species == 'Ree'",
-                                  "Voor mannelijke reeën zijn de leeftijdscategorieën 'jongvolwassen' en 'volwassen' uitgesloten.")
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot3"))
-                      ),
-                      tags$hr(),
-                  ),
                   countYearShotUI(id = "wild_labeltype", groupVariable = "labeltype",
                     regionLevels = c(1:2,4), uiText = uiText),
                   
-                  actionLink(inputId = "wild_linkPlot4",
-                      label = h3("FIGUUR: Percentage jaarlijks afschot")),
-                  conditionalPanel("input.wild_linkPlot4 % 2 == 1",
-                      fixedRow(
-                          
-                          column(4,
-                              optionsModuleUI(id = "wild_plot4",
-                                  showTime = TRUE, showYear = TRUE,
-                                  showType = TRUE, exportData = TRUE),
-                              tags$p("Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode. 
-                                      Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot4"))
-                      
-                      ),
-                      tags$hr()
-                  ),
+                  yearlyShotAnimalsUI(id = "wild", uiText = uiText),
                   
                   countAgeGenderUI(id = "wild", uiText = uiText),
                   
-                  actionLink(inputId = "wild_linkPlot6",
-                      label = h3("FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier)")),
-                  conditionalPanel("input.wild_linkPlot6 % 2 == 1",
-                      fixedRow(
-                          
-                        column(4,
-                          optionsModuleUI(id = "wild_plot6", showTime = TRUE,
-                            showType = TRUE, regionLevels = 1:2, exportData = TRUE,
-                            showDataSource = c("leeftijd", "geslacht")),
-                              tags$p("Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). 
-                                      Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.")
-                          ),
-                          column(8, plotModuleUI(id = "wild_plot6", filter = TRUE))
-                      
-                      ),
-                      tags$hr()
-                  )
-              
+                  boxAgeWeightUI(id = "wild", uiText = uiText)
               )
               
             }),
@@ -268,10 +126,7 @@ tagList(
               )
               
             })
-    
-    
-    
-    
+          
     )
 
 )

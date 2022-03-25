@@ -260,3 +260,71 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	return(toReturn)
 	
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{tableProvince}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams tableProvince
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+tableProvinceServer <- function(id, data, categorie, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "tableProvince", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "tableProvince",
+        plotFunction = "tableProvince", 
+        data = data, 
+        categorie = categorie)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{tableProvince}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+tableProvinceUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkTableProvince"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkTableProvince % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("tableProvince"), 
+            showYear = TRUE, exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          tableModuleUI(id = ns("tableProvince"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+  
+}

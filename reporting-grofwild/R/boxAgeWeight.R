@@ -149,3 +149,74 @@ boxAgeWeight <- function(data,
 	
 	
 }
+
+
+
+
+#' Shiny module for creating the plot \code{\link{boxAgeWeight}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams boxAgeWeight
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+boxAgeWeightServer <- function(id, data, type, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      callModule(module = optionsModuleServer, id = "boxAgeWeight", 
+        data = data,
+        types = type,
+        labelTypes = "Leeftijdscategorie",
+        multipleTypes = TRUE,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "boxAgeWeight",
+        plotFunction = "boxAgeWeight", 
+        data = data)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{percentageboxAgeWeight}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+boxAgeWeightUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkBoxAgeWeight"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkBoxAgeWeight % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("boxAgeWeight"), 
+            showTime = TRUE, showType = TRUE, regionLevels = 1:2, 
+            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("boxAgeWeight"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+
+}
+

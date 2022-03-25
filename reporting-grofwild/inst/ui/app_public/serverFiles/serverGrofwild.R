@@ -75,59 +75,22 @@ results$wild_timeRange <- reactive({
 
 
 ## User input for controlling the plots and create plotly
-# Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
-callModule(module = optionsModuleServer, id = "wild_table1", 
+tableProvinceServer(id = "wild",
     data = results$wild_ecoData,
+    categorie = "leeftijd",
     timeRange = results$wild_timeRange
 )
-callModule(module = plotModuleServer, id = "wild_table1",
-    plotFunction = "tableProvince", 
-    data = results$wild_ecoData, 
-    categorie = "leeftijd")
+  
 
-
-#			# Table 2 - input
-#			callModule(module = optionsModuleServer, id = "table2", 
-#					data = results$wild_ecoData,
-#					timeRange = results$wild_timeRange)
-#			# Table 3 - input
-#			callModule(module = optionsModuleServer, id = "table3", 
-#					data = results$wild_ecoData,
-#					timeRange = results$wild_timeRange)
-#			
-#			
-#			observe({
-#						
-#						if (input$wild_species == "Ree") {
-#							
-#							# Table 2 - output
-#							callModule(module = plotModuleServer, id = "table2",
-#									plotFunction = "tableProvince", 
-#									data = results$wild_ecoData,
-#									categorie = "typeAantal")
-#							
-#							
-#							# Table 3 - output
-#							callModule(module = plotModuleServer, id = "table3",
-#									plotFunction = "tableProvince", 
-#									data = results$wild_ecoData,
-#									toekenningsData = reactive(toekenningsData),
-#									categorie = "typePercent")
-#							
-#						}
-#						
-#					})
 
 
 # Plot 1: Gerapporteerd aantal per jaar en per regio
-callModule(module = optionsModuleServer, id = "wild_plot1", 
-    data = results$wild_ecoData,
-    timeRange = reactive(if (input$wild_species == "Edelhert")
-              c(2008, max(results$wild_timeRange())) else 
-              results$wild_timeRange()))
-callModule(module = plotModuleServer, id = "wild_plot1",
-    plotFunction = "countYearProvince", 
-    data = results$wild_ecoData)
+countYearProvinceServer(id = "wild",
+  data = results$wild_ecoData,
+  timeRange = reactive(if (input$wild_species == "Edelhert")
+        c(2008, max(results$wild_timeRange())) else 
+        results$wild_timeRange())
+  )
 
 
 # Plot 2: Leeftijdscategorie op basis van onderkaak & meldingsformulier
@@ -140,12 +103,9 @@ countAgeCheekServer(id = "wild",
 
 
 # Plot 3: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)
-callModule(module = optionsModuleServer, id = "wild_plot3", 
-    data = results$wild_ecoData,
-    timeRange = results$wild_timeRange)
-callModule(module = plotModuleServer, id = "wild_plot3",
-    plotFunction = "countYearAge", 
-    data = results$wild_ecoData)
+countYearAgeServer(id = "wild",
+  data = results$wild_ecoData,
+  timeRange = results$wild_timeRange)
 
 # Plot 4: Percentage jaarlijkse afschot
 results$labeltypes <- reactive({
@@ -160,31 +120,14 @@ results$labeltypes <- reactive({
       
     })
 
-
-callModule(module = optionsModuleServer, id = "wild_plot4", 
-    data = results$wild_ecoData,
-    timeRange = results$wild_openingstijd,
-    timeLabel = "Referentieperiode",
-    types = results$labeltypes,
-    multipleTypes = FALSE)
-
-callModule(module = plotModuleServer, id = "wild_plot4",
-    plotFunction = "percentageYearlyShotAnimals", 
-    data = results$wild_ecoData,
-    openingstijdenData = results$wild_openingstijdenData)
+yearlyShotAnimalsServer(id = "wild",
+  data = results$wild_ecoData,
+  timeRange = results$wild_openingstijd,
+  type = results$labeltypes,
+  openingstijdenData = results$wild_openingstijdenData
+)
 
 
-#			# Plot 4b
-#			callModule(module = optionsModuleServer, id = "wild_plot4b", 
-#					data = results$wild_ecoData,
-#					timeRange = results$wild_timeRange,
-#					types = results$types,
-#					multipleTypes = TRUE)
-#			
-#			callModule(module = plotModuleServer, id = "wild_plot4b",
-#					plotFunction = "percentageRealisedShotAnimals", 
-#					data = results$wild_ecoData,
-#					toekenningsData = reactive(toekenningsData))
 
 
 # Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
@@ -194,21 +137,16 @@ countAgeGenderServer(id = "wild",
 
 
 # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
-callModule(module = optionsModuleServer, id = "wild_plot6", 
-    data = results$wild_ecoData,
-    types = reactive(switch(input$wild_species,
-            "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
-            Ree = c("Kits", "Jongvolwassen", "Volwassen")									
-        )),
-    labelTypes = "Leeftijdscategorie",
-    multipleTypes = TRUE,
-    timeRange = reactive(if (input$wild_species == "Ree")
-              c(2014, max(results$wild_timeRange())) else 
-              results$wild_timeRange())
+boxAgeWeightServer(id = "wild",
+  data = results$wild_ecoData,
+  type = reactive(switch(input$wild_species,
+      "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
+      Ree = c("Kits", "Jongvolwassen", "Volwassen")									
+    )),
+  timeRange = reactive(if (input$wild_species == "Ree")
+        c(2014, max(results$wild_timeRange())) else 
+        results$wild_timeRange())
 )
-callModule(module = plotModuleServer, id = "wild_plot6",
-    plotFunction = "boxAgeWeight", 
-    data = results$wild_ecoData)
 
 
 # Plot 7: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht

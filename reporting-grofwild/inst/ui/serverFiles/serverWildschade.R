@@ -126,7 +126,7 @@ results$schade_spatialData <- reactive({
 output$schade_region <- renderUI({
       
       selectInput(inputId = "schade_region", label = "Regio('s)",
-          choices = levels(droplevels(results$schade_spatialData()$NAAM)),
+          choices = sort(unique(results$schade_spatialData()$NAAM)),
           selected = NULL, multiple = TRUE)
       
     })

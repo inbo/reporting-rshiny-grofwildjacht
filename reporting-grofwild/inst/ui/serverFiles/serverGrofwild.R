@@ -381,8 +381,17 @@ output$map_region <- renderUI({
             selectInput(inputId = "map_region", label = "Regio('s)",
                     choices = levels(droplevels(results$wild_spatialData()$NAAM)),
                     selected = selected, multiple = TRUE)
-            
-        })
+         
+    })
+  
+  
+observeEvent(input$map_regionLevel, {
+    
+    updateCheckboxInput(session = session, inputId = "map_combinatie",
+      label = paste0("Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot ", 
+        results$map_regionLevelName(), ")"))
+    
+  })  
 
 
 ## Time plot for Flanders (reference) ##

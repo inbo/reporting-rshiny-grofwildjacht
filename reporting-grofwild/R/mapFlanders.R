@@ -161,7 +161,7 @@ createSpaceData <- function(data, allSpatialData, year, species, regionLevel,
   
   # Create group variable
   if (regionLevel %in% c("flanders", "provinces")) {
-    
+
     if (unit == "absolute")
       otherBreaks <- unique(sort(summaryData2$freq)) else
       otherBreaks <- unique(sort(ceiling(summaryData2$freq*100)/100))

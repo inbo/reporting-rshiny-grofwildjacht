@@ -256,8 +256,6 @@ replicateColors <- function(nColors) {
   if(rest > 0)
     colors <- c(colors, inbo_palette(n = rest))
   
-  colors <- rev(colors)
-  
   # warning if noLocaties exceeds 9 colours
   warningText <- NULL
   if(nColors > 9) {

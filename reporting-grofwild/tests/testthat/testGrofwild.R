@@ -330,6 +330,22 @@ test_that("Distribution of weight ifo age", {
     
   })
 
+test_that("Afschot per jachtmethode", {
+    
+    countYearShotAnimals(data = wildEcoData,
+#      jaartallen = 2014:2020,
+      groupVariable = "labeltype",
+      interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[1]
+    )$plot
+    
+    countYearShotAnimals(data = reeEcoData,
+      jaartallen = 2019:2020,
+      groupVariable = "jachtmethode_comp",
+      interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[2]
+    )$plot
+    
+  })
+
 
 ## PLOT 9: Distribution of cheek length vs class ##
 

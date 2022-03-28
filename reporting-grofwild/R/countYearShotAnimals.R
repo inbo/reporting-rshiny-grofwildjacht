@@ -16,7 +16,7 @@
 #' @author dbemelmans
 #' @export 
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
-  interval = c("Per maand", "Per seizoen", "Per twee weken"), 
+  interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken"), 
   groupVariable, type = NULL) {
   
   
@@ -50,16 +50,19 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
         min(jaartallen):max(jaartallen)))
   
-  colors <- replicateColors(nColors = length(unique(plotData[, groupVariable])))$colors
-  if (any("onbekend" %in% plotData[, groupVariable]))
-    colors[length(colors)] <- inbo_lichtgrijs
+  colorNames <- sort(unique(plotData[, groupVariable]))
+  if (any("onbekend" %in% colorNames))
+    colors <- c(replicateColors(nColors = length(colorNames)-1)$colors, inbo_lichtgrijs) else
+    colors <- c(replicateColors(nColors = length(colorNames))$colors, inbo_lichtgrijs)
+  names(colors) <- c(colorNames[!colorNames %in% "onbekend"], colorNames[colorNames %in% "onbekend"])
   
   title <- paste0("Afschot van ",
     ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
       jaartallen))
   
   # Summarize data per year
-  totalCount <- table(plotData$afschotjaar)
+  totalCount <- as.data.frame(table(plotData$afschotjaar))
+  colnames(totalCount) <- c("year", "value")
   
   # Extract month/day
   plotData$maand <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
@@ -69,7 +72,12 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         strsplit(datum, split = "-")[[1]][3]
       }))
    
-  if (interval == "Per maand") {
+  
+  if (interval == "Per jaar") {
+    
+    newLevels <- sort(unique(plotData$afschotjaar))
+    
+  } else if (interval == "Per maand") {
     
     newLevels <- c(
       "januari",
@@ -130,8 +138,13 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             
   }
   
-  summaryData <- melt(table(plotData[, c("afschotjaar", "timeGroup", groupVariable)]), 
-    id.vars = c("afschotjaar", "timeGroup", groupVariable))
+  if (interval == "Per jaar") {
+    summaryData <- melt(table(plotData[, c("afschotjaar", groupVariable)]), 
+      id.vars = c("afschotjaar", groupVariable))
+    summaryData$timeGroup <- as.numeric(as.factor(summaryData$afschotjaar))
+  } else 
+    summaryData <- melt(table(plotData[, c("afschotjaar", "timeGroup", groupVariable)]), 
+      id.vars = c("afschotjaar", "timeGroup", groupVariable))
   
   # For optimal displaying in the plot
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
@@ -141,18 +154,33 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   # Create plot per year
-  allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
-      iYear <- levels(summaryData$afschotjaar)[i]
-      tmp <- plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
-        x = ~timeChar, y = ~value, type = "bar", 
-        color = ~get(groupVariable), colors = colors,
-        legendgroup = ~get(groupVariable), showlegend = i == 1,
-        width = width, height = height) %>%
-      layout(xaxis = list(
-          title = paste0(iYear, "<br>", "(n= ", totalCount[names(totalCount) == iYear], ")"), 
-          showticklabels = FALSE)
-    )
-    })
+  if (interval == "Per jaar") {
+    allPlots <- plot_ly(data = summaryData,
+            x = ~timeChar, y = ~value, type = "bar", 
+            color = ~get(groupVariable), colors = colors,
+            legendgroup = ~get(groupVariable), 
+            width = width, height = height) %>%
+          layout(
+            xaxis = list(title = ''),            
+            annotations = list(x = totalCount$year,
+              y = totalCount$value,
+              text = totalCount$value,
+              xanchor = 'center', yanchor = 'bottom',
+              showarrow = FALSE))
+  } else {
+    allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
+        iYear <- levels(summaryData$afschotjaar)[i]
+        tmp <- plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
+            x = ~timeChar, y = ~value, type = "bar", 
+            color = ~get(groupVariable), colors = colors,
+            legendgroup = ~get(groupVariable), showlegend = i == 1,
+            width = width, height = height) %>%
+          layout(xaxis = list(
+              title = paste0(iYear, "<br>", "(n= ", totalCount$value[totalCount$year == iYear], ")"), 
+              showticklabels = FALSE)
+          )
+      })
+  }
   
   # Combine all plots
   pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE) %>%
@@ -163,7 +191,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
     add_annotations(text = paste0(round(nrow(plotData)/noRecords, 2)*100, 
         "% met gekende afschotdatum (", nrow(plotData), "/", noRecords, ")"),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-      y = -0.2, yanchor = "bottom", showarrow = FALSE)
+      y = -0.25, yanchor = "bottom", showarrow = FALSE)
  
   colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
   summaryData$group <- NULL
@@ -199,7 +227,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
       callModule(module = optionsModuleServer, id = "countYearShot", 
         data = data,
         timeRange = timeRange,
-        intervals = c("Per maand", "Per seizoen", "Per twee weken"),
+        intervals = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken"),
         types = types,
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",

@@ -245,6 +245,7 @@ mapFlandersServer(id = "wild",
   defaultYear = defaultYear,
   species = reactive(input$wild_species),
   geoData = results$wild_geoData,
+  biotoopData = biotoopData,
   allSpatialData = spatialData)
 
 

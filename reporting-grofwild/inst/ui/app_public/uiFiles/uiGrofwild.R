@@ -59,7 +59,7 @@ tagList(
     ),
     
     
-    mapFlandersUI(id = "wild"),
+    mapFlandersUI(id = "wild", plotDetails = c("flanders", "region", "biotoop")),
     
     
     # Show user input module per plot

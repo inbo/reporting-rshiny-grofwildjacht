@@ -12,6 +12,8 @@ load(file = file.path(dataDir, "spatialData.RData"))
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
+biotoopData <- loadHabitats(spatialData = spatialData)
+
 
 test_that("Load grofwild data", {
     
@@ -482,3 +484,18 @@ test_that("Trend plots according with the interactive map", {
     }
     
   })
+  
+  
+  test_that("Biotoop plot according with the interactive map", {
+      
+      for (iName in names(spatialData)[1:6]) {
+        if (iName != "fbz_gemeentes")
+        print(barBiotoop(data = biotoopData[[ iName ]])$plot)
+      }
+      
+      barBiotoop(data = subset(biotoopData[[ "provinces" ]], regio %in% c("West-Vlaanderen", "Oost-Vlaanderen")))$plot
+      
+      expect_error(barBiotoop(data = 
+            subset(biotoopData[[ names(spatialData)[2] ]], regio %in% "Vlaanderen")))
+      
+    })

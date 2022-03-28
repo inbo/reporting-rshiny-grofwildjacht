@@ -34,7 +34,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' Create summary data of geographical data for selected year, species and region level
 #' @param data data.frame, geographical data
 #' @param allSpatialData list of sp, spatial data for all spatial levels
-#' @param biotoopData data.frame, background data for the WBE, as read from \code{loadWbeHabitats}
+#' @param biotoopData data.frame, background data for the WBE, as read from \code{loadHabitats}
 #' @param year integer, year of interest
 #' @param species character, species of interest
 #' @param regionLevel character, regional level of interest should be one of 
@@ -349,7 +349,7 @@ mapFlanders <- function(
 #' @param hideGlobeDefault boolean, whether the globe is shown by default 
 #' when the map is first created; default value is TRUE
 #' @param geoData SpatialPolygonsDataFrame with geographical data
-#' @param wbeData data.frame, with background biotoop data for selected wbe;
+#' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
 #' @param allSpatialData list with SpatialPolygonsDataFrame 
 #' @return no return value
@@ -360,7 +360,7 @@ mapFlanders <- function(
 #' @importFrom ggplot2 fortify
 #' @export
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
-  hideGlobeDefault = TRUE, geoData, wbeData = NULL, allSpatialData) {
+  hideGlobeDefault = TRUE, geoData, biotoopData = NULL, allSpatialData) {
   moduleServer(id,
     function(input, output, session) {
       
@@ -531,7 +531,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
-            biotoopData = wbeData,
+            biotoopData = biotoopData,
             year = input$year,
             species = species(),
             regionLevel = results$regionLevel(),
@@ -898,7 +898,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           createTrendData(
             data = geoData(),
             allSpatialData = allSpatialData,
-            biotoopData = wbeData,
+            biotoopData = biotoopData,
             timeRange = input$period,
             species = species(),
             regionLevel = results$regionLevel(),
@@ -944,12 +944,22 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
         })
       
       callModule(module = optionsModuleServer, id = "biotoopPlot", 
-        data = reactive(wbeData))
+        data = reactive({
+            if (!is.null(currentWbe))
+                biotoopData else
+                biotoopData[[req(input$regionLevel)]]
+          })
+      )
       callModule(module = plotModuleServer, id = "biotoopPlot",
         plotFunction = "barBiotoop", 
-        data = reactive(wbeData[wbeData$year == input$year, ])
+        data = reactive({
+            if (!is.null(currentWbe))
+              biotoopData[biotoopData$year == input$year, ] else {
+              validate(need(input$region, "Gelieve regio('s) te selecteren"))
+              subset(biotoopData[[req(input$regionLevel)]], regio %in% input$region)
+            }
+          })
       )
-      
       
     })  
 }

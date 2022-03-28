@@ -57,6 +57,7 @@ load(file = file.path(dataDir, "spatialData.RData"))
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
+biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)
 
 gc()
 

@@ -21,7 +21,7 @@ createSpaceData(
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 
-\item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadWbeHabitats}}
+\item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadHabitats}}
 
 \item{year}{integer, year of interest}
 
@@ -37,7 +37,7 @@ should be reported,}
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
 
-\item{dataDir}{character vector, defines the path to the data files}
+\item{dataDir}{character, path to data files}
 }
 \value{
 a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics

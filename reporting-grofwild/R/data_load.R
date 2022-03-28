@@ -1,5 +1,5 @@
 #' Read all shape data from geojson files
-#' @param dataDir character vector, defines the path to the data files
+#' @param dataDir character, path to data files
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
 #' @return save to dataDir object spatialData, i.e. a list with for each 
@@ -464,26 +464,69 @@ loadRawData <- function(
 }
 
 
-#' Load WBE Habitats (Background) data
-#' @inheritParams loadToekenningen 
-#' @return data.frame
+#' Load Habitats (Background) data
+#' @inheritParams readShapeData
+#' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
+#' by \code{\link{readShapeData}}
+#' @return named list with data.frame for each region level
 #' 
 #' @author mvarewyck
 #' @export
-loadWbeHabitats <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
+  spatialData) {
   
-  allFiles <- list.files(dataDir, pattern = "WBE_habitats", full.names = TRUE)
-  wbeHabitats <- do.call(rbind, lapply(allFiles, function(iFile) {
-        
-        iYear <- as.numeric(strsplit(gsub("WBE_habitats_", "", basename(iFile)), "\\.")[[1]][1])
-        iData <- read.csv(file = iFile)
-        iData$year <- iYear
-        
-        iData
-        
-      }))
+  allLevels <- list(
+    "flanders" = "flanders_habitats", 
+    "provinces" = "Provincies_habitats", 
+    "communes" = "Gemeentes_habitats", 
+    "faunabeheerzones" = "Faunabeheerzones_habitats", 
+    # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
+    "utm5" = "utm5_vlgrens_habitats", 
+    "wbe" = "WBE_habitats"
+  )
   
-  return(wbeHabitats)
+  
+  habitatData <- sapply(names(allLevels), function(iRegion) {
+      
+      iLevel <- allLevels[[match(iRegion, names(allLevels))]]
+      
+      allFiles <- list.files(dataDir, pattern = iLevel, full.names = TRUE)
+      
+      if (iRegion == "wbe") {
+          
+          tmpData <- do.call(rbind, lapply(allFiles, function(iFile) {
+                
+                iData <- read.csv(file = iFile)
+                iData$year <- as.numeric(gsub("WBE_|habitats_|\\.csv", "", basename(iFile)))
+             
+                iData
+                
+              }))
+          
+          colnames(tmpData)[1] <- "regio"
+          
+        } else { 
+          
+          tmpData <- read.csv(file = allFiles)
+          colnames(tmpData)[1] <- "regio"
+          
+          # Match region names
+          if ("NISCODE" %in% colnames(spatialData[[iRegion]]@data))
+            tmpData$regio <- spatialData[[iRegion]]$NAAM[
+              match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
+          
+          # Check matching
+          if (!all(spatialData[[iRegion]]$NAAM %in% tmpData$regio))
+            stop("Matching for habitat data names failed ", iRegion)
+          
+        }
+        
+      return(tmpData)
+    
+    })
+  
+  
+  return(habitatData)
   
 }
 

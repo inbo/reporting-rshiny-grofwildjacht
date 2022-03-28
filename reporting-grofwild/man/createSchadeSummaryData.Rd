@@ -17,7 +17,7 @@ wildschade and descriptives in data.frame}
 
 \item{timeRange}{numeric vector, year span of interest}
 
-\item{dataDir}{character vector, defines the path to the data files}
+\item{dataDir}{character, path to data files}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}

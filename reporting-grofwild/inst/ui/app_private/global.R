@@ -70,8 +70,8 @@ schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 currentWbe <- unique(geoData$PartijNummer)
 currentWbe <- currentWbe[!is.na(currentWbe)]
 
-wbeData <- loadWbeHabitats(dataDir = dataDir)
-wbeData <- wbeData[wbeData$WBE_NR %in% currentWbe, ]
+biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)[["wbe"]]
+biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
 
 toekenningsData <- loadToekenningen(dataDir = dataDir)
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]

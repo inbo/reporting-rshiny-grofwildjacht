@@ -16,7 +16,7 @@ ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
 toekenningsData <- loadToekenningen(dataDir = dataDir)
-wbeData <- loadWbeHabitats(dataDir = dataDir)
+biotoopData <- loadHabitats(spatialData = spatialData)[["wbe"]]
 
 
 currentKbo <- 445465768
@@ -32,7 +32,7 @@ ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
-wbeData <- wbeData[wbeData$WBE_NR == unique(geoData$PartijNummer), ]
+biotoopData <- biotoopData[biotoopData$regio == unique(geoData$PartijNummer), ]
 
 # Combine data
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
@@ -56,7 +56,7 @@ test_that("The map", {
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
-          biotoopData = wbeData,
+          biotoopData = biotoopData,
           year = iYear,
           species = iSpecies,
           regionLevel = "WBE_buitengrenzen",
@@ -101,7 +101,7 @@ test_that("Trend plot", {
       trendRegionData <- createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
         allSpatialData = spatialData,
-        biotoopData = wbeData,
+        biotoopData = biotoopData,
         timeRange = range(years),
         species = iSpecies,
         regionLevel = "WBE_buitengrenzen",
@@ -125,7 +125,7 @@ test_that("Trend plot", {
 
 test_that("Biotoop", {
     
-    result <- barBiotoop(data = wbeData, jaar = 2020)
+    result <- barBiotoop(data = biotoopData, jaar = 2020)
     
     epect_equal(sum(result$data$Waarde[-(1:2)]), 100)
     

@@ -9,7 +9,7 @@ loadOpeningstijdenData(
 )
 }
 \arguments{
-\item{dataDir}{character vector, defines the path to the data files}
+\item{dataDir}{character, path to data files}
 }
 \value{
 data.frame with columns:

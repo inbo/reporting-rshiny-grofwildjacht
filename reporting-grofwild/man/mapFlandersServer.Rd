@@ -11,7 +11,7 @@ mapFlandersServer(
   currentWbe = NULL,
   hideGlobeDefault = TRUE,
   geoData,
-  wbeData = NULL,
+  biotoopData = NULL,
   allSpatialData
 )
 }
@@ -29,7 +29,7 @@ when the map is first created; default value is TRUE}
 
 \item{geoData}{SpatialPolygonsDataFrame with geographical data}
 
-\item{wbeData}{data.frame, with background biotoop data for selected wbe;
+\item{biotoopData}{data.frame, with background biotoop data for selected region level;
 default value is NULL}
 
 \item{allSpatialData}{list with SpatialPolygonsDataFrame}

@@ -11,7 +11,7 @@ readShapeData(
 )
 }
 \arguments{
-\item{dataDir}{character vector, defines the path to the data files}
+\item{dataDir}{character, path to data files}
 
 \item{tolerance}{numeric, defines the tolerance in the Douglas-Peuker algorithm;
 larger values will impose stronger simplification; default value is 0.001}

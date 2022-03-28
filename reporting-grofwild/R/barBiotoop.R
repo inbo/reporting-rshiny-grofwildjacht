@@ -7,7 +7,7 @@
 
 #' Create interactive plot for biotoop description - irrespective of species
 #' 
-#' @param data data.frame, background data for the WBE, as read from \code{loadWbeHabitats}
+#' @param data data.frame, background data for the WBE, as read from \code{loadHabitats}
 #' @param jaar numeric, year of interest
 #' @inheritParams countAgeGender
 #' @return list with:
@@ -31,57 +31,74 @@ barBiotoop <- function(data, jaar = NULL,
   # For R CMD check
   year <- NULL
     
-  if (is.null(jaar))
-    jaar <- unique(data$year)
+  if (!is.null(jaar))
+    subData <- subset(data, year == jaar) else
+    subData <- data
   
-  wbeInfo <- subset(data, year == jaar)
-  percVars <- grep("perc", colnames(wbeInfo), value = TRUE)
+  percVars <- grep("perc", colnames(subData), value = TRUE)
   
-  plotData <- data.frame(
-    name = gsub("perc_", "", percVars),
-    value = round(unlist(wbeInfo[, percVars]*100), 2)
-  )
+  plotData <- melt(subData[, c("regio", percVars)], id.vars = "regio")
   
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
+  
+  plotData$value <- round(plotData$value * 100, 2)
+  plotData$variable <- gsub("perc_", "", plotData$variable)
+    
   # For correct display in plot
-  plotData$name[plotData$name == "bos"] <- "bos & natuur"
-  plotData$name <- factor(plotData$name, 
+  plotData$variable[plotData$variable == "bos"] <- "bos & natuur"
+  plotData$variable <- factor(plotData$variable, 
     levels = c("andere", "bebouwd", "water", "landbouw", "grasland", "bos & natuur"))
-  plotData <- plotData[match(plotData$name, levels(plotData$name)), ]
-  plotData <- plotData[match(plotData$name, levels(plotData$name)), ]
   
-  totalCounts <- data.frame(
-    name = c("Totale oppervlakte (ha)", "Totale oppervlakte (km2)"),
-    value = round(unlist(wbeInfo[, c("Area_ha", "Area_km2")]), 2)
-  )
+  tmpRegions <- tapply(plotData$value, plotData$variable, mean)
+  totalRegions <- data.frame(
+    regio = names(tmpRegions),
+    value = tmpRegions) 
   
-  colors <- replicateColors(nColors = 1)$colors[1]
+  totalCounts <- melt(subData[, c("Area_ha", "Area_km2", "regio")], id.vars = "regio")
+  totalCounts$value <- round(totalCounts$value)
+  totalCounts$name <- totalCounts$variable
+  totalCounts$variable <- ifelse(totalCounts$variable == "Area_ha", 
+    "Totale oppervlakte (ha)", "Totale oppervlakte (km2)")
   
- 
+  colors <- replicateColors(nColors = length(unique(plotData$regio)))$colors
+  names(colors) <- unique(plotData$regio)
+  
   # Create plot
-  pl <- plot_ly(data = plotData, x = ~value, y = ~name, 
-      color = "Percentage", colors = colors,
+  pl <- plot_ly(data = plotData, x = ~value, y = ~variable, 
+      color = ~as.factor(regio), colors = colors,
+      hovertemplate = paste('%{y} <br>%{x:/100\U0025}'),
       type = "bar", orientation = 'h', width = width, height = height) %>%
     
-    layout(title = paste0("Totale oppervlakte: ", totalCounts$value[2], " km\U00B2"),
-      xaxis = list(title = "", zeroline = FALSE, showline = FALSE), 
+    layout(title = paste0("Totale oppervlakte: ", 
+        sum(totalCounts$value[totalCounts$name == "Area_km2"]), " km\U00B2"),
+      xaxis = list(title = "", zeroline = FALSE, showline = FALSE, ticksuffix = "%"), 
       yaxis = list(title = "", zeroline = FALSE, showline = FALSE),    
-      margin = list(l = 100), 
-      annotations = list(x = plotData$value,  
-        y = levels(plotData$name),
-        text = paste(plotData$value, "%"),
-        xanchor = 'left', yanchor = 'center',
-        showarrow = FALSE)) %>%
+      margin = list(l = 100)
+    ) %>%
     
     add_annotations(text = "Percentages (%)",
       xref = "paper", yref = "paper", x = 0, xanchor = "right",
       y = 1, yanchor = "top", showarrow = FALSE)  
   
+  
+  # Percentage printed at top of bar
+  if (length(unique(plotData$regio)) == 1) {
+      pl <- pl %>% layout(
+        annotations = list(x = totalRegions$value,  
+        y = totalRegions$regio,
+        text = paste(totalRegions$value, "%"),
+        xanchor = 'left', yanchor = 'center',
+        showarrow = FALSE))
+  }
+    
+  totalCounts$name <- NULL
   finalData <- rbind(
     totalCounts,    
     plotData[nrow(plotData):1, ]
   )
   rownames(finalData) <- NULL
-  colnames(finalData) <- c("Naam", "Waarde")
+  colnames(finalData) <- c("Regio", "Naam", "Waarde")
   
   # To prevent warnings in UI
   pl$elementId <- NULL

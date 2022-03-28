@@ -7,7 +7,7 @@
 barBiotoop(data, jaar = NULL, width = NULL, height = NULL)
 }
 \arguments{
-\item{data}{data.frame, background data for the WBE, as read from \code{loadWbeHabitats}}
+\item{data}{data.frame, background data for the WBE, as read from \code{loadHabitats}}
 
 \item{jaar}{numeric, year of interest}
 

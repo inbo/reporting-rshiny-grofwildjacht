@@ -252,9 +252,11 @@ replicateColors <- function(nColors) {
   colors <- c()
   
   if (times > 0)
-    colors <- rep(rev(inbo_palette(n = 9)), times)
+    colors <- rep(inbo_palette(n = 9), times)
   if(rest > 0)
-    colors <- c(colors, rev(inbo_palette(n = rest)))
+    colors <- c(colors, inbo_palette(n = rest))
+  
+  colors <- rev(colors)
   
   # warning if noLocaties exceeds 9 colours
   if(nColors > 9) {

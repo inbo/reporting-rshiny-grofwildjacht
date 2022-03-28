@@ -240,7 +240,9 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
   )
 	
 	
-	return(list(plot = pl, data = plotData, warning = colorList$warning))
+	return(list(plot = pl, data = plotData, warning = if (!is.null(colorList$warning))
+        "Door het grote aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
+          Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."))
 	
 }
 

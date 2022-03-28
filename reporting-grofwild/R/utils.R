@@ -259,17 +259,16 @@ replicateColors <- function(nColors) {
   colors <- rev(colors)
   
   # warning if noLocaties exceeds 9 colours
+  warningText <- NULL
   if(nColors > 9) {
-    warning <- "Door het hoog aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
-      Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."
-  } else {
-    warning <- NULL
+    warningText <- "Door de ruime selectie werden de kleuren van deze grafiek hergebruikt. 
+      Hierdoor is verwarring mogelijk. Verklein de selectie om dit te voorkomen."
   }
   
   return(
     list(
       colors = colors, 
-      warning = warning
+      warning = warningText
     )
   )
 

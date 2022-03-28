@@ -104,8 +104,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
   
   
-  colorList <- replicateColors(nColors = nlevels(summaryData$embryos))
-  colors <- c(inbo_lichtgrijs, colorList$colors)[1:nlevels(summaryData$embryos)]
+  colorList <- replicateColors(nColors = nlevels(summaryData$embryos))$colors
+  colors <- c(inbo_lichtgrijs, colorList)[1:nlevels(summaryData$embryos)]
   names(colors) <- newLevels
 	
 	
@@ -139,7 +139,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	summaryData$text <- NULL
 	
 	
-	return(list(plot = pl, data = summaryData, warning = colorList$warning))
+	return(list(plot = pl, data = summaryData))
 	
 }
 

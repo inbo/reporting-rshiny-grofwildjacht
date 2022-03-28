@@ -50,9 +50,9 @@ barBiotoop <- function(data, jaar = NULL,
   plotData$variable <- factor(plotData$variable, 
     levels = c("andere", "bebouwd", "water", "landbouw", "grasland", "bos & natuur"))
   
-  tmpRegions <- tapply(plotData$value, plotData$variable, mean)
+  tmpRegions <- round(tapply(plotData$value, plotData$variable, mean), 2)
   totalRegions <- data.frame(
-    regio = names(tmpRegions),
+    variable = names(tmpRegions),
     value = tmpRegions) 
   
   totalCounts <- melt(subData[, c("Area_ha", "Area_km2", "regio")], id.vars = "regio")
@@ -61,8 +61,17 @@ barBiotoop <- function(data, jaar = NULL,
   totalCounts$variable <- ifelse(totalCounts$variable == "Area_ha", 
     "Totale oppervlakte (ha)", "Totale oppervlakte (km2)")
   
-  colors <- replicateColors(nColors = length(unique(plotData$regio)))$colors
-  names(colors) <- unique(plotData$regio)
+  # More than 9 regions -> total
+  warningText <- NULL
+  selectedRegions <- unique(plotData$regio)
+  if (length(selectedRegions) > 9) {
+    plotData <- totalRegions
+    plotData$regio <- "Totaal"
+    selectedRegions <- "Totaal"
+    warningText <- "Door het grote aantal gekozen regio's wordt het gemiddelde percentage weergegeven. Selecteer minder regio's om individuele percentages te bekomen." 
+  }
+  colors <- replicateColors(nColors = length(selectedRegions))$colors
+  names(colors) <- selectedRegions
   
   # Create plot
   pl <- plot_ly(data = plotData, x = ~value, y = ~variable, 
@@ -86,7 +95,7 @@ barBiotoop <- function(data, jaar = NULL,
   if (length(unique(plotData$regio)) == 1) {
       pl <- pl %>% layout(
         annotations = list(x = totalRegions$value,  
-        y = totalRegions$regio,
+        y = totalRegions$variable,
         text = paste(totalRegions$value, "%"),
         xanchor = 'left', yanchor = 'center',
         showarrow = FALSE))
@@ -103,7 +112,7 @@ barBiotoop <- function(data, jaar = NULL,
   # To prevent warnings in UI
   pl$elementId <- NULL
     
-  return(list(plot = pl, data = finalData))
+  return(list(plot = pl, data = finalData, warning = warningText))
   
 }
 

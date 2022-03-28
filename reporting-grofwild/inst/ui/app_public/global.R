@@ -68,24 +68,34 @@ if (!is.null(attr(ecoData, "excluded")))
 
 # check for wildsoorten to add to schadeWildsoorten
 if (any(!unique(schadeData$wildsoort) %in% unlist(schadeWildsoorten))) {
-	warning("Nieuwe wildsoorten gedetecteerd in raw data: ", 
+	warning("Nieuwe wildsoorten gedetecteerd in schade data: ", 
           paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeWildsoorten)), collapse = ", "),
-          "\nUpdate schadeWildsoorten aub")
+          "\nUpdate schadeWildsoorten in metaSchade() functie.")
 }
 
 # check for schadeTypes (basiscode) to add to schadeTypes
 if (any(!unique(schadeData$schadeBasisCode) %in% schadeTypes)) {
-  warning("Nieuwe schade basiscode gedetecteerd in raw data: ", 
+  warning("Nieuwe schade basiscode gedetecteerd in schade data: ", 
       paste0(setdiff(unique(schadeData$schadeBasisCode), schadeTypes), collapse = ", "),
-      "\nUpdate schadeTypes aub en ook de fullnames() functie.")
+      "\nUpdate schadeTypes in metaSchade() en fullNames() functie.")
 }
 
 # check for schadeCodes (schadeCode) to add to schadeCodes
 if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
-  warning("Nieuwe schadeCode gedetecteerd in raw data: ", 
+  warning("Nieuwe schadeCode gedetecteerd in schade data: ", 
       paste0(setdiff(unique(schadeData$schadeCode), schadeCodes), collapse = ", "),
-      "\nUpdate schadeCodes aub en ook de fullnames() functie.")
+      "\nUpdate schadeCodes in metaSchade() en fullNames() functie.")
 }
+
+# check for schadeSources (indieningType) to add to schadeSources
+indieningTypes <- unique(schadeData$indieningType)
+isPresent <- grepl(paste(metaSchade$sourcesSchade, collapse = "|"), indieningTypes)
+if (!all(isPresent)) {
+  warning("Nieuw indieningType gedetecteerd in schade data: ", 
+    paste0(indieningTypes[!isPresent], collapse = ", "),
+    "\nUpdate metaSchade() functie.")
+}
+rm(list = c("indieningTypes", "isPresent"))
 
 # UI text for each plot/table
 uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wild", "schade")]

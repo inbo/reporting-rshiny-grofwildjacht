@@ -10,7 +10,7 @@ countYearShotAnimals(
   jaartallen = NULL,
   width = NULL,
   height = NULL,
-  interval = c("Per maand", "Per seizoen", "Per twee weken"),
+  interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken"),
   groupVariable,
   type = NULL
 )

@@ -10,7 +10,7 @@
 #' Filter \code{plotData} based on the \code{indieningType} if required
 #' @param plotData data.frame, to be filtered
 #' @param sourceIndicator character, source used to filter \code{data} ('indieningType' column)
-#' should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.
+#' should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.
 #' @param returnStop character, should be one of \code{c("message", "data")}
 #' what needs to be returned if the filtered data has no rows left
 #' @return data.frame, filtered version of \code{plotData}
@@ -26,8 +26,8 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   
   if (!is.null(sourceIndicator)) {
     
-    sources <- unlist(sapply(sourceIndicator, function(source) sourcesSchade[[source]]))
-    plotData <- plotData[plotData$indieningType %in% sources, ]
+    sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
+    plotData <- plotData[grepl(sources, plotData$indieningType), ]
     
     if (nrow(plotData) == 0) {
       if (returnStop == "message")

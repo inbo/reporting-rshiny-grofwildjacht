@@ -4,10 +4,16 @@
 \alias{loadMetaSchade}
 \title{Specify currently used type schades}
 \usage{
-loadMetaSchade()
+loadMetaSchade(indieningTypes = NULL)
+}
+\arguments{
+\item{indieningTypes}{character vector with all available/recorded values for
+indieningType (can be duplicated values). If NULL, then sourcesSchade contains
+patterns per schade source; if not NULL then all matching values in the indieningType
+are given per pattern}
 }
 \value{
-character vector
+list with meta data for wildschade
 }
 \description{
 Specify currently used type schades

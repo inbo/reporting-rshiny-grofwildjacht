@@ -20,7 +20,7 @@ wildschade and descriptives in data.frame}
 \item{dataDir}{character, path to data files}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
-should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
+should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 }
 \value{
 a filtered spatialPointsDataFrame

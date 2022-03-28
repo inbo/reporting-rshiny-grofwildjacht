@@ -23,7 +23,7 @@ in the plot; if NULL no selection on year(s) is made}
 \code{c("provinces", "flanders", "faunabeheerzones")}}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
-should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
+should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
 \item{width}{plot width (optional)}
 

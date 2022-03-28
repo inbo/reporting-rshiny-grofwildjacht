@@ -35,7 +35,7 @@ absolute cases, or relative bos freq (aantal/100ha bos & natuur)
 should be reported,}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
-should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
+should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
 \item{dataDir}{character, path to data files}
 }

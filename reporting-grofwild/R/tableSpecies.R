@@ -73,11 +73,7 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
     
     freqBack <- count(allData[allData$jaar == (jaar - yearsBack), ], 
       vars = "categorie")
-    freqBack <- rbind(freqBack, data.frame(
-        categorie = "Totaal",
-        freq = sum(freqBack$freq, na.rm = TRUE)
-      ))
-    
+     
     # Only calculate trend if relevant
     if (nrow(freqBack) > 0) {
       

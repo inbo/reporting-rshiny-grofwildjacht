@@ -16,6 +16,7 @@ optionsModuleServer(
   timeLabel = "Periode",
   multipleTypes = FALSE,
   definedYear = defaultYear,
+  categories = NULL,
   intervals = NULL
 )
 }
@@ -45,7 +46,9 @@ same as \code{types} by defualt}
 (or max year value within a range) that is selected upon opening, default is
 \code{defaultYear} which is globally defined as \code{currentYear - 1}}
 
-\item{intervals}{defines the intervals that can be selected}
+\item{categories}{character vector, defines the choices for categorie}
+
+\item{intervals}{character vector, defines the choices for interval}
 }
 \value{
 no return value; some output objects are created

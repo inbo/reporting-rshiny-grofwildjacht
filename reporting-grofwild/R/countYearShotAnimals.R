@@ -20,6 +20,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   groupVariable, type = NULL) {
   
   
+  wildNaam <- unique(data$wildsoort)
   interval <- match.arg(interval)
   
   plotData <- data
@@ -34,7 +35,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       c("afschotjaar", "afschot_datum", groupVariable)]
   
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
-  plotData[is.na(plotData[, groupVariable]), groupVariable] <- "onbekend"
+  plotData[, groupVariable] <- droplevels(plotData[, groupVariable])
+  plotData[is.na(plotData[, groupVariable]), groupVariable] <- "Onbekend"
   
   # only retains animals of specified type
   if (!is.null(type) && type != "all") {
@@ -50,11 +52,10 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
         min(jaartallen):max(jaartallen)))
   
-  colorNames <- sort(unique(plotData[, groupVariable]))
-  if (any("onbekend" %in% colorNames))
-    colors <- c(replicateColors(nColors = length(colorNames)-1)$colors, inbo_lichtgrijs) else
-    colors <- c(replicateColors(nColors = length(colorNames))$colors, inbo_lichtgrijs)
-  names(colors) <- c(colorNames[!colorNames %in% "onbekend"], colorNames[colorNames %in% "onbekend"])
+  colorNames <- c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend")
+  colors <- replicateColors(nColors = length(colorNames))$colors
+  colors[length(colors)] <- inbo_lichtgrijs
+  names(colors) <- colorNames
   
   title <- paste0("Afschot van ",
     ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
@@ -148,9 +149,6 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   # For optimal displaying in the plot
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
-  summaryData[, groupVariable] <- as.factor(summaryData[, groupVariable])
-  summaryData[, groupVariable] <- factor(summaryData[, groupVariable], 
-    levels = levels(summaryData[, groupVariable]))
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   # Create plot per year

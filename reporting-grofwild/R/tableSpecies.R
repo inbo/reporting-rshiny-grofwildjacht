@@ -5,8 +5,10 @@
 
 
 
-#' Create summary table for specific species per WBE
+#' Create summary table with trend over years per \code{categorie} and in total
 #' @param data data.frame with raw data for summary table
+#' @param categorie character, variable name in \code{data} for 
+#' which rows should be created in the table
 #' @inheritParams percentageYearlyShotAnimals 
 #' @param minForTrend numeric, the minimum number of records needed before
 #' a trend is being reported
@@ -16,16 +18,15 @@
 #' @importFrom reshape2 dcast
 #' @importFrom plyr count join
 #' @export
-tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
+tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp", 
+  minForTrend = 10) {
   
   wildNaam <- unique(data$wildsoort)  
   
   if (is.null(jaar))
     stop("Gelieve jaartal te selecteren")
   
-  if (wildNaam == "Wild zwijn")
-    allData <- data[, c("PartijNummer", "leeftijd_comp", "afschotjaar")] else
-    allData <- data[, c("PartijNummer", "type_comp", "afschotjaar")]
+  allData <- data[, c("PartijNummer", categorie, "afschotjaar")]
   names(allData) <- c("locatie", "categorie", "jaar")
   
   
@@ -35,22 +36,6 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
   if (!jaar %in% allData$jaar)
       stop("Niet beschikbaar: Geen data voor het gekozen jaar")
   
-  
-  
-  
-  # Redefine names and ordering of factor levels
-  if (wildNaam == "Wild zwijn") {  # wild zwijn for leeftijd
-    
-    levelsCategorie <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
-    
-  } else if (wildNaam == "Ree") {  # ree for leeftijd
-    
-    levelsCategorie <- c("Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Reegeit", "Reebok", "Onbekend")
-    
-  }
-  # Rename categorie extra levels/NA to Onbekend
-  allData$categorie <- factor(allData$categorie, levels = levelsCategorie)
-  allData$categorie[is.na(allData$categorie)] <- tail(levelsCategorie, n = 1)
   
   # A. Current Year
   
@@ -64,7 +49,7 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
   summaryData$freq <- NULL
   
   # Add 'totaal'
-  levelsCategorie <- c(levelsCategorie, "Totaal")
+  levelsCategorie <- c(loadMetaEco(species = wildNaam)[[categorie]], "Totaal")
   
   # Add categorie with 0 observations
   fullData <- expand.grid(
@@ -72,13 +57,10 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
     categorie = levelsCategorie,
     jaar = jaar)
   summaryTable <- merge(summaryData, fullData, all = TRUE)
+  summaryTable$current[summaryTable$categorie == "Totaal"] <- nTotal
   summaryTable$percent <- ifelse(is.na(summaryTable$percent), "", 
     paste0(gsub(pattern = "\\.", "\\,", sprintf("%.1f", summaryTable$percent)), "%"))
   summaryTable[is.na(summaryTable)] <- 0
-  
-  # Calculate total
-  summaryTable$current[summaryTable$categorie == "Totaal"] <- sum(summaryTable$current)
- 
   
   
   # B. Calculate differences with 1, 5, 10 years ago
@@ -91,6 +73,10 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
     
     freqBack <- count(allData[allData$jaar == (jaar - yearsBack), ], 
       vars = "categorie")
+    freqBack <- rbind(freqBack, data.frame(
+        categorie = "Totaal",
+        freq = sum(freqBack$freq, na.rm = TRUE)
+      ))
     
     # Only calculate trend if relevant
     if (nrow(freqBack) > 0) {
@@ -139,7 +125,7 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
-#' @param id character, unique identifier for the module
+#' @inheritParams mapFlandersServer
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @return no return value
@@ -147,7 +133,7 @@ tableSpecies <- function(data, jaar = NULL, minForTrend = 10) {
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableSpeciesServer <- function(id, data, timeRange) {
+tableSpeciesServer <- function(id, data, timeRange, species) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -157,7 +143,14 @@ tableSpeciesServer <- function(id, data, timeRange) {
       # Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "tableSpecies", 
         data = data,
-        timeRange = timeRange
+        timeRange = timeRange,
+        categories = reactive({
+            allChoices <- c("label" = "labeltype", "type" = "type_comp", "geslacht" = "geslacht_comp", "leeftijd" = "leeftijd_comp")
+            if (species() != "Ree")
+              allChoices[-1] else
+              allChoices
+          })
+      
       )
       callModule(module = plotModuleServer, id = "tableSpecies",
         plotFunction = "tableSpecies", 
@@ -186,7 +179,8 @@ tableSpeciesUI <- function(id, uiText) {
     fixedRow(
       
       column(4,
-        optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, exportData = TRUE),
+        optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, 
+          showCategorie = TRUE, exportData = TRUE),
         tags$p(HTML(uiText[, id]))
       ),
       column(8, tableModuleUI(id = ns("tableSpecies")))

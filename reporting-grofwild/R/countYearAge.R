@@ -49,15 +49,12 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	# Remove some categories
 	plotData <- plotData[!is.na(plotData$jaar) & !is.na(plotData$kaak), ]
 	
-	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn") {  # wild zwijn
-		
-		newLevelsKaak <- c("Frisling", "Overloper", "Volwassen", "Niet ingezameld")
-		
-	} else {  # ree
-		
-		newLevelsKaak <- c("Kits", "Jongvolwassen", "Volwassen", "Niet ingezameld")
-		# Exclude categories 'jongvolwassen' and 'volwassen' for all animals labelled 'mannelijk' 
+  newLevelsKaak <- c(loadMetaEco(species = wildNaam)$leeftijd_comp, "Niet ingezameld")
+  
+  # Define names and ordering of factor levels
+  if (wildNaam == "Ree") {  
+    
+    # Exclude categories 'jongvolwassen' and 'volwassen' for all animals labelled 'mannelijk' 
 		# see github issue no. 31
 		geslacht <- NULL  # to prevent warnings with R CMD check
 		plotData <- subset(plotData, 
@@ -65,7 +62,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 		
 	}
 	
-	plotData$geslacht <- NULL
+  plotData$geslacht <- NULL
 	
 	# Summarize data per year and age category
 	summaryData <- count(df = plotData, vars = names(plotData))

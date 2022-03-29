@@ -2,14 +2,17 @@
 % Please edit documentation in R/tableSpecies.R
 \name{tableSpecies}
 \alias{tableSpecies}
-\title{Create summary table for specific species per WBE}
+\title{Create summary table with trend over years per \code{categorie} and in total}
 \usage{
-tableSpecies(data, jaar = NULL, minForTrend = 10)
+tableSpecies(data, jaar = NULL, categorie = "leeftijd_comp", minForTrend = 10)
 }
 \arguments{
 \item{data}{data.frame with raw data for summary table}
 
 \item{jaar}{year of interest}
+
+\item{categorie}{character, variable name in \code{data} for 
+which rows should be created in the table}
 
 \item{minForTrend}{numeric, the minimum number of records needed before
 a trend is being reported}
@@ -19,7 +22,7 @@ data.frame, number or percentage of observations
 per province and per \code{categorie}
 }
 \description{
-Create summary table for specific species per WBE
+Create summary table with trend over years per \code{categorie} and in total
 }
 \author{
 mvarewyck

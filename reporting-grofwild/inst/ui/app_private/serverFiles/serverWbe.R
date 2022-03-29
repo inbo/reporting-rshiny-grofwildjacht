@@ -57,14 +57,9 @@ results$wbe_timeRange <- reactive({
 
 results$labeltypes <- reactive({
     
-    types <- switch(req(input$wbe_species), 
-      "Wild zwijn" = "", 
-      "Ree" = c("kits", "geit", "bok"), 
-      "Damhert" = "", 
-      "Edelhert" = ""
-    )
+    types <- loadMetaEco(species = input$wbe_species)$labeltype
     
-    if (length(types) == 1 && types == "")
+    if (length(types) == 1 && input$wbe_species == types)
       return(c("alle" = "all")) else 
       return(types)
     
@@ -106,7 +101,8 @@ mapFlandersServer(id = "wbe",
 # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
 tableSpeciesServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange)
+  timeRange = results$wbe_timeRange,
+  species = reactive(input$wbe_species))
 
 
 # Plot2: Verdeling afschot over de jaren

@@ -189,6 +189,8 @@ loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "r
   pathFile <- file.path(dataDir, "Openingstijden_grofwild.csv")
   
   rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+  rawData$Type <- simpleCap(rawData$Type)
+  
   attr(rawData, "Date") <- file.mtime(pathFile)
   
   return(rawData)
@@ -323,61 +325,35 @@ loadRawData <- function(
   } else if (type == "eco") {
     ## ECO data for grofwild
     
-    # Re-define "Adult" as "Volwassen" for leeftijd + ordering levels
+    newLevels <- loadMetaEco()
+    
+    # Re-define "Adult" as "Volwassen" for leeftijd
     rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
     rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
     
+    # Leeftijdscategorie_onderkaak 
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak %in% c("", "Onbekend")] <- "Niet ingezameld"
+    rawData$Leeftijdscategorie_onderkaak <- factor(rawData$Leeftijdscategorie_onderkaak,
+      levels = c(newLevels[["leeftijd_comp"]], "Niet ingezameld"))
+    rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
     
     
-    # Define type_comp (ageGender)
-    rawData$type_comp <- as.factor(simpleCap(rawData$type_comp))
-    rawData$labeltype <- tolower(gsub("REE", "", rawData$labeltype))
-    
-#        rawData$type <- ifelse(rawData$wildsoort != "Ree",
-#                "", ifelse(grepl("kits", rawData$type_comp), "kits",
-#                        ifelse(rawData$geslacht_comp == "Mannelijk", "bok", "geit")))
-#        
-#        
-#        # for Figure 13: combine age and gender: 'type' column 
-#        # (to do the matching with the openingstijden table)
-#        idx <- which(rawData$wildsoort == "Ree")
-#        typeRee <- ifelse(
-#                rawData[idx, "leeftijd_comp"]  == "Kits", "kits",
-#                ifelse(rawData[idx, "leeftijd_comp"] %in% c("Jongvolwassen", "Volwassen"),
-#                        ifelse(rawData[idx, "geslacht_comp"] == 'Mannelijk', "bok", 
-#                                ifelse(rawData[idx, "geslacht_comp"] == 'Vrouwelijk', "geit", "")
-#                        ),
-#                        ""))
-#        rawData$type2 <- ""
-#        rawData$type2[idx] <- typeRee
-#        rawData$type2[is.na(rawData$type2)] <- ""
-#        
-#        
-#       
-#        # for Figure 28: combine age and gender, with subcategory for young adult
-#        male <- rawData$geslacht_comp == "Mannelijk"
-#        female <- rawData$geslacht_comp == "Vrouwelijk"
-#        ageGender <- with(rawData,
-#                ifelse(leeftijd_comp == "Kits", 
-#                        ifelse(male, "Bokkits", ifelse(female, "Geitkits", "")),
-#                        ifelse(leeftijd_comp == "Jongvolwassen", 
-#                                ifelse(male, "Jaarlingbok", ifelse(female, "Smalree", "")),
-#                                ifelse(leeftijd_comp == "Volwassen", 
-#                                        ifelse(male, "Bok", ifelse(female, "Geit", "")), "")
-#                        )))
-#        ageGender[is.na(ageGender)] <- ""
-#        
-#        rawData$ageGender <- factor(ageGender, 
-#                levels = c("", "Geitkits", "Bokkits", "Smalree", "Jaarlingbok", "Geit", "Bok"))
-#        
-#		# for Figure p. 27, 28: compute cheek length
-# 		# redundant: now available in onderkaaklengte_comp_bron
-#		rawData$bron <- with(rawData, ifelse(is.na(onderkaaklengte_comp), NA,
-#						ifelse(!is.na(lengte_mm), "inbo", "meldingsformulier")))
-    
-    
+    # Redefine names and ordering of factor levels
+    rawData$type_comp <- simpleCap(rawData$type_comp)
+    rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
+    rawData$labeltype <- simpleCap(gsub("REE", "", rawData$labeltype))
+  
+    for (iVar in names(newLevels)) {
+      
+      oldValues <- unique(rawData[!is.na(rawData[, iVar]), iVar]) 
+      if (any(!oldValues %in% newLevels[[iVar]]))
+        warning("Volgende waarden zullen worden overschreven als 'Onbekend' voor ", iVar, ": ",
+          paste(oldValues[!oldValues %in% newLevels[[iVar]]], collapse = ", "))
+      
+      rawData[, iVar] <- factor(rawData[, iVar], levels = c(newLevels[[iVar]], "Onbekend"))
+      rawData[is.na(rawData[iVar]), iVar] <- "Onbekend"
+      
+    }  
     
   } else if (type == "wildschade") {
     ## Wildschade data
@@ -432,26 +408,6 @@ loadRawData <- function(
         proj4string(rawData) <- CRS("+init=epsg:31370")
         
         rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
-        
-
-#        # Temporary fix - this should be done by Sander (data cleaning) in the future
-#        # see also global.R
-#        toExclude <- (rawData$ageGender == "Geit" & rawData$onderkaaklengte_comp > 200)
-#        toExclude[is.na(toExclude)] <- FALSE
-#        
-#        if (any(toExclude)) {
-#            
-#            ids <- rawData$ID[toExclude]
-#            
-#            
-#            rawData <- rawData[!toExclude, ]
-#            
-#            warning(sum(toExclude), 
-#                    " Geit(en) with onderkaaklengte_comp > 200 were excluded.")
-#            attr(rawData, "excluded") <- ids
-#            
-#            
-#        }
     
   }
   
@@ -531,6 +487,64 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
 }
 
 
+
+#' Specify currently used levels in eco data
+#' 
+#' @param species character, whether to extract levels for specific species;
+#' default is NA
+#' @return list with meta data for eco data
+#' 
+#' @author mvarewyck
+#' @export
+loadMetaEco <- function(species = NA) {
+  
+  allSpecies <- c("Wild zwijn", "Ree", "Damhert", "Edelhert")
+  
+  toReturn <- list(
+    geslacht_comp = c("Vrouwelijk", "Mannelijk"),
+    leeftijd_comp = list(
+      # Young to old
+      c("Frisling", "Kits", rep("Kalf", 2)),
+      c(NA, NA, "Jaarling", "Jaarling"),  
+      c("Overloper", rep("Jongvolwassen", 3)),
+      rep("Volwassen", 4) 
+    ),
+    type_comp = list(
+      # Young to old
+      c("Frisling (v)", "Frisling (m)", "Geitkits", "Bokkits", rep(c("Kalf (v)", "Kalf (m)"), 2)),
+      c("Overloper (v)", "Overloper (m)", "Smalree", "Jaarlingbok", rep(c("Smaldier", "Spitser"), 2)),
+      c("Zeug", "Keiler", "Reegeit", "Reebok", rep(c("Hinde", "Hert"), 2))
+    ),
+    jachtmethode_comp = 
+      c("Aanzitjacht", "Bersjacht", "Drijfjacht", "Drukjacht", "Kooijacht"),
+    labeltype = list(
+      # Wild Zwijn - Ree - Damhert - Edelhert
+      "Wild zwijn",
+      c("Kits", "Geit", "Bok"),
+      "Damhert",
+      "Edelhert"        
+    )
+  )
+  
+  if (!is.na(species)) {
+    
+    # Filter species
+    matchId <- match(species, allSpecies)
+    toReturn$leeftijd_comp <- sapply(toReturn$leeftijd_comp, function(x) x[matchId])
+    toReturn$type_comp <- sapply(toReturn$type_comp, function(x) x[c(-1, 0) + matchId*2])
+    toReturn$labeltype <- toReturn$labeltype[[matchId]] 
+    
+    # Remove NA
+    sapply(toReturn, function(x) x[!is.na(x)])
+    
+  } else {
+    
+    # Remove NA and duplicates
+    sapply(toReturn, function(x) unique(unlist(x)[!is.na(unlist(x))]))
+    
+  }
+  
+}
 
 #' Specify currently used type schades
 #' @return list with meta data for wildschade

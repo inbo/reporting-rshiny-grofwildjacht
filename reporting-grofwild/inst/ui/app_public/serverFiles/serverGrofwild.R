@@ -110,14 +110,14 @@ countYearAgeServer(id = "wild",
 # Plot 4: Percentage jaarlijkse afschot
 results$labeltypes <- reactive({
       
-      req(results$wild_openingstijdenData())
-      
-      types <- unique(results$wild_openingstijdenData()$Type)
-      
-      if (length(types) == 1 && types == "")
-        return(c("alle" = "all")) else 
-        return(types)
-      
+    req(results$wild_openingstijdenData())
+    
+    types <- loadMetaEco(species = input$wild_species)$labeltype
+    
+    if (length(types) == 1 && input$wild_species == types)
+      return(c("alle" = "all")) else 
+      return(types)
+  
     })
 
 yearlyShotAnimalsServer(id = "wild",
@@ -165,8 +165,7 @@ ageGenderLowerJawServer(id = "wild",
 # Plot 8: Onderkaaklengte per jaar
 results$typesGender <- reactive({
     
-    types <- levels(droplevels(results$wild_ecoData()$type_comp))
-    types[types != ""]
+    loadMetaEco(species = input$wild_species)$type_comp
     
   })
 

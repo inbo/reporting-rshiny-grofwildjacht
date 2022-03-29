@@ -154,6 +154,12 @@ test_that("Summary Table", {
     
     }  
     
+    tableSpecies(
+      data = combinedRee, 
+      jaar = 2020,
+      categorie = c("labeltype", "type_comp", "geslacht_comp", "leeftijd_comp")[1]
+    ) 
+    
   })
 
 

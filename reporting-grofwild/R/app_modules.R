@@ -26,11 +26,12 @@
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
+    showCategorie = FALSE, showInterval = FALSE, 
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, 
     showDataSource = NULL,
-    doWellPanel = TRUE,
-    showInterval = FALSE) {
+    doWellPanel = TRUE
+    ) {
   
   
   ns <- NS(id)
@@ -78,6 +79,8 @@ optionsModuleUI <- function(id,
       
       if(showInterval)
         uiOutput(ns("interval")),
+      if(showCategorie)
+        uiOutput(ns("categorie")),
       if(exportData) {
         downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
       }
@@ -108,14 +111,15 @@ optionsModuleUI <- function(id,
 #' @param definedYear numeric, single numeric value specifying the year value 
 #' (or max year value within a range) that is selected upon opening, default is
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
-#' @param intervals defines the intervals that can be selected
+#' @param intervals character vector, defines the choices for interval
+#' @param categories character vector, defines the choices for categorie 
 #' @return no return value; some output objects are created
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
     multipleTypes = FALSE, definedYear = defaultYear,
-    intervals = NULL) {
+    categories = NULL, intervals = NULL) {
   
   ns <- session$ns
   
@@ -247,6 +251,13 @@ optionsModuleServer <- function(input, output, session,
             selected = typesDefault(), multiple = multipleTypes)
         
       })
+    
+  output$categorie <- renderUI({
+      
+      selectInput(inputId = ns("categorie"), label = "Categorie",
+        choices = categories())
+      
+    })  
   
   output$dataSourceSchade <- renderUI({
         
@@ -520,8 +531,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))
               list(assignedData = subToekenningsData()),
-            if (!is.null(categorie))
-              list(categorie = categorie),
+            if (!is.null(categorie))          
+              list(categorie = categorie) else if (!is.null(input$categorie))          
+              list(categorie = input$categorie),
             if (!is.null(input$summarizeBy))
               list(summarizeBy = input$summarizeBy),
             if(!is.null(bioindicator))

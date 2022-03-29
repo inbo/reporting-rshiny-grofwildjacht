@@ -70,13 +70,9 @@ percentageYearlyShotAnimals <- function(
 	
 	# only retains animals of specified type
 	specifiedType <- !is.null(type) && type != "all"
-	if(specifiedType){
-        
-        inputData$type <- ifelse(inputData$wildsoort != "Ree",
-                "", ifelse(grepl("kits", inputData$type_comp), "kits",
-                        ifelse(inputData$geslacht_comp == "Mannelijk", "bok", "geit")))
-        
-		inputData <- inputData[inputData$type %in% type, ]
+	if (specifiedType){
+
+    inputData <- inputData[inputData$labeltype %in% type, ]
 		openingstijdenData <- openingstijdenData[openingstijdenData$Type %in% type, ]
         
 	}

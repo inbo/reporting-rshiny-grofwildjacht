@@ -7,7 +7,9 @@
 mapFlandersUI(
   id,
   showRegion = TRUE,
+  showSource = FALSE,
   showCombine = TRUE,
+  isSchade = FALSE,
   unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative"),
   plotDetails = c("flanders", "region")
 )
@@ -16,6 +18,8 @@ mapFlandersUI(
 \item{id}{character, unique identifier for the module}
 
 \item{showRegion}{boolean, whether to show choices for regionLevel and selected region(s)}
+
+\item{showSource}{boolean, whether to show choices for sources}
 
 \item{showCombine}{boolean, whether to show option to combine selected regions}
 

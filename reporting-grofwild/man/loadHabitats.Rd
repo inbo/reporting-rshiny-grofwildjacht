@@ -6,7 +6,8 @@
 \usage{
 loadHabitats(
   dataDir = system.file("extdata", package = "reportingGrofwild"),
-  spatialData
+  spatialData,
+  regionLevels = NULL
 )
 }
 \arguments{
@@ -14,6 +15,9 @@ loadHabitats(
 
 \item{spatialData}{list with each element a SpatialPolygonsDataFrame as created 
 by \code{\link{readShapeData}}}
+
+\item{regionLevels}{character vector, for which regions load the habitat data;
+if NULL loaded for all levels; default value is NULL}
 }
 \value{
 named list with data.frame for each region level

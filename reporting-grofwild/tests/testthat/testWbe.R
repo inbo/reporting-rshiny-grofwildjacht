@@ -9,14 +9,18 @@ context("Test WBE")
 
 # Load all data
 load(file = file.path(dataDir, "spatialData.RData"))
-years <- as.numeric(gsub("WBE_buitengrenzen_", "", grep("WBE_buitengrenzen", names(spatialData), value = TRUE)))
+load(file = file.path(dataDir, "spatialDataWBE.RData"))
+spatialData <- c(spatialData, spatialDataWBE)
+
+years <- as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE)))
+years <- years[!is.na(years)]
 
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
 toekenningsData <- loadToekenningen(dataDir = dataDir)
-biotoopData <- loadHabitats(spatialData = spatialData)[["wbe"]]
+biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 
 currentKbo <- 445465768
@@ -127,7 +131,7 @@ test_that("Biotoop", {
     
     result <- barBiotoop(data = biotoopData, jaar = 2020)
     
-    epect_equal(sum(result$data$Waarde[-(1:2)]), 100)
+    expect_equal(sum(result$data$Waarde[-(1:2)]), 100)
     
     
   })
@@ -155,7 +159,7 @@ test_that("Summary Table", {
     }  
     
     tableSpecies(
-      data = combinedData, 
+      data = combinedRee, 
       jaar = 2021,
       categorie = c("labeltype", "type_comp", "geslacht_comp", "leeftijd_comp")[3]
     ) 

@@ -135,7 +135,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @param locaties character vector, regions that were selected to plot
 #' @param combinatie logical, summarised view of selected regions
 #' @param timeRange numeric vector, time range selected for plot
-#' @param schadeTitles boolean, indicates whether the function should generate titles for schadeData; default is FALSE
+#' @param isSchade boolean, whether the function should generate titles for schadeData; default is FALSE
 #' @inheritParams createSpaceData
 #' @inheritParams countYearProvince
 #' @return list with:
@@ -153,47 +153,52 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @import plotly
 #' @importFrom stats aggregate
 #' @export
-trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange = NULL, 
-        unit = c("absolute", "relative", "relativeDekking"), schadeTitles = FALSE,
-		width = NULL, height = NULL) {
+trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, 
+  timeRange = NULL, unit = c("absolute", "relative", "relativeDekking"), 
+  isFlanders = FALSE, isSchade = FALSE, width = NULL, height = NULL) {
 	
 	
 	# To prevent warnings with R CMD check
 	locatie <- NULL
   
   unit <- match.arg(unit)
+  unitName <- switch(unit,
+    "absolute" = "",
+    "relative" = "/100ha",
+    "relativeDekking" = "/100ha bos & natuur",
+  )
+  
 	wildNaam <- unique(data$wildsoort)
   title_wildnaam <- unlist(strsplit(wildNaam, split = ", "))
-  titlePrefix <- if (!schadeTitles) "Gerapporteerd afschot" else "Evolutie schademeldingen"
+  titlePrefix <- if (!isSchade) "Gerapporteerd afschot" else "Evolutie schademeldingen"
   
 	
-	if (is.null(locaties))
-		stop("Gelieve regio('s) te selecteren")
-  	
 	# Select data
-	plotData <- subset(data, locatie %in% locaties)
-#	plotData$wildsoort <- NULL
-	
-  colorList <- replicateColors(nColors = length(locaties))
+  if (!isFlanders) {
+    if (is.null(locaties))
+      stop("Gelieve regio('s) te selecteren")
+    plotData <- subset(data, locatie %in% locaties)
+    colorList <- replicateColors(nColors = length(locaties))
+  } else {
+    plotData <- data
+    colorList <- replicateColors(nColors = 1)
+  }
   
   
-	title <- paste0(titlePrefix,
-			switch(unit,
-        "absolute" = "",
-        "relative" = "/100ha",
-        "relativeDekking" = "/100ha bos & natuur"
-      ),
-			
-      " voor ", 
+	title <- paste0(titlePrefix, unitName,
+			" voor ", 
       if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ", ...")
       else if (length(title_wildnaam) > 1) paste0(paste(tolower(title_wildnaam[1:length(title_wildnaam)-1]), collapse = ", "), " en ", tolower(title_wildnaam[length(title_wildnaam)]) )
       else (tolower(wildNaam)), 
       
       "\n in ", 
-      if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...")
-      else if (length(locaties) > 1) paste0(paste(locaties[1:length(locaties) - 1], collapse = ", "), " en ", locaties[length(locaties)])
-      else paste(locaties, collapse = ", "), 
-			
+      if (isFlanders) {
+          "Vlaanderen" 
+        } else {
+          if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...")
+          else if (length(locaties) > 1) paste0(paste(locaties[1:length(locaties) - 1], collapse = ", "), " en ", locaties[length(locaties)])
+          else paste(locaties, collapse = ", ") 
+        },
       ifelse(timeRange[1] != timeRange[2],
 					paste(" van", timeRange[1], "tot", timeRange[2]),
 					paste(" in", timeRange[1])
@@ -218,11 +223,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
       width = width, height = height) %>%
     layout(title = title,
       xaxis = list(title = "Jaar"), 
-      yaxis = list(title = switch(unit,
-          "absolute" = "Aantal",
-          "relative" = "Aantal/100ha",
-          "relativeDekking" = "Aantal/100ha bos & natuur"
-        ),
+      yaxis = list(title = paste0("Aantal", unitName),
         tickformat = if (unit == "absolute") ",d" else NULL,
         range = c(0, ~max(freq)*1.05),
         rangemode = "nonnegative"),
@@ -233,11 +234,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
 	pl$elementId <- NULL
 	
 	# change variable names
-	names(plotData)[names(plotData) == "freq"] <- switch(unit,
-    "absolute" = "aantal",
-    "relative" = "aantal/100ha",
-    "relativeDekking" = "aantal/100ha bos & natuur",
-  )
+	names(plotData)[names(plotData) == "freq"] <- paste0("aantal", unitName)
 	
 	
 	return(list(plot = pl, data = plotData, warning = if (!is.null(colorList$warning))

@@ -84,14 +84,22 @@ test_that("Ecological data", {
 ## 2. Geographical Data
 ## --------------------
 
-test_that("Geographical data", {
+test_that("Spatial data", {
     
     plotFile <- file.path(tempdir(), "checkGeoData.pdf")
     pdf(plotFile)
-    for (iLevel in names(spatialData))
+    for (iLevel in names(spatialData)) {
+      print(iLevel)
       plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(10, "Set1"))
+    }
     dev.off()
     
+    expect_true(file.exists(plotFile))
+    
+  })
+
+
+test_that("Geographical data", {
     
     # Can we combine data sources? 
     geoData <- loadRawData(type = "geo")
@@ -101,7 +109,6 @@ test_that("Geographical data", {
     notMatching <- which(!geoData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
     expect_equal(0, length(notMatching[!is.na(geoData$gemeente_afschot_locatie[notMatching])]))
     
-    expect_true(file.exists(plotFile))
     
   })
 
@@ -110,14 +117,6 @@ test_that("Geographical data", {
 ## -------------------
 
 test_that("Wildschade data", {
-    
-    plotFile <- file.path(tempdir(), "checkGeoData.pdf")
-    pdf(plotFile)
-    for (iLevel in names(spatialData))
-      plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(10, "Set1"))
-    dev.off()
-    
-    expect_true(file.exists(plotFile))
     
     # Can we combine data sources? 
     wildschadeData <- loadRawData(type = "wildschade")

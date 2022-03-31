@@ -358,11 +358,17 @@ mapFlanders <- function(
 #' @import shiny
 #' @import leaflet
 #' @importFrom ggplot2 fortify
+#' @importFrom webshot webshot
+#' @importFrom htmlwidgets saveWidget
 #' @export
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
-  hideGlobeDefault = TRUE, geoData, biotoopData = NULL, allSpatialData) {
+  hideGlobeDefault = TRUE, isSchade = FALSE, 
+  geoData, biotoopData = NULL, allSpatialData) {
   moduleServer(id,
     function(input, output, session) {
+      
+      # For R CMD check
+      regio <- NULL
       
       ns <- session$ns
       
@@ -374,11 +380,12 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Minimum year
       results$minYear <- reactive({
           
-          req(geoData())
+          req(nrow(geoData()) > 0)
           
-          if (!is.null(input$regionLevel) && input$regionLevel %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
-              2014 else
-              min(geoData()$afschotjaar)          
+          if (!isSchade && !is.null(input$regionLevel) && 
+            input$regionLevel %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
+            2014 else
+            min(geoData()$afschotjaar)          
           
         })
       
@@ -404,8 +411,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             "flanders" = "Vlaanderen",
             "provinces" = "Provincie",
             "faunabeheerzones" = "Faunabeheerzones",
-            "communes" = "Gemeente (binnen provincie)",
-            "fbz_gemeentes" = "Gemeente (binnen faunabeheerzone)",
+            "communes" = "Gemeente",
+            "fbz_gemeentes" = "Gemeente per faunabeheerzone",
             "utm5" = "5x5 UTM",
             "WBE_buitengrenzen" = unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe)]))
           
@@ -456,8 +463,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       
       output$period <- renderUI({
           
-          req(geoData())
-          
+          req(nrow(geoData()) > 0)
+         
           sliderInput(inputId = ns("period"), label = "Periode (grafiek)", 
             value = results$period_value,
             min = results$minYear(),
@@ -510,16 +517,30 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       ## Map for Flanders ##
       ## ---------------- ##
       
+      # Unit text
+      results$unitText <- reactive({
+          
+          paste0(
+            if (isSchade) "aantal schademeldingen" else "afschot",
+            switch(req(input$unit),
+              absolute = "",
+              relative = "/100ha",
+              relativeDekking = "/100ha bos & natuur"
+            )  
+          )
+          
+        })
       
       # Title for the map
       output$title <- renderUI({
-         
-          h3(paste("Gerapporteerd", 
-              if (req(input$unit) == "absolute") "afschot" else "afschot/100ha", 
-              "voor", tolower(species()),
-              "in", input$year))
           
-          
+          nSpecies <- length(species())
+          h3(paste("Gerapporteerd", results$unitText(), 
+                "voor", if (nSpecies > 1)
+                    paste(paste(tolower(species())[1:nSpecies-1], collapse = ", "), "en", tolower(species()[nSpecies])) else 
+                    tolower(species()),
+                "in", input$year))
+            
         })     
       
       
@@ -527,7 +548,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       results$summarySpaceData <- reactive({
           
           validate(need(input$year, "Gelieve jaar te selecteren"))
-                    
+                   
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
@@ -535,7 +556,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             year = input$year,
             species = species(),
             regionLevel = results$regionLevel(),
-            unit = input$unit
+            unit = input$unit,
+            sourceIndicator = input$bronMap
           )
           
         })
@@ -550,9 +572,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           validate(need(results$summarySpaceData()$data, "Geen data beschikbaar"))
           
           regionNames <- results$summarySpaceData()$data$locatie
-          titleText <- paste("Gerapporteerd", 
-            if (input$unit == "absolute") "aantal" else "aantal/100ha",
-            "in", input$year[1])
+          titleText <- paste("Gerapporteerd", results$unitText(), "in", input$year[1])
           
           textPopup <- paste0("<h4>", regionNames, "</h4>",  
             "<strong>", titleText, "</strong>: ", 
@@ -835,15 +855,14 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       
       output$downloadData <- downloadHandler(
         filename = function()
-          nameFile(species = species(),
+          nameFile(species = paste(species(), collapse = "-"),
             year = input$year, 
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           
           myData <- results$summarySpaceData()$data
           # change variable names
-          names(myData)[names(myData) == "freq"] <- if (input$unit == "absolute")
-              "aantal" else "aantal/100ha"
+          names(myData)[names(myData) == "freq"] <- unitText()
           names(myData)[names(myData) == "group"] <- "groep"
           
           ## write data to exported file
@@ -881,7 +900,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
         plotFunction = "trendYearFlanders", 
         data = results$timeDataFlanders,
         timeRange = reactive(input$period),
-        unit = reactive(input$unit)
+        unit = reactive(input$unit),
+        isSchade = isSchade
       )
       
       
@@ -910,8 +930,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Title for selected region level
       output$timeTitle <- renderUI({
           
-          h3("Evolutie gerapporteerd afschot", tags$br(), results$regionLevelName())
-          
+          h3("Evolutie", if (isSchade) "schademeldingen" else "gerapporteerd afschot", 
+            tags$br(), results$regionLevelName())
+        
         })
       
       
@@ -927,7 +948,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
         }),
         timeRange = reactive(input$period),
         unit = reactive(input$unit),
-        combinatie = reactive(input$combinatie)
+        combinatie = reactive(input$combinatie),
+        isSchade = isSchade
       )
       
       
@@ -969,6 +991,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - UI side
 #' @inheritParams mapFlandersServer 
 #' @param showRegion boolean, whether to show choices for regionLevel and selected region(s)
+#' @param showSource boolean, whether to show choices for sources
 #' @param showCombine boolean, whether to show option to combine selected regions
 #' @param unitChoices named character vector, choices for unit option;
 #' default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}
@@ -979,7 +1002,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-mapFlandersUI <- function(id, showRegion = TRUE, showCombine = TRUE,
+mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE, 
+  showCombine = TRUE, isSchade = FALSE,
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
   plotDetails = c("flanders", "region")) {
   
@@ -1009,8 +1033,12 @@ mapFlandersUI <- function(id, showRegion = TRUE, showCombine = TRUE,
       ),
       
       fixedRow(
-        column(6,
-          uiOutput(ns("year")),
+        column(6, uiOutput(ns("year"))),
+        column(6, uiOutput(ns("period")))
+      ),
+      
+      fixedRow(
+        column(12/(2+showSource),
           selectInput(inputId = ns("legend"), label = "Legende (kaart)",
             choices = c(
               "Bovenaan rechts" = "topright",
@@ -1019,12 +1047,19 @@ mapFlandersUI <- function(id, showRegion = TRUE, showCombine = TRUE,
               "Onderaan links" = "bottomleft",
               "<geen>" = "none"))
         ),
-        column(6, 
-          uiOutput(ns("period")),
+        column(12/(2+showSource),
           selectInput(inputId = ns("unit"), label = "Eenheid",
             choices = unitChoices)
-        )
+        ),
+        if (showSource)
+          column(4, 
+              selectInput(inputId = ns("bronMap"),
+                label = "Data bron",
+                choices = names(loadMetaSchade()$sources),
+                multiple = TRUE)
+          )
       ),
+      
       if (showCombine)
       checkboxInput(inputId = ns("combinatie"), 
         label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)"),
@@ -1044,7 +1079,9 @@ mapFlandersUI <- function(id, showRegion = TRUE, showCombine = TRUE,
     fixedRow(
       if ("flanders" %in% plotDetails) 
         column(6,
-          h3("Evolutie gerapporteerd afschot", tags$br(), "Vlaanderen"),
+          h3("Evolutie", 
+              if (isSchade) "schademeldingen" else "gerapporteerd afschot", 
+              tags$br(), "Vlaanderen"),
           plotModuleUI(id = ns("timePlotFlanders"), height = "400px"),
           optionsModuleUI(id = ns("timePlotFlanders"), exportData = TRUE,
             doWellPanel = FALSE)

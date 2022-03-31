@@ -11,6 +11,8 @@ readShapeData(
 )
 }
 \arguments{
+\item{jsonDir}{character, path to json shape files}
+
 \item{dataDir}{character, path to data files}
 
 \item{tolerance}{numeric, defines the tolerance in the Douglas-Peuker algorithm;

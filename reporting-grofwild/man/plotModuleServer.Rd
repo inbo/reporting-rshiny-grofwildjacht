@@ -18,7 +18,7 @@ plotModuleServer(
   locaties = NULL,
   timeRange = NULL,
   unit = NULL,
-  schade = FALSE,
+  isSchade = NULL,
   datatable = FALSE,
   schadeChoices = NULL,
   schadeChoicesVrtg = NULL,
@@ -49,6 +49,9 @@ plotModuleServer(
 with bioindicator, either 'onderkaaklengte',
 'ontweid_gewicht', or 'aantal_embryos'}
 
+\item{groupVariable}{character, variable name in \code{data} for 
+which colored bars should be plot}
+
 \item{locaties}{character, defines on which locations to filter on;
 defined externally for large map}
 
@@ -58,7 +61,7 @@ defined externally for large map}
 \item{unit}{character, defines whether absolute or relative frequencies are reported;
 defined externally for large map}
 
-\item{schade}{boolean, indicates whether module is used for schadeData; default is FALSE}
+\item{isSchade}{boolean, indicates whether module is used for schadeData; default is NULL}
 
 \item{datatable}{boolean, indicates whether module should be used to output a datatable object for table; default is FALSE}
 
@@ -71,8 +74,6 @@ defined externally for large map}
 \item{variable}{character, defines which variable is of interest for the table}
 
 \item{combinatie}{logical, summarised view of selected regions}
-
-\item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
 }
 \value{
 no return value; plot output object is created

@@ -4,7 +4,11 @@
 \alias{loadMetaEco}
 \title{Specify currently used levels in eco data}
 \usage{
-loadMetaEco(clean = TRUE)
+loadMetaEco(species = NA)
+}
+\arguments{
+\item{species}{character, whether to extract levels for specific species;
+default is NA}
 }
 \value{
 list with meta data for eco data

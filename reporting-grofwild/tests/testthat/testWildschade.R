@@ -78,13 +78,13 @@ test_that("Number of cases per region level", {
             data = trendData,
             timeRange = c(2018, 2019),
             unit = "absolute",
-            schadeTitles = TRUE) else 
+            isSchade = TRUE) else 
           trendPlot <- trendYearRegion(
             data = trendData,
             timeRange = c(2018, 2019),
             unit = "absolute",
             locaties = trendData$locatie[1:7],
-            schadeTitles = TRUE)
+            isSchade = TRUE)
         
         if (doPrint)
           print(trendPlot)

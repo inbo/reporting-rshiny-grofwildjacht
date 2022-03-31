@@ -12,12 +12,14 @@ Imports:
     DT, 
     flexdashboard,
     ggplot2,
+    htmlwidgets,
     INBOtheme, 
     leaflet, 
     magrittr,
     mapview, 
     methods, 
     mgcv, 
+    plotly,
     plyr, 
     raster,
     RColorBrewer, 
@@ -27,11 +29,11 @@ Imports:
     shiny, 
     shinycssloaders, 
     sp, 
-    stringr
+    stringr,
+    webshot
 Depends: 
-    maptools, 
-    plotly
+    maptools    
 Suggests:
-	testthat
+    testthat
 Encoding: UTF-8
 RoxygenNote: 7.1.2

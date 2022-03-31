@@ -21,6 +21,7 @@
 #' Should be one or more of \code{c("schade", "leeftijd", "geslacht", "onderkaak", "embryos")}
 #' @param doWellPanel boolean, whether to display the options within a 
 #' \code{shiny::wellPanel()}
+#' @param showCategorie boolean, if TRUE gives user option to select categorie
 #' @param showInterval boolean, if TRUE gives user option to select interval
 #' @return ui object (tagList)
 #' @export
@@ -436,7 +437,7 @@ datatableModuleUI <- function(id) {
 #' defined externally for large map
 #' @param unit character, defines whether absolute or relative frequencies are reported;
 #' defined externally for large map
-#' @param schade boolean, indicates whether module is used for schadeData; default is FALSE
+#' @param isSchade boolean, indicates whether module is used for schadeData; default is NULL
 #' @param datatable boolean, indicates whether module should be used to output a datatable object for table; default is FALSE
 #' @param schadeChoices character, chosen schade types (basisCode) to filter on, optional
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
@@ -446,6 +447,7 @@ datatableModuleUI <- function(id) {
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
+#' @inheritParams countYearShotAnimals
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
@@ -455,7 +457,7 @@ datatableModuleUI <- function(id) {
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL, groupVariable = NULL,
-    locaties = NULL, timeRange = NULL, unit = NULL, schade = FALSE, 
+    locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, schadeTitles = FALSE) {
@@ -527,7 +529,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(regio = input$region),
             if (!is.null(input$type))
               list(type = input$type),
-            if (!is.null(input$type) & !is.null(input$year) & isFALSE(schade))
+            if (!is.null(input$type) & !is.null(input$year) & is.null(input$dataSource_schade))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))
               list(assignedData = subToekenningsData()),
@@ -541,6 +543,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
             
+            if (!is.null(isSchade))
+              list(isSchade = isSchade),
             
             # Sources
             if(!is.null(input$dataSource_schade))

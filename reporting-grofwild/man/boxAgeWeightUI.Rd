@@ -2,7 +2,7 @@
 % Please edit documentation in R/boxAgeWeight.R
 \name{boxAgeWeightUI}
 \alias{boxAgeWeightUI}
-\title{Shiny module for creating the plot \code{\link{percentageboxAgeWeight}} - UI side}
+\title{Shiny module for creating the plot \code{\link{boxAgeWeight}} - UI side}
 \usage{
 boxAgeWeightUI(id, uiText)
 }
@@ -15,7 +15,7 @@ boxAgeWeightUI(id, uiText)
 HTML object
 }
 \description{
-Shiny module for creating the plot \code{\link{percentageboxAgeWeight}} - UI side
+Shiny module for creating the plot \code{\link{boxAgeWeight}} - UI side
 }
 \author{
 mvarewyck

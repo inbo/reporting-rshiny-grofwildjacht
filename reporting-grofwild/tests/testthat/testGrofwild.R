@@ -135,12 +135,6 @@ test_that("Map with counts and corresponding line plot", {
 # Check differences with reported map by INBO
     geoData[which(as.character(geoData$gemeente_afschot_locatie) == "Dessel" & geoData$wildsoort == "Wild zwijn"), ]
     
-    
-    plot(spatialData$flanders)
-    plot(spatialData$provinces)
-    plot(spatialData$provincesVoeren)
-    plot(spatialData$communes)
-    
 # Interactive map
     myMap <- leaflet(spatialData$provinces) %>% 
       addProviderTiles("Hydda.Full") %>%

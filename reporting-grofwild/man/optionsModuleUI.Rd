@@ -30,6 +30,8 @@ optionsModuleUI(
 
 \item{showType, }{boolean, whether to select a select input field with type}
 
+\item{showCategorie}{boolean, if TRUE gives user option to select categorie}
+
 \item{showInterval}{boolean, if TRUE gives user option to select interval}
 
 \item{regionLevels}{numeric vector, if not NULL, defines the choices for 

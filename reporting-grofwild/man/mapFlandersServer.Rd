@@ -10,6 +10,7 @@ mapFlandersServer(
   species,
   currentWbe = NULL,
   hideGlobeDefault = TRUE,
+  isSchade = FALSE,
   geoData,
   biotoopData = NULL,
   allSpatialData

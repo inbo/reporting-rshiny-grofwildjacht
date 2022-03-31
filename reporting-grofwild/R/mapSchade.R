@@ -327,7 +327,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
           
           mapSchade(
             schadeData = results$summaryPerceelData(),
-            regionLevel = "provinces",
+            regionLevel = NULL,
             variable = input$variable,
             allSpatialData = allSpatialData,
             addGlobe = input$globe %% 2 == 0, 
@@ -343,7 +343,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
           
           newPerceelMap <- mapSchade(
             schadeData = results$summaryPerceelData(),
-            regionLevel = "provinces", 
+            regionLevel = NULL, 
             variable = input$variable,
             allSpatialData = allSpatialData,
             legend = input$legend,

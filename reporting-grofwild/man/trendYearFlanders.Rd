@@ -7,8 +7,8 @@
 trendYearFlanders(
   data,
   timeRange,
-  unit = c("absolute", "relative"),
-  schadeTitles = FALSE,
+  unit = c("absolute", "relative", "relativeDekking"),
+  isSchade = FALSE,
   width = NULL,
   height = NULL
 )
@@ -22,7 +22,7 @@ trendYearFlanders(
 absolute cases, or relative bos freq (aantal/100ha bos & natuur)  
 should be reported,}
 
-\item{schadeTitles}{boolean, indicates whether the function should generate titles for schadeData; default is FALSE}
+\item{isSchade}{boolean, whether the function should generate titles for schadeData; default is FALSE}
 
 \item{width}{plot width (optional)}
 

@@ -1,4 +1,6 @@
 #' Read all shape data from geojson files
+#' 
+#' @param jsonDir character, path to json shape files
 #' @param dataDir character, path to data files
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
@@ -164,8 +166,14 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
     stop("Sommige NIS codes in shape data zijn niet gekend voor matching\n",
         "Gelieve het referentiebestand gemeentecodes.csv aan te vullen")
   
-  save(spatialData, file = file.path(dataDir, "spatialData.RData"))
+    
+  # Save WBE data separately
+  spatialDataWBE <- spatialData[grep("WBE", names(spatialData))]
+  save(spatialDataWBE, file = file.path(dataDir, "spatialDataWBE.RData"))
   
+  spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
+  save(spatialData, file = file.path(dataDir, "spatialData.RData"))
+    
 }
 
 
@@ -424,12 +432,14 @@ loadRawData <- function(
 #' @inheritParams readShapeData
 #' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
 #' by \code{\link{readShapeData}}
+#' @param regionLevels character vector, for which regions load the habitat data;
+#' if NULL loaded for all levels; default value is NULL
 #' @return named list with data.frame for each region level
 #' 
 #' @author mvarewyck
 #' @export
 loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-  spatialData) {
+  spatialData, regionLevels = NULL) {
   
   allLevels <- list(
     "flanders" = "flanders_habitats", 
@@ -439,7 +449,10 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
     # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
     "utm5" = "utm5_vlgrens_habitats", 
     "wbe" = "WBE_habitats"
-  )
+  ) 
+  
+  if (!is.null(regionLevels))
+    allLevels <- allLevels[names(allLevels) %in% regionLevels]
   
   
   habitatData <- sapply(names(allLevels), function(iRegion) {
@@ -479,7 +492,7 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
         
       return(tmpData)
     
-    })
+    }, simplify = FALSE)
   
   
   return(habitatData)

@@ -52,9 +52,9 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 ### Load all data
 ### -------------
 
-# TODO load only spatial data of specific WBE
 # Load object called spatialData
-load(file = file.path(dataDir, "spatialData.RData"))
+load(file = file.path(dataDir, "spatialDataWBE.RData"))
+spatialData <- spatialDataWBE
 gc()
 
 # Data with observations and geographical information
@@ -70,7 +70,8 @@ schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 currentWbe <- unique(geoData$PartijNummer)
 currentWbe <- currentWbe[!is.na(currentWbe)]
 
-biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)[["wbe"]]
+biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
+  regionLevels = "wbe")[["wbe"]]
 biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
 
 toekenningsData <- loadToekenningen(dataDir = dataDir)

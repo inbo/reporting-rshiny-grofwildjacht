@@ -35,8 +35,7 @@ tagList(
           HTML("<div class='fotoTitel'>Wild zwijn</div><div id='wildZwijnFoto'></div>"),
           HTML("<div class='fotoTitel'>Ree</div><div id='reeFoto'></div>"),
           HTML("<div class='fotoTitel'>Damhert</div><div id='damhertFoto'></div>"),
-          HTML("<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>")),
-        selected = "Ree"
+          HTML("<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>"))
       )
     )
   ),

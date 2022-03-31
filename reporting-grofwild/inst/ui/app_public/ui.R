@@ -46,7 +46,7 @@ shinyUI(
                                         uiOutput("grof_content")),
                                 tabPanel(title = "Wildschade", id = "tab-wildschade",
                                         uiOutput("schade_content")),
-                                tabPanel(title = "WBE"),
+#                                tabPanel(title = "WBE"),
                                 
                                 # Shape data source + contact e-mail
                                 header = tags$header(tags$div(align = "right",

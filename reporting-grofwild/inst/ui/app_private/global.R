@@ -55,6 +55,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 # Load object called spatialData
 load(file = file.path(dataDir, "spatialDataWBE.RData"))
 spatialData <- spatialDataWBE
+rm(spatialDataWBE)
 gc()
 
 # Data with observations and geographical information

@@ -72,7 +72,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     } else if (regionLevel == "WBE_buitengrenzen") {
       
       if (unit == "relativeDekking") {
-        tmpData <- biotoopData[biotoopData$year %in% year, c("WBE_NR", "Area_hab_km2_bos")]
+        tmpData <- biotoopData[biotoopData$year %in% year, c("regio", "Area_hab_km2_bos")]
         colnames(tmpData) <- c("NAAM", "AREA")
       } else {
         tmpData <- spatialData@data[, c("NAAM", "AREA")]        

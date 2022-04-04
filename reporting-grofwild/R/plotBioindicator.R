@@ -211,13 +211,13 @@ if (bioindicator == "onderkaaklengte") {
 		
 		# create plot
 		pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
-      			colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
+            colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
 				layout(title = title,
 						xaxis = list(title = "afschotjaar"), 
 						yaxis = list(title = paste(bioindicatorName, bioindicatorUnit)),
 						margin = list(b = 40, t = 100),
             annotations = list(x = names(totalCounts), 
-								y = 0, 
+								y = 0, textangle = if (length(totalCounts) > 10) -90,
 								xref = "x", text = paste0("(n = ", totalCounts, ")"), xanchor = 'center', 
 								yanchor = 'bottom', showarrow = FALSE)
 				)

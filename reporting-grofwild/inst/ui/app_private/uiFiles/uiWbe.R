@@ -64,11 +64,7 @@ tagList(
       }),
     
     
-    conditionalPanel("input.wbe_species == 'Ree'", {
-        
-        countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText)
-        
-      }),
+    countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText),
     
     mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText),
     

@@ -1068,13 +1068,24 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
     
     ),
     
-    
-    uiOutput(ns("title")),
-    withSpinner(leafletOutput(ns("spacePlot"))),
-    tags$div(align = "center", uiOutput(ns("stats"))),
-    tags$br(),
-    downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
-    downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton"),
+    fixedRow(
+      column(if ("biotoop" %in% plotDetails) 6 else 12,
+        uiOutput(ns("title")),
+        withSpinner(leafletOutput(ns("spacePlot"))),
+        tags$div(align = "center", uiOutput(ns("stats"))),
+        tags$br(),
+        downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
+        downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
+      ),
+      
+      if ("biotoop" %in% plotDetails)
+      column(6, 
+        uiOutput(ns("biotoopTitle")),
+        plotModuleUI(id = ns("biotoopPlot"), height = "400px"),
+        optionsModuleUI(id = ns("biotoopPlot"), exportData = TRUE,
+          doWellPanel = FALSE)
+      )
+    ),
     
     fixedRow(
       if ("flanders" %in% plotDetails) 
@@ -1092,14 +1103,7 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
           plotModuleUI(id = ns("timePlot"), height = "400px"),
           optionsModuleUI(id = ns("timePlot"), exportData = TRUE,
             doWellPanel = FALSE)
-        ),
-      if ("biotoop" %in% plotDetails)
-        column(6,
-          uiOutput(ns("biotoopTitle")),
-          plotModuleUI(id = ns("biotoopPlot"), height = "400px"),
-          optionsModuleUI(id = ns("biotoopPlot"), exportData = TRUE,
-            doWellPanel = FALSE)
-        )
+        )      
     ), 
     tags$hr()
   

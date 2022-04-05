@@ -21,7 +21,7 @@ in the plot; if NULL no selection on year(s) is made}
 \item{variable}{character, defines the dependent variable in the table besides \code{type}}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
-should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
+should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
 \item{type}{character, defines the region variable of interest in the table}
 }

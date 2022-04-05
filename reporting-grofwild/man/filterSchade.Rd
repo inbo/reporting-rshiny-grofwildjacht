@@ -14,7 +14,7 @@ filterSchade(
 \item{plotData}{data.frame, to be filtered}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
-should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
+should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
 \item{returnStop}{character, should be one of \code{c("message", "data")}
 what needs to be returned if the filtered data has no rows left}

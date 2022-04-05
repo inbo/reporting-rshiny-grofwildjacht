@@ -6,8 +6,9 @@
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
 #' @export
-createTrendData <- function(data, allSpatialData, 
-        timeRange, species, regionLevel, unit = c("absolute", "relative"),
+createTrendData <- function(data, allSpatialData, biotoopData = NULL,
+        timeRange, species, regionLevel, 
+        unit = c("absolute", "relative", "relativeDekking"),
         sourceIndicator = NULL,
         dataDir = system.file("extdata", package = "reportingGrofwild")) {
     
@@ -16,18 +17,23 @@ createTrendData <- function(data, allSpatialData,
     afschotjaar <- NULL
     wildsoort <- NULL
     
+    unit <- match.arg(unit)
+    
     
     # Select correct spatial data
-    if ("Wild zwijn" %in% species & regionLevel == "provinces") {
-        
-        spatialData <- allSpatialData[["provincesVoeren"]]
-        
-    } else {
-        
-        spatialData <- allSpatialData[[regionLevel]]
-        
-    }
-    
+    chosenTimes <- timeRange[1]:timeRange[2]
+    spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
+          tmp <- filterSpatial(
+            allSpatialData = allSpatialData,
+            species = species,
+            regionLevel = regionLevel,
+            year = iYear)
+          if (!is.null(tmp))
+            tmpData <- tmp@data else
+            return(NULL)
+          tmpData$YEAR <- iYear
+          tmpData
+        }))
     
     # filter for source
     plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
@@ -41,11 +47,16 @@ createTrendData <- function(data, allSpatialData,
             communes = plotData$gemeente_afschot_locatie,
             faunabeheerzones = plotData$FaunabeheerZone,
             fbz_gemeentes = plotData$fbz_gemeente,
-            utm5 = plotData$UTM5
+            utm5 = plotData$UTM5,
+            WBE_buitengrenzen = plotData$PartijNummer
     ))
+    # Need to match partijNummer to WBE_Naam_Toek later
+    if (regionLevel == "WBE_buitengrenzen") 
+      matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
     
+   
+  
     # Select subset for time & species
-    chosenTimes <- timeRange[1]:timeRange[2]
     plotData <- subset(plotData, 
             subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
             select = c("afschotjaar", "locatie"))
@@ -60,16 +71,26 @@ createTrendData <- function(data, allSpatialData,
     # Add names & times with 0 observations
     fullData <- cbind(expand.grid(
                     afschotjaar = chosenTimes,
-                    locatie = unique(spatialData@data$NAAM)))
-    # add Area
-    fullData <- merge(fullData, spatialData@data[, c("NAAM", "AREA")],
-            by.x = "locatie", by.y = "NAAM")
+                    locatie = unique(spatialData$NAAM)))
+    
+    if (unit == "relativeDekking") {
+      # add dekkingsgraad 100ha bos&natuur      
+      fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos", "year")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year"))
+      names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
+      
+    } else {
+      # add Area
+      fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
+      
+    }
     
     allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
     allData$freq[is.na(allData$freq)] <- 0
     
     # unit taken into account
-    if (unit == "relative")
+    if (grepl("relative", unit))
         allData$freq <- allData$freq/allData$AREA 
     
     allData$AREA <- NULL
@@ -95,6 +116,10 @@ createTrendData <- function(data, allSpatialData,
                             setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
 
       
+    } else if (regionLevel == "WBE_buitengrenzen") {
+      
+      allData$locatie <- matchLocaties$WBE_Naam_Toek[match(allData$locatie, matchLocaties$PartijNummer)]
+      
     }
     
      
@@ -110,7 +135,8 @@ createTrendData <- function(data, allSpatialData,
 #' @param locaties character vector, regions that were selected to plot
 #' @param combinatie logical, summarised view of selected regions
 #' @param timeRange numeric vector, time range selected for plot
-#' @param schadeTitles boolean, indicates whether the function should generate titles for schadeData; default is FALSE
+#' @param isFlanders boolean, whether the trend plot is made for Flanders (whole region)
+#' @param isSchade boolean, whether the function should generate titles for schadeData; default is FALSE
 #' @inheritParams createSpaceData
 #' @inheritParams countYearProvince
 #' @return list with:
@@ -128,43 +154,52 @@ createTrendData <- function(data, allSpatialData,
 #' @import plotly
 #' @importFrom stats aggregate
 #' @export
-trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange = NULL, 
-        unit = c("absolute", "relative"), schadeTitles = FALSE,
-		width = NULL, height = NULL) {
+trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, 
+  timeRange = NULL, unit = c("absolute", "relative", "relativeDekking"), 
+  isFlanders = FALSE, isSchade = FALSE, width = NULL, height = NULL) {
 	
 	
 	# To prevent warnings with R CMD check
 	locatie <- NULL
-	
-	unit <- match.arg(unit)
+  
+  unit <- match.arg(unit)
+  unitName <- switch(unit,
+    "absolute" = "",
+    "relative" = "/100ha",
+    "relativeDekking" = "/100ha bos & natuur",
+  )
+  
 	wildNaam <- unique(data$wildsoort)
   title_wildnaam <- unlist(strsplit(wildNaam, split = ", "))
-  titlePrefix <- if (!schadeTitles) "Gerapporteerd afschot" else "Evolutie schademeldingen"
+  titlePrefix <- if (!isSchade) "Gerapporteerd afschot" else "Evolutie schademeldingen"
   
 	
-	if (is.null(locaties))
-		stop("Gelieve regio('s) te selecteren")
-  	
 	# Select data
-	plotData <- subset(data, locatie %in% locaties)
-#	plotData$wildsoort <- NULL
-	
-  colorList <- replicateColors(nColors = length(locaties))
+  if (!isFlanders) {
+    if (is.null(locaties))
+      stop("Gelieve regio('s) te selecteren")
+    plotData <- subset(data, locatie %in% locaties)
+    colorList <- replicateColors(nColors = length(locaties))
+  } else {
+    plotData <- data
+    colorList <- replicateColors(nColors = 1)
+  }
   
   
-	title <- paste0(titlePrefix,
-			if (unit == "absolute") "" else "/100ha",
-			
-      " voor ", 
+	title <- paste0(titlePrefix, unitName,
+			" voor ", 
       if (length(title_wildnaam) > 3) paste0(paste(tolower(title_wildnaam[1:3]), collapse = ", "), ", ...")
       else if (length(title_wildnaam) > 1) paste0(paste(tolower(title_wildnaam[1:length(title_wildnaam)-1]), collapse = ", "), " en ", tolower(title_wildnaam[length(title_wildnaam)]) )
       else (tolower(wildNaam)), 
       
       "\n in ", 
-      if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...")
-      else if (length(locaties) > 1) paste0(paste(locaties[1:length(locaties) - 1], collapse = ", "), " en ", locaties[length(locaties)])
-      else paste(locaties, collapse = ", "), 
-			
+      if (isFlanders) {
+          "Vlaanderen" 
+        } else {
+          if (length(locaties) > 3) paste0(paste(locaties[1:3], collapse = ", "), ", ...")
+          else if (length(locaties) > 1) paste0(paste(locaties[1:length(locaties) - 1], collapse = ", "), " en ", locaties[length(locaties)])
+          else paste(locaties, collapse = ", ") 
+        },
       ifelse(timeRange[1] != timeRange[2],
 					paste(" van", timeRange[1], "tot", timeRange[2]),
 					paste(" in", timeRange[1])
@@ -176,30 +211,36 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, timeRange
     plotData <- aggregate(freq ~ afschotjaar, plotData, sum)
     plotData$locatie <- "Totaal"
   }
+  
+  # Filter NA's
+  plotData <- plotData[!is.na(plotData$freq), ]
+  
+  
 	# Create plot
-	pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
-          color = ~locatie, colors = colorList$colors, 
-					hoverinfo = "x+y+name",
-					type = "scatter", mode = "lines+markers",
-					width = width, height = height) %>%
-			layout(title = title,
-					xaxis = list(title = "Jaar"), 
-					yaxis = list(title = if (unit == "absolute") "Aantal" else "Aantal/100ha",
-                       tickformat = if (unit == "absolute") ",d" else NULL,
-                       range = if (unit == "absolute") c(~min(freq), ~max(5.1, sum(max(freq), 0.5))) else NULL,
-                       rangemode = "nonnegative"),
-					showlegend = TRUE,
-					margin = list(b = 80, t = 100))     
+  pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,
+      color = ~locatie, colors = colorList$colors, 
+      hoverinfo = "x+y+name",
+      type = "scatter", mode = "lines+markers",
+      width = width, height = height) %>%
+    layout(title = title,
+      xaxis = list(title = "Jaar"), 
+      yaxis = list(title = paste0("Aantal", unitName),
+        tickformat = if (unit == "absolute") ",d" else NULL,
+        range = c(0, ~max(freq)*1.05),
+        rangemode = "nonnegative"),
+      showlegend = TRUE,
+      margin = list(b = 80, t = 100))     
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
 	
 	# change variable names
-	names(plotData)[names(plotData) == "freq"] <- if (unit == "absolute")
-				"aantal" else "aantal/100ha"
+	names(plotData)[names(plotData) == "freq"] <- paste0("aantal", unitName)
 	
 	
-	return(list(plot = pl, data = plotData, warning = colorList$warning))
+	return(list(plot = pl, data = plotData, warning = if (!is.null(colorList$warning))
+        "Door het grote aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
+          Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."))
 	
 }
 

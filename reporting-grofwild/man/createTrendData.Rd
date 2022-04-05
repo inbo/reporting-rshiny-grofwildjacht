@@ -7,10 +7,11 @@
 createTrendData(
   data,
   allSpatialData,
+  biotoopData = NULL,
   timeRange,
   species,
   regionLevel,
-  unit = c("absolute", "relative"),
+  unit = c("absolute", "relative", "relativeDekking"),
   sourceIndicator = NULL,
   dataDir = system.file("extdata", package = "reportingGrofwild")
 )
@@ -20,6 +21,8 @@ createTrendData(
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 
+\item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadHabitats}}
+
 \item{timeRange}{numeric vector, time range selected for plot}
 
 \item{species}{character, species of interest}
@@ -27,13 +30,15 @@ createTrendData(
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
-\item{unit}{character, whether absolute or relative frequencies (aantal/100ha) 
+\item{unit}{character, whether absolute frequencies, relative frequencies (aantal/100ha),
+absolute cases, or relative bos freq (aantal/100ha bos & natuur); if 'region'
+the legend shows different types of regions for WBE
 should be reported,}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
-should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.}
+should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
-\item{dataDir}{character vector, defines the path to the data files}
+\item{dataDir}{character, path to data files}
 }
 \value{
 data.frame, summary of number of animals per species, region and year.

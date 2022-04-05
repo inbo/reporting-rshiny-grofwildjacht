@@ -163,7 +163,8 @@ setMonthsInDutch <- function(x) {
 nameFile <- function(species, year, extraInfo = NULL, content, fileExt) {
   
   paste0(
-    paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_",
+    if (length(species) > 0)
+      paste0(paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_"),
     if (length(year) > 1) paste(year, collapse = "-") else year,
     if (!is.null(extraInfo)) {paste0("_", paste(extraInfo, collapse = "-"))}, 
     "_", content, 
@@ -251,22 +252,21 @@ replicateColors <- function(nColors) {
   colors <- c()
   
   if (times > 0)
-    colors <- rep(rev(inbo_palette(n = 9)), times)
+    colors <- rep(inbo_palette(n = 9), times)
   if(rest > 0)
-    colors <- c(colors, rev(inbo_palette(n = rest)))
+    colors <- c(colors, inbo_palette(n = rest))
   
   # warning if noLocaties exceeds 9 colours
+  warningText <- NULL
   if(nColors > 9) {
-    warning <- "Door het hoog aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
-      Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."
-  } else {
-    warning <- NULL
+    warningText <- "Door de ruime selectie werden de kleuren van deze grafiek hergebruikt. 
+      Hierdoor is verwarring mogelijk. Verklein de selectie om dit te voorkomen."
   }
   
   return(
     list(
       colors = colors, 
-      warning = warning
+      warning = warningText
     )
   )
 

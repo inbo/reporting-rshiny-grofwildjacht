@@ -207,17 +207,19 @@ if (bioindicator == "onderkaaklengte") {
 				margin = list(b = 40, t = 100)
 		)
 		
-	}else{
-		
-		
+	} else {
 		
 		# create plot
 		pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
-						colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
+            colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
 				layout(title = title,
 						xaxis = list(title = "afschotjaar"), 
 						yaxis = list(title = paste(bioindicatorName, bioindicatorUnit)),
-						margin = list(b = 40, t = 100)
+						margin = list(b = 40, t = 100),
+            annotations = list(x = names(totalCounts), 
+								y = 0, textangle = if (length(totalCounts) > 10) -90,
+								xref = "x", text = paste0("(n = ", totalCounts, ")"), xanchor = 'center', 
+								yanchor = 'bottom', showarrow = FALSE)
 				)
 		
 		# To prevent warnings in UI
@@ -297,4 +299,87 @@ if (bioindicator == "onderkaaklengte") {
 	
 	return(list(plot = pl, data = returnedData, warning = colorList$warning))
 	
+}
+
+
+
+#' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams optionsModuleServer 
+#' @inheritParams plotBioindicator
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht")) {
+  
+  bioindicator <- match.arg(bioindicator)
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Bioindicator plot
+      callModule(module = optionsModuleServer, id = "plotBioindicator", 
+        data = data,
+        timeRange = timeRange,
+        types = types,
+        typesDefault = typesDefault,
+        multipleTypes = TRUE)
+      callModule(module = plotModuleServer, id = "plotBioindicator",
+        plotFunction = "plotBioindicator", 
+        bioindicator = bioindicator,
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
+#' @inheritParams plotBioindicatorServer
+#' @inheritParams optionsModuleUI
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
+  regionLevels, uiText) {
+  
+  bioindicator <- match.arg(bioindicator)
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", bioindicator), ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkPlotBioindicator"), 
+      label = h3(HTML(uiText$title))
+    ),
+    conditionalPanel("input.linkPlotBioindicator % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("plotBioindicator"),
+            showTime = TRUE, showType = TRUE,
+            regionLevels = regionLevels, exportData = TRUE,
+            showDataSource = switch(bioindicator,
+              ontweid_gewicht = c("leeftijd", "geslacht"),
+              onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
+            )),
+          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("plotBioindicator"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+
 }

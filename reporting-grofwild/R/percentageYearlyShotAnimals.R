@@ -70,13 +70,9 @@ percentageYearlyShotAnimals <- function(
 	
 	# only retains animals of specified type
 	specifiedType <- !is.null(type) && type != "all"
-	if(specifiedType){
-        
-        inputData$type <- ifelse(inputData$wildsoort != "Ree",
-                "", ifelse(grepl("kits", inputData$type_comp), "kits",
-                        ifelse(inputData$geslacht_comp == "Mannelijk", "bok", "geit")))
-        
-		inputData <- inputData[inputData$type %in% type, ]
+	if (specifiedType){
+
+    inputData <- inputData[inputData$labeltype %in% type, ]
 		openingstijdenData <- openingstijdenData[openingstijdenData$Type %in% type, ]
         
 	}
@@ -313,4 +309,75 @@ percentageYearlyShotAnimals <- function(
 	
 	return(list(plot = pl, data = dataReturn))
 	
+}
+
+
+
+
+#' Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams percentageYearlyShotAnimals
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenData) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "yearlyShotAnimals", 
+        data = data,
+        timeRange = timeRange,
+        timeLabel = "Referentieperiode",
+        types = type,
+        multipleTypes = FALSE
+      )
+      callModule(module = plotModuleServer, id = "yearlyShotAnimals",
+        plotFunction = "percentageYearlyShotAnimals", 
+        data = data,
+        openingstijdenData = openingstijdenData)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+yearlyShotAnimalsUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearlyShotAnimals"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkYearlyShotAnimals % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("yearlyShotAnimals"), 
+            showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("yearlyShotAnimals"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
 }

@@ -54,5 +54,10 @@ shinyServer(function(input, output, session) {
             source(file.path("uiFiles", "uiWbe.R"), local = TRUE)$value
             
           })
+                
+        observeEvent(input$tabs, {
+            if (input$tabs %in% c("Grofwild", "Wildschade"))
+              browseURL("https://grofwildjacht.inbo.be")
+          })
       
     })

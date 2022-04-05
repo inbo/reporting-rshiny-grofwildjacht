@@ -7,7 +7,7 @@
 #' @inheritParams countYearAge
 #' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
 #' @param interval character, data shown in intervals
-#' should be one of \code{c("Per maand", "Per seizoen", "Per twee weken")}
+#' should be one of \code{c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken")}
 #' @param groupVariable character, variable name in \code{data} for 
 #' which colored bars should be plot
 #' @param type character, used to filter the data
@@ -16,7 +16,7 @@
 #' @author dbemelmans
 #' @export 
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
-  interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken"), 
+  interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
   groupVariable, type = NULL) {
   
   
@@ -97,14 +97,11 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
     plotData$timeGroup <- plotData$maand
         
        
-  } else if (interval == "Per seizoen") {
+  } else if (interval == "Per kwartaal") {
     
-    newLevels <- c("lente", "zomer", "herfst", "winter")
+    newLevels <- c("Kwartaal 1 (jan-mrt)", "Kwartaal 2 (apr-jun)", "Kwartaal 3 (jul-sept)", "Kwartaal 4 (okt-dec)")
     
-    plotData$timeGroup <- with(plotData, ifelse(maand %in% 1:2 | maand == 12 & dag >= 21 | maand == 3 & dag < 21,
-            4, ifelse(maand == 3 & dag >= 21 | maand %in% 4:5 | maand == 6 & dag <= 21,
-            1, ifelse(maand == 6 & dag >= 21 | maand %in% 7:8 | maand == 9 & dag <= 21,
-            2, 3))))
+    plotData$timeGroup <- ceiling(plotData$maand/3)
     
         
   } else if(interval == "Per twee weken") {
@@ -225,7 +222,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
       callModule(module = optionsModuleServer, id = "countYearShot", 
         data = data,
         timeRange = timeRange,
-        intervals = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken"),
+        intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
         types = types,
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",

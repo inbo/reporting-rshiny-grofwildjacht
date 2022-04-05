@@ -9,7 +9,7 @@ mapFlandersUI(
   showRegion = TRUE,
   showSource = FALSE,
   showCombine = TRUE,
-  isSchade = FALSE,
+  type = c("grofwild", "wildschade", "wbe"),
   unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative"),
   plotDetails = c("flanders", "region")
 )
@@ -22,6 +22,9 @@ mapFlandersUI(
 \item{showSource}{boolean, whether to show choices for sources}
 
 \item{showCombine}{boolean, whether to show option to combine selected regions}
+
+\item{type}{character, defines the layout depending on which page it is shown;
+should be one of \code{c("grofwild", "wildschade", "wbe")}}
 
 \item{unitChoices}{named character vector, choices for unit option;
 default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}}

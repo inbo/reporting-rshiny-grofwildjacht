@@ -10,7 +10,7 @@ mapFlandersServer(
   species,
   currentWbe = NULL,
   hideGlobeDefault = TRUE,
-  isSchade = FALSE,
+  type = c("grofwild", "wildschade", "wbe"),
   geoData,
   biotoopData = NULL,
   allSpatialData
@@ -27,6 +27,9 @@ mapFlandersServer(
 
 \item{hideGlobeDefault}{boolean, whether the globe is shown by default 
 when the map is first created; default value is TRUE}
+
+\item{type}{character, defines the layout depending on which page it is shown;
+should be one of \code{c("grofwild", "wildschade", "wbe")}}
 
 \item{geoData}{SpatialPolygonsDataFrame with geographical data}
 

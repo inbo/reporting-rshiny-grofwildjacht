@@ -74,6 +74,8 @@ defined externally for large map}
 \item{variable}{character, defines which variable is of interest for the table}
 
 \item{combinatie}{logical, summarised view of selected regions}
+
+\item{schadeTitles}{boolean, whether title should include 'schade' instead of 'afschot'}
 }
 \value{
 no return value; plot output object is created

@@ -73,10 +73,10 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
                     afschotjaar = chosenTimes,
                     locatie = unique(spatialData$NAAM)))
     
-    if (regionLevel == "WBE_buitengrenzen" & unit == "relativeDekking") {
-      # add dekkingsgraad 100ha bos&natuur if WBE      
-      fullData <- merge(fullData, biotoopData[, c("WBE_NR", "Area_hab_km2_bos", "year")],
-        by.x = c("locatie", "afschotjaar"), by.y = c("WBE_NR", "year"))
+    if (unit == "relativeDekking") {
+      # add dekkingsgraad 100ha bos&natuur      
+      fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos", "year")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year"))
       names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
       
     } else {
@@ -135,6 +135,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @param locaties character vector, regions that were selected to plot
 #' @param combinatie logical, summarised view of selected regions
 #' @param timeRange numeric vector, time range selected for plot
+#' @param isFlanders boolean, whether the trend plot is made for Flanders (whole region)
 #' @param isSchade boolean, whether the function should generate titles for schadeData; default is FALSE
 #' @inheritParams createSpaceData
 #' @inheritParams countYearProvince

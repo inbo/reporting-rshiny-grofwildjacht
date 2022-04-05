@@ -10,7 +10,7 @@ countYearShotAnimals(
   jaartallen = NULL,
   width = NULL,
   height = NULL,
-  interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken"),
+  interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
   groupVariable,
   type = NULL
 )
@@ -28,7 +28,7 @@ in the plot; if NULL no selection on year(s) is made}
 \item{height}{plot height (optional)}
 
 \item{interval}{character, data shown in intervals
-should be one of \code{c("Per maand", "Per seizoen", "Per twee weken")}}
+should be one of \code{c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken")}}
 
 \item{groupVariable}{character, variable name in \code{data} for 
 which colored bars should be plot}

@@ -243,6 +243,7 @@ countYearShotServer(id = "wild_labeltype",
 mapFlandersServer(id = "wild",
   defaultYear = defaultYear,
   species = reactive(input$wild_species),
+  type = "grofwild",
   geoData = results$wild_geoData,
   biotoopData = biotoopData,
   allSpatialData = spatialData)

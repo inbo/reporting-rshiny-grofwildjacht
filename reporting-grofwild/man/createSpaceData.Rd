@@ -11,7 +11,7 @@ createSpaceData(
   year,
   species,
   regionLevel,
-  unit = c("absolute", "relative", "absoluteCases", "relativeDekking"),
+  unit = c("absolute", "relative", "absoluteCases", "relativeDekking", "region"),
   sourceIndicator = NULL,
   dataDir = system.file("extdata", package = "reportingGrofwild")
 )
@@ -31,7 +31,8 @@ createSpaceData(
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{unit}{character, whether absolute frequencies, relative frequencies (aantal/100ha),
-absolute cases, or relative bos freq (aantal/100ha bos & natuur)  
+absolute cases, or relative bos freq (aantal/100ha bos & natuur); if 'region'
+the legend shows different types of regions for WBE
 should be reported,}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)

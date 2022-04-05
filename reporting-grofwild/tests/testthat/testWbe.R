@@ -8,9 +8,9 @@
 context("Test WBE")
 
 # Load all data
-load(file = file.path(dataDir, "spatialData.RData"))
 load(file = file.path(dataDir, "spatialDataWBE.RData"))
-spatialData <- c(spatialData, spatialDataWBE)
+spatialData <- spatialDataWBE
+rm(spatialDataWBE)
 
 years <- as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE)))
 years <- years[!is.na(years)]
@@ -48,8 +48,6 @@ gc()
 
 test_that("The map", {
     
-    unit <- c("absolute", "relative", "relativeDekking")[2]
-    
     for (iYear in years) {
       
       if (doPrint)
@@ -64,7 +62,7 @@ test_that("The map", {
           year = iYear,
           species = iSpecies,
           regionLevel = "WBE_buitengrenzen",
-          unit = unit
+          unit = "region"
         )
         
         if (doPrint)
@@ -78,8 +76,8 @@ test_that("The map", {
             allSpatialData = spatialData, 
             regionLevel = "WBE_buitengrenzen", 
             year = iYear,
-            colorScheme = c("white", RColorBrewer::brewer.pal(
-                n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+            colorScheme = RColorBrewer::brewer.pal(
+                n = nlevels(spaceData$data$group), name = "YlOrBr"),
             summaryData = spaceData$data,
             legend = "topright",
             species = iSpecies

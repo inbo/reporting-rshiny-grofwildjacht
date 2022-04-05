@@ -114,7 +114,7 @@ results$schade_timeRange <- reactive({
 
 mapFlandersServer(id = "schade",
   defaultYear = defaultYear,
-  isSchade = TRUE,
+  type = "wildschade",
   species = reactive(input$schade_species),
   geoData = reactive(results$schade_data()@data),
   allSpatialData = spatialData)

@@ -26,8 +26,11 @@ trendYearRegion(
 \item{timeRange}{numeric vector, time range selected for plot}
 
 \item{unit}{character, whether absolute frequencies, relative frequencies (aantal/100ha),
-absolute cases, or relative bos freq (aantal/100ha bos & natuur)  
+absolute cases, or relative bos freq (aantal/100ha bos & natuur); if 'region'
+the legend shows different types of regions for WBE
 should be reported,}
+
+\item{isFlanders}{boolean, whether the trend plot is made for Flanders (whole region)}
 
 \item{isSchade}{boolean, whether the function should generate titles for schadeData; default is FALSE}
 

@@ -39,16 +39,18 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		
 	} else if (categorie == "typeAantal") {
 		
-		allData <- data[, c("provincie", "type", "afschotjaar")]
+		allData <- data[, c("provincie", "labeltype", "afschotjaar")]
 		names(allData) <- c("provincie", "categorie", "jaar")
 		
 	} else {
 		
-		allData <- data[, c("provincie", "type", "afschotjaar")]
+		allData <- data[, c("provincie", "labeltype", "afschotjaar")]
 		names(allData) <- c("provincie", "categorie", "jaar")
-		
-		assignedData <- assignedData[, c("Provincie", "Labeltype", "Jaar", "Aantal")]
+    
+		assignedData <- assignedData[, c("provincie_toek", "labeltype", "labeljaar", "toegekend")]
 		names(assignedData) <- c("provincie", "categorie", "jaar", "totaal")
+    # summarize per province
+    assignedData <- aggregate(totaal ~ jaar + provincie + categorie, data = assignedData, sum)
 		
 	}
 	  
@@ -103,7 +105,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		
 	} else if (grepl("type", categorie) & wildNaam == "Ree") {  # ree for type
 		
-		levelsCategorie <- c("geit", "bok", "kits")
+		levelsCategorie <- c("REEGEIT", "REEBOK", "REEKITS")
 		
 	}
 	
@@ -114,6 +116,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	if (categorie == "typePercent") {
 		
 		summaryData <- merge(x = summaryData, y = tableAssignedData, all = TRUE)
+    summaryData$totaal[is.na(summaryData$totaal)] <- 0
 		summaryData$percent <- summaryData$freq/summaryData$totaal
 		
 	} 
@@ -241,10 +244,14 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		return(NULL)
 	
 	
-	if (categorie == "typePercent")
-		toReturn[, c(levelsCategorie, "Totaal")] <- 
-				sapply(toReturn[, c(levelsCategorie, "Totaal")], function(x)
-							paste0(round(x*100), "%")) 
+	if (categorie == "typePercent") {
+    toReturn[, c(levelsCategorie, "Totaal")] <- 
+      sapply(toReturn[, c(levelsCategorie, "Totaal")], function(x)
+          paste0(round(as.numeric(x)*100), "%"))
+    
+    
+    toReturn <- toReturn[toReturn$provincie != "Onbekend", ]
+      }
 	
 	# Rename provincie
 	names(toReturn)[names(toReturn) == "provincie"] <- "Provincie"
@@ -252,4 +259,72 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	
 	return(toReturn)
 	
+}
+
+
+
+#' Shiny module for creating the plot \code{\link{tableProvince}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams tableProvince
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+tableProvinceServer <- function(id, data, categorie, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "tableProvince", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "tableProvince",
+        plotFunction = "tableProvince", 
+        data = data, 
+        categorie = categorie)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{tableProvince}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+tableProvinceUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkTableProvince"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkTableProvince % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("tableProvince"), 
+            showYear = TRUE, exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          tableModuleUI(id = ns("tableProvince"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+  
 }

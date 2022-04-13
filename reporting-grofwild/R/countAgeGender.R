@@ -124,3 +124,71 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 }
 
+
+
+#' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
+#' @param id character, unique identifier for the module
+#' @param data data.frame for the plot function
+#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countAgeGenderServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Geslachtsverdeling binnen het afschot per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "ageGender", 
+        data = data, 
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "ageGender",
+        plotFunction = "countAgeGender", 
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countAgeGenderUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkAgeGender"),
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkAgeGender % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("ageGender"), showTime = TRUE, exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("ageGender"))
+        )
+      ),
+      tags$hr()
+    )
+  )
+  
+}
+  
+  
+  
+

@@ -8,6 +8,7 @@
 #' 
 #' Figure p. 9 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
+#' @param currentYear numeric, current year to calculate accuracy for
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for a given species the percentage per age category
@@ -28,9 +29,15 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
-		width = NULL, height = NULL) {
+  currentYear = as.numeric(format(Sys.Date(), "%Y")),
+  width = NULL, height = NULL) {
 	
 	
+  # R CMD check notes
+  jaar <- NULL
+  jager <- NULL
+  kaak <- NULL
+  
 	wildNaam <- unique(data$wildsoort)
 	
 	if (is.null(jaartallen))
@@ -40,13 +47,22 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak")] 
-	names(plotData) <- c("jager", "kaak")
-	
+			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak", "afschotjaar")] 
+	names(plotData) <- c("jager", "kaak", "jaar")
 
 	# Percentage collected
 	nRecords <- nrow(plotData)
-	
+ 
+  # Calculate accuracy
+  accData <- subset(plotData, jaar %in% jaartallen & 
+        !is.na(jager) & !jager %in% "Onbekend" &
+        !is.na(kaak) & !kaak %in% "Niet ingezameld")
+  accuracy <- if (nrow(accData) > 0)
+    round(sum(accData$jager == accData$kaak)/nrow(accData) * 100) else
+    0
+  plotData$jaar <- NULL
+ 
+ 
 	# Remove some categories
 	plotData <- plotData[with(plotData, !is.na(jager) & !jager %in% "Onbekend" &
 							!is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
@@ -55,6 +71,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 		stop("Geen data beschikbaar")
 	
 	percentCollected <- nrow(plotData)/nRecords
+
 	
 	# Define names and ordering of factor levels
 	if (wildNaam == "Wild zwijn") {  # wild zwijn
@@ -124,8 +141,76 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
+  
+ 
+	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], 
+     accuracy = list(value = accuracy, total = nrow(accData))))
 	
-	
-	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"]))
-	
+}
+
+
+
+#' Shiny module for creating the plot \code{\link{countAgeCheek}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countAgeCheekServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Leeftijdscategorie op basis van onderkaak & meldingsformulier
+      callModule(module = optionsModuleServer, id = "ageCheek", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "ageCheek",
+        plotFunction = "countAgeCheek", 
+        data = data)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
+#' @param showAccuracy boolean, whether to show gauge for accuracy
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countAgeCheekUI <- function(id, showAccuracy = FALSE, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkAgeCheek"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkAgeCheek % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
+          tags$p(HTML(uiText[, id])),
+          if (showAccuracy)
+            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode"),
+        ),
+        column(8, 
+          plotModuleUI(id = ns("ageCheek"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
 }

@@ -7,7 +7,7 @@
 #' @inheritParams countYearAge
 #' @inheritParams filterGrofwild
 #' @import plotly
-#' @importFrom INBOtheme inbo_palette
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified specie and years}
@@ -49,31 +49,27 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
      "leeftijd_comp_bron", "geslacht_comp_bron"))
  
- nRecords <- nrow(plotData)
-
- if (nRecords == 0)
-   return(NULL)
- 
  # Filter on source & rename to embryos
  plotData <- filterGrofwild(plotData = plotData, 
    sourceIndicator_embryos = sourceIndicator,
    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
    sourceIndicator_geslacht = sourceIndicator_geslacht)
- 
       
-	## For aantal_embryos
-	# remove missing
-    plotData <- plotData[!is.na(plotData$embryos), ]
-    nCollected <- nrow(plotData)
-    # remove > 3 embryos
-    plotData <- plotData[plotData$embryos <= 3, ]
-	
-    if (nCollected == 0)
-        return(NULL)
+	# remove > 3 embryos
+  plotData <- plotData[plotData$embryos <= 3 | is.na(plotData$embryos), ]
+  # rename missing
+  plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
+  
+ 
+  ## For aantal_embryos
+  nCollected <- sum(plotData$embryos != "onbekend")
+  nRecords <- nrow(plotData)
+  if (nRecords == 0)
+    return(NULL)
     
 	# convert to a factor
-	newLevels <- rev(c("3", "2", "1", "0"))
-	plotData$embryos <- factor(plotData$embryos, levels = newLevels)
+	newLevels <- c("onbekend", "3", "2", "1", "0")
+	plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
 	
 	plotData$afschotjaar <- as.factor(plotData$afschotjaar)
 	
@@ -97,20 +93,20 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	totalCounts <- table(plotData$afschotjaar)
 	
 	
-	title <- paste0(wildNaam, " ", bioindicatorName, " ",
-   paste0("(", 
-         switch(sourceIndicator,
-           inbo = "INBO",
-           meldingsformulier = "Meldingsformulier",
-           both = "INBO en meldingsformulier"),
-         ")\n"),
-   ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-			if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
-	
-	
- colorList <- replicateColors(nColors = nlevels(summaryData$embryos))
- colors <- colorList$colors
-	names(colors) <- rev(newLevels)
+  title <- paste0(wildNaam, " ", bioindicatorName, " ",
+    paste0("(", 
+      switch(sourceIndicator,
+        inbo = "INBO",
+        meldingsformulier = "Meldingsformulier",
+        both = "INBO en meldingsformulier"),
+      ")\n"),
+    ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
+    if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
+  
+  
+  colorList <- replicateColors(nColors = nlevels(summaryData$embryos))$colors
+  colors <- c(inbo_lichtgrijs, colorList)[1:nlevels(summaryData$embryos)]
+  names(colors) <- newLevels
 	
 	
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
@@ -143,6 +139,74 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	summaryData$text <- NULL
 	
 	
-	return(list(plot = pl, data = summaryData, warning = colorList$warning))
+	return(list(plot = pl, data = summaryData))
 	
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams optionsModuleServer
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countEmbryosServer <- function(id, data, timeRange, types) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
+      callModule(module = optionsModuleServer, id = "countEmbryos", 
+        data = data,
+        timeRange = timeRange,
+        types = types,
+        multipleTypes = TRUE)
+      callModule(module = plotModuleServer, id = "countEmbryos",
+        plotFunction = "countEmbryos",
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
+#' @param regionLevels character, choices for region
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countEmbryosUI <- function(id, regionLevels, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("countEmbryos"),
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.countEmbryos % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("countEmbryos"), showTime = TRUE, showType = TRUE,
+            regionLevels = regionLevels, exportData = TRUE,
+            showDataSource = c("embryos", "leeftijd", "geslacht")),
+          tags$p(HTML(uiText[, id]))),
+        column(8, 
+          plotModuleUI(id = ns("countEmbryos"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+}
+

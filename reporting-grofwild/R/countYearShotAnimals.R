@@ -4,21 +4,27 @@
 ###############################################################################
 
 #' Interactive barplot to show the distribution of the hunted animals in a certain interval
-#' @inheritParams countHuntingMethod
-#' @param interval character, data shown in intervals monthly, biweekly..
+#' @inheritParams countYearAge
+#' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
+#' @param interval character, data shown in intervals
+#' should be one of \code{c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken")}
+#' @param groupVariable character, variable name in \code{data} for 
+#' which colored bars should be plot
 #' @param type character, used to filter the data
 #' 
-#' @importFrom INBOtheme inbo_palette
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @author dbemelmans
 #' @export 
-countYearShotAnimals <- function(data, regio, jaartallen, width = NULL, height = NULL, interval = NULL, type = NULL) {
+countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
+  interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
+  groupVariable, type = NULL) {
   
-  ## plotly gives a warning: Warning: 'layout' objects don't have these attributes: 'bargroupgap'
-  ## This is safe to ignore: https://github.com/ropensci/plotly/issues/994
   
-  pl <- NULL
+  wildNaam <- unique(data$wildsoort)
+  interval <- match.arg(interval)
+  
   plotData <- data
-  
+ 
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
@@ -26,255 +32,164 @@ countYearShotAnimals <- function(data, regio, jaartallen, width = NULL, height =
   
   # Select on years
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
-      c("afschotjaar", "afschot_datum", 
-          "type_comp", "geslacht_comp", "wildsoort")]
+      c("afschotjaar", "afschot_datum", groupVariable)]
   
   plotData <- plotData[!is.na(plotData$afschotjaar), ]
-  
+  plotData[, groupVariable] <- droplevels(plotData[, groupVariable])
+  plotData[is.na(plotData[, groupVariable]), groupVariable] <- "Onbekend"
   
   # only retains animals of specified type
-  specifiedType <- !is.null(type) && type != "all"
-  if(specifiedType){
+  if (!is.null(type) && type != "all") {
     
-    plotData$type <- ifelse(plotData$wildsoort != "Ree",
-        "", ifelse(grepl("kits", plotData$type_comp), "kits",
-            ifelse(plotData$geslacht_comp == "Mannelijk", "bok", "geit")))
+    plotData <- plotData[plotData[, groupVariable] %in% type, ]
     
-    plotData <- plotData[plotData$type %in% type, ]
   }
   
-  plotData <- plotData[, 
-      c("afschotjaar", "afschot_datum")]
-  
-  noRecords <- plotData
+  noRecords <- nrow(plotData)
   plotData <- plotData[!is.na(plotData$afschot_datum), ]
   
   
-  # Summarize data per province and year
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
-              min(jaartallen):max(jaartallen)))
+        min(jaartallen):max(jaartallen)))
   
+  colorNames <- c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend")
+  colors <- replicateColors(nColors = length(colorNames))$colors
+  colors[length(colors)] <- inbo_lichtgrijs
+  names(colors) <- colorNames
   
-  if(interval == "Per maand") {
-    
-    
-    plotData$maand <- sapply(plotData$afschot_datum, function(datum) {
-          as.numeric(stringr::str_split(datum, patter = "-")[[1]][2])
-        })
-    plotData <- plotData[, c("afschotjaar", "maand")]
-    
-    summaryData <- melt(table(plotData), id.vars = c("afschotjaar", "maand"))
-    
-    # For optimal displaying in the plot
-    summaryData$maandChar <- sapply(summaryData$maand, function(x) {
-          switch(as.character(x),
-              "1" = "januari",
-              "2" = "februari",
-              "3" = "maart",
-              "4" = "april",
-              "5" = "mei",
-              "6" = "juni", 
-              "7" = "juli",
-              "8" = "augustus",
-              "9" = "september",
-              "10" = "oktober",
-              "11" = "november",
-              "12" = "december")
-        })
-    
-    
-    summaryData$maandChar <- as.factor(summaryData$maandChar)
-    summaryData$maandChar <- factor(summaryData$maandChar, levels = rev(levels(summaryData$maandChar)))
-    summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
-    
-    colors <- rev(inbo_palette(n = 1))
-    title <- paste0("Afschot van ",
-        ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-            jaartallen))
-    
-    summaryData$maandChar <- factor(summaryData$maandChar, levels = c("januari", 
-            "februari", "maart", "april", "mei", "juni", 
-            "juli", "augustus", "september", "oktober", 
-            "november", "december"))
-    
+  title <- paste0("Afschot van ",
+    ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
+      jaartallen))
+  
+  # Summarize data per year
+  totalCount <- as.data.frame(table(plotData$afschotjaar))
+  colnames(totalCount) <- c("year", "value")
+  
+  # Extract month/day
+  plotData$maand <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
+        strsplit(datum, split = "-")[[1]][2]
+      }))
+  plotData$dag <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
+        strsplit(datum, split = "-")[[1]][3]
+      }))
    
-    # Create plot
-    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~maandChar, 
-            colors = c(rep(colors, 12)),
-            type = "bar",  width = width, height = height) %>%
-        layout(title = title,
-            xaxis = list(title = "Jaar"), 
-            yaxis = list(title = "Aantal"),
-            margin = list(b = 120, t = 100), 
-            barmode = "group", bargap = 0.15, bargroupgap = 0.1,
-            showlegend = FALSE)%>% add_annotations(text = paste0(round(nrow(plotData)/nrow(noRecords), 2)*100, 
-                "% met gekende afschotdatum (", nrow(plotData), "/", nrow(noRecords), ")"),
-            xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-            y = -0.2, yanchor = "bottom", showarrow = FALSE)
+  
+  if (interval == "Per jaar") {
     
+    newLevels <- sort(unique(plotData$afschotjaar))
     
-  } else if (interval == "Per seizoen") {
+  } else if (interval == "Per maand") {
     
-    plotData$maand <- sapply(plotData$afschot_datum, function(datum) {
-          as.numeric(stringr::str_split(datum, patter = "-")[[1]][2])
-        })
-    plotData$dag <- sapply(plotData$afschot_datum, function(datum) {
-          as.numeric(stringr::str_split(datum, patter = "-")[[1]][3])
-        })
-    plotData <- plotData[, c("afschotjaar", "maand", "dag")]
+    newLevels <- c(
+      "januari",
+      "februari",
+      "maart",
+      "april",
+      "mei",
+      "juni", 
+      "juli",
+      "augustus",
+      "september",
+      "oktober",
+      "november",
+      "december")
     
-    plotData$seizoen <- sapply(1:nrow(plotData), function(x) {
-          dag <- plotData$dag[x]
-          maand <- plotData$maand[x] 
-          if(maand %in% 1:2 | maand == 12 & dag >= 21 | maand == 3 & dag < 21) {
-            "winter"
-          } else if(maand == 3 & dag >= 21 | maand %in% 4:5 | maand == 6 & dag <= 21) {
-            "lente"
-          } else if(maand == 6 & dag >= 21 | maand %in% 7:8 | maand == 9 & dag <= 21) {
-            "zomer"
-          } else {
-            "herfst"
-          }
-          
-        })
+    plotData$timeGroup <- plotData$maand
+        
+       
+  } else if (interval == "Per kwartaal") {
     
-    plotData <- plotData[, c("afschotjaar", "seizoen")]
+    newLevels <- c("Kwartaal 1 (jan-mrt)", "Kwartaal 2 (apr-jun)", "Kwartaal 3 (jul-sept)", "Kwartaal 4 (okt-dec)")
     
-    summaryData <- melt(table(plotData), id.vars = c("afschotjaar", "seizoen"))
-    summaryData$seizoen <- as.factor(summaryData$seizoen)
-    summaryData$seizoen <- factor(summaryData$seizoen, levels = rev(levels(summaryData$seizoen)))
-    summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+    plotData$timeGroup <- ceiling(plotData$maand/3)
     
-    colors <- rev(inbo_palette(n = 1))
-    title <- paste0("Afschot van ",
-        ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-            jaartallen))
-    
-    summaryData$seizoen <- factor(summaryData$seizoen, levels = c("lente",
-            "zomer", "herfst", "winter"))
-    
-    # Create plot
-    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~seizoen, 
-            colors = c(rep(colors, 4)),
-            type = "bar",  width = width, height = height) %>%
-        layout(title = title,
-            xaxis = list(title = "Jaar"), 
-            yaxis = list(title = "Aantal"),
-            margin = list(b = 120, t = 100), 
-            barmode = "group", bargap = 0.15,  bargroupgap = 0.1,
-            showlegend = FALSE) %>% add_annotations(text = paste0(round(nrow(plotData)/nrow(noRecords), 2)*100, 
-                "% met gekende afschotdatum (", nrow(plotData), "/", nrow(noRecords), ")"),
-            xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-            y = -0.2, yanchor = "bottom", showarrow = FALSE)
+        
   } else if(interval == "Per twee weken") {
     
-    plotData$maand <- sapply(plotData$afschot_datum, function(datum) {
-          as.numeric(stringr::str_split(datum, patter = "-")[[1]][2])
-        })
-    plotData$dag <- sapply(plotData$afschot_datum, function(datum) {
-          as.numeric(stringr::str_split(datum, patter = "-")[[1]][3])
-        })
-    plotData <- plotData[, c("afschotjaar", "maand", "dag")]
-    
-    
-    plotData$tweewekelijks <- sapply(1:nrow(plotData), function(x) {
-          row <- plotData[x, ]
-          base <- (row$maand-1)*2 + 1
-          if(row$dag <= 15) {
-            base
-          } else {
-            base + 1
-          }
-          
-        })
-    
-    
-      plotData$tweewekelijks_datum <- sapply(plotData$tweewekelijks, function(x) { 
-          switch(as.character(x),
-              "1" = "01/01-15/01",
-              "2" = "16/01-31/01",
-              "3" = "01/02-15/02",
-              "4" = "16/02-28/02 or 29/02",
-              "5" = "01/03-15/03",
-              "6" = "16/03-31/03",
-              "7" = "01/04-15/04",
-              "8" = "16/04-30/04",
-              "9" = "01/05-15/05",
-              "10" = "16/05-31/05",
-              "11" = "01/06-15/06",
-              "12" = "16/06-30/06",
-              "13" = "01/07-15/07",
-              "14" = "16/07-31/07",
-              "15" = "01/08-15/08",
-              "16" = "16/08-31/08",
-              "17" = "01/09-15/09",
-              "18" = "16/09-30/09",
-              "19" = "01/10-15/10",
-              "20" = "16/10-31/10",
-              "21" = "01/11-15/11",
-              "22" = "16/11-30/11",
-              "23" = "01/12-15/12",
-              "24" = "16/12-31/12"
-              )
-        })
-    
-    plotData <- plotData[, c("afschotjaar", "tweewekelijks_datum")]
-    summaryData <- melt(table(plotData), id.vars = c("afschotjaar", "tweewekelijks_datum"))
-    summaryData$tweewekelijks_datum <- as.factor(summaryData$tweewekelijks_datum)
-    summaryData$tweewekelijks_datum <- factor(summaryData$tweewekelijks_datum, levels = rev(levels(summaryData$tweewekelijks_datum)))
-    summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
-    
-    
-    
-    colors <- rev(inbo_palette(n = 1))
-    title <- paste0("Afschot van ",
-        ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-            jaartallen))
-    
-    summaryData$tweewekelijks_datum <- factor(summaryData$tweewekelijks_datum, levels = c("01/01-15/01",
-            "16/01-31/01",
-            "01/02-15/02",
-            "16/02-28/02 or 29/02",
-            "01/03-15/03",
-            "16/03-31/03",
-            "01/04-15/04",
-            "16/04-30/04",
-            "01/05-15/05",
-            "16/05-31/05",
-            "01/06-15/06",
-            "16/06-30/06",
-            "01/07-15/07",
-            "16/07-31/07",
-            "01/08-15/08",
-            "16/08-31/08",
-            "01/09-15/09",
-            "16/09-30/09",
-            "01/10-15/10",
-            "16/10-31/10",
-            "01/11-15/11",
-            "16/11-30/11",
-            "01/12-15/12",
-            "16/12-31/12"))
-    
-    # Create plot
-    pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~tweewekelijks_datum, 
-            colors = c(rep(colors, 24)),
-            type = "bar",  width = width, height = height) %>%
-        layout(title = title,
-            xaxis = list(title = "Jaar"), 
-            yaxis = list(title = "Aantal"),
-            margin = list(b = 120, t = 100), 
-            barmode = "group", bargap = 0.15, bargroupgap = 0.1,
-           showlegend = FALSE) %>% add_annotations(text = paste0(round(nrow(plotData)/nrow(noRecords), 2)*100, 
-               "% met gekende afschotdatum (", nrow(plotData), "/", nrow(noRecords), ")"),
-           xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-           y = -0.2, yanchor = "bottom", showarrow = FALSE)
-       
-          
+     plotData$timeGroup <- (plotData$maand-1)*2 + (plotData$dag > 15) + 1 
+         
+     newLevels <- c(
+        "01/01-15/01",
+        "16/01-31/01",
+        "01/02-15/02",
+        "16/02-28/02 of 29/02",
+        "01/03-15/03",
+        "16/03-31/03",
+        "01/04-15/04",
+        "16/04-30/04",
+        "01/05-15/05",
+        "16/05-31/05",
+        "01/06-15/06",
+        "16/06-30/06",
+        "01/07-15/07",
+        "16/07-31/07",
+        "01/08-15/08",
+        "16/08-31/08",
+        "01/09-15/09",
+        "16/09-30/09",
+        "01/10-15/10",
+        "16/10-31/10",
+        "01/11-15/11",
+        "16/11-30/11",
+        "01/12-15/12",
+        "16/12-31/12")
+            
   }
   
+  if (interval == "Per jaar") {
+    summaryData <- melt(table(plotData[, c("afschotjaar", groupVariable)]), 
+      id.vars = c("afschotjaar", groupVariable))
+    summaryData$timeGroup <- as.numeric(as.factor(summaryData$afschotjaar))
+  } else 
+    summaryData <- melt(table(plotData[, c("afschotjaar", "timeGroup", groupVariable)]), 
+      id.vars = c("afschotjaar", "timeGroup", groupVariable))
   
+  # For optimal displaying in the plot
+  summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
+  summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+  
+  # Create plot per year
+  if (interval == "Per jaar") {
+    allPlots <- plot_ly(data = summaryData,
+            x = ~timeChar, y = ~value, type = "bar", 
+            color = ~get(groupVariable), colors = colors,
+            legendgroup = ~get(groupVariable), 
+            width = width, height = height) %>%
+          layout(
+            xaxis = list(title = ''),            
+            annotations = list(x = totalCount$year,
+              y = totalCount$value,
+              text = totalCount$value,
+              xanchor = 'center', yanchor = 'bottom',
+              showarrow = FALSE))
+  } else {
+    allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
+        iYear <- levels(summaryData$afschotjaar)[i]
+        tmp <- plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
+            x = ~timeChar, y = ~value, type = "bar", 
+            color = ~get(groupVariable), colors = colors,
+            legendgroup = ~get(groupVariable), showlegend = i == 1,
+            width = width, height = height) %>%
+          layout(xaxis = list(
+              title = paste0(iYear, "<br>", "(n= ", totalCount$value[totalCount$year == iYear], ")"), 
+              showticklabels = FALSE)
+          )
+      })
+  }
+  
+  # Combine all plots
+  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE) %>%
+    layout(barmode = 'stack', showlegend = TRUE,
+      title = title,
+      yaxis = list(title = "Aantal"),
+      margin = list(b = 120, t = 100)) %>% 
+    add_annotations(text = paste0(round(nrow(plotData)/noRecords, 2)*100, 
+        "% met gekende afschotdatum (", nrow(plotData), "/", noRecords, ")"),
+      xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+      y = -0.25, yanchor = "bottom", showarrow = FALSE)
  
+  colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
+  summaryData$group <- NULL
   
   
   # To prevent warnings in UI
@@ -283,4 +198,76 @@ countYearShotAnimals <- function(data, regio, jaartallen, width = NULL, height =
   return(list(plot = pl, data = summaryData))
 }
 
+
+
+#' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - server side
+#' @param id character, unique identifier for the module
+#' @param data data.frame for the plot function
+#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @param types character vector
+#' @inheritParams countYearShotAnimals
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Verdeling afschot over de jaren
+      callModule(module = optionsModuleServer, id = "countYearShot", 
+        data = data,
+        timeRange = timeRange,
+        intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
+        types = types,
+        multipleTypes = TRUE)
+      callModule(module = plotModuleServer, id = "countYearShot",
+        plotFunction = "countYearShotAnimals", 
+        groupVariable = groupVariable,
+        data = data)
+           
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
+#' @param regionLevels numeric vector, region level choices
+#' @inheritParams countYearShotAnimals
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", groupVariable), ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearShot"),
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkYearShot % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
+            regionLevels = regionLevels, exportData = TRUE,
+            showType = TRUE, showInterval = TRUE),
+          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
+        ),
+        column(8, plotModuleUI(id = ns("countYearShot")))
+      ),
+      tags$hr(),
+    )
+  
+  ) 
+  
+}
 

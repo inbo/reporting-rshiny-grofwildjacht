@@ -133,3 +133,76 @@ if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwi
 	))
 	
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - server side
+#' @inheritParams countAgeGenderServer
+#' @inheritParams optionsModuleServer
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+ageGenderLowerJawServer <- function(id, data, types, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+      callModule(module = optionsModuleServer, id = "ageGenderLowerJaw", 
+        data = data,
+        types = types,
+        labelTypes = "Leeftijdscategorie",
+        multipleTypes = TRUE,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "ageGenderLowerJaw",
+        plotFunction = "boxAgeGenderLowerJaw", 
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - UI side
+#' @param regionLevels character, choices for region
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    actionLink(inputId = ns("linkAgeGenderLowerJaw"),
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkAgeGenderLowerJaw % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
+            regionLevels = regionLevels, exportData = TRUE,
+            showDataSource = c("leeftijd", "geslacht")),
+          tags$p(HTML(uiText[, id]))),
+        column(8, 
+          plotModuleUI(id = ns("ageGenderLowerJaw"), filter = TRUE)
+        )
+      ),
+      tags$hr()
+    )
+  )
+  
+}
+
+
+
+
+

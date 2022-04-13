@@ -10,7 +10,7 @@
 #' Filter \code{plotData} based on the \code{indieningType} if required
 #' @param plotData data.frame, to be filtered
 #' @param sourceIndicator character, source used to filter \code{data} ('indieningType' column)
-#' should be one of \code{c("E-loker", "HVV", "Natuurpunt")}.
+#' should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.
 #' @param returnStop character, should be one of \code{c("message", "data")}
 #' what needs to be returned if the filtered data has no rows left
 #' @return data.frame, filtered version of \code{plotData}
@@ -22,14 +22,16 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   
   returnStop <- match.arg(returnStop)
   
+  sourcesSchade <- loadMetaSchade()$sources
+  
   if (!is.null(sourceIndicator)) {
     
-    sources <- unlist(sapply(sourceIndicator, function(source) sourcesSchade()[[source]]))
-    plotData <- plotData[plotData$indieningType %in% sources, ]
+    sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
+    plotData <- plotData[grepl(sources, plotData$indieningType), ]
     
     if (nrow(plotData) == 0) {
       if (returnStop == "message")
-        stop("Geen data beschikbaar voor de geselecteerde bron: ", sourceIndicator, ". ")
+        stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
     }
   }
   
@@ -123,8 +125,8 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
   
   if (!is.null(sourceIndicator_embryos)) {
     
-    # Exclude records with missing source
-    plotData <- plotData[!is.na(plotData$aantal_embryos_bron), ]
+    # Exclude records with missing source - NOT for countEmbryos()
+#    plotData <- plotData[!is.na(plotData$aantal_embryos_bron), ]
     
     if (sourceIndicator_embryos == "both")
       plotData$embryos <- plotData$aantal_embryos else if (sourceIndicator_embryos == "inbo") 
@@ -138,5 +140,53 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
       stop("Geen data beschikbaar. ")
   
   return(plotData)
+  
+}
+
+
+
+
+
+#' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
+#' @param allSpatialData list with SpatialPolygonsDataFrame as loaded by 
+#' \code{load(file = file.path(system.file("extdata", package = "reportingGrofwild"), "spatialData.RData"))}
+#' @param species character, animal species
+#' @param regionLevel character, region level. Should be one of 
+#' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}
+#' @param year integer, year of interest. Only relevant when \code{regionLevel}
+#' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
+#' @param locaties character vector, only relevant when \code{regionLevel} is 
+#' "WBE_binnengrenzen"; it selects the relevant WBE only; default is NULL
+#' @return single SpatialPolygonsDataFrame
+#' 
+#' @author mvarewyck
+#' @export
+filterSpatial <- function(allSpatialData, species, 
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", 
+    "WBE", "WBE_buitengrenzen"), 
+  year, locaties = NULL) {
+  
+  
+  regionLevel <- match.arg(regionLevel)
+  
+  
+  # Select correct spatial data
+  if ("Wild zwijn" %in% species & regionLevel == "provinces") {
+    
+    spatialData <- allSpatialData[["provincesVoeren"]]
+    
+  } else if (grepl("WBE", regionLevel)) {
+    
+    spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
+    if (!is.null(locaties))
+      spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
+    
+  } else {
+    
+    spatialData <- allSpatialData[[regionLevel]]
+    
+  }
+  
+  return(spatialData)
   
 }

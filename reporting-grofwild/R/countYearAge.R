@@ -49,15 +49,12 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	# Remove some categories
 	plotData <- plotData[!is.na(plotData$jaar) & !is.na(plotData$kaak), ]
 	
-	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn") {  # wild zwijn
-		
-		newLevelsKaak <- c("Frisling", "Overloper", "Volwassen", "Niet ingezameld")
-		
-	} else {  # ree
-		
-		newLevelsKaak <- c("Kits", "Jongvolwassen", "Volwassen", "Niet ingezameld")
-		# Exclude categories 'jongvolwassen' and 'volwassen' for all animals labelled 'mannelijk' 
+  newLevelsKaak <- c(loadMetaEco(species = wildNaam)$leeftijd_comp, "Niet ingezameld")
+  
+  # Define names and ordering of factor levels
+  if (wildNaam == "Ree") {  
+    
+    # Exclude categories 'jongvolwassen' and 'volwassen' for all animals labelled 'mannelijk' 
 		# see github issue no. 31
 		geslacht <- NULL  # to prevent warnings with R CMD check
 		plotData <- subset(plotData, 
@@ -65,7 +62,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 		
 	}
 	
-	plotData$geslacht <- NULL
+  plotData$geslacht <- NULL
 	
 	# Summarize data per year and age category
 	summaryData <- count(df = plotData, vars = names(plotData))
@@ -177,3 +174,69 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 }
 
+
+
+#' Shiny module for creating the plot \code{\link{countYearAge}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearAgeServer <- function(id, data, timeRange) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Afschot per jaar en per leeftijdscategorie
+      callModule(module = optionsModuleServer, id = "yearAge", 
+        data = data,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "yearAge",
+        plotFunction = "countYearAge", 
+        data = data)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearAge}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countYearAgeUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearAge"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkYearAge % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("yearAge"), 
+            summarizeBy = c("Aantal (alle data)" = "count",
+              "Percentage (enkel ingezamelde onderkaken)" = "percent"),
+            showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("yearAge"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+}

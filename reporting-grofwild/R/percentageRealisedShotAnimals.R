@@ -4,165 +4,184 @@
 ###############################################################################
 
 
-#' Create interactive plot to represent yearly percentage killed and non-killed animals
-#' 
-#' Visualization of results obtained by tableProvince with categorie = typePercent
-#' @inheritParams tableProvince 
-#' @inheritParams percentageYearlyShotAnimals
-#' @inheritParams countYearAge
+
+
+#' Create interactive plot for verwezenlijkt and toegekend afschot per jaar
+#' @inheritParams countEmbryos
+#' @param data data.frame, with \code{loadToekenningen()} for specific WBE 
+#' @param currentYear numeric, current year to calculate accuracy for
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the realised percentage
-#' killed animals out of assigned animals for the year \code{jaar}}
+#' \item{'plot': }{plotly object, for the specified type and jaartallen}
 #' \item{'data': }{data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jaar': }{the year}
-#' \item{'aantal': }{the number of animals that were shot or not shot}
-#' \item{'totaal': }{the number of assigned animals for the given year}
-#' \item{'percent': }{percentage calculated as aantal/totaal*100}
-#' \item{'class': }{character, whether the numbers refer to shot (gerealiseerd)
-#' or non-shot (niet-gerealiseerd) animals}
-#' }
-#' }
+#' \item{'jaar': }{year at which the animal was shot}
+#' \item{'verwezenlijkt': }{count for actually shot animals}
+#' \item{'toegekend': }{count for assigned animals}
+#' \item{'percent': }{verwezenlijkt / toegekend * 100}
+#' }}
 #' }
 #' @author mvarewyck
 #' @import plotly
-#' @import INBOtheme
-#' @importFrom plyr count
 #' @export
-percentageRealisedShotAnimals <- function(data, assignedData,
-		jaartallen = NULL, type = NULL,
-		regio = "", summarizeBy = c("count", "percent"),
-		width = NULL, height = NULL) {
-	
-	
-	wildNaam <- unique(data$wildsoort)
-	
-	summarizeBy <- match.arg(summarizeBy)
-	
-	if (is.null(jaartallen))
-		jaartallen <- unique(data$afschotjaar)
-	
-	# Data observed afschot
-	plotData <- data[data$afschotjaar %in% jaartallen, c("afschotjaar", "type")]
-	names(plotData) <- c("jaar", "type")
-	
-	# Data assigned afschot
-	assignedData <- assignedData[, c("Labeltype", "Jaar", "Aantal")]
-	names(assignedData) <- c("type", "jaar", "freq")
-	assignedData <- count(df = assignedData, vars = c("type", "jaar"), wt_var = "freq")
-	
-	# Exclude records with jaar = NA
-	plotData <- plotData[with(plotData, !is.na(jaar)), ]
-	
-	# Rename categorie NA to "Onbekend"
-	plotData$type[is.na(plotData$type) | plotData$type == ""] <- "Onbekend"
-	
-	
-	if (is.null(type))
-		type <- c("geit", "bok", "kits")
-	
-	plotData <- plotData[plotData$type %in% type, ]
-	plotData$type <- NULL
-	
-	assignedData <- assignedData[assignedData$type %in% type, ]
-	assignedData$type <- NULL
-	assignedData <- count(df = assignedData, vars = c("jaar"), wt_var = "freq")
-	
-	
-	# Percentage collected
-	nRecords <- nrow(plotData)
-	
-	# Summarize data per year and age category
-	summaryData <- count(df = plotData, vars = names(plotData))
-	names(summaryData)[names(summaryData) == "freq"] <- "observed" 
-	
-	summaryData <- merge(x = summaryData, y = assignedData, all = TRUE)
-	summaryData$percent <- summaryData$observed/summaryData$freq*100
-	
-	
-	
-	# For optimal displaying in the plot
-	summaryData$jaar <- as.factor(summaryData$jaar)
-	
-	# Create data for non-realised afschot
-	allData <- rbind(
-			cbind(summaryData, realised = TRUE),
-			cbind(summaryData, realised = FALSE))
-	allData$observed[!allData$realised] <- allData$freq[!allData$realised] - allData$observed[!allData$realised]
-	allData$percent <- allData$observed/allData$freq*100
-	allData$class <- factor(ifelse(allData$realised, "Gerealiseerd", "Niet-gerealiseerd"))
-	
-	
-#  if (summarizeBy == "count") {
-#    
-#    summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
-#        "<br>Aantal: ", summaryData$freq, 
-#        "<br>Totaal: ", summaryData$totaal)
-#    
-#  } else {
-#    
-#    summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
-#        "<br><i>Subset ingezamelde onderkaken </i>",
-#        "<br>", round(summaryData$percent), "%")
-#    
-#  }
-	
-	
-	
-	colors <- c(inbo_palette(1), inbo_lichtgrijs)
-	names(colors) <- levels(allData$class)
-	
-	title <- paste0(wildNaam, " (", paste(type, collapse = ", "), ") ",
-			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-					paste("in", jaartallen)),
-			if (!all(regio == ""))
-				paste0("\n(in ", paste(regio, collapse = " en "), ")")
-	)
-	
-	
-	
-	# Create plot
-	toPlot <- switch(summarizeBy,
-			count = plot_ly(data = allData, x = ~jaar, 
-							y = ~observed, color = ~class, 
-#              text = ~text, hoverinfo = "text+name",
-							colors = colors, type = "bar",
-							width = width, height = height) %>%
-					layout(title = title,
-							xaxis = list(title = "Jaar"), 
-							yaxis = list(title = "Aantal"),
-							barmode = "stack",
-							margin = list(b = 120, t = 100),
-							annotations = list(x = summaryData$jaar, 
-									y = summaryData$observed, 
-									text = ifelse(!is.na(summaryData$percent), 
-											paste0(round(summaryData$percent), "%"), ""),
-									xanchor = 'center', yanchor = 'bottom',
-									showarrow = FALSE)),
-			percent = plot_ly(data = allData, x = ~jaar, 
-							y = ~percent, color = ~class, 
-#              text = ~text, hoverinfo = "text+name",
-							colors = colors, type = "scatter", mode = "lines+markers",
-							width = width, height = height) %>%
-					layout(title = title,
-							xaxis = list(title = "Jaar"), 
-							yaxis = list(title = "Percentage", range = c(0, 100)),
-							margin = list(b = 120, t = 100))
-	)
-	
-	
-	allData$realised <- NULL
-	names(allData)[names(allData) == "observed"] <- "aantal"
-	names(allData)[names(allData) == "freq"] <- "totaal"
-	
-	
-	# To prevent warnings in UI
-	toPlot$elementId <- NULL
-	
-	
-	return(list(plot = toPlot, data = allData))
-	
+percentageRealisedShot <- function(data, type = NULL,
+  currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
+  jaartallen = NULL, 
+  width = NULL, height = NULL){
+  
+  # R CMD check notes
+  jaar <- NULL
+  
+  kboNaam <- unique(data$WBE_Naam_Toek)
+  
+  if (is.null(jaartallen))
+    jaartallen <- unique(data$labeljaar)[!is.na(unique(data$labeljaar))]
+  
+  
+  if (is.null(type))
+    type <- unique(data$labeltype)[!is.na(unique(data$labeltype))]
+  
+  
+  # Select on years/type
+  plotData <- data[data$labeljaar %in% jaartallen & data$labeltype %in% type,
+    c("labeljaar", "labeltype", "toegekend", "verwezenlijkt")]
+  
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
+  
+  # Aggregate over type
+  plotData <- aggregate(plotData[, c('toegekend', 'verwezenlijkt')], 
+    by = list(jaar = plotData$labeljaar), sum)
+  
+  # Calculate accuracy
+  accData <- colSums(subset(plotData, jaar %in% jaartallen))
+  accuracy <- if (length(accData) > 0)
+      round(accData[names(accData) == "verwezenlijkt"] / 
+          accData[names(accData) == "toegekend"] * 100) else
+      0
+  totalAccuracy <- accData[names(accData) == "toegekend"]
+  names(totalAccuracy) <- NULL
+  names(accuracy) <- NULL
+  
+  
+  plotData$jaar <- as.factor(plotData$jaar)
+  # percent 
+  plotData$percent <- plotData$verwezenlijkt / plotData$toegekend * 100 
+  # niet-verwezenlijkt
+  plotData$`niet-verwezenlijkt` <- plotData$toegekend - plotData$verwezenlijkt
+  
+  percentages <- data.frame(
+    value = paste0(round(plotData$percent), "%"),
+    y = plotData$toegekend,
+    x = plotData$jaar
+  )
+  
+  summaryData <- melt(plotData[, c("jaar", "verwezenlijkt", "niet-verwezenlijkt")], id.vars = "jaar")
+  summaryData <- merge(summaryData, plotData[, c("jaar", "toegekend")])
+  
+  title <- paste0("Toegekende en verwezenlijkte labels\n", paste(kboNaam, collapse = ","),
+    paste0(" (", paste(type, collapse = ", "),") "),
+    ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen)
+  )
+  
+  
+  colorList <- replicateColors(nColors = nlevels(summaryData$variable))
+  colors <- colorList$colors
+  names(colors) <- unique(summaryData$variable)
+  
+  pl <- plot_ly(data = summaryData, x = ~jaar, y = ~value, color = ~variable,
+      text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+name+text",
+      colors = colors, type = "bar", width = width, height = height) %>%
+    
+    layout(title = title,
+      xaxis = list(title = "Labeljaar"), 
+      yaxis = list(title = "Aantal"),
+      margin = list(b = 120, t = 100, r = 10),
+      legend = list(y = 0.8, yanchor = "top"),
+      barmode = if (nrow(percentages) == 1) "group" else "stack",
+      annotations = list(x = percentages$x, y = percentages$y, 
+        text = paste(if(nrow(percentages) == 1) "totaal:" else "", percentages$value),
+        xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) 
+  
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+  
+  
+  return(list(plot = pl, data = plotData,
+      accuracy = list(value = accuracy, total = totalAccuracy)))
+  
 }
+
+
+
+#' Shiny module for creating the plot \code{\link{percentageRealisedShot}} - server side
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams optionsModuleServer 
+#' @inheritParams percentageRealisedShot
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+percentageRealisedShotServer <- function(id, data, timeRange, types) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      # Gerealiseerd afschot
+      callModule(module = optionsModuleServer, id = "percentageRealisedShot", 
+        timeRange = timeRange,
+        types = types,
+        multipleTypes = TRUE)
+      callModule(module = plotModuleServer, id = "percentageRealisedShot",
+        plotFunction = "percentageRealisedShot",
+        data = data)
+      
+    })
+  
+}
+
+
+#' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
+#' @param showAccuracy boolean, whether to show gauge for accuracy
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkPlotRealisedShot"), 
+      label = h3(HTML(uiText$title))
+    ),
+    conditionalPanel("input.linkPlotRealisedShot % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("percentageRealisedShot"),
+            showTime = TRUE, showType = TRUE,
+            exportData = TRUE),
+          tags$p(HTML(uiText[, id])),
+          if (showAccuracy)
+              accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
+        ),
+        column(8, 
+          plotModuleUI(id = ns("percentageRealisedShot"))
+        ),
+        tags$hr()
+      )
+    )
+  )
+  
+}
+
 
 

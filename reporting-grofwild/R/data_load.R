@@ -579,34 +579,30 @@ loadMetaEco <- function(species = NA) {
 #' @return list with meta data for wildschade
 #' 
 #' @author mvarewyck
+#' @importFrom utils read.csv
 #' @export
-loadMetaSchade <- function() {
+loadMetaSchade <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  
+  rawData <- read.csv(file = file.path(dataDir, "meta_schade.csv"))
   
   # Specify currently used wildsoorten
-  schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
-    "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
-    "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
-    "Overig" = c("houtduif", "vos", "verwilderde kat"))
+  wildsoorten <- rawData[rawData$variable == "wildsoort", c("group", "name")]
+  schadeWildsoorten <- sapply(unique(wildsoorten$group), function(x)
+      wildsoorten$name[wildsoorten$group == x], simplify = FALSE)
   
-  # Specify currently used type schades
-  schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
-  
-  # Specify currently used types schade subcodes
-  schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
-    c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD", "GRFSCHD"),     #GEWAS
-    c("ANDERE", "VALWILD"))                            #ANDERE
+  # Specify currently used types schade types & subcodes
+  types <- rawData[rawData$variable == "type", c("group", "name")]
+  schadeCodes <- sapply(schadeTypes, function(x) 
+      types$name[types$group == x], simplify = FALSE)
   
   # List with all patterns to search for in indieningType per schadeChoice
-  sourcesSchade <-  list(
-    "Dieren onder de wielen (NP)" = "Natuurpunt",
-    "Wilder (LJV)" = "HVV_Wilder",
-    "E-loket (ANB)" = "E_Loket"
-  )
+  sources <- rawData[rawData$variable == "source", c("group", "name")]
+  sourcesSchade <- sapply(unique(sources$group), function(x)
+    sources$name[sources$group == x], simplify = FALSE)
   
   
   list(
     wildsoorten = schadeWildsoorten,
-    types = schadeTypes,
     codes = schadeCodes,
     sources = sourcesSchade
   )

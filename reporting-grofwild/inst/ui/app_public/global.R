@@ -33,8 +33,8 @@ addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 metaSchade <- loadMetaSchade()
 
 schadeWildsoorten <- metaSchade$wildsoorten
-schadeTypes <- metaSchade$types
-schadeCodes <- metaSchade$codes
+schadeTypes <- names(metaSchade$codes)
+schadeCodes <- unlist(metaSchade$codes)
 sourcesSchade <- metaSchade$sources
 
              
@@ -70,21 +70,21 @@ if (!is.null(attr(ecoData, "excluded")))
 if (any(!unique(schadeData$wildsoort) %in% unlist(schadeWildsoorten))) {
 	warning("Nieuwe wildsoorten gedetecteerd in schade data: ", 
           paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeWildsoorten)), collapse = ", "),
-          "\nUpdate schadeWildsoorten in metaSchade() functie.")
+          "\nUpdate schadeWildsoorten in loadMetaSchade() functie.")
 }
 
 # check for schadeTypes (basiscode) to add to schadeTypes
 if (any(!unique(schadeData$schadeBasisCode) %in% schadeTypes)) {
   warning("Nieuwe schade basiscode gedetecteerd in schade data: ", 
       paste0(setdiff(unique(schadeData$schadeBasisCode), schadeTypes), collapse = ", "),
-      "\nUpdate schadeTypes in metaSchade() en fullNames() functie.")
+      "\nUpdate schadeTypes in loadMetaSchade() en fullNames() functie.")
 }
 
 # check for schadeCodes (schadeCode) to add to schadeCodes
 if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
   warning("Nieuwe schadeCode gedetecteerd in schade data: ", 
       paste0(setdiff(unique(schadeData$schadeCode), schadeCodes), collapse = ", "),
-      "\nUpdate schadeCodes in metaSchade() en fullNames() functie.")
+      "\nUpdate schadeCodes in loadMetaSchade() en fullNames() functie.")
 }
 
 # check for schadeSources (indieningType) to add to schadeSources
@@ -93,7 +93,7 @@ isPresent <- grepl(paste(metaSchade$sourcesSchade, collapse = "|"), indieningTyp
 if (!all(isPresent)) {
   warning("Nieuw indieningType gedetecteerd in schade data: ", 
     paste0(indieningTypes[!isPresent], collapse = ", "),
-    "\nUpdate metaSchade() functie.")
+    "\nUpdate loadMetaSchade() functie.")
 }
 rm(list = c("indieningTypes", "isPresent"))
 

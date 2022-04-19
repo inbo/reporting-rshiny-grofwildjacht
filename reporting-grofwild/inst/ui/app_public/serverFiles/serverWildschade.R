@@ -10,11 +10,8 @@
 
 output$schade_subcode <- renderUI({
       
-      gewasChoices <- fullNames(
-          unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "GEWAS"]))
-      voertuigChoices <- fullNames(
-          unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "VRTG"]))
-      
+      gewasChoices <- fullNames(metaSchade$codes[["GEWAS"]])
+      voertuigChoices <- fullNames(metaSchade$codes[["VRTG"]])
       
       tagList(
           if ("GEWAS" %in% input$schade_code)

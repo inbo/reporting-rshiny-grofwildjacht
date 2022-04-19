@@ -1,0 +1,30 @@
+variable,group,name
+wildsoort,Grof wild,wild zwijn
+wildsoort,Grof wild,edelhert
+wildsoort,Grof wild,ree
+wildsoort,Grof wild,damhert
+wildsoort,Klein wild,haas
+wildsoort,Klein wild,fazant
+wildsoort,Klein wild,konijn
+wildsoort,Klein wild,patrijs
+wildsoort,Waterwild,wilde eend
+wildsoort,Waterwild,smient
+wildsoort,Waterwild,grauwe gans
+wildsoort,Waterwild,Canadese gans
+wildsoort,Waterwild,kievit
+wildsoort,Overig,houtduif
+wildsoort,Overig,vos
+wildsoort,Overig,verwilderde kat
+type,GEWAS,WLSCHD
+type,GEWAS,VRTSCHD
+type,GEWAS,GEWASANDR
+type,GEWAS,VGSCHD
+type,GEWAS,GRFSCHD
+type,VRTG,GNPERSLTSL
+type,VRTG,PERSLTSL
+type,VRTG,ONBEKEND
+type,ANDERE,VALWILD
+type,ANDERE,ANDERE
+source,Dieren onder de wielen (NP),Natuurpunt
+source,Wilder (LJV),HVV_Wilder
+source,E-loket (ANB),E_Loket

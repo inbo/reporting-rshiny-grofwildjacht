@@ -88,7 +88,7 @@ boxAgeWeight <- function(data,
 		
    newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
     
-	}else {  # ree
+	} else {  # ree
 		
 		# Exclude records with weight lower than 5 or more than 30 (unrealistic)
 		plotData <- subset(plotData, gewicht >= 5 & gewicht <= 30)

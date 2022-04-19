@@ -350,6 +350,12 @@ loadRawData <- function(
     rawData$type_comp <- simpleCap(rawData$type_comp)
     rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
     rawData$labeltype <- simpleCap(gsub("REE", "", rawData$labeltype))
+    
+    # New variable: leeftijd_comp_inbo
+    rawData$leeftijd_comp_inbo <- rawData$leeftijd_comp
+    rawData$leeftijd_comp_inbo[rawData$leeftijd_comp_inbo %in% "Frisling"] <- 
+      ifelse(rawData$leeftijd_maanden[rawData$leeftijd_comp_inbo %in% "Frisling"] < 6,
+        "Frisling (<6m)", "Frisling (>6m)")
   
     for (iVar in names(newLevels)) {
       
@@ -511,10 +517,19 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
 #' @export
 loadMetaEco <- function(species = NA) {
   
+  # Defines the order of the species
   allSpecies <- c("Wild zwijn", "Ree", "Damhert", "Edelhert")
   
   toReturn <- list(
     geslacht_comp = c("Vrouwelijk", "Mannelijk"),
+    leeftijd_comp_inbo = list(
+      # Young to old
+      c("Frisling (<6m)", NA, NA),
+      c("Frisling (>6m)", "Kits", rep("Kalf", 2)),
+      c(NA, NA, "Jaarling", "Jaarling"),  
+      c("Overloper", rep("Jongvolwassen", 3)),
+      rep("Volwassen", 4) 
+    ),
     leeftijd_comp = list(
       # Young to old
       c("Frisling", "Kits", rep("Kalf", 2)),
@@ -543,6 +558,7 @@ loadMetaEco <- function(species = NA) {
     
     # Filter species
     matchId <- match(species, allSpecies)
+    toReturn$leeftijd_comp_inbo <- sapply(toReturn$leeftijd_comp_inbo, function(x) x[matchId])
     toReturn$leeftijd_comp <- sapply(toReturn$leeftijd_comp, function(x) x[matchId])
     toReturn$type_comp <- sapply(toReturn$type_comp, function(x) x[c(-1, 0) + matchId*2])
     toReturn$labeltype <- toReturn$labeltype[[matchId]] 

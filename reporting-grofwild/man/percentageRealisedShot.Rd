@@ -16,7 +16,7 @@ percentageRealisedShot(
 \arguments{
 \item{data}{data.frame, with \code{loadToekenningen()} for specific WBE}
 
-\item{type}{animal type, used to filter \code{data} ('ageGender' column)
+\item{type}{animal type, used to filter \code{data} ('type_comp' column)
 default is \code{c("Smalree", "Geit")}}
 
 \item{currentYear}{numeric, current year to calculate accuracy for}

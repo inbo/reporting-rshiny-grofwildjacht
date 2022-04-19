@@ -19,7 +19,7 @@ countYearAgeUI,FIGUUR: Afschot per jaar en per leeftijdscategorie (o.b.v. onderk
 </br><i>Opmerking: Voor mannelijke reeën zijn de leeftijdscategorieën 'jongvolwassen' en 'volwassen' uitgesloten.</i>",,
 countYearProvinceUI,FIGUUR: Gerapporteerd aantal per jaar en per regio,Het gerapporteerd aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totaal aantal voor dat jaar weer).,,
 countYearShotUI-jachtmethode_comp,FIGUUR: Afschot per jachtmethode,Aandeel van afschot per jachtmethode over de jaren heen.,,Aandeel van afschot per jachtmethode over de jaren heen.
-countYearShotUI-labeltype,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.
+countYearShotUI-leeftijd_comp,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.
 mapSchadeUI,FIGUUR: Schademeldingen,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,,,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.

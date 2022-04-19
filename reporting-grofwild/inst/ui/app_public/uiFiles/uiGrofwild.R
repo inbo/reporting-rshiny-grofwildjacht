@@ -89,7 +89,7 @@ tagList(
                   
                   countYearAgeUI(id = "wild", uiText = uiText),
                   
-                  countYearShotUI(id = "wild_labeltype", groupVariable = "labeltype",
+                  countYearShotUI(id = "wild_leeftijd", groupVariable = "leeftijd_comp",
                     regionLevels = c(1:2,4), uiText = uiText),
                   
                   yearlyShotAnimalsUI(id = "wild", uiText = uiText),

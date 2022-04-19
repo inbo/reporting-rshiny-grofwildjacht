@@ -70,13 +70,12 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
   if (!is.null(sourceIndicator_embryos) && !"aantal_embryos_bron" %in% colnames(plotData))
     stop("Bron voor aantal embryos niet in data")
   
+  # To prevent error with R CMD check
+  leeftijd_comp_bron <- NULL
+  geslacht_comp_bron <- NULL
+  
   if (!is.null(sourceIndicator_leeftijd) && sourceIndicator_leeftijd == "inbo") {
-    
-    # To prevent error with R CMD check
-    leeftijd_comp_bron <- NULL
-    onderkaaklengte_comp_bron <- NULL
-    geslacht_comp_bron <- NULL
-    
+  
     # filters out NA and 'meldingsformulier'
     plotData <- subset(plotData, leeftijd_comp_bron == "inbo")
     
@@ -84,8 +83,6 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
   
   if (!is.null(sourceIndicator_geslacht)){
     if (sourceIndicator_geslacht == "inbo") {
-      # To prevent error with R CMD check
-      geslacht_comp_bron <- NULL
       
       # filters out NA and 'meldingsformulier' en 'onbekend'
       plotData <- subset(plotData, geslacht_comp_bron == "inbo")

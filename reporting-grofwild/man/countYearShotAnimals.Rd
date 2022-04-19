@@ -12,6 +12,7 @@ countYearShotAnimals(
   height = NULL,
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
   groupVariable,
+  sourceIndicator_leeftijd = c("both", "inbo"),
   type = NULL
 )
 }
@@ -32,6 +33,10 @@ should be one of \code{c("Per jaar", "Per maand", "Per kwartaal", "Per twee weke
 
 \item{groupVariable}{character, variable name in \code{data} for 
 which colored bars should be plot}
+
+\item{sourceIndicator_leeftijd}{character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+i.e. no filtering. Defaults to \code{"both"}}
 
 \item{type}{character, used to filter the data}
 }

@@ -4,12 +4,14 @@
 \alias{countEmbryosUI}
 \title{Shiny module for creating the plot \code{\link{countEmbryos}} - UI side}
 \usage{
-countEmbryosUI(id, regionLevels, uiText)
+countEmbryosUI(id, regionLevels)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{regionLevels}{character, choices for region}
+
+\item{wildsoort}{character, choice for wildsoort}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 }

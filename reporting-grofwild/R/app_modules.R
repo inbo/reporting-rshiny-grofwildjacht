@@ -226,24 +226,24 @@ optionsModuleServer <- function(input, output, session,
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   
   observe({
-        
-        if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
-          if (input$dataSource_leeftijd == "both") {
-            
-            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
-            updateSelectInput(session, inputId = "type",
-              choices = c("Frisling", "Overloper", "Volwassen"),
-              selected = c("Frisling", "Overloper", "Volwassen"))
-        
-          } else {
-            
-            updateSelectInput(session, inputId = "type",
-              choices = types(),
-              selected = typesDefault())
+      
+      if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
+        if (input$dataSource_leeftijd == "both") {
+          
+          ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+          updateSelectInput(session, inputId = "type",
+            choices = c("Frisling", "Overloper", "Volwassen"),
+            selected = c("Frisling", "Overloper", "Volwassen"))
+          
+        } else {
+          
+          updateSelectInput(session, inputId = "type",
+            choices = types(),
+            selected = typesDefault())
         }
-    }
-        
-      })
+      }
+      
+    })
   
   output$type <- renderUI({
         

@@ -112,19 +112,21 @@ tagList(
         countYearShotUI(id = "wild_jachtmethode", groupVariable = "jachtmethode_comp",
           regionLevels = c(1:2,4), uiText = uiText),
         
-        conditionalPanel("input.wild_species == 'Ree'", {
-              tagList(
-                  
-                  bioindicatorSection(id = "wild", uiText = uiText),
-                  
-                  plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
-                      
-                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
-                  
-                  countEmbryosUI("wild", regionLevels = 1:2, uiText = uiText)
+        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
+            
+            tagList(
               
-              )
+              bioindicatorSection(id = "wild", uiText = uiText),
               
+              conditionalPanel("input.wild_species == 'Ree'",
+                plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
+                plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
+              ),
+              
+              countEmbryosUI("wild", regionLevels = 1:2)
+            
+            )
+          
             })
           
     )

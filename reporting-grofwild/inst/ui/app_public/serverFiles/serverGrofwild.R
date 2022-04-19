@@ -193,16 +193,23 @@ plotBioindicatorServer(id = "wild_gewicht",
 
 # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
 results$typesFemale <- reactive({
-      
-      types <- levels(droplevels(results$wild_ecoData()$type_comp))
-      types[types %in% c("Reegeit", "Smalree")]
-      
-    })
+    
+    types <- levels(droplevels(results$wild_ecoData()$type_comp))
+    
+    if (input$wild_species == "Ree") {
+      types[types %in% c("Reegeit", "Smalree")] 
+    } else {
+      types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+    }
+    
+  })
 
 countEmbryosServer(id = "wild",
     data = results$wild_ecoData,
     timeRange = results$wild_timeRange,
-    types = results$typesFemale)
+    types = results$typesFemale,
+    uiText = uiText,
+    wildsoort = reactive(input$wild_species))
 
 results$wild_combinedData <- reactive({
     

@@ -4,12 +4,14 @@
 \alias{percentageRealisedShotUI}
 \title{Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side}
 \usage{
-percentageRealisedShotUI(id, showAccuracy = FALSE, uiText)
+percentageRealisedShotUI(id, showAccuracy = FALSE, regionLevels = NULL, uiText)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{showAccuracy}{boolean, whether to show gauge for accuracy}
+
+\item{regionLevels}{numeric vector, region level choices}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 }

@@ -9,6 +9,8 @@
 #' @inheritParams countYearAge
 #' @param type character, variable name in \code{data} of interest
 #' @inheritParams filterSchade 
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
 #' @return list with
 #' \itemize{
 #' \item{'plot': }{plotly object}
@@ -19,7 +21,7 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
-    summarizeBy = c("count", "percent"), 
+    summarizeBy = c("count", "percent"), fullNames = NULL,
     sourceIndicator = NULL, width = NULL, height = NULL) {
   
   # For R CMD check
@@ -78,7 +80,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   
   # Make full schade names
   if (type == "schadeCode") {
-    summaryData$variabele <- names(fullNames(summaryData$variabele))
+    summaryData$variabele <- names(fullNames)[match(summaryData$variabele, fullNames)]
   }
   
   # For optimal displaying in the plot

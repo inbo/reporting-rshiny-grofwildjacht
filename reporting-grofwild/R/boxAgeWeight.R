@@ -39,6 +39,10 @@ boxAgeWeight <- function(data,
   sourceIndicator_leeftijd = c("both", "inbo"),
 		sourceIndicator_geslacht = c("both","inbo"), 
   width = NULL, height = NULL) {
+  
+  # For R CMD check
+  gewicht <- NULL
+  leeftijd <- NULL 
 	
   sourceIndicator_leeftijd <- match.arg(sourceIndicator_leeftijd)
   sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)
@@ -48,64 +52,41 @@ boxAgeWeight <- function(data,
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
-	
-	# Select data
+  	
+  # Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", "geslacht_comp",
-					"provincie", "geslacht_comp_bron")]
-	names(plotData) <- c("gewicht", "leeftijd", "leeftijd_comp_bron", "maanden", "geslacht", "provincie", "geslacht_comp_bron")
-	
+			c("ontweid_gewicht", "leeftijd_comp",  "leeftijd_comp_inbo", "geslacht_comp", "provincie",
+        "leeftijd_comp_bron", "geslacht_comp_bron")]
+	names(plotData) <- c("gewicht", "leeftijd_comp", "leeftijd_comp_inbo", "geslacht", "provincie", 
+    "leeftijd_comp_bron", "geslacht_comp_bron")
   
-	# Percentage collected
+  leeftijdVar <- if (sourceIndicator_leeftijd == "inbo") "leeftijd_comp_inbo" else "leeftijd_comp" 
+  plotData <- plotData[plotData[, leeftijdVar] %in% c(type, "Onbekend"), ]  # to calculate nRecords
+  
+  # Percentage collected
 	nRecords <- nrow(plotData)
 	
+  plotData <- filterGrofwild(plotData = plotData, 
+    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
+    sourceIndicator_geslacht = sourceIndicator_geslacht)
+  plotData$leeftijd <- plotData$leeftijd_comp
+  
 	# Remove some categories
-	# To prevent error with R CMD check
-	leeftijd <- NULL
-	gewicht <- NULL
-	geslacht <- NULL
-	plotData <- subset(plotData, leeftijd != "Onbekend" &
-					!is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
-	plotData$geslacht <- factor(plotData$geslacht)
+	plotData <- plotData[plotData$leeftijd != "Onbekend" &
+					!is.na(plotData$gewicht) & plotData$geslacht != "Onbekend", ]
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
 	
-	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwijn
-		
-		plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
-				ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
-						"Frisling (<6m)", "Frisling (>6m)")
-		
-#    # Is "maanden" a reliable variable?
-#    xtabs(~ leeftijd + maanden, data = plotData)
-#    boxplot(plotData$maanden ~ plotData$leeftijd)
-		
-		newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
-		
-	} else if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "both") {
-		
-   newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
-    
-	}else {  # ree
-		
+  if (wildNaam != "Wild zwijn") {		
 		# Exclude records with weight lower than 5 or more than 30 (unrealistic)
 		plotData <- subset(plotData, gewicht >= 5 & gewicht <= 30)
-		newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
 		
 	}
 	
-	plotData$leeftijd <- factor(plotData$leeftijd, levels = newLevelsLeeftijd)
-	
-  # filters out NA leeftijd if all leeftijdlevels are passed in 'type'
+  # filters out "Onbekend" leeftijd if all leeftijdlevels are passed in 'type'
 	plotData <- subset(plotData, leeftijd %in% type)
   
- plotData <- filterGrofwild(plotData = plotData, 
-   sourceIndicator_leeftijd = sourceIndicator_leeftijd, 
-   sourceIndicator_geslacht = sourceIndicator_geslacht)
- 
- 
 	# For optimal displaying in the plot
 	colors <- inbo_palette(n = 2)
 	names(colors) <- unique(plotData$geslacht)
@@ -122,7 +103,7 @@ boxAgeWeight <- function(data,
 				paste0(" (", toString(regio), ")"))
 	
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
-	plotData$leeftijd <- factor(plotData$leeftijd, levels = type)
+	plotData$leeftijd <- droplevels(plotData$leeftijd)
   
 	# Create plot
 	# Prevent Warning: 'layout' objects don't have these attributes: 'boxmode'
@@ -132,12 +113,17 @@ boxAgeWeight <- function(data,
 			layout(title = title,
 					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Leeggewicht (kg)"),
-					margin = list(t = 100),
+					margin = list(b = 120, t = 100),
 					boxmode = "group",
 					annotations = list(x = totalCounts$index, 
 							y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
 							xref = "paper", text = totalCounts$freq, xanchor = 'center', 
-							yanchor = 'bottom', showarrow = FALSE))  
+							yanchor = 'bottom', showarrow = FALSE)) %>%
+          add_annotations(
+            text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+              text = "gekende leeftijd, geslacht en gewicht"),
+            xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+            y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL

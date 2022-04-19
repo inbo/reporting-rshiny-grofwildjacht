@@ -4,7 +4,7 @@
 \alias{dataModuleServer}
 \title{Display formatted frequency table of data (ui-side)}
 \usage{
-dataModuleServer(input, output, session, data, variable)
+dataModuleServer(input, output, session, data, variable, fullNames = NULL)
 }
 \arguments{
 \item{input}{shiny input variable for specific namespace}
@@ -16,6 +16,9 @@ dataModuleServer(input, output, session, data, variable)
 \item{data, }{character vector, values for which frequency table should be generated}
 
 \item{variable}{character, name of the variable that is summarized}
+
+\item{fullNames}{named character vector, values for the \code{variable} to be 
+displayed instead of original data values}
 }
 \value{
 ui object (tagList)

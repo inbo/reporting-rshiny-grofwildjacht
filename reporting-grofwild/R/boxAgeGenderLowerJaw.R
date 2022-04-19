@@ -26,6 +26,12 @@ boxAgeGenderLowerJaw <- function(data,
   sourceIndicator_geslacht = c("both","inbo"), 
   width = NULL, height = NULL) {
   
+  
+  # To prevent error with R CMD check
+  leeftijd <- NULL
+  onderkaaklengte <- NULL
+  geslacht <- NULL
+  
   sourceIndicator_leeftijd <- match.arg(sourceIndicator_leeftijd)
   sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)
 	
@@ -34,63 +40,32 @@ boxAgeGenderLowerJaw <- function(data,
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
-	
-	# Select data
+  
+  # Select data
 	plotData <- data[
 			# data of specified years
 			data$afschotjaar %in% jaartallen, 
-			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", 
-     "geslacht_comp", "provincie", "geslacht_comp_bron")]
-	names(plotData) <- c("onderkaaklengte", "leeftijd", "leeftijd_comp_bron", "maanden",
-   "geslacht", "provincie", "geslacht_comp_bron")
-	
-	
+			c("onderkaaklengte_comp", "leeftijd_comp", "geslacht_comp", "provincie",
+        "leeftijd_comp_bron", "geslacht_comp_bron")]
+	names(plotData) <- c("onderkaaklengte", "leeftijd", "geslacht", "provincie", 
+    "leeftijd_comp_bron", "geslacht_comp_bron")
+  plotData <- subset(plotData, leeftijd %in% c(type, "Onbekend"))  # to calculate nRecords
+  
 	# Percentage collected
 	nRecords <- nrow(plotData)
 	
+  plotData <- filterGrofwild(plotData = plotData, 
+    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
+    sourceIndicator_geslacht = sourceIndicator_geslacht)
+  
 	# Remove some categories
-    # To prevent error with R CMD check
-	leeftijd <- NULL
-	onderkaaklengte <- NULL
-	geslacht <- NULL
-	plotData <- subset(plotData, leeftijd != "Onbekend" &
-					!is.na(onderkaaklengte) & geslacht != "Onbekend" & !is.na(geslacht))
-	plotData$geslacht <- factor(plotData$geslacht)
+ 	plotData <- subset(plotData, leeftijd %in% type & leeftijd != "Onbekend" &
+					!is.na(onderkaaklengte) & geslacht != "Onbekend")
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
 	
-
-# Define names and ordering of factor levels
-  # NOTE: Redundant for wild zwijn (not shown in app)
-if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwijn
-  
-  plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
-    ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
-      "Frisling (<6m)", "Frisling (>6m)")
-  
-  newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
-  
-} else if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "both") {
-  
-  newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
-  
-}else {  # ree
-  
-  # Exclude records with weight lower than 5 or more than 30 (unrealistic)
-  newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
-  
-}
-	
-	plotData$leeftijd <- factor(plotData$leeftijd, levels = newLevelsLeeftijd)
-	
-	plotData <- subset(plotData, leeftijd %in% type)
- 
- plotData <- filterGrofwild(plotData = plotData, 
-   sourceIndicator_leeftijd = sourceIndicator_leeftijd, 
-   sourceIndicator_geslacht = sourceIndicator_geslacht)
-	
-	# For optimal displaying in the plot
+  # For optimal displaying in the plot
 	colors <- inbo_palette(n = 2)
 	names(colors) <- unique(plotData$geslacht)
 	
@@ -106,7 +81,7 @@ if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwi
 				paste0(" (", toString(regio), ")")) 
 			
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
-  plotData$leeftijd <- factor(plotData$leeftijd, levels = type)
+  plotData$leeftijd <- droplevels(plotData$leeftijd)
   
 	# create plot
 	pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~onderkaaklengte,
@@ -115,13 +90,19 @@ if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwi
 			layout(title = title,
 					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Onderkaaklengte (mm)"),
-					margin = list(t = 100),
+					margin = list(b = 120, t = 100),
 					boxmode = "group",
 					annotations = list(x = totalCounts$index, 
 							y = -diff(range(plotData$onderkaaklengte, na.rm = TRUE))/10, 
 							xref = "paper", text = totalCounts$freq, xanchor = 'center', 
 							yanchor = 'bottom', showarrow = FALSE)
-			)
+			) %>%
+      
+      add_annotations(
+        text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+          text = "gekende leeftijd, geslacht en onderkaaklengte"),
+        xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+        y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
@@ -129,7 +110,7 @@ if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwi
 	
 	return(list(
 					plot = pl, 
-					data = subset(plotData, select = c("onderkaaklengte", "leeftijd", "geslacht", "provincie"))
+					data = plotData
 	))
 	
 }
@@ -193,7 +174,7 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
             showDataSource = c("leeftijd", "geslacht")),
           tags$p(HTML(uiText[, id]))),
         column(8, 
-          plotModuleUI(id = ns("ageGenderLowerJaw"), filter = TRUE)
+          plotModuleUI(id = ns("ageGenderLowerJaw"))
         )
       ),
       tags$hr()

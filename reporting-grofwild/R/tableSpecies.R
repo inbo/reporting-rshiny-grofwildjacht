@@ -87,9 +87,13 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
       
       # Calculate trend
       finalTable <- join(x = finalTable, y = freqBack, by = "categorie")
+      finalTable[, paste("Warning", yearsBack, "jaar")] <- c("zwart", "oranje", "rood")[
+        ifelse(
+        finalTable$current != 0 & finalTable$freq != 0,
+        (finalTable$current < minForTrend) + (finalTable$freq < minForTrend),
+        0) + 1]
       finalTable[, paste0("Verandering tov ", yearsBack, " jaar (", jaar - yearsBack, ")")] <- 
-        ifelse(finalTable$current > minForTrend & 
-            finalTable$freq > minForTrend, {
+        ifelse(finalTable$current != 0 & finalTable$freq != 0, {
           value <- round((finalTable$current/finalTable$freq - 1)*100, 1)
             charValue <- sprintf("%.1f", value)
             ifelse(value > 0, paste0("+", gsub(pattern = "\\.", "\\,", charValue), "%"), 
@@ -107,7 +111,8 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
   
   # Order rows and columns
   toReturn <- finalTable[match(levelsCategorie, finalTable$categorie), c("categorie", "current", "percent", 
-      names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))])]
+      names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))],
+      names(finalTable)[grep(pattern = "Warning", x = names(finalTable))])]
   
   
   # Rename columns

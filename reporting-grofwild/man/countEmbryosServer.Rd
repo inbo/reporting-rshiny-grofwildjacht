@@ -4,7 +4,7 @@
 \alias{countEmbryosServer}
 \title{Shiny module for creating the plot \code{\link{countEmbryos}} - UI side}
 \usage{
-countEmbryosServer(id, data, timeRange, types)
+countEmbryosServer(id, data, timeRange, types, uiText, wildsoort)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
@@ -14,6 +14,11 @@ countEmbryosServer(id, data, timeRange, types)
 \item{timeRange}{numeric vector of length 2, min and max year to subset data}
 
 \item{types}{defines the species types that can be selected}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
+\item{wildsoort}{character, species to be displayed. 
+Needed to format title and description in \code{uiText}}
 }
 \value{
 no return value

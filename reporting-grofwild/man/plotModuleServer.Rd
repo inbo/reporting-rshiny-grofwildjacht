@@ -25,7 +25,8 @@ plotModuleServer(
   schadeChoicesGewas = NULL,
   variable = NULL,
   combinatie = NULL,
-  schadeTitles = FALSE
+  schadeTitles = FALSE,
+  fullNames = NULL
 )
 }
 \arguments{
@@ -46,8 +47,7 @@ plotModuleServer(
 \item{categorie}{character, defines which type of table should be made}
 
 \item{bioindicator}{string with column of \code{data}
-with bioindicator, either 'onderkaaklengte',
-'ontweid_gewicht', or 'aantal_embryos'}
+with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 
 \item{groupVariable}{character, variable name in \code{data} for 
 which colored bars should be plot}
@@ -76,6 +76,9 @@ defined externally for large map}
 \item{combinatie}{logical, summarised view of selected regions}
 
 \item{schadeTitles}{boolean, whether title should include 'schade' instead of 'afschot'}
+
+\item{fullNames}{named character vector, values for the \code{variable} to be 
+displayed instead of original data values}
 }
 \value{
 no return value; plot output object is created

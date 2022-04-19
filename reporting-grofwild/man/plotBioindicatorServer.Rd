@@ -26,8 +26,7 @@ plotBioindicatorServer(
 same as \code{types} by defualt}
 
 \item{bioindicator}{string with column of \code{data}
-with bioindicator, either 'onderkaaklengte',
-'ontweid_gewicht', or 'aantal_embryos'}
+with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 }
 \value{
 no return value

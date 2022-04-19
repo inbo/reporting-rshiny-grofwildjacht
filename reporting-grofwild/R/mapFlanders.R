@@ -166,10 +166,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   ## stats
   # compute all cases with full info available
-  statsDf[, "nAvailable"] = sum(allData$freq)
-  # compute percentage
-  statsDf[,"percentage"] = round((statsDf$nAvailable/statsDf$nTotal)*100, 1)
-  
+  myStats$nAvailable <- sum(allData$freq)
   
   
   # Remove redundant variables
@@ -264,7 +261,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   }
   
 #    return(summaryData2)
-  return(list(data = summaryData2, stats = statsDf))
+  return(list(data = summaryData2, stats = myStats))
   
   
 }
@@ -314,8 +311,8 @@ mapFlanders <- function(
     jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
     jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
     spatialData@data$NAAM <- NA
-    
-    spatialData <- rbind(spatialData, jachtData)
+      
+      spatialData <- rbind(spatialData, jachtData)
     
   }
   
@@ -503,6 +500,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           }
           
         })
+      # Update period if species changes
+      observeEvent(species(), {
+          updateSliderInput(session = session, inputId = "period", 
+            value = c(results$minYear(), defaultYear))
+        })
       
       output$period <- renderUI({
           
@@ -683,7 +685,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       output$stats <- renderUI({
           
           if (req(input$regionLevel) != "flanders") {
-            h5(paste0("Info beschikbaar en weergegeven voor ", results$summarySpaceData()$stats$percentage, 
+          
+            percentage <- round(with(results$summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
+            
+            h5(paste0("Info beschikbaar en weergegeven voor ", percentage, 
                 "% van de totale gegevens (", results$summarySpaceData()$stats$nAvailable, "/", 
                 results$summarySpaceData()$stats$nTotal, ")" ))
           }

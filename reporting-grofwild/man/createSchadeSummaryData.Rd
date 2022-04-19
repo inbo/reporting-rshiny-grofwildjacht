@@ -8,7 +8,8 @@ createSchadeSummaryData(
   schadeData,
   timeRange,
   dataDir = system.file("extdata", package = "reportingGrofwild"),
-  sourceIndicator = NULL
+  sourceIndicator = NULL,
+  fullNames = NULL
 )
 }
 \arguments{
@@ -21,6 +22,9 @@ wildschade and descriptives in data.frame}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
+
+\item{fullNames}{named character vector, values for the \code{variable} to be 
+displayed instead of original data values}
 }
 \value{
 a filtered spatialPointsDataFrame

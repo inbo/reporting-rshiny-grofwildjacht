@@ -47,7 +47,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	nRecords <- nrow(plotData)
 	
 	# Remove some categories
-	plotData <- plotData[!is.na(plotData$jaar) & !is.na(plotData$kaak), ]
+	plotData <- plotData[!is.na(plotData$kaak), ]
 	
   newLevelsKaak <- c(loadMetaEco(species = wildNaam)$leeftijd_comp, "Niet ingezameld")
   
@@ -79,7 +79,6 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	kaak <- NULL  # to prevent warnings with R CMD check
 	subData <- subset(summaryData, kaak != "Niet ingezameld")
 	nCollected <- sum(subData$freq)
-	percentCollected <- nCollected/nRecords
 	freq <- NULL  # to prevent warnings with R CMD check 
 	subData <- ddply(subData, "jaar", transform, 
 			percent = freq / sum(freq) * 100)
@@ -152,8 +151,8 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 							xaxis = list(title = "Jaar"), 
 							yaxis = list(title = "Percentage", range = c(0, 100)),
 							margin = list(b = 120, t = 100)) %>% 
-					add_annotations(text = paste0(round(percentCollected, 2)*100, 
-									"% ingezamelde onderkaken van totaal (", nCollected, "/", nRecords, ")"),
+					add_annotations(text = percentCollected(nAvailable = nCollected, nTotal = nRecords,
+              text = "ingezamelde onderkaken van totaal"),
 							xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
 							y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	)

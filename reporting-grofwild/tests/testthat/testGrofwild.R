@@ -65,25 +65,6 @@ test_that("Summary table for age", {
     
   })
 
-test_that("Table for provinces", {
-    
-    skip("outdated, not shown anymore")
-    
-    # For count with type 
-    tableProvince(data = reeEcoData[reeEcoData$doodsoorzaak == "afschot", ], 
-      categorie = "typeAantal", jaar = 2017)
-    
-    # For percent shot of assigned with type
-    toekenningsData <- loadToekenningen()
-    tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
-      assignedData = toekenningsData, categorie = "typePercent", jaar = 2017)
-    
-    # This will produce informative error
-    expect_error(tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
-        assignedData = toekenningsData, categorie = "typePercent", jaar = 2019))
-    
-  })
-
 
 ## PLOT 1: Counts per year and province ##
 
@@ -304,9 +285,9 @@ test_that("Distribution of weight ifo age", {
         
         plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
         boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), 
-          sourceIndicator_leeftijd = "both")
+          sourceIndicator_leeftijd = "both")$plot
         boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
-          sourceIndicator_leeftijd = "inbo")
+          sourceIndicator_leeftijd = "inbo")$plot
         
         
       })
@@ -338,7 +319,29 @@ test_that("Afschot per jachtmethode", {
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[2]
     )$plot
     
+    countYearShotAnimals(data = wildEcoData,
+#      jaartallen = 2014:2020,
+      groupVariable = "leeftijd_comp",
+      interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[4]
+    )$plot
+    
   })
+
+
+test_that("Verwezenlijkt afschot", {
+    
+    toekenningsData <- loadToekenningen()
+    
+    percentageRealisedShot(data = toekenningsData,
+      type = unique(toekenningsData$labeltype),
+      jaartallen = 2009:2020)
+    
+    boxRealisedShot(data = toekenningsData,
+      type = unique(toekenningsData$labeltype),
+      jaartallen = 2009:2020)
+    
+  })
+
 
 
 ## PLOT 9: Distribution of cheek length vs class ##
@@ -385,7 +388,12 @@ test_that("Number of embryos (bio-indicator)", {
         sourceIndicator = sourceIndicator)$plot
     
     
-    
+    countEmbryos(
+      data = wildEcoData,
+      type = c("Frisling (v)", "Overloper (v)", "Zeug"),
+      sourceIndicator = "both",
+      sourceIndicator_leeftijd = "inbo",
+      sourceIndicator_geslacht = "both")$plot
     
     
     

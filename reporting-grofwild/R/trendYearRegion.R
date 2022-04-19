@@ -51,16 +51,19 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
       WBE_buitengrenzen = plotData$PartijNummer
     ))
   # Need to match partijNummer to WBE_Naam_Toek later
-  if (regionLevel == "WBE_buitengrenzen") 
+  if (regionLevel == "WBE_buitengrenzen") {
     matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
+    matchLocaties <- matchLocaties[!duplicated(matchLocaties), ]
+  } else matchLocaties <- NULL
   
   
-  
+ 
   # Select subset for time & species
   plotData <- subset(plotData, 
     subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
     select = c("afschotjaar", "locatie"))
   
+
   # Exclude data with missing time or space
   plotData <- plotData[!is.na(plotData$afschotjaar) & 
       !is.na(plotData$locatie) & plotData$locatie != "",]
@@ -71,14 +74,14 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   # Add names & times with 0 observations
   fullData <- cbind(expand.grid(
       afschotjaar = chosenTimes,
-      locatie = unique(spatialData$NAAM)))
+      locatie = if (!is.null(matchLocaties)) 
+          matchLocaties$PartijNummer else unique(spatialData$NAAM)))
   
   if (unit == "relativeDekking") {
     # add dekkingsgraad 100ha bos&natuur      
     fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos", "year")],
       by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year"))
     names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
-    
   } else {
     # add Area
     fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
@@ -115,10 +118,10 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     allData <- allData[c("afschotjaar", "locatie", "niscode", "postcode", 
         setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
     
-    
   } else if (regionLevel == "WBE_buitengrenzen") {
-    
-    allData$locatie <- matchLocaties$WBE_Naam_Toek[match(allData$locatie, matchLocaties$PartijNummer)]
+      
+      allData$locatie <- matchLocaties$WBE_Naam_Toek[
+        match(allData$locatie, matchLocaties$PartijNummer)]
     
   }
   

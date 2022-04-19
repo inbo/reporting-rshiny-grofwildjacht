@@ -226,24 +226,24 @@ optionsModuleServer <- function(input, output, session,
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   
   observe({
-        
-        if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
-          if (input$dataSource_leeftijd == "both") {
-            
-            ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
-            updateSelectInput(session, inputId = "type",
-              choices = c("Frisling", "Overloper", "Volwassen"),
-              selected = c("Frisling", "Overloper", "Volwassen"))
-        
-          } else {
-            
-            updateSelectInput(session, inputId = "type",
-              choices = types(),
-              selected = typesDefault())
+      
+      if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
+        if (input$dataSource_leeftijd == "both") {
+          
+          ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
+          updateSelectInput(session, inputId = "type",
+            choices = c("Frisling", "Overloper", "Volwassen", "Onbekend"),
+            selected = c("Frisling", "Overloper", "Volwassen", "Onbekend"))
+          
+        } else {
+          
+          updateSelectInput(session, inputId = "type",
+            choices = types(),
+            selected = typesDefault())
         }
-    }
-        
-      })
+      }
+      
+    })
   
   output$type <- renderUI({
         
@@ -353,12 +353,6 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
       tags$div(align = "center",
           withSpinner(plotlyOutput(ns("plot"), height = height))
       ),
-      if (filter) {
-        tags$div(style = "margin-top: 30px;",
-            align = "center",
-            uiOutput(ns("filters"))
-        )
-      },
       uiOutput(outputId = ns("warning"))
   )
 }
@@ -449,6 +443,9 @@ datatableModuleUI <- function(id) {
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
+#' 
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
@@ -461,7 +458,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
-    variable = NULL, combinatie = NULL, schadeTitles = FALSE) {
+    variable = NULL, combinatie = NULL, schadeTitles = FALSE,
+    fullNames = NULL) {
   
   subData <- reactive({
         
@@ -543,6 +541,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
+            if(!is.null(fullNames))
+              list(fullNames = fullNames),
             
             if (!is.null(isSchade))
               list(isSchade = isSchade),
@@ -632,41 +632,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
-  # percentage of data used after filtering
-  output$filters <- renderUI({
-        
-        req(input$time)
-        
-        allData <- data()
-        
-        # subsetting data on time 
-        if(length(input$time) == 2) {
-          
-          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
-          
-        } else {
-          
-          subsetData <- allData[allData$afshotjaar == input$time, ]  
-          
-        }
-        
-        # subsetting data on region
-        if (!is.null(input$regionLevel) && input$regionLevel == "provinces") {
-          
-          req(input$region)
-          
-          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
-          
-        }
-        
-        noTotal <- nrow(subsetData)
-        noSubset <- nrow(resultFct()$data)
-        percData <- round((noSubset / noTotal) * 100, 2)
-        
-        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
-      })
-  
-  
   output$dataDownload <- downloadHandler(
       filename = function() nameFile(species = wildNaam(),
             year = if (!is.null(input$year)) 
@@ -708,35 +673,38 @@ plotModuleServer <- function(input, output, session, plotFunction,
       }
   )
   
-  if (datatable) {
-    output$table <- DT::renderDataTable({
-          
-          DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
-                  selection = "single",
-                  options = list(dom = 't', pageLength = -1)) %>%
-              formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
-              formatStyle(
-                  colnames(resultFct()$data)[1],
-                  target = "row",
-                  fontWeight = styleEqual(tail(resultFct()$data[, 1], n = 1), "bold")
-              )
-          
-        })
-  } else {
-    output$table <- DT::renderDataTable({
-          
-          DT::datatable(resultFct(), rownames = FALSE,
-                  options = list(dom = 't', pageLength = -1)) %>%
-              formatStyle(
-                  colnames(resultFct())[1],
-                  target = "row",
-                  fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
-              )
-          
-        })
-  }
-  
-  
+  output$table <- DT::renderDataTable({
+      
+      if (datatable) {
+        
+        DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
+            selection = "single",
+            options = list(dom = 't', pageLength = -1)) %>%
+          formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
+          formatStyle(
+            colnames(resultFct()$data)[1],
+            target = "row",
+            fontWeight = styleEqual(tail(resultFct()$data[, 1], n = 1), "bold")
+          )
+        
+      } else {
+        
+        DT::datatable(resultFct(), rownames = FALSE,
+            options = list(dom = 't', pageLength = -1,
+              columnDefs = list(list(targets = grep("Warning", colnames(resultFct())) - 1, visible = FALSE)))) %>%
+          formatStyle(
+            colnames(resultFct())[1],
+            target = "row",
+            fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
+          ) %>%
+          formatStyle(
+            grep("Verandering", colnames(resultFct()), value = TRUE),
+            grep("Warning", colnames(resultFct()), value = TRUE),
+            color = styleEqual(c("oranje", "rood"), c("orange", "red"))
+          )
+        
+      }
+    }) 
   
 }
 
@@ -746,12 +714,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' @inheritParams plotModuleServer
 #' @param data, character vector, values for which frequency table should be generated
 #' @param variable character, name of the variable that is summarized
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
 #' @return ui object (tagList)
 #' @export
-dataModuleServer <- function(input, output, session, data, variable) {
+dataModuleServer <- function(input, output, session, data, variable, fullNames = NULL) {
   
-  
-  # TODO include in formatLabels()
   
   freqTable <- reactive({
         
@@ -770,8 +738,8 @@ dataModuleServer <- function(input, output, session, data, variable) {
             SoortNaam = "Gewas")
         
         colnames(myTable) <- c(variableLabel, "Aantal")
-        if (!variable %in% c("wildsoort", "SoortNaam"))
-          myTable[, variableLabel] <- names(fullNames(myTable[, variableLabel]))
+        if (!is.null(fullNames))
+          myTable[, variableLabel] <- names(fullNames)[match(myTable[, variableLabel], fullNames)]
         
         myTable
         

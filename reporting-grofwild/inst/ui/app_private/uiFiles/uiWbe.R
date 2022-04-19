@@ -71,7 +71,8 @@ tagList(
     
     countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText),
     
-    mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText),
+    mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText,
+      plotDetails = "region"),
     
     countAgeGenderUI(id = "wbe", uiText = uiText),
     countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
@@ -89,7 +90,6 @@ tagList(
       ),
       countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText)
     )
-  
   
   )
 

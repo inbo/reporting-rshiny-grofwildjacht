@@ -53,36 +53,19 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	# Percentage collected
 	nRecords <- nrow(plotData)
  
-  # Calculate accuracy
-  accData <- subset(plotData, jaar %in% jaartallen & 
-        !is.na(jager) & !jager %in% "Onbekend" &
-        !is.na(kaak) & !kaak %in% "Niet ingezameld")
-  accuracy <- if (nrow(accData) > 0)
-    round(sum(accData$jager == accData$kaak)/nrow(accData) * 100) else
-    0
+  # Remove some categories
+  plotData <- plotData[with(plotData, !is.na(jager) & !jager %in% "Onbekend" &
+        !is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
   plotData$jaar <- NULL
+  
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
+  
+  # Calculate accuracy
+  accuracy <- round(sum(plotData$jager == plotData$kaak)/nrow(plotData) * 100, 1)
  
- 
-	# Remove some categories
-	plotData <- plotData[with(plotData, !is.na(jager) & !jager %in% "Onbekend" &
-							!is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
-	
-	if (nrow(plotData) == 0)
-		stop("Geen data beschikbaar")
-	
-	percentCollected <- nrow(plotData)/nRecords
-
-	
 	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn") {  # wild zwijn
-		
-		newLevels <- c("Frisling", "Overloper", "Volwassen")
-		
-	} else {  # ree
-		
-		newLevels <- c("Kits", "Jongvolwassen", "Volwassen")
-		
-	}
+  newLevels <- loadMetaEco(species = wildNaam)$leeftijd_comp
 	
   
   # disable graph only when not all age-groups are present 
@@ -134,8 +117,8 @@ countAgeCheek <- function(data, jaartallen = NULL,
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
 					y = 0.8, yanchor = "bottom",    # Same y as legend below
 					legendtitle = TRUE, showarrow = FALSE) %>%
-			add_annotations(text = paste0(round(percentCollected, 2)*100, 
-							"% ingezamelde onderkaken van totaal (", nrow(plotData), "/", nRecords, ")"),
+			add_annotations(text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+          text = "ingezamelde onderkaken van totaal"),
 					xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
 					y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
@@ -144,7 +127,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
   
  
 	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], 
-     accuracy = list(value = accuracy, total = nrow(accData))))
+     accuracy = list(value = accuracy, total = nrow(plotData))))
 	
 }
 

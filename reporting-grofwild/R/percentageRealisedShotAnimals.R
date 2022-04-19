@@ -9,7 +9,9 @@
 #' Create interactive plot for verwezenlijkt and toegekend afschot per jaar
 #' @inheritParams countEmbryos
 #' @param data data.frame, with \code{loadToekenningen()} for specific WBE 
-#' @param currentYear numeric, current year to calculate accuracy for
+#' @param unit character, which values to show on the y-axis;
+#' should be one of \code{c("absolute", "percentage")}; default \code{"absolute"}
+#' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
 #' @param unit character, which values to show on the y-axis;
 #' should be one of \code{c("absolute", "percentage")}; default \code{"absolute"}
 #' @return list with:
@@ -26,8 +28,7 @@
 #' @author mvarewyck
 #' @import plotly
 #' @export
-percentageRealisedShot <- function(data, type = NULL,
-  currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
+percentageRealisedShot <- function(data, regio, type = NULL,
   jaartallen = NULL, unit = c("absolute", "percentage"),
   width = NULL, height = NULL){
   
@@ -79,7 +80,7 @@ percentageRealisedShot <- function(data, type = NULL,
 #    y = plotData$toegekend,
 #    x = plotData$jaar
 #  )
-  
+
   title <- paste0(
     if (unit == "absolute") 
         "Toegekende en verwezenlijkte labels\n" else
@@ -158,7 +159,8 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
       callModule(module = optionsModuleServer, id = "percentageRealisedShot", 
         timeRange = timeRange,
         types = types,
-        multipleTypes = TRUE)
+        multipleTypes = TRUE,
+        data = data)
       callModule(module = plotModuleServer, id = "percentageRealisedShot",
         plotFunction = "percentageRealisedShot",
         data = data,
@@ -172,11 +174,12 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
+#' @param regionLevels numeric vector, region level choices
 #' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @export
-percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
+percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiText) {
   
   ns <- NS(id)
   
@@ -196,7 +199,7 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
             selectInput(inputId = ns("percentageRealisedUnit"), label = "Eenheid",
               choices = c("Aantal" = "absolute", "Percentage" = "percentage")),
             optionsModuleUI(id = ns("percentageRealisedShot"),
-              showTime = TRUE, showType = TRUE,
+              showTime = TRUE, showType = TRUE, regionLevels = regionLevels,
               exportData = TRUE,
               doWellPanel = FALSE)
           ),

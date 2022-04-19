@@ -41,29 +41,15 @@ countAgeGender <- function(data, jaartallen = NULL,
 				c("geslacht_comp", "leeftijd_comp")]
 	names(plotData) <- c("geslacht", "leeftijd")
 	
-	# Percentage collected
+	# For percentage collected
 	nRecords <- nrow(plotData)
 	
 	# Remove some categories
 	# To prevent error with R CMD check
 	leeftijd <- NULL
 	geslacht <- NULL
-	plotData <- subset(plotData, !is.na(geslacht) & geslacht != "Onbekend" &
-					leeftijd != "Onbekend")
-	percentCollected <- nrow(plotData)/nRecords
-	
-	# Define names and ordering of factor levels
-	if (wildNaam == "Wild zwijn") {  # wild zwijn
-		
-		newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
-		
-	} else {  # ree
-		
-		newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
-		
-	}
-	
-	
+	plotData <- subset(plotData, geslacht != "Onbekend" & leeftijd != "Onbekend")
+  
 	# Summarize data per province and year
 	summaryData <- count(df = plotData, vars = names(plotData))
 	freq <- NULL  # to prevent warnings with R CMD check 
@@ -73,7 +59,8 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 	
 	# For optimal displaying in the plot
-	summaryData$leeftijd <- factor(summaryData$leeftijd, levels = newLevelsLeeftijd)
+	summaryData$leeftijd <- factor(summaryData$leeftijd, 
+    levels = loadMetaEco(species = wildNaam)$leeftijd_comp)
 	
 	summaryData$text <- paste0(round(summaryData$percent), "%",
 			" (", summaryData$freq, ")")
@@ -107,12 +94,13 @@ countAgeGender <- function(data, jaartallen = NULL,
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
 					y = 0.8, yanchor = "bottom",    # Same y as legend below
 					legendtitle = TRUE, showarrow = FALSE) %>%
-			
-			add_annotations(text = paste0(round(percentCollected, 2)*100, 
-							"% met gekende leeftijd en geslacht (", nrow(plotData), "/", nRecords, ")"),
-					xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-					y = -0.3, yanchor = "bottom", showarrow = FALSE)  
-	
+        
+        add_annotations(
+          text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+            text = "gekende leeftijd en geslacht"),
+          xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+          y = -0.3, yanchor = "bottom", showarrow = FALSE)  
+      
 	colsFinal <- colnames(summaryData)[colnames(summaryData) != "text"]
 	
 	# To prevent warnings in UI

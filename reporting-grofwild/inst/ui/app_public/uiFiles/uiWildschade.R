@@ -54,7 +54,7 @@ tagList(
                 
                 # Select type schade
                 column(4, selectInput(inputId = "schade_code", label = "Type Schade",
-                        choices = fullNames(x = schadeTypes),
+                        choices = schadeTypes,
                         selected = NULL, #schadeTypes
                         multiple = TRUE,
                         width = "100%"

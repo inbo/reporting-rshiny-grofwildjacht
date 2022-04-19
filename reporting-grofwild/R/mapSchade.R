@@ -16,13 +16,15 @@
 #' @inheritParams readShapeData
 #' @inheritParams filterSchade
 #' @param timeRange numeric vector, year span of interest
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
 #' @return a filtered spatialPointsDataFrame
 #' 
 #' @author Eva Adriaensen
 #' @export
 createSchadeSummaryData <- function(schadeData, timeRange,
     dataDir = system.file("extdata", package = "reportingGrofwild"),
-    sourceIndicator = NULL) {
+    sourceIndicator = NULL, fullNames = NULL) {
 	
   
   plotData <- filterSchade(plotData = schadeData,
@@ -45,8 +47,8 @@ createSchadeSummaryData <- function(schadeData, timeRange,
                                                     gemeenteData$Gemeente)]
                                             
   # decrypte schade names
-  plotData$schadeBasisCode <- names(fullNames(plotData$schadeBasisCode))
-  plotData$schadeCode <- names(fullNames(plotData$schadeCode))
+  plotData$schadeBasisCode <- names(fullNames)[match(plotData$schadeBasisCode, fullNames)]
+  plotData$schadeCode <- names(fullNames)[match(plotData$schadeCode, fullNames)]
   
   plotData
 }
@@ -209,14 +211,20 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
       ns <- session$ns
       results <- reactiveValues()
       
+      
+      ## Region level
+      results$regionLevelName <- reactive({
+
+          unique(results$schadeData()@data$WBE_Naam_Toek)
+          
+        })
+      
+   
       # Data-dependent input fields
       output$subcode <- renderUI({
           
-          gewasChoices <- fullNames(
-            unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "GEWAS"]))
-          voertuigChoices <- fullNames(
-            unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "VRTG"]))
-          
+          gewasChoices <- loadMetaSchade()$codes[["GEWAS"]]
+          voertuigChoices <- loadMetaSchade()$codes[["VRTG"]]
           
           tagList(
             if ("GEWAS" %in% input$code)
@@ -273,7 +281,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
       results$schadeData <- reactive({
           
           # Select species & code & exclude data before 2018
-          toRetain <- schadeData@data$wildsoort %in% req(tolower(species())) &
+          toRetain <- schadeData@data$wildsoort %in% req(species()) &
             schadeData@data$schadeBasisCode %in% req(input$code) &
             schadeData@data$afschotjaar >= 2018
           
@@ -443,9 +451,41 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
             sep = ";", dec = ",")
           
         })
-      
-    })
+   
   
+    
+    ## Time plot for selected region ##
+    ## ----------------------------- ##
+    
+    # Create data for map, time plot
+    results$timeData <- reactive({
+        
+        validate(need(input$time, "Gelieve periode te selecteren"))
+
+        createTrendData(
+          data = results$schadeData()@data,
+          allSpatialData = allSpatialData,
+          timeRange = input$time,
+          species = species(),
+          regionLevel = "WBE_buitengrenzen"
+        )
+        
+      })
+    
+    callModule(module = optionsModuleServer, id = "timePlotSchade", 
+      data = results$timeData)
+    callModule(module = plotModuleServer, id = "timePlotSchade",
+      plotFunction = "trendYearRegion", 
+      data = results$timeData,
+      locaties = results$regionLevelName,
+      timeRange = reactive(input$time),
+      isSchade = TRUE,
+      combinatie = reactive(FALSE),
+    )
+    
+    
+    })
+    
 }
 
 
@@ -455,12 +495,14 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
 #' default value is FALSE
 #' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
 #' default value is FALSE
+#' @inheritParams mapFlandersUI
 #' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @importFrom leaflet leafletOutput
 #' @export
-mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
+mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText,
+  plotDetails = NULL) {
   
   ns <- NS(id)
   
@@ -479,7 +521,7 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
             fixedRow(  
               # Select type schade
               column(6, selectInput(inputId = ns("code"), label = "Type Schade",
-                  choices = fullNames(x = metaSchade$types),
+                  choices = metaSchade$types,
                   selected = metaSchade$types,
                   multiple = TRUE,
                   width = "100%"
@@ -524,15 +566,29 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
       
       tags$p(HTML(uiText[, id])),
       
-      uiOutput(ns("titlePerceel")),        
-      withSpinner(leafletOutput(ns("perceelPlot"))),
-      tags$br(),
-      actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
-      singleton(
-        tags$head(tags$script(src = "www/triggerDownload.js"))
+      fixedRow(
+        column(if (length(plotDetails) == 1) 6 else 12,
+          
+          uiOutput(ns("titlePerceel")),        
+          withSpinner(leafletOutput(ns("perceelPlot"))),
+          tags$br(),
+          actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
+          singleton(
+            tags$head(tags$script(src = "www/triggerDownload.js"))
+          ),
+          downloadButton(ns("downloadPerceelmapData"), "Download data", class = "downloadButton"),
+          downloadLink(ns("downloadPerceelMap"), " ")
+        
+        ),
+        
+        if ("region" %in% plotDetails)
+          column(6, 
+            h3("Evolutie schademeldingen WBE"),
+            plotModuleUI(id = ns("timePlotSchade"), height = "400px"),
+            optionsModuleUI(id = ns("timePlotSchade"), exportData = TRUE,
+              doWellPanel = FALSE)
+          )      
       ),
-      downloadButton(ns("downloadPerceelmapData"), "Download data", class = "downloadButton"),
-      downloadLink(ns("downloadPerceelMap"), " "),
       
       tags$hr()
     

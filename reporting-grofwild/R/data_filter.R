@@ -76,6 +76,9 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
   
   if (!is.null(sourceIndicator_leeftijd) && sourceIndicator_leeftijd == "inbo") {
   
+    # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
+    plotData$leeftijd_comp <- plotData$leeftijd_comp_inbo
+    
     # filters out NA and 'meldingsformulier'
     plotData <- subset(plotData, leeftijd_comp_bron == "inbo")
     

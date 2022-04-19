@@ -26,6 +26,12 @@ boxAgeGenderLowerJaw <- function(data,
   sourceIndicator_geslacht = c("both","inbo"), 
   width = NULL, height = NULL) {
   
+  
+  # To prevent error with R CMD check
+  leeftijd <- NULL
+  onderkaaklengte <- NULL
+  geslacht <- NULL
+  
   sourceIndicator_leeftijd <- match.arg(sourceIndicator_leeftijd)
   sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)
 	
@@ -34,63 +40,31 @@ boxAgeGenderLowerJaw <- function(data,
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
-	
+  
+  data <- filterGrofwild(plotData = data, 
+      sourceIndicator_leeftijd = sourceIndicator_leeftijd,
+      sourceIndicator_geslacht = sourceIndicator_geslacht)
+  
 	# Select data
 	plotData <- data[
 			# data of specified years
 			data$afschotjaar %in% jaartallen, 
-			c("onderkaaklengte_comp", "leeftijd_comp", "leeftijd_comp_bron", "leeftijd_maanden", 
-     "geslacht_comp", "provincie", "geslacht_comp_bron")]
-	names(plotData) <- c("onderkaaklengte", "leeftijd", "leeftijd_comp_bron", "maanden",
-   "geslacht", "provincie", "geslacht_comp_bron")
+			c("onderkaaklengte_comp", "leeftijd_comp", "geslacht_comp", "provincie")]
+	names(plotData) <- c("onderkaaklengte", "leeftijd", "geslacht", "provincie")
 	
 	
 	# Percentage collected
 	nRecords <- nrow(plotData)
 	
 	# Remove some categories
-    # To prevent error with R CMD check
-	leeftijd <- NULL
-	onderkaaklengte <- NULL
-	geslacht <- NULL
-	plotData <- subset(plotData, leeftijd != "Onbekend" &
+ 	plotData <- subset(plotData, leeftijd %in% type & leeftijd != "Onbekend" &
 					!is.na(onderkaaklengte) & geslacht != "Onbekend" & !is.na(geslacht))
 	plotData$geslacht <- factor(plotData$geslacht)
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
 	
-
-# Define names and ordering of factor levels
-  # NOTE: Redundant for wild zwijn (not shown in app)
-if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwijn
-  
-  plotData$leeftijd[plotData$leeftijd == "Frisling"] <- 
-    ifelse(plotData$maanden[plotData$leeftijd == "Frisling"] < 6,
-      "Frisling (<6m)", "Frisling (>6m)")
-  
-  newLevelsLeeftijd <- c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen")
-  
-} else if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "both") {
-  
-  newLevelsLeeftijd <- c("Frisling", "Overloper", "Volwassen")
-  
-}else {  # ree
-  
-  # Exclude records with weight lower than 5 or more than 30 (unrealistic)
-  newLevelsLeeftijd <- c("Kits", "Jongvolwassen", "Volwassen")
-  
-}
-	
-	plotData$leeftijd <- factor(plotData$leeftijd, levels = newLevelsLeeftijd)
-	
-	plotData <- subset(plotData, leeftijd %in% type)
- 
- plotData <- filterGrofwild(plotData = plotData, 
-   sourceIndicator_leeftijd = sourceIndicator_leeftijd, 
-   sourceIndicator_geslacht = sourceIndicator_geslacht)
-	
-	# For optimal displaying in the plot
+  # For optimal displaying in the plot
 	colors <- inbo_palette(n = 2)
 	names(colors) <- unique(plotData$geslacht)
 	
@@ -129,7 +103,7 @@ if (wildNaam == "Wild zwijn" & sourceIndicator_leeftijd == "inbo") {  # wild zwi
 	
 	return(list(
 					plot = pl, 
-					data = subset(plotData, select = c("onderkaaklengte", "leeftijd", "geslacht", "provincie"))
+					data = plotData
 	))
 	
 }

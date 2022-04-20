@@ -16,13 +16,15 @@
 #' @inheritParams readShapeData
 #' @inheritParams filterSchade
 #' @param timeRange numeric vector, year span of interest
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
 #' @return a filtered spatialPointsDataFrame
 #' 
 #' @author Eva Adriaensen
 #' @export
 createSchadeSummaryData <- function(schadeData, timeRange,
     dataDir = system.file("extdata", package = "reportingGrofwild"),
-    sourceIndicator = NULL) {
+    sourceIndicator = NULL, fullNames = NULL) {
 	
   
   plotData <- filterSchade(plotData = schadeData,
@@ -45,8 +47,8 @@ createSchadeSummaryData <- function(schadeData, timeRange,
                                                     gemeenteData$Gemeente)]
                                             
   # decrypte schade names
-  plotData$schadeBasisCode <- names(fullNames(plotData$schadeBasisCode))
-  plotData$schadeCode <- names(fullNames(plotData$schadeCode))
+  plotData$schadeBasisCode <- names(fullNames)[match(plotData$schadeBasisCode, fullNames)]
+  plotData$schadeCode <- names(fullNames)[match(plotData$schadeCode, fullNames)]
   
   plotData
 }
@@ -212,11 +214,8 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
       # Data-dependent input fields
       output$subcode <- renderUI({
           
-          gewasChoices <- fullNames(
-            unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "GEWAS"]))
-          voertuigChoices <- fullNames(
-            unique(schadeData@data$schadeCode[schadeData@data$schadeBasisCode == "VRTG"]))
-          
+          gewasChoices <- loadMetaSchade()$codes[["GEWAS"]]
+          voertuigChoices <- loadMetaSchade()$codes[["VRTG"]]
           
           tagList(
             if ("GEWAS" %in% input$code)
@@ -479,7 +478,7 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
             fixedRow(  
               # Select type schade
               column(6, selectInput(inputId = ns("code"), label = "Type Schade",
-                  choices = fullNames(x = metaSchade$types),
+                  choices = metaSchade$types,
                   selected = metaSchade$types,
                   multiple = TRUE,
                   width = "100%"

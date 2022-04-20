@@ -1,30 +1,30 @@
-variable,group,name
-wildsoort,Grof wild,wild zwijn
-wildsoort,Grof wild,edelhert
-wildsoort,Grof wild,ree
-wildsoort,Grof wild,damhert
-wildsoort,Klein wild,haas
-wildsoort,Klein wild,fazant
-wildsoort,Klein wild,konijn
-wildsoort,Klein wild,patrijs
-wildsoort,Waterwild,wilde eend
-wildsoort,Waterwild,smient
-wildsoort,Waterwild,grauwe gans
-wildsoort,Waterwild,Canadese gans
-wildsoort,Waterwild,kievit
-wildsoort,Overig,houtduif
-wildsoort,Overig,vos
-wildsoort,Overig,verwilderde kat
-type,GEWAS,WLSCHD
-type,GEWAS,VRTSCHD
-type,GEWAS,GEWASANDR
-type,GEWAS,VGSCHD
-type,GEWAS,GRFSCHD
-type,VRTG,GNPERSLTSL
-type,VRTG,PERSLTSL
-type,VRTG,ONBEKEND
-type,ANDERE,VALWILD
-type,ANDERE,ANDERE
-source,Dieren onder de wielen (NP),Natuurpunt
-source,Wilder (LJV),HVV_Wilder
-source,E-loket (ANB),E_Loket
+variable,group,group_display,name,name_display
+wildsoort,Grof wild,,wild zwijn,
+wildsoort,Grof wild,,edelhert,
+wildsoort,Grof wild,,ree,
+wildsoort,Grof wild,,damhert,
+wildsoort,Klein wild,,haas,
+wildsoort,Klein wild,,fazant,
+wildsoort,Klein wild,,konijn,
+wildsoort,Klein wild,,patrijs,
+wildsoort,Waterwild,,wilde eend,
+wildsoort,Waterwild,,smient,
+wildsoort,Waterwild,,grauwe gans,
+wildsoort,Waterwild,,Canadese gans,
+wildsoort,Waterwild,,kievit,
+wildsoort,Overig,,houtduif,
+wildsoort,Overig,,vos,
+wildsoort,Overig,,verwilderde kat,
+type,GEWAS,Gewas,WLSCHD,Woelschade
+type,GEWAS,Gewas,VRTSCHD,Vraatschade
+type,GEWAS,Gewas,GEWASANDR,Gewas – andere
+type,GEWAS,Gewas,VGSCHD,Veegschade
+type,GEWAS,Gewas,GRFSCHD,Graafschade
+type,VRTG,Voertuig,GNPERSLTSL,Verkeersongeluk zonder letsel
+type,VRTG,Voertuig,PERSLTSL,Verkeersongeluk met letsel
+type,VRTG,Voertuig,ONBEKEND,Verkeersongeluk onbekend
+type,ANDERE,Andere,VALWILD,Valwild
+type,ANDERE,Andere,ANDERE,Andere
+source,,,Natuurpunt,Dieren onder de wielen (NP)
+source,,,HVV_Wilder,Wilder (LJV)
+source,,,E_Loket,E-loket (ANB)

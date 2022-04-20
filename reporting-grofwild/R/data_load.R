@@ -576,6 +576,8 @@ loadMetaEco <- function(species = NA) {
 }
 
 #' Specify currently used type schades
+#' @param dataDir character, path to data files
+#' 
 #' @return list with meta data for wildschade
 #' 
 #' @author mvarewyck
@@ -590,19 +592,29 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   schadeWildsoorten <- sapply(unique(wildsoorten$group), function(x)
       wildsoorten$name[wildsoorten$group == x], simplify = FALSE)
   
-  # Specify currently used types schade types & subcodes
+  # Specify currently used types schade
   types <- rawData[rawData$variable == "type", c("group", "name")]
-  schadeCodes <- sapply(schadeTypes, function(x) 
-      types$name[types$group == x], simplify = FALSE)
+  schadeTypes <- unique(types$group)
+  
+  # Specify currently used subcodes
+  schadeCodes <- sapply(schadeTypes, function(x) {
+      toReturn <- types$name[types$group == x]
+      names(toReturn) <- rawData$name_display[match(toReturn, rawData$name)]
+      toReturn
+    }, simplify = FALSE)
+  
+  # Keep after schadeCodes to give them raw list names
+  names(schadeTypes) <- rawData$group_display[match(schadeTypes, rawData$group)]
   
   # List with all patterns to search for in indieningType per schadeChoice
-  sources <- rawData[rawData$variable == "source", c("group", "name")]
-  sourcesSchade <- sapply(unique(sources$group), function(x)
-    sources$name[sources$group == x], simplify = FALSE)
+  sources <- rawData[rawData$variable == "source", c("name", "name_display")]
+  sourcesSchade <- sapply(unique(sources$name_display), function(x)
+    sources$name[sources$name_display == x], simplify = FALSE)
   
   
   list(
     wildsoorten = schadeWildsoorten,
+    types = schadeTypes,
     codes = schadeCodes,
     sources = sourcesSchade
   )

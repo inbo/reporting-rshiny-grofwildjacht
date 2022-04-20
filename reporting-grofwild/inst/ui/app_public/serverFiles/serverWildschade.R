@@ -10,8 +10,8 @@
 
 output$schade_subcode <- renderUI({
       
-      gewasChoices <- fullNames(metaSchade$codes[["GEWAS"]])
-      voertuigChoices <- fullNames(metaSchade$codes[["VRTG"]])
+      gewasChoices <- metaSchade$codes[["GEWAS"]]
+      voertuigChoices <- metaSchade$codes[["VRTG"]]
       
       tagList(
           if ("GEWAS" %in% input$schade_code)
@@ -74,11 +74,13 @@ callModule(dataModuleServer, id = "wildsoort",
 ## schade
 callModule(dataModuleServer, id = "schade",
     data = results$schade_data,
-    variable = "schadeBasisCode")
+    variable = "schadeBasisCode",
+    fullNames = schadeTypes)
 ## subschade
 callModule(dataModuleServer, id = "subschade",
     data = results$schade_data,
-    variable = "schadeCode")
+    variable = "schadeCode",
+    fullNames = schadeCodes)
 
 
 # Show frequency tables for filtered data
@@ -171,7 +173,9 @@ results$schade_summaryPerceelData <- reactive({
       createSchadeSummaryData(
           schadeData = results$schade_data(),
           timeRange = input$schade_time2,
-          sourceIndicator = input$schade_bron2)
+          sourceIndicator = input$schade_bron2,
+          fullNames = fullNames
+        )
     })
 
 # Map for UI
@@ -320,7 +324,8 @@ callModule(module = optionsModuleServer, id = "schade_plot2",
 
 callModule(module = plotModuleServer, id = "schade_plot2",
     plotFunction = "countYearSchade", 
-    data = reactive(results$schade_data()@data))
+    data = reactive(results$schade_data()@data),
+    fullNames = fullNames)
 
 
 # Table Frequency table schadeCode
@@ -340,7 +345,8 @@ callModule(module = plotModuleServer, id = "schade_table2",
     schadeChoices = reactive(input$schade_code),
     schadeChoicesVrtg = reactive(input$schade_voertuig),
     schadeChoicesGewas = reactive(input$schade_gewas),
-    datatable = TRUE)
+    datatable = TRUE,
+    fullNames = fullNames)
 
 # Table Frequency table gewas
 callModule(module = optionsModuleServer, id = "schade_gewas",

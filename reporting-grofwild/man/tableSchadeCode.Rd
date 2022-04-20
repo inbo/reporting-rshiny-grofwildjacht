@@ -11,7 +11,8 @@ tableSchadeCode(
   sourceIndicator = NULL,
   schadeChoices = NULL,
   schadeChoicesVrtg = NULL,
-  schadeChoicesGewas = NULL
+  schadeChoicesGewas = NULL,
+  fullNames = NULL
 )
 }
 \arguments{
@@ -30,6 +31,9 @@ should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 \item{schadeChoicesVrtg}{character, chosen schade types related to "VRTG" to filter on, optional}
 
 \item{schadeChoicesGewas}{character, chosen schade types related to "GEWAS" to filter on, optional}
+
+\item{fullNames}{named character vector, values for the \code{variable} to be 
+displayed instead of original data values}
 }
 \value{
 a list containing a data.frame (\code{data}) and an html table header (\code{header}) 

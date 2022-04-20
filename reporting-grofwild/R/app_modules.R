@@ -449,6 +449,9 @@ datatableModuleUI <- function(id) {
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
+#' 
 #' @return no return value; plot output object is created
 #' @author mvarewyck
 #' @importFrom utils write.table
@@ -461,7 +464,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
-    variable = NULL, combinatie = NULL, schadeTitles = FALSE) {
+    variable = NULL, combinatie = NULL, schadeTitles = FALSE,
+    fullNames = NULL) {
   
   subData <- reactive({
         
@@ -543,6 +547,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
+            if(!is.null(fullNames))
+              list(fullNames = fullNames),
             
             if (!is.null(isSchade))
               list(isSchade = isSchade),
@@ -746,12 +752,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' @inheritParams plotModuleServer
 #' @param data, character vector, values for which frequency table should be generated
 #' @param variable character, name of the variable that is summarized
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
 #' @return ui object (tagList)
 #' @export
-dataModuleServer <- function(input, output, session, data, variable) {
+dataModuleServer <- function(input, output, session, data, variable, fullNames = NULL) {
   
-  
-  # TODO include in formatLabels()
   
   freqTable <- reactive({
         
@@ -770,8 +776,8 @@ dataModuleServer <- function(input, output, session, data, variable) {
             SoortNaam = "Gewas")
         
         colnames(myTable) <- c(variableLabel, "Aantal")
-        if (!variable %in% c("wildsoort", "SoortNaam"))
-          myTable[, variableLabel] <- names(fullNames(myTable[, variableLabel]))
+        if (!is.null(fullNames))
+          myTable[, variableLabel] <- names(fullNames)[match(myTable[, variableLabel], fullNames)]
         
         myTable
         

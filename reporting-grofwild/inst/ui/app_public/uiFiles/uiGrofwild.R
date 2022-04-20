@@ -112,6 +112,10 @@ tagList(
         countYearShotUI(id = "wild_jachtmethode", groupVariable = "jachtmethode_comp",
           regionLevels = c(1:2,4), uiText = uiText),
         
+        conditionalPanel("input.wild_species == 'Ree'",
+          percentageRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2)
+        ),
+        
         conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
             
             tagList(

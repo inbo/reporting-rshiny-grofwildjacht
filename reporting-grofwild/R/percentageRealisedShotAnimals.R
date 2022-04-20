@@ -10,6 +10,7 @@
 #' @inheritParams countEmbryos
 #' @param data data.frame, with \code{loadToekenningen()} for specific WBE 
 #' @param currentYear numeric, current year to calculate accuracy for
+#' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified type and jaartallen}
@@ -24,7 +25,7 @@
 #' @author mvarewyck
 #' @import plotly
 #' @export
-percentageRealisedShot <- function(data, type = NULL,
+percentageRealisedShot <- function(data, regio, type = NULL,
   currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
   jaartallen = NULL, 
   width = NULL, height = NULL){
@@ -79,7 +80,8 @@ percentageRealisedShot <- function(data, type = NULL,
   summaryData <- melt(plotData[, c("jaar", "verwezenlijkt", "niet-verwezenlijkt")], id.vars = "jaar")
   summaryData <- merge(summaryData, plotData[, c("jaar", "toegekend")])
   
-  title <- paste0("Toegekende en verwezenlijkte labels\n", paste(kboNaam, collapse = ","),
+  title <- paste0("Toegekende en verwezenlijkte labels\n", 
+    if (length(kboNaam) == 1) kboNaam,
     paste0(" (", paste(type, collapse = ", "),") "),
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen)
   )
@@ -134,7 +136,8 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
       callModule(module = optionsModuleServer, id = "percentageRealisedShot", 
         timeRange = timeRange,
         types = types,
-        multipleTypes = TRUE)
+        multipleTypes = TRUE,
+        data = data)
       callModule(module = plotModuleServer, id = "percentageRealisedShot",
         plotFunction = "percentageRealisedShot",
         data = data)
@@ -146,11 +149,12 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
+#' @param regionLevels numeric vector, region level choices
 #' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @export
-percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
+percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiText) {
   
   ns <- NS(id)
   
@@ -167,7 +171,7 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
         
         column(4,
           optionsModuleUI(id = ns("percentageRealisedShot"),
-            showTime = TRUE, showType = TRUE,
+            showTime = TRUE, showType = TRUE, regionLevels = regionLevels,
             exportData = TRUE),
           tags$p(HTML(uiText[, id])),
           if (showAccuracy)

@@ -246,6 +246,15 @@ countYearShotServer(id = "wild_leeftijd",
   types = results$leeftijdtypes)
 
 
+
+# Plot: Gerealiseerd afschot
+percentageRealisedShotServer(id = "wild",
+  data = reactive(toekenningsData),
+  types = reactive(unique(toekenningsData$labeltype)),
+  timeRange = reactive(range(toekenningsData$labeljaar))
+)
+
+
 ### The MAP
 ### -------------
 

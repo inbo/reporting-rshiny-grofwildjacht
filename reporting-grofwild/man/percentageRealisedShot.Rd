@@ -6,6 +6,7 @@
 \usage{
 percentageRealisedShot(
   data,
+  regio,
   type = NULL,
   currentYear = as.numeric(format(Sys.Date(), "\%Y")) - 1,
   jaartallen = NULL,
@@ -15,6 +16,8 @@ percentageRealisedShot(
 }
 \arguments{
 \item{data}{data.frame, with \code{loadToekenningen()} for specific WBE}
+
+\item{regio, }{empty function argument needed for generalization in \code{\link{plotModuleServer}}}
 
 \item{type}{animal type, used to filter \code{data} ('type_comp' column)
 default is \code{c("Smalree", "Geit")}}

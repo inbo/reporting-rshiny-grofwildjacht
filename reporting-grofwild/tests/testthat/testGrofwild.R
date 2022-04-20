@@ -65,25 +65,6 @@ test_that("Summary table for age", {
     
   })
 
-test_that("Table for provinces", {
-    
-    skip("outdated, not shown anymore")
-    
-    # For count with type 
-    tableProvince(data = reeEcoData[reeEcoData$doodsoorzaak == "afschot", ], 
-      categorie = "typeAantal", jaar = 2017)
-    
-    # For percent shot of assigned with type
-    toekenningsData <- loadToekenningen()
-    tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
-      assignedData = toekenningsData, categorie = "typePercent", jaar = 2017)
-    
-    # This will produce informative error
-    expect_error(tableProvince(data =  ecoData[ecoData$wildsoort == "Ree", ],
-        assignedData = toekenningsData, categorie = "typePercent", jaar = 2019))
-    
-  })
-
 
 ## PLOT 1: Counts per year and province ##
 
@@ -339,6 +320,18 @@ test_that("Afschot per jachtmethode", {
     )$plot
     
   })
+
+
+test_that("Verwezenlijkt afschot", {
+    
+    toekenningsData <- loadToekenningen()
+    
+    percentageRealisedShot(data = toekenningsData,
+      type = unique(toekenningsData$labeltype),
+      jaartallen = 2009:2020)
+    
+  })
+
 
 
 ## PLOT 9: Distribution of cheek length vs class ##

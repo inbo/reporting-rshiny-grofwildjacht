@@ -244,6 +244,9 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
     levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant",
       "Antwerpen", "Limburg"))
   
+  rawData$provincie <- rawData$provincie_toek
+  rawData$provincie_toek <- NULL
+  
   attr(rawData, "Date") <- file.mtime(pathFile)
   
   

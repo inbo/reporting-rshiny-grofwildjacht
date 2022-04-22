@@ -40,23 +40,25 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     bioindicator <- c("aantal_embryos", "aantal_embryos_labo", "aantal_embryos_MF")
     bioindicatorName <- "aantal embryo's"
     
-    
- 
  
  if (is.null(jaartallen))
    jaartallen <- unique(data$afschotjaar)
  
  
  # Select data of specified years and type
- plotData <- subset(data, data$afschotjaar %in% jaartallen & data$type_comp %in% type,
+ plotData <- subset(data, data$afschotjaar %in% jaartallen & 
+     data$type_comp %in% c(type, "Onbekend"),
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
      "leeftijd_comp_bron", "geslacht_comp_bron"))
+ nRecords <- nrow(plotData)
  
  # Filter on source & rename to embryos
  plotData <- filterGrofwild(plotData = plotData, 
    sourceIndicator_embryos = sourceIndicator,
    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
    sourceIndicator_geslacht = sourceIndicator_geslacht)
+  plotData <- subset(plotData, type_comp %in% type)
+ 
       
 	# remove > 3 embryos
   if (wildNaam == "Ree") {
@@ -68,9 +70,9 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
  
   ## For aantal_embryos
   nCollected <- sum(plotData$embryos != "onbekend")
-  nRecords <- nrow(plotData)
-  if (nRecords == 0)
-    return(NULL)
+  
+  if (nrow(plotData) == 0)
+    stop("Geen data beschikbaar")
     
   # convert to a factor
   if (wildNaam == "Ree") {
@@ -143,8 +145,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
 					y = 0.8, yanchor = "bottom",    # Same y as legend below
 					legendtitle = TRUE, showarrow = FALSE) %>%
-            add_annotations(text = paste0(round(nCollected/nRecords, 2)*100, 
-                            "% met gekend aantal embryo's van totaal (", nCollected, "/", nRecords, ")"),
+            add_annotations(text = percentCollected(nAvailable = nCollected,
+                nTotal = nRecords, text = "gekend aantal embryo's, leeftijd en geslacht van totaal"),
                     xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
                     y = -0.2, yanchor = "bottom", showarrow = FALSE)
 	

@@ -353,12 +353,6 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
       tags$div(align = "center",
           withSpinner(plotlyOutput(ns("plot"), height = height))
       ),
-      if (filter) {
-        tags$div(style = "margin-top: 30px;",
-            align = "center",
-            uiOutput(ns("filters"))
-        )
-      },
       uiOutput(outputId = ns("warning"))
   )
 }
@@ -635,41 +629,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       tags$em(resultFct()$warning)
         
-      })
-  
-  
-  # percentage of data used after filtering
-  output$filters <- renderUI({
-        
-        req(input$time)
-        
-        allData <- data()
-        
-        # subsetting data on time 
-        if(length(input$time) == 2) {
-          
-          subsetData <- allData[allData$afschotjaar %in% input$time[1]:input$time[2], ]
-          
-        } else {
-          
-          subsetData <- allData[allData$afshotjaar == input$time, ]  
-          
-        }
-        
-        # subsetting data on region
-        if (!is.null(input$regionLevel) && input$regionLevel == "provinces") {
-          
-          req(input$region)
-          
-          subsetData <- subsetData[subsetData$provincie %in% input$region, ]
-          
-        }
-        
-        noTotal <- nrow(subsetData)
-        noSubset <- nrow(resultFct()$data)
-        percData <- round((noSubset / noTotal) * 100, 2)
-        
-        paste0(percData, "% met gekende leeftijd en geslacht (", noSubset, "/", noTotal, ")")
       })
   
   

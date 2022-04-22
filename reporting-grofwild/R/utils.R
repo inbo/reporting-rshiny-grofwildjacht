@@ -256,6 +256,25 @@ replicateColors <- function(nColors) {
 
   
 }
+
+
+#' Generate text with percentage collected as annotation for plots
+#' @param nAvailable integer, number of subjects for which data is available (non-missing)
+#' @param nTotal integer, total number of subjects
+#' @param text character, explains how the filtering for \code{nAvailable} is done
+#' @return character, annotation text for the plot
+#' 
+#' @author mvarewyck
+#' @export
+percentCollected <- function(nAvailable, nTotal, text) {
+  
+  percentage <- round(nAvailable / nTotal * 100, 1)
+  
+  paste0(percentage, "% met ", text, " (", format(nAvailable, big.mark = " "), 
+    " / ", format(nTotal, big.mark = " "), ")")
+  
+}
+
 #' get path of report available in the package
 #' @return string with path of report
 #' @author Laure Cougnaud and Kirsten Van Hoorde

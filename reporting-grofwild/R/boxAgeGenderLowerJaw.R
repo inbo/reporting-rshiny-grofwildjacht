@@ -41,25 +41,26 @@ boxAgeGenderLowerJaw <- function(data,
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
   
-  data <- filterGrofwild(plotData = data, 
-      sourceIndicator_leeftijd = sourceIndicator_leeftijd,
-      sourceIndicator_geslacht = sourceIndicator_geslacht)
-  
-	# Select data
+  # Select data
 	plotData <- data[
 			# data of specified years
 			data$afschotjaar %in% jaartallen, 
-			c("onderkaaklengte_comp", "leeftijd_comp", "geslacht_comp", "provincie")]
-	names(plotData) <- c("onderkaaklengte", "leeftijd", "geslacht", "provincie")
-	
-	
+			c("onderkaaklengte_comp", "leeftijd_comp", "geslacht_comp", "provincie",
+        "leeftijd_comp_bron", "geslacht_comp_bron")]
+	names(plotData) <- c("onderkaaklengte", "leeftijd", "geslacht", "provincie", 
+    "leeftijd_comp_bron", "geslacht_comp_bron")
+  plotData <- subset(plotData, leeftijd %in% c(type, "Onbekend"))  # to calculate nRecords
+  
 	# Percentage collected
 	nRecords <- nrow(plotData)
 	
+  plotData <- filterGrofwild(plotData = plotData, 
+    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
+    sourceIndicator_geslacht = sourceIndicator_geslacht)
+  
 	# Remove some categories
  	plotData <- subset(plotData, leeftijd %in% type & leeftijd != "Onbekend" &
-					!is.na(onderkaaklengte) & geslacht != "Onbekend" & !is.na(geslacht))
-	plotData$geslacht <- factor(plotData$geslacht)
+					!is.na(onderkaaklengte) & geslacht != "Onbekend")
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
@@ -80,7 +81,7 @@ boxAgeGenderLowerJaw <- function(data,
 				paste0(" (", toString(regio), ")")) 
 			
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
-  plotData$leeftijd <- factor(plotData$leeftijd, levels = type)
+  plotData$leeftijd <- droplevels(plotData$leeftijd)
   
 	# create plot
 	pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~onderkaaklengte,
@@ -89,13 +90,19 @@ boxAgeGenderLowerJaw <- function(data,
 			layout(title = title,
 					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Onderkaaklengte (mm)"),
-					margin = list(t = 100),
+					margin = list(b = 120, t = 100),
 					boxmode = "group",
 					annotations = list(x = totalCounts$index, 
 							y = -diff(range(plotData$onderkaaklengte, na.rm = TRUE))/10, 
 							xref = "paper", text = totalCounts$freq, xanchor = 'center', 
 							yanchor = 'bottom', showarrow = FALSE)
-			)
+			) %>%
+      
+      add_annotations(
+        text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+          text = "gekende leeftijd, geslacht en onderkaaklengte"),
+        xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+        y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
@@ -167,7 +174,7 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
             showDataSource = c("leeftijd", "geslacht")),
           tags$p(HTML(uiText[, id]))),
         column(8, 
-          plotModuleUI(id = ns("ageGenderLowerJaw"), filter = TRUE)
+          plotModuleUI(id = ns("ageGenderLowerJaw"))
         )
       ),
       tags$hr()

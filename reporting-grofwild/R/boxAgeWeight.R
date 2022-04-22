@@ -48,29 +48,25 @@ boxAgeWeight <- function(data,
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
+  	
+  # Select data
+	plotData <- data[data$afschotjaar %in% jaartallen, 
+			c("ontweid_gewicht", "leeftijd_comp", "geslacht_comp", "provincie",
+        "leeftijd_comp_bron", "geslacht_comp_bron")]
+	names(plotData) <- c("gewicht", "leeftijd", "geslacht", "provincie", 
+    "leeftijd_comp_bron", "geslacht_comp_bron")
+  plotData <- subset(plotData, leeftijd %in% c(type, "Onbekend"))  # to calculate nRecords
   
-  
+  # Percentage collected
+	nRecords <- nrow(plotData)
+	
   data <- filterGrofwild(plotData = data, 
     sourceIndicator_leeftijd = sourceIndicator_leeftijd,
     sourceIndicator_geslacht = sourceIndicator_geslacht)
-	
-	# Select data
-	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "leeftijd_comp", "geslacht_comp", "provincie")]
-	names(plotData) <- c("gewicht", "leeftijd", "geslacht", "provincie")
-	
   
-	# Percentage collected
-	nRecords <- nrow(plotData)
-	
 	# Remove some categories
-	# To prevent error with R CMD check
-	leeftijd <- NULL
-	gewicht <- NULL
-	geslacht <- NULL
-	plotData <- subset(plotData, leeftijd != "Onbekend" &
-					!is.na(gewicht) & geslacht != "Onbekend" & !is.na(geslacht))
-	plotData$geslacht <- factor(plotData$geslacht)
+	plotData <- plotData[plotData$leeftijd != "Onbekend" &
+					!is.na(plotData$gewicht) & plotData$geslacht != "Onbekend", ]
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
@@ -81,7 +77,7 @@ boxAgeWeight <- function(data,
 		
 	}
 	
-  # filters out NA leeftijd if all leeftijdlevels are passed in 'type'
+  # filters out "Onbekend" leeftijd if all leeftijdlevels are passed in 'type'
 	plotData <- subset(plotData, leeftijd %in% type)
   
 	# For optimal displaying in the plot
@@ -100,7 +96,7 @@ boxAgeWeight <- function(data,
 				paste0(" (", toString(regio), ")"))
 	
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
-	plotData$leeftijd <- factor(plotData$leeftijd, levels = type)
+	plotData$leeftijd <- droplevels(plotData$leeftijd)
   
 	# Create plot
 	# Prevent Warning: 'layout' objects don't have these attributes: 'boxmode'
@@ -110,12 +106,17 @@ boxAgeWeight <- function(data,
 			layout(title = title,
 					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Leeggewicht (kg)"),
-					margin = list(t = 100),
+					margin = list(b = 120, t = 100),
 					boxmode = "group",
 					annotations = list(x = totalCounts$index, 
 							y = -diff(range(plotData$gewicht, na.rm = TRUE))/10, 
 							xref = "paper", text = totalCounts$freq, xanchor = 'center', 
-							yanchor = 'bottom', showarrow = FALSE))  
+							yanchor = 'bottom', showarrow = FALSE)) %>%
+          add_annotations(
+            text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+              text = "gekende leeftijd, geslacht en gewicht"),
+            xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+            y = -0.3, yanchor = "bottom", showarrow = FALSE)
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL

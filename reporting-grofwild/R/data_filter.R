@@ -22,9 +22,9 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   
   returnStop <- match.arg(returnStop)
   
-  sourcesSchade <- loadMetaSchade()$sources
-  
   if (!is.null(sourceIndicator)) {
+    
+    sourcesSchade <- loadMetaSchade()$sources  
     
     sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
     plotData <- plotData[grepl(sources, plotData$indieningType), ]

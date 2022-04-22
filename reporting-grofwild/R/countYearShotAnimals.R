@@ -37,31 +37,26 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   # regions get already filtered out in the plotModuleServer 
   
   # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
-  if (groupVariable == "leeftijd_comp" & sourceIndicator_leeftijd == "inbo") {
-    
+  if (groupVariable == "leeftijd_comp" & sourceIndicator_leeftijd == "inbo")
     groupVariable <- "leeftijd_comp_inbo"
-        
-    plotData <- filterGrofwild(plotData = plotData, 
-      sourceIndicator_leeftijd = sourceIndicator_leeftijd)
   
-  }
-  
-  # Select on years
+  # Select on years & type
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
-      c("afschotjaar", "afschot_datum", groupVariable)]
-  
-  plotData <- plotData[!is.na(plotData$afschotjaar), ]
+      c("afschotjaar", "afschot_datum", groupVariable, "leeftijd_comp_bron")]
+  if (!is.null(type) && type != "all")
+    plotData <- plotData[plotData[, groupVariable] %in% c(type, "Onbekend"), ] #include onbekend for nRecords
+  nRecords <- nrow(plotData)
+    
+  # Clean data for groupVariable
   plotData[, groupVariable] <- droplevels(plotData[, groupVariable])
   plotData[is.na(plotData[, groupVariable]), groupVariable] <- "Onbekend"
-  
-  # only retains animals of specified type
-  if (!is.null(type) && type != "all") {
-    
+  if (groupVariable == "leeftijd_comp_inbo")
+    plotData <- filterGrofwild(plotData = plotData, 
+      sourceIndicator_leeftijd = sourceIndicator_leeftijd)
+  if (!is.null(type) && type != "all") ## only retains animals of specified type
     plotData <- plotData[plotData[, groupVariable] %in% type, ]
-    
-  }
+  plotData$leeftijd_comp_bron <- NULL
   
-  noRecords <- nrow(plotData)
   plotData <- plotData[!is.na(plotData$afschot_datum), ]
   
   
@@ -200,8 +195,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       title = title,
       yaxis = list(title = "Aantal"),
       margin = list(b = 120, t = 100)) %>% 
-    add_annotations(text = paste0(round(nrow(plotData)/noRecords, 2)*100, 
-        "% met gekende afschotdatum (", nrow(plotData), "/", noRecords, ")"),
+    add_annotations(text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+        text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = -0.25, yanchor = "bottom", showarrow = FALSE)
  

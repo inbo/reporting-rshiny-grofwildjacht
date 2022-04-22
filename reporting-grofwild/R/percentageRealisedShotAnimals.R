@@ -9,7 +9,6 @@
 #' Create interactive plot for verwezenlijkt and toegekend afschot per jaar
 #' @inheritParams countEmbryos
 #' @param data data.frame, with \code{loadToekenningen()} for specific WBE 
-#' @param currentYear numeric, current year to calculate accuracy for
 #' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
 #' @return list with:
 #' \itemize{
@@ -26,7 +25,6 @@
 #' @import plotly
 #' @export
 percentageRealisedShot <- function(data, regio, type = NULL,
-  currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
   jaartallen = NULL, 
   width = NULL, height = NULL){
   

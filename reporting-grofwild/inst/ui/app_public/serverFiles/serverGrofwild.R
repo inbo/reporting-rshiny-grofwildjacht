@@ -254,6 +254,12 @@ percentageRealisedShotServer(id = "wild",
   timeRange = reactive(range(toekenningsData$labeljaar))
 )
 
+boxRealisedShotServer(id = "wild", 
+  data = reactive(toekenningsData),
+  types = reactive(unique(toekenningsData$labeltype)),
+  timeRange = reactive(range(toekenningsData$labeljaar))
+)
+
 
 ### The MAP
 ### -------------

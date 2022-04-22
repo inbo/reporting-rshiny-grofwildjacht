@@ -8,6 +8,8 @@ Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benad
 In dit geval dus de relatie tussen het aantal reeën in een gebied en de draagkracht van dat gebied. 
 Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen."
 boxAgeWeightUI,FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier),"Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,
+boxRealisedShotUI,FIGUUR: Percentage gerealiseerd afschot per jaar,"Het percentage geeft de graad van verwezenlijking weer (verwezenlijkt / toegekend afschot).
+Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,
 countAgeCheekUI,FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier,"Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.",,"Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn."
 countAgeGenderUI,FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie,"Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. 
 Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is wordt deze gebruikt anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt. ",,"Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode. 
@@ -23,7 +25,7 @@ countYearShotUI-leeftijd_comp,FIGUUR: Verdeling afschot over de jaren,Verdeling 
 mapSchadeUI,FIGUUR: Schademeldingen,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.
-Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
+Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.
 Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels."
 plotBioindicatorUI-onderkaaklengte,FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier),"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). </br> Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s). </br> Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt."

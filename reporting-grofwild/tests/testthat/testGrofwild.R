@@ -330,6 +330,10 @@ test_that("Verwezenlijkt afschot", {
       type = unique(toekenningsData$labeltype),
       jaartallen = 2009:2020)
     
+    boxRealisedShot(data = toekenningsData,
+      type = unique(toekenningsData$labeltype),
+      jaartallen = 2009:2020)
+    
   })
 
 

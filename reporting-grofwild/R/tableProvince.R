@@ -215,9 +215,13 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 			
 			# Calculate trend
 			finalTable <- join(x = finalTable, y = freqBack, by = "provincie")
+      finalTable[, paste("Warning", yearsBack, "jaar")] <- c("zwart", "oranje", "rood")[
+        ifelse(
+        summaryTables[[1]]$Totaal != 0 & finalTable$freq != 0,
+        (summaryTables[[1]]$Totaal < minForTrend) + (finalTable$freq < minForTrend),
+        0) + 1]
 			finalTable[, paste0("Verandering tov ", yearsBack, " jaar (", jaar - yearsBack, ")")] <- 
-					ifelse(summaryTables[[1]]$Totaal > minForTrend & 
-									finalTable$freq > minForTrend,
+					ifelse(summaryTables[[1]]$Totaal != 0 & finalTable$freq != 0,
 							{ if (categorie == "typePercent") 
 									value <- round((finalTable$Totaal - finalTable$percent)*100, 1) else
 									value <- round((finalTable$Totaal/finalTable$freq - 1)*100, 1)
@@ -237,7 +241,8 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	
 	rowOrder <- match(c(levelsProvincie, "Vlaanderen"), finalTable$provincie)
 	toReturn <- finalTable[rowOrder[!is.na(rowOrder)], c("provincie", levelsCategorie, "Totaal",
-					names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))])]
+					names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))],
+          names(finalTable)[grep(pattern = "Warning", x = names(finalTable))])]
 	
 	# If the selected year is not relevant, return NULL
 	if (all(toReturn$Totaal == "Inf"))

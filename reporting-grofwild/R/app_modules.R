@@ -673,33 +673,40 @@ plotModuleServer <- function(input, output, session, plotFunction,
       }
   )
   
-  if (datatable == TRUE) {
-    output$table <- DT::renderDataTable({
-          
-          DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
-                  selection = "single",
-                  options = list(dom = 't', pageLength = -1)) %>%
-              formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
-              formatStyle(
-                  colnames(resultFct()$data)[1],
-                  target = "row",
-                  fontWeight = styleEqual(tail(resultFct()$data[, 1], n = 1), "bold")
-              )
-          
-        })
-  } else {
-    output$table <- DT::renderDataTable({
-          
-          DT::datatable(resultFct(), rownames = FALSE,
-                  options = list(dom = 't', pageLength = -1)) %>%
-              formatStyle(
-                  colnames(resultFct())[1],
-                  target = "row",
-                  fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
-              )
-          
-        })
-  }
+  
+  output$table <- DT::renderDataTable({
+      
+      if (datatable) {
+        
+        DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
+            selection = "single",
+            options = list(dom = 't', pageLength = -1)) %>%
+          formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
+          formatStyle(
+            colnames(resultFct()$data)[1],
+            target = "row",
+            fontWeight = styleEqual(tail(resultFct()$data[, 1], n = 1), "bold")
+          )
+        
+      } else {
+        
+        DT::datatable(resultFct(), rownames = FALSE,
+            options = list(dom = 't', pageLength = -1,
+              columnDefs = list(list(targets = grep("Warning", colnames(resultFct())) - 1, visible = FALSE)))) %>%
+          formatStyle(
+            colnames(resultFct())[1],
+            target = "row",
+            fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
+          ) %>%
+          formatStyle(
+            grep("Verandering", colnames(resultFct()), value = TRUE),
+            grep("Warning", colnames(resultFct()), value = TRUE),
+            color = styleEqual(c("oranje", "rood"), c("orange", "red"))
+          )
+        
+      }
+    })
+  
   
   
   

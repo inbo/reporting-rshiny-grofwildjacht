@@ -292,12 +292,15 @@ mapFlanders <- function(
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, species = species,
       regionLevel = "WBE", year = year, locaties = summaryData$locatie)
-    jachtData@data$NAAM <- "Jachtterrein"
-    jachtData@data$WBE_NR <- jachtData@data$WBENR
-    jachtData@data$WBENR <- NULL
-    spatialData@data$NAAM <- "WBE"
     
-    spatialData <- rbind(spatialData, jachtData)
+    if (!is.null(jachtData)) {
+      jachtData@data$NAAM <- "Jachtterrein"
+      jachtData@data$WBE_NR <- jachtData@data$WBENR
+      jachtData@data$WBENR <- NULL
+      spatialData@data$NAAM <- "WBE"
+      
+      spatialData <- rbind(spatialData, jachtData)
+    }
     
   }
   

@@ -19,7 +19,6 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     
     unit <- match.arg(unit)
     
-    
     # Select correct spatial data
     chosenTimes <- timeRange[1]:timeRange[2]
     spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
@@ -42,23 +41,24 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     
     # Generic location name
     plotData$locatie <- as.character(switch(regionLevel,
-            flanders = "Vlaams Gewest",
-            provinces = plotData$provincie,
-            communes = plotData$gemeente_afschot_locatie,
-            faunabeheerzones = plotData$FaunabeheerZone,
-            fbz_gemeentes = plotData$fbz_gemeente,
-            utm5 = plotData$UTM5,
-            WBE_buitengrenzen = plotData$PartijNummer
-    ))
-    # Need to match partijNummer to WBE_Naam_Toek later
-    if (regionLevel == "WBE_buitengrenzen") 
-      matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
+        flanders = "Vlaams Gewest",
+        provinces = plotData$provincie,
+        communes = plotData$gemeente_afschot_locatie,
+        faunabeheerzones = plotData$FaunabeheerZone,
+        fbz_gemeentes = plotData$fbz_gemeente,
+        utm5 = plotData$UTM5,
+        WBE_buitengrenzen = plotData$PartijNummer
+      ))
     
-   
-  
+    # Need to match partijNummer to WBE_Naam_Toek later
+    if (regionLevel == "WBE_buitengrenzen") {
+      matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
+      matchLocaties <- matchLocaties[!duplicated(matchLocaties), ]
+    } else matchLocaties <- NULL
+    
     # Select subset for time & species
     plotData <- subset(plotData, 
-            subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
+            subset = afschotjaar %in% chosenTimes & tolower(wildsoort) %in% tolower(species),
             select = c("afschotjaar", "locatie"))
     
     # Exclude data with missing time or space
@@ -71,7 +71,8 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     # Add names & times with 0 observations
     fullData <- cbind(expand.grid(
                     afschotjaar = chosenTimes,
-                    locatie = unique(spatialData$NAAM)))
+                    locatie = if (!is.null(matchLocaties)) 
+                      matchLocaties$PartijNummer else unique(spatialData$NAAM)))
     
     if (unit == "relativeDekking") {
       # add dekkingsgraad 100ha bos&natuur      
@@ -118,7 +119,8 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
       
     } else if (regionLevel == "WBE_buitengrenzen") {
       
-      allData$locatie <- matchLocaties$WBE_Naam_Toek[match(allData$locatie, matchLocaties$PartijNummer)]
+      allData$locatie <- matchLocaties$WBE_Naam_Toek[
+        match(allData$locatie, matchLocaties$PartijNummer)]
       
     }
     
@@ -169,7 +171,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
     "relativeDekking" = "/100ha bos & natuur",
   )
   
-	wildNaam <- unique(data$wildsoort)
+  wildNaam <- unique(data$wildsoort)
   title_wildnaam <- unlist(strsplit(wildNaam, split = ", "))
   titlePrefix <- if (!isSchade) "Gerapporteerd afschot" else "Evolutie schademeldingen"
   

@@ -211,6 +211,15 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
       ns <- session$ns
       results <- reactiveValues()
       
+      
+      ## Region level
+      results$regionLevelName <- reactive({
+
+          unique(results$schadeData()@data$WBE_Naam_Toek)
+          
+        })
+      
+   
       # Data-dependent input fields
       output$subcode <- renderUI({
           
@@ -442,9 +451,41 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
             sep = ";", dec = ",")
           
         })
-      
-    })
+   
   
+    
+    ## Time plot for selected region ##
+    ## ----------------------------- ##
+    
+    # Create data for map, time plot
+    results$timeData <- reactive({
+        
+        validate(need(input$period, "Gelieve periode te selecteren"))
+
+        createTrendData(
+          data = results$schadeData()@data,
+          allSpatialData = allSpatialData,
+          timeRange = input$period,
+          species = species(),
+          regionLevel = "WBE_buitengrenzen"
+        )
+        
+      })
+    
+    callModule(module = optionsModuleServer, id = "timePlotSchade", 
+      data = results$timeData)
+    callModule(module = plotModuleServer, id = "timePlotSchade",
+      plotFunction = "trendYearRegion", 
+      data = results$timeData,
+      locaties = results$regionLevelName,
+      timeRange = reactive(input$period),
+      isSchade = TRUE,
+      combinatie = reactive(FALSE),
+    )
+    
+    
+    })
+    
 }
 
 
@@ -454,12 +495,14 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
 #' default value is FALSE
 #' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
 #' default value is FALSE
+#' @inheritParams mapFlandersUI
 #' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @importFrom leaflet leafletOutput
 #' @export
-mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
+mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText,
+  plotDetails = NULL) {
   
   ns <- NS(id)
   
@@ -523,15 +566,29 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText) {
       
       tags$p(HTML(uiText[, id])),
       
-      uiOutput(ns("titlePerceel")),        
-      withSpinner(leafletOutput(ns("perceelPlot"))),
-      tags$br(),
-      actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
-      singleton(
-        tags$head(tags$script(src = "www/triggerDownload.js"))
+      fixedRow(
+        column(if (length(plotDetails) == 1) 6 else 12,
+          
+          uiOutput(ns("titlePerceel")),        
+          withSpinner(leafletOutput(ns("perceelPlot"))),
+          tags$br(),
+          actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
+          singleton(
+            tags$head(tags$script(src = "www/triggerDownload.js"))
+          ),
+          downloadButton(ns("downloadPerceelmapData"), "Download data", class = "downloadButton"),
+          downloadLink(ns("downloadPerceelMap"), " ")
+        
+        ),
+        
+        if ("region" %in% plotDetails)
+          column(6, 
+            h3("Evolutie schademeldingen WBE"),
+            plotModuleUI(id = ns("timePlotSchade"), height = "400px"),
+            optionsModuleUI(id = ns("timePlotSchade"), exportData = TRUE,
+              doWellPanel = FALSE)
+          )      
       ),
-      downloadButton(ns("downloadPerceelmapData"), "Download data", class = "downloadButton"),
-      downloadLink(ns("downloadPerceelMap"), " "),
       
       tags$hr()
     

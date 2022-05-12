@@ -185,6 +185,31 @@ test_that("Map schade", {
     
   })
 
+test_that("Trend schade", {
+    
+    iSpecies <- species[1]
+    schadeDataSub <- subset(schadeData, wildsoort = tolower(iSpecies))
+    
+    matchLocaties <- geoData[, c("PartijNummer", "KboNummer_Toek")]
+    matchLocaties <- matchLocaties[!duplicated(matchLocaties), ]
+    schadeDataSub$PartijNummer <- matchLocaties$PartijNummer[match(schadeDataSub@data$KboNummer, matchLocaties$KboNummer_Toek)]
+    
+    trendRegionData <- createTrendData(
+      data = schadeDataSub@data,
+      allSpatialData = spatialData,
+      timeRange = range(years),
+      species = iSpecies,
+      regionLevel = "WBE_buitengrenzen"
+    )
+    
+    trendYearRegion(
+      data = trendRegionData,
+      locaties = matchLocaties$WBE_Naam_Toek,
+      timeRange = range(years)
+    )$plot
+    
+  })
+
 
 test_that("Additional plots", {
     

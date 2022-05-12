@@ -93,7 +93,6 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   
   # Long to wide table
   summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq")
-  
   # Optimal displaying of the table
   summaryTable[is.na(summaryTable)] <- 0
   
@@ -115,11 +114,12 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 
   allSchadeCode <- unique(comb$Var2)
   
-  # number of schadeCodes by schadeBasisCode
+  # number of schadeCodes by schadeBasisCode - correct sorting!
   columsPerSchadeBasisCode <- table(comb$Var1)
+  columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(comb$Var1)]
 
   # group columns together from same schadeBasisCode
-  codeNames <- unlist(fullNames[fullNames %in% comb$Var2])
+  codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
   summaryTable <- summaryTable[, c(colnames(summaryTable)[1], codeNames)]
   
   

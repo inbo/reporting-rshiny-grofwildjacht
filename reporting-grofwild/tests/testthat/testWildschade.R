@@ -16,11 +16,16 @@ schadeData <- loadRawData(type = "wildschade")
 wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])
 
 species <- sort(unique(schadeData$wildsoort))
-#  [1] "Canadese gans" "edelhert"      "fazant"        "grauwe gans"  
-#  [5] "haas"          "houtduif"      "konijn"        "ree"          
-#  [9] "smient"        "vos"           "wild zwijn"    "wilde eend"   
-# [13] "wolf"         
+   
 
+metaSchade <- loadMetaSchade()
+schadeWildsoorten <- metaSchade$wildsoorten
+schadeTypes <- metaSchade$types
+schadeCodes <- metaSchade$codes
+schadeCodes <- metaSchade$codes
+names(schadeCodes) <- NULL
+schadeCodes <- unlist(schadeCodes)
+fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
 
 ## THE MAP
@@ -197,7 +202,8 @@ test_that("Counts per type schade", {
 #                  type = c("provinces", "flanders", "faunabeheerzones")[1],
           schadeChoices = choicesSchadecode,
           schadeChoicesVrtg = choicesSchadeVrtg, 
-          schadeChoicesGewas = choicesSchadeGewas)
+          schadeChoicesGewas = choicesSchadeGewas,
+          fullNames = fullNames)
         
         # some tests
         expect_equal(names(schadeTable), c("data", "header"))
@@ -219,7 +225,8 @@ test_that("Counts per type schade", {
     schadeTable <- tableSchadeCode(data = wildSchadeData,
       schadeChoices = c("GEWAS", "VRTG", "ANDERE")[3],
       schadeChoicesVrtg = c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:2], 
-      schadeChoicesGewas = c("VRTSCHD", "WLSCHD", "GEWASANDR")[1:3])
+      schadeChoicesGewas = c("VRTSCHD", "WLSCHD", "GEWASANDR")[1:3],
+      fullNames = fullNames)
     
 # testing for special cases
     expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")

@@ -1,20 +1,20 @@
 variable,group,group_display,name,name_display
-wildsoort,Grof wild,,wild zwijn,
-wildsoort,Grof wild,,edelhert,
-wildsoort,Grof wild,,ree,
-wildsoort,Grof wild,,damhert,
-wildsoort,Klein wild,,haas,
-wildsoort,Klein wild,,fazant,
-wildsoort,Klein wild,,konijn,
-wildsoort,Klein wild,,patrijs,
-wildsoort,Waterwild,,wilde eend,
-wildsoort,Waterwild,,smient,
-wildsoort,Waterwild,,grauwe gans,
-wildsoort,Waterwild,,Canadese gans,
-wildsoort,Waterwild,,kievit,
-wildsoort,Overig,,houtduif,
-wildsoort,Overig,,vos,
-wildsoort,Overig,,verwilderde kat,
+wildsoort,Grof wild,NA,Wild zwijn,NA
+wildsoort,Grof wild,NA,Edelhert,NA
+wildsoort,Grof wild,NA,Ree,NA
+wildsoort,Grof wild,NA,Damhert,NA
+wildsoort,Klein wild,NA,Haas,NA
+wildsoort,Klein wild,NA,Fazant,NA
+wildsoort,Klein wild,NA,Konijn,NA
+wildsoort,Klein wild,NA,Patrijs,NA
+wildsoort,Waterwild,NA,Wilde eend,NA
+wildsoort,Waterwild,NA,Smient,NA
+wildsoort,Waterwild,NA,Grauwe gans,NA
+wildsoort,Waterwild,NA,Canadese gans,NA
+wildsoort,Waterwild,NA,Kievit,NA
+wildsoort,Overig,NA,Houtduif,NA
+wildsoort,Overig,NA,Vos,NA
+wildsoort,Overig,NA,Verwilderde kat,NA
 type,GEWAS,Gewas,WLSCHD,Woelschade
 type,GEWAS,Gewas,VRTSCHD,Vraatschade
 type,GEWAS,Gewas,GEWASANDR,Gewas – andere
@@ -25,6 +25,6 @@ type,VRTG,Voertuig,PERSLTSL,Verkeersongeluk met letsel
 type,VRTG,Voertuig,ONBEKEND,Verkeersongeluk onbekend
 type,ANDERE,Andere,VALWILD,Valwild
 type,ANDERE,Andere,ANDERE,Andere
-source,,,Natuurpunt,Dieren onder de wielen (NP)
-source,,,HVV_Wilder,Wilder (LJV)
-source,,,E_Loket,E-loket (ANB)
+source,NA,NA,Natuurpunt,Dieren onder de wielen (NP)
+source,NA,NA,HVV_Wilder,Wilder (LJV)
+source,NA,NA,E_Loket,E-loket (ANB)

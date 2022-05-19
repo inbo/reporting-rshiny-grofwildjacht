@@ -58,7 +58,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   
   # Force all fbz's in the summary table even if never occured    
   if (type == "faunabeheerzones") {
-    allData$locatie <- factor(allData$locatie, levels = as.character(c(1:10)))    
+    allData$locatie <- factor(allData$locatie, levels = as.character(c(1:10, "Onbekend")))
     levelsLocatie <- levels(allData$locatie)
   } else {
     allData$locatie <- as.factor(allData$locatie)    
@@ -71,23 +71,25 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   if (nrow(tableData) == 0)
     stop("Niet beschikbaar: Geen data voor de gekozen periode")
   
-  # Exclude records with provincie = NA, afschotjaar = NA
-  tableData <- tableData[!is.na(tableData$afschotjaar) & !is.na(tableData$locatie), ]
+  # Exclude records with afschotjaar = NA
+  if (any(is.na(tableData$locatie)))
+    warning("Locatie is missing for some records. Total numbers in the table might differ across chosen region levels.")
+  tableData <- tableData[!is.na(tableData$afschotjaar), ]
     
   # Summary of the data
   summaryData <- count(tableData, vars = setdiff(names(tableData), "afschotjaar"))
   
   # Include all possible locations and selected schadeCodes
   fullData <- expand.grid(
-      locatie = levelsLocatie,
-      schadeCode = if ("ANDERE" %in% schadeChoices) {
-            unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
-            
+    locatie = levelsLocatie,
+    schadeCode = if ("ANDERE" %in% schadeChoices) {
+        unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
+        
       } else {
         unique(c(schadeSubchoices, as.character(unique(allData$schadeCode))))
-
+        
       }
-)
+  )
   
   summaryData <- merge(summaryData, fullData, all = TRUE)
   

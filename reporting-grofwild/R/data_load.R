@@ -401,12 +401,16 @@ loadRawData <- function(
         # Remove Voeren as province
         rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
         rawData$provincie <- droplevels(rawData$provincie)
-        
+
         
         # Define fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
-                NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
-        # Define season
+          NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
+        # Onbekende locaties
+        rawData$provincie <- factor(ifelse(is.na(rawData$provincie), "Onbekend", as.character(rawData$provincie)), levels = c(levels(rawData$provincie), "Onbekend"))
+        rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
+        
+              # Define season
         rawData$season <- getSeason(rawData$afschot_datum)
         # Fix for korrelmais
         rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"

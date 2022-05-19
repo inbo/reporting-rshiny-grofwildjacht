@@ -198,12 +198,19 @@ test_that("Counts per type schade", {
         
         plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
         
-        schadeTable <- tableSchadeCode(data = plotData@data,
-#                  type = c("provinces", "flanders", "faunabeheerzones")[1],
-          schadeChoices = choicesSchadecode,
-          schadeChoicesVrtg = choicesSchadeVrtg, 
-          schadeChoicesGewas = choicesSchadeGewas,
-          fullNames = fullNames)
+        schadeTables <- lapply(c("provinces", "flanders", "faunabeheerzones"), function(type)
+            tableSchadeCode(data = plotData@data,
+              type = type,
+              schadeChoices = choicesSchadecode,
+              schadeChoicesVrtg = choicesSchadeVrtg, 
+              schadeChoicesGewas = choicesSchadeGewas,
+              fullNames = fullNames)
+        )
+        
+        totalValues <- sapply(schadeTables, function(schadeTable) tail(schadeTable$data$Totaal, n = 1))
+        expect_equal(totalValues[2], totalValues[1])
+        expect_equal(totalValues[3], totalValues[1])
+        schadeTable <- schadeTables[[1]]
         
         # some tests
         expect_equal(names(schadeTable), c("data", "header"))

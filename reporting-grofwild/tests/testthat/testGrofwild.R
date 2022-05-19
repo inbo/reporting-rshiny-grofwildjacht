@@ -285,9 +285,9 @@ test_that("Distribution of weight ifo age", {
         
         plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
         boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), 
-          sourceIndicator_leeftijd = "both")
+          sourceIndicator_leeftijd = "both")$plot
         boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
-          sourceIndicator_leeftijd = "inbo")
+          sourceIndicator_leeftijd = "inbo")$plot
         
         
       })

@@ -51,18 +51,21 @@ boxAgeWeight <- function(data,
   	
   # Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "leeftijd_comp", "geslacht_comp", "provincie",
+			c("ontweid_gewicht", "leeftijd_comp",  "leeftijd_comp_inbo", "geslacht_comp", "provincie",
         "leeftijd_comp_bron", "geslacht_comp_bron")]
-	names(plotData) <- c("gewicht", "leeftijd", "geslacht", "provincie", 
+	names(plotData) <- c("gewicht", "leeftijd_comp", "leeftijd_comp_inbo", "geslacht", "provincie", 
     "leeftijd_comp_bron", "geslacht_comp_bron")
-  plotData <- subset(plotData, leeftijd %in% c(type, "Onbekend"))  # to calculate nRecords
+  
+  leeftijdVar <- if (sourceIndicator_leeftijd == "inbo") "leeftijd_comp_inbo" else "leeftijd_comp" 
+  plotData <- plotData[plotData[, leeftijdVar] %in% c(type, "Onbekend"), ]  # to calculate nRecords
   
   # Percentage collected
 	nRecords <- nrow(plotData)
 	
-  data <- filterGrofwild(plotData = data, 
+  plotData <- filterGrofwild(plotData = plotData, 
     sourceIndicator_leeftijd = sourceIndicator_leeftijd,
     sourceIndicator_geslacht = sourceIndicator_geslacht)
+  plotData$leeftijd <- plotData$leeftijd_comp
   
 	# Remove some categories
 	plotData <- plotData[plotData$leeftijd != "Onbekend" &

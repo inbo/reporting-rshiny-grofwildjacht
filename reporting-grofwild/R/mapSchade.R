@@ -281,7 +281,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
       results$schadeData <- reactive({
           
           # Select species & code & exclude data before 2018
-          toRetain <- schadeData@data$wildsoort %in% req(tolower(species())) &
+          toRetain <- schadeData@data$wildsoort %in% req(species()) &
             schadeData@data$schadeBasisCode %in% req(input$code) &
             schadeData@data$afschotjaar >= 2018
           

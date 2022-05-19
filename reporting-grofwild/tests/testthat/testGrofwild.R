@@ -388,7 +388,12 @@ test_that("Number of embryos (bio-indicator)", {
         sourceIndicator = sourceIndicator)$plot
     
     
-    
+    countEmbryos(
+      data = wildEcoData,
+      type = c("Frisling (v)", "Overloper (v)", "Zeug"),
+      sourceIndicator = "both",
+      sourceIndicator_leeftijd = "inbo",
+      sourceIndicator_geslacht = "both")$plot
     
     
     

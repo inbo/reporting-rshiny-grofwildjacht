@@ -112,7 +112,7 @@ test_that("Trend plot", {
       
       myPlot <- trendYearRegion(
         data = trendRegionData,
-        locaties = unique(geoData$WBE_Naam_Toek[geoData$KboNummer_Toek == currentKbo]),
+        locaties = unique(trendRegionData$locatie),
         timeRange = range(years),
         unit = unit
       )$plot
@@ -188,11 +188,8 @@ test_that("Map schade", {
 test_that("Trend schade", {
     
     iSpecies <- species[1]
-    schadeDataSub <- subset(schadeData, wildsoort = tolower(iSpecies))
+    schadeDataSub <- subset(schadeData, wildsoort = iSpecies)
     
-    matchLocaties <- geoData[, c("PartijNummer", "KboNummer_Toek")]
-    matchLocaties <- matchLocaties[!duplicated(matchLocaties), ]
-    schadeDataSub$PartijNummer <- matchLocaties$PartijNummer[match(schadeDataSub@data$KboNummer, matchLocaties$KboNummer_Toek)]
     
     trendRegionData <- createTrendData(
       data = schadeDataSub@data,
@@ -204,7 +201,7 @@ test_that("Trend schade", {
     
     trendYearRegion(
       data = trendRegionData,
-      locaties = matchLocaties$WBE_Naam_Toek,
+      locaties = unique(trendRegionData$locatie),
       timeRange = range(years)
     )$plot
     

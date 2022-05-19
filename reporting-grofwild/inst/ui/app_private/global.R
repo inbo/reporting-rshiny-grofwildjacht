@@ -71,10 +71,6 @@ schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 currentWbe <- unique(geoData$PartijNummer)
 currentWbe <- currentWbe[!is.na(currentWbe)]
 
-# For createTrendData() -> trendYearRegion()
-schadeData$PartijNummer <- currentWbe
-
-
 biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
   regionLevels = "wbe")[["wbe"]]
 biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]

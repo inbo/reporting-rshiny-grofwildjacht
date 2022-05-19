@@ -58,7 +58,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     
     # Select subset for time & species
     plotData <- subset(plotData, 
-            subset = afschotjaar %in% chosenTimes & tolower(wildsoort) %in% tolower(species),
+            subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
             select = c("afschotjaar", "locatie"))
     
     # Exclude data with missing time or space

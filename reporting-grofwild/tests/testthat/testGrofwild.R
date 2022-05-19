@@ -319,6 +319,12 @@ test_that("Afschot per jachtmethode", {
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[2]
     )$plot
     
+    countYearShotAnimals(data = wildEcoData,
+#      jaartallen = 2014:2020,
+      groupVariable = "leeftijd_comp",
+      interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[4]
+    )$plot
+    
   })
 
 

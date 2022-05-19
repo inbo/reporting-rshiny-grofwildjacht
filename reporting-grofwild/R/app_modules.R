@@ -232,8 +232,8 @@ optionsModuleServer <- function(input, output, session,
           
           ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
           updateSelectInput(session, inputId = "type",
-            choices = c("Frisling", "Overloper", "Volwassen"),
-            selected = c("Frisling", "Overloper", "Volwassen"))
+            choices = c("Frisling", "Overloper", "Volwassen", "Onbekend"),
+            selected = c("Frisling", "Overloper", "Volwassen", "Onbekend"))
           
         } else {
           

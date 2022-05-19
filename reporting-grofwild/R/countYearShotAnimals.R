@@ -57,7 +57,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
     plotData <- plotData[plotData[, groupVariable] %in% type, ]
   plotData$leeftijd_comp_bron <- NULL
   
-  plotData <- plotData[!is.na(plotData$afschot_datum), ]
+#  plotData <- plotData[!is.na(plotData$afschot_datum), ]
   
   
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
@@ -195,7 +195,9 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       title = title,
       yaxis = list(title = "Aantal"),
       margin = list(b = 120, t = 100)) %>% 
-    add_annotations(text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+    add_annotations(text = percentCollected(
+        nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, groupVariable] != "Onbekend"), 
+        nTotal = nRecords,
         text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = -0.25, yanchor = "bottom", showarrow = FALSE)

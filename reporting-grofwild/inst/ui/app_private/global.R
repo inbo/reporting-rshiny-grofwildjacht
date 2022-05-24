@@ -78,6 +78,8 @@ biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
 toekenningsData <- loadToekenningen(dataDir = dataDir)
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 
+spatialData <- filterSpatialWbe(allSpatialData = spatialData, partijNummer = currentWbe)
+
 gc()
 
 uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wbe")]

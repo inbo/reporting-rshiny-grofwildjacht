@@ -67,7 +67,7 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
           
         } else if (grepl("Jachtter_", iLevel)) {
           
-          shapeData$NAAM <- factor(shapeData$WBENR)
+          shapeData$NAAM <- factor(shapeData$WBE_NR_wbe)
           
         }
         
@@ -129,7 +129,7 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
         iData@data$AREA <- raster::area(iData)/1e06
         
         # No simplification
-        if (iName %in% c("fbz_gemeentes", "utm5"))
+        if (iName %in% c("fbz_gemeentes", "utm5") | grepl("WBE", iName))
           return(iData)
         
         simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)

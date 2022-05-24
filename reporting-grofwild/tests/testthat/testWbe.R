@@ -19,7 +19,7 @@ years <- years[!is.na(years)]
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+toekenningsData <- loadToekenningen()
 biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 
@@ -36,12 +36,15 @@ ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
-biotoopData <- biotoopData[biotoopData$regio == unique(geoData$PartijNummer), ]
+currentPartij <- unique(geoData$PartijNummer)
+biotoopData <- biotoopData[biotoopData$regio == currentPartij, ]
 
 # Combine data
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
 combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ], 
   ecoData, by = commonNames, all.x = TRUE)
+
+spatialData <- filterSpatialWbe(allSpatialData = spatialData, partijNummer = currentPartij)
 
 gc()
 

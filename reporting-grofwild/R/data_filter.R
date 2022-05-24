@@ -190,3 +190,21 @@ filterSpatial <- function(allSpatialData, species,
   return(spatialData)
   
 }
+
+
+#' Filter loaded \code{allSpatialData} for selected partijNummer
+#' @inheritParams filterSpatial 
+#' @param partijNummer numeric, partijnummer of the WBE to filter
+#' @return list with SpatialPolygonsDataFrame, each of them filtered on selected WBE
+#' 
+#' @author mvarewyck
+#' @export
+filterSpatialWbe <- function(allSpatialData, partijNummer) {
+  
+  lapply(allSpatialData, function(iData) {
+      
+      iData[iData$NAAM %in% partijNummer, ]
+      
+    })
+  
+}

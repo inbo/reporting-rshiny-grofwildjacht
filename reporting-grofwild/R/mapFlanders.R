@@ -186,7 +186,10 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # Create group variable
   if (unit == "region") {
     
-    regionLevels <- c("WBE", "Jachtterrein")
+    jachtData <- filterSpatial(allSpatialData = allSpatialData, 
+      species = species, regionLevel = "WBE", year = year)
+   
+    regionLevels <- c("Niet-bejaagd", paste0("Jachtterrein (", jachtData@data$WBELID, ")"))
     summaryData2 <- cbind(summaryData2, data.frame(group = factor(regionLevels)))
     
   } else {
@@ -288,10 +291,10 @@ mapFlanders <- function(
   palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
   
   if (regionLevel == "WBE_buitengrenzen")
-    valuesPalette <- summaryData[spatialData$NAAM %in% summaryData$locatie, "group"] else
+    valuesPalette <- summaryData$group else
     valuesPalette <- summaryData[match(spatialData$NAAM, summaryData$locatie), "group"]
-
-
+  
+  
   if (any(!summaryData$locatie %in% spatialData$NAAM))
     stop("De geo-data kan niet gematcht worden aan de shape data.")
   
@@ -299,9 +302,9 @@ mapFlanders <- function(
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, species = species,
       regionLevel = "WBE", year = year, locaties = summaryData$locatie)
-    jachtData@data$NAAM <- "Jachtterrein"
-    jachtData@data$WBE_NR <- jachtData@data$WBENR
-    jachtData@data$WBENR <- NULL
+    jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
+    jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
+    jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
     spatialData@data$NAAM <- "WBE"
     
     spatialData <- rbind(spatialData, jachtData)
@@ -788,9 +791,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
               levels = levels(results$summarySpaceData()$data$group))
             
             if (type == "wbe")
-              valuesPalette <- results$summarySpaceData()$data[
-                spatialData()$NAAM %in% results$summarySpaceData()$data$locatie,
-                "group"] else 
+              valuesPalette <- results$summarySpaceData()$data$group else 
               valuesPalette <- results$summarySpaceData()$data[
                 match(spatialData()$NAAM, results$summarySpaceData()$data$locatie),
                 "group"]

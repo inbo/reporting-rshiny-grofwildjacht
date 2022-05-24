@@ -485,6 +485,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           }
           
         })
+      # Update period if species changes
+      observeEvent(species(), {
+          updateSliderInput(session = session, inputId = "period", 
+            value = c(results$minYear(), defaultYear))
+        })
       
       output$period <- renderUI({
           

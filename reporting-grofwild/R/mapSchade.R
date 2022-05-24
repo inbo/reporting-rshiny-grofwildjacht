@@ -460,12 +460,12 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
     # Create data for map, time plot
     results$timeData <- reactive({
         
-        validate(need(input$period, "Gelieve periode te selecteren"))
+        validate(need(input$time, "Gelieve periode te selecteren"))
 
         createTrendData(
           data = results$schadeData()@data,
           allSpatialData = allSpatialData,
-          timeRange = input$period,
+          timeRange = input$time,
           species = species(),
           regionLevel = "WBE_buitengrenzen"
         )
@@ -478,7 +478,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, defaultYe
       plotFunction = "trendYearRegion", 
       data = results$timeData,
       locaties = results$regionLevelName,
-      timeRange = reactive(input$period),
+      timeRange = reactive(input$time),
       isSchade = TRUE,
       combinatie = reactive(FALSE),
     )

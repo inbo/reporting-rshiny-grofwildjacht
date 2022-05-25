@@ -39,6 +39,10 @@ boxAgeWeight <- function(data,
   sourceIndicator_leeftijd = c("both", "inbo"),
 		sourceIndicator_geslacht = c("both","inbo"), 
   width = NULL, height = NULL) {
+  
+  # For R CMD check
+  gewicht <- NULL
+  leeftijd <- NULL 
 	
   sourceIndicator_leeftijd <- match.arg(sourceIndicator_leeftijd)
   sourceIndicator_geslacht <- match.arg(sourceIndicator_geslacht)

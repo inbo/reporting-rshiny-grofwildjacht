@@ -164,6 +164,12 @@ ageGenderLowerJawServer(id = "wild",
 )
 
 
+bioindicatorSectionServer(
+  id = "wild", 
+  uiText = uiText, 
+  wildsoort = reactive(input$wild_species)
+)
+
 # Plot 8: Onderkaaklengte per jaar
 results$typesGender <- reactive({
     

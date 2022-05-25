@@ -191,6 +191,9 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
   regionLevels, uiText) {
   
+  # For R CMD check
+  variable <- NULL
+  
   bioindicator <- match.arg(bioindicator)
   
   ns <- NS(id)

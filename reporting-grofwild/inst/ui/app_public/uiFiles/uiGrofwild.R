@@ -124,11 +124,11 @@ tagList(
               bioindicatorSection(id = "wild", uiText = uiText),
               
               conditionalPanel("input.wild_species == 'Ree'",
-                plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
-                plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
+                plotBioindicatorUI(id = "wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
+                plotBioindicatorUI(id = "wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
               ),
               
-              countEmbryosUI("wild", regionLevels = 1:2)
+              countEmbryosUI(id = "wild", regionLevels = 1:2)
             
             )
           

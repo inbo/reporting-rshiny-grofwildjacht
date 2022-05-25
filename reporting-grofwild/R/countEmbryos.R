@@ -32,6 +32,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     # to prevent warnings with R CMD check
     embryos <- NULL  
     Freq <- NULL
+    type_comp <- NULL
     
     sourceIndicator <- match.arg(sourceIndicator)
     
@@ -222,9 +223,8 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
 
 
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
+#' @param id character, identifier
 #' @param regionLevels character, choices for region
-#' @param wildsoort character, choice for wildsoort
-#' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @export

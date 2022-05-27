@@ -13,7 +13,6 @@
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny
-#' @importFrom devtools install_github dev_package_deps
 #' @importFrom stats update
 #' @export
 runWildApp <- function(installDependencies = FALSE, 
@@ -23,14 +22,14 @@ runWildApp <- function(installDependencies = FALSE,
   if (installDependencies) {
     
     ## (a) CRAN packages
-    update(dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
+    update(devtools::dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
             dependencies = "Suggests"))
     
     
     ## (b) non-CRAN packages - by hand
     if (!requireNamespace("INBOtheme")) {
       
-      install_github('inbo/INBOtheme')
+      devtools::install_github('inbo/INBOtheme')
       
     }
     

@@ -19,7 +19,7 @@ countEmbryos(
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
-\item{type}{animal type, used to filter \code{data} ('ageGender' column)
+\item{type}{animal type, used to filter \code{data} ('type_comp' column)
 default is \code{c("Smalree", "Geit")}}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered

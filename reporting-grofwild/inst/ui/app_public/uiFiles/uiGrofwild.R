@@ -89,7 +89,7 @@ tagList(
                   
                   countYearAgeUI(id = "wild", uiText = uiText),
                   
-                  countYearShotUI(id = "wild_labeltype", groupVariable = "labeltype",
+                  countYearShotUI(id = "wild_leeftijd", groupVariable = "leeftijd_comp",
                     regionLevels = c(1:2,4), uiText = uiText),
                   
                   yearlyShotAnimalsUI(id = "wild", uiText = uiText),
@@ -112,19 +112,26 @@ tagList(
         countYearShotUI(id = "wild_jachtmethode", groupVariable = "jachtmethode_comp",
           regionLevels = c(1:2,4), uiText = uiText),
         
-        conditionalPanel("input.wild_species == 'Ree'", {
-              tagList(
-                  
-                  bioindicatorSection(id = "wild", uiText = uiText),
-                  
-                  plotBioindicatorUI("wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
-                      
-                  plotBioindicatorUI("wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
-                  
-                  countEmbryosUI("wild", regionLevels = 1:2, uiText = uiText)
+        conditionalPanel("input.wild_species == 'Ree'",
+          percentageRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2),
+          boxRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2)
+        ),
+        
+        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
+            
+            tagList(
               
-              )
+              bioindicatorSection(id = "wild", uiText = uiText),
               
+              conditionalPanel("input.wild_species == 'Ree'",
+                plotBioindicatorUI(id = "wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
+                plotBioindicatorUI(id = "wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
+              ),
+              
+              countEmbryosUI(id = "wild", regionLevels = 1:2)
+            
+            )
+          
             })
           
     )

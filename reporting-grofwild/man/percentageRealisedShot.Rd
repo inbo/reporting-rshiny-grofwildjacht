@@ -6,8 +6,8 @@
 \usage{
 percentageRealisedShot(
   data,
+  regio,
   type = NULL,
-  currentYear = as.numeric(format(Sys.Date(), "\%Y")) - 1,
   jaartallen = NULL,
   width = NULL,
   height = NULL
@@ -16,10 +16,10 @@ percentageRealisedShot(
 \arguments{
 \item{data}{data.frame, with \code{loadToekenningen()} for specific WBE}
 
-\item{type}{animal type, used to filter \code{data} ('ageGender' column)
-default is \code{c("Smalree", "Geit")}}
+\item{regio, }{empty function argument needed for generalization in \code{\link{plotModuleServer}}}
 
-\item{currentYear}{numeric, current year to calculate accuracy for}
+\item{type}{animal type, used to filter \code{data} ('type_comp' column)
+default is \code{c("Smalree", "Geit")}}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}

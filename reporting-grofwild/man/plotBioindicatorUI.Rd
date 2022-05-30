@@ -15,8 +15,7 @@ plotBioindicatorUI(
 \item{id}{character, unique identifier for the module}
 
 \item{bioindicator}{string with column of \code{data}
-with bioindicator, either 'onderkaaklengte',
-'ontweid_gewicht', or 'aantal_embryos'}
+with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 
 \item{regionLevels}{numeric vector, if not NULL, defines the choices for 
 region levels: 1 = flanders, 2 = provinces, 3 = communes}

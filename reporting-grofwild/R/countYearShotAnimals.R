@@ -10,6 +10,9 @@
 #' should be one of \code{c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken")}
 #' @param groupVariable character, variable name in \code{data} for 
 #' which colored bars should be plot
+#' @param sourceIndicator_leeftijd character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+#' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+#' i.e. no filtering. Defaults to \code{"both"}
 #' @param type character, used to filter the data
 #' 
 #' @importFrom INBOtheme inbo_lichtgrijs
@@ -17,11 +20,14 @@
 #' @export 
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
-  groupVariable, type = NULL) {
+  groupVariable, 
+  sourceIndicator_leeftijd = c("both", "inbo"),
+  type = NULL) {
   
   
   wildNaam <- unique(data$wildsoort)
   interval <- match.arg(interval)
+  sourceIndicator_leeftijd <- match.arg(sourceIndicator_leeftijd)
   
   plotData <- data
  
@@ -30,23 +36,28 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   # regions get already filtered out in the plotModuleServer 
   
-  # Select on years
-  plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
-      c("afschotjaar", "afschot_datum", groupVariable)]
+  # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
+  if (groupVariable == "leeftijd_comp" & sourceIndicator_leeftijd == "inbo")
+    groupVariable <- "leeftijd_comp_inbo"
   
-  plotData <- plotData[!is.na(plotData$afschotjaar), ]
+  # Select on years & type
+  plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
+      c("afschotjaar", "afschot_datum", groupVariable, "leeftijd_comp_bron")]
+  if (!is.null(type) && type != "all")
+    plotData <- plotData[plotData[, groupVariable] %in% c(type, "Onbekend"), ] #include onbekend for nRecords
+  nRecords <- nrow(plotData)
+    
+  # Clean data for groupVariable
   plotData[, groupVariable] <- droplevels(plotData[, groupVariable])
   plotData[is.na(plotData[, groupVariable]), groupVariable] <- "Onbekend"
-  
-  # only retains animals of specified type
-  if (!is.null(type) && type != "all") {
-    
+  if (groupVariable == "leeftijd_comp_inbo")
+    plotData <- filterGrofwild(plotData = plotData, 
+      sourceIndicator_leeftijd = sourceIndicator_leeftijd)
+  if (!is.null(type) && type != "all") ## only retains animals of specified type
     plotData <- plotData[plotData[, groupVariable] %in% type, ]
-    
-  }
+  plotData$leeftijd_comp_bron <- NULL
   
-  noRecords <- nrow(plotData)
-  plotData <- plotData[!is.na(plotData$afschot_datum), ]
+#  plotData <- plotData[!is.na(plotData$afschot_datum), ]
   
   
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
@@ -62,6 +73,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       jaartallen))
   
   # Summarize data per year
+  plotData$afschotjaar <- droplevels(plotData$afschotjaar)
   totalCount <- as.data.frame(table(plotData$afschotjaar))
   colnames(totalCount) <- c("year", "value")
   
@@ -171,7 +183,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             legendgroup = ~get(groupVariable), showlegend = i == 1,
             width = width, height = height) %>%
           layout(xaxis = list(
-              title = paste0(iYear, "<br>", "(n= ", totalCount$value[totalCount$year == iYear], ")"), 
+              title = paste0(iYear, "<br>", "(n= ", totalCount$value[totalCount$year == iYear], ")"),
               showticklabels = FALSE)
           )
       })
@@ -183,8 +195,10 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       title = title,
       yaxis = list(title = "Aantal"),
       margin = list(b = 120, t = 100)) %>% 
-    add_annotations(text = paste0(round(nrow(plotData)/noRecords, 2)*100, 
-        "% met gekende afschotdatum (", nrow(plotData), "/", noRecords, ")"),
+    add_annotations(text = percentCollected(
+        nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, groupVariable] != "Onbekend"), 
+        nTotal = nRecords,
+        text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = -0.25, yanchor = "bottom", showarrow = FALSE)
  
@@ -224,6 +238,9 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
         timeRange = timeRange,
         intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
         types = types,
+        labelTypes = if (groupVariable == "leeftijd_comp") 
+            "Leeftijdscategorie" else
+            "Jachtmethode",
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
@@ -259,7 +276,8 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
         column(4,
           optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
             regionLevels = regionLevels, exportData = TRUE,
-            showType = TRUE, showInterval = TRUE),
+            showType = TRUE, showInterval = TRUE,
+            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd"),
           tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
         ),
         column(8, plotModuleUI(id = ns("countYearShot")))

@@ -244,6 +244,9 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
     levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant",
       "Antwerpen", "Limburg"))
   
+  rawData$provincie <- rawData$provincie_toek
+  rawData$provincie_toek <- NULL
+  
   attr(rawData, "Date") <- file.mtime(pathFile)
   
   
@@ -350,6 +353,12 @@ loadRawData <- function(
     rawData$type_comp <- simpleCap(rawData$type_comp)
     rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
     rawData$labeltype <- simpleCap(gsub("REE", "", rawData$labeltype))
+    
+    # New variable: leeftijd_comp_inbo
+    rawData$leeftijd_comp_inbo <- rawData$leeftijd_comp
+    rawData$leeftijd_comp_inbo[rawData$leeftijd_comp_inbo %in% "Frisling"] <- 
+      ifelse(rawData$leeftijd_maanden[rawData$leeftijd_comp_inbo %in% "Frisling"] < 6,
+        "Frisling (<6m)", "Frisling (>6m)")
   
     for (iVar in names(newLevels)) {
       
@@ -371,7 +380,8 @@ loadRawData <- function(
                         "IndieningSchadeBasisCode", "IndieningSchadeCode",
                         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
                         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
-                        "UTM5", "KboNummer", "PolyLocatieWKT", "x", "y")]
+                        "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
+                        "PolyLocatieWKT", "x", "y")]
         
         # format date
         rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
@@ -382,7 +392,8 @@ loadRawData <- function(
                 "schadeBasisCode", "schadeCode",
                 "SoortNaam", "wildsoort", "afschot_datum",
                 "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
-                "UTM5", "KboNummer", "perceelPolygon", "x", "y")
+                "UTM5", "KboNummer", "WBE_Naam_Toek", "PartijNummer",
+                "perceelPolygon", "x", "y")
         
         # Match on NISCODE: otherwise mismatch with spatialData locatie
         rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
@@ -392,12 +403,16 @@ loadRawData <- function(
         # Remove Voeren as province
         rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
         rawData$provincie <- droplevels(rawData$provincie)
-        
+
         
         # Define fbz_gemeente
         rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
-                NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
-        # Define season
+          NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
+        # Onbekende locaties
+        rawData$provincie <- factor(ifelse(is.na(rawData$provincie), "Onbekend", as.character(rawData$provincie)), levels = c(levels(rawData$provincie), "Onbekend"))
+        rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
+        
+              # Define season
         rawData$season <- getSeason(rawData$afschot_datum)
         # Fix for korrelmais
         rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
@@ -511,10 +526,19 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
 #' @export
 loadMetaEco <- function(species = NA) {
   
+  # Defines the order of the species
   allSpecies <- c("Wild zwijn", "Ree", "Damhert", "Edelhert")
   
   toReturn <- list(
     geslacht_comp = c("Vrouwelijk", "Mannelijk"),
+    leeftijd_comp_inbo = list(
+      # Young to old
+      c("Frisling (<6m)", NA, NA),
+      c("Frisling (>6m)", "Kits", rep("Kalf", 2)),
+      c(NA, NA, "Jaarling", "Jaarling"),  
+      c("Overloper", rep("Jongvolwassen", 3)),
+      rep("Volwassen", 4) 
+    ),
     leeftijd_comp = list(
       # Young to old
       c("Frisling", "Kits", rep("Kalf", 2)),
@@ -543,6 +567,7 @@ loadMetaEco <- function(species = NA) {
     
     # Filter species
     matchId <- match(species, allSpecies)
+    toReturn$leeftijd_comp_inbo <- sapply(toReturn$leeftijd_comp_inbo, function(x) x[matchId])
     toReturn$leeftijd_comp <- sapply(toReturn$leeftijd_comp, function(x) x[matchId])
     toReturn$type_comp <- sapply(toReturn$type_comp, function(x) x[c(-1, 0) + matchId*2])
     toReturn$labeltype <- toReturn$labeltype[[matchId]] 
@@ -560,32 +585,40 @@ loadMetaEco <- function(species = NA) {
 }
 
 #' Specify currently used type schades
+#' @param dataDir character, path to data files
+#' 
 #' @return list with meta data for wildschade
 #' 
 #' @author mvarewyck
+#' @importFrom utils read.csv
 #' @export
-loadMetaSchade <- function() {
+loadMetaSchade <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  
+  rawData <- read.csv(file = file.path(dataDir, "meta_schade.csv"))
   
   # Specify currently used wildsoorten
-  schadeWildsoorten <- list("Grof wild" = c("wild zwijn", "edelhert", "ree", "damhert"),
-    "Klein wild" = c("haas", "fazant", "konijn", "patrijs"),
-    "Waterwild" = c("wilde eend", "smient", "grauwe gans", "Canadese gans", "kievit"),
-    "Overig" = c("houtduif", "vos", "verwilderde kat"))
+  wildsoorten <- rawData[rawData$variable == "wildsoort", c("group", "name")]
+  schadeWildsoorten <- sapply(unique(wildsoorten$group), function(x)
+      wildsoorten$name[wildsoorten$group == x], simplify = FALSE)
   
-  # Specify currently used type schades
-  schadeTypes <- c("GEWAS", "VRTG", "ANDERE")
+  # Specify currently used types schade
+  types <- rawData[rawData$variable == "type", c("group", "name")]
+  schadeTypes <- unique(types$group)
   
-  # Specify currently used types schade subcodes
-  schadeCodes <- c(c("GNPERSLTSL", "PERSLTSL", "ONBEKEND"),           #VRTG
-    c("WLSCHD", "VRTSCHD", "GEWASANDR", "VGSCHD", "GRFSCHD"),     #GEWAS
-    c("ANDERE", "VALWILD"))                            #ANDERE
+  # Specify currently used subcodes
+  schadeCodes <- sapply(schadeTypes, function(x) {
+      toReturn <- types$name[types$group == x]
+      names(toReturn) <- rawData$name_display[match(toReturn, rawData$name)]
+      toReturn
+    }, simplify = FALSE)
+  
+  # Keep after schadeCodes to give them raw list names
+  names(schadeTypes) <- rawData$group_display[match(schadeTypes, rawData$group)]
   
   # List with all patterns to search for in indieningType per schadeChoice
-  sourcesSchade <-  list(
-    "Dieren onder de wielen (NP)" = "Natuurpunt",
-    "Wilder (LJV)" = "HVV_Wilder",
-    "E-loket (ANB)" = "E_Loket"
-  )
+  sources <- rawData[rawData$variable == "source", c("name", "name_display")]
+  sourcesSchade <- sapply(unique(sources$name_display), function(x)
+    sources$name[sources$name_display == x], simplify = FALSE)
   
   
   list(

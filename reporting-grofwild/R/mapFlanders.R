@@ -123,10 +123,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     returnStop = "data")
   
   #compute total number of cases to output in stats
-  statsDf <- data.frame(nTotal = as.integer(NA), 
-      nAvailable = as.integer(NA), 
-      percentage = as.numeric(NA)) 
-  statsDf[, "nTotal"] <- nrow(plotData)
+  myStats <- list(nTotal = nrow(plotData)) 
   
   if (nrow(plotData) == 0) {
     
@@ -146,9 +143,8 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
         WBE_buitengrenzen = plotData$PartijNummer
     )
     
-    # Exclude data with missing time or space
-    plotData <- subset(plotData, !is.na(plotData$afschotjaar) & 
-            !is.na(plotData$locatie) & plotData$locatie != "",
+    # Exclude data with missing locatie
+    plotData <- subset(plotData, !is.na(plotData$locatie) & plotData$locatie != "",
         c("afschotjaar", "locatie")
     )
     
@@ -163,10 +159,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   ## stats
   # compute all cases with full info available
-  statsDf[, "nAvailable"] = sum(allData$freq)
-  # compute percentage
-  statsDf[,"percentage"] = round((statsDf$nAvailable/statsDf$nTotal)*100, 1)
-  
+  myStats$nAvailable <- sum(allData$freq)
   
   
   # Remove redundant variables
@@ -255,7 +248,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   }
   
 #    return(summaryData2)
-  return(list(data = summaryData2, stats = statsDf))
+  return(list(data = summaryData2, stats = myStats))
   
   
 }
@@ -299,12 +292,15 @@ mapFlanders <- function(
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, species = species,
       regionLevel = "WBE", year = year, locaties = summaryData$locatie)
-    jachtData@data$NAAM <- "Jachtterrein"
-    jachtData@data$WBE_NR <- jachtData@data$WBENR
-    jachtData@data$WBENR <- NULL
-    spatialData@data$NAAM <- "WBE"
     
-    spatialData <- rbind(spatialData, jachtData)
+    if (!is.null(jachtData)) {
+      jachtData@data$NAAM <- "Jachtterrein"
+      jachtData@data$WBE_NR <- jachtData@data$WBENR
+      jachtData@data$WBENR <- NULL
+      spatialData@data$NAAM <- "WBE"
+      
+      spatialData <- rbind(spatialData, jachtData)
+    }
     
   }
   
@@ -489,6 +485,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           }
           
         })
+      # Update period if species changes
+      observeEvent(species(), {
+          updateSliderInput(session = session, inputId = "period", 
+            value = c(results$minYear(), defaultYear))
+        })
       
       output$period <- renderUI({
           
@@ -658,7 +659,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       output$stats <- renderUI({
           
           if (req(input$regionLevel) != "flanders") {
-            h5(paste0("Info beschikbaar en weergegeven voor ", results$summarySpaceData()$stats$percentage, 
+          
+            percentage <- round(with(results$summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
+            
+            h5(paste0("Info beschikbaar en weergegeven voor ", percentage, 
                 "% van de totale gegevens (", results$summarySpaceData()$stats$nAvailable, "/", 
                 results$summarySpaceData()$stats$nTotal, ")" ))
           }

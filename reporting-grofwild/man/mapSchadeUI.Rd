@@ -4,7 +4,13 @@
 \alias{mapSchadeUI}
 \title{Shiny module for creating map on schade data - UI side}
 \usage{
-mapSchadeUI(id, filterCode = FALSE, filterSubcode = FALSE, uiText)
+mapSchadeUI(
+  id,
+  filterCode = FALSE,
+  filterSubcode = FALSE,
+  uiText,
+  plotDetails = NULL
+)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
@@ -16,6 +22,9 @@ default value is FALSE}
 default value is FALSE}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
+\item{plotDetails}{character vector, detail plots to be shown below the map;
+should be subset of \code{c("flanders", "region", "biotoop")}}
 }
 \value{
 HTML object

@@ -4,7 +4,10 @@
 \alias{loadMetaSchade}
 \title{Specify currently used type schades}
 \usage{
-loadMetaSchade()
+loadMetaSchade(dataDir = system.file("extdata", package = "reportingGrofwild"))
+}
+\arguments{
+\item{dataDir}{character, path to data files}
 }
 \value{
 list with meta data for wildschade

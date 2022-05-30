@@ -20,12 +20,7 @@ plotBioindicator(
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
-\item{type}{animal type, used to filter \code{data} ('type_comp' column)
-If NULL (by default), for bioindicator set to:
-\itemize{
-\item{'aantal_embryos': }{only animals with age/gender type: "Smalree" "Geit" are considered}
-\item{'ontweid_gewicht' or 'onderkaaklengte'}{only animals without age/gender type are filtered (\code{type_comp} set to '')}
-}}
+\item{type}{animal type, used to filter \code{data} ('type_comp' column)}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}
@@ -34,11 +29,10 @@ in the plot; if NULL no selection on year(s) is made}
 to be shown in the plot title}
 
 \item{bioindicator}{string with column of \code{data}
-with bioindicator, either 'onderkaaklengte',
-'ontweid_gewicht', or 'aantal_embryos'}
+with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 
 \item{sourceIndicator}{character, defines the data source to be used for
-bioindicator 'onderkaak_comp_bron' or 'aantal_embryos_bron'}
+bioindicator 'onderkaak_comp_bron'}
 
 \item{sourceIndicator_leeftijd}{character, levels of \code{leeftijd_comp_bron} to select on}
 
@@ -54,13 +48,6 @@ list with:
 \item{'plot': }{plotly object, for the specified specie and years}
 \item{'data': }{
 \itemize{
-\item{for bioindicator set to 'aantal_embryos': }{
-data displayed in the plot, as data.frame with:
-\itemize{
-\item{'afschotjaar': }{year at which the animal was shot}
-\item{'variable': }{age/gender category}
-\item{'Freq': }{counts of females}
-}}
 \item{for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte': }{
 raw data used for the plot, as data.frame with:
 \itemize{

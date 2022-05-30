@@ -137,12 +137,17 @@ countAgeGenderServer(id = "wild",
 
 
 # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
-boxAgeWeightServer(id = "wild",
-  data = results$wild_ecoData,
-  type = reactive(switch(input$wild_species,
+results$leeftijdtypes <- reactive({
+    toReturn <- switch(input$wild_species,
       "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
       Ree = c("Kits", "Jongvolwassen", "Volwassen")									
-    )),
+    )
+    c(toReturn, "Onbekend")
+  })
+
+boxAgeWeightServer(id = "wild",
+  data = results$wild_ecoData,
+  type = results$leeftijdtypes,
   timeRange = reactive(if (input$wild_species == "Ree")
         c(2014, max(results$wild_timeRange())) else 
         results$wild_timeRange())
@@ -152,15 +157,18 @@ boxAgeWeightServer(id = "wild",
 # Plot 7: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 ageGenderLowerJawServer(id = "wild",
   data = results$wild_ecoData,
-  types = reactive(switch(input$wild_species,
-      "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
-      Ree = c("Kits", "Jongvolwassen", "Volwassen")									
-    )),
+  types = results$leeftijdtypes,
   timeRange = reactive(if (input$wild_species == "Ree")
         c(2014, max(results$wild_timeRange())) else 
         results$wild_timeRange())
 )
 
+
+bioindicatorSectionServer(
+  id = "wild", 
+  uiText = uiText, 
+  wildsoort = reactive(input$wild_species)
+)
 
 # Plot 8: Onderkaaklengte per jaar
 results$typesGender <- reactive({
@@ -193,16 +201,23 @@ plotBioindicatorServer(id = "wild_gewicht",
 
 # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
 results$typesFemale <- reactive({
-      
-      types <- levels(droplevels(results$wild_ecoData()$type_comp))
-      types[types %in% c("Reegeit", "Smalree")]
-      
-    })
+    
+    types <- levels(droplevels(results$wild_ecoData()$type_comp))
+    
+    if (input$wild_species == "Ree") {
+      types[types %in% c("Reegeit", "Smalree")] 
+    } else {
+      types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+    }
+    
+  })
 
 countEmbryosServer(id = "wild",
     data = results$wild_ecoData,
     timeRange = results$wild_timeRange,
-    types = results$typesFemale)
+    types = results$typesFemale,
+    uiText = uiText,
+    wildsoort = reactive(input$wild_species))
 
 results$wild_combinedData <- reactive({
     
@@ -216,7 +231,8 @@ results$wild_combinedData <- reactive({
 results$jachttypes <- reactive({
     
     choices <- unique(results$wild_combinedData()$jachtmethode_comp)
-    choices[is.na(choices)] <- "onbekend"
+    if (any(is.na(choices)))
+      choices[is.na(choices)] <- "onbekend"
     
     sort(choices)
     
@@ -230,11 +246,26 @@ countYearShotServer(id = "wild_jachtmethode",
   types = results$jachttypes)
 
 # Plot 12: Verdeling afschot over de jaren
-countYearShotServer(id = "wild_labeltype",
+countYearShotServer(id = "wild_leeftijd",
   data = results$wild_combinedData,
   timeRange = results$wild_timeRange,
-  groupVariable = "labeltype",
-  types = results$labeltypes)
+  groupVariable = "leeftijd_comp",
+  types = results$leeftijdtypes)
+
+
+
+# Plot: Gerealiseerd afschot
+percentageRealisedShotServer(id = "wild",
+  data = reactive(toekenningsData),
+  types = reactive(unique(toekenningsData$labeltype)),
+  timeRange = reactive(range(toekenningsData$labeljaar))
+)
+
+boxRealisedShotServer(id = "wild", 
+  data = reactive(toekenningsData),
+  types = reactive(unique(toekenningsData$labeltype)),
+  timeRange = reactive(range(toekenningsData$labeljaar))
+)
 
 
 ### The MAP

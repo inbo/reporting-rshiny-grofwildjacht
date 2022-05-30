@@ -172,13 +172,24 @@ plotBioindicatorServer(id = "wbe_gewicht",
 
 
 # Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
+results$typesFemale <- reactive({
+    
+    types <- levels(droplevels(results$wbe_combinedData()$type_comp))
+    
+    if (input$wbe_species == "Ree") {
+      types[types %in% c("Reegeit", "Smalree")] 
+    } else {
+      types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+    }
+    
+  })
+
 countEmbryosServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  types = reactive({
-      types <- levels(droplevels(results$wbe_combinedData()$type_comp))
-      types[types %in% c("Reegeit", "Smalree")]
-    })
+  types = results$typesFemale,
+  uiText = uiText,
+  wildsoort = reactive(input$wbe_species)
 )
 
 # Plot 10: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht

@@ -1,0 +1,30 @@
+variable,group,group_display,name,name_display
+wildsoort,Grof wild,,Wild zwijn,
+wildsoort,Grof wild,,Edelhert,
+wildsoort,Grof wild,,Ree,
+wildsoort,Grof wild,,Damhert,
+wildsoort,Klein wild,,Haas,
+wildsoort,Klein wild,,Fazant,
+wildsoort,Klein wild,,Konijn,
+wildsoort,Klein wild,,Patrijs,
+wildsoort,Waterwild,,Wilde eend,
+wildsoort,Waterwild,,Smient,
+wildsoort,Waterwild,,Grauwe gans,
+wildsoort,Waterwild,,Canadese gans,
+wildsoort,Waterwild,,Kievit,
+wildsoort,Overig,,Houtduif,
+wildsoort,Overig,,Vos,
+wildsoort,Overig,,Verwilderde kat,
+type,GEWAS,Gewas,WLSCHD,Woelschade
+type,GEWAS,Gewas,VRTSCHD,Vraatschade
+type,GEWAS,Gewas,GEWASANDR,Gewas – andere
+type,GEWAS,Gewas,VGSCHD,Veegschade
+type,GEWAS,Gewas,GRFSCHD,Graafschade
+type,VRTG,Voertuig,GNPERSLTSL,Verkeersongeluk zonder letsel
+type,VRTG,Voertuig,PERSLTSL,Verkeersongeluk met letsel
+type,VRTG,Voertuig,ONBEKEND,Verkeersongeluk onbekend
+type,ANDERE,Andere,VALWILD,Valwild
+type,ANDERE,Andere,ANDERE,Andere
+source,,,Natuurpunt,Dieren onder de wielen (NP)
+source,,,HVV_Wilder,Wilder (LJV)
+source,,,E_Loket,E-loket (ANB)

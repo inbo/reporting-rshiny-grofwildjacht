@@ -6,6 +6,7 @@
 
 
 #' Create summary table for schadeCode by region.
+#' 
 #' @param type character, defines the region variable of interest in the table
 #' @param schadeChoices character, chosen schade types (basisCode) to filter on
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
@@ -13,6 +14,9 @@
 #' @inheritParams tableProvince
 #' @inheritParams countYearProvince
 #' @inheritParams filterSchade
+#' @param fullNames named character vector, values for the \code{variable} to be 
+#' displayed instead of original data values
+#' 
 #' @return a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
 #' specifying multicolumn column names 
 #' @author Eva Adriaensen
@@ -24,7 +28,8 @@
 tableSchadeCode <- function(data, jaartallen = NULL,
         type = c("provinces", "flanders", "faunabeheerzones"), 
         sourceIndicator = NULL, 
-        schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL) {
+        schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL,
+        fullNames = NULL) {
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
     stop("Niet beschikbaar")
@@ -53,7 +58,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   
   # Force all fbz's in the summary table even if never occured    
   if (type == "faunabeheerzones") {
-    allData$locatie <- factor(allData$locatie, levels = as.character(c(1:10)))    
+    allData$locatie <- factor(allData$locatie, levels = as.character(c(1:10, "Onbekend")))
     levelsLocatie <- levels(allData$locatie)
   } else {
     allData$locatie <- as.factor(allData$locatie)    
@@ -66,29 +71,30 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   if (nrow(tableData) == 0)
     stop("Niet beschikbaar: Geen data voor de gekozen periode")
   
-  # Exclude records with provincie = NA, afschotjaar = NA
-  tableData <- tableData[!is.na(tableData$afschotjaar) & !is.na(tableData$locatie), ]
+  # Exclude records with afschotjaar = NA
+  if (any(is.na(tableData$locatie)))
+    warning("Locatie is missing for some records. Total numbers in the table might differ across chosen region levels.")
+  tableData <- tableData[!is.na(tableData$afschotjaar), ]
     
   # Summary of the data
   summaryData <- count(tableData, vars = setdiff(names(tableData), "afschotjaar"))
   
   # Include all possible locations and selected schadeCodes
   fullData <- expand.grid(
-      locatie = levelsLocatie,
-      schadeCode = if ("ANDERE" %in% schadeChoices) {
-            unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
-            
+    locatie = levelsLocatie,
+    schadeCode = if ("ANDERE" %in% schadeChoices) {
+        unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
+        
       } else {
         unique(c(schadeSubchoices, as.character(unique(allData$schadeCode))))
-
+        
       }
-)
+  )
   
   summaryData <- merge(summaryData, fullData, all = TRUE)
   
   # Long to wide table
   summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq")
-  
   # Optimal displaying of the table
   summaryTable[is.na(summaryTable)] <- 0
   
@@ -110,11 +116,13 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 
   allSchadeCode <- unique(comb$Var2)
   
-  # number of schadeCodes by schadeBasisCode
-  columsPerSchadeBasisCode <- rev(table(comb$Var1))
+  # number of schadeCodes by schadeBasisCode - correct sorting!
+  columsPerSchadeBasisCode <- table(comb$Var1)
+  columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(comb$Var1)]
 
   # group columns together from same schadeBasisCode
-  summaryTable <- summaryTable[, c(colnames(summaryTable)[1],fullNames(comb$Var2))]
+  codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
+  summaryTable <- summaryTable[, c(colnames(summaryTable)[1], codeNames)]
   
   
   # Add row and column sum
@@ -136,7 +144,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   names(summaryTable)[names(summaryTable) == "locatie"] <- "Locatie"
   
   # Full column names
-  columnFullNames <- names(fullNames(colnames(summaryTable)))
+  columnFullNames <- names(fullNames)[match(colnames(summaryTable), fullNames)]
   colnames(summaryTable)[!is.na(columnFullNames)] <- columnFullNames[!is.na(columnFullNames)]
 
   # Manage table header with multiline
@@ -146,13 +154,12 @@ tableSchadeCode <- function(data, jaartallen = NULL,
           tags$tr(
             tags$th(rowspan = 2, names(summaryTable)[1]) ,
             lapply(names(columsPerSchadeBasisCode), function(iName) {
-           	  tags$th(colspan = columsPerSchadeBasisCode[iName], names(fullNames(iName)))
+           	  tags$th(colspan = columsPerSchadeBasisCode[iName], names(fullNames)[match(iName, fullNames)])
             }),
             tags$th(rowspan = 2, tail(names(summaryTable), n=1))
           ),
           tags$tr(
-              #TODO
-              lapply(names(summaryTable)[names(summaryTable) %in% names(fullNames(comb$Var2))], tags$th)
+              lapply(names(summaryTable)[names(summaryTable) %in% names(codeNames)], tags$th)
           )
       )
    )

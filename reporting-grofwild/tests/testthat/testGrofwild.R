@@ -7,7 +7,7 @@
 context("Test Grofwildjacht")
 
 # Load all data
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")

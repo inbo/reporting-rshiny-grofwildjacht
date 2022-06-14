@@ -39,7 +39,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
   
   # add nis and postcode
-  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), header = TRUE, sep = ",")
+  gemeenteData <- loadGemeentes()
   
   plotData$niscode <- gemeenteData$NIS.code[match(plotData$gemeente_afschot_locatie, 
                                                   gemeenteData$Gemeente)]

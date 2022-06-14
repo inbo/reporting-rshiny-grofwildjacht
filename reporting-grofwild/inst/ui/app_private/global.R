@@ -53,7 +53,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 ### -------------
 
 # Load object called spatialData
-load(file = file.path(dataDir, "spatialDataWBE.RData"))
+readS3(file = "spatialDataWBE.RData")
 spatialData <- spatialDataWBE
 rm(spatialDataWBE)
 gc()
@@ -71,11 +71,10 @@ schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 currentWbe <- unique(geoData$PartijNummer)
 currentWbe <- currentWbe[!is.na(currentWbe)]
 
-biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
-  regionLevels = "wbe")[["wbe"]]
+biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
 
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+toekenningsData <- loadToekenningen()
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 
 gc()

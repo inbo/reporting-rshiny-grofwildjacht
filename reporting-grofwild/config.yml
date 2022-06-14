@@ -1,0 +1,9 @@
+default:
+  bucket: inbo-wbe-uat-data
+  credentials:
+    region: Sys.getenv('AWS_DEFAULT_REGION', unset = 'eu-west-1')
+    id: Sys.getenv('AWS_ACCESS_KEY_ID')
+    secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
+  
+production:
+  bucket: inbo-wbe-uat-data

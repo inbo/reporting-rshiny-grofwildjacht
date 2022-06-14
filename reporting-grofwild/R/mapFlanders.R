@@ -234,8 +234,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # Add (hoofd)postcode
   if (regionLevel == "communes") {
     
-    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-        header = TRUE, sep = ",")
+    gemeenteData <- loadGemeentes()
     
     summaryData2$postcode <- gemeenteData$Postcode[match(summaryData2$NISCODE, gemeenteData$NIS.code)]
     names(summaryData2)[names(summaryData2) == "NISCODE"] <- "niscode"

@@ -55,17 +55,17 @@ outTempFileName <- tempfile(fileext = ".html")
 ### Load all data
 ### -------------
 
-openingstijdenData <- loadOpeningstijdenData(dataDir = dataDir)
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+openingstijdenData <- loadOpeningstijdenData()
+toekenningsData <- loadToekenningen()
 
 # Load object called spatialData
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 # Data with observations and geographical information
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
-biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)
+biotoopData <- loadHabitats(spatialData = spatialData)
 
 gc()
 

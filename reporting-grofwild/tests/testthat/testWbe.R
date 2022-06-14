@@ -8,7 +8,7 @@
 context("Test WBE")
 
 # Load all data
-load(file = file.path(dataDir, "spatialDataWBE.RData"))
+readS3(file = "spatialDataWBE.RData")
 spatialData <- spatialDataWBE
 rm(spatialDataWBE)
 

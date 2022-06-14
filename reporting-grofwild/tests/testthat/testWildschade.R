@@ -10,7 +10,7 @@ context("Test wildschade")
 doPrint <- FALSE
 
 # Load all data
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 schadeData <- loadRawData(type = "wildschade")
 wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])

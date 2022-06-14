@@ -104,8 +104,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
         
       # NOTE: match returns FIRST match, so gemeentecodes.csv should be correctly sorted
       # in orde to obtain HOOFDpostcode. 
-      gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-          header = TRUE, sep = ",")
+      gemeenteData <- loadGemeentes()
       
       # Match gemeente NAAM to niscode and (hoofd)postcode
       allData$niscode <- gemeenteData$NIS.code[match(allData$locatie, gemeenteData$Gemeente)]

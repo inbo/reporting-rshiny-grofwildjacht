@@ -149,7 +149,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 
 #' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
 #' @param allSpatialData list with SpatialPolygonsDataFrame as loaded by 
-#' \code{load(file = file.path(system.file("extdata", package = "reportingGrofwild"), "spatialData.RData"))}
+#' \code{readS3(file = "spatialData.RData")}
 #' @param species character, animal species
 #' @param regionLevel character, region level. Should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}

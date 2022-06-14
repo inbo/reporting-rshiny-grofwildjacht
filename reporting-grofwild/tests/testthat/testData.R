@@ -10,15 +10,14 @@ context("Test Data Loading")
 ## 0. Update Shape Data
 ## --------------------
 
-# This will update 
+# This will update and upload them to the S3 bucket in config::get("bucket") 
 # (1) spatialData.RData, shape data and
 # (2) gemeentecodes.csv, file for matching NIS to NAAM
-# Next, install the package for the latest files to be available from the extdata folder
 
 #readShapeData(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data")   # created shape data
 
 # Load the shape data
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 
 

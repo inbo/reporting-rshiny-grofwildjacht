@@ -1,12 +1,12 @@
 #' Read all shape data from geojson files
 #' 
 #' @param jsonDir character, path to json shape files
-#' @param dataDir character, path to data files
+#' @inheritParams loadRawData
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
-#' @return save to dataDir object spatialData, i.e. a list with for each 
+#' @return save to S3 bucket object spatialData, i.e. a list with for each 
 #' spatial level a SpatialPolygonsDataFrame object, 
-#' with polygons and data as provided in the dataDir; spatial levels are 
+#' with polygons and data as provided in the jsonDir; spatial levels are 
 #' flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
 #' and provincesVoeren (Voeren as separate province)
 #' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
@@ -17,9 +17,10 @@
 #' @importFrom shiny incProgress
 #' @importFrom raster area
 #' @importFrom utils write.csv read.csv
+#' @importFrom aws.s3 s3save put_object
+#' @importFrom config get
 #' @export
-readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "reportingGrofwild"),
-    tolerance = 0.0001) {
+readShapeData <- function(jsonDir, bucket = config::get("bucket"), tolerance = 0.0001) {
   
   
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
@@ -154,12 +155,14 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
   # Update commune names for later matching: geo/wildschade data with shape data
   # Note: You can use gemeentecode.csv for matching NIS to NAAM
   # First install the package again!
-  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",",stringsAsFactors = FALSE)
-  
+  gemeenteData <- loadGemeentes(bucket = bucket)
+      
   communeData <- spatialData$communes@data
   gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
-  write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"), row.names = FALSE)
+  gemeenteFile <- file.path(tempdir(), "gemeentecodes.csv")
+  write.csv(gemeenteData, file = gemeenteFile, row.names = FALSE)
+  put_object(file = gemeenteFile, object = basename(gemeenteFile), 
+    bucket = bucket, multipart = TRUE)
   
   # IF any NIS code not in gemeenteData -> throw error
   if (any(!spatialData$communes@data$NISCODE %in% gemeenteData$NIS.code))
@@ -169,15 +172,25 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
     
   # Save WBE data separately
   spatialDataWBE <- spatialData[grep("WBE", names(spatialData))]
-  save(spatialDataWBE, file = file.path(dataDir, "spatialDataWBE.RData"))
+  s3save(spatialDataWBE, bucket = bucket, object = "spatialDataWBE.RData")
   
   spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
-  save(spatialData, file = file.path(dataDir, "spatialData.RData"))
+  s3save(spatialData, bucket = bucket, object = "spatialData.RData")
     
 }
 
 
-
+#' Read gemeentes data
+#' @inheritParams loadRawData
+#' @return data.frame with NIS.code, Postcode and Gemeente
+#' 
+#' @author mvarewyck
+#' @export
+loadGemeentes <- function(bucket = config::get("bucket")) {
+  
+  readS3(FUN = read.csv, header = TRUE, file = "gemeentecodes.csv", bucket = bucket)
+  
+}
 
 #' read openingstijden data
 #' @inheritParams readShapeData
@@ -191,15 +204,19 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
+#' @importFrom data.table rbindlist
+#' @importFrom aws.s3 get_bucket
 #' @export
-loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "reportingGrofwild")){
+loadOpeningstijdenData <- function(bucket = config::get("bucket")){
   
-  pathFile <- file.path(dataDir, "Openingstijden_grofwild.csv")
+  pathFile <- "Openingstijden_grofwild.csv"
+  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
+    file = pathFile, bucket = bucket)
   
-  rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
   rawData$Type <- simpleCap(rawData$Type)
   
-  attr(rawData, "Date") <- file.mtime(pathFile)
+  tmpInfo <- data.table::rbindlist(aws.s3::get_bucket(bucket = bucket))
+  attr(rawData, "Date") <- as.Date(tmpInfo[tmpInfo$Key == pathFile, ]$LastModified[1])
   
   return(rawData)
   
@@ -222,11 +239,11 @@ loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "r
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
-loadToekenningen <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+loadToekenningen <- function(bucket = config::get("bucket")) {
   
-  pathFile <- file.path(dataDir, "Verwezenlijkt_categorie_per_afschotplan.csv")
-  
-  rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
+    file = "Verwezenlijkt_categorie_per_afschotplan.csv",
+    bucket = bucket)
   
   # Rename LabelType to non-plural
   rawData$labeltype[rawData$labeltype == "Geiten"] <- "Geit"
@@ -257,7 +274,9 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 
 
 #' Read ecology or geography data
-#' @inheritParams readShapeData
+#' 
+#' @param bucket character, name of the S3 bucket as specified in the config.yml file;
+#' default value is "inbo-wbe-uat-data"
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' @return data.frame, loaded ecology or geography data; 
 #' and attribute 'Date', the date that this data file was created
@@ -266,19 +285,19 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' @importFrom sp CRS proj4string
 #' @importFrom raster coordinates
 #' @export
-loadRawData <- function(
-    dataDir = system.file("extdata", package = "reportingGrofwild"),
-    type = c("eco", "geo", "wildschade")) {
+loadRawData <- function(bucket = config::get("bucket"),
+  type = c("eco", "geo", "wildschade")) {
   
   type <- match.arg(type)
   
   
-  dataFile <- file.path(dataDir, switch(type,
+  dataFile <- switch(type,
           "eco" = "rshiny_reporting_data_ecology.csv",
           "geo" = "rshiny_reporting_data_geography.csv",
-          "wildschade" = "WildSchade_georef.csv"))
+          "wildschade" = "WildSchade_georef.csv")
   
-  rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
+  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE, 
+    file = dataFile, bucket = bucket)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
   ## Replace decimal comma by dot
@@ -300,8 +319,7 @@ loadRawData <- function(
   
   # Gemeente & NIS & postcode
   # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
-  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",")
+  gemeenteData <- loadGemeentes()
   
   
   ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
@@ -444,7 +462,8 @@ loadRawData <- function(
 
 
 #' Load Habitats (Background) data
-#' @inheritParams readShapeData
+#' 
+#' @inheritParams loadRawData
 #' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
 #' by \code{\link{readShapeData}}
 #' @param regionLevels character vector, for which regions load the habitat data;
@@ -453,8 +472,8 @@ loadRawData <- function(
 #' 
 #' @author mvarewyck
 #' @export
-loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-  spatialData, regionLevels = NULL) {
+loadHabitats <- function(bucket = config::get("bucket"), spatialData, 
+  regionLevels = NULL) {
   
   allLevels <- list(
     "flanders" = "flanders_habitats", 
@@ -474,13 +493,15 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
       
       iLevel <- allLevels[[match(iRegion, names(allLevels))]]
       
-      allFiles <- list.files(dataDir, pattern = iLevel, full.names = TRUE)
+      allFiles <- grep(pattern = iLevel,
+        x = sapply(aws.s3::get_bucket(bucket = bucket), function(x) as.list(x)$Key),
+        value = TRUE)
       
       if (iRegion == "wbe") {
           
           tmpData <- do.call(rbind, lapply(allFiles, function(iFile) {
                 
-                iData <- read.csv(file = iFile)
+                iData <- readS3(FUN = read.csv, file = iFile)
                 iData$year <- as.numeric(gsub("WBE_|habitats_|\\.csv", "", basename(iFile)))
              
                 iData
@@ -491,7 +512,7 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
           
         } else { 
           
-          tmpData <- read.csv(file = allFiles)
+          tmpData <- readS3(FUN = read.csv, file = allFiles)
           colnames(tmpData)[1] <- "regio"
           
           # Match region names
@@ -585,8 +606,8 @@ loadMetaEco <- function(species = NA) {
 }
 
 #' Specify currently used type schades
-#' @param dataDir character, path to data files
 #' 
+#' @param dataDir character, path to data files
 #' @return list with meta data for wildschade
 #' 
 #' @author mvarewyck

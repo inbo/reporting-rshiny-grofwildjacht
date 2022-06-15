@@ -129,43 +129,49 @@ optionsModuleServer <- function(input, output, session,
   sourcesSchade <- loadMetaSchade()$sources
   
   output$time <- renderUI({
-        
-        sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = c(min(timeRange()), definedYear),
-            min = min(timeRange()),
-            max = max(timeRange()),
-            step = 1,
-            sep = "")
-        
-      })
-  
-  
-  
-  observe({
       
-      req(input$dataSource_leeftijd)
+      results$minTime <- min(timeRange())
+      
+      sliderInput(inputId = ns("time"), label = timeLabel, 
+        value = c(min(timeRange()), definedYear),
+        min = min(timeRange()),
+        max = max(timeRange()),
+        step = 1,
+        sep = "")
+      
+    })
+  
+  
+  
+    observe({
         
-        results$time <- input$time
-       
-        updateSliderInput(session, inputId = "time", 
-          value = results$time,
-          min = {
-            # TODO for indieningType??
-            subData <- tryCatch(filterGrofwild(
-                plotData = data(), 
-                sourceIndicator_leeftijd = input$dataSource_leeftijd,
-                sourceIndicator_geslacht = input$dataSource_geslacht,
-                sourceIndicator_onderkaak = input$dataSource_onderkaak,
-                sourceIndicator_embryos = input$dataSource_embryos
-              ), error = function(err) validate(need(FALSE, err$message)))
-            min = min(subData$afschotjaar)
-          }
+        req(input$dataSource_leeftijd)
         
-        )
+        # TODO for indieningType??
+        subData <- tryCatch(filterGrofwild(
+            plotData = data(), 
+            sourceIndicator_leeftijd = input$dataSource_leeftijd,
+            sourceIndicator_geslacht = input$dataSource_geslacht,
+            sourceIndicator_onderkaak = input$dataSource_onderkaak,
+            sourceIndicator_embryos = input$dataSource_embryos
+          ), error = function(err) validate(need(FALSE, err$message)))
         
+        newMin <- min(subData$afschotjaar)
+        
+        if (results$minTime != newMin) {
+          
+          results$minTime <- newMin
+          currentTime <- input$time
+          
+          if (currentTime[2] < newMin) 
+            currentTime[2] <- newMin
+          updateSliderInput(session, inputId = "time", 
+            value = c(max(newMin, currentTime[1]), currentTime[2]),
+            min = newMin)      
+        }
         
       })
-  
+    
   
   output$year <- renderUI({
         

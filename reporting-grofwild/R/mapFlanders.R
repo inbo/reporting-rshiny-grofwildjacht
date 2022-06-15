@@ -144,7 +144,8 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     )
     
     # Exclude data with missing locatie
-    plotData <- subset(plotData, !is.na(plotData$locatie) & plotData$locatie != "",
+    plotData <- subset(plotData, 
+      !is.na(plotData$locatie) & plotData$locatie != "" & plotData$locatie != "Onbekend",
         c("afschotjaar", "locatie")
     )
     

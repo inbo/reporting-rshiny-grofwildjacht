@@ -1,5 +1,48 @@
 
-In this folder, the required data is collected to create the Rshiny application.
+In this folder, only the meta data is collected for the Rshiny application.
+All data is moved to an AWS S3 bucket *inbo-wbe-uat-data*. Access keys can be requested with Johan Ripoli.
+
+# Local Data
+
+## meta_schade
+
+The `meta_schade.csv` file provides the choices to be shown on the wildschade page for filtering.
+The choices should be a valid subset of all available choices in the schade data ("WildSchade_georef.csv")
+Creation of this file was discussed in https://github.com/inbo/reporting-rshiny-grofwildjacht/issues/254
+ 
+Column metadata is as follows:
+
+| Column            | Property      | Description                                   |
+| ----------------- | ------------- | --------------------------------------------- |
+| variable          | character     | name of the filtering field                   |
+| group             | character     | grouping indicator in the data for `variable` |
+| group_display     | character     | label for the `group` to be shown in the app (empty if group can be used) |
+| name              | character     | values in the data for `variable` |
+| name_display      | character     | label for the `name` to be shown in the app (empty if name can be used) |
+
+
+## uiText
+ 
+The `uiText.csv` file provides the according text to be shown for each plot/table in the app.
+The text (except for plotFunction column) can be formatted using HTML. E.g.
+```
+- Italic font: <i>text</i>
+- Line break: a</br>b
+```
+When starting the application, a warning is printed if some plotFunction was detected in the file `uiText.csv` which is not available in the R-package reportingGrofwild.
+
+Creation of this file was discussed in https://github.com/inbo/reporting-rshiny-grofwildjacht/issues/291
+
+| Column                       | Property      | Description                                              |
+| ---------------------------- | ------------- | -------------------------------------------------------- |
+| plotFunction                 | character     | name of the plot function in reportingGrofwild R package |
+| title                        | character     | title of the graph/table/paragraph                       |
+| wild                         | character     | helper text to be shown on the 'Grofwild' page           |
+| schade                       | character     | helper text to be shown on the 'Wildschade' page         |
+| title                        | character     | helper text to be shown on the 'WBE' page                |
+
+
+# Remote Data (S3)
 
 ## reporting data files
 

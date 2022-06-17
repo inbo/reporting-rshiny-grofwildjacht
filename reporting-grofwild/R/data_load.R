@@ -241,9 +241,9 @@ loadOpeningstijdenData <- function(bucket = config::get("bucket")){
 #' @export
 loadToekenningen <- function(bucket = config::get("bucket")) {
   
+  pathFile <- "Verwezenlijkt_categorie_per_afschotplan.csv"
   rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
-    file = "Verwezenlijkt_categorie_per_afschotplan.csv",
-    bucket = bucket)
+    file = pathFile, bucket = bucket)
   
   # Rename LabelType to non-plural
   rawData$labeltype[rawData$labeltype == "Geiten"] <- "Geit"

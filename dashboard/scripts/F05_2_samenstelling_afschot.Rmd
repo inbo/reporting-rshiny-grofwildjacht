@@ -1,0 +1,55 @@
+---
+title: "F05-2 Samenstelling van het afschot"
+author: "Lynn Pallemaerts"
+date: '2022-06-20'
+output: html_document
+---
+
+```{r}
+library(INBOtheme)
+library(forcats)
+library(tidyverse)
+```
+
+```{r}
+app <- read.csv("./dashboard/input/animal/rshiny_reporting_data_ecology.csv",
+                sep = ";")
+```
+
+```{r}
+app %>%
+  filter(wildsoort == "Wild zwijn") %>%
+  mutate(ord = case_when(leeftijd_comp == "Frisling" ~ 1,
+                         leeftijd_comp == "Overloper" ~ 2,
+                         leeftijd_comp == "Adult" ~ 3,
+                         TRUE ~ 4)) %>%
+  mutate(leeftijd_comp = fct_reorder(leeftijd_comp, ord)) %>%
+  mutate(ord2 = case_when(geslacht_comp == "Vrouwelijk" ~ 1,
+                          geslacht_comp == "Mannelijk" ~ 2,
+                          TRUE ~ 3)) %>%
+  mutate(geslacht_comp = fct_reorder(geslacht_comp, ord2)) %>%
+  group_by(leeftijd_comp, geslacht_comp) %>%
+  count() %>%
+  ungroup() %>%
+  add_tally(n, name = "N") %>%
+  group_by(leeftijd_comp) %>%
+  mutate(label_y = cumsum(n)) %>%
+  ungroup() %>%
+  mutate(prc = round(n / N * 100, 0)) %>%
+  ggplot(aes(x = leeftijd_comp,
+             fill = geslacht_comp,
+             y = n)) +
+  geom_col() +
+  labs(x = "Leeftijdscategorie",
+       y = "Aantal geschoten everzwijnen",
+       fill = "Geslacht") +
+  geom_text(aes(y = label_y,
+                group =  leeftijd_comp:geslacht_comp,
+                label = paste0(prc, "%")),
+            check_overlap = T,
+            vjust = 0.5,
+            stat = "identity") +
+  theme_inbo() +
+  theme(legend.position = "bottom")
+```
+

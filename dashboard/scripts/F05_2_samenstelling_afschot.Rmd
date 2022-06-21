@@ -19,6 +19,8 @@ app <- read.csv("./dashboard/input/animal/rshiny_reporting_data_ecology.csv",
 ```{r}
 app %>%
   filter(wildsoort == "Wild zwijn") %>%
+    mutate(leeftijd_comp = if_else(is.na(leeftijd_comp), "Onbekend", leeftijd_comp),
+           geslacht_comp = if_else(is.na(geslacht_comp), "Onbekend", geslacht_comp)) %>%
   mutate(ord = case_when(leeftijd_comp == "Frisling" ~ 1,
                          leeftijd_comp == "Overloper" ~ 2,
                          leeftijd_comp == "Adult" ~ 3,
@@ -35,21 +37,60 @@ app %>%
   group_by(leeftijd_comp) %>%
   mutate(label_y = cumsum(n)) %>%
   ungroup() %>%
-  mutate(prc = round(n / N * 100, 0)) %>%
+  mutate(prc = round(n / N * 100, 1)) %>%
   ggplot(aes(x = leeftijd_comp,
              fill = geslacht_comp,
              y = n)) +
-  geom_col() +
+  geom_col(position = "dodge") +
   labs(x = "Leeftijdscategorie",
        y = "Aantal geschoten everzwijnen",
        fill = "Geslacht") +
-  geom_text(aes(y = label_y,
-                group =  leeftijd_comp:geslacht_comp,
+  geom_text(aes(group =  leeftijd_comp:geslacht_comp,
                 label = paste0(prc, "%")),
             check_overlap = T,
-            vjust = 0.5,
-            stat = "identity") +
-  theme_inbo() +
-  theme(legend.position = "bottom")
+            position = position_dodge(width = 0.9),
+            size = 3,
+            vjust = -1) +
+  theme_inbo()
 ```
 
+```{r}
+app %>%
+  filter(wildsoort == "Wild zwijn") %>%
+    mutate(leeftijd_comp = if_else(is.na(leeftijd_comp), "Onbekend", leeftijd_comp),
+           geslacht_comp = if_else(is.na(geslacht_comp), "Onbekend", geslacht_comp)) %>%
+  mutate(ord = case_when(leeftijd_comp == "Frisling" ~ 1,
+                         leeftijd_comp == "Overloper" ~ 2,
+                         leeftijd_comp == "Adult" ~ 3,
+                         TRUE ~ 4)) %>%
+  mutate(leeftijd_comp = fct_reorder(leeftijd_comp, ord)) %>%
+  mutate(ord2 = case_when(geslacht_comp == "Vrouwelijk" ~ 1,
+                          geslacht_comp == "Mannelijk" ~ 2,
+                          TRUE ~ 3)) %>%
+  mutate(geslacht_comp = fct_reorder(geslacht_comp, ord2)) %>%
+  group_by(afschotjaar, leeftijd_comp, geslacht_comp) %>%
+  count() %>%
+  ungroup() %>%
+    group_by(afschotjaar) %>%
+  add_tally(n, name = "N") %>%
+  ungroup() %>%
+  mutate(prc = round(n / N * 100, 1)) %>%
+  ggplot(aes(x = afschotjaar,
+             group = leeftijd_comp,
+             fill = leeftijd_comp,
+             alpha = geslacht_comp,
+             y = n)) +
+  geom_col(position = "dodge") +
+  labs(x = "Jaar",
+       y = "Aantal geschoten everzwijnen",
+       fill = "Geslacht",
+       group = "Leeftijdscategorie",
+       alpha = "Geslacht") +
+  # geom_text(aes(group =  leeftijd_comp:geslacht_comp,
+  #               label = paste0(prc, "%")),
+  #           check_overlap = T,
+  #           position = position_dodge(width = 0.9),
+  #           size = 3,
+  #           vjust = -1) +
+  theme_inbo()
+```

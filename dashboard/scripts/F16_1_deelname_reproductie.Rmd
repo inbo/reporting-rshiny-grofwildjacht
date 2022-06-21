@@ -19,6 +19,7 @@ app <- read.csv("./dashboard/input/animal/rshiny_reporting_data_ecology.csv",
 app %>%
   filter(wildsoort == "Wild zwijn",
          geslacht_comp == "Vrouwelijk") %>%
+  mutate(leeftijd_comp = if_else(is.na(leeftijd_comp), "Onbekend", leeftijd_comp)) %>%
   mutate(ord = case_when(leeftijd_comp == "Frisling" ~ 1,
                          leeftijd_comp == "Overloper" ~ 2,
                          leeftijd_comp == "Adult" ~ 3,
@@ -41,9 +42,7 @@ app %>%
        y = "Aantal geschoten dieren",
        fill = "Reproductiestatus") +
   geom_text(aes(label = paste0(prc, "%")),
-            check_overlap = T,
-            vjust = 0.5,
-            stat = "identity") +
+            check_overlap = T) +
   theme(legend.position = "bottom")
 ```
 

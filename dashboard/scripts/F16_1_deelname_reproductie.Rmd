@@ -1,0 +1,49 @@
+---
+title: "F16-1 Deelname aan de reproductie (proportie reproducerend)"
+author: "Lynn Pallemaerts"
+date: '2022-06-21'
+output: html_document
+---
+
+```{r}
+library(INBOtheme)
+library(tidyverse)
+```
+
+```{r}
+app <- read.csv("./dashboard/input/animal/rshiny_reporting_data_ecology.csv",
+                sep = ";")
+```
+
+```{r}
+app %>%
+  filter(wildsoort == "Wild zwijn",
+         geslacht_comp == "Vrouwelijk") %>%
+  mutate(ord = case_when(leeftijd_comp == "Frisling" ~ 1,
+                         leeftijd_comp == "Overloper" ~ 2,
+                         leeftijd_comp == "Adult" ~ 3,
+                         TRUE ~ 4)) %>%
+  mutate(leeftijd_comp = fct_reorder(leeftijd_comp, ord)) %>%
+  mutate(Staat = case_when(aantal_embryos != 0 ~ "Drachtig",
+                           TRUE ~ "Niet drachtig")) %>%
+  group_by(leeftijd_comp, Staat) %>%
+  count() %>%
+  ungroup() %>%
+  group_by(leeftijd_comp) %>%
+  add_tally(n, name = "N") %>%
+  ungroup() %>%
+  mutate(prc = round(n / N * 100, 0)) %>%
+  ggplot(aes(x = leeftijd_comp,
+             fill = Staat,
+             y = n)) +
+  geom_col(position = "stack") +
+  labs(x = "Leeftijdscategorie",
+       y = "Aantal geschoten dieren",
+       fill = "Reproductiestatus") +
+  geom_text(aes(label = paste0(prc, "%")),
+            check_overlap = T,
+            vjust = 0.5,
+            stat = "identity") +
+  theme(legend.position = "bottom")
+```
+

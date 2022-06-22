@@ -71,7 +71,7 @@ app %>%
   group_by(afschotjaar, leeftijd_comp, geslacht_comp) %>%
   count() %>%
   ungroup() %>%
-    group_by(afschotjaar) %>%
+  group_by(afschotjaar) %>%
   add_tally(n, name = "N") %>%
   ungroup() %>%
   mutate(prc = round(n / N * 100, 1)) %>%

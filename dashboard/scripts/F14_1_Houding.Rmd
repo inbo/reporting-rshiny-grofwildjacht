@@ -18,7 +18,7 @@ schaalfactor <- 1
 
 ```
 
-#Plot
+#PCI plot
 ```{r}
 PCI_plot_houding <- ggplot(Houding_data) + 
   geom_point(aes(x = meanAnswer, 
@@ -45,6 +45,36 @@ PCI_plot_houding <- ggplot(Houding_data) +
   
 
 PCI_plot_houding
+
+ggsave(plot = PCI_plot_houding, 
+       filename =  "./dashboard/interim/houding_optie1.jpeg", 
+       width = 24, 
+       height = 14, 
+       units = "cm")
+```
+
+#Simpele Plot
+```{r}
+plot_houding <- ggplot(data = Houding_data,
+                       aes(x = as.factor(Year),
+                           y = meanAnswer,
+                           fill = Sector)) +
+  geom_bar(stat = "identity", 
+           position = "dodge")  +
+  labs(y = "Houding tov everzwijnen",
+       x = "Jaar") +
+  scale_y_continuous(limits = c(0, 1),
+                     breaks = c(0,1),
+                     labels = c("Neutraal", "Positief"))
+
+
+plot_houding
+
+ggsave(plot = plot_houding, 
+       filename =  "./dashboard/interim/houding_optie2.jpeg", 
+       width = 24, 
+       height = 14, 
+       units = "cm")
 ```
 
 

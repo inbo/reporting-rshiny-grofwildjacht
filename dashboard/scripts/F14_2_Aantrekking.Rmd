@@ -1,0 +1,80 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggforce)
+```
+
+#Data
+```{r}
+Aantrekking_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_2.csv",
+                         sep = ",",
+                         header = TRUE)
+
+Aantrekking_data$Question_label <- as.factor(Aantrekking_data$Question_label)
+Aantrekking_data$group <- as.factor(Aantrekking_data$group)
+
+schaalfactor <- 1
+
+```
+
+#PCI plot
+```{r}
+PCI_plot_Aantrekking <- ggplot(Aantrekking_data) + 
+  geom_point(aes(x = meanAnswer, 
+                 y = as.numeric(group)/schaalfactor, colour = Sector))+  
+  geom_circle(aes(x0 = meanAnswer, 
+                  y0 = as.numeric(group)/schaalfactor, 
+                  r = pci2,
+                  colour = Sector,
+                  fill = Sector )) +
+  scale_x_continuous(name = "Aantrekkingskracht",
+                     limits = c(-2,2),
+                     labels = c("Helemaal niet", "", "", "", "Helemaal wel")) + 
+  scale_y_continuous(name ="",
+                     breaks = unique(as.numeric(Aantrekking_data$group)/schaalfactor),
+                     labels = unique(Aantrekking_data$group)) + 
+  coord_fixed() +
+  scale_fill_manual(name = "",
+                    values = c("darkgreen", "limegreen", "darkblue", "lightblue")) + 
+  scale_color_manual(name = "",
+                     values = c("darkgreen", "limegreen", "darkblue", "lightblue")) +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed")+
+  theme_bw() +
+  theme(legend.position = 'bottom')
+  
+
+PCI_plot_Aantrekking
+
+ggsave(plot = PCI_plot_Aantrekking, 
+       filename =  "./dashboard/interim/Aantrekking_optie1.jpeg", 
+       width = 24, 
+       height = 14, 
+       units = "cm")
+```
+
+#Simpele Plot
+```{r}
+plot_Aantrekking <- ggplot(data = Aantrekking_data,
+                       aes(x = as.factor(Year),
+                           y = meanAnswer,
+                           fill = Sector)) +
+  geom_bar(stat = "identity", 
+           position = "dodge")  +
+  labs(y = "Aantrekkingskracht everzwijnen",
+       x = "Jaar") +
+  scale_y_continuous(limits = c(-1, 1),
+                     breaks = c(-1, 0 ,1),
+                     labels = c("Negatief" ,"Neutraal", "Positief"))
+
+
+plot_Aantrekking
+
+ggsave(plot = plot_Aantrekking, 
+       filename =  "./dashboard/interim/Aantrekking_optie2.jpeg", 
+       width = 24, 
+       height = 14, 
+       units = "cm")
+```
+
+

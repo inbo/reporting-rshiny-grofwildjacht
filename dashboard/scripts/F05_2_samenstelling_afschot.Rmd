@@ -42,6 +42,7 @@ app %>%
         legend.key.width = unit(0.3, 'cm')) +
   geom_text(aes(label = ..count..),
             stat = "count",
+            position = position_stack(vjust = 0.5),
             check_overlap = T,
             size = 3)
 ```

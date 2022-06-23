@@ -42,7 +42,8 @@ app %>%
        y = "Aantal geschoten dieren",
        fill = "Reproductiestatus") +
   geom_text(aes(label = paste0(prc, "%")),
-            check_overlap = T) +
+            check_overlap = T,
+            position = position_stack(vjust = 0.5),) +
   theme(legend.position = "bottom")
 ```
 

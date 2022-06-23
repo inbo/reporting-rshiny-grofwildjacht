@@ -1,0 +1,50 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(ggforce)
+```
+
+#Data
+```{r}
+Houding_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_1.csv",
+                         sep = ",",
+                         header = TRUE)
+
+Houding_data$Question_label <- as.factor(Houding_data$Question_label)
+Houding_data$group <- as.factor(Houding_data$group)
+
+schaalfactor <- 1
+
+```
+
+#Plot
+```{r}
+PCI_plot_houding <- ggplot(Houding_data) + 
+  geom_point(aes(x = meanAnswer, 
+                 y = as.numeric(group)/schaalfactor, colour = Sector))+  
+  geom_circle(aes(x0 = meanAnswer, 
+                  y0 = as.numeric(group)/schaalfactor, 
+                  r = pci2,
+                  colour = Sector,
+                  fill = Sector )) +
+  scale_x_continuous(name = "Houding aanwezigheid everzwijn",
+                     limits = c(-2,2),
+                     labels = c("Heel erg negatief", "", "", "", "Heel erg positief")) + 
+  scale_y_continuous(name ="",
+                     breaks = unique(as.numeric(Houding_data$group)/schaalfactor),
+                     labels = unique(Houding_data$group)) + 
+  coord_fixed() +
+  scale_fill_manual(name = "",
+                    values = c("darkgreen", "limegreen", "darkblue", "lightblue")) + 
+  scale_color_manual(name = "",
+                     values = c("darkgreen", "limegreen", "darkblue", "lightblue")) +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed")+
+  theme_bw() +
+  theme(legend.position = 'bottom')
+  
+
+PCI_plot_houding
+```
+
+

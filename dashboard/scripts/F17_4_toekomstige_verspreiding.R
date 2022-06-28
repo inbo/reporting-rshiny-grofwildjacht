@@ -9,11 +9,11 @@ library(shinydashboard)
 ########################################################################################
 
 ##Shapefiles
-Pixelsmap <- readOGR("./Rshiny/Input/Pixels_ModelOutput.shp")
+Pixelsmap <- readOGR("./Rshiny/Input/Pixels_ModelOutput_toekomst_verspr_2022.shp")
 Pixelsmap <- spTransform(Pixelsmap, 
                          CRS("+proj=longlat +datum=WGS84"))
 
-Gemeentemap <- readOGR("./Rshiny/Input/Municipalities_ModelOutput.shp")
+Gemeentemap <- readOGR("./Rshiny/Input/Municipalities_ModelOutput_toekomst_verspr_2022.shp")
 Gemeentemap <- spTransform(Gemeentemap, 
                            CRS("+proj=longlat +datum=WGS84"))
 ########################################################################################

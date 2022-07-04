@@ -13,8 +13,14 @@ Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Dat
 Popgroei_inschatting <- Data_inschatting %>%
   filter(Vraag == "populatie_evolutie")
 
+Popgroei_inschatting$Antwoord <- factor(Popgroei_inschatting$Antwoord , 
+                                    levels = c('Erg veel toegenomen','Veel toegenomen',
+                                               'Beetje toegenomen', 'Hetzelfde gebleven',
+                                               'Beetje afgenomen', 'Veel afgenomen',
+                                               'Erg veel afgenomen'))
+
 plot_inschatting_Popgroei <- ggplot(data = Popgroei_inschatting[order(Popgroei_inschatting$Score), ],
-                           aes(x = aantal,
+                           aes(x = percentage,
                                y = Vraag,
                                fill = Antwoord)) +
   geom_bar(stat = "identity", 

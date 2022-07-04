@@ -13,8 +13,15 @@ Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Dat
 landbouw_inschatting <- Data_inschatting %>%
   filter(Vraag == "schade_landbouw_evolutie")
 
+
+landbouw_inschatting$Antwoord <- factor(landbouw_inschatting$Antwoord , 
+                                    levels = c('Erg veel toegenomen','Veel toegenomen',
+                                               'Beetje toegenomen', 'Hetzelfde gebleven',
+                                               'Beetje afgenomen', 'Veel afgenomen',
+                                               'Erg veel afgenomen'))
+
 plot_inschatting_landbouw <- ggplot(data = landbouw_inschatting[order(landbouw_inschatting$Score), ],
-                           aes(x = aantal,
+                           aes(x = percentage,
                                y = Vraag,
                                fill = Antwoord)) +
   geom_bar(stat = "identity", 

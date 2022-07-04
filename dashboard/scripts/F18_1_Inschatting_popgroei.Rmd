@@ -1,0 +1,25 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Data_inschatting.csv")
+```
+
+#Test grafiek
+```{r}
+Popgroei_inschatting <- Data_inschatting %>%
+  filter(Vraag == "populatie_evolutie")
+
+plot_inschatting_Popgroei <- ggplot(data = Popgroei_inschatting[order(Popgroei_inschatting$Score), ],
+                           aes(x = aantal,
+                               y = Vraag,
+                               fill = Antwoord)) +
+  geom_bar(stat = "identity", 
+           position = "stack")
+
+plot_inschatting_Popgroei
+
+```

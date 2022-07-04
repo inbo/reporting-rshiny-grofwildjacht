@@ -13,8 +13,14 @@ Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Dat
 Privpub_inschatting <- Data_inschatting %>%
   filter(Vraag == "schade_privpub_evolutie")
 
+Privpub_inschatting$Antwoord <- factor(Privpub_inschatting$Antwoord , 
+                                    levels = c('Erg veel toegenomen','Veel toegenomen',
+                                               'Beetje toegenomen', 'Hetzelfde gebleven',
+                                               'Beetje afgenomen', 'Veel afgenomen',
+                                               'Erg veel afgenomen'))
+
 plot_inschatting_Privpub <- ggplot(data = Privpub_inschatting[order(Privpub_inschatting$Score), ],
-                           aes(x = aantal,
+                           aes(x = percentage,
                                y = Vraag,
                                fill = Antwoord)) +
   geom_bar(stat = "identity", 

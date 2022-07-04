@@ -84,7 +84,7 @@ Data_houding <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_1_d
 # grafiek
 ```{r}
 plot_houding <- ggplot(data = Data_houding[order(Data_houding$Score), ],
-                           aes(x = aantal,
+                           aes(x = percentage,
                                y = as.factor(GemMet),
                                fill = Antwoord)) +
   geom_bar(stat = "identity", 

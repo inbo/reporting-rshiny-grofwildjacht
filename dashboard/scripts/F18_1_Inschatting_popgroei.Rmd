@@ -17,7 +17,7 @@ Popgroei_inschatting$Antwoord <- factor(Popgroei_inschatting$Antwoord ,
                                     levels = c('Erg veel toegenomen','Veel toegenomen',
                                                'Beetje toegenomen', 'Hetzelfde gebleven',
                                                'Beetje afgenomen', 'Veel afgenomen',
-                                               'Erg veel afgenomen'))
+                                               'Erg veel afgenomen', 'Geen mening'))
 
 plot_inschatting_Popgroei <- ggplot(data = Popgroei_inschatting[order(Popgroei_inschatting$Score), ],
                            aes(x = percentage,

@@ -10,23 +10,22 @@ Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Dat
 
 #Test grafiek
 ```{r}
-landbouw_inschatting <- Data_inschatting %>%
-  filter(Vraag == "schade_landbouw_evolutie")
+verkeer_inschatting <- Data_inschatting %>%
+  filter(Vraag != "populatie_evolutie")
 
-
-landbouw_inschatting$Antwoord <- factor(landbouw_inschatting$Antwoord , 
+verkeer_inschatting$Antwoord <- factor(verkeer_inschatting$Antwoord , 
                                     levels = c('Erg veel toegenomen','Veel toegenomen',
                                                'Beetje toegenomen', 'Hetzelfde gebleven',
                                                'Beetje afgenomen', 'Veel afgenomen',
-                                               'Erg veel afgenomen'))
+                                               'Erg veel afgenomen', 'Geen mening'))
 
-plot_inschatting_landbouw <- ggplot(data = landbouw_inschatting[order(landbouw_inschatting$Score), ],
+plot_inschatting_verkeer <- ggplot(data = verkeer_inschatting,
                            aes(x = percentage,
                                y = Vraag,
                                fill = Antwoord)) +
   geom_bar(stat = "identity", 
            position = "stack")
 
-plot_inschatting_landbouw
+plot_inschatting_verkeer
 
 ```

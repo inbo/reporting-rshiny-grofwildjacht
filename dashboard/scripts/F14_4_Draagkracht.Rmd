@@ -2,95 +2,56 @@
 ```{r}
 library(tidyverse)
 library(ggplot2)
-library(ggforce)
 ```
 
 #Data
 ```{r}
-Draagkracht_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_4.csv",
+Draagkracht_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_4_data.csv",
                          sep = ",",
                          header = TRUE)
-
-Draagkracht_data$Question_label <- as.factor(Draagkracht_data$Question_label)
-
-schaalfactor <- 1
-
 ```
 
-#PCI plot
+#Plot Stakeholders
 ```{r}
-#Define order 
-Draagkracht_data$Question_label <- factor(Draagkracht_data$Question_label, levels = c('Anticonceptie',
-                                                                            'Translocatie',
-                                                                            'Kooien',
-                                                                            ' Kooien',
-                                                                            'Niet-elektrische omheining',
-                                                                            'Elektrische omheining',
-                                                                            'Preventieve maatregelen',
-                                                                            'Jacht',
-                                                                            'Nachtjacht',
-                                                                            'Aankorrelplaatsen',
-                                                                            'Drijfjacht',
-                                                                            'Hoogzitjacht'))
+stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
 
-#PCI plots
-Draagkracht_PCI_plot <- ggplot(Draagkracht_data) + 
-  geom_point(aes(x = meanAnswer, 
-                 y = as.numeric(Question_label)/schaalfactor, colour = Sector))+  
-  geom_circle(aes(x0 = meanAnswer, 
-                  y0 = as.numeric(Question_label)/schaalfactor, 
-                  r = pci2,
-                  colour = Sector,
-                  fill = Sector )) +
-  scale_x_continuous(name = "Aanvaarding maatregelen",
-                     limits = c(-2,2),
-                     labels = c("Heel klein", "", "", "", "Heel groot")) + 
-  scale_y_continuous(name ="",
-                     breaks = unique(as.numeric(Draagkracht_data$Question_label)/schaalfactor),
-                     labels = unique(Draagkracht_data$Question_label)) + 
-  coord_fixed() +
-  scale_fill_manual(name = "",
-                    values = c("darkgreen", "limegreen", "olivedrab1", "darkblue", "skyblue")) + 
-  scale_color_manual(name = "",
-                     values = c("darkgreen", "limegreen", "olivedrab1", "darkblue", "skyblue")) +
-  geom_vline(xintercept = 0, color = "black", linetype = "dashed")+
-  theme_bw()   +theme(legend.position = 'bottom')
+Draagkracht_stakeholders <- Draagkracht_data %>%
+  filter(Groep %in% stakeholders)
 
-  
+Draagkracht_stakeholders$Antwoord <- factor(Draagkracht_stakeholders$Antwoord , 
+                                    levels = c('Erg belangrijk', 'Belangrijk', 'Neutraal',
+                                               'Niet belangrijk', 'Helemaal niet belangrijk'))
 
-Draagkracht_PCI_plot
-
-ggsave(plot = Draagkracht_PCI_plot, 
-       filename =  "./dashboard/interim/Draagkracht_optie1.jpeg", 
-       width = 24, 
-       height = 14, 
-       units = "cm")
-```
-
-#Simpele Plot
-```{r}
-plot_Draagkracht <- ggplot(data = Draagkracht_data,
-                       aes(x = as.factor(Question_label),
-                           y = meanAnswer,
-                           fill = Sector)) +
+plot_draagkracht_stakeholders <- ggplot(data = Draagkracht_stakeholders,
+                           aes(x = percentage,
+                               y = Question_label,
+                               fill = Antwoord)) +
   geom_bar(stat = "identity", 
-           position = "dodge")  +
-  labs(y = "Aanvaarding maatregelen",
-       x = "Jaar") +
-  facet_grid(~Year) +
-  scale_y_continuous(limits = c(-1, 1),
-                     breaks = c(-1, 0 ,1),
-                     labels = c("Heel klein" ,"Neutraal", "Heel groot"))+
-  theme(axis.text.x = element_text(angle = 90))
+           position = "stack") +
+  facet_grid( ~ Groep)
 
+plot_draagkracht_stakeholders
+```
+#Plot Breed publiek
+```{r}
+breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
 
-plot_Draagkracht
+Draagkracht_breed_publiek <- Draagkracht_data %>%
+  filter(Groep %in% breed_publiek)
 
-ggsave(plot = plot_Draagkracht, 
-       filename =  "./dashboard/interim/Draagkracht_optie2.jpeg", 
-       width = 24, 
-       height = 14, 
-       units = "cm")
+Draagkracht_breed_publiek$Antwoord <- factor(Draagkracht_breed_publiek$Antwoord , 
+                                    levels = c('Erg belangrijk', 'Belangrijk', 'Neutraal',
+                                               'Niet belangrijk', 'Helemaal niet belangrijk'))
+
+plot_draagkracht_breed_publiek <- ggplot(data = Draagkracht_breed_publiek,
+                           aes(x = percentage,
+                               y = Question_label,
+                               fill = Antwoord)) +
+  geom_bar(stat = "identity", 
+           position = "stack") +
+  facet_grid(Year ~ Groep)
+
+plot_draagkracht_breed_publiek
 ```
 
 

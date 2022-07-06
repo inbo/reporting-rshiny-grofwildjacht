@@ -1,0 +1,56 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+#Data
+```{r}
+Impacts_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_3_data.csv",
+                         sep = ",",
+                         header = TRUE)
+
+```
+
+#Plot Stakeholders
+```{r}
+stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
+
+Impacts_stakeholders <- Impacts_data %>%
+  filter(Sector %in% stakeholders)
+
+Impacts_stakeholders$Antwoord <- factor(Impacts_stakeholders$Antwoord , 
+                                    levels = c('Geen idee', 'Zeer groot', 'Groot',
+                                               'Klein', 'Zeer klein', 'Onbestaand'))
+
+plot_Impacts_stakeholders <- ggplot(data = Impacts_stakeholders,
+                           aes(x = percentage,
+                               y = Question_label,
+                               fill = Antwoord)) +
+  geom_bar(stat = "identity", 
+           position = "stack") +
+  facet_grid( ~ Sector)
+
+plot_Impacts_stakeholders
+```
+#Plot Breed publiek
+```{r}
+breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
+
+Impacts_breed_publiek <- Impacts_data %>%
+  filter(Sector %in% breed_publiek)
+
+Impacts_breed_publiek$Antwoord <- factor(Impacts_breed_publiek$Antwoord , 
+                                    levels = c('Geen idee', 'Zeer groot', 'Groot',
+                                               'Klein', 'Zeer klein', 'Onbestaand'))
+
+plot_Impacts_breed_publiek <- ggplot(data = Impacts_breed_publiek,
+                           aes(x = percentage,
+                               y = Question_label,
+                               fill = Antwoord)) +
+  geom_bar(stat = "identity", 
+           position = "stack") +
+  facet_grid( ~ Sector)
+
+plot_Impacts_breed_publiek
+```

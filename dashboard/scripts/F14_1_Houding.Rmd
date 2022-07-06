@@ -7,85 +7,18 @@ library(ggforce)
 
 #Data
 ```{r}
-Houding_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_1.csv",
-                         sep = ",",
-                         header = TRUE)
-
-Houding_data$Question_label <- as.factor(Houding_data$Question_label)
-Houding_data$group <- as.factor(Houding_data$group)
-
-schaalfactor <- 1
-
-```
-
-#PCI plot
-```{r}
-PCI_plot_houding <- ggplot(Houding_data) + 
-  geom_point(aes(x = meanAnswer, 
-                 y = as.numeric(group)/schaalfactor, colour = Sector))+  
-  geom_circle(aes(x0 = meanAnswer, 
-                  y0 = as.numeric(group)/schaalfactor, 
-                  r = pci2,
-                  colour = Sector,
-                  fill = Sector )) +
-  scale_x_continuous(name = "Houding aanwezigheid everzwijn",
-                     limits = c(-2,2),
-                     labels = c("Heel erg negatief", "", "", "", "Heel erg positief")) + 
-  scale_y_continuous(name ="",
-                     breaks = unique(as.numeric(Houding_data$group)/schaalfactor),
-                     labels = unique(Houding_data$group)) + 
-  coord_fixed() +
-  scale_fill_manual(name = "",
-                    values = c("darkgreen", "limegreen", "darkblue", "lightblue")) + 
-  scale_color_manual(name = "",
-                     values = c("darkgreen", "limegreen", "darkblue", "lightblue")) +
-  geom_vline(xintercept = 0, color = "black", linetype = "dashed")+
-  theme_bw() +
-  theme(legend.position = 'bottom')
-  
-
-PCI_plot_houding
-
-ggsave(plot = PCI_plot_houding, 
-       filename =  "./dashboard/interim/houding_optie1.jpeg", 
-       width = 24, 
-       height = 14, 
-       units = "cm")
-```
-
-#Simpele Plot
-```{r}
-plot_houding <- ggplot(data = Houding_data,
-                       aes(x = as.factor(Year),
-                           y = meanAnswer,
-                           fill = Sector)) +
-  geom_bar(stat = "identity", 
-           position = "dodge")  +
-  labs(y = "Houding tov everzwijnen",
-       x = "Jaar") +
-  scale_y_continuous(limits = c(0, 1),
-                     breaks = c(0,1),
-                     labels = c("Neutraal", "Positief"))
-
-
-plot_houding
-
-ggsave(plot = plot_houding, 
-       filename =  "./dashboard/interim/houding_optie2.jpeg", 
-       width = 24, 
-       height = 14, 
-       units = "cm")
-```
-
-```{r}
 Data_houding <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_1_data.csv")
 ```
 
-# grafiek
+#Grafiek
 ```{r}
-plot_houding <- ggplot(data = Data_houding[order(Data_houding$Score), ],
+Data_houding$Antwoord <- factor(Data_houding$Antwoord , 
+                                    levels = c('Heel erg positief', 'Positief', 'Neutraal',
+                                               'Negatief', 'Heel erg negatief', 'Geen mening'))
+
+plot_houding <- ggplot(data = Data_houding,
                            aes(x = percentage,
-                               y = as.factor(GemMet),
+                               y = Sector,
                                fill = Antwoord)) +
   geom_bar(stat = "identity", 
            position = "stack") +

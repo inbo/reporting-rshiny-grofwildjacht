@@ -8,7 +8,7 @@ library(ggplot2)
 Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Data_inschatting.csv")
 ```
 
-#Test grafiek
+#Grafiek
 ```{r}
 verkeer_inschatting <- Data_inschatting %>%
   filter(Vraag != "populatie_evolutie")

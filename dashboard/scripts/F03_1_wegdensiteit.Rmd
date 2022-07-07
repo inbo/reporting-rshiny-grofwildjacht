@@ -1,0 +1,21 @@
+#Libraries
+```{r}
+library(tidyverse)
+```
+
+#Data
+```{r}
+wegdensiteit_data <- read.csv("./dashboard/input/wegdensiteit.csv",
+                         sep = ",",
+                         header = TRUE)
+
+```
+
+#Filter
+```{r}
+wegdensiteit_niveau <- wegdensiteit_data %>%
+  filter(Niveau == "Provincie") #Per niveau
+
+
+#Gewoon weergeven in tabel van achtergrondvariabelen
+```

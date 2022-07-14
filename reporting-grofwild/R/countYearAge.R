@@ -206,10 +206,11 @@ countYearAgeServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countYearAge}} - UI side
 #' @template moduleUI
+#' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' 
 #' @author mvarewyck
 #' @export
-countYearAgeUI <- function(id, uiText) {
+countYearAgeUI <- function(id, uiText, showRegion = TRUE) {
   
   ns <- NS(id)
   
@@ -227,7 +228,7 @@ countYearAgeUI <- function(id, uiText) {
           optionsModuleUI(id = ns("yearAge"), 
             summarizeBy = c("Aantal (alle data)" = "count",
               "Percentage (enkel ingezamelde onderkaken)" = "percent"),
-            showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
+            showTime = TRUE, regionLevels = if (showRegion) 1:2, exportData = TRUE),
           tags$p(HTML(uiText[, id]))
         ),
         column(8, 

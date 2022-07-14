@@ -30,7 +30,20 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 # Link to www folder
 addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 
-metaSchade <- loadMetaSchade()
+
+### Debugging
+### -----------
+
+if (!exists("doDebug"))
+  doDebug <- FALSE
+
+
+
+### Meta data
+### ------------
+
+if (!doDebug | !exists("metaSchade"))
+  metaSchade <- loadMetaSchade()
 
 schadeWildsoorten <- metaSchade$wildsoorten
 schadeTypes <- metaSchade$types
@@ -45,7 +58,8 @@ tmpWildsoorten <- unlist(tmpWildsoorten)
 names(tmpWildsoorten) <- tmpWildsoorten
 fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
-             
+
+
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 
@@ -55,17 +69,24 @@ outTempFileName <- tempfile(fileext = ".html")
 ### Load all data
 ### -------------
 
-openingstijdenData <- loadOpeningstijdenData(dataDir = dataDir)
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+if (!doDebug | !exists("openingstijdenData"))
+  openingstijdenData <- loadOpeningstijdenData(dataDir = dataDir)
+if (!doDebug | !exists("toekenningsData"))
+  toekenningsData <- loadToekenningen(dataDir = dataDir)
 
 # Load object called spatialData
-load(file = file.path(dataDir, "spatialData.RData"))
+if (!doDebug | !exists("spatialData"))
+  load(file = file.path(dataDir, "spatialData.RData"))
 
 # Data with observations and geographical information
-ecoData <- loadRawData(type = "eco")
-geoData <- loadRawData(type = "geo")
-schadeData <- loadRawData(type = "wildschade")
-biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)
+if (!doDebug | !exists("ecoData"))
+  ecoData <- loadRawData(type = "eco")
+if (!doDebug | !exists("geoData"))
+  geoData <- loadRawData(type = "geo")
+if (!doDebug | !exists("schadeData"))
+  schadeData <- loadRawData(type = "wildschade")
+if (!doDebug | !exists("biotoopData"))
+  biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)
 
 gc()
 
@@ -106,16 +127,10 @@ if (!all(isPresent)) {
 rm(list = c("indieningTypes", "isPresent"))
 
 # UI text for each plot/table
-uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wild", "schade")]
+if (!doDebug | !exists("uiText"))
+  uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))
 uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
 if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
   warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
     paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
-
-
-
-### Debugging
-### -----------
-
-if (!exists("doDebug"))
-	doDebug <- FALSE
+rm(uiFunctions)

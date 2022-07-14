@@ -31,9 +31,10 @@ shinyServer(function(input, output, session) {
                   verbatimTextOutput("print")
               )
           })
-      
-      
-      
+        
+       
+        
+        
       # Tabpages
       # ----------
       
@@ -50,20 +51,26 @@ shinyServer(function(input, output, session) {
       
       # Tabpanel grofwild
       output$grof_content <- renderUI({
-            
-            source(file.path("uiFiles", "uiGrofwild.R"), local = TRUE)$value
-            
-          })
+          
+          source(file.path("uiFiles", "uiGrofwild.R"), local = TRUE)$value
+          
+        })
       
       # Tabpanel wildschade
       output$schade_content <- renderUI({
-            source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
-            
-          })
-        
-        observeEvent(input$tabs, {
-            if (input$tabs == "WBE")
-              browseURL("https://grofwildjacht.inbo.be/WBE")
-          })
+          source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
+          
+        })
+      
+      # Tabpanel dashboard
+      output$dash_content <- renderUI({
+          source(file.path("uiFiles", "uiDashboard.R"), local = TRUE)$value
+          
+        })
+      
+      observeEvent(input$tabs, {
+          if (input$tabs == "WBE")
+            browseURL("https://grofwildjacht.inbo.be/WBE")
+        })
       
     })

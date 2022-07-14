@@ -26,14 +26,29 @@ tagList(
     
     welcomeSection(id = "dash", uiText = uiText),
     
-    checkboxGroupInput(inputId = "dash_jachtIndicatoren",
-      label = "Jacht",
-      choices = c(
-        "Absoluut afschot" = "F05_1",
-        "Samenstelling afschot" = "F05_2"
+    fixedRow(
+      column(3,
+        checkboxGroupInput(inputId = "dash_populatieIndicatoren",
+          label = "Populatie",
+          choices = c(
+            "Deelname aan de reproductie *" = "F16_1"
+          ),
+          selected = if (doDebug) c("F16_1")
+        )
       ),
-      selected = if (doDebug) c("F05_1", "F05_2")
+      column(3,
+        checkboxGroupInput(inputId = "dash_jachtIndicatoren",
+          label = "Jacht",
+          choices = c(
+            "Absoluut afschot" = "F05_1",
+            "Samenstelling afschot" = "F05_2"
+          ),
+          selected = if (doDebug) c("F05_1", "F05_2")
+        )
+      )
     ),
+    
+    tags$em("* Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau"),
     
     actionButton(inputId = "dash_submit", label = "Maak dashboard"),
     actionButton(inputId = "dash_createReport", label = "Maak pdf"),
@@ -50,19 +65,25 @@ tagList(
       plotDetails = "biotoop"),
     
     
+    # Populatie
+    uiOutput("dash_populatieTitle"),
     
- 
+    conditionalPanel("input.dash_populatieIndicatoren.indexOf('F16_1') > -1", 
+      countAgeGroupUI(id = "dash_reproductie", uiText = uiText, groupVariable = "reproductiestatus")
+    ),
+    
+    
     # Jacht
     uiOutput("dash_jachtTitle"),
     
     conditionalPanel("input.dash_jachtIndicatoren.indexOf('F05_1') > -1", 
-     trendYearRegionUI(id = "dash", uiText = uiText)
+      trendYearRegionUI(id = "dash", uiText = uiText)
     ),
     
     conditionalPanel("input.dash_jachtIndicatoren.indexOf('F05_2') > -1", 
       countYearAgeUI(id = "dash", uiText = uiText, showRegion = FALSE)
     )
-    
+  
   
   )
 

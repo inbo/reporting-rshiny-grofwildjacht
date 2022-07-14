@@ -573,6 +573,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Title for the map
       output$title <- renderUI({
           
+          if (type == "dash")
+            return(NULL)
+          
           nSpecies <- length(species())
           h3(paste("Gerapporteerd", results$unitText(), 
                 "voor", if (nSpecies > 1)

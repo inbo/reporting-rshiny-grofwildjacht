@@ -84,6 +84,31 @@ mapFlandersServer(id = "dash",
 
 results$dash_timeRange <- reactive(range(everEcoData$afschotjaar))
 
+
+# Populatie 
+
+output$dash_populatieTitle <- renderUI({
+    
+    req(input$dash_populatieIndicatoren)
+    
+    h2(toupper("Populatie"))
+    
+  })
+
+countAgeGroupServer(
+  id = "dash_reproductie",
+  data = reactive({
+      plotData <- ecoData[ecoData$geslacht_comp == "Vrouwelijk", ]
+      plotData$reproductiestatus <- ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
+      plotData
+    }),
+  timeRange = results$dash_timeRange,
+  groupVariable = "reproductiestatus"
+)
+
+
+# Jacht
+
 output$dash_jachtTitle <- renderUI({
     
     req(input$dash_jachtIndicatoren)
@@ -107,3 +132,4 @@ countYearAgeServer(id = "dash",
   data = results$dash_ecoData,
   timeRange = results$dash_timeRange
 )
+

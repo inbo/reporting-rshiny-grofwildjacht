@@ -11,7 +11,6 @@ load(file = file.path(dataDir, "spatialData.RData"))
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
-geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 biotoopData <- loadHabitats(spatialData = spatialData)
 
 

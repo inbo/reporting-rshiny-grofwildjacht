@@ -101,11 +101,10 @@ test_that("F17_2", {
     
     regionLevel <- "utm1"
     
-    # TODO how to filter on region? Attach to waarnemingen province, fbz and gemeente
-    
     df <- fread(file.path(dataDir, "waarnemingen_2018.csv"))
     nOccurred <- as.data.frame(table(df[[regionLevel]]))
-    
+    # TODO update: not working #323
+    # update code such that it works for waarnemingen data
     spaceData <- createSpaceData(
       data = df, 
       allSpatialData = spatialData,
@@ -146,7 +145,7 @@ test_that("F09_2", {
     groupVariable <- c("SoortNaam", "season")[1]
     # TODO bedrag column will change #325
     
-    # TODO plot function
+    # TODO new plot function - barCost.R
     # plot per year (xaxis) and group (color): freq x minBedrag (yaxis)
     
     subData <- subset(schadeData@data, schadeBasisCode == "GEWAS",
@@ -168,7 +167,7 @@ test_that("F03_1", {
     regionLevel <- "provinces"
     locaties <- c("Antwerpen", "Limburg")
     
-    # TODO create function for table
+    # TODO create new function for table: tableBackground.R (see e.g. tableProvince.R)
     toReport <- subset(habitatData$provinces, regio %in% locaties, select = c("regio", "weg_dens_km"))
     toReport <- rbind(toReport, habitatData$flanders[, c("regio", "weg_dens_km")])
     toReport[,2] <- toReport[,2]*100
@@ -191,6 +190,8 @@ test_that("F06", {
         stroke = F,
         fillOpacity = 1) 
     
+    # TODO create new shiny module for the map: download kaart
+    
     expect_s3_class(myMap, "leaflet")
     
   })
@@ -200,11 +201,9 @@ test_that("F07_3, F09_3, F11_3", {
     
     inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
     
-    # TODO create plotly graph
-    library(tidyverse)
-    library(ggplot2)
-    verkeer_inschatting <- inschattingData %>%
-      filter(Vraag != "populatie_evolutie")
+    # TODO create new plotly graph: barInschatting.R
+    verkeer_inschatting <- subset(inschattingData, Vraag != "populatie_evolutie")
+    verkeer_inschatting$percentage <- as.numeric(verkeer_inschatting$percentage)
     
     verkeer_inschatting$Antwoord <- factor(verkeer_inschatting$Antwoord , 
       levels = c('Erg veel toegenomen','Veel toegenomen',
@@ -212,14 +211,9 @@ test_that("F07_3, F09_3, F11_3", {
         'Beetje afgenomen', 'Veel afgenomen',
         'Erg veel afgenomen', 'Geen mening'))
     
-    plot_inschatting_verkeer <- ggplot(data = verkeer_inschatting,
-        aes(x = percentage,
-          y = Vraag,
-          fill = Antwoord)) +
-      geom_bar(stat = "identity", 
-        position = "stack")
-    
-    plot_inschatting_verkeer
+    ggplot2::ggplot(data = verkeer_inschatting,
+        ggplot2::aes(x = percentage, y = Vraag, fill = Antwoord)) +
+      ggplot2::geom_bar(stat = "identity", position = "stack")
     
   })
 
@@ -229,34 +223,36 @@ test_that("F12_1, F14_1, F14_2", {
     # Maatschappelijke draagkracht
     inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
     
-    # TODO create plotly graphs
+    # TODO create new plotly graphs: barDraagkracht.R 
+    ## if possible merge with code from barInschatting.R -> then rename to barQuestionnaire.R 
+    library(ggplot2)
     
     # F12_1
     plotData <- fread(file.path(inputDir, "F12_1_data.csv"))
-    library(tidyverse)
-    library(ggplot2)
-    myPlot <- ggplot(data = plotData,
-        aes(x = Jaar, y = Aantal, fill = Type)) +
-      geom_bar(stat = "identity", position = "stack") 
+    ggplot2::ggplot(data = plotData,
+        ggplot2::aes(x = Jaar, y = Aantal, fill = Type)) +
+      ggplot2::geom_bar(stat = "identity", position = "stack") 
     
     # F14_1
     plotData <- fread(file.path(inputDir, "F14_1_data.csv"))
+    plotData$percentage <- as.numeric(plotData$percentage)
     plotData$Antwoord <- factor(plotData$Antwoord , 
       levels = c('Heel erg positief', 'Positief', 'Neutraal',
         'Negatief', 'Heel erg negatief', 'Geen mening'))
     
-    myPlot <- ggplot(data = plotData,
+    ggplot(data = plotData,
         aes(x = percentage, y = Sector, fill = Antwoord)) +
       geom_bar(stat = "identity", position = "stack") +
       facet_wrap(~ Year)
     
     # F14_2 (same code as above, different data
     plotData <- fread(file.path(inputDir, "F14_2_data.csv"))
+    plotData$percentage <- as.numeric(plotData$percentage)
     plotData$Antwoord <- factor(plotData$Antwoord , 
       levels = c('Ja, zeker wel', 'Ja, waarschijnlijk wel', 
         'Nee, waarschijnlijk niet', 'Nee, zeker niet'))
     
-    myPlot <- ggplot(data = plotData, 
+    ggplot(data = plotData, 
         aes(x = percentage, y = Sector, fill = Antwoord)) +
       geom_bar(stat = "identity", position = "stack") +
       facet_wrap(~ Year)
@@ -272,18 +268,19 @@ test_that("F14_3, F14_4", {
     
     # TODO create plotly graphs + make data more uniform so same function applies for F14_3, F14_4, F14_5, F18_1
     plotData <- fread(file.path(inputDir, inputFile))
-    library(tidyverse)
+    plotData$percentage <- as.numeric(plotData$percentage)
+    
     library(ggplot2)
     # Stakeholders
     stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
     
-    subData <- subData %>% filter(Sector %in% stakeholders)
+    subData <- subset(plotData, Sector %in% stakeholders)
     
     subData$Antwoord <- factor(subData$Antwoord , 
       levels = c('Geen idee', 'Zeer groot', 'Groot',
         'Klein', 'Zeer klein', 'Onbestaand'))
     
-    myPlot <- ggplot(data = subData,
+    ggplot(data = subData,
         aes(x = percentage, y = Question_label, fill = Antwoord)) +
       geom_bar(stat = "identity", position = "stack") +
       facet_grid( ~ Sector)
@@ -292,13 +289,13 @@ test_that("F14_3, F14_4", {
     # Plot Breed publiek
     breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
     
-    subData <- plotData %>% filter(Sector %in% breed_publiek)
+    subData <- subset(plotData, Sector %in% breed_publiek)
     
     subData$Antwoord <- factor(subData$Antwoord , 
       levels = c('Geen idee', 'Zeer groot', 'Groot',
         'Klein', 'Zeer klein', 'Onbestaand'))
     
-    myPlot <- ggplot(data = subData,
+    ggplot(data = subData,
         aes(x = percentage,
           y = Question_label,
           fill = Antwoord)) +
@@ -313,9 +310,9 @@ test_that("F14_5", {
     # Maatschappelijke draagkracht
     inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
     
-    # TODO create plotly graphs + integrate with F14_3 and F14_4
+    # TODO create new plotly graphs + integrate with F14_3 and F14_4?
     plotData <- fread(file.path(inputDir, "F14_5_data.csv"))
-    library(tidyverse)
+    plotData$percentage <- as.numeric(plotData$percentage)
     library(ggplot2)
     
     plotData$Antwoord <- factor(plotData$Antwoord , 
@@ -323,12 +320,40 @@ test_that("F14_5", {
         'Niet belangrijk', 'Helemaal niet belangrijk',
         'Geen mening'))
     
-    myPlot <- ggplot(data = plotData,
+    ggplot(data = plotData,
         aes(x = percentage, y = Question_label, fill = Antwoord)) +
       geom_bar(stat = "identity", position = "stack") +
       facet_grid( ~ Sector)
     
   })
+
+
+
+test_that("F18_1", {
+    
+    # Maatschappelijke draagkracht
+    inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
+    
+    # TODO create new plotly graphs -> integrate with code from F14_3 and F14_4
+    plotData <- read.csv(file.path(inputDir, "Data_inschatting.csv"))
+    plotData$percentage <- as.numeric(plotData$percentage)
+    library(ggplot2)
+    
+    subData <- subset(plotData, Vraag == "populatie_evolutie")
+    
+    subData$Antwoord <- factor(subData$Antwoord , 
+      levels = c('Erg veel toegenomen','Veel toegenomen',
+        'Beetje toegenomen', 'Hetzelfde gebleven',
+        'Beetje afgenomen', 'Veel afgenomen',
+        'Erg veel afgenomen', 'Geen mening'))
+    
+    ggplot(data = subData[order(subData$Score), ],
+        aes(x = percentage, y = Vraag, fill = Antwoord)) +
+      geom_bar(stat = "identity", position = "stack")
+    
+  })
+
+
 
 test_that("F17_4", {
     
@@ -359,7 +384,7 @@ test_that("F17_4", {
     }
     
     
-    # TODO create function: similar code structure in mapFlanders.R: mapFlanders(), mapFlandersServer(), mapFlandersUI()
+    # TODO create new function: similar code structure in mapFlanders.R: mapFlanders(), mapFlandersServer(), mapFlandersUI()
     # baseMap should be function argument: load both when the app starts and pass to the function
     # other function arguments: 
     #   spatialLevel = c("pixels", "communes"); replace in code below where spatialFile is used
@@ -450,30 +475,3 @@ test_that("F17_4", {
     finalMap
     
   })
-
-
-test_that("F18_1", {
-    
-    # Maatschappelijke draagkracht
-    inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
-    
-    # TODO create plotly graphs + integrate with code from F14_3 and F14_4
-    plotData <- read.csv(file.path(inputDir, "Data_inschatting.csv"))
-    
-    library(tidyverse)
-    library(ggplot2)
-    
-    subData <- plotData %>% filter(Vraag == "populatie_evolutie")
-    
-    subData$Antwoord <- factor(subData$Antwoord , 
-      levels = c('Erg veel toegenomen','Veel toegenomen',
-        'Beetje toegenomen', 'Hetzelfde gebleven',
-        'Beetje afgenomen', 'Veel afgenomen',
-        'Erg veel afgenomen', 'Geen mening'))
-    
-    myPlot <- ggplot(data = subData[order(subData$Score), ],
-        aes(x = percentage, y = Vraag, fill = Antwoord)) +
-      geom_bar(stat = "identity", position = "stack")
-    
-  })
-

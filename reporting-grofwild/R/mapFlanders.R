@@ -145,7 +145,6 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
         faunabeheerzones = plotData$FaunabeheerZone,
         fbz_gemeentes = plotData$fbz_gemeente,
         utm5 = plotData$UTM5,
-        utm1 = plotData$UTM1,
         WBE_buitengrenzen = plotData$PartijNummer
     )
     
@@ -275,7 +274,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @export
 mapFlanders <- function(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
-    "fbz_gemeentes", "utm5", "utm1", "WBE_buitengrenzen"),  
+    "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),  
   species, year = NA,
   allSpatialData, summaryData, colorScheme = NULL,
   legend = "none", addGlobe = FALSE) {
@@ -285,7 +284,7 @@ mapFlanders <- function(
     species = species, regionLevel = regionLevel, year = year, 
     locaties = summaryData$locatie)
   
-  palette <- colorFactor(palette = colorScheme, domain = levels(summaryData$group))
+  palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
   
   if (regionLevel == "WBE_buitengrenzen")
     valuesPalette <- summaryData[spatialData$NAAM %in% summaryData$locatie, "group"] else
@@ -343,8 +342,7 @@ mapFlanders <- function(
     borderRegion <- switch(regionLevel,
         "communes" = "provinces",
         "fbz_gemeentes" = "faunabeheerzones",
-        "utm5" = "provinces",
-        "utm1" = "provinces",
+        "utm5" = "provinces"
       )  
     
     myMap <- addPolylines(map = myMap,

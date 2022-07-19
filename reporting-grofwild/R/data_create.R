@@ -34,7 +34,7 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
   
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
     "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
-    "UTM5" = "utm5", "UTM1" = "utm1")
+    "UTM5" = "utm5")
   
   # WBE per year
   wbeLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "WBE_binnengrenzen_"))
@@ -70,10 +70,6 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
       } else if (iLevel == "utm5") {
         
         shapeData$NAAM <- factor(shapeData$TAG)
-        
-      } else if (iLevel == "utm1") {
-        
-        shapeData$NAAM <- factor(shapeData$CELLCODE)
         
       } else if (grepl("WBE_binnengrenzen", iLevel)) {
         
@@ -143,7 +139,7 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
       iData@data$AREA <- raster::area(iData)/1e06
       
       # No simplification
-      if (iName %in% c("fbz_gemeentes", "utm5", "utm1"))
+      if (iName %in% c("fbz_gemeentes", "utm5"))
         return(iData)
       
       simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
@@ -210,7 +206,7 @@ createWaarnemingenData <- function(
   
   waarnemingen <- data.table::fread(
     dataFile, 
-    select = c("x", "y"),
+    select = c("x", "y", "jaar"),
     dec = ","
   )
   
@@ -220,8 +216,7 @@ createWaarnemingenData <- function(
     sf::st_coordinates()
   waarnemingenSpatial <- round(waarnemingenSpatial/10^3)
   
-  waarnemingen$UTM1 <- apply(waarnemingenSpatial, 1, function(x)
-      paste0("1kmE", x[1], "N", x[2]))
+  # TODO Anneleen will add UTM5 and gemeente locatie
   waarnemingen$wildsoort <- "Wild zwijn"
   
   write.csv(waarnemingen, file = file.path(saveDir, basename(dataFile)), 

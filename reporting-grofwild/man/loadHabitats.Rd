@@ -14,7 +14,7 @@ loadHabitats(
 \item{dataDir}{character, path to data files}
 
 \item{spatialData}{list with each element a SpatialPolygonsDataFrame as created 
-by \code{\link{readShapeData}}}
+by \code{\link{createShapeData}}}
 
 \item{regionLevels}{character vector, for which regions load the habitat data;
 if NULL loaded for all levels; default value is NULL}

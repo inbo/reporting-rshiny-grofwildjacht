@@ -1,186 +1,7 @@
-#' Read all shape data from geojson files
-#' 
-#' @param jsonDir character, path to json shape files
-#' @param dataDir character, path to data files
-#' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
-#' larger values will impose stronger simplification; default value is 0.001
-#' @return save to dataDir object spatialData, i.e. a list with for each 
-#' spatial level a SpatialPolygonsDataFrame object, 
-#' with polygons and data as provided in the dataDir; spatial levels are 
-#' flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
-#' and provincesVoeren (Voeren as separate province)
-#' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
-#' @importFrom methods slot
-#' @importFrom maptools unionSpatialPolygons spRbind
-#' @importFrom rgdal readOGR
-#' @importFrom rgeos gSimplify
-#' @importFrom shiny incProgress
-#' @importFrom raster area
-#' @importFrom utils write.csv read.csv
-#' @export
-readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "reportingGrofwild"),
-    tolerance = 0.0001) {
-  
-  
-  allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
-      "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
-      "UTM5" = "utm5")
-  
-  # WBE per year
-  wbeLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "WBE_binnengrenzen_"))
-  # jachtterein per shared year
-  jachtLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "Jachtter_"))
-  
-  allLevels <- c(allLevels, wbeLevels, jachtLevels)
-  
-  ## New code for geojson files
-  spatialData <- lapply(allLevels, function(iLevel) {
-        
-        file <- file.path(jsonDir, paste0(iLevel, ".geojson"))
-#        # Check whether we can use readOGR()
-#        "GeoJSON" %in% rgdal::ogrDrivers()$name
-        shapeData <- readOGR(dsn = file, verbose = TRUE)
-        shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
-        
-        # Create factor for region names
-        if (iLevel == "provinces") {
-          
-          shapeData$NAAM <- factor(shapeData$NAAM, levels = c("West-Vlaanderen",
-                  "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg")) 
-          
-        } else if (iLevel == "faunabeheerzones") {
-          
-          shapeData$NAAM <- factor(shapeData$Code)
-          
-        } else if (iLevel == "fbz_gemeentes") {
-          
-          # Create fbz_gemeente
-          shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
-          
-        } else if (iLevel == "utm5") {
-          
-          shapeData$NAAM <- factor(shapeData$TAG)
-          
-        } else if (grepl("WBE_binnengrenzen", iLevel)) {
-          
-          shapeData$NAAM <- factor(shapeData$WBE_NR)
-          
-        } else if (grepl("Jachtter_", iLevel)) {
-          
-          shapeData$NAAM <- factor(shapeData$WBENR)
-          
-        }
-        
-        return(shapeData)
-        
-      })
-    
-  # Rename WBE levels  
-  allLevels <- gsub("WBE_binnengrenzen", "WBE_buitengrenzen", allLevels)
-  allLevels[grepl("Jachtter", allLevels)] <- 
-    sapply(strsplit(allLevels[grepl("Jachtter", allLevels)], split = "-"), function(x) x[1])
-  allLevels <- gsub("Jachtter", "WBE", allLevels)
-  
-  names(spatialData) <- allLevels
-  
-  
-  ## Create "province" Voeren
-  
-  # Define provinces based on NIS codes
-  provinceIds <- substr(spatialData$communes$NISCODE, start = 1, stop = 1)
-  # Give Voeren unique code, different from any other province
-  voerenId <- which(spatialData$communes$NAAM == "Voeren")
-  provinceIds[voerenId] <- 100
-  # Select Limburg and Voeren
-  isLimburg <- provinceIds %in% c(7, 100)
-  isLimburgProvince <- spatialData$provinces$NAAM == "Limburg"
-  
-  # Create new polygon for Limburg
-  limburgPolygon <- unionSpatialPolygons(SpP = spatialData$communes[isLimburg,],
-      IDs = provinceIds[isLimburg])
-  limburgData <- spatialData$provinces@data[isLimburgProvince, ]
-  voerenData <- limburgData
-  voerenData$NAAM <- "Voeren"
-  
-  # Bind all province polygons and data
-  allPolygons <- spRbind(spatialData$provinces[!isLimburgProvince, ],
-      limburgPolygon)
-  tmpData <- rbind(spatialData$provinces@data[!isLimburgProvince, ],
-      voerenData, limburgData)
-  rownames(tmpData) <- sapply(slot(allPolygons, "polygons"), function(x) slot(x, "ID")) 
-  
-  newProvinceData <- SpatialPolygonsDataFrame(Sr = allPolygons,
-      data = tmpData)
-  
-  # Attach new province data to spatialData
-  spatialData$provincesVoeren <- newProvinceData
-  
-  
-  
-  
-  newNames <- names(spatialData)
-  
-  # Try to simplify polygons
-  spatialData <- lapply(names(spatialData), function(iName) {
-        
-        iData <- spatialData[[iName]]
-        
-        # Calculate area for each polygon
-        iData@data$AREA <- raster::area(iData)/1e06
-        
-        # No simplification
-        if (iName %in% c("fbz_gemeentes", "utm5"))
-          return(iData)
-        
-        simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
-        
-        if (length(simpleShapeData) != length(iData))
-          stop("The number of polygons in original shapeData for ", 
-              iName, " is: ", length(iData),
-              "\nThe number of polygons in simplified shapeData is: ", length(simpleShapeData),
-              "\nPlease decrease value for tolerance")
-        
-        iData <- SpatialPolygonsDataFrame(Sr = simpleShapeData, 
-            data = data.frame(iData@data, stringsAsFactors = FALSE))
-        
-        
-        return(iData)
-        
-      })
-  
-  names(spatialData) <- newNames
-  
-  
-  # Update commune names for later matching: geo/wildschade data with shape data
-  # Note: You can use gemeentecode.csv for matching NIS to NAAM
-  # First install the package again!
-  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",",stringsAsFactors = FALSE)
-  
-  communeData <- spatialData$communes@data
-  gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
-  write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"), row.names = FALSE)
-  
-  # IF any NIS code not in gemeenteData -> throw error
-  if (any(!spatialData$communes@data$NISCODE %in% gemeenteData$NIS.code))
-    stop("Sommige NIS codes in shape data zijn niet gekend voor matching\n",
-        "Gelieve het referentiebestand gemeentecodes.csv aan te vullen")
-  
-    
-  # Save WBE data separately
-  spatialDataWBE <- spatialData[grep("WBE", names(spatialData))]
-  save(spatialDataWBE, file = file.path(dataDir, "spatialDataWBE.RData"))
-  
-  spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
-  save(spatialData, file = file.path(dataDir, "spatialData.RData"))
-    
-}
-
-
 
 
 #' read openingstijden data
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'Soort': }{specie}
@@ -207,7 +28,7 @@ loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "r
 
 
 #' Read toekenningen (Ree) data
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'labeltype': }{character, type of Ree, one of \code{c("geit", "bok", "kits")}}
@@ -257,7 +78,7 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 
 
 #' Read ecology or geography data
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' @return data.frame, loaded ecology or geography data; 
 #' and attribute 'Date', the date that this data file was created
@@ -374,14 +195,15 @@ loadRawData <- function(
     
   } else if (type == "wildschade") {
     ## Wildschade data
-    
+
         # variables to keep
         rawData <- rawData[, c("UUID", "IndieningID", "IndieningType", "Jaartal", 
                         "IndieningSchadeBasisCode", "IndieningSchadeCode",
                         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
                         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
                         "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
-                        "PolyLocatieWKT", "x", "y")]
+                        "PolyLocatieWKT", "x", "y",
+                        "SchadebedragID")]
         
         # format date
         rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
@@ -393,7 +215,7 @@ loadRawData <- function(
                 "SoortNaam", "wildsoort", "afschot_datum",
                 "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
                 "UTM5", "KboNummer", "WBE_Naam_Toek", "PartijNummer",
-                "perceelPolygon", "x", "y")
+                "perceelPolygon", "x", "y", "schadeBedrag")
         
         # Match on NISCODE: otherwise mismatch with spatialData locatie
         rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
@@ -412,13 +234,16 @@ loadRawData <- function(
         rawData$provincie <- factor(ifelse(is.na(rawData$provincie), "Onbekend", as.character(rawData$provincie)), levels = c(levels(rawData$provincie), "Onbekend"))
         rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
         
-              # Define season
+        # Define season
         rawData$season <- getSeason(rawData$afschot_datum)
         # Fix for korrelmais
         rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
         
         # fix for ANDERE within GEWAS
         rawData$schadeCode[rawData$schadeBasisCode == "GEWAS" & rawData$schadeCode == "ANDERE"] <- "GEWASANDR"
+        
+        # format schade bedrag
+        rawData$schadeBedrag <- suppressWarnings(as.numeric(gsub("BEDRAG", "", rawData$schadeBedrag)))
         
         # TODO what if x/y coordinates missing -> exclude
         toExclude <- is.na(rawData$x) | is.na(rawData$y)
@@ -444,9 +269,9 @@ loadRawData <- function(
 
 
 #' Load Habitats (Background) data
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
-#' by \code{\link{readShapeData}}
+#' by \code{\link{createShapeData}}
 #' @param regionLevels character vector, for which regions load the habitat data;
 #' if NULL loaded for all levels; default value is NULL
 #' @return named list with data.frame for each region level
@@ -508,6 +333,28 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
       return(tmpData)
     
     }, simplify = FALSE)
+  
+  # Bind wegdensiteit
+  densiteitData <- data.table::fread(file.path(dataDir, "wegdensiteit.csv"), drop = "V1")
+  habitatData <- sapply(names(habitatData), function(iLevel) {
+      
+      iData <- switch(iLevel, 
+        flanders = densiteitData[densiteitData$Niveau == "Vlaanderen", ],
+        provinces = densiteitData[densiteitData$Niveau == "Provincie", ],
+        communes = densiteitData[densiteitData$Niveau == "Gemeente", ],
+        faunabeheerzones = densiteitData[densiteitData$Niveau == "Faunabeheerzone", ],
+        NULL
+      )
+      if (is.null(iData))
+        return(habitatData[[iLevel]])
+      
+      iData$Niveau <- NULL
+      colnames(iData) <- paste0("weg_", colnames(iData))
+      
+      merge(habitatData[[iLevel]], iData, by.x = "regio", by.y = "weg_NAAM")
+    
+    })
+  
   
   
   return(habitatData)

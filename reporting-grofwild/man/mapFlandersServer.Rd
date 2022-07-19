@@ -10,10 +10,12 @@ mapFlandersServer(
   species,
   currentWbe = NULL,
   hideGlobeDefault = TRUE,
-  type = c("grofwild", "wildschade", "wbe"),
+  type = c("grofwild", "wildschade", "wbe", "dash"),
   geoData,
   biotoopData = NULL,
-  allSpatialData
+  allSpatialData,
+  regionLevel,
+  locaties
 )
 }
 \arguments{
@@ -29,7 +31,7 @@ mapFlandersServer(
 when the map is first created; default value is TRUE}
 
 \item{type}{character, defines the layout depending on which page it is shown;
-should be one of \code{c("grofwild", "wildschade", "wbe")}}
+should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}}
 
 \item{geoData}{SpatialPolygonsDataFrame with geographical data}
 
@@ -37,6 +39,12 @@ should be one of \code{c("grofwild", "wildschade", "wbe")}}
 default value is NULL}
 
 \item{allSpatialData}{list with SpatialPolygonsDataFrame}
+
+\item{regionLevel}{reactive, value of regionLevel if chosen outside module;
+only relevant for \code{type} "dash"}
+
+\item{locaties}{reactive, value of region if chosen outside module;
+only relevant for \code{type} "dash"}
 }
 \value{
 no return value

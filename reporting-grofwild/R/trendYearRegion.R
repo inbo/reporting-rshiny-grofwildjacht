@@ -1,7 +1,7 @@
 #' Create data for plotting trend over years in \code{\link{trendYearFlanders}}
 #' @inheritParams createSpaceData
 #' @inheritParams trendYearRegion
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck

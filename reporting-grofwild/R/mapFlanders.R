@@ -44,7 +44,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' the legend shows different types of regions for WBE
 #' should be reported,
 #' @inheritParams filterSchade
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
 #' @export
@@ -117,6 +117,11 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   
   # Select subset for time
+  if (!"afschotjaar" %in% colnames(data)) {
+    data$afschotjaar <- ""
+    year <- ""
+  }
+  
   plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
   
   plotData <- filterSchade(plotData = plotData, sourceIndicator = sourceIndicator,
@@ -140,6 +145,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
         faunabeheerzones = plotData$FaunabeheerZone,
         fbz_gemeentes = plotData$fbz_gemeente,
         utm5 = plotData$UTM5,
+        utm1 = plotData$UTM1,
         WBE_buitengrenzen = plotData$PartijNummer
     )
     
@@ -268,7 +274,8 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
 #' @export
 mapFlanders <- function(
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),  
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
+    "fbz_gemeentes", "utm5", "utm1", "WBE_buitengrenzen"),  
   species, year = NA,
   allSpatialData, summaryData, colorScheme = NULL,
   legend = "none", addGlobe = FALSE) {
@@ -278,7 +285,7 @@ mapFlanders <- function(
     species = species, regionLevel = regionLevel, year = year, 
     locaties = summaryData$locatie)
   
-  palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
+  palette <- colorFactor(palette = colorScheme, domain = levels(summaryData$group))
   
   if (regionLevel == "WBE_buitengrenzen")
     valuesPalette <- summaryData[spatialData$NAAM %in% summaryData$locatie, "group"] else
@@ -336,7 +343,8 @@ mapFlanders <- function(
     borderRegion <- switch(regionLevel,
         "communes" = "provinces",
         "fbz_gemeentes" = "faunabeheerzones",
-        "utm5" = "provinces"
+        "utm5" = "provinces",
+        "utm1" = "provinces",
       )  
     
     myMap <- addPolylines(map = myMap,
@@ -371,7 +379,7 @@ mapFlanders <- function(
 #' @param hideGlobeDefault boolean, whether the globe is shown by default 
 #' when the map is first created; default value is TRUE
 #' @param type character, defines the layout depending on which page it is shown;
-#' should be one of \code{c("grofwild", "wildschade", "wbe", "dash)}
+#' should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}
 #' @param geoData SpatialPolygonsDataFrame with geographical data
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL

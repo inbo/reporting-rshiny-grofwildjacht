@@ -9,11 +9,11 @@ library(shinydashboard)
 ########################################################################################
 
 ##Shapefiles
-Pixelsmap <- readOGR("./Rshiny/Input/Pixels_ModelOutput_toekomst_verspr_2022.shp")
+Pixelsmap <- readOGR("./dashboard/input/spatial/Pixels_ModelOutput_toekomst_verspr_2022.shp")
 Pixelsmap <- spTransform(Pixelsmap, 
                          CRS("+proj=longlat +datum=WGS84"))
 
-Gemeentemap <- readOGR("./Rshiny/Input/Municipalities_ModelOutput_toekomst_verspr_2022.shp")
+Gemeentemap <- readOGR("./dashboard/input/spatial/Municipalities_ModelOutput_toekomst_verspr_2022.shp")
 Gemeentemap <- spTransform(Gemeentemap, 
                            CRS("+proj=longlat +datum=WGS84"))
 ########################################################################################
@@ -55,7 +55,7 @@ server <- function(input, output) {
     
     ###1. Pixel map model output 
     ####1.1 Background map habitat classes
-    Pixelsmap$Hbtt_ct <- factor (Pixelsmap$Hbtt_ct, 
+    Pixelsmap$Hbtt_ct <- factor(Pixelsmap$Hbtt_ct, 
                                           levels = c("Hoge Geschiktheid","Geschikt", 
                                                      "Lage geschiktheid","Niet geschikt"))
     pal_hab <- colorFactor(
@@ -143,7 +143,7 @@ server <- function(input, output) {
                   title = "Startlocatie",
                   opacity = 1)
     }
-    print(Output_finalyear)
+    Output_finalyear
   })
   
   ####1.4 Model output Gemeentes exacte pixels 
@@ -184,7 +184,7 @@ server <- function(input, output) {
                   title = "Waarschijnlijkheid",
                   opacity = 1)
     }
-    print(Gemeentemap_model)
+    Gemeentemap_model
   })
   
   ###2. AVP risico maps 
@@ -231,7 +231,7 @@ server <- function(input, output) {
                   title = "Legende",
                   opacity = 1)
     }
-    print(pig_pixel_map)
+    pig_pixel_map
   })
   
   output$Gemeente_avp <- renderLeaflet({
@@ -275,7 +275,7 @@ server <- function(input, output) {
                   title = "Risico klasse",
                   opacity = 1) 
     }
-    print(Gemeentemap_AVP)
+    Gemeentemap_AVP
   })
 }
 ########################################################################################

@@ -45,10 +45,21 @@ tagList(
           ),
           selected = if (doDebug) c("F05_1", "F05_2")
         )
+      ),
+      column(3,
+        checkboxGroupInput(inputId = "dash_verkeerIndicatoren",
+          label = "Verkeer",
+          choices = c(
+            "Preventieve rasters *" = "F06_1",
+            "Preventieve signalisatie *" = "F06_2",
+            "Preventieve snelheidsbeperkingen *" = "F06_3"
+          ),
+          selected = if (doDebug) c("F05_1", "F05_2")
+        )
       )
     ),
     
-    tags$em("* Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau"),
+    tags$p(tags$em("* Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
     
     actionButton(inputId = "dash_submit", label = "Maak dashboard"),
     actionButton(inputId = "dash_createReport", label = "Maak pdf"),
@@ -82,9 +93,20 @@ tagList(
     
     conditionalPanel("input.dash_jachtIndicatoren.indexOf('F05_2') > -1", 
       countYearAgeUI(id = "dash", uiText = uiText, showRegion = FALSE)
-    )
+    ),
+    
+    # Verkeer
+    uiOutput("dash_verkeerTitle"),
+    
+    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F06_1') > -1", 
+      actionLink(inputId = "dash_showVerkeer", label = tags$h3("FIGUUR: Preventieve maatregelen verkeer")),
+      conditionalPanel("input.dash_showVerkeer % 2 == 1", 
+        leafletOutput(outputId = "dash_verkeer"),
+        tags$hr()
+      )
+    ),
   
-  
+    tags$br()
   )
 
 )

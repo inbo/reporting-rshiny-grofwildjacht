@@ -60,9 +60,9 @@ test_that("F05_2", {
 test_that("F16_1", {
     
     plotData <- ecoData[ecoData$geslacht_comp == "Vrouwelijk", ]
-    plotData$reproductiestatus <- ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
+    plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
+      ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig"))
     
-    # TODO currently onbekend excluded with disclaimer - #322
     countAgeGroup(data = plotData, groupVariable = "reproductiestatus")
     
   })
@@ -92,6 +92,7 @@ test_that("F17_1", {
     )
     
     expect_s3_class(myPlot, "leaflet")
+    # TODO include in the app (low priority)
     
   })
 
@@ -99,29 +100,32 @@ test_that("F17_1", {
 # F17_2: Verspreidingsgebied waarnemingen
 test_that("F17_2", {
     
-    regionLevel <- "utm1"
+    regionLevel <- c("utm5", "communes")[1]
     
     df <- fread(file.path(dataDir, "waarnemingen_2018.csv"))
-    nOccurred <- as.data.frame(table(df[[regionLevel]]))
-    # TODO update: not working #323
-    # update code such that it works for waarnemingen data
+    df$wildsoort <- "Wild zwijn"
+
     spaceData <- createSpaceData(
       data = df, 
       allSpatialData = spatialData,
-      year = NULL,
+      year = 2018,
       species = "Wild zwijn",
-      regionLevel = "utm1",
-      unit = c("absolute", "relative")[1]
+      regionLevel = regionLevel,
+      unit = c("absolute", "relative")[1],
+      countVariable = "aantal"    
     )
     
     mapFlanders(
       regionLevel = regionLevel,
       species = "Wild zwijn",
-      year = NULL,
+      year = 2018,
       allSpatialData = spatialData,
       summaryData = spaceData$data,
-      colorScheme = "YlOrBr" 
+      colorScheme = c("white", RColorBrewer::brewer.pal(
+          n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+      legend = "topright"
     )
+    # TODO include in the app (low priority)
     
   })
 
@@ -168,8 +172,8 @@ test_that("F03_1", {
     locaties <- c("Antwerpen", "Limburg")
     
     # TODO create new function for table: tableBackground.R (see e.g. tableProvince.R)
-    toReport <- subset(habitatData$provinces, regio %in% locaties, select = c("regio", "weg_dens_km"))
-    toReport <- rbind(toReport, habitatData$flanders[, c("regio", "weg_dens_km")])
+    toReport <- subset(biotoopData$provinces, regio %in% locaties, select = c("regio", "weg_dens_km"))
+    toReport <- rbind(toReport, biotoopData$flanders[, c("regio", "weg_dens_km")])
     toReport[,2] <- toReport[,2]*100
     
   })
@@ -190,7 +194,8 @@ test_that("F06", {
         stroke = F,
         fillOpacity = 1) 
     
-    # TODO create new shiny module for the map: download kaart
+    # TODO create new shiny module for the map
+    ##   properties: download kaart, not data; add/remove layers using leafletproxy
     
     expect_s3_class(myMap, "leaflet")
     
@@ -266,7 +271,7 @@ test_that("F14_3, F14_4", {
     inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
     inputFile <- c("F14_3_data.csv", "F14_4_data.csv")[1]
     
-    # TODO create plotly graphs + make data more uniform so same function applies for F14_3, F14_4, F14_5, F18_1
+    # TODO create new plotly graphs + make data more uniform so same function applies for F14_3, F14_4, F14_5, F18_1
     plotData <- fread(file.path(inputDir, inputFile))
     plotData$percentage <- as.numeric(plotData$percentage)
     
@@ -385,7 +390,7 @@ test_that("F17_4", {
     
     
     # TODO create new function: similar code structure in mapFlanders.R: mapFlanders(), mapFlandersServer(), mapFlandersUI()
-    # baseMap should be function argument: load both when the app starts and pass to the function
+    # baseMap should be function argument: always load for both spatialFiles when the app starts and pass to the function
     # other function arguments: 
     #   spatialLevel = c("pixels", "communes"); replace in code below where spatialFile is used
     #   unitVar: one of choices above (include check whether unitVar can be chosen for spatialLevel)
@@ -394,10 +399,7 @@ test_that("F17_4", {
     
     # Create map
     finalMap <- leaflet(baseMap) %>%
-      setView(lng = 4.403268, lat  = 51.094453, zoom = 8) %>%
-      # TODO ask Anneleen: differ background map & zoom for gemeente and pixel?
-      addProviderTiles(providers$CartoDB.Positron)
-#    addTiles() # gemeente
+      addProviderTiles("OpenStreetMap.HOT")  # background
     
     modelShape <- subset(baseMap, !is.na(baseMap@data[, unitVar]))
     modelShape[[unitVar]] <- as.factor(modelShape[[unitVar]])
@@ -409,29 +411,9 @@ test_that("F17_4", {
       domain = modelShape[[unitVar]],
       na.color = NA) 
     
-    # TODO some layers same across unitVar -> leafletproxy in the app (see mapFlandersServer(), need 'group =' in addPolygons())
+    # TODO layers that stay the same -> leafletproxy in the app (see mapFlandersServer(), need 'group =' in addPolygons())
     # create helper function for each palette, which can then be called in leafletProxy
-    if (unitVar %in% c("Mdl_EP_", "Mdl_OH_")) {
-    
-      ## Habitat classes - Model output
-      baseMap$Hbtt_ct <- factor(baseMap$Hbtt_ct, 
-        levels = c("Hoge Geschiktheid","Geschikt", "Lage geschiktheid", "Niet geschikt"))
-      
-      pal_hab <- colorFactor(
-        palette = c("darkgreen", "green", "yellow", "grey"), 
-        domain = baseMap$Hbtt_ct)
-      
-      finalMap <- finalMap %>%  
-        addPolygons(stroke = FALSE,
-          smoothFactor = 1,
-          fillOpacity = 0.5,
-          fillColor =  ~pal_hab(Hbtt_ct)) %>%
-        addLegend("bottomleft", pal = pal_hab, values = ~Hbtt_ct,
-          title = "Habitatsgeschiktheid",
-          opacity = 1)
-      
-    }
-    
+  
     finalMap <- finalMap %>%
       addPolygons(data = modelShape,
         stroke = grepl("Municipalities", spatialFile),

@@ -34,8 +34,8 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
   names(plotData)[names(plotData) == "leeftijd_comp"] <- "leeftijd"
 
   
-  # For percentage collected
-  nRecords <- nrow(plotData)
+#  # For percentage collected
+#  nRecords <- nrow(plotData)
   
   # Remove missing groups
   plotData <- plotData[!is.na(plotData[, groupVariable]), ]
@@ -57,7 +57,12 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
   
   totalCount <- count(df = summaryData, vars = "leeftijd", wt_var = "freq")$freq
   
-  colors <- inbo_palette(n = nlevels(as.factor(summaryData[[groupVariable]])))
+  groupLevels <- levels(as.factor(summaryData[[groupVariable]]))
+  colors <- inbo_palette(n = length(groupLevels))
+  names(colors) <- groupLevels
+  if ("Onbekend" %in% groupLevels)
+    colors[groupLevels == "Onbekend"] <- "gray"
+  
   title <- paste(wildNaam, paste0("(", 
       ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
         jaartallen), ")"))
@@ -82,13 +87,13 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
     add_annotations(text = groupLabel, 
       xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
       y = 0.8, yanchor = "bottom",    # Same y as legend below
-      legendtitle = TRUE, showarrow = FALSE) %>% 
+      legendtitle = TRUE, showarrow = FALSE)
   
-  add_annotations(
-    text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
-      text = paste("gekende", groupVariable)),
-    xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-    y = -0.3, yanchor = "bottom", showarrow = FALSE)  
+#  add_annotations(
+#    text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
+#      text = paste("gekende", groupVariable)),
+#    xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+#    y = -0.3, yanchor = "bottom", showarrow = FALSE)  
   
   colsFinal <- colnames(summaryData)[colnames(summaryData) != "text"]
   

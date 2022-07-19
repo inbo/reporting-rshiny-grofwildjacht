@@ -98,8 +98,9 @@ output$dash_populatieTitle <- renderUI({
 countAgeGroupServer(
   id = "dash_reproductie",
   data = reactive({
-      plotData <- ecoData[ecoData$geslacht_comp == "Vrouwelijk", ]
-      plotData$reproductiestatus <- ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
+      plotData <- everEcoData[everEcoData$geslacht_comp == "Vrouwelijk", ]
+      plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
+        ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig"))
       plotData
     }),
   timeRange = results$dash_timeRange,

@@ -42,7 +42,8 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' @param unit character, whether absolute frequencies, relative frequencies (aantal/100ha),
 #' absolute cases, or relative bos freq (aantal/100ha bos & natuur); if 'region'
 #' the legend shows different types of regions for WBE
-#' should be reported,
+#' @param countVariable character, column name in \code{data} that contains counts;
+#' if NULL then each row in the data contains 1 count
 #' @inheritParams filterSchade
 #' @inheritParams createShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
@@ -51,7 +52,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 createSpaceData <- function(data, allSpatialData, biotoopData, 
     year, species, regionLevel,
     unit = c("absolute", "relative", "absoluteCases", "relativeDekking", "region"), 
-    sourceIndicator = NULL, 
+    sourceIndicator = NULL, countVariable = NULL,
     dataDir = system.file("extdata", package = "reportingGrofwild")) {
   
   
@@ -98,7 +99,6 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   colnames(fullData)[1] <- "locatie"
   
-  
   # For communes -> provide corresponding province in downloaded data
   if (regionLevel %in% c("communes", "fbz_gemeentes")) {
     
@@ -114,13 +114,6 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     
   }
   
-  
-  
-  # Select subset for time
-  if (!"afschotjaar" %in% colnames(data)) {
-    data$afschotjaar <- ""
-    year <- ""
-  }
   
   plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
   
@@ -150,11 +143,18 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     
     # Exclude data with missing locatie
     plotData <- subset(plotData, !is.na(plotData$locatie) & plotData$locatie != "",
-        c("afschotjaar", "locatie")
+        c("afschotjaar", "locatie", countVariable)
     )
     
-    # Summarize data over years
-    summaryData <- plyr::count(df = plotData, vars = names(plotData))
+    # Summarize data over afschotjaar/locaties
+    if (is.null(countVariable)) {
+      summaryData <- plyr::count(df = plotData, vars = names(plotData)) 
+    } else {
+      summaryData <- aggregate(plotData[[countVariable]], 
+        by = list(afschotjaar = plotData$afschotjaar, locatie = plotData$locatie), sum)
+      summaryData$freq <- summaryData$x
+      summaryData$x <- NULL
+    }
     
     # Add names & times with 0 observations
     allData <- merge(summaryData, fullData, all = TRUE)

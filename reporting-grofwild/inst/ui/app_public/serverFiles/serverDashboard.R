@@ -133,3 +133,34 @@ countYearAgeServer(id = "dash",
   timeRange = results$dash_timeRange
 )
 
+
+# Verkeer
+
+output$dash_verkeerTitle <- renderUI({
+    
+    req(input$dash_verkeerIndicatoren)
+    
+    h2(toupper("Verkeer"))
+    
+  })
+
+output$dash_verkeer <- renderLeaflet({
+    
+    load(file = file.path(dataDir, "trafficData.RData"))
+    
+    leaflet() %>%
+      addTiles() %>%
+      addPolylines(data = trafficData$ecorasters,
+        opacity =  0.5) %>%
+      addCircleMarkers(data = trafficData$oversteek,
+        radius = 3,
+        color = "black",
+        stroke = F,
+        fillOpacity = 1) 
+    
+  })
+
+outputOptions(output, "dash_verkeer", suspendWhenHidden = FALSE)
+
+
+

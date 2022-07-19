@@ -162,8 +162,8 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @author mvarewyck
 #' @export
 filterSpatial <- function(allSpatialData, species, 
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", 
-    "WBE", "WBE_buitengrenzen"), 
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
+    "fbz_gemeentes", "utm5", "utm1", "WBE", "WBE_buitengrenzen"), 
   year, locaties = NULL) {
   
   

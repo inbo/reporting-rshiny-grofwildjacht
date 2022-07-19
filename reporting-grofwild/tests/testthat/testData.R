@@ -7,7 +7,7 @@
 context("Test Data Loading")
 
 
-## 0. Update Shape Data
+## 0. Update Data
 ## --------------------
 
 # This will update 
@@ -15,11 +15,16 @@ context("Test Data Loading")
 # (2) gemeentecodes.csv, file for matching NIS to NAAM
 # Next, install the package for the latest files to be available from the extdata folder
 
-#readShapeData(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data")   # created shape data
+# createShapeData()   # created shape data
 
 # Load the shape data
 load(file = file.path(dataDir, "spatialData.RData"))
 
+# This will update waarnemingen
+# createWaarnemingenData()
+
+# This will update trafficData
+#createTrafficData()
 
 
 

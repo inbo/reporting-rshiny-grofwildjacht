@@ -67,6 +67,12 @@ if (!doDebug | !exists("spatialData")) {
 }
 gc()
 
+# Load grid data
+if (!doDebug | !exists("gridData")) {
+  gridData <- readCubeData()[[1]]
+}
+gc()
+
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData")) {
   ecoData <- loadRawData(type = "eco")

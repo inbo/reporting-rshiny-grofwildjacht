@@ -13,7 +13,7 @@
 #' created by \code{\link{mapSchade}} and relevant for data download.
 #' 
 #' @inheritParams mapSchade
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @inheritParams filterSchade
 #' @param timeRange numeric vector, year span of interest
 #' @param fullNames named character vector, values for the \code{variable} to be 

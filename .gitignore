@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 # Architect project file
 .project
+
+# Rendered reports
+*.pdf

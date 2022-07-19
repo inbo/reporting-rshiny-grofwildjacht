@@ -6,12 +6,12 @@
 \usage{
 mapFlanders(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
-    "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),
+    "fbz_gemeentes", "utm5", "utm1", "WBE_buitengrenzen"),
   species,
   year = NA,
   allSpatialData,
   summaryData,
-  colorScheme,
+  colorScheme = NULL,
   legend = "none",
   addGlobe = FALSE
 )
@@ -29,7 +29,7 @@ mapFlanders(
 \item{summaryData}{data.frame, as returned by \code{\link{createSpaceData}}}
 
 \item{colorScheme}{character vector, specifies the color palette for the different groups
-in the summary data}
+in the summary data; if NULL map is not colored}
 
 \item{legend}{character, legend placement; default is "none", no legend}
 

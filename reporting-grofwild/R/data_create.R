@@ -206,18 +206,10 @@ createWaarnemingenData <- function(
   
   waarnemingen <- data.table::fread(
     dataFile, 
-    select = c("x", "y", "jaar"),
+    select = c("id", "jaar", "NAAM", "TAG", "aantal"),
     dec = ","
   )
-  
-  waarnemingenSpatial <- sf::st_as_sf(waarnemingen, coords = c("x", "y"),
-      crs = 31370) %>%
-    sf::st_transform(3035) %>%
-    sf::st_coordinates()
-  waarnemingenSpatial <- round(waarnemingenSpatial/10^3)
-  
-  # TODO Anneleen will add UTM5 and gemeente locatie
-  waarnemingen$wildsoort <- "Wild zwijn"
+  colnames(waarnemingen) <- c("id", "afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
   
   write.csv(waarnemingen, file = file.path(saveDir, basename(dataFile)), 
     row.names = FALSE)

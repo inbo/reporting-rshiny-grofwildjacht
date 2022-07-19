@@ -6,7 +6,7 @@
 \usage{
 mapFlanders(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
-    "fbz_gemeentes", "utm5", "utm1", "WBE_buitengrenzen"),
+    "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),
   species,
   year = NA,
   allSpatialData,

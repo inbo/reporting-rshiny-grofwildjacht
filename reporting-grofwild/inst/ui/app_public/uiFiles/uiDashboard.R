@@ -50,9 +50,7 @@ tagList(
         checkboxGroupInput(inputId = "dash_verkeerIndicatoren",
           label = "Verkeer",
           choices = c(
-            "Preventieve rasters *" = "F06_1",
-            "Preventieve signalisatie *" = "F06_2",
-            "Preventieve snelheidsbeperkingen *" = "F06_3"
+            "Preventieve maatregelen *" = "F06_123"
           ),
           selected = if (doDebug) c("F05_1", "F05_2")
         )
@@ -98,14 +96,21 @@ tagList(
     # Verkeer
     uiOutput("dash_verkeerTitle"),
     
-    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F06_1') > -1", 
+    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F06_123') > -1", 
       actionLink(inputId = "dash_showVerkeer", label = tags$h3("FIGUUR: Preventieve maatregelen verkeer")),
       conditionalPanel("input.dash_showVerkeer % 2 == 1", 
+        wellPanel(
+          # TODO make checkbox work
+          checkboxGroupInput(inputId = "dash_verkeerLayers", label = "Toon",
+            choices = c("Preventieve rasters" = "ecorasters",
+              "Preventieve signalisatie/snelheidsbeperkingen" = "oversteek"),
+            inline = TRUE)
+        ),
         leafletOutput(outputId = "dash_verkeer"),
         tags$hr()
       )
     ),
-  
+    
     tags$br()
   )
 

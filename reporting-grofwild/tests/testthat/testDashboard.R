@@ -148,10 +148,7 @@ test_that("F09_2", {
     
     groupVariable <- c("SoortNaam", "season")[1]
     # TODO bedrag column will change #325
-    
-    # TODO new plot function - barCost.R
-    # plot per year (xaxis) and group (color): freq x minBedrag (yaxis)
-    
+        
     subData <- subset(schadeData@data, schadeBasisCode == "GEWAS",
       select = c("schadeBedrag", groupVariable, "afschotjaar"))
     
@@ -162,20 +159,37 @@ test_that("F09_2", {
       FUN = sum, na.rm = TRUE)
     plotData <- plotData[plotData$x != 0, ]
     
+    # TODO new plot function - barCost.R
+    # plot per year (xaxis) and group (color): freq x minBedrag (yaxis)         
+     costPlots <-  barCost(plotData)
+     
+     costPlots$barPlot
+     costPlots$linePlot
+     
+      # Remarks:
+      # - labels are cut off from hover info: problem? 
+      # - Does the lineplot need to use relative values? (as in pdf file?)
+      
   })
 
 # F03_1: Wegdensiteit
 
 test_that("F03_1", {
     
-    regionLevel <- "provinces"
-    locaties <- c("Antwerpen", "Limburg")
+#    regionLevel <- "provinces"
+    locaties <- c("Antwerpen", "Limburg", "Vlaams Brabant")
     
     # TODO create new function for table: tableBackground.R (see e.g. tableProvince.R)
-    toReport <- subset(biotoopData$provinces, regio %in% locaties, select = c("regio", "weg_dens_km"))
-    toReport <- rbind(toReport, biotoopData$flanders[, c("regio", "weg_dens_km")])
-    toReport[,2] <- toReport[,2]*100
+      # Remarks:
+      # - Value for Vlaams gewest is added as extra row rather than as extra column as in pdf file. 
+      # since it would always hold the same value for each row. Can set it in bold?
+      # - Round values?
+
     
+    tmpDf <- tableBackground(biotoopData, locaties)
+   
+    DT::datatable(tmpDf)
+        
   })
 
 
@@ -206,7 +220,6 @@ test_that("F07_3, F09_3, F11_3", {
     
     inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
     
-    # TODO create new plotly graph: barInschatting.R
     verkeer_inschatting <- subset(inschattingData, Vraag != "populatie_evolutie")
     verkeer_inschatting$percentage <- as.numeric(verkeer_inschatting$percentage)
     
@@ -219,6 +232,12 @@ test_that("F07_3, F09_3, F11_3", {
     ggplot2::ggplot(data = verkeer_inschatting,
         ggplot2::aes(x = percentage, y = Vraag, fill = Antwoord)) +
       ggplot2::geom_bar(stat = "identity", position = "stack")
+  
+# TODO create new plotly graph: barInschatting.R
+      barInschatting(verkeer_inschatting)
+          # Remarks:
+      # - didn't add the percentages on the bars: can be seen when hovering over the area + 
+      # if added they would still be there when deselecting a certain category
     
   })
 

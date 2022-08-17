@@ -25,7 +25,7 @@ tableBackground <- function(biotoopData, locations){
   toReport <- rbind(toReport, biotoopData$flanders[, c("regio", "weg_dens_km")])
   
   # Convert from percentages
-  toReport[,2] <- toReport[,2]*100
+  toReport[,2] <- round(toReport[,2]*100, 1)
   
   # Set column names
   colnames(toReport) <- c("Studiegebied", "Wegdensiteit")

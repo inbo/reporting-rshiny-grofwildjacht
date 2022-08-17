@@ -146,51 +146,34 @@ test_that("F02_1", {
 
 test_that("F09_2", {
       
-      groupVariable <- c("SoortNaam", "season")[1]
-      # TODO bedrag column will change #325
+      myResult <- barCost(
+        schadeData = schadeData@data, 
+        groupVariable = groupVariable <- c("SoortNaam", "season")[2]
+      )
+    
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
       
-      subData <- subset(schadeData@data, schadeBasisCode == "GEWAS",
-          select = c("schadeBedrag", groupVariable, "afschotjaar"))
-      
-      summaryData <- count(df = subData, vars = names(subData))
-      summaryData$schadeBedrag <- summaryData$schadeBedrag * summaryData$freq
-      summaryData$freq <- NULL
-      plotData <- aggregate(summaryData$schadeBedrag, by = summaryData[, c(groupVariable, "afschotjaar")], 
-          FUN = sum, na.rm = TRUE)
-      plotData <- plotData[plotData$x != 0, ]
-      
-      # TODO new plot function - barCost.R (to be checked)
-      # plot per year (xaxis) and group (color): freq x minBedrag (yaxis)         
-      costPlots <-  barCost(plotData)
-      
-      costPlots$barPlot
-      costPlots$linePlot
-      
-      # Remarks:
-      # - For some lines the hoverText isn't rendered
-      # - Does the lineplot need to use relative values? (as in pdf file?)
-      
+      # TODO include in the app (low priority)
+    
     })
 
 # F03_1: Wegdensiteit
 
 test_that("F03_1", {
-      
-#    regionLevel <- "provinces"
-      locaties <- c("Antwerpen", "Limburg", "Vlaams Brabant")
-      
-      # TODO create new function for table: tableBackground.R (see e.g. tableProvince.R) (to be checked)
-      # Remarks:
-      # - Value for Vlaams gewest is added as extra row rather than as extra column as in pdf file. 
-      # since it would always hold the same value for each row. Can set it in bold?
-      # - Round values?
-      
-      
-      tmpDf <- tableBackground(biotoopData, locaties)
-      
-      DT::datatable(tmpDf)
-      
-    })
+    
+    locaties <- c("Antwerpen", "Limburg", "Vlaams Brabant")
+    
+    tmpDf <- tableBackground(biotoopData, locaties)
+    
+    expect_s3_class(tmpDf, "data.frame")
+    
+    DT::datatable(tmpDf)
+    
+    # TODO include in the app (low priority)
+    
+  })
 
 
 # F06_1,2,3: Verkeer
@@ -217,29 +200,18 @@ test_that("F06", {
 
 # F07_3: Inschatting verkeer
 test_that("F07_3, F09_3, F11_3", {
-      
-      inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
-      
-      verkeer_inschatting <- subset(inschattingData, Vraag != "populatie_evolutie")
-      verkeer_inschatting$percentage <- as.numeric(verkeer_inschatting$percentage)
-      
-      verkeer_inschatting$Antwoord <- factor(verkeer_inschatting$Antwoord , 
-          levels = c('Erg veel toegenomen','Veel toegenomen',
-              'Beetje toegenomen', 'Hetzelfde gebleven',
-              'Beetje afgenomen', 'Veel afgenomen',
-              'Erg veel afgenomen', 'Geen mening'))
-      
-      ggplot2::ggplot(data = verkeer_inschatting,
-              ggplot2::aes(x = percentage, y = Vraag, fill = Antwoord)) +
-          ggplot2::geom_bar(stat = "identity", position = "stack")
-      
-# TODO create new plotly graph: barInschatting.R (to be checked)
-      barInschatting(verkeer_inschatting)
-      # Remarks:
-      # - didn't add the percentages on the bars: can be seen when hovering over the area + 
-      # if added they would still be there when deselecting a certain category
-      
-    })
+    
+    inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
+    
+    myResult <- barInschatting(data = inschattingData)
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+    # TODO include in the app (low priority)
+    
+  })
 
 # F12_1, F14_1, F14_2
 test_that("F12_1, F14_1, F14_2", {
@@ -249,48 +221,33 @@ test_that("F12_1, F14_1, F14_2", {
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
 
-      # TODO create new plotly graphs: barDraagkracht.R (to be checked)
-      ## if possible merge with code from barInschatting.R -> then rename to barQuestionnaire.R: currently not implemented this way but can look into it
+      # TODO if possible merge with code from barInschatting.R -> then rename to barQuestionnaire.R: currently not implemented this way but can look into it
       
       # F12_1
-      plotData <- fread(file.path(inputDir, "F12_1_data.csv"))
-      ggplot2::ggplot(data = plotData,
-              ggplot2::aes(x = Jaar, y = Aantal, fill = Type)) +
-          ggplot2::geom_bar(stat = "identity", position = "stack") 
+      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F12_1_data.csv")),
+        xVar = "Jaar", yVar = "Aantal")
       
-      # plotly
-      barDraagkracht(plotData, ficheNumber = "F12_1", yVar = "Aantal")
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
       
       # F14_1
-      plotData <- fread(file.path(inputDir, "F14_1_data.csv"))
-      plotData$percentage <- as.numeric(plotData$percentage)
-      plotData$Antwoord <- factor(plotData$Antwoord , 
-          levels = c('Heel erg positief', 'Positief', 'Neutraal',
-              'Negatief', 'Heel erg negatief', 'Geen mening'))
+      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F14_1_data.csv")), 
+        subplotVar = "Year", yVar = "Sector")
       
-      ggplot(data = plotData,
-              aes(x = percentage, y = Sector, fill = Antwoord)) +
-          geom_bar(stat = "identity", position = "stack") +
-          facet_wrap(~ Year)
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
       
-      # plotly
-      barDraagkracht(plotData, ficheNumber = "F14_1", subplotVar = "Year", yVar = "Sector")
-
+      
       # F14_2 (same code as above, different data)
-      plotData <- fread(file.path(inputDir, "F14_2_data.csv"))
-      plotData$percentage <- as.numeric(plotData$percentage)
-      plotData$Antwoord <- factor(plotData$Antwoord , 
-          levels = c('Ja, zeker wel', 'Ja, waarschijnlijk wel', 
-              'Nee, waarschijnlijk niet', 'Nee, zeker niet'))
-      
-      ggplot(data = plotData, 
-              aes(x = percentage, y = Sector, fill = Antwoord)) +
-          geom_bar(stat = "identity", position = "stack") +
-          facet_wrap(~ Year)
-      
-      # plotly
-      barDraagkracht(plotData, ficheNumber = "F14_2", subplotVar = "Year", yVar = "Sector")         
+      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F14_2_data.csv")), 
+        subplotVar = "Year", yVar = "Sector")         
  
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
+      
     })
 
 
@@ -300,74 +257,40 @@ test_that("F14_3, F14_4", {
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
       inputFile <- c("F14_3_data.csv", "F14_4_data.csv")[1]
       
-      # TODO create new plotly graphs + make data more uniform so same function applies for F14_3, F14_4, F14_5, F18_1
       plotData <- fread(file.path(inputDir, inputFile))
-      plotData$percentage <- as.numeric(plotData$percentage)
-      
-      library(ggplot2)
       
       # Stakeholders
-      stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
+      subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
+      myResult <- barDraagkracht(plotData = subData, subplotVar = "Sector", yVar = "Question_label")
+           
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
       
-      subData <- subset(plotData, Sector %in% stakeholders)
-      
-      subData$Antwoord <- factor(subData$Antwoord , 
-          levels = c('Geen idee', 'Zeer groot', 'Groot',
-              'Klein', 'Zeer klein', 'Onbestaand'))
-      
-      ggplot(data = subData,
-              aes(x = percentage, y = Question_label, fill = Antwoord)) +
-          geom_bar(stat = "identity", position = "stack") +
-          facet_grid( ~ Sector)
-      
-      barDraagkracht(subData, ficheNumber = "F14_3", subplotVar = "Sector", yVar = "Question_label")
-            
       # Plot Breed publiek
-      breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
+      subData <- subset(plotData, Sector %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
+      myResult <- barDraagkracht(plotData = subData, subplotVar = "Sector", yVar = "Question_label")
       
-      subData <- subset(plotData, Sector %in% breed_publiek)
-      
-      subData$Antwoord <- factor(subData$Antwoord , 
-          levels = c('Geen idee', 'Zeer groot', 'Groot',
-              'Klein', 'Zeer klein', 'Onbestaand'))
-      
-      ggplot(data = subData,
-              aes(x = percentage,
-                  y = Question_label,
-                  fill = Antwoord)) +
-          geom_bar(stat = "identity", 
-              position = "stack") +
-          facet_grid( ~ Sector)
-      
-      barDraagkracht(subData, ficheNumber = "F14_4", subplotVar = "Sector", yVar = "Question_label")
-      
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
       
     })
 
+  
 test_that("F14_5", {
       
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
 
-      plotData <- fread(file.path(inputDir, "F14_5_data.csv"))
-      plotData$percentage <- as.numeric(plotData$percentage)
-      library(ggplot2)
+      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F14_5_data.csv")),
+        subplotVar = "Sector", yVar = "Question_label")
       
-      plotData$Antwoord <- factor(plotData$Antwoord , 
-          levels = c('Erg belangrijk', 'Belangrijk', 'Neutraal',
-              'Niet belangrijk', 'Helemaal niet belangrijk',
-              'Geen mening'))
-      
-      ggplot(data = plotData,
-              aes(x = percentage, y = Question_label, fill = Antwoord)) +
-          geom_bar(stat = "identity", position = "stack") +
-          facet_grid( ~ Sector)
-      
-      # TODO create new plotly graphs + integrate with F14_3 and F14_4? (to be checked)
-      barDraagkracht(plotData, ficheNumber = "F14_5", subplotVar = "Sector", yVar = "Question_label")
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
       
     })
-
 
 
 test_that("F18_1", {
@@ -375,28 +298,14 @@ test_that("F18_1", {
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
       
-      plotData <- read.csv(file.path(inputDir, "Data_inschatting.csv"))
-      plotData$percentage <- as.numeric(plotData$percentage)
-      library(ggplot2)
+      plotData <- fread(file.path(inputDir, "Data_inschatting.csv"))
       
-      subData <- subset(plotData, Vraag == "populatie_evolutie")
-      
-      subData$Antwoord <- factor(subData$Antwoord , 
-          levels = c('Erg veel toegenomen','Veel toegenomen',
-              'Beetje toegenomen', 'Hetzelfde gebleven',
-              'Beetje afgenomen', 'Veel afgenomen',
-              'Erg veel afgenomen', 'Geen mening'))
-      
-      ggplot(data = subData[order(subData$Score), ],
-              aes(x = percentage, y = Vraag, fill = Antwoord)) +
-          geom_bar(stat = "identity", position = "stack")
-      
-      # TODO create new plotly graphs -> integrate with code from F14_3 and F14_4 (to be checked)
-      barDraagkracht(subData, ficheNumber = "F18_1", yVar = "Vraag")
+      barDraagkracht(plotData = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
       
       # Remark:
       # There is a problem with hovertemplate when there is only 1 data point on the plot:
-      # https://github.com/plotly/plotly.R/issues/1859). Can look for workaround if needed. 
+      # https://github.com/plotly/plotly.R/issues/1859
+    
     })
 
 

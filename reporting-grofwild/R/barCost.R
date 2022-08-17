@@ -18,7 +18,10 @@
 barCost <- function(plotData){
   
   # bar plot
-  barPlot <- plot_ly(plotData, x = as.character(plotData$afschotjaar), y = ~x , type = 'bar', name = ~SoortNaam) %>%
+  barPlot <- plot_ly(plotData, x = as.character(plotData$afschotjaar), y = ~x , type = 'bar', name = ~SoortNaam,
+          hovertemplate = paste(
+              '<b>Bedrag</b>: %{y:.2f}', '<br>',
+              '<b>Gewas</b>: %{text}<extra></extra>'), text = ~SoortNaam) %>%
       layout(
           legend = list(title = list(text = "<b> Gewas </b>")),
           yaxis = list(title = "Bedrag"),
@@ -27,7 +30,10 @@ barCost <- function(plotData){
       )
   
   # line plot
-  linePlot <- plot_ly(plotData, x = ~afschotjaar,  y = ~x, type = "scatter", mode = "lines", name = ~SoortNaam)%>%
+  linePlot <- plot_ly(plotData, x = as.character(plotData$afschotjaar),  y = ~x, type = "scatter", mode = "lines", name = ~SoortNaam,
+          hovertemplate = paste(
+              '<b>Bedrag</b>: %{y:.2f}', '<br>',
+              '<b>Gewas</b>: %{text}<extra></extra>'), text = ~SoortNaam)%>%
       layout(
           legend = list(title = list(text = "<b> Gewas </b>")),
           yaxis = list(title = "Bedrag"),
@@ -38,6 +44,6 @@ barCost <- function(plotData){
       list(
           barPlot = barPlot,
           linePlot = linePlot
-          )
       )
+  )
 }

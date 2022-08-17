@@ -362,98 +362,12 @@ test_that("F18_1", {
 
 test_that("F17_4", {
     
-    spatialDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/spatial"
-    spatialFile <- c(
-      # pixels
-      "Pixels_ModelOutput_toekomst_verspr_2022.shp",
-      # gemeente
-      "Municipalities_ModelOutput_toekomst_verspr_2022.shp"
-    )[2]
-    unitVar <- if (grepl("Pixels", spatialFile))
-        # Model output exact pixels / Model output optimal habitat / AVP risk exact pixels / AVP risk optimal habitat
-        c("Mdl_EP_", "Mdl_OH_", "Rsc_ExP", "Rsc_OpH")[1] else   
-        c("M_EP_A_", "M_OH_A_", "M_EP__G_", "M_OH__G_")[4] 
-    
-    baseMap <- rgdal::readOGR(file.path(spatialDir, spatialFile)) %>%
-      sp::spTransform(CRS("+proj=longlat +datum=WGS84"))
-    
-    # Modify data
-    ## Risico
-    riskLevels <- c("Hoog risico", "Gemiddeld risico", "Laag risico", "Verwaarloosbaar risico") 
-    if (grepl("Pixels", spatialFile)) {
-      baseMap$Rsc_ExP <- factor(baseMap$Rsc_ExP, levels = riskLevels)
-      baseMap$Rsc_OpH <- factor(baseMap$Rsc_ExP, levels = riskLevels)
-    } else {
-      baseMap$M_EP__G_ <- factor (baseMap$M_EP__G_, levels = riskLevels)
-      baseMap$M_OH__G_ <- factor (baseMap$M_OH__G_, levels = riskLevels)
-    }
-    
-    
-    # TODO create new function: similar code structure in mapFlanders.R: mapFlanders(), mapFlandersServer(), mapFlandersUI()
-    # baseMap should be function argument: always load for both spatialFiles when the app starts and pass to the function
-    # other function arguments: 
-    #   spatialLevel = c("pixels", "communes"); replace in code below where spatialFile is used
-    #   unitVar: one of choices above (include check whether unitVar can be chosen for spatialLevel)
-    
-    library(leaflet)
-    
-    # Create map
-    finalMap <- leaflet(baseMap) %>%
-      addProviderTiles("OpenStreetMap.HOT")  # background
-    
-    modelShape <- subset(baseMap, !is.na(baseMap@data[, unitVar]))
-    modelShape[[unitVar]] <- as.factor(modelShape[[unitVar]])
-    pal_model <- colorFactor(
-      palette = if (grepl("Mdl", unitVar))
-          c("deepskyblue1", "deepskyblue3", "deepskyblue4") else if (grepl("Rsc", unitVar))
-          c('red', 'orange', 'green', 'white') else
-          c('green', 'yellow', 'orange', 'red', 'darkgrey'), 
-      domain = modelShape[[unitVar]],
-      na.color = NA) 
-    
-    # TODO layers that stay the same -> leafletproxy in the app (see mapFlandersServer(), need 'group =' in addPolygons())
-    # create helper function for each palette, which can then be called in leafletProxy
-  
-    finalMap <- finalMap %>%
-      addPolygons(data = modelShape,
-        stroke = grepl("Municipalities", spatialFile),
-        smoothFactor = 1,
-        fillOpacity = if (grepl("Pixels", spatialFile)) 1 else 0.5,
-        fillColor =  ~pal_model(modelShape[[unitVar]]),
-        weight = if (grepl("Pixels", spatialFile)) 0 else 0.75,
-        color = "black") %>%
-      addLegend("bottomright", pal = pal_model, values = ~get(unitVar),
-        title = if (grepl("Mdl", unitVar))
-            "Waarschijnlijkheid verspreiding" else 
-            "Risico klasse",
-        opacity = 1,
-        na.label = "")
-    
-    startVar <- switch(unitVar,
-      Mdl_EP_ = "Strt_EP",
-      Mdl_OH_ = "Strt_OH",
-      NULL
+    mapSpread(
+      spatialDir = "~/git/reporting-rshiny-grofwildjacht/dashboard/input/spatial",
+      spatialLevel = c("pixels", "municipalities")[2],
+      unit = c("model_EP", "model_OH", "risk_EP", "risk_OH")[3],
+      legend = "bottomright",
+      addGlobe = TRUE
     )
-    
-    if (!is.null(startVar) && startVar %in% colnames(baseMap@data)) {
-      
-      startShape <- subset(baseMap, baseMap@data[[startVar]] == 2019)
-      pal_start <- colorFactor(
-        palette = c("black"), 
-        domain = startShape[[startVar]],
-        na.color = NA)  
-      
-      finalMap <- finalMap %>%
-        addPolygons(data = startShape,
-          stroke = FALSE,
-          smoothFactor = 1,
-          fillOpacity = 1,
-          fillColor =  ~pal_start(get(startVar))) %>%
-        addLegend("bottomright", pal = pal_start, values = ~get(startVar),
-          title = "Startlocatie",
-          opacity = 1)
-    }
-    
-    finalMap
     
   })

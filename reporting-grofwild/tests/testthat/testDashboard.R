@@ -259,7 +259,7 @@ test_that("F12_1, F14_1, F14_2", {
           ggplot2::geom_bar(stat = "identity", position = "stack") 
       
       # plotly
-      barDraagkracht(plotData, ficheNumber = "F12_1")
+      barDraagkracht(plotData, ficheNumber = "F12_1", yVar = "Aantal")
       
       # F14_1
       plotData <- fread(file.path(inputDir, "F14_1_data.csv"))
@@ -274,7 +274,7 @@ test_that("F12_1, F14_1, F14_2", {
           facet_wrap(~ Year)
       
       # plotly
-      barDraagkracht(plotData, ficheNumber = "F14_1")
+      barDraagkracht(plotData, ficheNumber = "F14_1", subplotVar = "Year", yVar = "Sector")
 
       # F14_2 (same code as above, different data)
       plotData <- fread(file.path(inputDir, "F14_2_data.csv"))
@@ -289,8 +289,7 @@ test_that("F12_1, F14_1, F14_2", {
           facet_wrap(~ Year)
       
       # plotly
-      barDraagkracht(plotData, ficheNumber = "F14_2")
-          
+      barDraagkracht(plotData, ficheNumber = "F14_2", subplotVar = "Year", yVar = "Sector")         
  
     })
 
@@ -306,6 +305,7 @@ test_that("F14_3, F14_4", {
       plotData$percentage <- as.numeric(plotData$percentage)
       
       library(ggplot2)
+      
       # Stakeholders
       stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
       
@@ -320,7 +320,8 @@ test_that("F14_3, F14_4", {
           geom_bar(stat = "identity", position = "stack") +
           facet_grid( ~ Sector)
       
-      
+      barDraagkracht(subData, ficheNumber = "F14_3", subplotVar = "Sector", yVar = "Question_label")
+            
       # Plot Breed publiek
       breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
       
@@ -338,14 +339,16 @@ test_that("F14_3, F14_4", {
               position = "stack") +
           facet_grid( ~ Sector)
       
+      barDraagkracht(subData, ficheNumber = "F14_4", subplotVar = "Sector", yVar = "Question_label")
+      
+      
     })
 
 test_that("F14_5", {
       
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
-      
-      # TODO create new plotly graphs + integrate with F14_3 and F14_4?
+
       plotData <- fread(file.path(inputDir, "F14_5_data.csv"))
       plotData$percentage <- as.numeric(plotData$percentage)
       library(ggplot2)
@@ -360,6 +363,9 @@ test_that("F14_5", {
           geom_bar(stat = "identity", position = "stack") +
           facet_grid( ~ Sector)
       
+      # TODO create new plotly graphs + integrate with F14_3 and F14_4? (to be checked)
+      barDraagkracht(plotData, ficheNumber = "F14_5", subplotVar = "Sector", yVar = "Question_label")
+      
     })
 
 
@@ -369,7 +375,6 @@ test_that("F18_1", {
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
       
-      # TODO create new plotly graphs -> integrate with code from F14_3 and F14_4
       plotData <- read.csv(file.path(inputDir, "Data_inschatting.csv"))
       plotData$percentage <- as.numeric(plotData$percentage)
       library(ggplot2)
@@ -386,6 +391,12 @@ test_that("F18_1", {
               aes(x = percentage, y = Vraag, fill = Antwoord)) +
           geom_bar(stat = "identity", position = "stack")
       
+      # TODO create new plotly graphs -> integrate with code from F14_3 and F14_4 (to be checked)
+      barDraagkracht(subData, ficheNumber = "F18_1", yVar = "Vraag")
+      
+      # Remark:
+      # There is a problem with hovertemplate when there is only 1 data point on the plot:
+      # https://github.com/plotly/plotly.R/issues/1859). Can look for workaround if needed. 
     })
 
 

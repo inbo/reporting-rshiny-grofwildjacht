@@ -233,7 +233,7 @@ test_that("F07_3, F09_3, F11_3", {
               ggplot2::aes(x = percentage, y = Vraag, fill = Antwoord)) +
           ggplot2::geom_bar(stat = "identity", position = "stack")
       
-# TODO create new plotly graph: barInschatting.R
+# TODO create new plotly graph: barInschatting.R (to be checked)
       barInschatting(verkeer_inschatting)
       # Remarks:
       # - didn't add the percentages on the bars: can be seen when hovering over the area + 
@@ -244,18 +244,22 @@ test_that("F07_3, F09_3, F11_3", {
 # F12_1, F14_1, F14_2
 test_that("F12_1, F14_1, F14_2", {
       
+      library(ggplot2)
+      
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
-      
-      # TODO create new plotly graphs: barDraagkracht.R 
-      ## if possible merge with code from barInschatting.R -> then rename to barQuestionnaire.R 
-      library(ggplot2)
+
+      # TODO create new plotly graphs: barDraagkracht.R (to be checked)
+      ## if possible merge with code from barInschatting.R -> then rename to barQuestionnaire.R: currently not implemented this way but can look into it
       
       # F12_1
       plotData <- fread(file.path(inputDir, "F12_1_data.csv"))
       ggplot2::ggplot(data = plotData,
               ggplot2::aes(x = Jaar, y = Aantal, fill = Type)) +
           ggplot2::geom_bar(stat = "identity", position = "stack") 
+      
+      # plotly
+      barDraagkracht(plotData, ficheNumber = "F12_1")
       
       # F14_1
       plotData <- fread(file.path(inputDir, "F14_1_data.csv"))
@@ -269,7 +273,10 @@ test_that("F12_1, F14_1, F14_2", {
           geom_bar(stat = "identity", position = "stack") +
           facet_wrap(~ Year)
       
-      # F14_2 (same code as above, different data
+      # plotly
+      barDraagkracht(plotData, ficheNumber = "F14_1")
+
+      # F14_2 (same code as above, different data)
       plotData <- fread(file.path(inputDir, "F14_2_data.csv"))
       plotData$percentage <- as.numeric(plotData$percentage)
       plotData$Antwoord <- factor(plotData$Antwoord , 
@@ -281,6 +288,10 @@ test_that("F12_1, F14_1, F14_2", {
           geom_bar(stat = "identity", position = "stack") +
           facet_wrap(~ Year)
       
+      # plotly
+      barDraagkracht(plotData, ficheNumber = "F14_2")
+          
+ 
     })
 
 

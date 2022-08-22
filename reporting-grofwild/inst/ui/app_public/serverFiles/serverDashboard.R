@@ -6,7 +6,10 @@
 
 everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
+everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
+inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
+  
 results$dash_species <- reactive("Wild zwijn")
 
 ## FILTER ##
@@ -54,6 +57,24 @@ results$dash_ecoData <- reactive({
     } else everEcoData
     
   })
+
+results$dash_schadeData <- reactive({
+    
+    if (input$dash_regionLevel != "flanders") {
+      
+      validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
+      
+      filterVariable <- switch(input$dash_regionLevel,
+        "provinces" = "provincie", 
+        "faunabeheerzones" = "FaunabeheerZone",
+        "communes" = "gemeente_afschot_locatie")
+      
+      everSchadeData[everSchadeData[[filterVariable]] %in% input$dash_locaties, ]
+      
+    } else everSchadeData
+    
+  })
+
 
 
 ## SUBMIT & DOWNLOAD ##
@@ -106,6 +127,8 @@ countAgeGroupServer(
   timeRange = results$dash_timeRange,
   groupVariable = "reproductiestatus"
 )
+
+#mapSpreadServer(id = "dash_toekomst") 
 
 
 # Jacht
@@ -163,5 +186,43 @@ output$dash_verkeer <- renderLeaflet({
 
 outputOptions(output, "dash_verkeer", suspendWhenHidden = FALSE)
 
+barDraagkrachtServer(id = "dash_verkeer", 
+  data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
+  yVar = "Vraag"
+)
 
+# Landbouw
+
+output$dash_landbouwTitle <- renderUI({
+    
+    req(input$dash_landbouwIndicatoren)
+    
+    h2(toupper("Landbouw"))
+    
+  })
+
+barCostServer(id = "dash_landbouw",
+  data = reactive(results$dash_schadeData()@data)
+)
+
+barDraagkrachtServer(id = "dash_landbouw", 
+  data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
+  yVar = "Vraag"
+)
+
+
+# Prive/Publiek
+
+output$dash_priveTitle <- renderUI({
+    
+    req(input$dash_priveIndicatoren)
+    
+    h2(toupper("Private en publieke gebieden"))
+    
+  })
+
+barDraagkrachtServer(id = "dash_prive", 
+  data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
+  yVar = "Vraag"
+)
 

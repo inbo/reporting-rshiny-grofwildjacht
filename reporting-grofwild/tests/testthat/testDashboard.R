@@ -147,16 +147,14 @@ test_that("F02_1", {
 test_that("F09_2", {
       
       myResult <- barCost(
-        schadeData = schadeData@data, 
-        groupVariable = groupVariable <- c("SoortNaam", "season")[2]
+        data = schadeData@data, 
+        summarizeBy = groupVariable <- c("SoortNaam", "season")[2]
       )
     
       expect_type(myResult, "list")
       expect_s3_class(myResult$plot, "plotly")
       expect_s3_class(myResult$data, "data.frame")
       
-      # TODO include in the app (low priority)
-    
     })
 
 # F03_1: Wegdensiteit
@@ -198,18 +196,16 @@ test_that("F06", {
       
     })
 
-# F07_3: Inschatting verkeer
+# F07_3: Inschatting schade
 test_that("F07_3, F09_3, F11_3", {
     
     inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
     
-    myResult <- barInschatting(data = inschattingData)
-    
+    myResult <- barDraagkracht(data = inschattingData[Vraag != "populatie_evolutie", ], yVar = "Vraag")
+
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
-    
-    # TODO include in the app (low priority)
     
   })
 
@@ -220,11 +216,9 @@ test_that("F12_1, F14_1, F14_2", {
       
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
-
-      # TODO if possible merge with code from barInschatting.R -> then rename to barQuestionnaire.R: currently not implemented this way but can look into it
-      
+ 
       # F12_1
-      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F12_1_data.csv")),
+      myResult <- barDraagkracht(data = fread(file.path(inputDir, "F12_1_data.csv")),
         xVar = "Jaar", yVar = "Aantal")
       
       expect_type(myResult, "list")
@@ -232,8 +226,8 @@ test_that("F12_1, F14_1, F14_2", {
       expect_s3_class(myResult$data, "data.frame")
       
       # F14_1
-      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F14_1_data.csv")), 
-        subplotVar = "Year", yVar = "Sector")
+      myResult <- barDraagkracht(data = fread(file.path(inputDir, "F14_1_data.csv")), 
+        groupVariable = "Year", yVar = "Sector")
       
       expect_type(myResult, "list")
       expect_s3_class(myResult$plot, "plotly")
@@ -241,13 +235,15 @@ test_that("F12_1, F14_1, F14_2", {
       
       
       # F14_2 (same code as above, different data)
-      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F14_2_data.csv")), 
-        subplotVar = "Year", yVar = "Sector")         
+      myResult <- barDraagkracht(data = fread(file.path(inputDir, "F14_2_data.csv")), 
+        groupVariable = "Year", yVar = "Sector")         
  
       expect_type(myResult, "list")
       expect_s3_class(myResult$plot, "plotly")
       expect_s3_class(myResult$data, "data.frame")
       
+    # TODO include in the app (low priority)
+    
     })
 
 
@@ -261,7 +257,7 @@ test_that("F14_3, F14_4", {
       
       # Stakeholders
       subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
-      myResult <- barDraagkracht(plotData = subData, subplotVar = "Sector", yVar = "Question_label")
+      myResult <- barDraagkracht(data = subData, groupVariable = "Sector", yVar = "Question_label")
            
       expect_type(myResult, "list")
       expect_s3_class(myResult$plot, "plotly")
@@ -269,11 +265,13 @@ test_that("F14_3, F14_4", {
       
       # Plot Breed publiek
       subData <- subset(plotData, Sector %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
-      myResult <- barDraagkracht(plotData = subData, subplotVar = "Sector", yVar = "Question_label")
+      myResult <- barDraagkracht(data = subData, groupVariable = "Sector", yVar = "Question_label")
       
       expect_type(myResult, "list")
       expect_s3_class(myResult$plot, "plotly")
       expect_s3_class(myResult$data, "data.frame")
+      
+    # TODO include in the app (low priority)
       
     })
 
@@ -283,12 +281,14 @@ test_that("F14_5", {
       # Maatschappelijke draagkracht
       inputDir <- "~/git/reporting-rshiny-grofwildjacht/dashboard/input/maatschappelijke_draagkracht"
 
-      myResult <- barDraagkracht(plotData = fread(file.path(inputDir, "F14_5_data.csv")),
-        subplotVar = "Sector", yVar = "Question_label")
+      myResult <- barDraagkracht(data = fread(file.path(inputDir, "F14_5_data.csv")),
+        groupVariable = "Sector", yVar = "Question_label")
       
       expect_type(myResult, "list")
       expect_s3_class(myResult$plot, "plotly")
       expect_s3_class(myResult$data, "data.frame")
+      
+    # TODO include in the app (low priority)
       
     })
 
@@ -300,11 +300,13 @@ test_that("F18_1", {
       
       plotData <- fread(file.path(inputDir, "Data_inschatting.csv"))
       
-      barDraagkracht(plotData = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
+      barDraagkracht(data = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
       
       # Remark:
       # There is a problem with hovertemplate when there is only 1 data point on the plot:
       # https://github.com/plotly/plotly.R/issues/1859
+    
+  # TODO include in the app (low priority)
     
     })
 
@@ -319,5 +321,7 @@ test_that("F17_4", {
       legend = "bottomright",
       addGlobe = TRUE
     )
+    
+  # TODO include in the app (low priority)
     
   })

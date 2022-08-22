@@ -443,6 +443,7 @@ datatableModuleUI <- function(id) {
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
+#' @inheritParams barDraagkracht
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' 
@@ -455,6 +456,7 @@ datatableModuleUI <- function(id) {
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL, groupVariable = NULL,
+    xVar = NULL, yVar = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
@@ -483,7 +485,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
   
-  wildNaam <- reactive(unique(data()$wildsoort))
+  wildNaam <- reactive({
+      
+      toReturn <- unique(data()$wildsoort)
+      if (is.null(toReturn))
+        toReturn <- "Wild zwijn"
+      
+      toReturn
+      
+    })
   
   
   subToekenningsData <- reactive({
@@ -541,6 +551,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
+            if(!is.null(xVar))
+              list(xVar = xVar),
+            if(!is.null(yVar))
+              list(yVar = yVar),
             if(!is.null(fullNames))
               list(fullNames = fullNames),
             

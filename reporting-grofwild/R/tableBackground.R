@@ -6,17 +6,16 @@
 
 #' Function to generate table for wegdensiteit (F03_1)
 #' 
-#' @param biotoopData 
+#' @param biotoopData data.frame
+#' @param locations character vector, selected regions
 #' @param character vector containing names of provinces to take into account
 #' 
 #' 
-#' @return 
+#' @return data.frame
 #' 
 #' @author wverlinden
-#' @importFrom DT rbind 
 #' @export 
-
-tableBackground <- function(biotoopData, locations){
+tableBackground <- function(biotoopData, locaties){
   
   # Subset data
   toReport <- subset(biotoopData$provinces, regio %in% locaties, select = c("regio", "weg_dens_km"))

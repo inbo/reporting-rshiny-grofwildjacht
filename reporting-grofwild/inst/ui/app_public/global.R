@@ -127,8 +127,7 @@ if (!all(isPresent)) {
 rm(list = c("indieningTypes", "isPresent"))
 
 # UI text for each plot/table
-if (!doDebug | !exists("uiText"))
-  uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))
+uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))
 uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
 if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
   warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",

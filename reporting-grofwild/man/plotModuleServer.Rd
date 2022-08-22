@@ -15,6 +15,8 @@ plotModuleServer(
   categorie = NULL,
   bioindicator = NULL,
   groupVariable = NULL,
+  xVar = NULL,
+  yVar = NULL,
   locaties = NULL,
   timeRange = NULL,
   unit = NULL,
@@ -51,6 +53,11 @@ with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 
 \item{groupVariable}{character, variable name in \code{data} for 
 which colored bars should be plot}
+
+\item{xVar}{character, column in \code{plotData} for x-axis;
+default value is 'percentage'}
+
+\item{yVar}{character, column in \code{plotData} for y-axis}
 
 \item{locaties}{character, defines on which locations to filter on;
 defined externally for large map}

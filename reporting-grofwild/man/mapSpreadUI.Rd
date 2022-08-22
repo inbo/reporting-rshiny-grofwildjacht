@@ -4,7 +4,7 @@
 \alias{mapSpreadUI}
 \title{Shiny module for creating the plot \code{\link{mapSpread}} - UI side}
 \usage{
-mapSpreadUI(id)
+mapSpreadUI(id, uiText)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}

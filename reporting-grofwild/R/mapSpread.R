@@ -88,7 +88,7 @@ mapSpread <- function(
   
   modelColors <- paletteMap(variable = unit, groupNames = levels(modelShape[[unitVariable]]))
   pal_model <- colorFactor(palette = modelColors$colors, levels = modelColors$levels, na.color = NA)
- 
+  
   
   
   finalMap <- leaflet(baseMap)
@@ -206,12 +206,12 @@ mapSpreadServer <- function(id) {
     function(input, output, session) {
       
       ns <- session$ns
-     
+      
       
       
       ## Map for spread ##
       ## -------------- ##
-   
+      
       # Send map to the UI
       output$spreadPlot <- renderLeaflet({
           
@@ -224,56 +224,56 @@ mapSpreadServer <- function(id) {
         })
       
       
-      # TODO Center view for WBE
-      observe({
-          
-          req(type %in% c("wbe", "dash"))
-          
-          selectedPolygons <- subset(spatialData(), 
-            spatialData()$NAAM %in% results$region_value)
-          
-          coordData <- ggplot2::fortify(selectedPolygons)
-          centerView <- c(range(coordData$long), range(coordData$lat))
-          
-          leafletProxy("spreadPlot", data = spatialData()) %>%
-            
-            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-              lat1 = centerView[3], lat2 = centerView[4])
-          
-        })
-      
-      
-      # TODO Plot thick border for selected regions
-      observe({
-          
-          if (!is.null(results$region_value)) {
-            
-            validate(need(spatialData(), "Geen data beschikbaar"))
-            
-            selectedPolygons <- subset(spatialData(), 
-              spatialData()$NAAM %in% results$region_value)
-            
-            leafletProxy("spreadPlot", data = spatialData()) %>%
-              
-              clearGroup(group = "regionLines") %>%
-              
-              addPolylines(data = selectedPolygons, color = "gray", weight = 5,
-                group = "regionLines")
-            
-          } else {
-            
-            leafletProxy("spreadPlot", data = spatialData()) %>%
-              
-              clearGroup(group = "regionLines")
-            
-          }
-          
-        })
+#      # TODO Center view for WBE
+#      observe({
+#          
+#          req(type %in% c("wbe", "dash"))
+#          
+#          selectedPolygons <- subset(spatialData(), 
+#            spatialData()$NAAM %in% results$region_value)
+#          
+#          coordData <- ggplot2::fortify(selectedPolygons)
+#          centerView <- c(range(coordData$long), range(coordData$lat))
+#          
+#          leafletProxy("spreadPlot", data = spatialData()) %>%
+#            
+#            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
+#              lat1 = centerView[3], lat2 = centerView[4])
+#          
+#        })
+#      
+#      
+#      # TODO Plot thick border for selected regions
+#      observe({
+#          
+#          if (!is.null(results$region_value)) {
+#            
+#            validate(need(spatialData(), "Geen data beschikbaar"))
+#            
+#            selectedPolygons <- subset(spatialData(), 
+#              spatialData()$NAAM %in% results$region_value)
+#            
+#            leafletProxy("spreadPlot", data = spatialData()) %>%
+#              
+#              clearGroup(group = "regionLines") %>%
+#              
+#              addPolylines(data = selectedPolygons, color = "gray", weight = 5,
+#                group = "regionLines")
+#            
+#          } else {
+#            
+#            leafletProxy("spreadPlot", data = spatialData()) %>%
+#              
+#              clearGroup(group = "regionLines")
+#            
+#          }
+#          
+#        })
       
       
       # Add world map
       observe({
-      
+          
           proxy <- leafletProxy("spreadPlot", data = spatialData())
           
           if (!is.null(input$globe) & !is.null(proxy)){
@@ -299,112 +299,112 @@ mapSpreadServer <- function(id) {
         })
       
       
-      # TODO Add legend
-      observe({
-          
-          req(input$legend)
-          
-          proxy <- leafletProxy("spreadPlot")
-          proxy %>% removeControl(layerId = "legend")
-          
-          if (input$legend != "none") {
-            
-            palette <- colorFactor(palette = results$colorScheme(), 
-              levels = levels(results$summarySpaceData()$data$group))
-            
-            if (type == "wbe")
-              valuesPalette <- results$summarySpaceData()$data[
-                spatialData()$NAAM %in% results$summarySpaceData()$data$locatie,
-                "group"] else 
-              valuesPalette <- results$summarySpaceData()$data[
-                match(spatialData()$NAAM, results$summarySpaceData()$data$locatie),
-                "group"]
-            
-            proxy %>% addLegend(
-              position = input$legend,
-              pal = palette, 
-              values = valuesPalette,
-              opacity = 0.8,
-              title = "Legende",
-              layerId = "legend"
-            )                      
-            
-          }
-          
-        })
+#      # TODO Add legend
+#      observe({
+#          
+#          req(input$legend)
+#          
+#          proxy <- leafletProxy("spreadPlot")
+#          proxy %>% removeControl(layerId = "legend")
+#          
+#          if (input$legend != "none") {
+#            
+#            palette <- colorFactor(palette = results$colorScheme(), 
+#              levels = levels(results$summarySpaceData()$data$group))
+#            
+#            if (type == "wbe")
+#              valuesPalette <- results$summarySpaceData()$data[
+#                spatialData()$NAAM %in% results$summarySpaceData()$data$locatie,
+#                "group"] else 
+#              valuesPalette <- results$summarySpaceData()$data[
+#                match(spatialData()$NAAM, results$summarySpaceData()$data$locatie),
+#                "group"]
+#            
+#            proxy %>% addLegend(
+#              position = input$legend,
+#              pal = palette, 
+#              values = valuesPalette,
+#              opacity = 0.8,
+#              title = "Legende",
+#              layerId = "legend"
+#            )                      
+#            
+#          }
+#          
+#        })
+#      
+#      
+#      
+#      
+#      # TODO Create final map (for download)
+#      results$finalMap <- reactive({
+#          
+#          validate(need(results$summarySpaceData()$data, "Geen data beschikbaar"))
+#          
+#          newMap <- mapFlanders(
+#            regionLevel = results$regionLevel(), 
+#            species = species(),
+#            allSpatialData = allSpatialData,
+#            summaryData = results$summarySpaceData()$data,
+#            colorScheme = results$colorScheme(),
+#            legend = input$legend,
+#            addGlobe = input$globe %% 2 == as.numeric(hideGlobeDefault)
+#          )
+#          
+#          # save the zoom level and centering to the map object
+#          newMap <- newMap %>% setView(
+#            lng = input$spreadPlot_center$lng,
+#            lat = input$spreadPlot_center$lat,
+#            zoom = input$spreadPlot_zoom
+#          )
+#          
+#          tmpFile <- tempfile(fileext = ".html")
+#          
+#          # write map to temp .html file
+#          htmlwidgets::saveWidget(newMap, file = tmpFile, selfcontained = FALSE)
+#          
+#          # output is path to temp .html file containing map
+#          tmpFile
+#          
+#        }) 
+#      
+#      
+#      # TODO Download the map
+#      output$download <- downloadHandler(
+#        filename = function()
+#          nameFile(species = species(),
+#            year = input$year, 
+#            content = "kaart", fileExt = "png"),
+#        content = function(file) {
+#          
+#          # convert temp .html file into .png for download
+#          webshot::webshot(url = results$finalMap(), file = file,
+#            vwidth = 1000, vheight = 500, cliprect = "viewport")
+#          
+#        }
+#      )
+#      
+#      # TODO Download data
+#      output$downloadData <- downloadHandler(
+#        filename = function()
+#          nameFile(species = paste(species(), collapse = "-"),
+#            year = input$year, 
+#            content = "kaartData", fileExt = "csv"),
+#        content = function(file) {
+#          
+#          myData <- results$summarySpaceData()$data
+#          # change variable names
+#          names(myData)[names(myData) == "freq"] <- results$unitText()
+#          names(myData)[names(myData) == "group"] <- "groep"
+#          
+#          ## write data to exported file
+#          write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,
+#            sep = ";", dec = ",")
+#          
+#        })
       
-      
-      
-      
-      # TODO Create final map (for download)
-      results$finalMap <- reactive({
-          
-          validate(need(results$summarySpaceData()$data, "Geen data beschikbaar"))
-          
-          newMap <- mapFlanders(
-            regionLevel = results$regionLevel(), 
-            species = species(),
-            allSpatialData = allSpatialData,
-            summaryData = results$summarySpaceData()$data,
-            colorScheme = results$colorScheme(),
-            legend = input$legend,
-            addGlobe = input$globe %% 2 == as.numeric(hideGlobeDefault)
-          )
-          
-          # save the zoom level and centering to the map object
-          newMap <- newMap %>% setView(
-            lng = input$spreadPlot_center$lng,
-            lat = input$spreadPlot_center$lat,
-            zoom = input$spreadPlot_zoom
-          )
-          
-          tmpFile <- tempfile(fileext = ".html")
-          
-          # write map to temp .html file
-          htmlwidgets::saveWidget(newMap, file = tmpFile, selfcontained = FALSE)
-          
-          # output is path to temp .html file containing map
-          tmpFile
-          
-        }) 
-      
-      
-      # TODO Download the map
-      output$download <- downloadHandler(
-        filename = function()
-          nameFile(species = species(),
-            year = input$year, 
-            content = "kaart", fileExt = "png"),
-        content = function(file) {
-          
-          # convert temp .html file into .png for download
-          webshot::webshot(url = results$finalMap(), file = file,
-            vwidth = 1000, vheight = 500, cliprect = "viewport")
-          
-        }
-      )
-      
-      # TODO Download data
-      output$downloadData <- downloadHandler(
-        filename = function()
-          nameFile(species = paste(species(), collapse = "-"),
-            year = input$year, 
-            content = "kaartData", fileExt = "csv"),
-        content = function(file) {
-          
-          myData <- results$summarySpaceData()$data
-          # change variable names
-          names(myData)[names(myData) == "freq"] <- results$unitText()
-          names(myData)[names(myData) == "group"] <- "groep"
-          
-          ## write data to exported file
-          write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,
-            sep = ";", dec = ",")
-          
-        })
-      
-      })
-   
+    })
+  
 }
 
 
@@ -416,58 +416,65 @@ mapSpreadServer <- function(id) {
 #' @author mvarewyck
 #' @import shiny
 #' @export
-mapSpreadUI <- function(id) {
+mapSpreadUI <- function(id, uiText) {
   
   ns <- NS(id)
   type <- match.arg(type)
   
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
   # Map spread
   
-  tags$div(class = "container",
+  tagList(
     
-    ## countMap: all species
-    wellPanel(
-      fixedRow(
-        column(4, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
-            choices = c(
-              "Gemeente" = "municipalities",
-              "2x2 UTM" = "pixels"
-            ))      
-        ),
-        column(4, selectInput(inputId = ns("legend"), label = "Legende",
-            choices = c(
-              "Bovenaan rechts" = "topright",
-              "Onderaan rechts" = "bottomright",
-              "Bovenaan links" = "topleft",
-              "Onderaan links" = "bottomleft",
-              "<geen>" = "none")) 
+    actionLink(inputId = ns("linkSpread"),
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkSpread % 2 == 1", ns = ns,
+      
+      ## countMap: all species
+      wellPanel(
+        fixedRow(
+          column(4, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
+              choices = c(
+                "Gemeente" = "municipalities",
+                "2x2 UTM" = "pixels"
+              ))      
+          ),
+          column(4, selectInput(inputId = ns("legend"), label = "Legende",
+              choices = c(
+                "Bovenaan rechts" = "topright",
+                "Onderaan rechts" = "bottomright",
+                "Bovenaan links" = "topleft",
+                "Onderaan links" = "bottomleft",
+                "<geen>" = "none")) 
+          ),
+          
+          column(4, selectInput(inputId = ns("unit"), label = "Eenheid",
+              choices = c(
+                "Model output exacte pixels" = "model_EP", 
+                "Model output optimaal habitat" = "model_OH", 
+                "Risico klasse exacte pixels" = "risk_EP", 
+                "Risico klasse optimaal habitat" = "risk_OH")
+            )
+          )
         ),
         
-        column(4, selectInput(inputId = ns("unit"), label = "Eenheid",
-            choices = c(
-              "Model output exacte pixels" = "model_EP", 
-              "Model output optimaal habitat" = "model_OH", 
-              "Risico klasse exacte pixels" = "risk_EP", 
-              "Risico klasse optimaal habitat" = "risk_OH")
-          )
-        )
+        actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
+          icon = icon("globe"))
+      
       ),
       
-      actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
-        icon = icon("globe"))
-  
-    ),
+      fixedRow(
+        withSpinner(leafletOutput(ns("spreadPlot"))),
+        tags$div(align = "center", uiOutput(ns("stats"))),
+        tags$br(),
+        downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
+        downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
+      ),
+      
+      ,tags$hr()
     
-    fixedRow(
-      withSpinner(leafletOutput(ns("spreadPlot"))),
-      tags$div(align = "center", uiOutput(ns("stats"))),
-      tags$br(),
-      downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
-      downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
-    ),
-    
-    ,tags$hr()
-  
+    )
   )
   
 }

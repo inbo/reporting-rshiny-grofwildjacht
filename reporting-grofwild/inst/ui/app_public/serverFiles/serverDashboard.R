@@ -8,8 +8,10 @@ everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
-inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
-  
+draagkrachtDir <- system.file("extdata", "maatschappelijke_draagkracht", package = "reportingGrofwild")
+inschattingData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
+
+
 results$dash_species <- reactive("Wild zwijn")
 
 ## FILTER ##
@@ -128,7 +130,28 @@ countAgeGroupServer(
   groupVariable = "reproductiestatus"
 )
 
-#mapSpreadServer(id = "dash_toekomst") 
+mapFlandersServer(id = "F17_1",
+  defaultYear = defaultYear,
+  species = results$dash_species,
+  type = "dash",
+  regionLevel = reactive(input$dash_regionLevel),
+  locaties = reactive(input$dash_locaties),
+  geoData = reactive(everGeoData),
+  biotoopData = biotoopData,
+  allSpatialData = spatialData,
+  hideGlobeDefault = FALSE)
+
+
+mapSpreadServer(id = "dash_F17_4",
+  regionLevel = reactive(input$dash_regionLevel),
+  locaties = reactive(input$dash_locaties),
+  allSpatialData = spatialData,
+  type = "F17_4"
+) 
+
+barDraagkrachtServer(id = "dash_F18_1",
+  data = reactive(inschattingData[Vraag == "populatie_evolutie", ]),
+  yVar = "Vraag")
 
 
 # Jacht
@@ -168,23 +191,12 @@ output$dash_verkeerTitle <- renderUI({
     
   })
 
-output$dash_verkeer <- renderLeaflet({
-    
-    load(file = file.path(dataDir, "trafficData.RData"))
-    
-    leaflet() %>%
-      addTiles() %>%
-      addPolylines(data = trafficData$ecorasters,
-        opacity =  0.5) %>%
-      addCircleMarkers(data = trafficData$oversteek,
-        radius = 3,
-        color = "black",
-        stroke = F,
-        fillOpacity = 1) 
-    
-  })
-
-outputOptions(output, "dash_verkeer", suspendWhenHidden = FALSE)
+mapSpreadServer(id = "dash_F06",
+  regionLevel = reactive(input$dash_regionLevel),
+  locaties = reactive(input$dash_locaties),
+  allSpatialData = spatialData,
+  type = "F06"
+) 
 
 barDraagkrachtServer(id = "dash_verkeer", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
@@ -226,3 +238,37 @@ barDraagkrachtServer(id = "dash_prive",
   yVar = "Vraag"
 )
 
+
+# Maatschappelijke draagkracht
+
+output$dash_maatschappijTitle <- renderUI({
+    
+    req(input$dash_maatschappijIndicatoren)
+    
+    h2(toupper("Maatschappelijk draagvlak"))
+    
+  })
+
+barDraagkrachtServer(id = "dash_F12_1",
+  data = reactive(fread(file.path(draagkrachtDir, "F12_1_data.csv"))),
+  xVar = "Jaar", yVar = "Aantal")
+
+barDraagkrachtServer(id = "dash_F14_1",
+  data = reactive(fread(file.path(draagkrachtDir, "F14_1_data.csv"))),
+  groupVariable = "Year", yVar = "Sector")
+
+barDraagkrachtServer(id = "dash_F14_2",
+  data = reactive(fread(file.path(draagkrachtDir, "F14_2_data.csv"))),
+  groupVariable = "Year", yVar = "Sector")
+
+barDraagkrachtServer(id = "dash_F14_3",
+  data = reactive(fread(file.path(draagkrachtDir, "F14_3_data.csv"))),
+  groupVariable = "Sector", yVar = "Question_label")
+
+barDraagkrachtServer(id = "dash_F14_4",
+  data = reactive(fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
+  groupVariable = c("Groep", "Year"), yVar = "Question_label")
+
+barDraagkrachtServer(id = "dash_F14_5",
+  data = reactive(fread(file.path(draagkrachtDir, "F14_5_data.csv"))),
+  groupVariable = "Sector", yVar = "Question_label")

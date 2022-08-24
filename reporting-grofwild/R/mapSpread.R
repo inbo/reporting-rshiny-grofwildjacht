@@ -165,6 +165,7 @@ mapSpread <- function(
     
   }
   
+  attr(finalMap, "modelColors") <- modelColors
   
   finalMap
   
@@ -175,22 +176,7 @@ mapSpread <- function(
 
 
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - server side
-#' @param id character, unique identifier for the module
-#' @param defaultYear numeric, default year
-#' @param species character, species for which to show the graphs
-#' @param currentWbe numeric, KBO number; default value is NULL
-#' @param hideGlobeDefault boolean, whether the globe is shown by default 
-#' when the map is first created; default value is TRUE
-#' @param type character, defines the layout depending on which page it is shown;
-#' should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}
-#' @param geoData SpatialPolygonsDataFrame with geographical data
-#' @param biotoopData data.frame, with background biotoop data for selected region level;
-#' default value is NULL
-#' @param allSpatialData list with SpatialPolygonsDataFrame 
-#' @param regionLevel reactive, value of regionLevel if chosen outside module;
-#' only relevant for \code{type} "dash"
-#' @param locaties reactive, value of region if chosen outside module;
-#' only relevant for \code{type} "dash"
+#' @inheritParams mapFlanders
 #' 
 #' @return no return value
 #' 
@@ -201,74 +187,107 @@ mapSpread <- function(
 #' @importFrom webshot webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
-mapSpreadServer <- function(id) {
+mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData, 
+  hideGlobeDefault = FALSE, type = c("F06", "F17_4")) {
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
       
       
-      
       ## Map for spread ##
       ## -------------- ##
       
-      # Send map to the UI
+      spreadPlot <- reactive({
+          
+          if (type == "F17_4") {
+            
+            mapSpread(
+              spatialDir = "~/git/reporting-rshiny-grofwildjacht/dashboard/input/spatial",
+              spatialLevel = input$spatialLevel,
+              unit = input$unit
+            ) 
+            
+          } else if (type == "F06") {
+            
+            dataDir <- system.file("extdata", package = "reportingGrofwild")
+            load(file = file.path(dataDir, "trafficData.RData"))
+            
+            myMap <- leaflet() %>%
+              addPolylines(data = trafficData$ecorasters,
+                opacity =  0.5,
+                group = "ecorasters") %>%
+              addCircleMarkers(data = trafficData$oversteek,
+                radius = 3,
+                color = "black",
+                stroke = FALSE,
+                fillOpacity = 1,
+                group = "oversteek")
+            
+            attr(myMap, "modelColors") <- NULL
+            
+            myMap
+            
+          }
+          
+        })
+      
+      selectedPolygons <- reactive({
+          
+          validate(need(spatialData(), "Geen data beschikbaar"))
+          
+          subset(spatialData(), spatialData()$NAAM %in% locaties())
+          
+        })
+      
       output$spreadPlot <- renderLeaflet({
           
-          mapSpread(
-            spatialDir = "~/git/reporting-rshiny-grofwildjacht/dashboard/input/spatial",
-            spatialLevel = input$spatialLevel,
-            unit = input$unit
-          )          
+          coordData <- ggplot2::fortify(selectedPolygons())
+          centerView <- c(range(coordData$long), range(coordData$lat))
+          
+          modelColors <- attr(spreadPlot(), "modelColors")
+          if (!is.null(modelColors))
+            pal_model <- colorFactor(palette = modelColors$colors, levels = modelColors$levels, na.color = NA)
+          
+          myMap <- spreadPlot() %>%
+            # Initial settings
+            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
+              lat1 = centerView[3], lat2 = centerView[4]) %>%
+            clearGroup(group = "regionLines") %>%
+            addPolylines(data = selectedPolygons(), color = "gray", weight = 5,
+              group = "regionLines") %>%
+            addProviderTiles("OpenStreetMap.HOT") 
+          
+          if (!is.null(modelColors))
+            myMap <- myMap %>%
+              addLegend(
+                position = "topright",
+                pal = pal_model, 
+                values = modelColors$levels,
+                opacity = 0.8,
+                title = "Legende",
+                layerId = "legend"
+              )      
+          
+          myMap
           
         })
       
       
-#      # TODO Center view for WBE
-#      observe({
-#          
-#          req(type %in% c("wbe", "dash"))
-#          
-#          selectedPolygons <- subset(spatialData(), 
-#            spatialData()$NAAM %in% results$region_value)
-#          
-#          coordData <- ggplot2::fortify(selectedPolygons)
-#          centerView <- c(range(coordData$long), range(coordData$lat))
-#          
-#          leafletProxy("spreadPlot", data = spatialData()) %>%
-#            
-#            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-#              lat1 = centerView[3], lat2 = centerView[4])
-#          
-#        })
-#      
-#      
-#      # TODO Plot thick border for selected regions
-#      observe({
-#          
-#          if (!is.null(results$region_value)) {
-#            
-#            validate(need(spatialData(), "Geen data beschikbaar"))
-#            
-#            selectedPolygons <- subset(spatialData(), 
-#              spatialData()$NAAM %in% results$region_value)
-#            
-#            leafletProxy("spreadPlot", data = spatialData()) %>%
-#              
-#              clearGroup(group = "regionLines") %>%
-#              
-#              addPolylines(data = selectedPolygons, color = "gray", weight = 5,
-#                group = "regionLines")
-#            
-#          } else {
-#            
-#            leafletProxy("spreadPlot", data = spatialData()) %>%
-#              
-#              clearGroup(group = "regionLines")
-#            
-#          }
-#          
-#        })
+      # Selected regions of interest
+      spatialData <- reactive({
+          
+          req(allSpatialData)
+          
+          filterSpatial(
+            allSpatialData = allSpatialData, 
+            species = "Wild zwijn", 
+            regionLevel = regionLevel(), 
+            year = NULL,
+            locaties = locaties()
+          )
+          
+        })
       
       
       # Add world map
@@ -299,43 +318,72 @@ mapSpreadServer <- function(id) {
         })
       
       
-#      # TODO Add legend
-#      observe({
-#          
-#          req(input$legend)
-#          
-#          proxy <- leafletProxy("spreadPlot")
-#          proxy %>% removeControl(layerId = "legend")
-#          
-#          if (input$legend != "none") {
-#            
-#            palette <- colorFactor(palette = results$colorScheme(), 
-#              levels = levels(results$summarySpaceData()$data$group))
-#            
-#            if (type == "wbe")
-#              valuesPalette <- results$summarySpaceData()$data[
-#                spatialData()$NAAM %in% results$summarySpaceData()$data$locatie,
-#                "group"] else 
-#              valuesPalette <- results$summarySpaceData()$data[
-#                match(spatialData()$NAAM, results$summarySpaceData()$data$locatie),
-#                "group"]
-#            
-#            proxy %>% addLegend(
-#              position = input$legend,
-#              pal = palette, 
-#              values = valuesPalette,
-#              opacity = 0.8,
-#              title = "Legende",
-#              layerId = "legend"
-#            )                      
-#            
-#          }
-#          
-#        })
-#      
-#      
-#      
-#      
+      # Add legend
+      observe({
+          
+          req(input$legend)
+          
+          proxy <- leafletProxy("spreadPlot")
+          proxy %>% removeControl(layerId = "legend")
+          
+          if (input$legend != "none") {
+            
+            modelColors <- attr(spreadPlot(), "modelColors")
+            pal_model <- colorFactor(palette = modelColors$colors, levels = modelColors$levels, na.color = NA)
+            
+            proxy %>% addLegend(
+              position = input$legend,
+              pal = pal_model, 
+              values = modelColors$levels,
+              opacity = 0.8,
+              title = "Legende",
+              layerId = "legend"
+            )                      
+            
+          }
+          
+        })
+      
+      
+      # Traffic data layers
+      observe({
+          
+          proxy <- leafletProxy("spreadPlot")
+          
+          if (!is.null(input$layers) & !is.null(proxy)) {
+            
+            if ("oversteek" %in% input$layers) {
+              
+              proxy %>% addCircleMarkers(data = trafficData$oversteek,
+                radius = 3,
+                color = "black",
+                stroke = FALSE,
+                fillOpacity = 1,
+                group = "oversteek")
+              
+            } else {
+              
+              proxy %>% clearGroup("oversteek")
+              
+            }
+            
+            if ("ecorasters" %in% input$layers) {
+              
+              proxy %>% addPolylines(data = trafficData$ecorasters,
+                opacity =  0.5,
+                group = "ecorasters")
+              
+            } else {
+              
+              proxy %>% clearGroup("ecorasters")
+              
+            }
+            
+          }
+          
+        })
+
+      
 #      # TODO Create final map (for download)
 #      results$finalMap <- reactive({
 #          
@@ -416,63 +464,71 @@ mapSpreadServer <- function(id) {
 #' @author mvarewyck
 #' @import shiny
 #' @export
-mapSpreadUI <- function(id, uiText) {
+mapSpreadUI <- function(id, title, showLayer = FALSE) {
   
   ns <- NS(id)
-  type <- match.arg(type)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   # Map spread
   
   tagList(
     
     actionLink(inputId = ns("linkSpread"),
-      label = h3(HTML(uiText$title))),
+      label = h3(HTML(paste("FIGUUR:", title)))),
     conditionalPanel("input.linkSpread % 2 == 1", ns = ns,
       
-      ## countMap: all species
       wellPanel(
-        fixedRow(
-          column(4, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
-              choices = c(
-                "Gemeente" = "municipalities",
-                "2x2 UTM" = "pixels"
-              ))      
-          ),
-          column(4, selectInput(inputId = ns("legend"), label = "Legende",
-              choices = c(
-                "Bovenaan rechts" = "topright",
-                "Onderaan rechts" = "bottomright",
-                "Bovenaan links" = "topleft",
-                "Onderaan links" = "bottomleft",
-                "<geen>" = "none")) 
-          ),
-          
-          column(4, selectInput(inputId = ns("unit"), label = "Eenheid",
-              choices = c(
-                "Model output exacte pixels" = "model_EP", 
-                "Model output optimaal habitat" = "model_OH", 
-                "Risico klasse exacte pixels" = "risk_EP", 
-                "Risico klasse optimaal habitat" = "risk_OH")
-            )
-          )
-        ),
         
-        actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
+        if (showLayer) {
+            checkboxGroupInput(inputId = ns("layers"), label = "Toon",
+              choices = c(
+                "Preventieve rasters" = "ecorasters",
+                "Preventieve signalisatie/snelheidsbeperkingen" = "oversteek"),
+              selected = c("ecorasters", "oversteek"),
+              inline = TRUE)
+            
+          } else {
+            
+            fixedRow(
+              column(4, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
+                  choices = c(
+                    "Gemeente" = "municipalities",
+                    "2x2 UTM" = "pixels"
+                  ))      
+              ),
+              column(4, selectInput(inputId = ns("legend"), label = "Legende",
+                  choices = c(
+                    "Bovenaan rechts" = "topright",
+                    "Onderaan rechts" = "bottomright",
+                    "Bovenaan links" = "topleft",
+                    "Onderaan links" = "bottomleft",
+                    "<geen>" = "none")) 
+              ),
+              column(4, selectInput(inputId = ns("unit"), label = "Eenheid",
+                  choices = c(
+                    "Model output exacte pixels" = "model_EP", 
+                    "Model output optimaal habitat" = "model_OH", 
+                    "Risico klasse exacte pixels" = "risk_EP", 
+                    "Risico klasse optimaal habitat" = "risk_OH")
+                )
+              )
+            )
+            
+          }
+        
+        , actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
           icon = icon("globe"))
       
       ),
       
       fixedRow(
         withSpinner(leafletOutput(ns("spreadPlot"))),
-        tags$div(align = "center", uiOutput(ns("stats"))),
         tags$br(),
         downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
         downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
       ),
       
-      ,tags$hr()
+      tags$hr()
     
     )
   )

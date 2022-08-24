@@ -48,35 +48,54 @@ barDraagkracht <- function(data, groupVariable = NULL,
   
   if (!is.null(groupVariable)) {
     
-    groupLevels <- unique(data[[groupVariable]])
+    groupLevels <- sapply(groupVariable, function(x) unique(data[[x]]), simplify = FALSE)
     
-    plotList <- lapply(groupLevels, function(iVar) {
+    plotList <- list()
+    
+    secondGroup <- if (length(groupVariable) > 1)
+        groupLevels[[2]] else
+        ""
+    
+    for (jVar in secondGroup) 
+      for (iVar in groupLevels[[1]]) {
         
-        plot_ly(
-            data = data[data[[groupVariable]] %in% iVar, ], 
+        subData <- if (jVar == "")
+            data[data[[groupVariable[1]]] %in% iVar, ] else
+            data[data[[groupVariable[1]]] %in% iVar & data[[groupVariable[2]]] %in% jVar, ]
+        
+        plotList[[(length(plotList) + 1)]] <- plot_ly(
+            data = subData, 
             x = ~get(xVar), 
             y = ~get(yVar), 
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
             legendgroup = ~Antwoord, 
-            showlegend = iVar == groupLevels[1], 
+            showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]), 
             hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
               '<b>Antwoord</b>: %{text}'),
             text = ~Antwoord
           ) %>%
           layout(
-            annotations = list(x = 50, 
-              y = 1.025, 
-              text = as.character(iVar), showarrow = FALSE, font = list(size = 16),
-              yref = 'paper'),
-            legend = list(title = list(text = "<b> Antwoord </b>")),
+            annotations = list(
+              # columns
+              list(x = 50, y = 1.05, 
+                text = if (jVar == secondGroup[1]) as.character(iVar) else "", 
+                showarrow = FALSE, font = list(size = 16), 
+                yref = 'paper'),
+              # rows
+              list(x = 1.05, y = 0.5, 
+                text = if (iVar == tail(groupLevels[[1]], n=1)) as.character(jVar) else "", 
+                showarrow = FALSE, font = list(size = 16), textangle = 90,
+                xref = 'paper', yref = 'paper')
+            ),
+            legend = list(title = list(text = "<b>Antwoord</b>")),
             barmode = "stack",
-            yaxis = list(title = "Sector"),
+            yaxis = list(title = ""),
             xaxis = list(title = "Percentage") 
           ) 
         
-      })
+      }
     
-    myPlot <- do.call(subplot, c(plotList, shareY = TRUE, shareX = TRUE))
+    myPlot <- do.call(subplot, c(plotList, shareY = TRUE, shareX = TRUE, nrows = length(secondGroup)))
     
     extraVars <- c("Antwoord", groupVariable)
     
@@ -145,12 +164,29 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
       
       ns <- session$ns
       
+      subData <- reactive({
+          
+          if (!is.null(input$subGroup)) {
+            
+            switch(input$subGroup,
+              "stakeholders" = data()[data()[[groupVariable[1]]] %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'), ],
+              "public" = data()[data()[[groupVariable[1]]] %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'), ]
+            )
+            
+          } else {
+                        
+            data()
+            
+          } 
+            
+        })
+      
       callModule(module = optionsModuleServer, id = "barDraagkracht", 
-        data = data
+        data = subData
       )
       callModule(module = plotModuleServer, id = "barDraagkracht",
         plotFunction = "barDraagkracht", 
-        data = data,
+        data = subData,
         groupVariable = groupVariable,
         xVar = xVar,
         yVar = yVar
@@ -163,21 +199,24 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side
 #' @template moduleUI
+#' @param title character, title for the plot
 #' 
 #' @author mvarewyck
 #' @export
-barDraagkrachtUI <- function(id, uiText) {
+barDraagkrachtUI <- function(id, title, subGroups = NULL) {
   
   ns <- NS(id)
-  
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   
   tagList(
     
     actionLink(inputId = ns("linkDraagkracht"),
-      label = h3(HTML(uiText$title))),
+      label = h3(HTML(paste("FIGUUR:", title)))),
     conditionalPanel("input.linkDraagkracht % 2 == 1", ns = ns,
       
+      if (!is.null(subGroups))
+        wellPanel(
+          radioButtons(inputId = ns("subGroup"), label = NULL, choices = subGroups)
+        ),
       plotModuleUI(id = ns("barDraagkracht")),
       optionsModuleUI(id = ns("barDraagkracht"), exportData = TRUE,
         doWellPanel = FALSE),

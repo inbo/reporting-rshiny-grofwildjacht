@@ -90,10 +90,11 @@ barCostServer <- function(id, data) {
 
 #' Shiny module for creating the plot \code{\link{barCost}} - UI side
 #' @template moduleUI
+#' @inheritParams barDraagkrachtUI
 #' 
 #' @author mvarewyck
 #' @export
-barCostUI <- function(id, uiText) {
+barCostUI <- function(id, title) {
   
   ns <- NS(id)
   
@@ -102,7 +103,7 @@ barCostUI <- function(id, uiText) {
   tagList(
     
     actionLink(inputId = ns("linkBarCost"), 
-      label = h3(HTML(uiText$title))),
+      label = h3(HTML(paste("FIGUUR:", title)))),
     conditionalPanel("input.linkBarCost % 2 == 1", ns = ns,
       
       fixedRow(

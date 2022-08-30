@@ -111,12 +111,27 @@ tagList(
     ),
     
     conditionalPanel("input.dash_populatieIndicatoren.indexOf('F17_1') > -1", 
-#      mapFlandersUI(id = "F17_1", showCombine = FALSE, type = "dash",  
-#        regionChoices = c("Gemeente" = "communes",
-#          "5x5 UTM" = "utm5"), 
-#        unitChoices = c("Aantal" = "absolute", 
-#          "Aantal/100ha" = "relative")
-#      )
+      actionLink(inputId = "dash_showF17_1", 
+        label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_1"])))),
+      conditionalPanel("input.dash_showF17_1 % 2 == 1", 
+        mapFlandersUI(id = "F17_1", showCombine = FALSE, type = "dash",  
+          regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
+          unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+          plotDetails = "", showTitle = FALSE
+        )
+      )
+    ),
+    
+    conditionalPanel("input.dash_populatieIndicatoren.indexOf('F17_2') > -1", 
+      actionLink(inputId = "dash_showF17_2", 
+        label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_2"])))),
+      conditionalPanel("input.dash_showF17_2 % 2 == 1", 
+        mapFlandersUI(id = "F17_2", showCombine = FALSE, type = "dash",  
+          regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
+          unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+          plotDetails = "", showTitle = FALSE
+        )
+      )
     ),
     
     

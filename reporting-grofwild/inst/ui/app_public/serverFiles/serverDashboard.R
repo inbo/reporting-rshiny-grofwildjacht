@@ -93,7 +93,7 @@ observeEvent(input$dash_submit, {
 mapFlandersServer(id = "dash",
   defaultYear = defaultYear,
   species = results$dash_species,
-  type = "dash",
+  type = "empty",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   geoData = reactive(everGeoData),
@@ -130,16 +130,31 @@ countAgeGroupServer(
   groupVariable = "reproductiestatus"
 )
 
+
 mapFlandersServer(id = "F17_1",
   defaultYear = defaultYear,
   species = results$dash_species,
-  type = "dash",
+  type = "grofwild",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   geoData = reactive(everGeoData),
-  biotoopData = biotoopData,
   allSpatialData = spatialData,
   hideGlobeDefault = FALSE)
+
+
+mapFlandersServer(id = "F17_2",
+  defaultYear = defaultYear,
+  species = results$dash_species,
+  type = "grofwild",
+  regionLevel = reactive(input$dash_regionLevel),
+  locaties = reactive(input$dash_locaties),
+  geoData = reactive({
+      df <- fread(file.path(dataDir, "waarnemingen_2018.csv"))
+      df$wildsoort <- "Wild zwijn"
+      df}),
+  allSpatialData = spatialData,
+  hideGlobeDefault = FALSE,
+  countVariable = "aantal")
 
 
 mapSpreadServer(id = "dash_F17_4",
@@ -190,6 +205,7 @@ output$dash_verkeerTitle <- renderUI({
     h2(toupper("Verkeer"))
     
   })
+
 
 mapSpreadServer(id = "dash_F06",
   regionLevel = reactive(input$dash_regionLevel),

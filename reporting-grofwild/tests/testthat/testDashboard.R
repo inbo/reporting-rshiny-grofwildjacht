@@ -93,7 +93,6 @@ test_that("F17_1", {
       )
       
       expect_s3_class(myPlot, "leaflet")
-      # TODO include in the app (low priority)
       
     })
 
@@ -128,7 +127,6 @@ test_that("F17_2", {
       )
       
       expect_s3_class(myPlot, "leaflet")
-      # TODO include in the app (low priority)
       
     })
 
@@ -194,9 +192,6 @@ test_that("F06", {
               color = "black",
               stroke = F,
               fillOpacity = 1) 
-      
-      # TODO create new shiny module for the map
-      ##   properties: download kaart, not data; add/remove layers using leafletproxy
       
       expect_s3_class(myMap, "leaflet")
       

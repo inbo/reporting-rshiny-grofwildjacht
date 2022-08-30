@@ -210,9 +210,6 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
           } else if (type == "F06") {
             
-            dataDir <- system.file("extdata", package = "reportingGrofwild")
-            load(file = file.path(dataDir, "trafficData.RData"))
-            
             myMap <- leaflet() %>%
               addPolylines(data = trafficData$ecorasters,
                 opacity =  0.5,
@@ -383,11 +380,14 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
 
+      # TODO for type F06 
+      #   properties: download kaart, not data; add/remove layers using leafletproxy
       
-#      # TODO Create final map (for download)
+      
+#      # Create final map (for download)
 #      results$finalMap <- reactive({
 #          
-#          validate(need(results$summarySpaceData()$data, "Geen data beschikbaar"))
+#          newMap <- spreadPlot()
 #          
 #          newMap <- mapFlanders(
 #            regionLevel = results$regionLevel(), 

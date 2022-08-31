@@ -214,7 +214,12 @@ mapSpreadServer(id = "dash_F06",
   type = "F06"
 ) 
 
-barDraagkrachtServer(id = "dash_verkeer", 
+barCostServer(id = "dash_F07_1",
+  data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "verkeersongeluk")),
+  yVar = "count"
+)
+
+barDraagkrachtServer(id = "dash_F07_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
   yVar = "Vraag"
 )
@@ -229,11 +234,18 @@ output$dash_landbouwTitle <- renderUI({
     
   })
 
-barCostServer(id = "dash_landbouw",
-  data = reactive(results$dash_schadeData()@data)
+
+barCostServer(id = "dash_F09_1",
+  data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "landbouw")),
+  yVar = "count"
 )
 
-barDraagkrachtServer(id = "dash_landbouw", 
+barCostServer(id = "dash_F09_2",
+  data = reactive(results$dash_schadeData()@data),
+  yVar = "schadeBedrag"
+)
+
+barDraagkrachtServer(id = "dash_F09_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
   yVar = "Vraag"
 )
@@ -249,7 +261,13 @@ output$dash_priveTitle <- renderUI({
     
   })
 
-barDraagkrachtServer(id = "dash_prive", 
+
+barCostServer(id = "dash_F11_1",
+  data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "private en publieke gebieden")),
+  yVar = "count"
+)
+
+barDraagkrachtServer(id = "dash_F11_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
   yVar = "Vraag"
 )

@@ -215,7 +215,7 @@ loadRawData <- function(
                 "SoortNaam", "wildsoort", "afschot_datum",
                 "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
                 "UTM5", "KboNummer", "WBE_Naam_Toek", "PartijNummer",
-                "perceelPolygon", "x", "y", "schadeBedrag")
+                "perceelPolygon", "x", "y", "schadeBedrag", "typeMelding")
         
         # Match on NISCODE: otherwise mismatch with spatialData locatie
         rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 

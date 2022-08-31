@@ -43,14 +43,6 @@ optionsModuleUI <- function(id,
       if (!is.null(summarizeBy))
         radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
             choices = summarizeBy),
-#          if (showLegend)
-#            selectInput(inputId = ns("legend"), "Legende",
-#                choices = c("<none>" = "none", 
-#                    "Bovenaan rechts" = "topright", 
-#                    "Onderaan rechts" = "bottomright", 
-#                    "Bovenaan links" = "topleft",
-#                    "Onderaan links" = "bottomleft")
-#            ),
       if(showYear)
         uiOutput(ns("year")),
       if (showTime)

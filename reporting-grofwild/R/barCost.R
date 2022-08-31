@@ -33,7 +33,6 @@ barCost <- function(data, summarizeBy = c("SoortNaam", "season")) {
   plotData <- aggregate(summaryData$schadeBedrag, by = summaryData[, c(summarizeBy, "afschotjaar")], 
     FUN = sum, na.rm = TRUE)
   plotData <- plotData[plotData$x != 0, ]
-  # TODO bedrag column will change #325
   
   
   myPlot <- plot_ly(plotData, 

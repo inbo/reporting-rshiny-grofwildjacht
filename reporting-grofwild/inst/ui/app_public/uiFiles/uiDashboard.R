@@ -4,22 +4,6 @@
 ###############################################################################
 
 
-
-verkeerChoices <- c("F06", "F07_3")
-names(verkeerChoices) <- sapply(verkeerChoices, function(x) uiText$title[uiText$plotFunction == x])
-
-landbouwChoices <- c("F09_2", "F09_3")
-names(landbouwChoices) <- sapply(landbouwChoices, function(x) uiText$title[uiText$plotFunction == x])
-
-priveChoices <- c("F11_3")
-names(priveChoices) <- sapply(priveChoices, function(x) uiText$title[uiText$plotFunction == x])
-
-maatschappijChoices <- c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
-names(maatschappijChoices) <- sapply(maatschappijChoices, function(x) uiText$title[uiText$plotFunction == x])
-
-populatieChoices <- c("F16_1", "F17_1", "F17_2", "F17_4", "F18_1")
-names(populatieChoices) <- sapply(populatieChoices, function(x) uiText$title[uiText$plotFunction == x])
-
 tagList(
   
   tags$div(class = "container",
@@ -46,7 +30,7 @@ tagList(
       column(3,
         checkboxGroupInput(inputId = "dash_populatieIndicatoren",
           label = "Populatie",
-          choices = populatieChoices,
+          choices = namedChoices(c("F16_1", "F17_1", "F17_2", "F17_4", "F18_1"), uiText = uiText),
           selected = if (doDebug) c("F16_1", "F17_4")
         )
       ),
@@ -63,26 +47,26 @@ tagList(
       column(3,
         checkboxGroupInput(inputId = "dash_verkeerIndicatoren",
           label = "Verkeer",
-          choices = verkeerChoices,
+          choices = namedChoices(choices = c("F06", "F07_3"), uiText = uiText),
           selected = if (doDebug) c("F06_123")
         ),
         checkboxGroupInput(inputId = "dash_landbouwIndicatoren",
           label = "Landbouw",
-          choices = landbouwChoices,
+          choices = namedChoices(choices = c("F09_2", "F09_3"), uiText = uiText),
           selected = if (doDebug) c("F09_2", "F09_3")
         ),
         checkboxGroupInput(inputId = "dash_priveIndicatoren",
           label = "Private en publieke gebieden",
-          choices = priveChoices
+          choices = namedChoices(choices = c("F11_3"), uiText = uiText)
         )
       ),
       column(3, 
         checkboxGroupInput(inputId = "dash_maatschappijIndicatoren",
           label = "Maatschappelijk draagvlak",
-          choices = maatschappijChoices,
+          choices = namedChoices(choices = c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4", "F14_5"), uiText = uiText),
           selected = if (doDebug) c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4")
         ),
-        )
+      )
     ),
     
     tags$p(tags$em("* Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
@@ -99,7 +83,8 @@ tagList(
       unitChoices = c("Aantal" = "absolute", 
         "Aantal/100ha" = "relative", 
         "Aantal/100ha bos & natuur" = "relativeDekking"),
-      plotDetails = c("biotoop", "biotoopTable")
+      plotDetails = c("biotoop", "biotoopTable"), 
+      showTitle = FALSE
     ),
     
     
@@ -218,7 +203,7 @@ tagList(
     
     # White space at the bottom
     tags$br()
-    
+  
   )
 
 )

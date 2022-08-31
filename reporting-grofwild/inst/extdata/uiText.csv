@@ -44,9 +44,12 @@ trendYearRegionUI,FIGUUR: Evolutie gerapporteerd afschot,,,,,FALSE
 yearlyShotAnimalsUI,FIGUUR: Percentage jaarlijks afschot,"Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode.              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,,FALSE
 welcomeSection,,Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.,,Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris.,Kies hieronder de indicatoren die u wilt weergeven …,FALSE
 F06,Preventieve maatregelen,,,,,TRUE
+F07_1,Meldingen van verkeersongelukken,,,,,TRUE
 F07_3,Kosten van verkeersongelukken,,,,,TRUE
+F09_1,Meldingen van landbouwschade,,,,,TRUE
 F09_2,Kosten van landbouwschade,,,,,TRUE
 F09_3,Inschatting v.d. schade aan landbouw,,,,,TRUE
+F11_1,Schade aan private en publieke gebieden,,,,,TRUE
 F11_3,Schadeomvang aan private en publieke gebieden,,,,,TRUE
 F12_1,Communicatie,,,,,TRUE
 F14_1,Houding v.h. publiek t.o.v. everzwijnen,,,,,TRUE

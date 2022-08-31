@@ -47,17 +47,17 @@ tagList(
       column(3,
         checkboxGroupInput(inputId = "dash_verkeerIndicatoren",
           label = "Verkeer",
-          choices = namedChoices(choices = c("F06", "F07_3"), uiText = uiText),
+          choices = namedChoices(choices = c("F06", "F07_1", "F07_3"), uiText = uiText),
           selected = if (doDebug) c("F06_123")
         ),
         checkboxGroupInput(inputId = "dash_landbouwIndicatoren",
           label = "Landbouw",
-          choices = namedChoices(choices = c("F09_2", "F09_3"), uiText = uiText),
+          choices = namedChoices(choices = c("F09_1", "F09_2", "F09_3"), uiText = uiText),
           selected = if (doDebug) c("F09_2", "F09_3")
         ),
         checkboxGroupInput(inputId = "dash_priveIndicatoren",
           label = "Private en publieke gebieden",
-          choices = namedChoices(choices = c("F11_3"), uiText = uiText)
+          choices = namedChoices(choices = c("F11_1", "F11_3"), uiText = uiText)
         )
       ),
       column(3, 
@@ -147,8 +147,12 @@ tagList(
       mapSpreadUI(id = "dash_F06", title = uiText$title[uiText$plotFunction == "F06"], showLayer = TRUE)
     ),
     
+    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F07_1') > -1", 
+      barCostUI(id = "dash_F07_1", title = uiText$title[uiText$plotFunction == "F07_1"])
+    ),
+    
     conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F07_3') > -1", 
-      barDraagkrachtUI(id = "dash_verkeer", title = uiText$title[uiText$plotFunction == "F07_3"])
+      barDraagkrachtUI(id = "dash_F07_3", title = uiText$title[uiText$plotFunction == "F07_3"])
     ),
     
     
@@ -156,20 +160,30 @@ tagList(
     # Landbouw
     uiOutput("dash_landbouwTitle"),
     
+    conditionalPanel("input.dash_landbouwIndicatoren.indexOf('F09_1') > -1", 
+      barCostUI(id = "dash_F09_1", title = uiText$title[uiText$plotFunction == "F09_1"],
+        summarizeBy = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
+    ),
+    
     conditionalPanel("input.dash_landbouwIndicatoren.indexOf('F09_2') > -1", 
-      barCostUI(id = "dash_landbouw", title = uiText$title[uiText$plotFunction == "F09_2"])
+      barCostUI(id = "dash_F09_2", title = uiText$title[uiText$plotFunction == "F09_2"],
+        summarizeBy = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
     ),
     
     conditionalPanel("input.dash_landbouwIndicatoren.indexOf('F09_3') > -1", 
-      barDraagkrachtUI(id = "dash_landbouw", title = uiText$title[uiText$plotFunction == "F09_3"])
+      barDraagkrachtUI(id = "dash_F09_3", title = uiText$title[uiText$plotFunction == "F09_3"])
     ),
     
     
     # Prive/Publiek
     uiOutput("dash_priveTitle"),
     
+    conditionalPanel("input.dash_priveIndicatoren.indexOf('F11_1') > -1", 
+      barCostUI(id = "dash_F11_1", title = uiText$title[uiText$plotFunction == "F11_1"])
+    ),
+    
     conditionalPanel("input.dash_priveIndicatoren.indexOf('F11_3') > -1", 
-      barDraagkrachtUI(id = "dash_prive", title = uiText$title[uiText$plotFunction == "F11_3"])
+      barDraagkrachtUI(id = "dash_F11_3", title = uiText$title[uiText$plotFunction == "F11_3"])
     ),
     
     # Maatschappelijk draagvlak

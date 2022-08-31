@@ -203,7 +203,7 @@ loadRawData <- function(
                         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
                         "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
                         "PolyLocatieWKT", "x", "y",
-                        "SchadebedragID")]
+                        "geschat_schadebedrag", "type_melding")]
         
         # format date
         rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 

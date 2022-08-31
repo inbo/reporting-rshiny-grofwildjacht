@@ -15,13 +15,16 @@
 tableBackground <- function(data, regionLevel, locaties){
   
   # Subset
-  data <- data[, c("regio", "weg_dens_km")]
+  data <- data[, c("regio", "weg_dens_km", "perimeter_bos_m", "densiteit_bos", "gem_opp_bos_km2")]
   
   # Convert from percentages
-  data[,2] <- round(data[,2]*100, 1)
+  data$weg_dens_km <- round(data$weg_dens_km, 3)
+  data$perimeter_bos_m <- round(data$perimeter_bos_m) 
+  data$gem_opp_bos_km2 <- round(data$gem_opp_bos_km2)
   
   # Set column names
-  colnames(data) <- c("Studiegebied", "Wegdensiteit")
+  colnames(data) <- c("Studiegebied", "Wegdensiteit (km/km\U00B2)", 
+    "Bos perimeter (km/km\U00B2)", "Bos densiteit (#/km\U00B2)", "Bos oppervlakte (km\U00B2)")
   
   return(data)
   

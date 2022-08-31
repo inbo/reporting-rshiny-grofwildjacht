@@ -159,7 +159,7 @@ test_that("F09_2", {
     
   })
 
-# F03_1: Wegdensiteit
+# F03_1,2,3,4: Wegdensiteit
 
 test_that("F03_1", {
     

@@ -72,18 +72,16 @@ tagList(
     
     tags$p(tags$em("\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
     
-    actionButton(inputId = "dash_submit", label = "Maak dashboard"),
-    actionButton(inputId = "dash_createReport", label = "Maak pdf"),
+#    actionButton(inputId = "dash_submit", label = "Maak dashboard"),
+#    actionButton(inputId = "dash_createReport", label = "Maak pdf"),
     
     tags$hr(),
     
     # Achtergrond
     tags$h2(toupper("Achtergrondinformatie")),
-    mapFlandersUI(id = "dash", showRegion = FALSE, showCombine = FALSE,
-      type = "dash",
-      unitChoices = c("Aantal" = "absolute", 
-        "Aantal/100ha" = "relative", 
-        "Aantal/100ha bos & natuur" = "relativeDekking"),
+    mapFlandersUI(id = "dash_background", showRegion = FALSE, showCombine = FALSE,
+      type = "empty",
+      showSource = FALSE,
       plotDetails = c("biotoop", "biotoopTable"), 
       showTitle = FALSE
     ),
@@ -220,5 +218,4 @@ tagList(
     tags$br()
   
   )
-
 )

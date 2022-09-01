@@ -31,7 +31,8 @@ results$dash_spatialData <- reactive({
 
 output$dash_region <- renderUI({
     
-    req(input$dash_regionLevel != "flanders")
+    if (input$dash_regionLevel == "flanders")
+      return(NULL)
     
     regionChoices <- sort(unique(results$dash_spatialData()$NAAM))
     
@@ -90,7 +91,7 @@ observeEvent(input$dash_submit, {
 
 ## MAP ##
 
-mapFlandersServer(id = "dash",
+mapFlandersServer(id = "dash_background",
   defaultYear = defaultYear,
   species = results$dash_species,
   type = "empty",

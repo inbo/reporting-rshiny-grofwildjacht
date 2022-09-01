@@ -596,7 +596,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Create data for map, summary of ecological data, given year, species and regionLevel
       results$summarySpaceData <- reactive({
           
-          validate(need(input$year, "Gelieve jaar te selecteren"))
+          if (type != "empty")
+            validate(need(input$year, "Gelieve jaar te selecteren"))
+          
+          req(!is.null(results$regionLevel()))
           
           createSpaceData(
             data = geoData(), 
@@ -672,6 +675,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             allSpatialData = allSpatialData,
             summaryData = results$summarySpaceData()$data,
             colorScheme = results$colorScheme(),
+            addGlobe = !hideGlobeDefault,
             addBorders = !(id %in% c("F17_1", "F17_2")) 
           )          
           
@@ -1108,7 +1112,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' @import shiny
 #' @export
 mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE, 
-  showCombine = TRUE, type = c("grofwild", "wildschade", "wbe", "dash"),
+  showCombine = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
     "Provincie" = "provinces", 
@@ -1142,7 +1146,7 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
       ),
       
       fixedRow(
-        column(6, uiOutput(ns("year"))),
+        column(6, if (type != "empty") uiOutput(ns("year"))),
         column(6, if (type %in% "wbe") 
             selectInput(inputId = ns("legend"), label = "Legende",
               choices = c(
@@ -1150,11 +1154,11 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
                 "Onderaan rechts" = "bottomright",
                 "Bovenaan links" = "topleft",
                 "Onderaan links" = "bottomleft",
-                "<geen>" = "none")) else if (type != "dash")
+                "<geen>" = "none")) else if (!type %in% c("dash", "empty"))
             uiOutput(ns("period")))
       ),
 
-      if (!type %in% c("wbe", "dash"))
+      if (!type %in% c("wbe", "dash", "empty"))
       fixedRow(
         column(12/(2+showSource),
           selectInput(inputId = ns("legend"), label = "Legende (kaart)",

@@ -40,7 +40,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     data$Antwoord <- droplevels(data$Antwoord)  
     nExcept <- sum(c("Onbestaand", "Geen mening", "Geen idee") %in% levels(data$Antwoord))
     myColors <- c(
-      brewer.pal(n = length(levels(data$Antwoord)) - nExcept, name = "RdBu"), 
+      rev(brewer.pal(n = length(levels(data$Antwoord)) - nExcept, name = "RdBu")), 
       rev(brewer.pal(n = 3, name = "Greys"))
     )[1:length(levels(data$Antwoord))]
     

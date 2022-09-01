@@ -10,12 +10,13 @@ mapFlandersServer(
   species,
   currentWbe = NULL,
   hideGlobeDefault = TRUE,
-  type = c("grofwild", "wildschade", "wbe", "dash"),
+  type = c("grofwild", "wildschade", "wbe", "empty"),
   geoData,
   biotoopData = NULL,
   allSpatialData,
-  regionLevel,
-  locaties
+  regionLevel = reactive(NULL),
+  locaties = reactive(NULL),
+  countVariable = NULL
 )
 }
 \arguments{
@@ -40,11 +41,14 @@ default value is NULL}
 
 \item{allSpatialData}{list with SpatialPolygonsDataFrame}
 
-\item{regionLevel}{reactive, value of regionLevel if chosen outside module;
-only relevant for \code{type} "dash"}
+\item{regionLevel}{reactive, pre-selected value of regionLevel chosen outside module;
+to draw black borders and zoom}
 
-\item{locaties}{reactive, value of region if chosen outside module;
-only relevant for \code{type} "dash"}
+\item{locaties}{reactive, pre-selected value of region chosen outside module;
+to draw black borders and zoom}
+
+\item{countVariable}{character, column name in \code{data} that contains counts;
+if NULL then each row in the data contains 1 count}
 }
 \value{
 no return value

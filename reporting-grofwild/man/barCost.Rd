@@ -4,12 +4,14 @@
 \alias{barCost}
 \title{Function to generate stacked bar plot for kost landbouwschade (F09_2)}
 \usage{
-barCost(data, summarizeBy = c("SoortNaam", "season"))
+barCost(data, summarizeBy = NULL, yVar = c("schadeBedrag", "count"))
 }
 \arguments{
 \item{data}{data.frame with schadeData}
 
 \item{summarizeBy}{character, variable in \code{data} to summarize on}
+
+\item{yVar}{character, column in \code{plotData} for y-axis}
 }
 \value{
 list with plotly object and data.frame 

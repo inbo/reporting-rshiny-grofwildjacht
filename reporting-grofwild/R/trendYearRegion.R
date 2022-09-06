@@ -318,10 +318,12 @@ trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, loc
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - ui side
 #' 
 #' @template moduleUI
+#' @param title character, plot title in the app, overrides the automatic title
+#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @author mvarewyck
 #' @export
-trendYearRegionUI <- function(id, uiText) {
+trendYearRegionUI <- function(id, uiText, title = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -330,8 +332,8 @@ trendYearRegionUI <- function(id, uiText) {
   tagList(
     
     actionLink(inputId = ns("linkYearRegion"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearRegion % 2 == 1", ns = ns,
+      label = h3(HTML(if (!is.null(title)) title else uiText$title))),
+    conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
       fixedRow(
         
         column(4, 

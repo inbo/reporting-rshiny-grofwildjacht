@@ -276,24 +276,7 @@ percentCollected <- function(nAvailable, nTotal, text) {
 }
 
 
-#' Create named choices for the dashboard indicators
-#' @param choices character vector, plotFunction names in \code{uiText} 
-#' for which to create named choices 
-#' @param uiText data.frame as loaded by \code{read.csv(file = file.path(dataDir, "uiText.csv"))}
-#' @return named character vector
-#' 
-#' @author mvarewyck
-#' @export
-namedChoices <- function(choices, uiText) {
-  
-  names(choices) <- sapply(choices, function(x) {
-      matchId <- which(uiText$plotFunction == x)
-      paste(uiText$title[matchId], if (uiText$isLimited[matchId]) "*")
-    })
-  
-  choices
-  
-}
+
 
 #' get path of report available in the package
 #' @return string with path of report

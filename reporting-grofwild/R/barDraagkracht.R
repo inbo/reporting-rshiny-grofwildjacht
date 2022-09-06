@@ -23,6 +23,7 @@
 barDraagkracht <- function(data, groupVariable = NULL, 
   xVar = "percentage", yVar = NULL, width = 1000, height = NULL) {
   
+  
   if (xVar == "percentage") {
     
     data$percentage <- as.numeric(data$percentage)
@@ -211,7 +212,7 @@ barDraagkrachtUI <- function(id, title, subGroups = NULL) {
     
     actionLink(inputId = ns("linkDraagkracht"),
       label = h3(HTML(paste("FIGUUR:", title)))),
-    conditionalPanel("input.linkDraagkracht % 2 == 1", ns = ns,
+    conditionalPanel("input.linkDraagkracht % 2 == 0", ns = ns,
       
       if (!is.null(subGroups))
         wellPanel(

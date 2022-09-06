@@ -141,10 +141,12 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable) {
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - UI side
 #' @template moduleUI
+#' @param title character, plot title in the app, overrides the automatic title
+#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @author mvarewyck
 #' @export
-countAgeGroupUI <- function(id, uiText, groupVariable) {
+countAgeGroupUI <- function(id, uiText, title = NULL, groupVariable, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -153,8 +155,8 @@ countAgeGroupUI <- function(id, uiText, groupVariable) {
   tagList(
     
     actionLink(inputId = ns("linkAgeGroup"),
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkAgeGroup % 2 == 1", ns = ns,
+      label = h3(HTML(if (!is.null(title)) title else uiText$title))),
+    conditionalPanel(paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         

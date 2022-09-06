@@ -421,8 +421,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           req(nrow(geoData()) > 0)
           
           if (type == "grofwild" && req(input$regionLevel) %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
-            2014 else
-            min(geoData()$afschotjaar)          
+            2014 else 
+            min(geoData()$afschotjaar)
           
         })
       
@@ -474,7 +474,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       
       output$year <- renderUI({
           
-          req(geoData())
+          req(nrow(geoData()) > 0)
           
           div(class = "sliderBlank", 
             sliderInput(inputId = ns("year"), 
@@ -756,7 +756,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           
           req(type %in% c("wbe", "empty") | !is.null(locaties()))
           
-          coordData <- ggplot2::fortify(selectedPolygons())
+          coordData <- suppressMessages(ggplot2::fortify(selectedPolygons()))
           centerView <- c(range(coordData$long), range(coordData$lat))
           
           leafletProxy("spacePlot", data = spatialData()) %>%

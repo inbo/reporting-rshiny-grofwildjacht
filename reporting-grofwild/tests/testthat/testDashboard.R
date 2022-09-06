@@ -221,7 +221,7 @@ test_that("F07_1, F09_1", "F11_1", {
 # F07_3: Inschatting schade
 test_that("F07_3, F09_3, F11_3", {
     
-    inschattingData <- fread(file.path(dataDir, "Data_inschatting.csv"))
+    inschattingData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
     
     myResult <- barDraagkracht(data = inschattingData[Vraag != "populatie_evolutie", ], yVar = "Vraag")
     
@@ -311,6 +311,7 @@ test_that("F14_5", {
   })
 
 
+
 test_that("F18_1", {
     
     plotData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
@@ -324,7 +325,7 @@ test_that("F18_1", {
   })
 
 
-
+# Toekomstig verspreidingsgebied
 test_that("F17_4", {
     
     myMap <- mapSpread(
@@ -348,7 +349,7 @@ test_that("F17_4", {
     selectedPolygons <- subset(tmpSpatial, 
       tmpSpatial$NAAM %in% locaties)
     
-    coordData <- ggplot2::fortify(selectedPolygons)
+    coordData <- suppressMessages(ggplot2::fortify(selectedPolygons))
     centerView <- c(range(coordData$long), range(coordData$lat))
     
     myMap <- myMap %>%

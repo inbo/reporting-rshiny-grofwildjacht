@@ -239,7 +239,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       
       output$spreadPlot <- renderLeaflet({
           
-          coordData <- ggplot2::fortify(selectedPolygons())
+          coordData <- suppressMessages(ggplot2::fortify(selectedPolygons()))
           centerView <- c(range(coordData$long), range(coordData$lat))
           
           modelColors <- attr(spreadPlot(), "modelColors")
@@ -475,7 +475,7 @@ mapSpreadUI <- function(id, title, showLayer = FALSE) {
     
     actionLink(inputId = ns("linkSpread"),
       label = h3(HTML(paste("FIGUUR:", title)))),
-    conditionalPanel("input.linkSpread % 2 == 1", ns = ns,
+    conditionalPanel("input.linkSpread % 2 == 0", ns = ns,
       
       wellPanel(
         

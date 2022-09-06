@@ -9,7 +9,7 @@ mapFlandersUI(
   showRegion = TRUE,
   showSource = FALSE,
   showCombine = TRUE,
-  type = c("grofwild", "wildschade", "wbe", "dash"),
+  type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   regionChoices = c(Vlaanderen = "flanders", Provincie = "provinces", Faunabeheerzones
     = "faunabeheerzones", Gemeente = "communes", `Gemeente per Faunabeheerzone` =
     "fbz_gemeentes", `5x5 UTM` = "utm5"),

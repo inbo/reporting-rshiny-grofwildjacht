@@ -615,7 +615,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
     
   # Prevent that plotly images are squeezed
-  outputOptions(output, "plot", suspendWhenHidden = FALSE)
+#  outputOptions(output, "plot", suspendWhenHidden = FALSE)
     
   output$accuracy <- flexdashboard::renderGauge({
       

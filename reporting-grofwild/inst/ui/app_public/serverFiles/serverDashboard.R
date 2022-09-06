@@ -14,6 +14,106 @@ inschattingData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
 
 results$dash_species <- reactive("Wild zwijn")
 
+
+
+## INDICATOR SELECTION ##
+
+output$dash_populatieIndicatoren <- reactive({
+    
+    tmp <- dashboardChoicesServer(
+      id = "dash_populatie", 
+      choices = populatieChoices,
+      uiText = uiText, 
+      regionLevel = reactive(input$dash_regionLevel)
+    )
+    if (is.null(tmp()))
+      "" else
+      tmp()
+    
+  })
+outputOptions(output, "dash_populatieIndicatoren", suspendWhenHidden = FALSE)
+
+
+output$dash_jachtIndicatoren <- reactive({
+    
+    tmp <- dashboardChoicesServer(
+      id = "dash_jacht",
+      choices = jachtChoices,
+      uiText = uiText,
+      regionLevel = reactive(input$dash_regionLevel)
+    )
+    if (is.null(tmp()))
+      "" else 
+      tmp()
+    
+  })    
+outputOptions(output, "dash_jachtIndicatoren", suspendWhenHidden = FALSE)
+
+
+output$dash_verkeerIndicatoren <- reactive({
+    
+    tmp <- dashboardChoicesServer(
+      id = "dash_verkeer",
+      choices = verkeerChoices,
+      uiText = uiText,
+      regionLevel = reactive(input$dash_regionLevel)
+    )
+    if (is.null(tmp()))
+      "" else 
+      tmp()
+    
+  })
+outputOptions(output, "dash_verkeerIndicatoren", suspendWhenHidden = FALSE)
+
+
+output$dash_landbouwIndicatoren <- reactive({
+    
+    tmp <- dashboardChoicesServer(
+      id = "dash_landbouw",
+      choices = landbouwChoices, 
+      uiText = uiText,
+      regionLevel = reactive(input$dash_regionLevel)
+    )
+    if (is.null(tmp()))
+      "" else 
+      tmp()
+    
+  })
+outputOptions(output, "dash_landbouwIndicatoren", suspendWhenHidden = FALSE)
+
+
+output$dash_priveIndicatoren <- reactive({
+    
+    tmp <- dashboardChoicesServer(
+      id = "dash_prive",
+      choices = priveChoices, 
+      uiText = uiText,
+      regionLevel = reactive(input$dash_regionLevel)
+    )
+    if (is.null(tmp()))
+      "" else 
+      tmp()
+    
+  })
+outputOptions(output, "dash_priveIndicatoren", suspendWhenHidden = FALSE)
+
+
+output$dash_maatschappijIndicatoren <- reactive({
+    
+    tmp <- dashboardChoicesServer(
+      id = "dash_maatschappij",
+      choices = maatschappijChoices, 
+      uiText = uiText,
+      regionLevel = reactive(req(input$dash_regionLevel))
+    )
+    if (is.null(tmp()))
+      "" else 
+      tmp()
+    
+  })    
+outputOptions(output, "dash_maatschappijIndicatoren", suspendWhenHidden = FALSE)
+
+
 ## FILTER ##
 
 results$dash_spatialData <- reactive({
@@ -53,7 +153,7 @@ results$dash_ecoData <- reactive({
         "provinces" = "provincie", 
         "faunabeheerzones" = "FaunabeheerZone",
         "communes" = "gemeente_afschot_locatie")
-    
+      
       keepIds <- everGeoData$ID[everGeoData[[filterVariable]] %in% input$dash_locaties]
       everEcoData[everEcoData$ID %in% keepIds, ]
       
@@ -111,14 +211,6 @@ results$dash_timeRange <- reactive(range(everEcoData$afschotjaar))
 
 # Populatie 
 
-output$dash_populatieTitle <- renderUI({
-    
-    req(input$dash_populatieIndicatoren)
-    
-    h2(toupper("Populatie"))
-    
-  })
-
 countAgeGroupServer(
   id = "dash_reproductie",
   data = reactive({
@@ -172,14 +264,6 @@ barDraagkrachtServer(id = "dash_F18_1",
 
 # Jacht
 
-output$dash_jachtTitle <- renderUI({
-    
-    req(input$dash_jachtIndicatoren)
-    
-    h2(toupper("Jacht"))
-    
-  })
-
 trendYearRegionServer(id = "dash",
   data = results$dash_ecoData, 
   species = results$dash_species,
@@ -199,16 +283,7 @@ countYearAgeServer(id = "dash",
 
 # Verkeer
 
-output$dash_verkeerTitle <- renderUI({
-    
-    req(input$dash_verkeerIndicatoren)
-    
-    h2(toupper("Verkeer"))
-    
-  })
-
-
-mapSpreadServer(id = "dash_F06",
+mapSpreadServer(id = "dash_F06_1",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   allSpatialData = spatialData,
@@ -225,16 +300,8 @@ barDraagkrachtServer(id = "dash_F07_3",
   yVar = "Vraag"
 )
 
+
 # Landbouw
-
-output$dash_landbouwTitle <- renderUI({
-    
-    req(input$dash_landbouwIndicatoren)
-    
-    h2(toupper("Landbouw"))
-    
-  })
-
 
 barCostServer(id = "dash_F09_1",
   data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "landbouw")),
@@ -254,17 +321,9 @@ barDraagkrachtServer(id = "dash_F09_3",
 
 # Prive/Publiek
 
-output$dash_priveTitle <- renderUI({
-    
-    req(input$dash_priveIndicatoren)
-    
-    h2(toupper("Private en publieke gebieden"))
-    
-  })
-
-
 barCostServer(id = "dash_F11_1",
-  data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "private en publieke gebieden")),
+  data = reactive(subset(results$dash_schadeData()@data, 
+      typeMelding %in% "private en publieke gebieden")),
   yVar = "count"
 )
 
@@ -275,14 +334,6 @@ barDraagkrachtServer(id = "dash_F11_3",
 
 
 # Maatschappelijke draagkracht
-
-output$dash_maatschappijTitle <- renderUI({
-    
-    req(input$dash_maatschappijIndicatoren)
-    
-    h2(toupper("Maatschappelijk draagvlak"))
-    
-  })
 
 barDraagkrachtServer(id = "dash_F12_1",
   data = reactive(fread(file.path(draagkrachtDir, "F12_1_data.csv"))),

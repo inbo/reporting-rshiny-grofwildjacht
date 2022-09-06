@@ -29,6 +29,7 @@ RUN R -e "install.packages(c('gert', 'usethis'), repos='https://cloud.r-project.
 
 # install imports of reporting-grofwild app that are not on cloud
 RUN R -e "install.packages(c('shiny', 'sp', 'plyr', 'devtools', 'methods', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr'), repos = 'https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('data.table', 'sf'), repos = 'https://cloud.r-project.org/')"
 RUN R -e "devtools::install_version('plotly', version = '4.9.2.1', repos = 'http://cran.us.r-project.org')"
 RUN R -e "devtools::install_github('inbo/INBOtheme')"
 RUN R -e "install.packages('https://cran.r-project.org/src/contrib/Archive/DT/DT_0.12.tar.gz', repos = NULL, type = 'source')"

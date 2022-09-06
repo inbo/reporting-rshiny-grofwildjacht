@@ -1,66 +1,66 @@
-plotFunction,title,wild,schade,wbe,dash,isLimited
+plotFunction,title,wild,schade,wbe,dash
 ageGenderLowerJawUI,FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier),"Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
 Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.",,"Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
-Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.",,FALSE
-barCostUI,FIGUUR: Kosten schade,,,,,FALSE
+Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.",
+barCostUI,FIGUUR: Kosten schade,,,,
 bioindicatorSection,Bio-indicatoren,"Bio-indicatoren zijn ecologische parameters die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
-{isRee}Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen. ",,,,FALSE
-boxAgeWeightUI,FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier),"Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,,FALSE
+{isRee}Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen. ",,,
+boxAgeWeightUI,FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier),"Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,
 boxRealisedShotUI,FIGUUR: Percentage gerealiseerd afschot per jaar,"Het percentage geeft de graad van verwezenlijking weer (verwezenlijkt / toegekend afschot).
-Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,,,FALSE
-countAgeCheekUI,FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier,"Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.",,"Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.",,FALSE
+Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,,
+countAgeCheekUI,FIGUUR: Leeftijdscategorie op basis van onderkaak & meldingsformulier,"Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.",,"Vergelijking tussen de leeftijd zoals aangeduid op het meldingsformulier en de leeftijd bepaald door het INBO op basis van een ingezamelde onderkaak, voor die dieren waarvoor beide gegevens beschikbaar zijn.",
 countAgeGenderUI,FIGUUR: Geslachtsverdeling binnen het afschot per leeftijdscategorie,"Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode.
 Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is wordt deze gebruikt anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt. ",,"Geslachtsverdeling per leeftijdscategorie voor de geselecteerde periode.
-Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is wordt deze gebruikt anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt. ",,FALSE
-countAgeGroupUI-reproductiestatus,FIGUUR: Deelname aan de reproductie,,,,,FALSE
+Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is wordt deze gebruikt anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt. ",
+countAgeGroupUI-reproductiestatus,FIGUUR: Deelname aan de reproductie,,,,
 countEmbryosUI,FIGUUR: Gerapporteerd aantal embryo's voor vrouwelijke {wildsoort} per jaar,"Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld.
 </br><i>Opmerking: Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.</i>",,"Evolutie van het gerapporteerd aantal embryo's per geschoten dier doorheen de geselecteerde jaren voor de gekozen regio en types. Vóór 2014 kon nul embryo's niet ingevuld worden op het meldingsformulier, waardoor er geen onderscheid gemaakt kon worden tussen niet drachtig en niet ingevuld.
-</br><i>Opmerking: Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.</i>",,FALSE
+</br><i>Opmerking: Observaties met meer dan 3 embryo's zijn niet opgenomen in de figuur.</i>",
 countYearAgeUI,FIGUUR: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak),"Evolutie van de verdeling van het afschot over de verschillende leeftijdscategorieën doorheen de jaren op basis van de ingezamelde onderkaken.
-</br><i>Opmerking: Voor mannelijke reeën zijn de leeftijdscategorieën 'jongvolwassen' en 'volwassen' uitgesloten.</i>",,,,FALSE
-countYearProvinceUI,FIGUUR: Gerapporteerd aantal per jaar en per regio,Het gerapporteerd aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totaal aantal voor dat jaar weer).,,,,FALSE
-countYearShotUI-jachtmethode_comp,FIGUUR: Afschot per jachtmethode,Aandeel van afschot per jachtmethode over de jaren heen.,,Aandeel van afschot per jachtmethode over de jaren heen.,,FALSE
-countYearShotUI-leeftijd_comp,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.,,FALSE
-mapSchadeUI,FIGUUR: Schademeldingen,,,,,FALSE
-mapSpreadUI,FIGUUR: Verspreidingsgebied,,,,,FALSE
+</br><i>Opmerking: Voor mannelijke reeën zijn de leeftijdscategorieën 'jongvolwassen' en 'volwassen' uitgesloten.</i>",,,
+countYearProvinceUI,FIGUUR: Gerapporteerd aantal per jaar en per regio,Het gerapporteerd aantal geschoten dieren per jaar in de verschillende provincies voor de geselecteerde periode (cijfers geven het totaal aantal voor dat jaar weer).,,,
+countYearShotUI-jachtmethode_comp,FIGUUR: Afschot per jachtmethode,Aandeel van afschot per jachtmethode over de jaren heen.,,Aandeel van afschot per jachtmethode over de jaren heen.,
+countYearShotUI-leeftijd_comp,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.,
+mapSchadeUI,FIGUUR: Schademeldingen,,,,
+mapSpreadUI,FIGUUR: Verspreidingsgebied,,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.
 Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.
-Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,FALSE
+Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels.",
 plotBioindicatorUI-onderkaaklengte,FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier),"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).
 </br>Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).
-</br>Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,FALSE
+</br>Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",
 plotBioindicatorUI-ontweid_gewicht,FIGUUR: Gewicht per jaar,"Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types.
 </br><i>Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur.</i>",,"Evolutie van de gerapporteerde leeggewichten (met 95% betrouwbaarheidsinterval) doorheen de geselecteerde jaren voor de gekozen regio en types.
-</br><i>Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur.</i>",,FALSE
+</br><i>Opmerking: Observaties met leeggewicht < 5kg of > 25kg zijn niet opgenomen in de figuur.</i>",
 tableProvinceUI,TABEL: Gerapporteerd afschot per regio en per leeftijdscategorie,"Het gerapporteerd aantal geschoten dieren per provincie en per leeftijdscategorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren.
 Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.
-</br><i> LET OP! Wanneer de trend oranje of rood gekleurd is, is de trend gebaseerd op minder dan 50 geschoten dieren en is de berekende waarde minder betekenisvol.</i>",,,,FALSE
+</br><i> LET OP! Wanneer de trend oranje of rood gekleurd is, is de trend gebaseerd op minder dan 50 geschoten dieren en is de berekende waarde minder betekenisvol.</i>",,,
 tableSpeciesUI,TABEL: Gerapporteerd afschot,,,"Het gerapporteerd aantal geschoten dieren per gekozen categorie voor het geselecteerde jaar in combinatie met de verandering ten opzichte van de voorbije 1, 5 en 10 jaren.
 Indien de categorie bij INBO gekend is, wordt deze gebruikt, anders wordt de categorie volgens het meldingsformulier bepaald.
-</br><i> LET OP! Wanneer de trend oranje of rood gekleurd is, is de trend gebaseerd op minder dan 10 geschoten dieren en is de berekende waarde minder betekenisvol. </i>",,FALSE
-trendYearRegionUI,FIGUUR: Evolutie gerapporteerd afschot,,,,,FALSE
-yearlyShotAnimalsUI,FIGUUR: Percentage jaarlijks afschot,"Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode.              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,,FALSE
-welcomeSection,,Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.,,Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris.,Kies hieronder de indicatoren die u wilt weergeven,FALSE
-F05_1,Absoluut afschot,,,,,FALSE
-F05_2,Samenstelling afschot,,,,,FALSE
-F06,Preventieve maatregelen,,,,,TRUE
-F07_1,Meldingen van verkeersongelukken,,,,,TRUE
-F07_3,Kosten van verkeersongelukken,,,,,TRUE
-F09_1,Meldingen van landbouwschade,,,,,TRUE
-F09_2,Kosten van landbouwschade,,,,,TRUE
-F09_3,Inschatting v.d. schade aan landbouw,,,,,TRUE
-F11_1,Schade aan private en publieke gebieden,,,,,TRUE
-F11_3,Schadeomvang aan private en publieke gebieden,,,,,TRUE
-F12_1,Communicatie,,,,,TRUE
-F14_1,Houding v.h. publiek t.o.v. everzwijnen,,,,,TRUE
-F14_2,Aantrekkingskracht v. everzwijnengebied,,,,,TRUE
-F14_3,Inschatting impacts,,,,,TRUE
-F14_4,Draagkracht voor de beheersmaatregelen,,,,,TRUE
-F14_5,Beheer,,,,,TRUE
-F16_1,Deelname aan de reproductie,,,,,TRUE
-F17_1,Verspreidingsgebied a.d.h.v. afschotgegevens,,,,,FALSE
-F17_2,Verspreidingsgebied a.d.h.v. waarnemingen.be,,,,,FALSE
-F17_4,Toekomstig verspreidingsgebied,,,,,FALSE
-F18_1,Inschatting v.d. populatiegroei,,,,,TRUE
+</br><i> LET OP! Wanneer de trend oranje of rood gekleurd is, is de trend gebaseerd op minder dan 10 geschoten dieren en is de berekende waarde minder betekenisvol. </i>",
+trendYearRegionUI,FIGUUR: Evolutie gerapporteerd afschot,,,,
+yearlyShotAnimalsUI,FIGUUR: Percentage jaarlijks afschot,"Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode.              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,
+welcomeSection,,Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.,,Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris.,Kies hieronder de indicatoren die u wilt weergeven
+F05_1,Absoluut afschot,,,,
+F05_2,Samenstelling afschot,,,,
+F06_1,Preventieve maatregelen,,,,
+F07_1,Meldingen van verkeersongelukken,,,,
+F07_3,Kosten van verkeersongelukken,,,,
+F09_1,Meldingen van landbouwschade,,,,
+F09_2,Kosten van landbouwschade,,,,
+F09_3,Inschatting v.d. schade aan landbouw,,,,
+F11_1,Schade aan private en publieke gebieden,,,,
+F11_3,Schadeomvang aan private en publieke gebieden,,,,
+F12_1,Communicatie,,,,
+F14_1,Houding v.h. publiek t.o.v. everzwijnen,,,,
+F14_2,Aantrekkingskracht v. everzwijnengebied,,,,
+F14_3,Inschatting impacts,,,,
+F14_4,Draagkracht voor de beheersmaatregelen,,,,
+F14_5,Beheer,,,,
+F16_1,Deelname aan de reproductie,,,,
+F17_1,Verspreidingsgebied a.d.h.v. afschotgegevens,,,,
+F17_2,Verspreidingsgebied a.d.h.v. waarnemingen.be,,,,
+F17_4,Toekomstig verspreidingsgebied,,,,
+F18_1,Inschatting v.d. populatiegroei,,,,

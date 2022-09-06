@@ -137,3 +137,21 @@ if (!all(uiCheck %in% ls("package:reportingGrofwild")))
   warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
     paste(uiCheck[!uiCheck %in% ls("package:reportingGrofwild")], collapse = ","))
 rm(uiFunctions, uiCheck)
+
+# Availability (Dashboard page)
+availableData <- read.csv(file.path(dataDir, "Data_beschikbaarheid.csv"))
+names(availableData)[3:6] <- c("flanders", "provinces", "communes", "faunabeheerzones")
+
+uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code")
+
+
+
+# Choices for Dashboard
+## Ideally these are read from availableData
+populatieChoices <- c("F16_1", "F17_1", "F17_2", "F17_4", "F18_1")
+jachtChoices <- c("F05_1", "F05_2")
+verkeerChoices <- c("F06_1", "F07_1", "F07_3")
+landbouwChoices <- c("F09_1", "F09_2", "F09_3")
+priveChoices <- c("F11_1", "F11_3")
+maatschappijChoices <- c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
+

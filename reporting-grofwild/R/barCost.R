@@ -130,7 +130,7 @@ barCostUI <- function(id, title, summarizeBy = NULL) {
     
     actionLink(inputId = ns("linkBarCost"), 
       label = h3(HTML(paste("FIGUUR:", title)))),
-    conditionalPanel("input.linkBarCost % 2 == 1", ns = ns,
+    conditionalPanel("input.linkBarCost % 2 == 0", ns = ns,
       
       fixedRow(
         

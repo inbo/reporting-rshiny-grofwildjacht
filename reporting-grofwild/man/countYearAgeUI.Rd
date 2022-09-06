@@ -4,14 +4,18 @@
 \alias{countYearAgeUI}
 \title{Shiny module for creating the plot \code{\link{countYearAge}} - UI side}
 \usage{
-countYearAgeUI(id, uiText, showRegion = TRUE)
+countYearAgeUI(id, uiText, title = NULL, showRegion = TRUE, doHide = TRUE)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
+\item{title}{character, plot title in the app, overrides the automatic title}
+
 \item{showRegion}{boolean, whether to show the region filter; default is TRUE}
+
+\item{doHide}{boolean, whether to initially hide the plot; default TRUE}
 }
 \value{
 HTML object

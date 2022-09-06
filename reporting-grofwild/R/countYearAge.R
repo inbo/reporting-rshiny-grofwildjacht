@@ -207,10 +207,12 @@ countYearAgeServer <- function(id, data, timeRange) {
 #' Shiny module for creating the plot \code{\link{countYearAge}} - UI side
 #' @template moduleUI
 #' @param showRegion boolean, whether to show the region filter; default is TRUE
+#' @param title character, plot title in the app, overrides the automatic title
+#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @author mvarewyck
 #' @export
-countYearAgeUI <- function(id, uiText, showRegion = TRUE) {
+countYearAgeUI <- function(id, uiText, title = NULL, showRegion = TRUE, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -219,8 +221,8 @@ countYearAgeUI <- function(id, uiText, showRegion = TRUE) {
   tagList(
     
     actionLink(inputId = ns("linkYearAge"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearAge % 2 == 1", ns = ns,
+      label = h3(HTML(if (!is.null(title)) title else uiText$title))),
+    conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         

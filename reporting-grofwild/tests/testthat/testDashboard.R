@@ -330,10 +330,14 @@ test_that("F18_1", {
 # Toekomstig verspreidingsgebied
 test_that("F17_4", {
     
-    myMap <- mapSpread(
+    spreadShape <- loadSpreadData(
       spatialDir = "~/git/reporting-rshiny-grofwildjacht/dashboard/input/spatial",
-      spatialLevel = c("pixels", "municipalities")[1],
-      unit = c("model_EP", "model_OH", "risk_EP", "risk_OH")[3],
+      spatialLevel = c("pixels", "municipalities")[2],
+      unit = c("model_EP", "model_OH", "risk_EP", "risk_OH")[3]
+    )
+    
+    myMap <- mapSpread(
+      spreadShape = spreadShape, 
       legend = "bottomright",
       addGlobe = TRUE
     )

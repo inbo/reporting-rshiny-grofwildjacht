@@ -15,6 +15,9 @@ dashboardChoices(id, choices, selected = NULL, uiText)
 
 \item{uiText}{data.frame}
 }
+\value{
+named character vector
+}
 \description{
 List choices for indicatoren - UI side
 }

@@ -480,3 +480,78 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   )
   
 }
+
+
+#' Load data for \code{mapSpread}
+#' @param spatialDir path to directory with spatial files
+#' @param spatialLevel character, for which spatial level to create the map;
+#' should be one of \code{c("pixels", "municipalities")}
+#' @param unit character, characteristic that defines the polygons and color coding
+#' should be one of \code{c("model_EP", "model_OH", "risk_EP", "risk_OH")}
+
+#' @return SpatialPolygonsDataFrame
+#' 
+#' @author mvarewyck
+#' @export
+loadSpreadData <- function(
+  spatialDir = system.file("extdata", package = "reporting-grofwild"), 
+  spatialLevel = c("pixels", "municipalities"), 
+  unit = c("model_EP", "model_OH", "risk_EP", "risk_OH")) {
+  
+  spatialLevel <- match.arg(spatialLevel)
+  unit <- match.arg(unit)
+  
+  spatialFile <- switch(spatialLevel,
+    # pixels
+    pixels = "Pixels_ModelOutput_toekomst_verspr_2022.shp",
+    # gemeente
+    municipalities = "Municipalities_ModelOutput_toekomst_verspr_2022.shp"
+  )
+  
+  unitChoices <- if (spatialLevel == "pixels")
+      c("Mdl_EP_", "Mdl_OH_", "Rsc_ExP", "Rsc_OpH") else
+      c("M_EP_A_", "M_OH_A_", "M_EP__G_", "M_OH__G_")
+  unitVariable <- unitChoices[match(unit, c("model_EP", "model_OH", "risk_EP", "risk_OH"))]
+  
+  baseMap <- rgdal::readOGR(file.path(spatialDir, spatialFile)) %>%
+    sp::spTransform(CRS("+proj=longlat +datum=WGS84"))
+  
+  
+  # Modify data
+  ## Risico
+  riskLevels <- c("Hoog risico", "Gemiddeld risico", "Laag risico", "Verwaarloosbaar risico") 
+  if (spatialLevel == "pixels") {
+    baseMap$Rsc_ExP <- factor(baseMap$Rsc_ExP, levels = riskLevels)
+    baseMap$Rsc_OpH <- factor(baseMap$Rsc_OpH, levels = riskLevels)
+  } else {
+    baseMap$M_EP__G_ <- factor(baseMap$M_EP__G_, levels = riskLevels)
+    baseMap$M_OH__G_ <- factor(baseMap$M_OH__G_, levels = riskLevels)
+  }
+  
+  # Outcome
+  modelShape <- subset(baseMap, !is.na(baseMap@data[, unitVariable]))
+  modelShape[[unitVariable]] <- as.factor(modelShape[[unitVariable]])
+  
+  modelShape$outcome <- modelShape[[unitVariable]]
+  
+  # Start
+  startVariable <- switch(unitVariable,
+    Mdl_EP_ = "Strt_EP",
+    Mdl_OH_ = "Strt_OH",
+    NULL
+  )
+  
+  if (!is.null(startVariable))
+    modelShape$start <- modelShape[[startVariable]]
+  
+  modelShape@data <- modelShape@data[, c(if (spatialLevel == "pixels") "ID" else "Communs", 
+      "outcome", 
+      if (!is.null(startVariable)) "start")]
+  
+  attr(modelShape, "unit") <- unit
+  attr(modelShape, "spatialLevel") <- spatialLevel
+  
+  
+  return(modelShape)
+  
+} 

@@ -432,6 +432,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       ## Region level
       results$regionLevel <- reactive({
           
+          if (!is.null(regionLevel()))
+            validate(need(locaties(), "Gelieve regio('s) te selecteren"))
+          
           if (type == "wbe")
             "WBE_buitengrenzen" else if (type == "empty")
             regionLevel() else
@@ -1085,7 +1088,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           
           h3("Biotoop beschrijving", tags$br(), 
             results$regionLevelName(), 
-            "in", input$year)
+            if (!is.null(input$year)) paste("in", input$year))
           
         })
       

@@ -87,9 +87,6 @@ if (!doDebug | !exists("schadeData"))
   schadeData <- loadRawData(type = "wildschade")
 if (!doDebug | !exists("biotoopData"))
   biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)
-# Data for the dashboard page
-if (!doDebug | !exists("trafficData"))
-  load(file = file.path(dataDir, "trafficData.RData"))
 
 gc()
 

@@ -178,14 +178,15 @@ filterSpatial <- function(allSpatialData, species,
   } else if (grepl("WBE", regionLevel)) {
     
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
-    if (!is.null(locaties))
-      spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
     
   } else {
     
     spatialData <- allSpatialData[[regionLevel]]
     
   }
+  
+  if (!is.null(locaties))
+    spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
   
   return(spatialData)
   

@@ -37,7 +37,7 @@ namedChoices <- function(choices, uiText, regionLevel) {
 #' @param choices character vector, indicator choices to list, i.e. F_* codes
 #' @param selected character vector, subset of \code{choices} pre-selected choices
 #' @param uiText data.frame 
-#' @return 
+#' @return named character vector
 #' 
 #' @author mvarewyck
 #' @import shiny

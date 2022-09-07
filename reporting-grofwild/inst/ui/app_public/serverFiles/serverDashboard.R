@@ -19,32 +19,30 @@ results$dash_species <- reactive("Wild zwijn")
 ## INDICATOR SELECTION ##
 
 output$dash_populatieIndicatoren <- reactive({
-    
-    tmp <- dashboardChoicesServer(
+    tmp_populatie <- dashboardChoicesServer(
       id = "dash_populatie", 
       choices = populatieChoices,
       uiText = uiText, 
       regionLevel = reactive(input$dash_regionLevel)
     )
-    if (is.null(tmp()))
+    if (is.null(tmp_populatie()))
       "" else
-      tmp()
-    
+      tmp_populatie()
   })
 outputOptions(output, "dash_populatieIndicatoren", suspendWhenHidden = FALSE)
 
 
 output$dash_jachtIndicatoren <- reactive({
     
-    tmp <- dashboardChoicesServer(
+    tmp_jacht <- dashboardChoicesServer(
       id = "dash_jacht",
       choices = jachtChoices,
       uiText = uiText,
       regionLevel = reactive(input$dash_regionLevel)
     )
-    if (is.null(tmp()))
+    if (is.null(tmp_jacht()))
       "" else 
-      tmp()
+      tmp_jacht()
     
   })    
 outputOptions(output, "dash_jachtIndicatoren", suspendWhenHidden = FALSE)
@@ -52,15 +50,15 @@ outputOptions(output, "dash_jachtIndicatoren", suspendWhenHidden = FALSE)
 
 output$dash_verkeerIndicatoren <- reactive({
     
-    tmp <- dashboardChoicesServer(
+    tmp_verkeer <- dashboardChoicesServer(
       id = "dash_verkeer",
       choices = verkeerChoices,
       uiText = uiText,
       regionLevel = reactive(input$dash_regionLevel)
     )
-    if (is.null(tmp()))
+    if (is.null(tmp_verkeer()))
       "" else 
-      tmp()
+      tmp_verkeer()
     
   })
 outputOptions(output, "dash_verkeerIndicatoren", suspendWhenHidden = FALSE)
@@ -68,15 +66,15 @@ outputOptions(output, "dash_verkeerIndicatoren", suspendWhenHidden = FALSE)
 
 output$dash_landbouwIndicatoren <- reactive({
     
-    tmp <- dashboardChoicesServer(
+    tmp_landbouw <- dashboardChoicesServer(
       id = "dash_landbouw",
       choices = landbouwChoices, 
       uiText = uiText,
       regionLevel = reactive(input$dash_regionLevel)
     )
-    if (is.null(tmp()))
+    if (is.null(tmp_landbouw()))
       "" else 
-      tmp()
+      tmp_landbouw()
     
   })
 outputOptions(output, "dash_landbouwIndicatoren", suspendWhenHidden = FALSE)
@@ -84,15 +82,15 @@ outputOptions(output, "dash_landbouwIndicatoren", suspendWhenHidden = FALSE)
 
 output$dash_priveIndicatoren <- reactive({
     
-    tmp <- dashboardChoicesServer(
+    tmp_prive <- dashboardChoicesServer(
       id = "dash_prive",
       choices = priveChoices, 
       uiText = uiText,
       regionLevel = reactive(input$dash_regionLevel)
     )
-    if (is.null(tmp()))
+    if (is.null(tmp_prive()))
       "" else 
-      tmp()
+      tmp_prive()
     
   })
 outputOptions(output, "dash_priveIndicatoren", suspendWhenHidden = FALSE)
@@ -100,15 +98,15 @@ outputOptions(output, "dash_priveIndicatoren", suspendWhenHidden = FALSE)
 
 output$dash_maatschappijIndicatoren <- reactive({
     
-    tmp <- dashboardChoicesServer(
+    tmp_maatschappij <- dashboardChoicesServer(
       id = "dash_maatschappij",
       choices = maatschappijChoices, 
       uiText = uiText,
       regionLevel = reactive(req(input$dash_regionLevel))
     )
-    if (is.null(tmp()))
+    if (is.null(tmp_maatschappij()))
       "" else 
-      tmp()
+      tmp_maatschappij()
     
   })    
 outputOptions(output, "dash_maatschappijIndicatoren", suspendWhenHidden = FALSE)
@@ -195,8 +193,13 @@ mapFlandersServer(id = "dash_background",
   defaultYear = defaultYear,
   species = results$dash_species,
   type = "empty",
-  regionLevel = reactive(input$dash_regionLevel),
-  locaties = reactive(input$dash_locaties),
+  regionLevel = reactive(req(input$dash_regionLevel)),
+  locaties = reactive({
+      req(input$dash_regionLevel)
+      if (input$dash_regionLevel != "flanders")
+        req(input$dash_locaties)
+      input$dash_locaties
+    }),
   geoData = reactive(everGeoData),
   biotoopData = biotoopData,
   allSpatialData = spatialData,

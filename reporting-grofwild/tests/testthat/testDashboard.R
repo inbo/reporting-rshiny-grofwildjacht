@@ -89,7 +89,9 @@ test_that("F17_1", {
           n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
       summaryData = spaceData$data,
       legend = "topright",
-      species = "Wild zwijn"
+      species = "Wild zwijn",
+      borderRegion = "provinces",
+      borderLocaties = c("Antwerpen", "Limburg")
     )
     
     expect_s3_class(myPlot, "leaflet")

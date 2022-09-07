@@ -9,7 +9,6 @@ mapSpreadServer(
   regionLevel,
   locaties,
   allSpatialData,
-  hideGlobeDefault = FALSE,
   type = c("F06", "F17_4")
 )
 }

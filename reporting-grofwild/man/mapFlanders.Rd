@@ -7,19 +7,26 @@
 mapFlanders(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
     "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),
+  borderRegion = NULL,
+  borderLocaties = NULL,
   species,
   year = NA,
   allSpatialData,
   summaryData,
   colorScheme = NULL,
   legend = "none",
-  addGlobe = FALSE,
-  addBorders = TRUE
+  addGlobe = FALSE
 )
 }
 \arguments{
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
+
+\item{borderRegion}{character, region level for which to draw black borders;
+if NULL no borders are plotted}
+
+\item{borderLocaties}{character, locations for which to draw black borders;
+if NULL default regions are selected}
 
 \item{species}{character, species of interest}
 
@@ -35,8 +42,6 @@ in the summary data; if NULL map is not colored}
 \item{legend}{character, legend placement; default is "none", no legend}
 
 \item{addGlobe}{boolean, whether to add world map to background; default is FALSE}
-
-\item{addBorders}{boolean, whether to add black borders for overview regions; default is TRUE}
 }
 \value{
 leaflet map

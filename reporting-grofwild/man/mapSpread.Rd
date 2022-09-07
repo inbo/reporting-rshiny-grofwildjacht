@@ -4,23 +4,10 @@
 \alias{mapSpread}
 \title{Create leaflet map for the spread of a species}
 \usage{
-mapSpread(
-  spatialDir = system.file("extdata", package = "reporting-grofwild"),
-  spatialLevel = c("pixels", "municipalities"),
-  unit = c("model_EP", "model_OH", "risk_EP", "risk_OH"),
-  startYear = 2019,
-  legend = "none",
-  addGlobe = FALSE
-)
+mapSpread(spreadShape, startYear = 2019, legend = "none", addGlobe = FALSE)
 }
 \arguments{
-\item{spatialDir}{path to directory with spatial files}
-
-\item{spatialLevel}{character, for which spatial level to create the map;
-should be one of \code{c("pixels", "municipalities")}}
-
-\item{unit}{character, characteristic that defines the polygons and color coding
-should be one of \code{c("model_EP", "model_OH", "risk_EP", "risk_OH")}}
+\item{spreadShape}{SpatialPolygonsDataFrame as loaded by \code{loadSpreadData}}
 
 \item{startYear}{integer, starting year; only relevant for pixels & model unit}
 

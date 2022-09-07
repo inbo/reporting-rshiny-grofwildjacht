@@ -194,12 +194,7 @@ mapFlandersServer(id = "dash_background",
   species = results$dash_species,
   type = "empty",
   regionLevel = reactive(req(input$dash_regionLevel)),
-  locaties = reactive({
-      req(input$dash_regionLevel)
-      if (input$dash_regionLevel != "flanders")
-        req(input$dash_locaties)
-      input$dash_locaties
-    }),
+  locaties = reactive(input$dash_locaties),
   geoData = reactive(everGeoData),
   biotoopData = biotoopData,
   allSpatialData = spatialData,

@@ -30,7 +30,7 @@ tagList(
       column(4,
         dashboardChoices(id = "dash_populatie", 
           choices = populatieChoices,
-          selected = if (doDebug) c("F16_1"),
+          selected = if (doDebug) c("F16_1", "F17_1", "F17_2"),
           uiText = uiText
         ),
         dashboardChoices(id = "dash_jacht",
@@ -89,7 +89,7 @@ tagList(
     conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_1') > -1", 
       actionLink(inputId = "dash_showF17_1", 
         label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_1"])))),
-      conditionalPanel("output.dash_showF17_1 % 2 == 1", 
+      conditionalPanel("input.dash_showF17_1 % 2 == 0", 
         mapFlandersUI(id = "F17_1", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
@@ -101,7 +101,7 @@ tagList(
     conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_2') > -1", 
       actionLink(inputId = "dash_showF17_2", 
         label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_2"])))),
-      conditionalPanel("output.dash_showF17_2 % 2 == 1", 
+      conditionalPanel("inputt.dash_showF17_2 % 2 == 0", 
         mapFlandersUI(id = "F17_2", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
@@ -111,7 +111,7 @@ tagList(
     ),
     
     
-    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_4') > -1", 
+    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_4') > -1",
       mapSpreadUI(id = "dash_F17_4", title = uiText$title[uiText$plotFunction == "F17_4"])
     ),
     

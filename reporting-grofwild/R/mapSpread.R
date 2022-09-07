@@ -229,6 +229,23 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
+      
+      # Selected regions of interest
+      spatialData <- reactive({
+          
+          req(allSpatialData)
+          
+          filterSpatial(
+            allSpatialData = allSpatialData, 
+            species = "Wild zwijn", 
+            regionLevel = regionLevel(), 
+            year = NULL,
+            locaties = locaties()
+          )
+          
+        })
+      
+      
       selectedPolygons <- reactive({
           
           validate(need(spatialData(), "Geen data beschikbaar"))
@@ -251,7 +268,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             fitBounds(lng1 = centerView[1], lng2 = centerView[2],
               lat1 = centerView[3], lat2 = centerView[4]) %>%
             clearGroup(group = "regionLines") %>%
-            addPolylines(data = selectedPolygons(), color = "gray", weight = 5,
+            addPolylines(data = selectedPolygons(), color = "black", weight = 3,
               group = "regionLines") %>%
             addProviderTiles("OpenStreetMap.HOT") 
           
@@ -267,22 +284,6 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               )      
           
           myMap
-          
-        })
-      
-      
-      # Selected regions of interest
-      spatialData <- reactive({
-          
-          req(allSpatialData)
-          
-          filterSpatial(
-            allSpatialData = allSpatialData, 
-            species = "Wild zwijn", 
-            regionLevel = regionLevel(), 
-            year = NULL,
-            locaties = locaties()
-          )
           
         })
       
@@ -379,7 +380,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           }
           
         })
-
+      
       # TODO for type F06 
       #   properties: download kaart, not data; add/remove layers using leafletproxy
       
@@ -522,15 +523,18 @@ mapSpreadUI <- function(id, title, showLayer = FALSE) {
       ),
       
       fixedRow(
-        withSpinner(leafletOutput(ns("spreadPlot"))),
-        tags$br(),
-        downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
-        downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
+        column(12,
+          withSpinner(leafletOutput(ns("spreadPlot"))),
+          tags$br(),
+          downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
+          downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
+        )
       ),
       
       tags$hr()
     
     )
   )
+  
   
 }

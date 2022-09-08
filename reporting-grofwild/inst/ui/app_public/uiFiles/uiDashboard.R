@@ -63,7 +63,11 @@ tagList(
     tags$p(tags$em("\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
     
 #    actionButton(inputId = "dash_submit", label = "Maak dashboard"),
+    singleton(
+      tags$head(tags$script(src = "www/triggerDownload.js"))
+    ),
     actionButton(inputId = "dash_createReport", label = "Maak pdf"),
+    downloadLink("dash_downloadReport", " "),
     
     tags$hr(),
     
@@ -91,7 +95,7 @@ tagList(
       actionLink(inputId = "dash_showF17_1", 
         label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_1"])))),
       conditionalPanel("input.dash_showF17_1 % 2 == 0", 
-        mapFlandersUI(id = "F17_1", showCombine = FALSE, type = "dash",  
+        mapFlandersUI(id = "dash_F17_1", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
           plotDetails = "", showTitle = FALSE
@@ -103,7 +107,7 @@ tagList(
       actionLink(inputId = "dash_showF17_2", 
         label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_2"])))),
       conditionalPanel("input.dash_showF17_2 % 2 == 0", 
-        mapFlandersUI(id = "F17_2", showCombine = FALSE, type = "dash",  
+        mapFlandersUI(id = "dash_F17_2", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
           plotDetails = "", showTitle = FALSE

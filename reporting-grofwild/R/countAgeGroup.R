@@ -128,11 +128,13 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable) {
         data = data, 
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "ageGroup",
+      toReturn <- callModule(module = plotModuleServer, id = "ageGroup",
         plotFunction = "countAgeGroup", 
         data = data,
         groupVariable = groupVariable
       )
+      
+      return(reactive(toReturn()))
       
     })
   

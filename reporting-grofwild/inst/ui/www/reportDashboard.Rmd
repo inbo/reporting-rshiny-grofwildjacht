@@ -1,0 +1,64 @@
+---
+title: "Rapport Dashboard Wilde Zwijnen"
+subtitle: "`r paste0('Dashboard v', packageVersion('reportingGrofwild'))`"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+output: 
+   pdf_report:
+      logo: NULL
+      bigLogo: logo.png
+      bigLogoSize: 15cm
+      always_allow_html: yes
+---
+
+```{r knitr, echo = FALSE, results = 'hide'}
+library(knitr)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE, 
+  message = FALSE,
+  fig.align = 'center',
+  fig.width = 10, 
+  fig.height = 8
+)
+```
+
+
+# ACHTERGRONDINFORMATIE
+
+
+```{r 'mapFlanders'}
+tmpFile <- tempfile(fileext = ".html")
+htmlwidgets::saveWidget(results$dash_finalMap(), file = tmpFile, selfcontained = FALSE)
+webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+```
+
+## Biotoop beschrijving
+
+```{r 'biotoopPlot'}
+barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot %>%
+  config(displayModeBar = FALSE)
+```
+
+```{r 'biotoopTable'}
+myTable <- tableBackground(data = rbind(
+    subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
+    biotoopData$flanders))
+DT::datatable(myTable, rownames = FALSE,
+    options = list(dom = 't', pageLength = -1)) %>%
+  DT::formatStyle(
+    colnames(myTable)[1],
+    target = "row",
+    fontWeight = styleEqual(tail(myTable[, 1], n = 1), "bold")
+  )
+```
+
+
+```{r 'F16_1', results = "asis"}
+cat("##", uiText$title[uiText$plotFunction == "F16_1"])
+results$dash_F16_1()$plot %>%
+  config(displayModeBar = FALSE)
+```
+
+
+
+TODO: Add all selected indicators

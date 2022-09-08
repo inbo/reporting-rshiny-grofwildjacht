@@ -304,17 +304,13 @@ getPathCss <- function(){
   
 }
 
-#' get path of file contained in the 'figure' folder of the report
-#' @param figureName string name of the figure file
-#' ('graph[1-3].png')
-#' @return string with path of figure
-#' @author Laure Cougnaud
+#' get path of INBO logo file
+#' 
+#' @return character, path of logo file
+#' @author mvarewyck
 #' @export
-getPathFigure <- function(figureName){
+getPathLogo <- function() {
   
-  basePath <- system.file("report/figure", package = "reportingGrofwild")
-  pathFile <- dir(basePath, pattern = figureName, full.names = TRUE)
-  
-  return(pathFile)
+  system.file("ui/www", "logo.png", package = "reportingGrofwild")
   
 }

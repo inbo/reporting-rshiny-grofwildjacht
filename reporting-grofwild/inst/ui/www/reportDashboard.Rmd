@@ -5,7 +5,6 @@ date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: 
    pdf_report:
       logo: NULL
-      bigLogo: logo.png
       bigLogoSize: 15cm
       always_allow_html: yes
 ---

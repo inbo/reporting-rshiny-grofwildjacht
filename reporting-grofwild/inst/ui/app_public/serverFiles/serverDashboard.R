@@ -188,10 +188,19 @@ observeEvent(input$dash_createReport, {
     
     withProgress(message = 'Rapport genereren...\n', value = 0.2, {
         
+        oldDir <- getwd()
+        setwd(tempdir())
+        on.exit(setwd(oldDir))
+        
+        fromFile <- system.file("ui/www", "reportDashboard.Rmd", package = "reportingGrofwild")
+        file.copy(from = fromFile, to = file.path(tempdir(), basename(fromFile)), overwrite = TRUE)
+        
         dash_reportFile(
           rmarkdown::render(
-            input = system.file("ui/www", "reportDashboard.Rmd", package = "reportingGrofwild"),
-            output_file = tempfile(fileext = ".pdf")
+            input = file.path(tempdir(), basename(fromFile)),
+            output_file = tempfile(fileext = ".pdf"),
+            intermediates_dir = tempdir(),
+            output_options = list(bigLogo = getPathLogo())
           )
         )
         

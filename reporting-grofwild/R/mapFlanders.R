@@ -347,7 +347,7 @@ mapFlanders <- function(
     myMap <- addPolylines(map = myMap,
       data = filterSpatial(allSpatialData = allSpatialData, species = species,
         regionLevel = borderRegion, year = year, 
-        locaties = if (is.null(borderLocaties)) summaryData$locatie else borderLocaties), 
+        locaties = borderLocaties), 
       color = "black", 
       weight = 3,
       opacity = 0.8,

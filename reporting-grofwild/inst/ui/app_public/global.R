@@ -140,7 +140,8 @@ rm(uiFunctions, uiCheck)
 availableData <- read.csv(file.path(dataDir, "Data_beschikbaarheid.csv"))
 names(availableData)[3:6] <- c("flanders", "provinces", "communes", "faunabeheerzones")
 
-uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code")
+uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
+  all.x = TRUE)
 
 
 

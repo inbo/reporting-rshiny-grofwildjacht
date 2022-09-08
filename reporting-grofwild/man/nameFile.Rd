@@ -4,7 +4,7 @@
 \alias{nameFile}
 \title{Name file given content information}
 \usage{
-nameFile(species, year, extraInfo = NULL, content, fileExt)
+nameFile(species, year = NA, extraInfo = NULL, content, fileExt)
 }
 \arguments{
 \item{species}{character, species of the file content}

@@ -703,7 +703,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     })
   
   
-  
+  return(reactive(resultFct()))
   
 }
 

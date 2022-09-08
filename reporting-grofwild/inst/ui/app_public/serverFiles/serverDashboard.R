@@ -180,16 +180,44 @@ results$dash_schadeData <- reactive({
 
 ## SUBMIT & DOWNLOAD ##
 
-observeEvent(input$dash_submit, {
+dash_reportFile <- reactiveVal()
+
+observeEvent(input$dash_createReport, {
     
+    dash_reportFile(NULL)  # reset on each button press
     
+    withProgress(message = 'Rapport genereren...\n', value = 0.2, {
+        
+        dash_reportFile(
+          rmarkdown::render(
+            input = system.file("ui/www", "reportDashboard.Rmd", package = "reportingGrofwild"),
+            output_file = tempfile(fileext = ".pdf")
+          )
+        )
+        
+        # report is ready, trigger download
+        setProgress(1)
+        
+        session$sendCustomMessage(type = "imageReady", 
+          message = list(id = "dash_downloadReport"))
+        
+      })
+    
+  })
+
+
+output$dash_downloadReport <- downloadHandler(
+  filename = 'rapportDashboard.pdf',
+  content = function(file) {
+    
+    file.copy(dash_reportFile(), file, overwrite = TRUE)
     
   })
 
 
 ## MAP ##
 
-mapFlandersServer(id = "dash_background",
+results$dash_finalMap <- mapFlandersServer(id = "dash_background",
   defaultYear = defaultYear,
   species = results$dash_species,
   type = "empty",
@@ -201,6 +229,7 @@ mapFlandersServer(id = "dash_background",
   hideGlobeDefault = FALSE)
 
 
+
 ## PLOTS ##
 
 
@@ -209,7 +238,7 @@ results$dash_timeRange <- reactive(range(everEcoData$afschotjaar))
 
 # Populatie 
 
-countAgeGroupServer(
+results$dash_F16_1 <- countAgeGroupServer(
   id = "dash_reproductie",
   data = reactive({
       plotData <- everEcoData[everEcoData$geslacht_comp == "Vrouwelijk", ]
@@ -222,7 +251,7 @@ countAgeGroupServer(
 )
 
 
-mapFlandersServer(id = "F17_1",
+mapFlandersServer(id = "dash_F17_1",
   defaultYear = defaultYear,
   species = results$dash_species,
   type = "grofwild",
@@ -233,7 +262,7 @@ mapFlandersServer(id = "F17_1",
   hideGlobeDefault = FALSE)
 
 
-mapFlandersServer(id = "F17_2",
+mapFlandersServer(id = "dash_F17_2",
   defaultYear = defaultYear,
   species = results$dash_species,
   type = "grofwild",

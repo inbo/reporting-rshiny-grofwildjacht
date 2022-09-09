@@ -9,7 +9,7 @@ everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 draagkrachtDir <- system.file("extdata", "maatschappelijke_draagkracht", package = "reportingGrofwild")
-inschattingData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
+inschattingData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
 
 
 results$dash_species <- reactive("Wild zwijn")
@@ -278,7 +278,7 @@ mapFlandersServer(id = "dash_F17_2",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   geoData = reactive({
-      df <- fread(file.path(dataDir, "waarnemingen_2018.csv"))
+      df <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))
       df$wildsoort <- "Wild zwijn"
       df}),
   allSpatialData = spatialData,
@@ -372,25 +372,25 @@ barDraagkrachtServer(id = "dash_F11_3",
 # Maatschappelijke draagkracht
 
 barDraagkrachtServer(id = "dash_F12_1",
-  data = reactive(fread(file.path(draagkrachtDir, "F12_1_data.csv"))),
+  data = reactive(data.table::fread(file.path(draagkrachtDir, "F12_1_data.csv"))),
   xVar = "Jaar", yVar = "Aantal")
 
 barDraagkrachtServer(id = "dash_F14_1",
-  data = reactive(fread(file.path(draagkrachtDir, "F14_1_data.csv"))),
+  data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv"))),
   groupVariable = "Year", yVar = "Sector")
 
 barDraagkrachtServer(id = "dash_F14_2",
-  data = reactive(fread(file.path(draagkrachtDir, "F14_2_data.csv"))),
+  data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv"))),
   groupVariable = "Year", yVar = "Sector")
 
 barDraagkrachtServer(id = "dash_F14_3",
-  data = reactive(fread(file.path(draagkrachtDir, "F14_3_data.csv"))),
+  data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_3_data.csv"))),
   groupVariable = "Sector", yVar = "Question_label")
 
 barDraagkrachtServer(id = "dash_F14_4",
-  data = reactive(fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
+  data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
   groupVariable = c("Groep", "Year"), yVar = "Question_label")
 
 barDraagkrachtServer(id = "dash_F14_5",
-  data = reactive(fread(file.path(draagkrachtDir, "F14_5_data.csv"))),
+  data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv"))),
   groupVariable = "Sector", yVar = "Question_label")

@@ -494,7 +494,7 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
 #' @author mvarewyck
 #' @export
 loadSpreadData <- function(
-  spatialDir = system.file("extdata", package = "reporting-grofwild"), 
+  spatialDir = system.file("extdata/futureSpread", package = "reportingGrofwild"), 
   spatialLevel = c("pixels", "municipalities"), 
   unit = c("model_EP", "model_OH", "risk_EP", "risk_OH")) {
   

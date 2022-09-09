@@ -227,7 +227,6 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           if (type == "F17_4") {
             
             loadSpreadData(
-              spatialDir = "~/git/reporting-rshiny-grofwildjacht/dashboard/input/spatial",
               spatialLevel = req(input$spatialLevel),
               unit = req(input$unit)
             )
@@ -348,7 +347,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
             if ("oversteek" %in% input$layers) {
               
-              proxy %>% addCircleMarkers(data = trafficData$oversteek,
+              proxy %>% addCircleMarkers(data = shapeData()$oversteek,
                 radius = 3,
                 color = "black",
                 stroke = FALSE,
@@ -363,7 +362,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
             if ("ecorasters" %in% input$layers) {
               
-              proxy %>% addPolylines(data = trafficData$ecorasters,
+              proxy %>% addPolylines(data = shapeData()$ecorasters,
                 opacity =  0.5,
                 group = "ecorasters")
               
@@ -391,7 +390,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               
             } else if (type == "F06") {
               
-              mapVerkeer(trafficData = spreadShape(), 
+              mapVerkeer(trafficData = shapeData(), 
                 layers = input$layers,
                 addGlobe = input$globe %% 2 == 0
                 )

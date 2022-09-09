@@ -18,7 +18,13 @@ RUN apt-get update && apt-get install -y \
     libproj-dev \
     libgeos-dev \
     libudunits2-dev \
-	libgit2-dev
+	libgit2-dev \
+	texlive-latex-base \
+    texlive-latex-recommended \
+    texlive-fonts-recommended \
+    texlive-latex-extra \
+    && rm -rf /var/lib/apt/lists/*
+    
 	
 	
 # Dependencies for rgdal and rgeos
@@ -47,12 +53,6 @@ RUN R -e "remotes::install_github('daattali/shinycssloaders')"
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!
 RUN R -e "webshot::install_phantomjs()"
-
-RUN apt-get update && apt-get install -y \
-    texlive-latex-base \
-    texlive-latex-recommended \
-    texlive-fonts-recommended \
-    texlive-latex-extra
     
 # copy the app to the image by installing package (need latest version!!)
 ENV latestApp reporting-grofwild.tar.gz

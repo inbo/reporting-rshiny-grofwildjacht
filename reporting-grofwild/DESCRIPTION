@@ -9,7 +9,6 @@ Version: 0.2.8
 Date: 2022-05-25
 Imports:
     data.table,
-    devtools, 
     DT, 
     flexdashboard,
     ggplot2,
@@ -24,6 +23,7 @@ Imports:
     plyr, 
     raster,
     RColorBrewer, 
+    remotes,
     reshape2, 
     rgdal, 
     rgeos, 
@@ -36,6 +36,8 @@ Imports:
 Depends: 
     maptools    
 Suggests:
-    testthat
+    testthat,
+    rmarkdown,
+    oaStyle
 Encoding: UTF-8
 RoxygenNote: 7.2.0

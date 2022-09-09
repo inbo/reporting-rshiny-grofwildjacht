@@ -104,7 +104,7 @@ test_that("F17_2", {
     
     regionLevel <- c("utm5", "communes")[1]
     
-    df <- fread(file.path(dataDir, "waarnemingen_2018.csv"))
+    df <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))
     df$wildsoort <- "Wild zwijn"
     
     spaceData <- createSpaceData(
@@ -223,7 +223,7 @@ test_that("F07_1, F09_1", "F11_1", {
 # F07_3: Inschatting schade
 test_that("F07_3, F09_3, F11_3", {
     
-    inschattingData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
+    inschattingData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
     
     myResult <- barDraagkracht(data = inschattingData[Vraag != "populatie_evolutie", ], yVar = "Vraag")
     
@@ -237,7 +237,7 @@ test_that("F07_3, F09_3, F11_3", {
 test_that("F12_1, F14_1, F14_2", {
     
     # F12_1
-    myResult <- barDraagkracht(data = fread(file.path(draagkrachtDir, "F12_1_data.csv")),
+    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F12_1_data.csv")),
       xVar = "Jaar", yVar = "Aantal")
     
     expect_type(myResult, "list")
@@ -245,7 +245,7 @@ test_that("F12_1, F14_1, F14_2", {
     expect_s3_class(myResult$data, "data.frame")
     
     # F14_1
-    myResult <- barDraagkracht(data = fread(file.path(draagkrachtDir, "F14_1_data.csv")), 
+    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv")), 
       groupVariable = "Year", yVar = "Sector")
     
     expect_type(myResult, "list")
@@ -254,7 +254,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     
     # F14_2
-    myResult <- barDraagkracht(data = fread(file.path(draagkrachtDir, "F14_2_data.csv")), 
+    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv")), 
       groupVariable = "Year", yVar = "Sector")         
     
     expect_type(myResult, "list")
@@ -269,7 +269,7 @@ test_that("F14_3, F14_4", {
     inputFiles <- c("F14_3_data.csv", "F14_4_data.csv")
     
     # F14_3
-    plotData <- fread(file.path(draagkrachtDir, inputFiles[1]))
+    plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[1]))
     
     # Stakeholders
     subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
@@ -289,7 +289,7 @@ test_that("F14_3, F14_4", {
     
     
     # F14_4
-    plotData <- fread(file.path(draagkrachtDir, inputFiles[2]))
+    plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[2]))
     subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
     
     myResult <- barDraagkracht(data = subData, groupVariable = c("Groep", "Year"), yVar = "Question_label")
@@ -303,7 +303,7 @@ test_that("F14_3, F14_4", {
 
 test_that("F14_5", {
     
-    myResult <- barDraagkracht(data = fread(file.path(draagkrachtDir, "F14_5_data.csv")),
+    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv")),
       groupVariable = "Sector", yVar = "Question_label")
     
     expect_type(myResult, "list")
@@ -316,7 +316,7 @@ test_that("F14_5", {
 
 test_that("F18_1", {
     
-    plotData <- fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
+    plotData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
     
     barDraagkracht(data = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
     

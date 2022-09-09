@@ -13,7 +13,7 @@
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny
-#' @importFrom devtools install_github dev_package_deps
+#' @importFrom remotes install_github dev_package_deps
 #' @importFrom stats update
 #' @export
 runWildApp <- function(installDependencies = FALSE, 

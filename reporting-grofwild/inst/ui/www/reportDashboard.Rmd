@@ -3,10 +3,11 @@ title: "Rapport Dashboard Wilde Zwijnen"
 subtitle: "`r paste0('Dashboard v', packageVersion('reportingGrofwild'))`"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: 
-   pdf_report:
+   oaStyle::pdf_report:
       logo: NULL
       bigLogoSize: 15cm
       always_allow_html: yes
+      latex_engine: pdflatex
 ---
 
 ```{r knitr, echo = FALSE, results = 'hide'}
@@ -47,7 +48,7 @@ DT::datatable(myTable, rownames = FALSE,
   DT::formatStyle(
     colnames(myTable)[1],
     target = "row",
-    fontWeight = styleEqual(tail(myTable[, 1], n = 1), "bold")
+    fontWeight = DT::styleEqual(tail(myTable[, 1], n = 1), "bold")
   )
 ```
 

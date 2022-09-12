@@ -604,7 +604,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$plot <- renderPlotly({  
         
-        resultFct()$plot
+        resultFct()$plot %>%
+          config(toImageButtonOptions = list(width = 1300, height = 800))
         
       })
     

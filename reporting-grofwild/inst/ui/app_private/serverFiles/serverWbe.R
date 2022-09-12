@@ -77,17 +77,19 @@ results$jachttypes <- reactive({
 
 
 
+
+
 ### The MAP
 ### -------------
 
 
 mapFlandersServer(id = "wbe",
   defaultYear = defaultYear,
-  species = reactive(input$wbe_species),
+  species = reactive(""),
   currentWbe = currentWbe,
   type = "wbe",
   hideGlobeDefault = FALSE,
-  geoData = results$wbe_geoData,
+  geoData = reactive(geoData),  # independent of species
   biotoopData = biotoopData,
   allSpatialData = spatialData)
 
@@ -97,6 +99,18 @@ mapFlandersServer(id = "wbe",
 ### Extra Graphs/Tables
 ### -------------
 
+
+## Plot1: Trend over time
+
+trendYearRegionServer(id = "wbe",
+  species = reactive(input$wbe_species),
+  allSpatialData = spatialData,
+  biotoopData = biotoopData,
+  geoData = results$wbe_geoData, 
+  type = "wbe", 
+  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
+        match(results$wbe_geoData()$PartijNummer, currentWbe)]))
+)
 
 ## User input for controlling the plots and create plotly
 # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie

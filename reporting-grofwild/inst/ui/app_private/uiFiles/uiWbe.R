@@ -23,6 +23,14 @@ tagList(
   
   tags$div(class = "container",
     
+    # Map
+    
+    mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
+      type = "wbe", plotDetails = "biotoop"),
+    
+
+    # Choose species
+    
     h2("Grofwildsoort")),
   
   tags$div(class = "container", 
@@ -41,15 +49,11 @@ tagList(
   ),
   
   
-  # Map
-  
-  mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
-    type = "wbe",
+  trendYearRegionUI(id = "wbe", 
     unitChoices = c("Aantal" = "absolute", 
       "Aantal/100ha" = "relative", 
-      "Aantal/100ha bos & natuur" = "relativeDekking"),
-    plotDetails = c("region", "biotoop")),
-  
+      "Aantal/100ha bos & natuur" = "relativeDekking")
+  ),
   
   tableSpeciesUI(id = "wbe", uiText = uiText),
   

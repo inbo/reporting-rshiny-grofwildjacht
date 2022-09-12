@@ -56,20 +56,15 @@ test_that("The map", {
       if (doPrint)
       cat("*", iYear, "\n")
       
-      for (iSpecies in species) {
-        
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
           biotoopData = biotoopData,
           year = iYear,
-          species = iSpecies,
+          species = "",
           regionLevel = "WBE_buitengrenzen",
           unit = "region"
         )
-        
-        if (doPrint)
-        cat("*", iSpecies, "\n")
         
         if (!is.null(spaceData) && nrow(spaceData$data) && !all(spaceData$data$freq == 0)) {
           
@@ -79,18 +74,17 @@ test_that("The map", {
             allSpatialData = spatialData, 
             regionLevel = "WBE_buitengrenzen", 
             year = iYear,
-            colorScheme = RColorBrewer::brewer.pal(
-                n = nlevels(spaceData$data$group), name = "YlOrBr"),
+            colorScheme = c("grey", RColorBrewer::brewer.pal(
+                n = nlevels(spaceData$data$group), name = "YlOrBr")),
             summaryData = spaceData$data,
             legend = "topright",
-            species = iSpecies
+            species = ""
           )
           
           expect_is(myPlot, "plotly")
           
         }
-      }
-    }
+     }
     
   })
 

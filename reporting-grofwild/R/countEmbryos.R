@@ -185,10 +185,13 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
       
       output$titleEmbryos <- renderUI({
           
+          req(wildsoort())
+          
           oldTitle <- uiText$title
           newTitle <- gsub("\\{wildsoort\\}", switch(wildsoort(), 
               "Ree" = "ree\u00EBn",
-              "Wild zwijn" = "wilde zwijnen"),
+              "Wild zwijn" = "wilde zwijnen",
+              ""),
             oldTitle
           )
           

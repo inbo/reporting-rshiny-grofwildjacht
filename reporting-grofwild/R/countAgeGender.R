@@ -59,14 +59,23 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 	
 	# For optimal displaying in the plot
-	summaryData$leeftijd <- factor(summaryData$leeftijd, 
+  summaryData$leeftijd <- factor(summaryData$leeftijd, 
     levels = loadMetaEco(species = wildNaam)$leeftijd_comp)
+  missingLeeftijd <- !levels(summaryData$leeftijd) %in% summaryData$leeftijd
+  if (any(missingLeeftijd))
+    summaryData <- rbind(summaryData,
+      data.frame(
+        geslacht = NA,
+        leeftijd = levels(summaryData$leeftijd)[missingLeeftijd], 
+        freq = NA, percent = NA))
 	
 	summaryData$text <- paste0(round(summaryData$percent), "%",
 			" (", summaryData$freq, ")")
 	
 	totalCount <- count(df = summaryData, vars = "leeftijd", wt_var = "freq")$freq
-	
+  totalCount[is.na(totalCount)] <- 0
+	names(totalCount) <- levels(summaryData$leeftijd)
+  
 	colors <- inbo_palette(n = nlevels(as.factor(summaryData$geslacht)))
 	title <- paste(wildNaam, paste0("(", 
 					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
@@ -86,7 +95,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 					barmode = "stack",
 					shapes = list(type = "line", line = list(color = inbo_lichtgrijs, dash = "dash"), 
 							xref = "paper", x0 = 0, x1 = 1, y0 = 50, y1 = 50),
-					annotations = list(x = levels(summaryData$leeftijd), y = -10, 
+					annotations = list(x = names(totalCount), y = -10, 
 							text = totalCount, xanchor = 'center', yanchor = 'bottom', 
 							showarrow = FALSE)) %>%
 			

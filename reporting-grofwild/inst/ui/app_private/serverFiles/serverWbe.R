@@ -28,6 +28,8 @@ results$wbe_combinedData <- reactive({
     combinedData <- merge(results$wbe_geoData(), ecoData, 
       by = commonNames, all.x = TRUE)
     
+    combinedData
+    
   })
 
 results$wbe_spatialData <- reactive({
@@ -80,17 +82,25 @@ results$jachttypes <- reactive({
 observe({
     
     req(input$wbe_species)
+    speciesChoices <- c("Wild zwijn", "Ree", "Damhert", "Edelhert")
     
-    for (iSpecies in c("Wild zwijn", "Ree", "Damhert", "Edelhert")) {
+    for (iSpecies in speciesChoices) {
       
       subData <- subset(geoData, wildsoort == iSpecies)
       
+      jsSelector <- sprintf('[type=radio][name=wbe_species][value="%s"]', iSpecies)
+      
       if (nrow(subData) == 0) {
-        shinyjs::disable(selector = paste0("[type=radio][name=wbe_species][value=", iSpecies, "]"))
-        shinyjs::runjs(paste0("$('[type=radio][name=wbe_species][value=", iSpecies, "]').parent().addClass('disabled').css('opacity', 0.4)"))
+        
+        if (input$wbe_species == iSpecies)
+        updateRadioButtons(session = session, inputId = "wbe_species",
+           selected = speciesChoices[which(iSpecies == speciesChoices) + 1])
+          
+        shinyjs::disable(selector = jsSelector)
+        shinyjs::runjs(paste0("$('", jsSelector, "').parent().addClass('disabled').css('opacity', 0.4)"))
       } else {
-        shinyjs::enable(selector = paste0("[type=radio][name=wbe_species][value=", iSpecies, "]"))
-        shinyjs::runjs(paste0("$('[type=radio][name=wbe_species][value=", iSpecies, "]').parent().removeClass('disabled').css('opacity', 1)"))
+        shinyjs::enable(selector = jsSelector)
+        shinyjs::runjs(paste0("$('", jsSelector, "').parent().removeClass('disabled').css('opacity', 1)"))
       }
       
     }

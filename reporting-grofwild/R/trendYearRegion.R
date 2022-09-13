@@ -28,7 +28,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
           species = species,
           regionLevel = regionLevel,
           year = iYear)
-        if (!is.null(tmp))
+        if (!is.null(tmp) && nrow(tmp@data) > 0)
           tmpData <- tmp@data else
           return(NULL)
         tmpData$YEAR <- iYear

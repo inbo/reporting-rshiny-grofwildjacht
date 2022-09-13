@@ -4,6 +4,7 @@ library(reportingGrofwild)
 library(leaflet)           # for interactive map
 library(plotly)            # for interactive graphs
 library(shinycssloaders)   # for busy indicator
+library(shinyjs)
 
 # Other packages needed, but not loaded
 # mapview

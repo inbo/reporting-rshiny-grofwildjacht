@@ -52,7 +52,7 @@ results$wbe_timeRange <- reactive({
     req(nrow(results$wbe_combinedData()) > 0)
     
     range(results$wbe_combinedData()$afschotjaar)
-        
+    
   })  
 
 results$labeltypes <- reactive({
@@ -75,7 +75,27 @@ results$jachttypes <- reactive({
   })
 
 
-
+## Disable species without data
+# https://stackoverflow.com/a/58310568
+observe({
+    
+    req(input$wbe_species)
+    
+    for (iSpecies in c("Wild zwijn", "Ree", "Damhert", "Edelhert")) {
+      
+      subData <- subset(geoData, wildsoort == iSpecies)
+      
+      if (nrow(subData) == 0) {
+        shinyjs::disable(selector = paste0("[type=radio][name=wbe_species][value=", iSpecies, "]"))
+        shinyjs::runjs(paste0("$('[type=radio][name=wbe_species][value=", iSpecies, "]').parent().addClass('disabled').css('opacity', 0.4)"))
+      } else {
+        shinyjs::enable(selector = paste0("[type=radio][name=wbe_species][value=", iSpecies, "]"))
+        shinyjs::runjs(paste0("$('[type=radio][name=wbe_species][value=", iSpecies, "]').parent().removeClass('disabled').css('opacity', 1)"))
+      }
+      
+    }
+    
+  })
 
 
 

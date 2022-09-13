@@ -40,6 +40,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
   currentKbo <- "445465768"  ## 441 - fixed AREA
 #  currentKbo <- "450506996"   ## 101 - evolving AREA
 #  currentKbo <- "446912355"
+#  currentKbo <- "454472813"  # including Damhert data
   
 } else {
   # Inside shinyProxy

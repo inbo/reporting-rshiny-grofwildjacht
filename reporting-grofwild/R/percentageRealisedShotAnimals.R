@@ -10,6 +10,8 @@
 #' @inheritParams countEmbryos
 #' @param data data.frame, with \code{loadToekenningen()} for specific WBE 
 #' @param currentYear numeric, current year to calculate accuracy for
+#' @param unit character, which values to show on the y-axis;
+#' should be one of \code{c("absolute", "percentage")}; default \code{"absolute"}
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified type and jaartallen}
@@ -26,11 +28,13 @@
 #' @export
 percentageRealisedShot <- function(data, type = NULL,
   currentYear = as.numeric(format(Sys.Date(), "%Y")) - 1,
-  jaartallen = NULL, 
+  jaartallen = NULL, unit = c("absolute", "percentage"),
   width = NULL, height = NULL){
   
   # R CMD check notes
   jaar <- NULL
+  
+  unit <- match.arg(unit)
   
   kboNaam <- unique(data$WBE_Naam_Toek)
   
@@ -70,38 +74,58 @@ percentageRealisedShot <- function(data, type = NULL,
   # niet-verwezenlijkt
   plotData$`niet-verwezenlijkt` <- plotData$toegekend - plotData$verwezenlijkt
   
-  percentages <- data.frame(
-    value = paste0(round(plotData$percent), "%"),
-    y = plotData$toegekend,
-    x = plotData$jaar
-  )
+#  percentages <- data.frame(
+#    value = paste0(round(plotData$percent), "%"),
+#    y = plotData$toegekend,
+#    x = plotData$jaar
+#  )
   
-  summaryData <- melt(plotData[, c("jaar", "verwezenlijkt", "niet-verwezenlijkt")], id.vars = "jaar")
-  summaryData <- merge(summaryData, plotData[, c("jaar", "toegekend")])
-  
-  title <- paste0("Toegekende en verwezenlijkte labels\n", paste(kboNaam, collapse = ","),
+  title <- paste0(
+    if (unit == "absolute") 
+        "Toegekende en verwezenlijkte labels\n" else
+        "Percentage verwezenlijkte labels\n",
+    paste(kboNaam, collapse = ","),
     paste0(" (", paste(type, collapse = ", "),") "),
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen)
   )
   
-  
   colorList <- replicateColors(nColors = nlevels(summaryData$variable))
   colors <- colorList$colors
-  names(colors) <- unique(summaryData$variable)
   
-  pl <- plot_ly(data = summaryData, x = ~jaar, y = ~value, color = ~variable,
-      text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+name+text",
-      colors = colors, type = "bar", width = width, height = height) %>%
+  
+  if (unit == "absolute") {
     
+    summaryData <- melt(plotData[, c("jaar", "verwezenlijkt", "niet-verwezenlijkt")], id.vars = "jaar")
+    summaryData <- merge(summaryData, plotData[, c("jaar", "toegekend")])
+    
+    names(colors) <- unique(summaryData$variable)
+    
+    pl <- plot_ly(data = summaryData, x = ~jaar, y = ~value, color = ~variable,
+      text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+name+text",
+      colors = colors, type = "bar", width = width, height = height)
+    
+  } else {
+    
+    pl <- plot_ly(data = plotData, x = ~jaar, y = ~round(percent, 2),
+      text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+text", 
+      marker = list(color = colors[1]),
+      type = "bar", width = width, height = height)
+    
+  }
+  
+  pl <- pl %>%
     layout(title = title,
       xaxis = list(title = "Labeljaar"), 
-      yaxis = list(title = "Aantal"),
+      yaxis = list(
+        title = if (unit == "absolute") "Aantal" else "Percentage",
+        range = if (unit == "percentage") c(0, 100)),
       margin = list(b = 120, t = 100, r = 10),
       legend = list(y = 0.8, yanchor = "top"),
-      barmode = if (nrow(percentages) == 1) "group" else "stack",
-      annotations = list(x = percentages$x, y = percentages$y, 
-        text = paste(if(nrow(percentages) == 1) "totaal:" else "", percentages$value),
-        xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) 
+      barmode = if (length(unique(plotData$jaar)) == 1) "group" else "stack"
+    )
+#      annotations = list(x = percentages$x, y = percentages$y, 
+#        text = paste(if(nrow(percentages) == 1) "totaal:" else "", percentages$value),
+#        xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) 
   
   # To prevent warnings in UI
   pl$elementId <- NULL
@@ -137,7 +161,9 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "percentageRealisedShot",
         plotFunction = "percentageRealisedShot",
-        data = data)
+        data = data,
+        unit = reactive(input$percentageRealisedUnit)
+      )
       
     })
   
@@ -166,12 +192,17 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, uiText) {
       fixedRow(
         
         column(4,
-          optionsModuleUI(id = ns("percentageRealisedShot"),
-            showTime = TRUE, showType = TRUE,
-            exportData = TRUE),
+          wellPanel(
+            selectInput(inputId = ns("percentageRealisedUnit"), label = "Eenheid",
+              choices = c("Aantal" = "absolute", "Percentage" = "percentage")),
+            optionsModuleUI(id = ns("percentageRealisedShot"),
+              showTime = TRUE, showType = TRUE,
+              exportData = TRUE,
+              doWellPanel = FALSE)
+          ),
           tags$p(HTML(uiText[, id])),
           if (showAccuracy)
-              accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
+            accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
         ),
         column(8, 
           plotModuleUI(id = ns("percentageRealisedShot"))

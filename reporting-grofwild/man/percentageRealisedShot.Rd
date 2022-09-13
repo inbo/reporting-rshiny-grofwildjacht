@@ -9,6 +9,7 @@ percentageRealisedShot(
   type = NULL,
   currentYear = as.numeric(format(Sys.Date(), "\%Y")) - 1,
   jaartallen = NULL,
+  unit = c("absolute", "percentage"),
   width = NULL,
   height = NULL
 )
@@ -23,6 +24,9 @@ default is \code{c("Smalree", "Geit")}}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}
+
+\item{unit}{character, which values to show on the y-axis;
+should be one of \code{c("absolute", "percentage")}; default \code{"absolute"}}
 
 \item{width}{plot width (optional)}
 

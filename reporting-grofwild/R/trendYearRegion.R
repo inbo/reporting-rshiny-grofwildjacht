@@ -284,7 +284,7 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
           
           req(nrow(geoData()) > 0)
           
-          sliderInput(inputId = ns("period"), 
+          sliderInput(inputId = ns("trendPeriod"), 
             label = if (type == "wbe") "Periode" else "Periode (grafiek)", 
             value = range(geoData()$afschotjaar),
             min = min(geoData()$afschotjaar),
@@ -300,10 +300,10 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
             data = geoData(),
             allSpatialData = allSpatialData,
             biotoopData = biotoopData,
-            timeRange = req(input$period),
+            timeRange = req(input$trendPeriod),
             species = req(species()),
             regionLevel = "WBE_buitengrenzen",
-            unit = req(input$unit)
+            unit = req(input$trendUnit)
           )
           
         })
@@ -316,8 +316,8 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
         data = trendRegionData,
         locaties = regionLevelName,
         combinatie = reactive(FALSE),
-        timeRange = reactive(input$period),
-        unit = reactive(input$unit),
+        timeRange = reactive(input$trendPeriod),
+        unit = reactive(input$trendUnit),
         isSchade = (type == "wildschade")
       )
       
@@ -344,7 +344,7 @@ trendYearRegionUI <- function(id, unitChoices) {
       column(4,
         wellPanel(
           uiOutput(ns("period")),
-          selectInput(inputId = ns("unit"), label = "Eenheid",
+          selectInput(inputId = ns("trendUnit"), label = "Eenheid",
             choices = unitChoices),
           optionsModuleUI(id = ns("trendRegion"), exportData = TRUE,
             doWellPanel = FALSE)

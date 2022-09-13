@@ -708,7 +708,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
       }
   )
   
-  if (datatable == TRUE) {
+  if (datatable) {
     output$table <- DT::renderDataTable({
           
           DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,

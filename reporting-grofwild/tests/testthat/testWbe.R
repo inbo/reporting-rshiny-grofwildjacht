@@ -206,7 +206,8 @@ test_that("Additional plots", {
     
     percentageRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
-      jaartallen = 2009:2020)
+      jaartallen = 2009:2020,
+      unit = "percentage")
     
     plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")
     

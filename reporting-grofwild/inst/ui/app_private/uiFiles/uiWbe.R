@@ -88,7 +88,7 @@ tagList(
         plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
         plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText)
       ),
-      countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText)
+      countEmbryosUI("wbe", regionLevels = NULL)
     )
   
   )

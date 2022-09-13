@@ -43,6 +43,8 @@ biotoopData <- biotoopData[biotoopData$regio == currentPartij, ]
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
 combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ], 
   ecoData, by = commonNames, all.x = TRUE)
+combinedZwijn <- merge(geoData[geoData$wildsoort == "Wild zwijn", ], 
+  ecoData[ecoData$wildsoort == "Wild zwijn", ], by = commonNames, all.x = TRUE)
 
 spatialData <- filterSpatialWbe(allSpatialData = spatialData, partijNummer = currentPartij)
 
@@ -109,7 +111,7 @@ test_that("Trend plot", {
       
       myPlot <- trendYearRegion(
         data = trendRegionData,
-        locaties = unique(trendRegionData$locatie),
+        locaties = unique(geoData$WBE_Naam_Toek[geoData$KboNummer_Toek == currentKbo]),
         timeRange = range(years),
         unit = unit
       )$plot
@@ -182,28 +184,6 @@ test_that("Map schade", {
     
   })
 
-test_that("Trend schade", {
-    
-    iSpecies <- species[1]
-    schadeDataSub <- subset(schadeData, wildsoort = iSpecies)
-    
-    
-    trendRegionData <- createTrendData(
-      data = schadeDataSub@data,
-      allSpatialData = spatialData,
-      timeRange = range(years),
-      species = iSpecies,
-      regionLevel = "WBE_buitengrenzen"
-    )
-    
-    trendYearRegion(
-      data = trendRegionData,
-      locaties = unique(trendRegionData$locatie),
-      timeRange = range(years)
-    )$plot
-    
-  })
-
 
 test_that("Additional plots", {
     
@@ -235,7 +215,7 @@ test_that("Additional plots", {
     
     plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
     
-    countEmbryos(data = combinedRee, jaartallen = 2009:2020,
-      sourceIndicator = "both", sourceIndicator_leeftijd = "both", sourceIndicator_geslacht = "both")
+    countEmbryos(data = combinedZwijn, jaartallen = 2009:2020,
+      type = c("Zeug", "Overloper (v)", "Frisling (v)"))
     
   })

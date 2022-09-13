@@ -166,9 +166,9 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   ## stats
   # compute all cases with full info available
-  myStats$nAvailable <- sum(allData$freq)
-  
-  
+  statsDf$nAvailable <- sum(allData$freq)
+  statsDf$percentage <- statsDf$nAvailable / statsDf$nTotal * 100
+    
   # Remove redundant variables
   allData$afschotjaar <- NULL
   
@@ -261,7 +261,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   }
   
 #    return(summaryData2)
-  return(list(data = summaryData2, stats = myStats))
+  return(list(data = summaryData2, stats = statsDf))
   
   
 }

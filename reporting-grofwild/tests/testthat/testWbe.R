@@ -166,7 +166,7 @@ test_that("Summary Table", {
 
 test_that("Map schade", {
     
-    schadeDataSub <- subset(schadeData, wildsoort == "ree")  
+    schadeDataSub <- subset(schadeData, wildsoort == "Ree")  
     schadeDataSub <- createSchadeSummaryData(
       schadeData = schadeDataSub,
       timeRange = range(schadeDataSub$afschotjaar))
@@ -175,7 +175,7 @@ test_that("Map schade", {
       
       myPlot <- mapSchade(
         schadeData = schadeDataSub,
-        regionLevel = "provinces",
+        regionLevel = "WBE_buitengrenzen_2018",
         variable = var,
         allSpatialData = spatialData,
         addGlobe = TRUE)

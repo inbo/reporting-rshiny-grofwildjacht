@@ -172,7 +172,9 @@ mapSchadeServer(id = "wbe",
   allSpatialData = spatialData, 
   timeRange = reactive(c(max(2018, results$wbe_timeRange()[1]), results$wbe_timeRange()[2])), 
   defaultYear = defaultYear, 
-  species = reactive(input$wbe_species))
+  species = reactive(input$wbe_species),
+  borderRegion = "WBE_buitengrenzen"
+)
 
 
 # Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie

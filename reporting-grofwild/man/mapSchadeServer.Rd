@@ -10,7 +10,8 @@ mapSchadeServer(
   allSpatialData,
   timeRange,
   defaultYear,
-  species
+  species,
+  borderRegion = NULL
 )
 }
 \arguments{
@@ -25,6 +26,9 @@ mapSchadeServer(
 \item{defaultYear}{integer, current (default) end year of the selected period}
 
 \item{species}{character vector, selected species for the plot}
+
+\item{borderRegion}{character, for which \code{regionLevel} to show black border;
+see also \code{\link{mapSchade}}; default is NULL}
 }
 \value{
 no return value

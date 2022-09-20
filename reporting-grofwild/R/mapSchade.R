@@ -198,8 +198,9 @@ mapSchade <- function(
 
 #' Shiny module for creating map on schade data - server side
 #' @param id character, unique identifier for module
-#' @param schadeData object as returned by \code{loadRawData(type = "wildschade")}
-#' @inheritParams mapSchade 
+#' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
+#' @param allSpatialData reactive object spatialPolygonsDataFrame with
+#' spatial data for selected region (and year for WBE)
 #' @param timeRange integer vector, relevant period that can be selected for the map
 #' @param defaultYear integer, current (default) end year of the selected period
 #' @param species character vector, selected species for the plot
@@ -291,28 +292,28 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       results$schadeData <- reactive({
           
           # Select species & code & exclude data before 2018
-          toRetain <- schadeData@data$wildsoort %in% req(species()) &
-            schadeData@data$schadeBasisCode %in% req(input$code) &
-            schadeData@data$afschotjaar >= 2018
+          toRetain <- schadeData()@data$wildsoort %in% req(species()) &
+            schadeData()@data$schadeBasisCode %in% req(input$code) &
+            schadeData()@data$afschotjaar >= 2018
           
           
           # Filter gewas
           if ("GEWAS" %in% input$code) {
             otherCodes <- input$code[input$code != "GEWAS"]
             toRetain <- toRetain &
-              (schadeData@data$schadeBasisCode %in% otherCodes |
-                schadeData@data$schadeCode %in% input$gewas)
+              (schadeData()@data$schadeBasisCode %in% otherCodes |
+                schadeData()@data$schadeCode %in% input$gewas)
           }
           
           # Filter voertuig
           if ("VRTG" %in% input$code) {
             otherCodes <- input$code[input$code != "VRTG"]
             toRetain <- toRetain &
-              (schadeData@data$schadeBasisCode %in% otherCodes |
-                schadeData@data$schadeCode %in% input$voertuig)
+              (schadeData()@data$schadeBasisCode %in% otherCodes |
+                schadeData()@data$schadeCode %in% input$voertuig)
           }
           
-          schadeData[toRetain, ]
+          schadeData()[toRetain, ]
           
         })
       
@@ -342,7 +343,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       # Map for UI
       output$perceelPlot <- renderLeaflet({
           
-          validate(need(allSpatialData, "Geen data beschikbaar"),
+          validate(need(allSpatialData(), "Geen data beschikbaar"),
             # Also show map if 0 observations
             need(ncol(results$summaryPerceelData()@data) > 0, "Geen data beschikbaar"),
             need(input$time_schade, "Gelieve periode te selecteren"))
@@ -353,7 +354,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
                 paste0(borderRegion, "_", input$time_schade[2]) else
                 borderRegion,
             variable = input$variable,
-            allSpatialData = allSpatialData,
+            allSpatialData = allSpatialData(),
             addGlobe = input$globe_schade %% 2 == 0, 
             legend = input$legend_schade)
           
@@ -371,7 +372,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
                 paste0(borderRegion, "_", input$time_schade[2]) else
                 borderRegion, 
             variable = input$variable,
-            allSpatialData = allSpatialData,
+            allSpatialData = allSpatialData(),
             legend = input$legend_schade,
             addGlobe = input$globe_schade %% 2 == 0
           )
@@ -483,7 +484,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
         
         createTrendData(
           data = results$schadeData()@data,
-          allSpatialData = allSpatialData,
+          allSpatialData = allSpatialData(),
           timeRange = input$time_schade,
           species = species(),
           regionLevel = "WBE_buitengrenzen"

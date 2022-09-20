@@ -289,7 +289,7 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
           
           sliderInput(inputId = ns("trendPeriod"), 
             label = if (type == "wbe") "Periode" else "Periode (grafiek)", 
-            value = range(geoData()$afschotjaar),
+            value = c(min(geoData()$afschotjaar), defaultYear),
             min = min(geoData()$afschotjaar),
             max = max(geoData()$afschotjaar),
             step = 1,

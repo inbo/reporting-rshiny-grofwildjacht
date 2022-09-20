@@ -17,7 +17,7 @@
 #' @importFrom stats update
 #' @export
 runWildApp <- function(installDependencies = FALSE, 
-  public = TRUE, kbo = NULL, ...) {
+  public = TRUE, kbo = "", ...) {
   
   # (1) Install all suggested R packages (see DESCRIPTION)
   if (installDependencies) {
@@ -45,9 +45,7 @@ runWildApp <- function(installDependencies = FALSE,
   
   # (3) Specific WBE
   # WARNING: This overrides the kbo read from shinyproxy
-  if (!is.null(kbo))
-    Sys.setenv("SHINYPROXY_USERNAME" = kbo)
-  
+  Sys.setenv("SHINYPROXY_USERNAME" = kbo)
   
   
   # (4) Run the application

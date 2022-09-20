@@ -11,6 +11,10 @@ tagList(
     
     tags$br(),
     
+    if (length(currentKbo) > 1)
+      selectInput(inputId = "wbe_kboChoice", label = "WBE Naam", 
+        choices = currentKbo, width = "100%"),
+    
     tags$div(align = "center",
       uiOutput("wbe_title")
     ),

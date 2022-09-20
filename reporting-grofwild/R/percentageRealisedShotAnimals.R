@@ -90,15 +90,13 @@ percentageRealisedShot <- function(data, regio, type = NULL,
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen)
   )
   
-  colorList <- replicateColors(nColors = nlevels(summaryData$variable))
-  colors <- colorList$colors
-  
-  
   if (unit == "absolute") {
     
     summaryData <- melt(plotData[, c("jaar", "verwezenlijkt", "niet-verwezenlijkt")], id.vars = "jaar")
     summaryData <- merge(summaryData, plotData[, c("jaar", "toegekend")])
     
+    colorList <- replicateColors(nColors = nlevels(summaryData$variable))
+    colors <- colorList$colors
     names(colors) <- unique(summaryData$variable)
     
     pl <- plot_ly(data = summaryData, x = ~jaar, y = ~value, color = ~variable,
@@ -106,6 +104,8 @@ percentageRealisedShot <- function(data, regio, type = NULL,
       colors = colors, type = "bar", width = width, height = height)
     
   } else {
+    
+    colors <- replicateColors(nColors = 3)$colors
     
     pl <- plot_ly(data = plotData, x = ~jaar, y = ~round(percent, 2),
       text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+text", 

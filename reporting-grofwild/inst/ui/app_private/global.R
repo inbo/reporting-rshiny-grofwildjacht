@@ -42,6 +42,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 #  currentKbo <- "454472813"  # including Damhert data
 #  currentKbo <- "417187694"   # including Edelhert data
 #  currentKbo <- "454472813"   # no data Wild zwijn
+#  currentKbo <- "admin"
   
 } else {
   # Inside shinyProxy
@@ -49,6 +50,8 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
   currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
   
 }
+
+
 
 
 
@@ -66,22 +69,20 @@ ecoData <- loadRawData(type = "eco")
 ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 
 geoData <- loadRawData(type = "geo")
-geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
-
 schadeData <- loadRawData(type = "wildschade")
-schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
-
-currentWbe <- unique(geoData$PartijNummer)
-currentWbe <- currentWbe[!is.na(currentWbe)]
-
 biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
   regionLevels = "wbe")[["wbe"]]
-biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
-
 toekenningsData <- loadToekenningen(dataDir = dataDir)
-toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 
-spatialData <- filterSpatialWbe(allSpatialData = spatialData, partijNummer = currentWbe)
+
+# Special case for 'admin'
+if (currentKbo == "admin") {
+  
+  currentKbo <- unique(geoData$KboNummer_Toek)
+  names(currentKbo) <- geoData$WBE_Naam_Toek[match(currentKbo, geoData$KboNummer_Toek)]
+  currentKbo <- currentKbo[order(names(currentKbo))]
+  
+}
 
 gc()
 

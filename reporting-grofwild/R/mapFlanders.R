@@ -400,7 +400,7 @@ mapFlanders <- function(
 #' @importFrom webshot webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
-mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
+mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NULL),
   hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe"),
   geoData, biotoopData = NULL, allSpatialData) {
   moduleServer(id,
@@ -435,7 +435,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       ## Region level
       results$regionLevel <- reactive({
           
-          if (!is.null(currentWbe))
+          if (!is.null(currentWbe()))
             "WBE_buitengrenzen" else
             req(input$regionLevel)
           
@@ -453,7 +453,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             "communes" = "Gemeente",
             "fbz_gemeentes" = "Gemeente per faunabeheerzone",
             "utm5" = "5x5 UTM",
-            "WBE_buitengrenzen" = unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe)]))
+            "WBE_buitengrenzen" = unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe())]))
           
         })
       
@@ -544,7 +544,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             species = req(!is.null(species())), 
             regionLevel = results$regionLevel(), 
             year = req(input$year),
-            locaties = if (!is.null(currentWbe)) currentWbe
+            locaties = if (!is.null(currentWbe())) currentWbe()
           )
           
         })
@@ -732,10 +732,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Center view for WBE
       observe({
           
-          req(currentWbe)
+          req(currentWbe())
           
           selectedPolygons <- subset(spatialData(), 
-            spatialData()$NAAM %in% currentWbe)
+            spatialData()$NAAM %in% currentWbe())
           
           coordData <- ggplot2::fortify(selectedPolygons)
           centerView <- c(range(coordData$long), range(coordData$lat))
@@ -1014,7 +1014,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
         plotFunction = "trendYearRegion", 
         data = results$timeData,
         locaties = reactive({
-            if (!is.null(currentWbe))
+            if (!is.null(currentWbe()))
               results$regionLevelName() else
               input$region
           }),
@@ -1039,16 +1039,16 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       
       callModule(module = optionsModuleServer, id = "biotoopPlot", 
         data = reactive({
-            if (!is.null(currentWbe))
-              biotoopData else
+            if (!is.null(currentWbe()))
+              subset(biotoopData, regio %in% currentWbe()) else
               biotoopData[[req(input$regionLevel)]]
           })
       )
       callModule(module = plotModuleServer, id = "biotoopPlot",
         plotFunction = "barBiotoop", 
         data = reactive({
-            if (!is.null(currentWbe))
-              biotoopData[biotoopData$year == input$year, ] else {
+            if (!is.null(currentWbe()))
+              subset(biotoopData, year == input$year & regio %in% currentWbe()) else {
               validate(need(input$region, "Gelieve regio('s) te selecteren"))
               subset(biotoopData[[req(input$regionLevel)]], regio %in% input$region)
             }

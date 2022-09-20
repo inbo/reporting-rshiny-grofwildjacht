@@ -85,8 +85,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   } else {
     # add Area
     fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
-    
+      by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))   
   }
   
   allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)

@@ -55,7 +55,7 @@ boxAgeWeight <- function(data,
   	
   # Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("ontweid_gewicht", "leeftijd_comp", "leeftijd_comp_inbo", "geslacht_comp", "provincie",
+			c("ontweid_gewicht", "leeftijd_comp",  "leeftijd_comp_inbo", "geslacht_comp", "provincie",
         "leeftijd_comp_bron", "geslacht_comp_bron")]
 	names(plotData) <- c("gewicht", "leeftijd_comp", "leeftijd_comp_inbo", "geslacht", "provincie", 
     "leeftijd_comp_bron", "geslacht_comp_bron")

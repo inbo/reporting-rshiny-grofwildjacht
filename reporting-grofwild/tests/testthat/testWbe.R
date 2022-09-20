@@ -115,7 +115,7 @@ test_that("Trend plot", {
       
       myPlot <- trendYearRegion(
         data = trendRegionData,
-        locaties = unique(geoData$WBE_Naam_Toek[geoData$KboNummer_Toek == currentKbo]),
+        locaties = unique(trendRegionData$locatie),
         timeRange = range(years),
         unit = unit
       )$plot
@@ -203,6 +203,28 @@ test_that("Map schade", {
         addGlobe = TRUE)
       
     }
+    
+  })
+
+test_that("Trend schade", {
+    
+    iSpecies <- species[1]
+    schadeDataSub <- subset(schadeData, wildsoort = iSpecies)
+    
+    
+    trendRegionData <- createTrendData(
+      data = schadeDataSub@data,
+      allSpatialData = spatialData,
+      timeRange = range(years),
+      species = iSpecies,
+      regionLevel = "WBE_buitengrenzen"
+    )
+    
+    trendYearRegion(
+      data = trendRegionData,
+      locaties = unique(trendRegionData$locatie),
+      timeRange = range(years)
+    )$plot
     
   })
 

@@ -45,6 +45,12 @@ names(tmpWildsoorten) <- NULL
 tmpWildsoorten <- unlist(tmpWildsoorten)
 names(tmpWildsoorten) <- tmpWildsoorten
 
+tmpWildsoorten <- schadeWildsoorten
+names(tmpWildsoorten) <- NULL
+tmpWildsoorten <- unlist(tmpWildsoorten)
+names(tmpWildsoorten) <- tmpWildsoorten
+fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+
              
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1

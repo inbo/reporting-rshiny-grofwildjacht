@@ -65,7 +65,6 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   if (wildNaam == "Ree") {
     plotData <- plotData[plotData$embryos <= 3 | is.na(plotData$embryos), ]
   }  
-  
  
   ## For aantal_embryos
   nCollected <- sum(!is.na(plotData$embryos))

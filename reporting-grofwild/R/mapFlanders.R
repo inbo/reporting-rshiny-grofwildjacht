@@ -168,7 +168,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # compute all cases with full info available
   statsDf$nAvailable <- sum(allData$freq)
   statsDf$percentage <- statsDf$nAvailable / statsDf$nTotal * 100
-    
+
   # Remove redundant variables
   allData$afschotjaar <- NULL
   
@@ -261,7 +261,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   }
   
 #    return(summaryData2)
-  return(list(data = summaryData2, stats = statsDf))
+  return(list(data = summaryData2, stats = myStats))
   
   
 }
@@ -312,7 +312,7 @@ mapFlanders <- function(
     jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
     spatialData@data$NAAM <- NA
       
-      spatialData <- rbind(spatialData, jachtData)
+    spatialData <- rbind(spatialData, jachtData)
     
   }
   

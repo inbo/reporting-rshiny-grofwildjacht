@@ -261,7 +261,7 @@ test_that("Percentages per age and gender", {
       })
     allPlots
     
-    countAgeGender(data = plotData, sourceIndicator_leeftijd = "inbo", 
+    countAgeGender(data = wildEcoData, sourceIndicator_leeftijd = "inbo", 
       sourceIndicator_geslacht = "both", jaartallen = 2007:2021)
     
     countAgeGender(data = wildEcoData, jaartallen = 2016)

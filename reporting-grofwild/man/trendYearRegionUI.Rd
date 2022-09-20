@@ -7,14 +7,11 @@
 trendYearRegionUI(id, unitChoices)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
+\item{id}{unique identifier}
 
 \item{unitChoices, }{character vector with choices for the units}
 
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
+\item{unitChoices}{character vector, user choices for unit}
 }
 \description{
 Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side

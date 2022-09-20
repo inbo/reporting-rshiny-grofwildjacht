@@ -251,8 +251,8 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - server side
 #' 
 #' NOTE: Currently only used for type = "wbe"
+#' @inheritParams createTrendData
 #' @param id character, unique identifier for the module
-#' @param data reactive data.frame for the plot function
 #' @param geoData reactive data.frame, geographical data for the selected species
 #' @param type character, type of module e.g. "wbe"
 #' @param regionLevelName character, region name to be shown in the plot title
@@ -331,7 +331,8 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
 
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' @param unitChoices, character vector with choices for the units
-#' @template moduleUI
+#' @param id unique identifier
+#' @param unitChoices character vector, user choices for unit
 #' 
 #' @author mvarewyck
 #' @export

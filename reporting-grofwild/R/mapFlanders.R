@@ -151,7 +151,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     
     # Exclude data with missing time or space
     plotData <- subset(plotData, !is.na(plotData$afschotjaar) & 
-        !is.na(plotData$locatie) & plotData$locatie != "",
+        !is.na(plotData$locatie) & !plotData$locatie %in% c("", "Onbekend"),
       c("afschotjaar", "locatie")
     )
     

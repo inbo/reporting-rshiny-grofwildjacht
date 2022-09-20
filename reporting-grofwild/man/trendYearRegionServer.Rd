@@ -17,13 +17,17 @@ trendYearRegionServer(
 \arguments{
 \item{id}{character, unique identifier for the module}
 
+\item{species}{character, species of interest}
+
+\item{allSpatialData}{list of sp, spatial data for all spatial levels}
+
+\item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadHabitats}}
+
 \item{geoData}{reactive data.frame, geographical data for the selected species}
 
 \item{type}{character, type of module e.g. "wbe"}
 
 \item{regionLevelName}{character, region name to be shown in the plot title}
-
-\item{data}{reactive data.frame for the plot function}
 }
 \value{
 no return value

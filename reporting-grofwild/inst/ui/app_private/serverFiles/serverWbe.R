@@ -247,6 +247,14 @@ plotBioindicatorServer(id = "wbe_gewicht",
   bioindicator = "ontweid_gewicht")
 
 
+## Bio indicatoren ##
+
+bioindicatorSectionServer(
+  id = "wbe", 
+  uiText = uiText, 
+  wildsoort = reactive(input$wbe_species)
+)
+
 # Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
 results$typesFemale <- reactive({
     

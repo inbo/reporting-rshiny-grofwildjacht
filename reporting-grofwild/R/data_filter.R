@@ -84,7 +84,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
     
   }
   
-  if (!is.null(sourceIndicator_geslacht)){
+  if (!is.null(sourceIndicator_geslacht)) {
     if (sourceIndicator_geslacht == "inbo") {
       
       # filters out NA and 'meldingsformulier' en 'onbekend'
@@ -102,7 +102,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
     
     # Bioindicator 'onderkaaklengte' depends on data source
     # bron == "both" -> onderkaaklengte_comp
-    # bron == "inbo" -> lengte_mm
+    # bron == "inbo" -> onderkaaklengte_mm
     # bron == "meldingsformulier" -> mean(onderkaaklengte_links, onderkaaklengte_rechts)
      if (sourceIndicator_onderkaak == "both") {
         
@@ -117,7 +117,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
         plotData$onderkaaklengte_comp_bron <- sourceIndicator_onderkaak
         
         if (sourceIndicator_onderkaak == "inbo") 
-          plotData$onderkaaklengte <- plotData$lengte_mm else
+          plotData$onderkaaklengte <- plotData$onderkaaklengte_mm else
           plotData$onderkaaklengte <- rowMeans(plotData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
       }
       

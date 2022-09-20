@@ -23,10 +23,9 @@ toekenningsData <- loadToekenningen()
 biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 
-currentKbo <- 445465768
-#currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
-
-currentYear <- 2020
+currentKbo <- 452846379
+# Find KBO with many species
+# which.max(sapply(allWbe, function(wbe) length(unique(geoData$wildsoort[geoData$KboNummer_Toek == wbe]))))
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
@@ -72,18 +71,20 @@ test_that("The map", {
           
           expect_is(spaceData$data, "data.frame")
           
+          colorScheme <- c("grey", suppressWarnings(RColorBrewer::brewer.pal(
+                n = nlevels(spaceData$data$group), name = "YlOrBr")))
+          
           myPlot <- mapFlanders(
             allSpatialData = spatialData, 
             regionLevel = "WBE_buitengrenzen", 
             year = iYear,
-            colorScheme = c("grey", RColorBrewer::brewer.pal(
-                n = nlevels(spaceData$data$group), name = "YlOrBr")),
+            colorScheme = colorScheme,
             summaryData = spaceData$data,
             legend = "topright",
             species = ""
           )
           
-          expect_is(myPlot, "plotly")
+          expect_is(myPlot, "leaflet")
           
         }
      }
@@ -98,6 +99,9 @@ test_that("Trend plot", {
     unit <- c("absolute", "relative", "relativeDekking")[3]
     
     for (iSpecies in species) {
+      
+      if (doPrint)
+        print(iSpecies)
       
       trendRegionData <- createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
@@ -139,20 +143,23 @@ test_that("Summary Table", {
     
     for (iSpecies in species) {
       
+      if (doPrint)
+        print(iSpecies)
+      
       combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
         ecoData, by = commonNames, all.x = TRUE)
       
-      if (nrow(combinedData) > 0) {
+      if (sum(combinedData$afschotjaar == 2020) > 0) {
         
-      myTable <- tableSpecies(
-        data = combinedData, 
-        jaar = 2020
-      ) 
+        myTable <- tableSpecies(
+          data = combinedData, 
+          jaar = 2020
+        ) 
+        
+        expect_is(myTable, "data.frame")
+        
+      }
       
-      expect_is(myTable, "data.frame")
-      
-    }
-    
     }  
     
     tableSpecies(
@@ -166,12 +173,27 @@ test_that("Summary Table", {
 
 test_that("Map schade", {
     
+    # Metadata schade
+    metaSchade <- loadMetaSchade()
+    schadeWildsoorten <- metaSchade$wildsoorten
+    schadeTypes <- metaSchade$types
+    schadeCodes <- metaSchade$codes
+    names(schadeCodes) <- NULL
+    schadeCodes <- unlist(schadeCodes)
+    sourcesSchade <- metaSchade$sources
+    fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+    
+    
     schadeDataSub <- subset(schadeData, wildsoort == "Ree")  
     schadeDataSub <- createSchadeSummaryData(
       schadeData = schadeDataSub,
-      timeRange = range(schadeDataSub$afschotjaar))
+      timeRange = range(schadeDataSub$afschotjaar),
+      fullNames = fullNames)
     
     for (var in c("season", "schadeCode", "afschotjaar")) {
+      
+      if (doPrint)
+        print(var)
       
       myPlot <- mapSchade(
         schadeData = schadeDataSub,
@@ -199,23 +221,23 @@ test_that("Additional plots", {
       interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
     )$plot
     
-    countAgeGender(data = combinedRee)
+    countAgeGender(data = combinedRee)$plot
     
-    countAgeCheek(data = combinedRee, 
-      jaartallen = 2009:2020)
+    countAgeCheek(data = combinedRee, jaartallen = 2009:2020)$plot
     
-    boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))
+    boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))$plot
     
     percentageRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
       jaartallen = 2009:2020,
-      unit = "percentage")
+      unit = "percentage")$plot
     
-    plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")
+    plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")$plot
     
-    plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
+    plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")$plot
     
     countEmbryos(data = combinedZwijn, jaartallen = 2009:2020,
-      type = c("Zeug", "Overloper (v)", "Frisling (v)"))
+      type = c("Zeug", "Overloper (v)", "Frisling (v)"))$plot
     
   })
+

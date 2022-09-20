@@ -4,7 +4,7 @@
 \alias{runWildApp}
 \title{Run the reporting-grofwild application}
 \usage{
-runWildApp(installDependencies = FALSE, public = TRUE, kbo = NULL, ...)
+runWildApp(installDependencies = FALSE, public = TRUE, kbo = "", ...)
 }
 \arguments{
 \item{installDependencies}{boolean, whether to first install packages listed

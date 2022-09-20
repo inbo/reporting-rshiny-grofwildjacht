@@ -138,11 +138,7 @@ countAgeGenderServer(id = "wild",
 
 # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 results$leeftijdtypes <- reactive({
-    toReturn <- switch(input$wild_species,
-      "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
-      Ree = c("Kits", "Jongvolwassen", "Volwassen")									
-    )
-    c(toReturn, "Onbekend")
+    c(loadMetaEco(species = input$wild_species)$leeftijd_comp_inbo, "Onbekend")
   })
 
 boxAgeWeightServer(id = "wild",

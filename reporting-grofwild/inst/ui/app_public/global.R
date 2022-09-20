@@ -38,12 +38,12 @@ schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
 sourcesSchade <- metaSchade$sources
+fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
 tmpWildsoorten <- schadeWildsoorten
 names(tmpWildsoorten) <- NULL
 tmpWildsoorten <- unlist(tmpWildsoorten)
 names(tmpWildsoorten) <- tmpWildsoorten
-fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
              
 # Specify default year to show (and default max to show in time ranges)

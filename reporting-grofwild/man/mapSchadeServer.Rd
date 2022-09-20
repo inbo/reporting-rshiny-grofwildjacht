@@ -17,9 +17,10 @@ mapSchadeServer(
 \arguments{
 \item{id}{character, unique identifier for module}
 
-\item{schadeData}{object as returned by \code{loadRawData(type = "wildschade")}}
+\item{schadeData}{reacive object as returned by \code{loadRawData(type = "wildschade")}}
 
-\item{allSpatialData}{list of sp, spatial data for all spatial levels}
+\item{allSpatialData}{reactive object spatialPolygonsDataFrame with
+spatial data for selected region (and year for WBE)}
 
 \item{timeRange}{integer vector, relevant period that can be selected for the map}
 

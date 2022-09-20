@@ -42,13 +42,18 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), header = TRUE, sep = ",")
   
   plotData$niscode <- gemeenteData$NIS.code[match(plotData$gemeente_afschot_locatie, 
-                                                  gemeenteData$Gemeente)]
+      gemeenteData$Gemeente)]
   plotData$postcode <- gemeenteData$Postcode[match(plotData$gemeente_afschot_locatie, 
-                                                    gemeenteData$Gemeente)]
-                                            
+      gemeenteData$Gemeente)]
+  
+  
   # decrypte schade names
-  plotData$schadeBasisCode <- names(fullNames)[match(plotData$schadeBasisCode, fullNames)]
-  plotData$schadeCode <- names(fullNames)[match(plotData$schadeCode, fullNames)]
+  if (!is.null(fullNames)) {
+    
+    plotData$schadeBasisCode <- names(fullNames)[match(plotData$schadeBasisCode, fullNames)]
+    plotData$schadeCode <- names(fullNames)[match(plotData$schadeCode, fullNames)]
+    
+  }
   
   plotData
 }
@@ -223,6 +228,17 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       results <- reactiveValues()
       
       
+      # Metadata schade
+      metaSchade <- loadMetaSchade()
+      
+      schadeWildsoorten <- metaSchade$wildsoorten
+      schadeTypes <- metaSchade$types
+      schadeCodes <- metaSchade$codes
+      names(schadeCodes) <- NULL
+      schadeCodes <- unlist(schadeCodes)
+      sourcesSchade <- metaSchade$sources
+      fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+      
       ## Region level
       results$regionLevelName <- reactive({
 
@@ -337,7 +353,9 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           createSchadeSummaryData(
             schadeData = results$schadeData(),
             timeRange = input$time_schade,
-            sourceIndicator = input$bron)
+            sourceIndicator = input$bron,
+            fullNames = fullNames)
+          
         })
       
       # Map for UI

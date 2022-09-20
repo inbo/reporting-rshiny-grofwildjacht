@@ -45,9 +45,7 @@ test_that("Ecological data", {
         
         myData <- subset(ecoData, wildsoort == iSoort)
         myData$onderkaaklengte <- rowMeans(myData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
-        
-        expect_true(all(myData$doodsoorzaak == "afschot"))
-        
+                
         hist(myData$afschotjaar, main = paste(iSoort, "- afschotjaar"))
         barplot(table(myData$provincie), main = paste(iSoort, "- provincie"))
         barplot(table(myData$geslacht_comp), main = paste(iSoort, "- geslacht"))
@@ -61,8 +59,8 @@ test_that("Ecological data", {
         
         if (iSoort %in% c("Ree")) {
           
-          hist(myData$lengte_mm, main = paste(iSoort, "- onderkaaklengte"), border = "red",
-            xlim = range(myData[ , c("lengte_mm", "onderkaaklengte", "onderkaaklengte_comp")], na.rm = TRUE))
+          hist(myData$onderkaaklengte_mm, main = paste(iSoort, "- onderkaaklengte"), border = "red",
+            xlim = range(myData[ , c("onderkaaklengte_mm", "onderkaaklengte", "onderkaaklengte_comp")], na.rm = TRUE))
           hist(myData$onderkaaklengte, add = TRUE, border = "blue")
           hist(myData$onderkaaklengte_comp, add = TRUE)
           
@@ -90,7 +88,7 @@ test_that("Spatial data", {
     pdf(plotFile)
     for (iLevel in names(spatialData)) {
       print(iLevel)
-      plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(10, "Set1"))
+      plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(9, "Set1"))
     }
     dev.off()
     
@@ -119,7 +117,7 @@ test_that("Geographical data", {
 test_that("Wildschade data", {
     
     # Can we combine data sources? 
-    wildschadeData <- loadRawData(type = "wildschade")
+    expect_warning(wildschadeData <- loadRawData(type = "wildschade"))
     
     dim(wildschadeData)
     head(wildschadeData)

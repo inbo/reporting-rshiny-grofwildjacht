@@ -321,7 +321,7 @@ mapFlanders <- function(
     addPolygons(
       weight = 1, 
       color = "gray",
-      fillColor = ~ palette(NAAM),
+      fillColor = ~ palette(valuesPalette),
       fillOpacity = 0.8,
       layerId = spatialData$NAAM,
       group = "region"

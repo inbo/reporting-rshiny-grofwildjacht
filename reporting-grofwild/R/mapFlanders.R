@@ -186,13 +186,21 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # Create group variable
   if (unit == "region") {
     
-#    jachtData <- filterSpatial(allSpatialData = allSpatialData, 
-#      species = species, regionLevel = "WBE", year = year)
-#    
-#    regionLevels <- c("Niet-bejaagd", paste0("Jachtterrein (", jachtData@data$WBELID, ")"))
-    # Keep only 'aangesloten' #327
-    regionLevels <- "Jachtterrein (aangesloten)"
-  
+    jachtData <- filterSpatial(allSpatialData = allSpatialData, 
+      species = species, regionLevel = "WBE", year = year)
+    
+    if (is.null(jachtData)) {
+      
+      regionLevels <- NA
+      
+    } else {
+
+#      regionLevels <- c("Niet-bejaagd", paste0("Jachtterrein (", jachtData@data$WBELID, ")"))
+      # Keep only 'aangesloten' #327
+      regionLevels <- "Jachtterrein (aangesloten)"
+      
+    }
+    
     summaryData2 <- cbind(summaryData2, data.frame(group = factor(regionLevels)))
     
   } else {
@@ -334,7 +342,7 @@ mapFlanders <- function(
     ) 
   
   # Add legend
-  if (legend != "none" & !all(is.na(valuesPalette))) { 
+  if (legend != "none") { 
     
     myMap <- addLegend(
       map = myMap,
@@ -828,15 +836,16 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                 match(spatialData()$NAAM, results$summarySpaceData()$data$locatie),
                 "group"]
             
-            proxy %>% addLegend(
-              position = input$legend,
-              pal = palette, 
-              values = valuesPalette,
-              opacity = 0.8,
-              title = "Legende",
-              layerId = "legend"
-            )                      
-            
+            if (!all(is.na(valuesPalette)))
+              proxy %>% addLegend(
+                position = input$legend,
+                pal = palette, 
+                values = valuesPalette,
+                opacity = 0.8,
+                title = "Legende",
+                layerId = "legend"
+              )                      
+          
           }
           
         })

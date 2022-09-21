@@ -706,6 +706,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
       }
 
     })
+  
+  }
 
 
 #' Display formatted frequency table of data (ui-side)

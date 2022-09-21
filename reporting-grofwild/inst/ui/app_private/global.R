@@ -42,7 +42,7 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 #  currentKbo <- "454472813"  # including Damhert data
 #  currentKbo <- "417187694"   # including Edelhert data
 #  currentKbo <- "454472813"   # no data Wild zwijn
-#  currentKbo <- "admin"
+  currentKbo <- "admin"
   
 } else {
   # Inside shinyProxy

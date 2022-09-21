@@ -261,7 +261,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   }
   
 #    return(summaryData2)
-  return(list(data = summaryData2, stats = myStats))
+  return(list(data = summaryData2, stats = statsDf))
   
   
 }
@@ -291,13 +291,6 @@ mapFlanders <- function(
     species = species, regionLevel = regionLevel, year = year, 
     locaties = summaryData$locatie)
   
-  palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
-  
-  if (regionLevel == "WBE_buitengrenzen")
-    valuesPalette <- c(NA, levels(summaryData$group)) else
-    valuesPalette <- summaryData[match(spatialData$NAAM, summaryData$locatie), "group"]
-  
-  
   if (any(!summaryData$locatie %in% spatialData$NAAM))
     stop("De geo-data kan niet gematcht worden aan de shape data.")
   
@@ -305,16 +298,29 @@ mapFlanders <- function(
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, species = species,
       regionLevel = "WBE", year = year, locaties = summaryData$locatie)
-    # Retain only 'aangesloten' #327
-    jachtData <- subset(jachtData, WBELID == "aangesloten")
-    jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
-    jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
-    jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
+    
     spatialData@data$NAAM <- NA
+    
+    if (!is.null(jachtData)) {
+      # Retain only 'aangesloten' #327
+      jachtData <- subset(jachtData, WBELID == "aangesloten")
+      jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
+      jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
+      jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
       
-    spatialData <- rbind(spatialData, jachtData)
+      spatialData <- rbind(spatialData, jachtData)
+    }
+    
+    valuesPalette <- unique(spatialData@data$NAAM)
+    
+  } else {
+    
+    valuesPalette <- summaryData[match(spatialData$NAAM, summaryData$locatie), "group"]
     
   }
+  
+  
+  palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
   
   myMap <- leaflet(spatialData) %>%
     
@@ -328,7 +334,7 @@ mapFlanders <- function(
     ) 
   
   # Add legend
-  if (legend != "none") { 
+  if (legend != "none" & !all(is.na(valuesPalette))) { 
     
     myMap <- addLegend(
       map = myMap,
@@ -421,9 +427,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           req(nrow(geoData()) > 0)
           
-          if (type == "grofwild" && input$regionLevel %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
-            2014 else if (type == "wbe")
-            2016 else
+          if ((type == "grofwild" && input$regionLevel %in% c("faunabeheerzones", "fbz_gemeentes", "utm5")) | type == "wbe")
+            2014 else
             min(geoData()$afschotjaar)          
           
         })

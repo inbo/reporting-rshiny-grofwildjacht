@@ -387,6 +387,7 @@ mapFlanders <- function(
 #' @param locaties reactive, pre-selected value of region chosen outside module;
 #' to draw black borders and zoom
 #' @inheritParams createSpaceData
+#' @param uiText data.frame
 #' 
 #' @return no return value
 #' 
@@ -400,7 +401,8 @@ mapFlanders <- function(
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
   hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty"),
   geoData, biotoopData = NULL, allSpatialData,
-  regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL) {
+  regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL,
+  uiText) {
   moduleServer(id,
     function(input, output, session) {
       
@@ -528,10 +530,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       observe({
           
           results$region_value <- if (is.null(input$region)) {
-              if (type %in% "empty")
+              if (results$regionLevel() == "flanders")
+                spatialData()$NAAM[1] else if (type %in% "empty")
                 locaties() else if (type == "wbe")
-                currentWbe else if (req(input$regionLevel) == "flanders")
-                spatialData()$NAAM[1] else
+                currentWbe else
                 NULL
             } else {
               input$region
@@ -1088,18 +1090,23 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Title for selected region level
       output$biotoopTitle <- renderUI({
           
-          h3("Biotoop beschrijving", tags$br(), 
-            results$regionLevelName(), 
-            if (!is.null(input$year)) paste("in", input$year))
+          uiText <- uiText[uiText$plotFunction == "biotoopUI", ]
           
+          tagList(
+            h3(uiText$title, tags$br(), 
+              req(results$regionLevelName()), 
+              if (!is.null(input$year)) paste("in", input$year)),
+            tags$p(HTML(uiText[, strsplit(id, "_")[[1]][1]]))
+          )
+        
         })
       
       # Plot
       callModule(module = optionsModuleServer, id = "biotoopPlot", 
         data = reactive({
             if (type == "wbe")
-              biotoopData else
-              biotoopData[[req(results$regionLevel())]]
+              biotoopData[biotoopData$year == input$year, ] else
+              subset(biotoopData[[req(results$regionLevel())]], regio %in% results$region_value)
           })
       )
       callModule(module = plotModuleServer, id = "biotoopPlot",
@@ -1107,7 +1114,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
         data = reactive({
             if (type == "wbe")
               biotoopData[biotoopData$year == input$year, ] else {
-              validate(need(results$region_value, "Gelieve regio('s) te selecteren"))
               subset(biotoopData[[req(results$regionLevel())]], regio %in% results$region_value)
             }
           })
@@ -1117,8 +1123,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       callModule(module = plotModuleServer, id = "biotoopTable",
         plotFunction = "tableBackground",
         data = reactive({
-            tmpData <- subset(biotoopData[[results$regionLevel()]], regio %in% results$region_value)
-            rbind(tmpData, biotoopData$flanders)
+            if (results$regionLevel() == "flanders")
+              biotoopData$flanders else 
+              rbind(subset(biotoopData[[req(results$regionLevel())]], regio %in% results$region_value),
+                biotoopData$flanders)
           })
       )
       
@@ -1249,7 +1257,7 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
     ),
     
     fixedRow(
-      column(if ("biotoop" %in% plotDetails) 6 else 12,
+      column(if ("biotoop" %in% plotDetails && type != "empty") 6 else 12,
         uiOutput(ns("title")),
         withSpinner(leafletOutput(ns("spacePlot"))),
         tags$div(align = "center", uiOutput(ns("stats"))),
@@ -1258,23 +1266,22 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
         downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
       ),
       
+      if (any(grepl("biotoop", plotDetails)))
+          uiOutput(ns("biotoopTitle")),
+          
       if ("biotoop" %in% plotDetails)
         column(6, 
-          uiOutput(ns("biotoopTitle")),
           plotModuleUI(id = ns("biotoopPlot"), height = "400px"),
           optionsModuleUI(id = ns("biotoopPlot"), exportData = TRUE,
             doWellPanel = FALSE)
-        )
-    ),
-    
-    if ("biotoopTable" %in% plotDetails)
-      fixedRow(
-        column(6, ""),
+        ),
+      if ("biotoopTable" %in% plotDetails)
         column(6,
           tableModuleUI(id = ns("biotoopTable")),
           optionsModuleUI(id = ns("biotoopTable"), exportData = TRUE,
             doWellPanel = FALSE)
-        )),
+        )
+    ),
     
     if (type == "wbe") {
         tags$div(style = "margin-top:20px;",

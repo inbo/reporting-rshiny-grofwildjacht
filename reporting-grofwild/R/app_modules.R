@@ -383,7 +383,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   
   ns <- NS(id)
   
-  tagList(
+  tags$div(style = "margin-bottom: 10px",
       withSpinner(DT::dataTableOutput(ns("table"))),
       if (includeTotal)
         uiOutput(ns("total"))

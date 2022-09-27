@@ -71,18 +71,14 @@ tagList(
     
     tags$hr(),
     
-    if (!doDebug) {
-      tagList(
-        # Achtergrond
-        tags$h2(toupper("Achtergrondinformatie")),
-        mapFlandersUI(id = "dash_background", showRegion = FALSE, showCombine = FALSE,
-          type = "empty",
-          showSource = FALSE,
-          plotDetails = c("biotoop", "biotoopTable"), 
-          showTitle = FALSE
-        )
-      )
-    },
+    # Achtergrond
+    tags$h2(toupper("Achtergrondinformatie")),
+    mapFlandersUI(id = "dash_background", showRegion = FALSE, showCombine = FALSE,
+      type = "empty",
+      showSource = FALSE,
+      plotDetails = c("biotoop", "biotoopTable"), 
+      showTitle = FALSE
+    ),
     
     
     # Populatie

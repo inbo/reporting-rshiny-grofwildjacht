@@ -235,7 +235,9 @@ results$dash_finalMap <- mapFlandersServer(id = "dash_background",
   geoData = reactive(everGeoData),
   biotoopData = biotoopData,
   allSpatialData = spatialData,
-  hideGlobeDefault = FALSE)
+  hideGlobeDefault = FALSE,
+  uiText = uiText
+)
 
 
 

@@ -4,14 +4,12 @@
 \alias{countAgeGroupUI}
 \title{Shiny module for creating the plot \code{\link{countAgeGroup}} - UI side}
 \usage{
-countAgeGroupUI(id, uiText, title = NULL, groupVariable, doHide = TRUE)
+countAgeGroupUI(id, uiText, doHide = TRUE)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-
-\item{title}{character, plot title in the app, overrides the automatic title}
 
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
 }

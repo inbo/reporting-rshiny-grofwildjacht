@@ -4,7 +4,14 @@
 \alias{barDraagkrachtServer}
 \title{Shiny module for creating the plot \code{\link{barDraagkracht}} - server side}
 \usage{
-barDraagkrachtServer(id, data, groupVariable = NULL, xVar = "percentage", yVar)
+barDraagkrachtServer(
+  id,
+  data,
+  groupVariable = NULL,
+  xVar = "percentage",
+  yVar,
+  title = reactive(NULL)
+)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}

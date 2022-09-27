@@ -4,9 +4,16 @@
 \alias{mapSpreadUI}
 \title{Shiny module for creating the plot \code{\link{mapSpread}} - UI side}
 \usage{
-mapSpreadUI(id, title, showLayer = FALSE)
+mapSpreadUI(id, uiText, showLayer = FALSE)
+}
+\arguments{
+\item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 }
 \value{
+HTML object
+
 UI object
 }
 \description{

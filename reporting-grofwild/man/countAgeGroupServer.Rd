@@ -4,7 +4,7 @@
 \alias{countAgeGroupServer}
 \title{Shiny module for creating the plot \code{\link{countAgeGroup}} - server side}
 \usage{
-countAgeGroupServer(id, data, timeRange, groupVariable)
+countAgeGroupServer(id, data, timeRange, groupVariable, title = reactive(NULL))
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
@@ -12,6 +12,8 @@ countAgeGroupServer(id, data, timeRange, groupVariable)
 \item{data}{data.frame for the plot function}
 
 \item{timeRange}{numeric vector of length 2, min and max year to subset data}
+
+\item{title}{reactive character, title with asterisk to show in the \code{actionLink}}
 }
 \value{
 no return value

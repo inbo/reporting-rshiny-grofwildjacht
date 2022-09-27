@@ -5,7 +5,7 @@
 \title{Load data for \code{mapSpread}}
 \usage{
 loadSpreadData(
-  spatialDir = system.file("extdata", package = "reporting-grofwild"),
+  spatialDir = system.file("extdata/futureSpread", package = "reportingGrofwild"),
   spatialLevel = c("pixels", "municipalities"),
   unit = c("model_EP", "model_OH", "risk_EP", "risk_OH")
 )

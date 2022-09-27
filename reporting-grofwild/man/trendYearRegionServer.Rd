@@ -13,7 +13,8 @@ trendYearRegionServer(
   locaties,
   geoData,
   allSpatialData,
-  biotoopData = NULL
+  biotoopData = NULL,
+  title = reactive(NULL)
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ trendYearRegionServer(
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 
 \item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadHabitats}}
+
+\item{title}{reactive character, title with asterisk to show in the \code{actionLink}}
 }
 \value{
 no return value

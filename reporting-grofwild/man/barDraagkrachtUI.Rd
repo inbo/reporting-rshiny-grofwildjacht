@@ -4,12 +4,10 @@
 \alias{barDraagkrachtUI}
 \title{Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side}
 \usage{
-barDraagkrachtUI(id, title, subGroups = NULL)
+barDraagkrachtUI(id, uiText, subGroups = NULL)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
-
-\item{title}{character, title for the plot}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 }

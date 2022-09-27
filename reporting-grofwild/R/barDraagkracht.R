@@ -158,7 +158,8 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percentage", yVar) {
+barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percentage", yVar,
+  title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -182,6 +183,13 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
             
         })
       
+      observeEvent(title(), {
+          
+          updateActionLink(session = session, inputId = "linkDraagkracht",
+            label = paste("FIGUUR:", title()))
+          
+        })
+      
       callModule(module = optionsModuleServer, id = "barDraagkracht", 
         data = subData
       )
@@ -200,24 +208,27 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side
 #' @template moduleUI
-#' @param title character, title for the plot
 #' 
 #' @author mvarewyck
 #' @export
-barDraagkrachtUI <- function(id, title, subGroups = NULL) {
+barDraagkrachtUI <- function(id, uiText, subGroups = NULL) {
   
   ns <- NS(id)
   
+  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+    
   tagList(
     
     actionLink(inputId = ns("linkDraagkracht"),
-      label = h3(HTML(paste("FIGUUR:", title)))),
+      label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkDraagkracht % 2 == 0", ns = ns,
       
       if (!is.null(subGroups))
         wellPanel(
           radioButtons(inputId = ns("subGroup"), label = NULL, choices = subGroups)
         ),
+      tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
+      
       plotModuleUI(id = ns("barDraagkracht")),
       optionsModuleUI(id = ns("barDraagkracht"), exportData = TRUE,
         doWellPanel = FALSE),

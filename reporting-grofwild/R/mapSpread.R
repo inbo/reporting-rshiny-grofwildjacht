@@ -171,6 +171,7 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - server side
 #' @inheritParams mapFlanders
+#' @param title reactive object, title with asterisk to show in the \code{actionLink}
 #' 
 #' @return no return value
 #' 
@@ -182,7 +183,7 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 #' @importFrom htmlwidgets saveWidget
 #' @export
 mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData, 
-  type = c("F06", "F17_4")) {
+  type = c("F06", "F17_4"), title = reactive(NULL)) {
   moduleServer(id,
     function(input, output, session) {
       
@@ -278,6 +279,15 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
+      
+      # Title
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkSpread",
+            label = paste("FIGUUR:", title()))
+          
+        })
       
       # Add world map
       observe({
@@ -454,25 +464,29 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
 
 
 #' Shiny module for creating the plot \code{\link{mapSpread}} - UI side
+#' @template moduleUI 
 #' @inheritParams mapSpreadServer 
 #' @return UI object
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-mapSpreadUI <- function(id, title, showLayer = FALSE) {
+mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
   
   ns <- NS(id)
   
+  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
   
   # Map spread
   
   tagList(
     
     actionLink(inputId = ns("linkSpread"),
-      label = h3(HTML(paste("FIGUUR:", title)))),
+      label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkSpread % 2 == 0", ns = ns,
       
+      tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
+  
       wellPanel(
         
         if (showLayer) {

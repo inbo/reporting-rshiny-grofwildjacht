@@ -177,17 +177,26 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 
 #' Shiny module for creating the plot \code{\link{countYearAge}} - server side
 #' @inheritParams countAgeGenderServer 
+#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearAgeServer <- function(id, data, timeRange) {
+countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
+      
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkYearAge",
+            label = paste("FIGUUR:", title()))
+          
+        })
       
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearAge", 
@@ -212,16 +221,16 @@ countYearAgeServer <- function(id, data, timeRange) {
 #' 
 #' @author mvarewyck
 #' @export
-countYearAgeUI <- function(id, uiText, title = NULL, showRegion = TRUE, doHide = TRUE) {
+countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
+  showRegion = TRUE, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == plotFunction, ]
   
   tagList(
     
-    actionLink(inputId = ns("linkYearAge"), 
-      label = h3(HTML(if (!is.null(title)) title else uiText$title))),
+    actionLink(inputId = ns("linkYearAge"), label = uiText$title, class = "action-h3"),
     conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(

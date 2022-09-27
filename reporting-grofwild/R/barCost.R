@@ -89,12 +89,20 @@ barCost <- function(data, summarizeBy = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data) {
+barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
+      
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkBarCost",
+            label = paste("FIGUUR:", title()))
+          
+        })  
       
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "barCost", 
@@ -120,23 +128,24 @@ barCostServer <- function(id, yVar, data) {
 #' 
 #' @author mvarewyck
 #' @export
-barCostUI <- function(id, title, summarizeBy = NULL) {
+barCostUI <- function(id, uiText, summarizeBy = NULL) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
   
   tagList(
     
     actionLink(inputId = ns("linkBarCost"), 
-      label = h3(HTML(paste("FIGUUR:", title)))),
+      label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkBarCost % 2 == 0", ns = ns,
       
       fixedRow(
         
         column(4,
           optionsModuleUI(id = ns("barCost"), 
-            summarizeBy = summarizeBy, exportData = TRUE)
+            summarizeBy = summarizeBy, exportData = TRUE),
+          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
         ),
         column(8, 
           plotModuleUI(id = ns("barCost"))

@@ -253,13 +253,14 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
 #' @inheritParams trendYearRegion 
 #' @inheritParams createTrendData
 #' @param geoData reactive object, geographical data for the selected species
+#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
 trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, locaties,
-  geoData, allSpatialData, biotoopData = NULL) {
+  geoData, allSpatialData, biotoopData = NULL, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -295,7 +296,15 @@ trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, loc
             unit = input$unit
           )
           
-        })      
+        })     
+      
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkYearRegion",
+            label = paste("FIGUUR:", title()))
+          
+        })
       
       callModule(module = optionsModuleServer, id = "yearRegion", 
         data = timeData,
@@ -323,16 +332,15 @@ trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, loc
 #' 
 #' @author mvarewyck
 #' @export
-trendYearRegionUI <- function(id, uiText, title = NULL, doHide = TRUE) {
+trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI", doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == plotFunction, ]
   
   tagList(
     
-    actionLink(inputId = ns("linkYearRegion"), 
-      label = h3(HTML(if (!is.null(title)) title else uiText$title))),
+    actionLink(inputId = ns("linkYearRegion"), label = uiText$title, class = "action-h3"),
     conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
       fixedRow(
         

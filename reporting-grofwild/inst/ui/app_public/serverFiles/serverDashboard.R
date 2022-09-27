@@ -248,7 +248,7 @@ results$dash_timeRange <- reactive(range(everEcoData$afschotjaar))
 # Populatie 
 
 results$dash_F16_1 <- countAgeGroupServer(
-  id = "dash_reproductie",
+  id = "dash_F16_1",
   data = reactive({
       plotData <- everEcoData[everEcoData$geslacht_comp == "Vrouwelijk", ]
       plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
@@ -256,9 +256,18 @@ results$dash_F16_1 <- countAgeGroupServer(
       plotData
     }),
   timeRange = results$dash_timeRange,
-  groupVariable = "reproductiestatus"
+  groupVariable = "reproductiestatus",
+  title = reactive(names(namedChoices("F16_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
+
+observe({
+    
+    updateActionLink(session = session, inputId = "dash_showF17_1",
+      label = paste("FIGUUR:", names(namedChoices("F17_1", uiText = uiText, 
+            regionLevel = req(input$dash_regionLevel)))))
+    
+  })
 
 mapFlandersServer(id = "dash_F17_1",
   defaultYear = defaultYear,
@@ -290,12 +299,15 @@ mapSpreadServer(id = "dash_F17_4",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   allSpatialData = spatialData,
-  type = "F17_4"
+  type = "F17_4",
+  title = reactive(names(namedChoices("F17_4", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 ) 
 
 barDraagkrachtServer(id = "dash_F18_1",
   data = reactive(inschattingData[Vraag == "populatie_evolutie", ]),
-  yVar = "Vraag")
+  yVar = "Vraag",
+  title = reactive(names(namedChoices("F18_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)
 
 
 # Jacht
@@ -308,12 +320,14 @@ trendYearRegionServer(id = "dash",
   locaties = reactive(input$dash_locaties),
   geoData = reactive(everGeoData),
   allSpatialData = spatialData,
-  biotoopData = biotoopData
+  biotoopData = biotoopData,
+  title = reactive(names(namedChoices("F05_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 countYearAgeServer(id = "dash",
   data = results$dash_ecoData,
-  timeRange = results$dash_timeRange
+  timeRange = results$dash_timeRange,
+  title = reactive(names(namedChoices("F05_2", uiText = uiText, regionLevel = req(input$dash_regionLevel)))) 
 )
 
 
@@ -323,17 +337,20 @@ mapSpreadServer(id = "dash_F06_1",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   allSpatialData = spatialData,
-  type = "F06"
+  type = "F06",
+  title = reactive(names(namedChoices("F06_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 ) 
 
 barCostServer(id = "dash_F07_1",
   data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "verkeersongeluk")),
-  yVar = "count"
+  yVar = "count",
+  title = reactive(names(namedChoices("F07_1", uiText = uiText, regionLevel = req(input$dash_regionLevel)))) 
 )
 
 barDraagkrachtServer(id = "dash_F07_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
-  yVar = "Vraag"
+  yVar = "Vraag",
+  title = reactive(names(namedChoices("F07_3", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 
@@ -341,17 +358,20 @@ barDraagkrachtServer(id = "dash_F07_3",
 
 barCostServer(id = "dash_F09_1",
   data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "landbouw")),
-  yVar = "count"
+  yVar = "count",
+  title = reactive(names(namedChoices("F09_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 barCostServer(id = "dash_F09_2",
   data = reactive(results$dash_schadeData()@data),
-  yVar = "schadeBedrag"
+  yVar = "schadeBedrag",
+  title = reactive(names(namedChoices("F09_2", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 barDraagkrachtServer(id = "dash_F09_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
-  yVar = "Vraag"
+  yVar = "Vraag",
+  title = reactive(names(namedChoices("F09_3", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 
@@ -360,12 +380,14 @@ barDraagkrachtServer(id = "dash_F09_3",
 barCostServer(id = "dash_F11_1",
   data = reactive(subset(results$dash_schadeData()@data, 
       typeMelding %in% "private en publieke gebieden")),
-  yVar = "count"
+  yVar = "count",
+  title = reactive(names(namedChoices("F11_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 barDraagkrachtServer(id = "dash_F11_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
-  yVar = "Vraag"
+  yVar = "Vraag",
+  title = reactive(names(namedChoices("F11_3", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 
@@ -373,24 +395,36 @@ barDraagkrachtServer(id = "dash_F11_3",
 
 barDraagkrachtServer(id = "dash_F12_1",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F12_1_data.csv"))),
-  xVar = "Jaar", yVar = "Aantal")
+  xVar = "Jaar", yVar = "Aantal",
+  title = reactive(names(namedChoices("F12_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)
 
 barDraagkrachtServer(id = "dash_F14_1",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv"))),
-  groupVariable = "Year", yVar = "Sector")
+  groupVariable = "Year", yVar = "Sector",
+  title = reactive(names(namedChoices("F14_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)
 
 barDraagkrachtServer(id = "dash_F14_2",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv"))),
-  groupVariable = "Year", yVar = "Sector")
+  groupVariable = "Year", yVar = "Sector",
+  title = reactive(names(namedChoices("F14_2", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)
 
 barDraagkrachtServer(id = "dash_F14_3",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_3_data.csv"))),
-  groupVariable = "Sector", yVar = "Question_label")
+  groupVariable = "Sector", yVar = "Question_label",
+  title = reactive(names(namedChoices("F14_3", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)
 
 barDraagkrachtServer(id = "dash_F14_4",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
-  groupVariable = c("Groep", "Year"), yVar = "Question_label")
+  groupVariable = c("Groep", "Year"), yVar = "Question_label",
+  title = reactive(names(namedChoices("F14_4", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)
 
 barDraagkrachtServer(id = "dash_F14_5",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv"))),
-  groupVariable = "Sector", yVar = "Question_label")
+  groupVariable = "Sector", yVar = "Question_label",
+  title = reactive(names(namedChoices("F14_5", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+)

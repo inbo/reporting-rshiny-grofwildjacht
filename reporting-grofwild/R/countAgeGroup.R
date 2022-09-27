@@ -112,17 +112,27 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
 #' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countAgeGroupServer <- function(id, data, timeRange, groupVariable) {
+countAgeGroupServer <- function(id, data, timeRange, groupVariable, 
+  title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
+     
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkAgeGroup",
+            label = paste("FIGUUR:", title()))
+          
+        })      
       
       callModule(module = optionsModuleServer, id = "ageGroup", 
         data = data, 
@@ -143,21 +153,21 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable) {
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - UI side
 #' @template moduleUI
-#' @param title character, plot title in the app, overrides the automatic title
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @author mvarewyck
 #' @export
-countAgeGroupUI <- function(id, uiText, title = NULL, groupVariable, doHide = TRUE) {
+countAgeGroupUI <- function(id, uiText, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", groupVariable), ]
+  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
   
   tagList(
     
     actionLink(inputId = ns("linkAgeGroup"),
-      label = h3(HTML(if (!is.null(title)) title else uiText$title))),
+      label = h3(HTML(uiText$title)),
+      class = "action-h3"),
     conditionalPanel(paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(

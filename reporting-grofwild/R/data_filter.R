@@ -23,22 +23,28 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   returnStop <- match.arg(returnStop)
   
   if (!is.null(sourceIndicator)) {
+    if ("indieningType" %in% names(plotData)) {
+      
+      sourcesSchade <- loadMetaSchade()$sources  
+      
+      sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
+      plotData <- plotData[grepl(sources, plotData$indieningType), ]
+      
+    } else {
+      
+      plotData <- plotData[dataSource %in% sourceIndicator]
+      
+    }
     
-    sourcesSchade <- loadMetaSchade()$sources  
-    
-    sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
-    plotData <- plotData[grepl(sources, plotData$indieningType), ]
-    
-    if (nrow(plotData) == 0) {
+    if (nrow(plotData) == 0)
       if (returnStop == "message")
         stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
-    }
+    
   }
   
   return(plotData)
   
-}
-
+}  
 
 
 

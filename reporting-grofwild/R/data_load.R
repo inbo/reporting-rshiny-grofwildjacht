@@ -550,6 +550,7 @@ loadSpreadData <- function(
   
   attr(modelShape, "unit") <- unit
   attr(modelShape, "spatialLevel") <- spatialLevel
+  attr(modelShape, "year") <- as.numeric(tail(strsplit(tools::file_path_sans_ext(spatialFile), split = "_")[[1]], n = 1))
   
   
   return(modelShape)

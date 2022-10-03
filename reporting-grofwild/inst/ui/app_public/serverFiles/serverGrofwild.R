@@ -180,7 +180,7 @@ results$typesDefaultGender <- reactive({
 plotBioindicatorServer(id = "wild_onderkaak",
   data = results$wild_ecoData,
   timeRange = results$wild_timeRange,
-  types = results$typesDefaultGender,
+  types = results$typesGender,
   typesDefault = results$typesDefaultGender,
   bioindicator = "onderkaaklengte")
 

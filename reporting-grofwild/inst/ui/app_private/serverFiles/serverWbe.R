@@ -234,7 +234,7 @@ results$wbe_typesDefaultGender <- reactive({
 plotBioindicatorServer(id = "wbe_onderkaak",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  types = results$wbe_typesDefaultGender,
+  types = results$wbe_typesGender,
   typesDefault = results$wbe_typesDefaultGender,
   bioindicator = "onderkaaklengte")
 

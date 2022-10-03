@@ -49,8 +49,6 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
                 x
               } 
             )
-            print(toRetain)
-          
           HTML(trimws(paste(toRetain, collapse = "")))
           
         })

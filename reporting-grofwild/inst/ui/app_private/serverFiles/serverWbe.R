@@ -4,18 +4,75 @@
 ###############################################################################
 
 
+
+results$wbe_currentKbo <- reactive({
+    
+    if (length(currentKbo) > 1)
+      input$wbe_kboChoice else
+      currentKbo
+    
+  })
+
+results$wbe_geoDataKbo <- reactive({
+    
+    subset(geoData, KboNummer_Toek %in% results$wbe_currentKbo())
+    
+  })
+
+results$wbe_currentPartij <- reactive({
+    
+    toReturn <- unique(results$wbe_geoDataKbo()$PartijNummer)
+    toReturn[!is.na(toReturn)]
+    
+  })
+
+
+
+## Disable species without data
+# https://stackoverflow.com/a/58310568
+observe({
+    
+    req(input$wbe_species)
+    speciesChoices <- c("Wild zwijn", "Ree", "Damhert", "Edelhert")
+    
+    for (iSpecies in speciesChoices) {
+      
+      subData <- subset(results$wbe_geoDataKbo(), wildsoort == iSpecies)
+      
+      jsSelector <- sprintf('[type=radio][name=wbe_species][value="%s"]', iSpecies)
+      
+      if (nrow(subData) == 0) {
+        
+        if (input$wbe_species == iSpecies)
+          updateRadioButtons(session = session, inputId = "wbe_species",
+            selected = speciesChoices[which(iSpecies == speciesChoices) + 1])
+        
+        shinyjs::disable(selector = jsSelector)
+        shinyjs::runjs(paste0("$('", jsSelector, "').parent().addClass('disabled').css('opacity', 0.4)"))
+      } else {
+        shinyjs::enable(selector = jsSelector)
+        shinyjs::runjs(paste0("$('", jsSelector, "').parent().removeClass('disabled').css('opacity', 1)"))
+      }
+      
+    }
+    
+  })
+
 output$wbe_title <- renderUI({
     
     h1("Welkom op de wildbeheereenheid pagina voor",
-      paste(unique(geoData$WBE_Naam_Toek), collapse = ","))
+      paste(unique(results$wbe_geoData()$WBE_Naam_Toek), collapse = ","))
     
   })
+
+
 
 ## Filter Data ##
 
 results$wbe_geoData <- reactive({
     
-    subset(geoData, wildsoort == req(input$wbe_species))
+    subset(geoData, wildsoort == req(input$wbe_species) & 
+        KboNummer_Toek %in% results$wbe_currentKbo())
     
   })
 
@@ -28,31 +85,34 @@ results$wbe_combinedData <- reactive({
     combinedData <- merge(results$wbe_geoData(), ecoData, 
       by = commonNames, all.x = TRUE)
     
-  })
-
-results$wbe_spatialData <- reactive({
-    
-    spatialData <- filterSpatial(
-      allSpatialData = spatialData, 
-      species = req(input$wbe_species), 
-      regionLevel = "WBE_binnengrenzen", 
-      year = req(input$wbe_year)
-    )
-    
-    req(spatialData)
-    validate(need(any(currentWbe %in% spatialData@data$NAAM), "Geen data beschikbaar"))
-    
-    spatialData
+    combinedData
     
   })
 
+results$wbe_schadeData <- reactive({
+    
+    schadeData[schadeData$KboNummer %in% results$wbe_currentKbo(), ]
+  
+  })
+
+results$wbe_toekenningsData <- reactive({
+    
+    toekenningsData[toekenningsData$KboNummer_Toek %in% results$wbe_currentKbo(), ]
+    
+  })
+
+results$wbe_schadeData <- reactive({
+    
+    schadeData[schadeData$KboNummer %in% results$wbe_currentKbo(), ]
+    
+  })
 
 results$wbe_timeRange <- reactive({
     
     req(nrow(results$wbe_combinedData()) > 0)
     
     range(results$wbe_combinedData()$afschotjaar)
-        
+    
   })  
 
 results$labeltypes <- reactive({
@@ -77,17 +137,19 @@ results$jachttypes <- reactive({
 
 
 
+
+
 ### The MAP
 ### -------------
 
 
 mapFlandersServer(id = "wbe",
   defaultYear = defaultYear,
-  species = reactive(input$wbe_species),
-  currentWbe = currentWbe,
+  species = reactive(""),
+  currentWbe = results$wbe_currentPartij,
   type = "wbe",
   hideGlobeDefault = FALSE,
-  geoData = results$wbe_geoData,
+  geoData = results$wbe_geoDataKbo,  # independent of species
   biotoopData = biotoopData,
   allSpatialData = spatialData)
 
@@ -97,6 +159,18 @@ mapFlandersServer(id = "wbe",
 ### Extra Graphs/Tables
 ### -------------
 
+
+## Plot1: Trend over time
+
+trendYearRegionServer(id = "wbe",
+  species = reactive(input$wbe_species),
+  allSpatialData = spatialData,
+  biotoopData = biotoopData,
+  geoData = results$wbe_geoData, 
+  type = "wbe", 
+  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
+        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))
+)
 
 ## User input for controlling the plots and create plotly
 # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
@@ -124,11 +198,13 @@ countYearShotServer(id = "wbe_jachtmethode",
 
 # Plot4: Schademeldingen
 mapSchadeServer(id = "wbe",
-  schadeData = schadeData, 
-  allSpatialData = spatialData, 
+  schadeData = results$wbe_schadeData, 
+  allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())), 
   timeRange = reactive(c(max(2018, results$wbe_timeRange()[1]), results$wbe_timeRange()[2])), 
   defaultYear = defaultYear, 
-  species = reactive(input$wbe_species))
+  species = reactive(input$wbe_species),
+  borderRegion = "WBE_buitengrenzen"
+)
 
 
 # Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
@@ -158,7 +234,7 @@ results$wbe_typesDefaultGender <- reactive({
 plotBioindicatorServer(id = "wbe_onderkaak",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  types = results$wbe_typesDefaultGender,
+  types = results$wbe_typesGender,
   typesDefault = results$wbe_typesDefaultGender,
   bioindicator = "onderkaaklengte")
 
@@ -170,6 +246,14 @@ plotBioindicatorServer(id = "wbe_gewicht",
   typesDefault = results$wbe_typesDefaultGender,
   bioindicator = "ontweid_gewicht")
 
+
+## Bio indicatoren ##
+
+bioindicatorSectionServer(
+  id = "wbe", 
+  uiText = uiText, 
+  wildsoort = reactive(input$wbe_species)
+)
 
 # Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
 results$typesFemale <- reactive({
@@ -186,7 +270,7 @@ results$typesFemale <- reactive({
 
 countEmbryosServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange,
+  timeRange = reactive(range(results$wbe_combinedData()$afschotjaar[results$wbe_combinedData()$geslacht_comp == "Vrouwelijk"])),
   types = results$typesFemale,
   uiText = uiText,
   wildsoort = reactive(input$wbe_species)
@@ -207,7 +291,7 @@ ageGenderLowerJawServer(id = "wbe",
 
 # Plot 11: Gerealiseerd afschot
 percentageRealisedShotServer(id = "wbe",
-  data = reactive(toekenningsData),
-  types = reactive(unique(toekenningsData$labeltype)),
-  timeRange = reactive(range(toekenningsData$labeljaar))
+  data = results$wbe_toekenningsData,
+  types = reactive(unique(results$wbe_toekenningsData()$labeltype)),
+  timeRange = reactive(range(results$wbe_toekenningsData()$labeljaar))
 )

@@ -65,12 +65,9 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   if (wildNaam == "Ree") {
     plotData <- plotData[plotData$embryos <= 3 | is.na(plotData$embryos), ]
   }  
-  # rename missing
-  plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
-  
  
   ## For aantal_embryos
-  nCollected <- sum(plotData$embryos != "onbekend")
+  nCollected <- sum(!is.na(plotData$embryos))
   
   if (nrow(plotData) == 0)
     stop("Geen data beschikbaar")
@@ -78,16 +75,17 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   # convert to a factor
   if (wildNaam == "Ree") {
     newLevels <- c("onbekend", 3:0)
+    plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
     plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
   } else {
-    newLevels <- c("onbekend", ">9", 9:4, "1-3", "0")
-    plotData$embryos[plotData$embryos %in% 9:20] <- ">9"
-    plotData$embryos[plotData$embryos %in% 1:3] <- "1-3"
+    newLevels <- c("onbekend", ">9", "7-9", "4-6", "1-3", "0")
+    plotData$embryos <- as.character(cut(plotData$embryos, breaks = c(0, 1, 4, 7, 9, 20),
+      include.lowest = TRUE, right = FALSE, labels = rev(newLevels[-1])))
+    plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
     plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
   }
-	
-	
-	plotData$afschotjaar <- as.factor(plotData$afschotjaar)
+  
+  plotData$afschotjaar <- as.factor(plotData$afschotjaar)
 	
 	# use table with factor to have 0 when no counts for certain year/number of embryos
 	tmpSummary <- as.data.frame(with(plotData, table(afschotjaar, embryos)))
@@ -186,10 +184,13 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
       
       output$titleEmbryos <- renderUI({
           
+          req(wildsoort())
+          
           oldTitle <- uiText$title
           newTitle <- gsub("\\{wildsoort\\}", switch(wildsoort(), 
               "Ree" = "ree\u00EBn",
-              "Wild zwijn" = "wilde zwijnen"),
+              "Wild zwijn" = "wilde zwijnen",
+              ""),
             oldTitle
           )
           

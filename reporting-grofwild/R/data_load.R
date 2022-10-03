@@ -67,7 +67,7 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
           
         } else if (grepl("Jachtter_", iLevel)) {
           
-          shapeData$NAAM <- factor(shapeData$WBENR)
+          shapeData$NAAM <- factor(shapeData$WBE_NR_wbe)
           
         }
         
@@ -129,7 +129,7 @@ readShapeData <- function(jsonDir, dataDir = system.file("extdata", package = "r
         iData@data$AREA <- raster::area(iData)/1e06
         
         # No simplification
-        if (iName %in% c("fbz_gemeentes", "utm5"))
+        if (iName %in% c("fbz_gemeentes", "utm5") | grepl("WBE", iName))
           return(iData)
         
         simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
@@ -285,9 +285,11 @@ loadRawData <- function(
   if ("ontweid_gewicht" %in% names(rawData))
     rawData$ontweid_gewicht <- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
   
-  ## Replace decimal comma by dot
-  if ("lengte_mm" %in% names(rawData))
-    rawData$lengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+  ## Replace decimal comma by dot & rename
+  if ("lengte_mm" %in% names(rawData)) {
+    rawData$onderkaaklengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+    rawData$lengte_mm <- NULL
+  }
   
   ## Replace decimal comma by dot
   if ("onderkaaklengte_comp" %in% names(rawData))

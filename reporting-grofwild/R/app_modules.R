@@ -151,13 +151,19 @@ optionsModuleServer <- function(input, output, session,
           value = results$time,
           min = {
             # TODO for indieningType??
-            subData <- tryCatch(filterGrofwild(
+            subData <- tryCatch({
+              tmpData <- filterGrofwild(
                 plotData = data(), 
                 sourceIndicator_leeftijd = input$dataSource_leeftijd,
                 sourceIndicator_geslacht = input$dataSource_geslacht,
                 sourceIndicator_onderkaak = input$dataSource_onderkaak,
                 sourceIndicator_embryos = input$dataSource_embryos
-              ), error = function(err) validate(need(FALSE, err$message)))
+              )
+              if (!is.null(input$dataSource_embryos))
+                tmpData <- tmpData[tmpData$geslacht_comp == "Vrouwelijk", ]
+              
+              tmpData
+            }, error = function(err) validate(need(FALSE, err$message)))
             min = min(subData$afschotjaar)
           }
         
@@ -673,7 +679,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
       }
   )
   
-  
   output$table <- DT::renderDataTable({
       
       if (datatable) {
@@ -705,13 +710,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
           )
         
       }
+
     })
   
-  
-  
-  
-}
-
+  }
 
 
 #' Display formatted frequency table of data (ui-side)

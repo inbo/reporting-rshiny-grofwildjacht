@@ -8,7 +8,6 @@ Description: Data visualization of grof wild in Vlaanderen.
 Version: 0.2.8
 Date: 2022-05-25
 Imports:
-    devtools, 
     DT, 
     flexdashboard,
     ggplot2,
@@ -34,6 +33,7 @@ Imports:
 Depends: 
     maptools    
 Suggests:
+    devtools, 
     testthat
 Encoding: UTF-8
 RoxygenNote: 7.1.2

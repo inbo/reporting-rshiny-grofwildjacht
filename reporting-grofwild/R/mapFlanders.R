@@ -122,7 +122,10 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     returnStop = "data")
   
   #compute total number of cases to output in stats
-  myStats <- list(nTotal = nrow(plotData)) 
+  myStats <- list(nTotal = if (is.null(countVariable)) 
+        nrow(plotData) else 
+        sum(plotData[[countVariable]])
+  ) 
   
   if (nrow(plotData) == 0) {
     
@@ -1194,14 +1197,14 @@ mapFlandersUI <- function(id, showRegion = TRUE,
             column(6, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                 choices = regionChoices,
                 selected = "communes")),
-            column(6, selectInput(inputId = ns("bronMap"),
-              label = "Data bron",
-              choices = sourceChoices, selected = sourceChoices,
-              multiple = TRUE)),
             column(6, selectInput(inputId = ns("legend"), label = "Legende",
                 choices = legendChoices)
             ),
-            column(6, uiOutput(ns("year")))
+            column(6, uiOutput(ns("year"))),
+            column(6, selectInput(inputId = ns("bronMap"),
+              label = "Data bron",
+              choices = sourceChoices, selected = sourceChoices,
+              multiple = TRUE))
           )
           
         } else if (type != "empty") {

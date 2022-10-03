@@ -23,14 +23,14 @@ runWildApp <- function(installDependencies = FALSE,
   if (installDependencies) {
     
     ## (a) CRAN packages
-    update(dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
+    update(remotes::dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
             dependencies = "Suggests"))
     
     
     ## (b) non-CRAN packages - by hand
     if (!requireNamespace("INBOtheme")) {
       
-      install_github('inbo/INBOtheme')
+      remotes::install_github('inbo/INBOtheme')
       
     }
     

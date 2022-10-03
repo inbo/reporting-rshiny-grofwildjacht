@@ -55,11 +55,11 @@ output$dash_jachtIndicatoren <- reactive({
 outputOptions(output, "dash_jachtIndicatoren", suspendWhenHidden = FALSE)
 
 
-output$dash_verkeerIndicatoren <- reactive({
+output$dash_schadeIndicatoren <- reactive({
     
     tmp_verkeer <- dashboardChoicesServer(
-      id = "dash_verkeer",
-      choices = verkeerChoices,
+      id = "dash_schade",
+      choices = schadeChoices,
       uiText = uiText,
       regionLevel = reactive(req(input$dash_regionLevel))
     )
@@ -68,39 +68,7 @@ output$dash_verkeerIndicatoren <- reactive({
       tmp_verkeer()
     
   })
-outputOptions(output, "dash_verkeerIndicatoren", suspendWhenHidden = FALSE)
-
-
-output$dash_landbouwIndicatoren <- reactive({
-    
-    tmp_landbouw <- dashboardChoicesServer(
-      id = "dash_landbouw",
-      choices = landbouwChoices, 
-      uiText = uiText,
-      regionLevel = reactive(req(input$dash_regionLevel))
-    )
-    if (is.null(tmp_landbouw()))
-      "" else 
-      tmp_landbouw()
-    
-  })
-outputOptions(output, "dash_landbouwIndicatoren", suspendWhenHidden = FALSE)
-
-
-output$dash_priveIndicatoren <- reactive({
-    
-    tmp_prive <- dashboardChoicesServer(
-      id = "dash_prive",
-      choices = priveChoices, 
-      uiText = uiText,
-      regionLevel = reactive(req(input$dash_regionLevel))
-    )
-    if (is.null(tmp_prive()))
-      "" else 
-      tmp_prive()
-    
-  })
-outputOptions(output, "dash_priveIndicatoren", suspendWhenHidden = FALSE)
+outputOptions(output, "dash_schadeIndicatoren", suspendWhenHidden = FALSE)
 
 
 output$dash_maatschappijIndicatoren <- reactive({
@@ -326,7 +294,7 @@ countYearAgeServer(id = "dash",
 )
 
 
-# Verkeer
+# Schade
 
 mapSpreadServer(id = "dash_F06_1",
   regionLevel = reactive(input$dash_regionLevel),
@@ -351,11 +319,11 @@ barDraagkrachtServer(id = "dash_F07_3",
 
 # Landbouw
 
-barCostServer(id = "dash_F09_1",
-  data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "landbouw")),
-  yVar = "count",
-  title = reactive(names(namedChoices("F09_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
-)
+#barCostServer(id = "dash_F09_1",
+#  data = reactive(subset(results$dash_schadeData()@data, typeMelding %in% "landbouw")),
+#  yVar = "count",
+#  title = reactive(names(namedChoices("F09_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+#)
 
 barCostServer(id = "dash_F09_2",
   data = reactive(results$dash_schadeData()@data),
@@ -363,27 +331,16 @@ barCostServer(id = "dash_F09_2",
   title = reactive(names(namedChoices("F09_2", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
-barDraagkrachtServer(id = "dash_F09_3", 
-  data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
-  yVar = "Vraag",
-  title = reactive(names(namedChoices("F09_3", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
-)
-
 
 # Prive/Publiek
 
-barCostServer(id = "dash_F11_1",
-  data = reactive(subset(results$dash_schadeData()@data, 
-      typeMelding %in% "private en publieke gebieden")),
-  yVar = "count",
-  title = reactive(names(namedChoices("F11_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
-)
+#barCostServer(id = "dash_F11_1",
+#  data = reactive(subset(results$dash_schadeData()@data, 
+#      typeMelding %in% "private en publieke gebieden")),
+#  yVar = "count",
+#  title = reactive(names(namedChoices("F11_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
+#)
 
-barDraagkrachtServer(id = "dash_F11_3", 
-  data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
-  yVar = "Vraag",
-  title = reactive(names(namedChoices("F11_3", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
-)
 
 
 # Maatschappelijke draagkracht

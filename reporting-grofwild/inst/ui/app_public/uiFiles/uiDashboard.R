@@ -40,17 +40,10 @@ tagList(
         )
       ),
       column(4,
-        dashboardChoices(id = "dash_verkeer",
-          choices = verkeerChoices, uiText = uiText,
-          selected = if (doDebug) "F06_1"),
-        dashboardChoices(id = "dash_landbouw",
-          choices = landbouwChoices, 
-          selected = if (doDebug) c("F09_1", "F09_2"),
-          uiText = uiText
-        ),
-        dashboardChoices(id = "dash_prive",
-          choices = priveChoices,
-          uiText = uiText)
+        dashboardChoices(id = "dash_schade",
+          choices = schadeChoices, uiText = uiText,
+          selected = if (doDebug) c("F06_1", "F09_2")
+        )
       ),
       column(4, 
         dashboardChoices(id = "dash_maatschappij",
@@ -130,55 +123,27 @@ tagList(
     ),
     
     # Verkeer
-    conditionalPanel("output.dash_verkeerIndicatoren.length > 0",
-      h2(toupper("Verkeer"))),
+    conditionalPanel("output.dash_schadeIndicatoren.length > 0",
+      h2(toupper("Schade"))),
     
     # Note: F06_1, F06_2 and F06_3 combined
-    conditionalPanel("output.dash_verkeerIndicatoren.indexOf('F06_1') > -1", 
+    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F06_1') > -1", 
       mapSpreadUI(id = "dash_F06_1", uiText = uiText, showLayer = TRUE)
     ),
     
-    conditionalPanel("output.dash_verkeerIndicatoren.indexOf('F07_1') > -1", 
+    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_1') > -1", 
       barCostUI(id = "dash_F07_1", uiText = uiText)
     ),
     
-    conditionalPanel("output.dash_verkeerIndicatoren.indexOf('F07_3') > -1", 
+    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_3') > -1", 
       barDraagkrachtUI(id = "dash_F07_3", uiText = uiText)
     ),
     
-    
-    
-    # Landbouw
-    conditionalPanel("output.dash_landbouwIndicatoren.length > 0",
-      h2(toupper("Landbouw"))),
-    
-    conditionalPanel("output.dash_landbouwIndicatoren.indexOf('F09_1') > -1", 
-      barCostUI(id = "dash_F09_1", uiText = uiText,
-        summarizeBy = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
-    ),
-    
-    conditionalPanel("output.dash_landbouwIndicatoren.indexOf('F09_2') > -1", 
+    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F09_2') > -1", 
       barCostUI(id = "dash_F09_2", uiText = uiText,
         summarizeBy = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
     ),
-    
-    conditionalPanel("output.dash_landbouwIndicatoren.indexOf('F09_3') > -1", 
-      barDraagkrachtUI(id = "dash_F09_3", uiText = uiText)
-    ),
-    
-    
-    # Prive/Publiek
-    conditionalPanel("output.dash_priveIndicatoren.length > 0",
-      h2(toupper("Private en publieke gebieden"))
-    ),
-    
-    conditionalPanel("output.dash_priveIndicatoren.indexOf('F11_1') > -1", 
-      barCostUI(id = "dash_F11_1", uiText = uiText)
-    ),
-    
-    conditionalPanel("output.dash_priveIndicatoren.indexOf('F11_3') > -1", 
-      barDraagkrachtUI(id = "dash_F11_3", uiText = uiText)
-    ),
+   
     
     # Maatschappelijk draagvlak
     conditionalPanel("output.dash_maatschappijIndicatoren.length > 0",

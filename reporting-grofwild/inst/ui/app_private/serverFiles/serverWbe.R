@@ -270,7 +270,7 @@ results$typesFemale <- reactive({
 
 countEmbryosServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange,
+  timeRange = reactive(range(results$wbe_combinedData()$afschotjaar[results$wbe_combinedData()$geslacht_comp == "Vrouwelijk"])),
   types = results$typesFemale,
   uiText = uiText,
   wildsoort = reactive(input$wbe_species)

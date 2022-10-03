@@ -516,10 +516,10 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
                     "Onderaan links" = "bottomleft",
                     "<geen>" = "none")) 
               ),
-              column(4, selectInput(inputId = ns("unit"), label = "Eenheid",
+              column(4, selectInput(inputId = ns("unit"), label = "Startpopulatie",
                   choices = c(
-                    "Model output exacte pixels" = "model_EP", 
-                    "Model output optimaal habitat" = "model_OH")
+                    "Exacte pixels" = "model_EP", 
+                    "Optimaal habitat" = "model_OH")
                 )
               )
             )

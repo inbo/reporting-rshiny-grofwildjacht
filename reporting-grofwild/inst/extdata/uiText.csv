@@ -61,5 +61,9 @@ F14_4,Draagkracht voor de beheersmaatregelen,,,,
 F14_5,Beheer,,,,
 F16_1,Deelname aan de reproductie,,,,
 F17_1,Huidig verspreidingsgebied,,,,
-F17_4,Toekomstig verspreidingsgebied,,,,
+F17_4,Toekomstig verspreidingsgebied,,,,"Voor het verspreidingsmodel kan 1 van volgende benaderingen voor de startpopulatie gekozen worden:
+<ul>
+<li>De startlocatie o.b.v. <b>exacte pixels</b> is gebaseerd op een dataset van alle waarnemingen en afschotdata van everzwijnen met exacte coördinaten. De dataset met exacte coördinaten vormen slechts een deel van de gehele dataset van everzwijnwaarnemingen en afschotdata, de meeste gegevens zijn beschikbaar op niveau van een gemeente. 
+<li>De startlocatie o.b.v. <b>optimaal habitat</b> is gebaseerd op alle habitatpixels met 'hoge geschiktheid' in gemeentes waar everzwijnen werden geschoten. 
+</ul>"
 F18_1,Inschatting v.d. populatiegroei,,,,

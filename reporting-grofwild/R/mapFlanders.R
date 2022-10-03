@@ -114,8 +114,9 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     
   }
   
-  
-  plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
+  plotData <- if (is.null(year))
+    subset(data, subset = wildsoort %in% species) else 
+    subset(data, subset = afschotjaar %in% year & wildsoort %in% species)
   
   plotData <- filterSchade(plotData = plotData, sourceIndicator = sourceIndicator,
     returnStop = "data")
@@ -1090,7 +1091,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       # Title for selected region level
       output$biotoopTitle <- renderUI({
           
-          uiText <- uiText[uiText$plotFunction == "biotoopUI", ]
+          uiText <- uiText[uiText$plotFunction == "barBiotoop", ]
           
           tagList(
             h3(uiText$title, tags$br(), 
@@ -1140,11 +1141,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - UI side
 #' @inheritParams mapFlandersServer 
 #' @param showRegion boolean, whether to show choices for regionLevel and selected region(s)
-#' @param showSource boolean, whether to show choices for sources
 #' @param showCombine boolean, whether to show option to combine selected regions
 #' @param regionChoices named character vector, choices for the region levels
 #' @param unitChoices named character vector, choices for unit option;
 #' default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}
+#' @param sourceChoices named character vector, choices for the source
 #' @param plotDetails character vector, detail plots to be shown below the map;
 #' should be subset of \code{c("flanders", "region", "biotoop")}
 #' @param showTitle boolean, whether to show title above the map
@@ -1153,7 +1154,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE, 
+mapFlandersUI <- function(id, showRegion = TRUE, 
   showCombine = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
@@ -1164,11 +1165,19 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
     "5x5 UTM" = "utm5"
   ),
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+  sourceChoices = NULL,
   plotDetails = c("flanders", "region"),
   showTitle = TRUE) {
   
   ns <- NS(id)
   type <- match.arg(type)
+  
+  legendChoices <- c(
+    "Bovenaan rechts" = "topright",
+    "Onderaan rechts" = "bottomright",
+    "Bovenaan links" = "topleft",
+    "Onderaan links" = "bottomleft",
+    "<geen>" = "none")
   
   # Map with according line plot
   
@@ -1182,21 +1191,20 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
       if (type == "dash") {
           
           fixedRow(
-            column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+            column(6, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                 choices = regionChoices,
                 selected = "communes")),
-            column(4, selectInput(inputId = ns("legend"), label = "Legende",
-                choices = c(
-                  "Bovenaan rechts" = "topright",
-                  "Onderaan rechts" = "bottomright",
-                  "Bovenaan links" = "topleft",
-                  "Onderaan links" = "bottomleft",
-                  "<geen>" = "none"))
+            column(6, selectInput(inputId = ns("bronMap"),
+              label = "Data bron",
+              choices = sourceChoices, selected = sourceChoices,
+              multiple = TRUE)),
+            column(6, selectInput(inputId = ns("legend"), label = "Legende",
+                choices = legendChoices)
             ),
-            column(4, uiOutput(ns("year")))
+            column(6, uiOutput(ns("year")))
           )
           
-        } else {
+        } else if (type != "empty") {
           
           tagList(
             if (showRegion)
@@ -1208,38 +1216,29 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
               ),
             
             fixedRow(
-              column(6, if (type != "empty") uiOutput(ns("year"))),
-              column(6, if (type %in% c("wbe", "dash")) 
+              column(6, uiOutput(ns("year"))),
+              column(6, uiOutput(ns("period")),
+                if (type %in% c("wbe")) 
                     selectInput(inputId = ns("legend"), label = "Legende",
-                      choices = c(
-                        "Bovenaan rechts" = "topright",
-                        "Onderaan rechts" = "bottomright",
-                        "Bovenaan links" = "topleft",
-                        "Onderaan links" = "bottomleft",
-                        "<geen>" = "none")) else if (!type %in% c("dash", "empty"))
-                    uiOutput(ns("period")))
+                      choices = legendChoices) 
+                    )
             ),
             
-            if (!type %in% c("wbe", "dash", "empty"))
+            if (!type %in% c("wbe"))
               fixedRow(
-                column(12/(2+showSource),
+                column(12/(2+!is.null(sourceChoices)),
                   selectInput(inputId = ns("legend"), label = "Legende (kaart)",
-                    choices = c(
-                      "Bovenaan rechts" = "topright",
-                      "Onderaan rechts" = "bottomright",
-                      "Bovenaan links" = "topleft",
-                      "Onderaan links" = "bottomleft",
-                      "<geen>" = "none"))
+                    choices = legendChoices)
                 ),
-                column(12/(2+showSource),
+                column(12/(2+!is.null(sourceChoices)),
                   selectInput(inputId = ns("unit"), label = "Eenheid",
                     choices = unitChoices)
                 ),
-                if (showSource)
+                if (!is.null(sourceChoices))
                   column(4, 
                     selectInput(inputId = ns("bronMap"),
                       label = "Data bron",
-                      choices = names(loadMetaSchade()$sources),
+                      choices = sourceChoices,
                       multiple = TRUE)
                   )
               )

@@ -2,10 +2,10 @@ plotFunction,title,wild,schade,wbe,dash
 ageGenderLowerJawUI,FIGUUR: Onderkaaklengte per leeftijdscategorie en geslacht (INBO of Meldingsformulier),"Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
 Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.",,"Verdeling van de onderkaaklengte per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s).
 Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier bepaald.",
+barBiotoop,Biotoop beschrijving,,,,
 barCostUI,FIGUUR: Kosten schade,,,,
 bioindicatorSection,Bio-indicatoren,"Bio-indicatoren zijn ecologische parameters die betrekking hebben op de relatie tussen een populatie en de draagkracht van het gebied en gevoelig zijn voor veranderingen in populatieaantallen en/of in de draagkracht van het gebied.
 {isRee}Voor ree werd aangetoond dat van zodra de draagkracht van een gebied wordt benaderd, dit zich vertaalt in kleinere reekitsen (lichtere gewichten en kortere onderkaken), een lager percentage drachtige geiten en smalreeën en in gemiddeld kleinere worpen. ",,,
-biotoopUI,Biotoop beschrijving,,,,
 boxAgeWeightUI,FIGUUR: Leeggewicht per leeftijdscategorie en geslacht (INBO of Meldingsformulier),"Verdeling van de leeggewichten per leeftijdscategorie en per geslacht voor alle gegevens uit de geselecteerde periode en regio('s). Indien de leeftijdscategorie o.b.v. de ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,
 boxRealisedShotUI,FIGUUR: Percentage gerealiseerd afschot per jaar,"Het percentage geeft de graad van verwezenlijking weer (verwezenlijkt / toegekend afschot).
 Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,,
@@ -43,7 +43,7 @@ Indien de categorie bij INBO gekend is, wordt deze gebruikt, anders wordt de cat
 trendYearRegionUI,FIGUUR: Evolutie gerapporteerd afschot,,,,
 yearlyShotAnimalsUI,FIGUUR: Percentage jaarlijks afschot,"Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode.              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,,
 welcomeSection,,Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.,,Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris.,Kies hieronder de indicatoren die u wilt weergeven
-F05_1,Absoluut afschot,,,,
+F05_1,Afschot,,,,
 F05_2,Samenstelling afschot,,,,
 F06_1,Preventieve maatregelen,,,,
 F07_1,Meldingen van verkeersongelukken,,,,
@@ -60,7 +60,6 @@ F14_3,Inschatting impacts,,,,
 F14_4,Draagkracht voor de beheersmaatregelen,,,,
 F14_5,Beheer,,,,
 F16_1,Deelname aan de reproductie,,,,
-F17_1,Verspreidingsgebied a.d.h.v. afschotgegevens,,,,
-F17_2,Verspreidingsgebied a.d.h.v. waarnemingen.be,,,,
+F17_1,Huidig verspreidingsgebied,,,,
 F17_4,Toekomstig verspreidingsgebied,,,,
 F18_1,Inschatting v.d. populatiegroei,,,,

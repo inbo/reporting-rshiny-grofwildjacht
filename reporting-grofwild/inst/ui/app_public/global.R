@@ -146,7 +146,7 @@ uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
 
 # Choices for Dashboard
 ## Ideally these are read from availableData
-populatieChoices <- c("F16_1", "F17_1", "F17_2", "F17_4", "F18_1")
+populatieChoices <- c("F16_1", "F17_1", "F17_4", "F18_1")
 jachtChoices <- c("F05_1", "F05_2")
 verkeerChoices <- c("F06_1", "F07_1", "F07_3")
 landbouwChoices <- c("F09_1", "F09_2", "F09_3")

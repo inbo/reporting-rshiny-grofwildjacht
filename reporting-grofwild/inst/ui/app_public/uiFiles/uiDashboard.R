@@ -75,7 +75,6 @@ tagList(
     tags$h2(toupper("Achtergrondinformatie")),
     mapFlandersUI(id = "dash_background", showRegion = FALSE, showCombine = FALSE,
       type = "empty",
-      showSource = FALSE,
       plotDetails = c("biotoop", "biotoopTable"), 
       showTitle = FALSE
     ),
@@ -99,19 +98,7 @@ tagList(
         mapFlandersUI(id = "dash_F17_1", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
-          plotDetails = "", showTitle = FALSE
-        )
-      )
-    ),
-    
-    # TODO merge with graph above #334
-    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_2') > -1", 
-      actionLink(inputId = "dash_showF17_2", 
-        label = h3(HTML(paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_2"])))),
-      conditionalPanel("input.dash_showF17_2 % 2 == 0", 
-        mapFlandersUI(id = "dash_F17_2", showCombine = FALSE, type = "dash",  
-          regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
-          unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+          sourceChoices = c("waarnemingen.be", "afschot"),
           plotDetails = "", showTitle = FALSE
         )
       )

@@ -8,6 +8,13 @@ everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
+# Combine waarnemingen.be & afschot
+everWaarnemingen <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))[, 
+  c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
+everGeoAll <- rbind(everWaarnemingen, cbind(everGeoData, data.frame(dataSource = "afschot")), fill = TRUE)
+everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
+
+
 draagkrachtDir <- system.file("extdata", "maatschappelijke_draagkracht", package = "reportingGrofwild")
 inschattingData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
 
@@ -23,7 +30,7 @@ output$dash_populatieIndicatoren <- reactive({
       id = "dash_populatie", 
       choices = populatieChoices,
       uiText = uiText, 
-      regionLevel = reactive(input$dash_regionLevel)
+      regionLevel = reactive(req(input$dash_regionLevel))
     )
     if (is.null(tmp_populatie()))
       "" else
@@ -38,7 +45,7 @@ output$dash_jachtIndicatoren <- reactive({
       id = "dash_jacht",
       choices = jachtChoices,
       uiText = uiText,
-      regionLevel = reactive(input$dash_regionLevel)
+      regionLevel = reactive(req(input$dash_regionLevel))
     )
     if (is.null(tmp_jacht()))
       "" else 
@@ -54,7 +61,7 @@ output$dash_verkeerIndicatoren <- reactive({
       id = "dash_verkeer",
       choices = verkeerChoices,
       uiText = uiText,
-      regionLevel = reactive(input$dash_regionLevel)
+      regionLevel = reactive(req(input$dash_regionLevel))
     )
     if (is.null(tmp_verkeer()))
       "" else 
@@ -70,7 +77,7 @@ output$dash_landbouwIndicatoren <- reactive({
       id = "dash_landbouw",
       choices = landbouwChoices, 
       uiText = uiText,
-      regionLevel = reactive(input$dash_regionLevel)
+      regionLevel = reactive(req(input$dash_regionLevel))
     )
     if (is.null(tmp_landbouw()))
       "" else 
@@ -86,7 +93,7 @@ output$dash_priveIndicatoren <- reactive({
       id = "dash_prive",
       choices = priveChoices, 
       uiText = uiText,
-      regionLevel = reactive(input$dash_regionLevel)
+      regionLevel = reactive(req(input$dash_regionLevel))
     )
     if (is.null(tmp_prive()))
       "" else 
@@ -277,21 +284,7 @@ mapFlandersServer(id = "dash_F17_1",
   type = "grofwild",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
-  geoData = reactive(everGeoData),
-  allSpatialData = spatialData,
-  hideGlobeDefault = FALSE)
-
-
-mapFlandersServer(id = "dash_F17_2",
-  defaultYear = defaultYear,
-  species = results$dash_species,
-  type = "grofwild",
-  regionLevel = reactive(input$dash_regionLevel),
-  locaties = reactive(input$dash_locaties),
-  geoData = reactive({
-      df <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))
-      df$wildsoort <- "Wild zwijn"
-      df}),
+  geoData = reactive(everGeoAll),
   allSpatialData = spatialData,
   hideGlobeDefault = FALSE,
   countVariable = "aantal")

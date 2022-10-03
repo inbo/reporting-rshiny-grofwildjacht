@@ -122,7 +122,6 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 
 #' Shiny module for creating the plot \code{\link{barCost}} - UI side
 #' @template moduleUI
-#' @inheritParams barDraagkrachtUI
 #' @param summarizeBy character vector, choices for the \code{summarizeBy} parameter
 #' in \code{\link{barCost}}
 #' 

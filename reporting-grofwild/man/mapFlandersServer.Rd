@@ -16,7 +16,8 @@ mapFlandersServer(
   allSpatialData,
   regionLevel = reactive(NULL),
   locaties = reactive(NULL),
-  countVariable = NULL
+  countVariable = NULL,
+  uiText
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ to draw black borders and zoom}
 
 \item{countVariable}{character, column name in \code{data} that contains counts;
 if NULL then each row in the data contains 1 count}
+
+\item{uiText}{data.frame}
 }
 \value{
 no return value

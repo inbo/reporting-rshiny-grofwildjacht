@@ -285,7 +285,9 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
           req(title())
           updateActionLink(session = session, inputId = "linkSpread",
-            label = paste("FIGUUR:", title()))
+            label = paste("FIGUUR:", if (type == "F17_4") 
+                  paste(title(),  "-", toString(attr(shapeData(), "year"))) else 
+                  title()))
           
         })
       
@@ -517,9 +519,7 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
               column(4, selectInput(inputId = ns("unit"), label = "Eenheid",
                   choices = c(
                     "Model output exacte pixels" = "model_EP", 
-                    "Model output optimaal habitat" = "model_OH", 
-                    "Risico klasse exacte pixels" = "risk_EP", 
-                    "Risico klasse optimaal habitat" = "risk_OH")
+                    "Model output optimaal habitat" = "model_OH")
                 )
               )
             )

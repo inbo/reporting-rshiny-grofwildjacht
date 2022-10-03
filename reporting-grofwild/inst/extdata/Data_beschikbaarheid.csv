@@ -5,22 +5,22 @@ Jacht,aantal_drukjachten,1,1,1,1,1,1,1,F04_3
 Jacht,drukjachtinspanning,1,1,1,1,1,1,1,F04_4
 Jacht,afschot,2,2,2,2,2,2,1,F05_1
 Jacht,samenstelling_afschot,2,2,2,2,2,2,1,F05_2
-Verkeer,rasters_verkeer,1,1,1,1,1,1,1,F06_1
-Verkeer,signalisatie_verkeer,1,1,1,1,1,1,1,F06_2
-Verkeer,snelheid_verkeer,1,1,1,1,1,1,1,F06_3
-Verkeer,meldingen_verkeer,1,1,1,1,1,1,1,F07_1
-Verkeer,kost_verkeer,0,0,0,0,0,0,0,F07_2
-Verkeer,inschatting_verkeer,1,1,1,1,1,1,1,F07_3
-Landbouw,aantal_rasters_landbouw,0,0,0,0,0,0,0,F08_1
-Landbouw,maatregelen_landbouw,0,0,0,0,0,0,0,F08_2
-Landbouw,lengte_rasters_landbouw,0,0,0,0,0,0,0,F08_3
-Landbouw,meldingen_landbouw,1,1,1,1,1,1,1,F09_1
-Landbouw,kost_landbouw,1,1,1,1,1,1,1,F09_2
-Landbouw,inschatting_landbouw,1,1,1,1,1,1,1,F09_3
-Private en publieke gebieden,maatregelen_privpub,0,0,0,0,0,0,0,F10_1
-Private en publieke gebieden,meldingen_privpub,1,1,1,1,1,1,1,F11_1
-Private en publieke gebieden,kost_privpub,0,0,0,0,0,0,0,F11_2
-Private en publieke gebieden,inschatting_privpub,1,1,1,1,1,1,0,F11_3
+Schade,rasters_verkeer,1,1,1,1,1,1,1,F06_1
+Schade,signalisatie_verkeer,1,1,1,1,1,1,1,F06_2
+Schade,snelheid_verkeer,1,1,1,1,1,1,1,F06_3
+Schade,meldingen_verkeer,1,1,1,1,1,1,1,F07_1
+Schade,kost_verkeer,0,0,0,0,0,0,0,F07_2
+Schade,inschatting_verkeer,1,1,1,1,1,1,1,F07_3
+Schade,aantal_rasters_landbouw,0,0,0,0,0,0,0,F08_1
+Schade,maatregelen_landbouw,0,0,0,0,0,0,0,F08_2
+Schade,lengte_rasters_landbouw,0,0,0,0,0,0,0,F08_3
+Schade,meldingen_landbouw,1,1,1,1,1,1,1,F09_1
+Schade,kost_landbouw,1,1,1,1,1,1,1,F09_2
+Schade,inschatting_landbouw,1,1,1,1,1,1,1,F09_3
+Schade,maatregelen_privpub,0,0,0,0,0,0,0,F10_1
+Schade,meldingen_privpub,1,1,1,1,1,1,1,F11_1
+Schade,kost_privpub,0,0,0,0,0,0,0,F11_2
+Schade,inschatting_privpub,1,1,1,1,1,1,0,F11_3
 Maatschappelijk draagvlak,communicatie,1,1,1,1,1,1,1,F12_1
 Maatschappelijk draagvlak,kost_stakeholders,0,0,0,0,0,0,0,F13_1
 Maatschappelijk draagvlak,houding,2,1,1,1,1,0,0,F14_1

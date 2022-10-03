@@ -149,8 +149,6 @@ uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
 ## Ideally these are read from availableData
 populatieChoices <- c("F16_1", "F17_1", "F17_4", "F18_1")
 jachtChoices <- c("F05_1", "F05_2")
-verkeerChoices <- c("F06_1", "F07_1", "F07_3")
-landbouwChoices <- c("F09_1", "F09_2", "F09_3")
-priveChoices <- c("F11_1", "F11_3")
+schadeChoices <- c("F06_1", "F07_1", "F07_3", "F09_2")
 maatschappijChoices <- c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
 

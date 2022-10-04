@@ -4,15 +4,14 @@
 \alias{barCostUI}
 \title{Shiny module for creating the plot \code{\link{barCost}} - UI side}
 \usage{
-barCostUI(id, uiText, summarizeBy = NULL)
+barCostUI(id, uiText, typeMelding = NULL)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
-\item{summarizeBy}{character vector, choices for the \code{summarizeBy} parameter
-in \code{\link{barCost}}}
+\item{typeMelding}{character vector, choices for filtering on `typeMelding` in data}
 }
 \value{
 HTML object

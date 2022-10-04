@@ -42,7 +42,7 @@ tagList(
       column(4,
         dashboardChoices(id = "dash_schade",
           choices = schadeChoices, uiText = uiText,
-          selected = if (doDebug) c("F06_1", "F09_2")
+          selected = if (doDebug) c("F06_1", "F07_1", "F09_2", "F07_3")
         )
       ),
       column(4, 
@@ -132,18 +132,20 @@ tagList(
     ),
     
     conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_1') > -1", 
-      barCostUI(id = "dash_F07_1", uiText = uiText)
+      barCostUI(id = "dash_F07_1", uiText = uiText, 
+        typeMelding = c("Verkeer" = "verkeersongeluk", "Landbouw" = "landbouw", 
+          "Private en publieke gebieden" = "private en publieke gebieden"))
+    ),
+    
+    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F09_2') > -1", 
+      barCostUI(id = "dash_F09_2", uiText = uiText,
+        typeMelding = c("Landbouw" = "landbouw"))
     ),
     
     conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_3') > -1", 
       barDraagkrachtUI(id = "dash_F07_3", uiText = uiText)
     ),
     
-    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F09_2') > -1", 
-      barCostUI(id = "dash_F09_2", uiText = uiText,
-        summarizeBy = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
-    ),
-   
     
     # Maatschappelijk draagvlak
     conditionalPanel("output.dash_maatschappijIndicatoren.length > 0",

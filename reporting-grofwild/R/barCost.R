@@ -7,7 +7,7 @@
 #' Function to generate stacked bar plot for kost landbouwschade (F09_2)
 #' 
 #' @param data data.frame with schadeData
-#' @param summarizeBy character, variable in \code{data} to summarize on
+#' @param unit character, variable in \code{data} to summarize on
 #' @inheritParams barDraagkracht
 #' 
 #' @return list with plotly object and data.frame 
@@ -17,8 +17,7 @@
 #' @import plotly
 #' @importFrom stats aggregate
 #' @export 
-barCost <- function(data, summarizeBy = NULL, 
-  yVar = c("schadeBedrag", "count")) {
+barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   
   
   yVar <- match.arg(yVar)  
@@ -27,17 +26,17 @@ barCost <- function(data, summarizeBy = NULL,
     schadeBedrag = "Bedrag",
     count = "Aantal"
   )
-  groupLabel <- if (!is.null(summarizeBy))
-      switch(summarizeBy,
+  groupLabel <- if (!is.null(unit))
+      switch(unit,
         SoortNaam = "Gewas",
         season = "Seizoen"
       ) else 
       NULL
   
   
-  if (!is.null(summarizeBy))
+  if (!is.null(unit))
     subData <- subset(data, schadeBasisCode == "GEWAS", 
-      c(if (yVar != "count") yVar, summarizeBy, "afschotjaar")) else 
+      c(if (yVar != "count") yVar, unit, "afschotjaar")) else 
     subData <- subset(data, ,
       c(if (yVar != "count") yVar, "afschotjaar"))
   
@@ -48,7 +47,7 @@ barCost <- function(data, summarizeBy = NULL,
   summaryData$freq <- NULL
   
   if (ncol(summaryData) > 2) {
-    plotData <- aggregate(summaryData$yVar, by = summaryData[, c(summarizeBy, "afschotjaar")], 
+    plotData <- aggregate(summaryData$yVar, by = summaryData[, c(unit, "afschotjaar")], 
       FUN = sum, na.rm = TRUE) 
   } else {
     plotData <- summaryData
@@ -56,14 +55,19 @@ barCost <- function(data, summarizeBy = NULL,
   }
   plotData <- plotData[plotData$x != 0, ]
   
+  selectedGroups <- if (is.null(unit)) "group" else unique(summaryData[[unit]])
+  colors <- replicateColors(nColors = length(selectedGroups))$colors
+  names(colors) <- selectedGroups
   
   myPlot <- plot_ly(plotData, 
       x = as.character(plotData$afschotjaar), 
-      y = ~x , type = 'bar', name = if (!is.null(summarizeBy)) ~get(summarizeBy),
+      y = ~x , type = 'bar', name = if (!is.null(unit)) ~get(unit),
+      color = if (!is.null(unit)) ~as.factor(get(unit)) else "group", 
+      colors = colors,
       hovertemplate = paste0(
         '<b>', yLabel, '</b>: ', if (yVar == "schadeBedrag") '%{y:.2f}' else '%{y:.0f}', '<br>',
         if (!is.null(groupLabel)) paste0('<b>', groupLabel, '</b>: %{text}'), '<extra></extra>'), 
-      text = if (!is.null(summarizeBy)) ~get(summarizeBy)) %>%
+      text = if (!is.null(unit)) ~get(unit)) %>%
     layout(
       legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
       yaxis = list(title = yLabel),
@@ -74,7 +78,7 @@ barCost <- function(data, summarizeBy = NULL,
   colnames(plotData)[colnames(plotData) == "x"] <- yLabel
   colnames(plotData)[colnames(plotData) == "afschotjaar"] <- "jaar"
   
-  return(list(plot = myPlot, data = plotData[, c("jaar", summarizeBy, yLabel)]))
+  return(list(plot = myPlot, data = plotData[, c("jaar", unit, yLabel)]))
   
 }
 
@@ -104,15 +108,35 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
           
         })  
       
+      subData <- reactive({
+          
+          if (!is.null(input$typeMelding))
+            subset(data(), typeMelding %in% input$typeMelding) else 
+            data()
+          
+        })
+      
+      output$unitChoices <- renderUI({
+          
+          req(input$typeMelding == "landbouw")
+          
+          selectInput(inputId = ns("unit"), label = "Groep per",
+            choices = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
+        
+        })
+      
+      
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "barCost", 
-        data = data
+        data = subData
       )
       
       callModule(module = plotModuleServer, id = "barCost",
         plotFunction = "barCost", 
-        data = data,
-        yVar = yVar)
+        data = subData,
+        yVar = yVar,
+        unit = reactive(if (input$typeMelding == "landbouw") input$unit)
+      )
       
     })
   
@@ -122,12 +146,11 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 
 #' Shiny module for creating the plot \code{\link{barCost}} - UI side
 #' @template moduleUI
-#' @param summarizeBy character vector, choices for the \code{summarizeBy} parameter
-#' in \code{\link{barCost}}
+#' @param typeMelding character vector, choices for filtering on `typeMelding` in data
 #' 
 #' @author mvarewyck
 #' @export
-barCostUI <- function(id, uiText, summarizeBy = NULL) {
+barCostUI <- function(id, uiText, typeMelding = NULL) {
   
   ns <- NS(id)
   
@@ -142,8 +165,13 @@ barCostUI <- function(id, uiText, summarizeBy = NULL) {
       fixedRow(
         
         column(4,
-          optionsModuleUI(id = ns("barCost"), 
-            summarizeBy = summarizeBy, exportData = TRUE),
+          wellPanel(
+            if (!is.null(typeMelding))
+              selectInput(inputId = ns("typeMelding"), label = "Type schade",
+                choices = typeMelding),
+            uiOutput(ns("unitChoices")),
+            optionsModuleUI(id = ns("barCost"), exportData = TRUE, doWellPanel = FALSE)
+          ),
           tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
         ),
         column(8, 

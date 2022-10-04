@@ -152,7 +152,7 @@ test_that("F09_2", {
     
     myResult <- barCost(
       data = schadeData@data, 
-      summarizeBy = groupVariable <- c("SoortNaam", "season")[2]
+      unit = c("SoortNaam", "season")[2]
     )
     
     expect_type(myResult, "list")

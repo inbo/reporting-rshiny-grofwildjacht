@@ -129,8 +129,12 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
   } else {
     
+    colors <- replicateColors(nColors = length(unique(data$Type)))$colors
+    names(colors) <- unique(data$Type)
+    
     myPlot <- plot_ly(data, x = as.character(data[[xVar]]), 
-        y = data[[yVar]], type = 'bar', name = ~Type) %>%
+        y = data[[yVar]], type = 'bar',
+        color = ~as.factor(Type), colors = colors) %>%
       layout(
         legend = list(title = list(text = "<b> Type </b>")),
         yaxis = list(title = "Aantal"),

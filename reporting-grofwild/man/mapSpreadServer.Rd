@@ -14,10 +14,16 @@ mapSpreadServer(
 )
 }
 \arguments{
+\item{id}{character, unique identifier for the module}
+
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
+\item{locaties}{reactive object, pre-selected regions outside module}
+
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
+
+\item{type}{character, in which case the module is used (plot codes for dashboard)}
 
 \item{title}{reactive object, title with asterisk to show in the \code{actionLink}}
 }

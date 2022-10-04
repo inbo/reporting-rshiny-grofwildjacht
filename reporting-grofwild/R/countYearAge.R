@@ -215,8 +215,8 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
 
 #' Shiny module for creating the plot \code{\link{countYearAge}} - UI side
 #' @template moduleUI
+#' @param plotFunction character, to match the description to be displayed
 #' @param showRegion boolean, whether to show the region filter; default is TRUE
-#' @param title character, plot title in the app, overrides the automatic title
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @author mvarewyck

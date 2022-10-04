@@ -13,6 +13,8 @@ countAgeGroupServer(id, data, timeRange, groupVariable, title = reactive(NULL))
 
 \item{timeRange}{numeric vector of length 2, min and max year to subset data}
 
+\item{groupVariable}{character, variable in \code{data}}
+
 \item{title}{reactive character, title with asterisk to show in the \code{actionLink}}
 }
 \value{

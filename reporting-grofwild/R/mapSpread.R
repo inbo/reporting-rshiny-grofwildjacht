@@ -5,9 +5,9 @@
 
 
 
-#' Necessary info for the color palette of \code{\link{mapCube}}
+#' Necessary info for the color palette of \code{\link{mapSpread}}
 #' @param groupNames character vector, labels to be shown in the color legend
-#' @param groupVariable character, variable for which the \code{groupNames} are defined
+#' @param variable character, variable for which the \code{groupNames} are defined
 #' @return list with colors, character vector and levels, character vector. 
 #' Each item has same length as \code{units}
 #' 
@@ -171,7 +171,10 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - server side
 #' @inheritParams mapFlanders
+#' @inheritParams mapFlandersServer
 #' @param title reactive object, title with asterisk to show in the \code{actionLink}
+#' @param locaties reactive object, pre-selected regions outside module
+#' @param type character, in which case the module is used (plot codes for dashboard)
 #' 
 #' @return no return value
 #' 
@@ -189,6 +192,9 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       
       ns <- session$ns
       
+      
+      # To prevent warnings R CMD check
+      trafficData <- NULL
       
       
       ## User Input ##
@@ -451,7 +457,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           
-          myData <- spreadShape()@data
+          myData <- shapeData()@data
           
           ## write data to exported file
           write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,
@@ -467,7 +473,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
 
 #' Shiny module for creating the plot \code{\link{mapSpread}} - UI side
 #' @template moduleUI 
-#' @inheritParams mapSpreadServer 
+#' @param showLayer boolean, whether to show the option to select spatial layers
 #' @return UI object
 #' 
 #' @author mvarewyck

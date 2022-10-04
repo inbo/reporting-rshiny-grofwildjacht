@@ -10,6 +10,8 @@ barDraagkrachtUI(id, uiText, subGroups = NULL)
 \item{id}{character, unique identifier for the module}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
+\item{subGroups}{character vector, choices for the subgroups; default NULL}
 }
 \value{
 HTML object

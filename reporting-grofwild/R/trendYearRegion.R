@@ -327,7 +327,6 @@ trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, loc
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - ui side
 #' 
 #' @template moduleUI
-#' @param title character, plot title in the app, overrides the automatic title
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @author mvarewyck

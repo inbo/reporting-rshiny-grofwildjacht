@@ -29,11 +29,11 @@ barDraagkracht <- function(data, groupVariable = NULL,
     data$percentage <- as.numeric(data$percentage)
     data$Antwoord <- factor(data$Antwoord , 
       levels = c('Erg veel toegenomen',
-        'Heel erg positief', 'Ja, zeker wel', 'Zeer groot', 'Erg belangrijk', 'Veel toegenomen',
-        'Positief', 'Ja, waarschijnlijk wel', 'Groot', 'Belangrijk', 'Beetje toegenomen',
+        'Heel erg negatief', 'Nee, zeker niet', 'Zeer klein', 'Helemaal niet belangrijk', 'Veel toegenomen',
+        'Negatief', 'Nee, waarschijnlijk niet', 'Klein', 'Niet belangrijk', 'Beetje toegenomen',
         'Neutraal', 'Hetzelfde gebleven',
-        'Negatief', 'Nee, waarschijnlijk niet', 'Klein', 'Niet belangrijk', 'Beetje afgenomen',
-        'Heel erg negatief', 'Nee, zeker niet', 'Zeer klein', 'Helemaal niet belangrijk', 'Veel afgenomen',
+        'Positief', 'Ja, waarschijnlijk wel', 'Groot', 'Belangrijk', 'Beetje afgenomen',
+        'Heel erg positief', 'Ja, zeker wel', 'Zeer groot', 'Erg belangrijk', 'Veel afgenomen',
         'Erg veel afgenomen',
         'Onbestaand',
         'Geen mening', 'Geen idee'))
@@ -41,7 +41,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     data$Antwoord <- droplevels(data$Antwoord)  
     nExcept <- sum(c("Onbestaand", "Geen mening", "Geen idee") %in% levels(data$Antwoord))
     myColors <- c(
-      rev(brewer.pal(n = length(levels(data$Antwoord)) - nExcept, name = "RdBu")), 
+      brewer.pal(n = length(levels(data$Antwoord)) - nExcept, name = "RdBu"),
       rev(brewer.pal(n = 3, name = "Greys"))
     )[1:length(levels(data$Antwoord))]
     
@@ -116,7 +116,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #                '<b>Antwoord</b>: %{text}')
       ) %>%
       layout(
-        legend = list(title = list(text = "<b> Antwoord </b>")),
+        legend = list(title = list(text = "<b> Antwoord </b>"), traceorder = 'normal'),
         barmode = "stack",
         yaxis = list(title = yVar,
           ticktext = as.list(yLabels), 

@@ -42,7 +42,7 @@ tagList(
       column(4,
         dashboardChoices(id = "dash_schade",
           choices = schadeChoices, uiText = uiText,
-          selected = if (doDebug) c("F06_1", "F07_1", "F09_2", "F07_3")
+          selected = if (doDebug) c("F07_1", "F07_3")
         )
       ),
       column(4, 

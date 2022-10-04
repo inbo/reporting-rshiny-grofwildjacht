@@ -334,13 +334,13 @@ barDraagkrachtServer(id = "dash_F12_1",
 
 barDraagkrachtServer(id = "dash_F14_1",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv"))),
-  groupVariable = "Year", yVar = "Sector",
+  groupVariable = "Sector", yVar = "Year",
   title = reactive(names(namedChoices("F14_1", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 
 barDraagkrachtServer(id = "dash_F14_2",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv"))),
-  groupVariable = "Year", yVar = "Sector",
+  groupVariable = "Sector", yVar = "Year",
   title = reactive(names(namedChoices("F14_2", uiText = uiText, regionLevel = req(input$dash_regionLevel))))
 )
 

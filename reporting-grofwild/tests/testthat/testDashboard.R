@@ -246,7 +246,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     # F14_1
     myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv")), 
-      groupVariable = "Year", yVar = "Sector")
+      groupVariable = "Sector", yVar = "Year")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -255,7 +255,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     # F14_2
     myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv")), 
-      groupVariable = "Year", yVar = "Sector")         
+      groupVariable = "Sector", yVar = "Year")         
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

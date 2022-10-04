@@ -67,7 +67,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
         plotList[[(length(plotList) + 1)]] <- plot_ly(
             data = subData, 
             x = ~get(xVar), 
-            y = ~get(yVar), 
+            y = ~as.factor(get(yVar)), 
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
             legendgroup = ~Antwoord, 
             showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]), 

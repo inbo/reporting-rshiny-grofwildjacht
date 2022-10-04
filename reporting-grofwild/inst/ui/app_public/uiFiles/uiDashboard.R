@@ -86,8 +86,9 @@ tagList(
         label = paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_1"]),
         class = "action-h3"
       ),
-      tags$p(HTML(uiText$dash[uiText$plotFunction == "F17_1"])),
       conditionalPanel("input.dash_showF17_1 % 2 == 0", 
+        tags$div(class = "container",
+          tags$p(HTML(uiText$dash[uiText$plotFunction == "F17_1"]))),
         mapFlandersUI(id = "dash_F17_1", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),

@@ -579,7 +579,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           
           paste0(
             if (type == "wildschade") "aantal schademeldingen" else "afschot",
-            if (!type %in% c("wbe", "empty")) switch(req(input$unit),
+            if (!is.null(input$unit) && !type %in% c("wbe", "empty")) switch(input$unit,
                 absolute = "",
                 relative = "/100ha",
                 relativeDekking = "/100ha bos & natuur"
@@ -601,7 +601,23 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
                   tolower(species()),
               "in", input$year))
           
-        })     
+        })
+      
+      # Restrict bron
+      observe({
+          
+          req(input$year)
+          
+          if ("dataSource" %in% names(geoData())) {
+            
+            previousChoice <- isolate(input$bronMap)
+            newChoices <- unique(geoData()$dataSource[geoData()$afschotjaar == input$year])
+            updateSelectInput(inputId = "bronMap", choices = newChoices,
+              selected = previousChoice[previousChoice %in% newChoices])
+          
+          }
+          
+        })
       
       
       # Create data for map, summary of ecological data, given year, species and regionLevel

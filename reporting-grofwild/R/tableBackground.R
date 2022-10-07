@@ -8,6 +8,8 @@
 #' 
 #' @param data data.frame with row for each location of interest;
 #' columns are measured background variables
+#' @param regionLevel character, selected spatial level
+#' @param locaties character vector, selected regions at the \code{regionLevel}
 #' @return data.frame
 #' 
 #' @author wverlinden

@@ -25,6 +25,8 @@ for which each unique value a separate subplot is created}
 default value is 'percentage'}
 
 \item{yVar}{character, column in \code{plotData} for y-axis}
+
+\item{title}{reactive object, title to be displayed in the plot}
 }
 \value{
 no return value

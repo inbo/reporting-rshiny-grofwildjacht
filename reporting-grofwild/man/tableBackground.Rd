@@ -9,6 +9,10 @@ tableBackground(data, regionLevel, locaties)
 \arguments{
 \item{data}{data.frame with row for each location of interest;
 columns are measured background variables}
+
+\item{regionLevel}{character, selected spatial level}
+
+\item{locaties}{character vector, selected regions at the \code{regionLevel}}
 }
 \value{
 data.frame

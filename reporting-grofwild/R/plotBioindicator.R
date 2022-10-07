@@ -37,6 +37,9 @@ plotBioindicator <- function(data,
     sourceIndicator_geslacht = NULL,
 		width = NULL, height = NULL){
 	  
+    
+  # To prevent warnings R CMD check
+  variable <- NULL
 	
 	wildNaam <- unique(data$wildsoort)
 	

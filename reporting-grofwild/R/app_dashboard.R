@@ -10,6 +10,7 @@
 #' @param choices character vector, plotFunction names in \code{uiText} 
 #' for which to create named choices 
 #' @param uiText data.frame as loaded by \code{read.csv(file = file.path(dataDir, "uiText.csv"))}
+#' @param regionLevel character, selected spatial level, for adding stars to label
 #' @return named character vector
 #' 
 #' @author mvarewyck

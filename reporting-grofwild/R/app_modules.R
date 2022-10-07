@@ -435,6 +435,7 @@ datatableModuleUI <- function(id) {
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
+#' @inheritParams barDraagkracht
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' 
@@ -476,7 +477,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
   
-  wildNaam <- reactive(unique(data()$wildsoort))
+  wildNaam <- reactive({
+      
+      toReturn <- unique(data()$wildsoort)
+      if (is.null(toReturn))
+        toReturn <- "Wild zwijn"
+      
+      toReturn
+      
+    })
   
   
   subToekenningsData <- reactive({

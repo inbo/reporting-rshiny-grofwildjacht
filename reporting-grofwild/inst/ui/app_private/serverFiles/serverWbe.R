@@ -89,7 +89,9 @@ mapFlandersServer(id = "wbe",
   hideGlobeDefault = FALSE,
   geoData = results$wbe_geoData,
   biotoopData = biotoopData,
-  allSpatialData = spatialData)
+  allSpatialData = spatialData,
+  uiText = uiText
+)
 
 
 

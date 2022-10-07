@@ -106,6 +106,12 @@ if (!doDebug | !exists("uiText")) {
       paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
   rm(uiFunctions)
 }
+<<<<<<< HEAD
 
 
 
+=======
+
+
+
+>>>>>>> edbd6e8a3fb0195a217fb6686a81310504829e80

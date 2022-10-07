@@ -9,7 +9,8 @@ mapSpreadServer(
   regionLevel,
   locaties,
   allSpatialData,
-  type = c("F06", "F17_4")
+  type = c("F06", "F17_4"),
+  title = reactive(NULL)
 )
 }
 \arguments{
@@ -17,6 +18,8 @@ mapSpreadServer(
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
+
+\item{title}{reactive object, title with asterisk to show in the \code{actionLink}}
 }
 \value{
 no return value

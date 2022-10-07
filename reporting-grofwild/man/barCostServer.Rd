@@ -4,7 +4,7 @@
 \alias{barCostServer}
 \title{Shiny module for creating the plot \code{\link{barCost}} - server side}
 \usage{
-barCostServer(id, yVar, data)
+barCostServer(id, yVar, data, title = reactive(NULL))
 }
 \arguments{
 \item{id}{character, unique identifier for the module}

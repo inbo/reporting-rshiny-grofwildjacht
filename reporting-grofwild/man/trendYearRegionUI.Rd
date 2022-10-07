@@ -4,16 +4,21 @@
 \alias{trendYearRegionUI}
 \title{Shiny module for creating the plot \code{\link{trendYearRegion}} - ui side}
 \usage{
-trendYearRegionUI(id, uiText, title = NULL, doHide = TRUE)
+trendYearRegionUI(
+  id,
+  uiText,
+  plotFunction = "trendYearRegionUI",
+  doHide = TRUE
+)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
-\item{title}{character, plot title in the app, overrides the automatic title}
-
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
+
+\item{title}{character, plot title in the app, overrides the automatic title}
 }
 \value{
 HTML object

@@ -4,6 +4,22 @@
 ###############################################################################
 
 
+
+verkeerChoices <- c("F06", "F07_3")
+names(verkeerChoices) <- sapply(verkeerChoices, function(x) uiText$title[uiText$plotFunction == x])
+
+landbouwChoices <- c("F09_2", "F09_3")
+names(landbouwChoices) <- sapply(landbouwChoices, function(x) uiText$title[uiText$plotFunction == x])
+
+priveChoices <- c("F11_3")
+names(priveChoices) <- sapply(priveChoices, function(x) uiText$title[uiText$plotFunction == x])
+
+maatschappijChoices <- c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
+names(maatschappijChoices) <- sapply(maatschappijChoices, function(x) uiText$title[uiText$plotFunction == x])
+
+populatieChoices <- c("F16_1", "F17_1", "F17_2", "F17_4", "F18_1")
+names(populatieChoices) <- sapply(populatieChoices, function(x) uiText$title[uiText$plotFunction == x])
+
 tagList(
   
   tags$div(class = "container",
@@ -30,10 +46,8 @@ tagList(
       column(3,
         checkboxGroupInput(inputId = "dash_populatieIndicatoren",
           label = "Populatie",
-          choices = c(
-            "Deelname aan de reproductie *" = "F16_1"
-          ),
-          selected = if (doDebug) c("F16_1")
+          choices = populatieChoices,
+          selected = if (doDebug) c("F16_1", "F17_4")
         )
       ),
       column(3,
@@ -49,12 +63,26 @@ tagList(
       column(3,
         checkboxGroupInput(inputId = "dash_verkeerIndicatoren",
           label = "Verkeer",
-          choices = c(
-            "Preventieve maatregelen *" = "F06_123"
-          ),
-          selected = if (doDebug) c("F05_1", "F05_2")
+          choices = verkeerChoices,
+          selected = if (doDebug) c("F06_123")
+        ),
+        checkboxGroupInput(inputId = "dash_landbouwIndicatoren",
+          label = "Landbouw",
+          choices = landbouwChoices,
+          selected = if (doDebug) c("F09_2", "F09_3")
+        ),
+        checkboxGroupInput(inputId = "dash_priveIndicatoren",
+          label = "Private en publieke gebieden",
+          choices = priveChoices
         )
-      )
+      ),
+      column(3, 
+        checkboxGroupInput(inputId = "dash_maatschappijIndicatoren",
+          label = "Maatschappelijk draagvlak",
+          choices = maatschappijChoices,
+          selected = if (doDebug) c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4")
+        ),
+        )
     ),
     
     tags$p(tags$em("* Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
@@ -71,7 +99,8 @@ tagList(
       unitChoices = c("Aantal" = "absolute", 
         "Aantal/100ha" = "relative", 
         "Aantal/100ha bos & natuur" = "relativeDekking"),
-      plotDetails = "biotoop"),
+      plotDetails = c("biotoop", "biotoopTable")
+    ),
     
     
     # Populatie
@@ -79,6 +108,24 @@ tagList(
     
     conditionalPanel("input.dash_populatieIndicatoren.indexOf('F16_1') > -1", 
       countAgeGroupUI(id = "dash_reproductie", uiText = uiText, groupVariable = "reproductiestatus")
+    ),
+    
+    conditionalPanel("input.dash_populatieIndicatoren.indexOf('F17_1') > -1", 
+#      mapFlandersUI(id = "F17_1", showCombine = FALSE, type = "dash",  
+#        regionChoices = c("Gemeente" = "communes",
+#          "5x5 UTM" = "utm5"), 
+#        unitChoices = c("Aantal" = "absolute", 
+#          "Aantal/100ha" = "relative")
+#      )
+    ),
+    
+    
+    conditionalPanel("input.dash_populatieIndicatoren.indexOf('F17_4') > -1", 
+      mapSpreadUI(id = "dash_F17_4", title = uiText$title[uiText$plotFunction == "F17_4"])
+    ),
+    
+    conditionalPanel("input.dash_populatieIndicatoren.indexOf('F18_1') > -1",
+      barDraagkrachtUI(id = "dash_F18_1", title = uiText$title[uiText$plotFunction == "F18_1"])
     ),
     
     
@@ -96,22 +143,67 @@ tagList(
     # Verkeer
     uiOutput("dash_verkeerTitle"),
     
-    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F06_123') > -1", 
-      actionLink(inputId = "dash_showVerkeer", label = tags$h3("FIGUUR: Preventieve maatregelen verkeer")),
-      conditionalPanel("input.dash_showVerkeer % 2 == 1", 
-        wellPanel(
-          # TODO make checkbox work
-          checkboxGroupInput(inputId = "dash_verkeerLayers", label = "Toon",
-            choices = c("Preventieve rasters" = "ecorasters",
-              "Preventieve signalisatie/snelheidsbeperkingen" = "oversteek"),
-            inline = TRUE)
-        ),
-        leafletOutput(outputId = "dash_verkeer"),
-        tags$hr()
-      )
+    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F06') > -1", 
+      mapSpreadUI(id = "dash_F06", title = uiText$title[uiText$plotFunction == "F06"], showLayer = TRUE)
     ),
     
+    conditionalPanel("input.dash_verkeerIndicatoren.indexOf('F07_3') > -1", 
+      barDraagkrachtUI(id = "dash_verkeer", title = uiText$title[uiText$plotFunction == "F07_3"])
+    ),
+    
+    
+    
+    # Landbouw
+    uiOutput("dash_landbouwTitle"),
+    
+    conditionalPanel("input.dash_landbouwIndicatoren.indexOf('F09_2') > -1", 
+      barCostUI(id = "dash_landbouw", title = uiText$title[uiText$plotFunction == "F09_2"])
+    ),
+    
+    conditionalPanel("input.dash_landbouwIndicatoren.indexOf('F09_3') > -1", 
+      barDraagkrachtUI(id = "dash_landbouw", title = uiText$title[uiText$plotFunction == "F09_3"])
+    ),
+    
+    
+    # Prive/Publiek
+    uiOutput("dash_priveTitle"),
+    
+    conditionalPanel("input.dash_priveIndicatoren.indexOf('F11_3') > -1", 
+      barDraagkrachtUI(id = "dash_prive", title = uiText$title[uiText$plotFunction == "F11_3"])
+    ),
+    
+    # Maatschappelijk draagvlak
+    uiOutput("dash_maatschappijTitle"),
+    
+    conditionalPanel("input.dash_maatschappijIndicatoren.indexOf('F12_1') > -1",
+      barDraagkrachtUI(id = "dash_F12_1", title = uiText$title[uiText$plotFunction == "F12_1"])
+    ),
+    
+    conditionalPanel("input.dash_maatschappijIndicatoren.indexOf('F14_1') > -1",
+      barDraagkrachtUI(id = "dash_F14_1", title = uiText$title[uiText$plotFunction == "F14_1"])
+    ),
+    
+    conditionalPanel("input.dash_maatschappijIndicatoren.indexOf('F14_2') > -1",
+      barDraagkrachtUI(id = "dash_F14_2", title = uiText$title[uiText$plotFunction == "F14_2"])
+    ),
+    
+    conditionalPanel("input.dash_maatschappijIndicatoren.indexOf('F14_3') > -1",
+      barDraagkrachtUI(id = "dash_F14_3", title = uiText$title[uiText$plotFunction == "F14_3"],
+        subGroups = c("Stakeholders" = "stakeholders", "Publiek" = "public"))
+    ),
+    
+    conditionalPanel("input.dash_maatschappijIndicatoren.indexOf('F14_4') > -1",
+      barDraagkrachtUI(id = "dash_F14_4", title = uiText$title[uiText$plotFunction == "F14_4"],
+        subGroups = c("Stakeholders" = "stakeholders", "Publiek" = "public"))
+    ),
+    
+    conditionalPanel("input.dash_maatschappijIndicatoren.indexOf('F14_5') > -1",
+      barDraagkrachtUI(id = "dash_F14_5", title = uiText$title[uiText$plotFunction == "F14_5"])
+    ),
+    
+    # White space at the bottom
     tags$br()
+    
   )
 
 )

@@ -351,7 +351,7 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
   
   tagList(
       tags$div(align = "center",
-          withSpinner(plotlyOutput(ns("plot"), height = height))
+          withSpinner(plotlyOutput(ns("plot"), height = height), hide.ui = FALSE)
       ),
       uiOutput(outputId = ns("warning"))
   )
@@ -607,6 +607,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
         resultFct()$plot
         
       })
+    
+  # Prevent that plotly images are squeezed
+  outputOptions(output, "plot", suspendWhenHidden = FALSE)
     
   output$accuracy <- flexdashboard::renderGauge({
       

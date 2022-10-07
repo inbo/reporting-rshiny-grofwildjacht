@@ -1041,6 +1041,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           
         })
       
+      # Plot
       callModule(module = optionsModuleServer, id = "biotoopPlot", 
         data = reactive({
             if (type == "wbe")
@@ -1058,6 +1059,16 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             }
           })
       )
+      
+      # Table
+      callModule(module = plotModuleServer, id = "biotoopTable",
+        plotFunction = "tableBackground",
+        data = reactive({
+            tmpData <- subset(biotoopData[[results$regionLevel()]], regio %in% results$region_value)
+            rbind(tmpData, biotoopData$flanders)
+          })
+      )
+      
       
     })  
 }
@@ -1172,6 +1183,15 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
           doWellPanel = FALSE)
       )
     ),
+    
+    if ("biotoopTable" %in% plotDetails)
+      fixedRow(
+        column(6, ""),
+        column(6,
+          tableModuleUI(id = ns("biotoopTable")),
+          optionsModuleUI(id = ns("biotoopTable"), exportData = TRUE,
+            doWellPanel = FALSE)
+          )),
     
     if (type == "wbe") {
         tags$div(style = "margin-top:20px;",

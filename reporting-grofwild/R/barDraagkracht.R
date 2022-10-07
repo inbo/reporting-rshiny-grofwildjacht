@@ -6,76 +6,115 @@
 
 #' Function to generate barplots for  Maatschappelijk draagvlak (F12_1)
 #' 
-#' @param plotData dataframe 
-#' @param ficheNumber character vector with the fiche number of the figure to be plotted
+#' @param plotData data.frame 
 #' @param subplotVar character vector containing the name of the column in plotData
 #' for which each unique value a separate subplot is created
-#' @param yVar character containing the name of the column in plotData that needs to be plotted on the y-axis
+#' @param xVar character, column in \code{plotData} for x-axis;
+#' default value is 'percentage'
+#' @param yVar character, column in \code{plotData} for y-axis
 #' 
-#' @return plotly-object
+#' @return list with plotly object and data.frame
 #' 
 #' @author wverlinden
 #' @import plotly
+#' @importFrom RColorBrewer brewer.pal
 #' @export 
 
-barDraagkracht <- function(plotData, ficheNumber, subplotVar = NULL, yVar = NULL){
+barDraagkracht <- function(plotData, subplotVar = NULL, 
+  xVar = "percentage", yVar = NULL) {
   
-  if (ficheNumber == "F12_1") {
-    plot_ly(plotData, x = as.character(plotData$Jaar), y = plotData[[yVar]], type = 'bar', name = ~Type) %>%
+  if (xVar == "percentage") {
+    
+    plotData$percentage <- as.numeric(plotData$percentage)
+    plotData$Antwoord <- factor(plotData$Antwoord , 
+      levels = c('Erg veel toegenomen',
+        'Heel erg positief', 'Ja, zeker wel', 'Zeer groot', 'Erg belangrijk', 'Veel toegenomen',
+        'Positief', 'Ja, waarschijnlijk wel', 'Groot', 'Belangrijk', 'Beetje toegenomen',
+        'Neutraal', 'Hetzelfde gebleven',
+        'Negatief', 'Nee, waarschijnlijk niet', 'Klein', 'Niet belangrijk', 'Beetje afgenomen',
+        'Heel erg negatief', 'Nee, zeker niet', 'Zeer klein', 'Helemaal niet belangrijk', 'Veel afgenomen',
+        'Erg veel afgenomen',
+        'Onbestaand',
+        'Geen mening', 'Geen idee'))
+    
+    plotData$Antwoord <- droplevels(plotData$Antwoord)  
+    nExcept <- sum(c("Onbestaand", "Geen mening", "Geen idee") %in% levels(plotData$Antwoord))
+    myColors <- c(
+      brewer.pal(n = length(levels(plotData$Antwoord)) - nExcept, name = "RdBu"), 
+      rev(brewer.pal(n = 3, name = "Greys"))
+    )[1:length(levels(plotData$Antwoord))]
+     
+  }
+  
+  if (!is.null(subplotVar)) {
+    
+    groupLevels <- unique(plotData[[subplotVar]])
+    
+    plotList <- lapply(groupLevels, function(iVar) {
+      
+      plot_ly(
+          data = plotData[plotData[[subplotVar]] %in% iVar, ], 
+          x = ~get(xVar), 
+          y = ~get(yVar), 
+          type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
+          legendgroup = ~Antwoord, 
+          showlegend = iVar == groupLevels[1], 
+          hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
+            '<b>Antwoord</b>: %{text}'),
+          text = ~Antwoord
+        ) %>%
         layout(
-            legend = list(title = list(text = "<b> Type </b>")),
-            yaxis = list(title = "Aantal"),
-            xaxis = list(title = "Jaar"),
-            barmode = "stack"
-        )
+          annotations = list(x = 50, 
+            y = 1.025, 
+            text = as.character(iVar), showarrow = FALSE, font = list(size = 16),
+            yref = 'paper'),
+          legend = list(title = list(text = "<b> Antwoord </b>")),
+          barmode = "stack",
+          yaxis = list(title = "Sector"),
+          xaxis = list(title = "Percentage") 
+        ) 
+      
+    })
     
-  }else if(ficheNumber == "F18_1") {
+    myPlot <- do.call(subplot, c(plotList, shareY = TRUE, shareX = TRUE))
     
-    plot_ly(plotData, x = ~percentage, y = plotData[[yVar]], type = 'bar', name = ~Antwoord
+    extraVars <- c("Antwoord", subplotVar)
+    
+  } else if (xVar == "percentage") {
+    
+    myPlot <- plot_ly(plotData, x = ~get(xVar), y = ~get(yVar), 
+        type = 'bar', color = ~Antwoord, colors = myColors
 #            hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
-#                '<b>Antwoord</b>: %{text}<extra></extra>'), text = ~Antwoord
+#                '<b>Antwoord</b>: %{text}')
         ) %>%
         layout(
             legend = list(title = list(text = "<b> Antwoord </b>")),
             barmode = "stack",
-            yaxis = list(title = "Vraag",
+            yaxis = list(title = yVar,
                 ticktext = list("Populatie everzwijnen"), 
                 tickvals = list(0),
                 tickmode = "array"),
             xaxis = list(title = "Percentage") 
         )
-    
-  } else {
-    
-    plotList <- list()
-    for (i in seq_along(unique(plotData[[subplotVar]]))) {
       
-      tmpPlot <- plot_ly(plotData[plotData[[subplotVar]] == unique(plotData[[subplotVar]])[i],], x = ~percentage, 
-              y = plotData[[yVar]][plotData[[subplotVar]] == unique(plotData[[subplotVar]])[i]], type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = "RdBu", 
-              legendgroup = ~Antwoord, 
-              showlegend = if(i == 1){
-                    TRUE
-                  } else {
-                    FALSE
-                  }, 
-              hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
-                  '<b>Antwoord</b>: %{text}<extra></extra>'),
-              text = ~Antwoord
-          ) %>%
+      extraVars <- c("Antwoord")
+      
+    } else {
+      
+        myPlot <- plot_ly(plotData, x = as.character(plotData[[xVar]]), 
+            y = plotData[[yVar]], type = 'bar', name = ~Type) %>%
           layout(
-              annotations = list(x = 0.5 , 
-                  y = 1.025, 
-                  text = as.character(unique(plotData[[subplotVar]])[i]), showarrow = F, font = list(size = 16),
-                  xref='paper', yref='paper'),
-              legend = list(title = list(text = "<b> Antwoord </b>")),
-              barmode = "stack",
-              yaxis = list(title = "Sector"),
-              xaxis = list(title = "Percentage") 
-          ) 
-      
-      plotList[[i]] <- tmpPlot
-    }
-    do.call(subplot, c(plotList, shareY = TRUE, shareX = TRUE))
-    
-  }
+            legend = list(title = list(text = "<b> Type </b>")),
+            yaxis = list(title = "Aantal"),
+            xaxis = list(title = "Jaar"),
+            barmode = "stack"
+          )
+        
+        extraVars <- c("Type")
+        
+      } 
+ 
+  
+  return(list(plot = myPlot, data = plotData[, c(extraVars, xVar, yVar), with = FALSE]))
+  
 }

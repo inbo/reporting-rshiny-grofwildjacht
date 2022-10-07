@@ -9,41 +9,49 @@
 #' @param plotData dataframe with columns SoortNaam, afschotjaar and x
 #' 
 #' 
-#' @return list containing a bar plot and a line plot
+#' @return plotly object, 
+#' plot per year (xaxis) and group (color): freq x schadeBedrag (yaxis)
 #' 
 #' @author wverlinden
 #' @import plotly
+#' @importFrom stats aggregate
 #' @export 
-
-barCost <- function(plotData){
+barCost <- function(schadeData, groupVariable = c("SoortNaam", "season")) {
   
-  # bar plot
-  barPlot <- plot_ly(plotData, x = as.character(plotData$afschotjaar), y = ~x , type = 'bar', name = ~SoortNaam,
-          hovertemplate = paste(
-              '<b>Bedrag</b>: %{y:.2f}', '<br>',
-              '<b>Gewas</b>: %{text}<extra></extra>'), text = ~SoortNaam) %>%
-      layout(
-          legend = list(title = list(text = "<b> Gewas </b>")),
-          yaxis = list(title = "Bedrag"),
-          xaxis = list(title = "Afschotjaar"),
-          barmode = "stack"
-      )
-  
-  # line plot
-  linePlot <- plot_ly(plotData, x = as.character(plotData$afschotjaar),  y = ~x, type = "scatter", mode = "lines", name = ~SoortNaam,
-          hovertemplate = paste(
-              '<b>Bedrag</b>: %{y:.2f}', '<br>',
-              '<b>Gewas</b>: %{text}<extra></extra>'), text = ~SoortNaam)%>%
-      layout(
-          legend = list(title = list(text = "<b> Gewas </b>")),
-          yaxis = list(title = "Bedrag"),
-          xaxis = list(title = "Afschotjaar")
-      )
-  
-  return(
-      list(
-          barPlot = barPlot,
-          linePlot = linePlot
-      )
+  groupVariable <- match.arg(groupVariable)
+  groupLabel <- switch(groupVariable,
+    SoortNaam = "Gewas",
+    season = "Seizoen"
   )
+  
+  subData <- subset(schadeData, schadeBasisCode == "GEWAS",
+    select = c("schadeBedrag", groupVariable, "afschotjaar"))
+  
+  summaryData <- count(df = subData, vars = names(subData))
+  summaryData$schadeBedrag <- summaryData$schadeBedrag * summaryData$freq
+  summaryData$freq <- NULL
+  plotData <- aggregate(summaryData$schadeBedrag, by = summaryData[, c(groupVariable, "afschotjaar")], 
+    FUN = sum, na.rm = TRUE)
+  plotData <- plotData[plotData$x != 0, ]
+  # TODO bedrag column will change #325
+  
+  
+  myPlot <- plot_ly(plotData, 
+      x = as.character(plotData$afschotjaar), 
+      y = ~x , type = 'bar', name = ~get(groupVariable),
+      hovertemplate = paste0(
+        '<b>Bedrag</b>: %{y:.2f}', '<br>',
+        '<b>', groupLabel, '</b>: %{text}<extra></extra>'), 
+      text = ~get(groupVariable)) %>%
+    layout(
+      legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
+      yaxis = list(title = "Bedrag"),
+      xaxis = list(title = "Afschotjaar"),
+      barmode = "stack"
+    )
+  
+  colnames(plotData)[colnames(plotData) == "x"] <- "bedrag"
+  
+  return(list(plot = myPlot, data = plotData[, c("afschotjaar", groupVariable, "bedrag")]))
+  
 }

@@ -8,10 +8,9 @@
 #' 
 #' @param plotData dataframe with columns including percentage, Vraag and Antwoord 
 
-#' @return plotly-object
+#' @return list with plotly object and data.frame
 #' 
 #' @author wverlinden
-#' @import list with plotly object and data.frame
 #' @import plotly
 #' @export 
 barInschatting <- function(data) {

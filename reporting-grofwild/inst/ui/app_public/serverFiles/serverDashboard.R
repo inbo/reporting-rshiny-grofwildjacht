@@ -26,6 +26,7 @@ results$dash_species <- reactive("Wild zwijn")
 ## INDICATOR SELECTION ##
 
 output$dash_populatieIndicatoren <- reactive({
+    req(input$dash_regionLevel)
     tmp_populatie <- dashboardChoicesServer(
       id = "dash_populatie", 
       choices = populatieChoices,

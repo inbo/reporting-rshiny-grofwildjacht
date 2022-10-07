@@ -4,12 +4,18 @@
 \alias{mapSpreadUI}
 \title{Shiny module for creating the plot \code{\link{mapSpread}} - UI side}
 \usage{
-mapSpreadUI(id)
+mapSpreadUI(id, uiText, showLayer = FALSE)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
+\item{showLayer}{boolean, whether to show the option to select spatial layers}
 }
 \value{
+HTML object
+
 UI object
 }
 \description{

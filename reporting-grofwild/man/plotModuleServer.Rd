@@ -15,6 +15,8 @@ plotModuleServer(
   categorie = NULL,
   bioindicator = NULL,
   groupVariable = NULL,
+  xVar = NULL,
+  yVar = NULL,
   locaties = NULL,
   timeRange = NULL,
   unit = NULL,

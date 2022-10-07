@@ -4,35 +4,20 @@
 \alias{mapSpreadServer}
 \title{Shiny module for creating the plot \code{\link{mapFlanders}} - server side}
 \usage{
-mapSpreadServer(id)
+mapSpreadServer(
+  id,
+  regionLevel,
+  locaties,
+  allSpatialData,
+  hideGlobeDefault = FALSE,
+  type = c("F06", "F17_4")
+)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
+\item{regionLevel}{character, regional level of interest should be one of 
+\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
-\item{defaultYear}{numeric, default year}
-
-\item{species}{character, species for which to show the graphs}
-
-\item{currentWbe}{numeric, KBO number; default value is NULL}
-
-\item{hideGlobeDefault}{boolean, whether the globe is shown by default 
-when the map is first created; default value is TRUE}
-
-\item{type}{character, defines the layout depending on which page it is shown;
-should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}}
-
-\item{geoData}{SpatialPolygonsDataFrame with geographical data}
-
-\item{biotoopData}{data.frame, with background biotoop data for selected region level;
-default value is NULL}
-
-\item{allSpatialData}{list with SpatialPolygonsDataFrame}
-
-\item{regionLevel}{reactive, value of regionLevel if chosen outside module;
-only relevant for \code{type} "dash"}
-
-\item{locaties}{reactive, value of region if chosen outside module;
-only relevant for \code{type} "dash"}
+\item{allSpatialData}{list of sp, spatial data for all spatial levels}
 }
 \value{
 no return value

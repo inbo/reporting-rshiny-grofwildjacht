@@ -10,8 +10,12 @@ mapFlandersUI(
   showSource = FALSE,
   showCombine = TRUE,
   type = c("grofwild", "wildschade", "wbe", "dash"),
+  regionChoices = c(Vlaanderen = "flanders", Provincie = "provinces", Faunabeheerzones
+    = "faunabeheerzones", Gemeente = "communes", `Gemeente per Faunabeheerzone` =
+    "fbz_gemeentes", `5x5 UTM` = "utm5"),
   unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative"),
-  plotDetails = c("flanders", "region")
+  plotDetails = c("flanders", "region"),
+  showTitle = TRUE
 )
 }
 \arguments{
@@ -26,11 +30,15 @@ mapFlandersUI(
 \item{type}{character, defines the layout depending on which page it is shown;
 should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}}
 
+\item{regionChoices}{named character vector, choices for the region levels}
+
 \item{unitChoices}{named character vector, choices for unit option;
 default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}}
 
 \item{plotDetails}{character vector, detail plots to be shown below the map;
 should be subset of \code{c("flanders", "region", "biotoop")}}
+
+\item{showTitle}{boolean, whether to show title above the map}
 }
 \value{
 UI object

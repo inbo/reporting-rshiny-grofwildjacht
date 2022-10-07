@@ -4,14 +4,11 @@
 \alias{tableBackground}
 \title{Function to generate table for wegdensiteit (F03_1)}
 \usage{
-tableBackground(biotoopData, locaties)
+tableBackground(data, regionLevel, locaties)
 }
 \arguments{
-\item{biotoopData}{data.frame}
-
-\item{locations}{character vector, selected regions}
-
-\item{character}{vector containing names of provinces to take into account}
+\item{data}{data.frame with row for each location of interest;
+columns are measured background variables}
 }
 \value{
 data.frame

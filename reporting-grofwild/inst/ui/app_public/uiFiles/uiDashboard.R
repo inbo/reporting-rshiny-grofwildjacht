@@ -27,49 +27,50 @@ tagList(
     welcomeSection(id = "dash", uiText = uiText),
     
     fixedRow(
-      column(3,
+      column(4,
         checkboxGroupInput(inputId = "dash_populatieIndicatoren",
           label = "Populatie",
           choices = namedChoices(c("F16_1", "F17_1", "F17_2", "F17_4", "F18_1"), uiText = uiText),
-          selected = if (doDebug) c("F16_1", "F17_4")
-        )
-      ),
-      column(3,
+          selected = if (doDebug) c("F17_4"),
+          width = "100%"
+        ),
         checkboxGroupInput(inputId = "dash_jachtIndicatoren",
           label = "Jacht",
-          choices = c(
-            "Absoluut afschot" = "F05_1",
-            "Samenstelling afschot" = "F05_2"
-          ),
-          selected = if (doDebug) c("F05_1", "F05_2")
+          choices = namedChoices(c("F05_1", "F05_2"), uiText = uiText),
+          selected = if (doDebug) c("F05_1", "F05_2"),
+          width = "100%"
         )
       ),
-      column(3,
+      column(4,
         checkboxGroupInput(inputId = "dash_verkeerIndicatoren",
           label = "Verkeer",
           choices = namedChoices(choices = c("F06", "F07_1", "F07_3"), uiText = uiText),
-          selected = if (doDebug) c("F06_123")
+          selected = if (doDebug) NULL,
+          width = "100%"
         ),
         checkboxGroupInput(inputId = "dash_landbouwIndicatoren",
           label = "Landbouw",
           choices = namedChoices(choices = c("F09_1", "F09_2", "F09_3"), uiText = uiText),
-          selected = if (doDebug) c("F09_2", "F09_3")
+          selected = if (doDebug) c("F09_1", "F09_2"),
+          width = "100%"
         ),
         checkboxGroupInput(inputId = "dash_priveIndicatoren",
           label = "Private en publieke gebieden",
-          choices = namedChoices(choices = c("F11_1", "F11_3"), uiText = uiText)
+          choices = namedChoices(choices = c("F11_1", "F11_3"), uiText = uiText),
+          width = "100%"
         )
       ),
-      column(3, 
+      column(4, 
         checkboxGroupInput(inputId = "dash_maatschappijIndicatoren",
           label = "Maatschappelijk draagvlak",
           choices = namedChoices(choices = c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4", "F14_5"), uiText = uiText),
-          selected = if (doDebug) c("F12_1", "F14_1", "F14_2", "F14_3", "F14_4")
+          selected = if (doDebug) c("F14_1"),
+          width = "100%"
         ),
       )
     ),
     
-    tags$p(tags$em("* Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
+    tags$p(tags$em("\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
     
     actionButton(inputId = "dash_submit", label = "Maak dashboard"),
     actionButton(inputId = "dash_createReport", label = "Maak pdf"),

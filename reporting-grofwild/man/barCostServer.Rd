@@ -4,10 +4,12 @@
 \alias{barCostServer}
 \title{Shiny module for creating the plot \code{\link{barCost}} - server side}
 \usage{
-barCostServer(id, data)
+barCostServer(id, yVar, data)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
+
+\item{yVar}{character, column in \code{plotData} for y-axis}
 
 \item{data}{data.frame for the plot function}
 }

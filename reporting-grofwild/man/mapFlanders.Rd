@@ -13,7 +13,8 @@ mapFlanders(
   summaryData,
   colorScheme = NULL,
   legend = "none",
-  addGlobe = FALSE
+  addGlobe = FALSE,
+  addBorders = TRUE
 )
 }
 \arguments{
@@ -34,6 +35,8 @@ in the summary data; if NULL map is not colored}
 \item{legend}{character, legend placement; default is "none", no legend}
 
 \item{addGlobe}{boolean, whether to add world map to background; default is FALSE}
+
+\item{addBorders}{boolean, whether to add black borders for overview regions; default is TRUE}
 }
 \value{
 leaflet map

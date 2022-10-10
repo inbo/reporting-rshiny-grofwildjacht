@@ -11,8 +11,6 @@ namedChoices(choices, uiText, regionLevel)
 for which to create named choices}
 
 \item{uiText}{data.frame as loaded by \code{read.csv(file = file.path(dataDir, "uiText.csv"))}}
-
-\item{regionLevel}{character, selected spatial level, for adding stars to label}
 }
 \value{
 named character vector

@@ -17,11 +17,11 @@ countYearAgeUI(
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
-\item{plotFunction}{character, to match the description to be displayed}
-
 \item{showRegion}{boolean, whether to show the region filter; default is TRUE}
 
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
+
+\item{title}{character, plot title in the app, overrides the automatic title}
 }
 \value{
 HTML object

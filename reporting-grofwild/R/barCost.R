@@ -20,9 +20,6 @@
 barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   
   
-  # To prevent warnings R CMD check
-  schadeBasisCode <- NULL
-  
   yVar <- match.arg(yVar)  
   
   yLabel <- switch(yVar,

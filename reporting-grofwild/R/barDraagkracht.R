@@ -106,7 +106,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     yLabels <- unique(data[[yVar]])
     yLabels[yLabels == "populatie_evolutie"] <- "Populatie everzwijnen"
     yLabels[yLabels == "schade_landbouw_evolutie"] <- "Schade aan de landbouw"
-    yLabels[yLabels == "schade_privpub_evolutie"] <- "Schade aan priv\u00E9terreinen"
+    yLabels[yLabels == "schade_privpub_evolutie"] <- "Schade aan privéterreinen"
     yLabels[yLabels == "schade_verkeer_evolutie"] <- "Schade in het verkeer"
     
     myPlot <- plot_ly(data, x = ~get(xVar), y = ~get(yVar), 
@@ -157,8 +157,6 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @inheritParams barDraagkracht
-#' @param title reactive object, title to be displayed in the plot
-#' 
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -214,7 +212,6 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side
 #' @template moduleUI
-#' @param subGroups character vector, choices for the subgroups; default NULL
 #' 
 #' @author mvarewyck
 #' @export

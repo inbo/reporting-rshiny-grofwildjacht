@@ -17,6 +17,8 @@ trendYearRegionUI(
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
+
+\item{title}{character, plot title in the app, overrides the automatic title}
 }
 \value{
 HTML object

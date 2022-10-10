@@ -20,9 +20,6 @@
 filterSchade <- function(plotData, sourceIndicator = NULL,
   returnStop = c("message", "data")) {
   
-  # To prevent warnings R CMD check
-  dataSource <- NULL
-  
   returnStop <- match.arg(returnStop)
   
   if (!is.null(sourceIndicator)) {

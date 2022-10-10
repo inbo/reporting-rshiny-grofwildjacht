@@ -2,21 +2,21 @@
 % Please edit documentation in R/mapSpread.R
 \name{paletteMap}
 \alias{paletteMap}
-\title{Necessary info for the color palette of \code{\link{mapSpread}}}
+\title{Necessary info for the color palette of \code{\link{mapCube}}}
 \usage{
 paletteMap(variable, groupNames)
 }
 \arguments{
-\item{variable}{character, variable for which the \code{groupNames} are defined}
-
 \item{groupNames}{character vector, labels to be shown in the color legend}
+
+\item{groupVariable}{character, variable for which the \code{groupNames} are defined}
 }
 \value{
 list with colors, character vector and levels, character vector. 
 Each item has same length as \code{units}
 }
 \description{
-Necessary info for the color palette of \code{\link{mapSpread}}
+Necessary info for the color palette of \code{\link{mapCube}}
 }
 \author{
 mvarewyck

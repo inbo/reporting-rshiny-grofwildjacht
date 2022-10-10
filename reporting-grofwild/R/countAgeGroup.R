@@ -109,7 +109,6 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - server side
-#' @inheritParams countAgeGroup
 #' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data

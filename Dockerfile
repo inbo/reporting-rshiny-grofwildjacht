@@ -1,4 +1,4 @@
-FROM openanalytics/r-ver:4.0.5
+FROM openanalytics/r-ver:4.0.5 as builder
 
 MAINTAINER Stijn Van Hoey stijn.vanhoey@inbo.be
 
@@ -27,9 +27,18 @@ RUN R -q -e "remotes::install_github('daattali/shinycssloaders')"
 # Attention: do not install phantomjs directly, will not work then!
 RUN R -q -e "webshot::install_phantomjs()"
 
+FROM builder as tmp
+
 # Install the package without the source files ending up in the Docker image
 COPY reporting-grofwild /tmp/package
 RUN R -q -e "remotes::install_local('/tmp/package', dependencies=FALSE)"
+
+COPY data /tmp/data
+RUN R -q -e "library(reportingGrofwild); readShapeData('/tmp/data')"
+
+FROM builder as final
+
+COPY --from=tmp /usr/local/lib/R/site-library/reportingGrofwild/ /usr/local/lib/R/site-library/reportingGrofwild/
 
 # set host
 COPY Rprofile.site /usr/local/lib/R/etc/

@@ -1,12 +1,12 @@
-FROM openanalytics/r-ver:4.0.5
+FROM openanalytics/r-ver:4.0.5 as builder
 
-MAINTAINER Stijn Van Hoey stijn.vanhoey@inbo.be 
+MAINTAINER Stijn Van Hoey stijn.vanhoey@inbo.be
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \
     libproj15 \
     libgeos-3.8.0 libgeos-c1v5  \
-    curl \ 
+    curl \
     ca-certificates \
     pandoc \
     libudunits2-0 \
@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Use the remotes package instead of devtools as it is mutch lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs'))"
 RUN R -q -e "remotes::install_version('plotly', version = '4.9.2.1')"
 RUN R -q -e "remotes::install_version('DT', version = '0.12')"
 RUN R -q -e "remotes::install_github('inbo/INBOtheme')"
@@ -27,8 +27,18 @@ RUN R -q -e "remotes::install_github('daattali/shinycssloaders')"
 # Attention: do not install phantomjs directly, will not work then!
 RUN R -q -e "webshot::install_phantomjs()"
 
+FROM builder as tmp
+
 # Install the package without the source files ending up in the Docker image
-RUN --mount=target=/tmp/package,source=reporting-grofwild R -q -e "remotes::install_local('/tmp/package', dependencies=FALSE)"
+COPY reporting-grofwild /tmp/package
+RUN R -q -e "remotes::install_local('/tmp/package', dependencies=FALSE)"
+
+COPY data /tmp/data
+RUN R -q -e "library(reportingGrofwild); readShapeData('/tmp/data')"
+
+FROM builder as final
+
+COPY --from=tmp /usr/local/lib/R/site-library/reportingGrofwild/ /usr/local/lib/R/site-library/reportingGrofwild/
 
 # set host
 COPY Rprofile.site /usr/local/lib/R/etc/

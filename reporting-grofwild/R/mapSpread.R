@@ -258,24 +258,31 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               
             }
           
-          coordData <- suppressMessages(ggplot2::fortify(selectedPolygons()))
-          centerView <- c(range(coordData$long), range(coordData$lat))
           
           baseMap %>%
-            # Initial settings
-            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-              lat1 = centerView[3], lat2 = centerView[4]) %>%
             addPolylines(data = selectedPolygons(), color = "black", weight = 3,
               group = "regionLines")
           
         })
       
       
-      
-      
       output$spreadPlot <- renderLeaflet({
           
           spreadPlot()
+          
+        })
+      
+      
+      # Center view
+      observe({
+          
+          coordData <- suppressMessages(ggplot2::fortify(selectedPolygons()))
+          centerView <- c(range(coordData$long), range(coordData$lat))
+          
+          leafletProxy("spreadPlot", data = spatialData()) %>%
+            
+            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
+              lat1 = centerView[3], lat2 = centerView[4])
           
         })
       

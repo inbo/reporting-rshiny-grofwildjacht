@@ -35,7 +35,17 @@ outTempFileName <- tempfile(fileext = ".html")
 ### WBE configuration
 ### -----------
 
-if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
+if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
+  
+  currentKbo <- "admin"
+  
+} else if (Sys.getenv("SHINYPROXY_KBO_NUMMERS") != "") {
+  # Inside shinyProxy
+  
+  currentKbo <- Sys.getenv("SHINYPROXY_KBO_NUMMERS")
+  
+} else {
+  # Local testing
   
   currentKbo <- "445465768"  ## 441 - fixed AREA
 #  currentKbo <- "450506996"   ## 101 - evolving AREA
@@ -43,14 +53,9 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
 #  currentKbo <- "417187694"   # including Edelhert data
 #  currentKbo <- "454472813"   # no data Wild zwijn
   currentKbo <- "admin"
-  
-} else {
-  # Inside shinyProxy
-  
-  currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
+#  currentKbo <- "445465768,450506996,454472813"
   
 }
-
 
 
 
@@ -75,14 +80,13 @@ biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
 toekenningsData <- loadToekenningen(dataDir = dataDir)
 
 
-# Special case for 'admin'
-if (currentKbo == "admin") {
-  
-  currentKbo <- unique(geoData$KboNummer_Toek)
-  names(currentKbo) <- geoData$WBE_Naam_Toek[match(currentKbo, geoData$KboNummer_Toek)]
-  currentKbo <- currentKbo[order(names(currentKbo))]
-  
-}
+# Manipulate kbo: admin, multiple kbo
+if (currentKbo == "admin")
+  currentKbo <- unique(geoData$KboNummer_Toek) else
+  currentKbo <- trimws(strsplit(currentKbo, split = ",")[[1]])
+
+names(currentKbo) <- geoData$WBE_Naam_Toek[match(currentKbo, geoData$KboNummer_Toek)]
+currentKbo <- currentKbo[order(names(currentKbo))]
 
 gc()
 

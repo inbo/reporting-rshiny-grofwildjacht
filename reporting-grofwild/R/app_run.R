@@ -8,8 +8,9 @@
 #' @param installDependencies boolean, whether to first install packages listed
 #' in the Suggests field of DESCRIPTION; default value is FALSE
 #' @param public boolean, whether to start the public or private version of the app
-#' @param kbo numeric, specific KBO number for which to show the WBE (private) app;
-#' only relevant if \code{public} is FALSE
+#' @param kbo character, specific KBO number(s) or 'admin' login to start the WBE (private) app;
+#' only relevant if \code{public} is FALSE;
+#' examples are "admin", "454472813" or "445465768,450506996,454472813"
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny
@@ -45,8 +46,11 @@ runWildApp <- function(installDependencies = FALSE,
   
   # (3) Specific WBE
   # WARNING: This overrides the kbo read from shinyproxy
-  Sys.setenv("SHINYPROXY_USERNAME" = kbo)
-  
+  if (kbo != "") {
+    if (kbo == "admin")
+      Sys.setenv("SHINYPROXY_USERGROUPS" = "WBE_ADMIN") else
+      Sys.setenv("SHINYPROXY_KBO_NUMMERS" = kbo)
+  }
   
   # (4) Run the application
   runApp(appDir = appDir, ...)

@@ -123,7 +123,7 @@ tagList(
         plotFunction = "F05_2", showRegion = FALSE, doHide = FALSE)
     ),
     
-    # Verkeer
+    # Schade
     conditionalPanel("output.dash_schadeIndicatoren.length > 0",
       h2(toupper("Schade"))),
     

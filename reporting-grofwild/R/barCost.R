@@ -131,12 +131,14 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
         data = subData
       )
       
-      callModule(module = plotModuleServer, id = "barCost",
+      toReturn <- callModule(module = plotModuleServer, id = "barCost",
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
         unit = reactive(if (input$typeMelding == "landbouw") input$unit)
       )
+      
+      return(reactive(toReturn()))
       
     })
   

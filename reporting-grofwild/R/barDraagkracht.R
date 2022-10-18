@@ -112,7 +112,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
                   tickvals = lapply(names(totalCounts), function(x) x),
                   tickmode = "array") else
                 list(title = ""),
-            xaxis = list(title = "Percentage"),
+            xaxis = list(title = "Percentage", range = list(0, 100)),
             margin = list(
               t = if (!(yVar == "Year" | "Year" %in% groupVariable)) 50, 
               r = if ("Year" %in% groupVariable & iVar == tail(groupLevels[[1]], n=1)) 50)
@@ -221,13 +221,15 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
       callModule(module = optionsModuleServer, id = "barDraagkracht", 
         data = subData
       )
-      callModule(module = plotModuleServer, id = "barDraagkracht",
+      toReturn <- callModule(module = plotModuleServer, id = "barDraagkracht",
         plotFunction = "barDraagkracht", 
         data = subData,
         groupVariable = groupVariable,
         xVar = xVar,
         yVar = yVar
       )
+      
+      return(reactive(toReturn()))
       
     })
   

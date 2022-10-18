@@ -425,14 +425,8 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           # black borders for preselected regions
           addPolylines(data = selectedPolygons(), color = "black", weight = 3,
             group = "regionLines")
-          
-          tmpFile <- tempfile(fileext = ".html")
-          
-          # write map to temp .html file
-          htmlwidgets::saveWidget(newMap, file = tmpFile, selfcontained = FALSE)
-          
-          # output is path to temp .html file containing map
-          tmpFile
+        
+        newMap
           
         }) 
       
@@ -444,8 +438,13 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             content = "kaart", fileExt = "png"),
         content = function(file) {
           
+          tmpFile <- tempfile(fileext = ".html")
+          
+          # write map to temp .html file
+          htmlwidgets::saveWidget(finalMap(), file = tmpFile, selfcontained = FALSE)
+          
           # convert temp .html file into .png for download
-          webshot::webshot(url = finalMap(), file = file,
+          webshot::webshot(url = tmpFile, file = file,
             vwidth = 1000, vheight = 500, cliprect = "viewport")
           
         }
@@ -465,6 +464,8 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             sep = ";", dec = ",")
           
         })
+      
+      return(reactive(finalMap()))
       
     })
   

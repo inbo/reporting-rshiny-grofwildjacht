@@ -25,8 +25,17 @@ knitr::opts_chunk$set(
 
 # ACHTERGRONDINFORMATIE
 
+* Regio-schaal: `r switch(input$dash_regionLevel, 
+  "flanders" = "Vlaanderen",
+  "provinces" = "Provincie", 
+  "faunabeheerzones" = "Faunabeheerzones",
+  "communes" = "Gemeente")`
+* Regio('s): `r toString(input$dash_locaties)`
+
 
 ```{r 'mapFlanders'}
+incProgress(amount = 0.1, detail = "Achtergrondinformatie")
+
 tmpFile <- tempfile(fileext = ".html")
 htmlwidgets::saveWidget(results$dash_finalMap(), file = tmpFile, selfcontained = FALSE)
 webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
@@ -52,13 +61,131 @@ DT::datatable(myTable, rownames = FALSE,
   )
 ```
 
+Voor indicatoren met (*) zijn slechts gedeeltelijke gegevens
+beschikbaar op het gekozen niveau.
 
-```{r 'F16_1', results = "asis"}
-cat("##", uiText$title[uiText$plotFunction == "F16_1"])
-results$dash_F16_1()$plot %>%
-  config(displayModeBar = FALSE)
+```{r popSection, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
+cat("#", toupper("Populatie"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Populatie")
+
+if ("F16_1" %in% results$dash_showPopulatie()) {
+  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F16_1"]), "\n\n")
+  results$dash_F16_1()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F17_1" %in% results$dash_showPopulatie()) {
+  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F17_1"]), "\n\n")
+  tmpFile <- tempfile(fileext = ".html")
+  htmlwidgets::saveWidget(results$dash_F17_1(), file = tmpFile, selfcontained = FALSE)
+  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+}
+
+if ("F17_4" %in% results$dash_showPopulatie()) {
+  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F17_4"]), "\n\n")
+  tmpFile <- tempfile(fileext = ".html")
+  htmlwidgets::saveWidget(results$dash_F17_4(), file = tmpFile, selfcontained = FALSE)
+  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+}
+
+if ("F18_1" %in% results$dash_showPopulatie()) {
+  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F18_1"]), "\n\n")
+  results$dash_F18_1()$plot %>%
+    config(displayModeBar = FALSE)
+}
 ```
 
 
+```{r jachtSection, eval = !is.null(results$dash_showJacht()), results = "asis"}
+cat("#", toupper("Jacht"), "\n\n")
 
-TODO: Add all selected indicators
+incProgress(amount = 0.2, detail = "Jacht")
+
+if ("F05_1" %in% results$dash_showJacht()) {
+  cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_1"]), "\n\n")
+  results$dash_F05_1()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F05_2" %in% results$dash_showJacht()) {
+  cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_2"]), "\n\n")
+  results$dash_F05_2()$plot %>%
+    config(displayModeBar = FALSE)
+}
+```
+
+
+```{r schadeSection, eval = !is.null(results$dash_showSchade()), results = "asis"}
+cat("#", toupper("Schade"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Schade")
+
+if ("F06_1" %in% results$dash_showSchade()) {
+  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F06_1"]), "\n\n")
+  tmpFile <- tempfile(fileext = ".html")
+  htmlwidgets::saveWidget(results$dash_F06_1(), file = tmpFile, selfcontained = FALSE)
+  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+}
+
+if ("F07_1" %in% results$dash_showSchade()) {
+  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_1"]), "\n\n")
+  results$dash_F07_1()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F09_2" %in% results$dash_showSchade()) {
+  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F09_2"]), "\n\n")
+  results$dash_F09_2()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F07_3" %in% results$dash_showSchade()) {
+  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_3"]), "\n\n")
+  results$dash_F07_3()$plot %>%
+    config(displayModeBar = FALSE)
+}
+```
+
+
+```{r maatschappijSection, eval = !is.null(results$dash_showMaatschappij()), results = "asis"}
+cat("#", toupper("Maatschappelijk draagvlak"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Maatschappelijk draagvlak")
+
+if ("F12_1" %in% results$dash_showMaatschappij()) {
+  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F12_1"]), "\n\n")
+  results$dash_F12_1()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F14_1" %in% results$dash_showMaatschappij()) {
+  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_1"]), "\n\n")
+  results$dash_F14_1()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F14_2" %in% results$dash_showMaatschappij()) {
+  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_2"]), "\n\n")
+  results$dash_F14_2()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F14_3" %in% results$dash_showMaatschappij()) {
+  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_3"]), "\n\n")
+  results$dash_F14_3()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F14_4" %in% results$dash_showMaatschappij()) {
+  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_4"]), "\n\n")
+  results$dash_F14_4()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
+if ("F14_5" %in% results$dash_showMaatschappij()) {
+  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_5"]), "\n\n")
+  results$dash_F14_5()$plot %>%
+    config(displayModeBar = FALSE)
+}
+```

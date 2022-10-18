@@ -203,9 +203,11 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
         data = data,
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "yearAge",
+      toReturn <- callModule(module = plotModuleServer, id = "yearAge",
         plotFunction = "countYearAge", 
         data = data)
+      
+      return(reactive(toReturn()))
       
     })
   

@@ -310,7 +310,7 @@ trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, loc
         data = timeData,
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "yearRegion",
+      toReturn <- callModule(module = plotModuleServer, id = "yearRegion",
         plotFunction = "trendYearRegion", 
         data = timeData,
         locaties = locaties,
@@ -318,6 +318,8 @@ trendYearRegionServer <- function(id, data, timeRange, species, regionLevel, loc
         unit = reactive(input$unit),
         combinatie = reactive(input$combinatie)
       )
+      
+      return(reactive(toReturn()))
       
     }) 
   

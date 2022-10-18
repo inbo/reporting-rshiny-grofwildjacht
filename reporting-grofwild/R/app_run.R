@@ -10,7 +10,8 @@
 #' @param public boolean, whether to start the public or private version of the app
 #' @param kbo character, specific KBO number(s) or 'admin' login to start the WBE (private) app;
 #' only relevant if \code{public} is FALSE;
-#' examples are "admin", "454472813" or "445465768,450506996,454472813"
+#' examples are "admin", "[454472813]" or "[445465768,450506996,454472813]"
+#' Note: brackets can be left out, but are there if sent from shinyproxy
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny

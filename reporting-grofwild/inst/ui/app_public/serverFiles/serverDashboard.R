@@ -280,7 +280,11 @@ trendYearRegionServer(id = "dash",
   species = results$dash_species,
   timeRange = results$dash_timeRange,
   regionLevel = reactive(input$dash_regionLevel),
-  locaties = reactive(input$dash_locaties),
+  locaties = reactive({
+      if (req(input$dash_regionLevel) == "flanders")
+        "Vlaams Gewest" else 
+        input$dash_locaties
+    }),
   geoData = reactive(everGeoData),
   allSpatialData = spatialData,
   biotoopData = biotoopData,

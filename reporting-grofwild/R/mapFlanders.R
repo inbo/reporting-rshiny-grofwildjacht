@@ -48,6 +48,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' @inheritParams createShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
+#' @importFrom reshape2 dcast
 #' @export
 createSpaceData <- function(data, allSpatialData, biotoopData, 
   year, species, regionLevel,
@@ -147,7 +148,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     
     # Exclude data with missing locatie
     plotData <- subset(plotData, !is.na(plotData$locatie) & plotData$locatie != "",
-      c("afschotjaar", "locatie", countVariable)
+      c("afschotjaar", "locatie", countVariable, if (!is.null(sourceIndicator)) "dataSource")
     )
     
     # Summarize data over afschotjaar/locaties
@@ -155,9 +156,14 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       summaryData <- plyr::count(df = plotData, vars = names(plotData)) 
     } else {
       summaryData <- aggregate(plotData[[countVariable]], 
-        by = list(afschotjaar = plotData$afschotjaar, locatie = plotData$locatie), sum)
+        by = list(afschotjaar = plotData$afschotjaar, locatie = plotData$locatie, dataSource = plotData$dataSource), sum)
       summaryData$freq <- summaryData$x
       summaryData$x <- NULL
+      
+      if (!is.null(sourceIndicator)) {
+        summaryData <- dcast(summaryData, afschotjaar + locatie ~ dataSource, value.var = "freq", fun.aggregate = sum)
+        summaryData$freq <- apply(summaryData[, -(1:2), drop = FALSE], 1, sum, na.rm = TRUE)      
+      }
     }
     
     # Add names & times with 0 observations
@@ -403,7 +409,7 @@ mapFlanders <- function(
 #' @importFrom htmlwidgets saveWidget
 #' @export
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
-  hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty"),
+  hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   geoData, biotoopData = NULL, allSpatialData,
   regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL,
   uiText) {
@@ -425,7 +431,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           
           req(nrow(geoData()) > 0)
           
-          if (type == "grofwild" && req(input$regionLevel) %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
+          if (type %in% c("grofwild", "dash") && req(input$regionLevel) %in% c("faunabeheerzones", "fbz_gemeentes", "utm5"))
             2014 else 
             min(geoData()$afschotjaar)
           
@@ -578,7 +584,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
       results$unitText <- reactive({
           
           paste0(
-            if (type == "wildschade") "aantal schademeldingen" else "afschot",
+            if (type == "wildschade") 
+                "aantal schademeldingen" else if (!is.null(countVariable)) 
+                countVariable else 
+                "afschot",
             if (!is.null(input$unit) && !type %in% c("wbe", "empty")) switch(input$unit,
                 absolute = "",
                 relative = "/100ha",
@@ -595,9 +604,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
             return(NULL)
           
           nSpecies <- length(species())
-          h3(paste("Gerapporteerd", results$unitText(), 
+          
+          h3(paste(
+              if (type != "dash") paste("Gerapporteerd", results$unitText()) else "Verspreiding", 
               "voor", if (nSpecies > 1)
-                  paste(paste(tolower(species())[1:nSpecies-1], collapse = ", "), "en", tolower(species()[nSpecies])) else 
+                  paste(toString(tolower(species())[1:nSpecies-1]), "en", tolower(species()[nSpecies])) else 
                   tolower(species()),
               "in", input$year))
           
@@ -654,9 +665,18 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = NULL,
           regionNames <- results$summarySpaceData()$data$locatie
           titleText <- paste("Gerapporteerd", results$unitText(), "in", input$year[1])
           
+          contentText <- if (!is.null(input$bronMap)) {
+              availableBron <- input$bronMap[input$bronMap %in% colnames(results$summarySpaceData()$data)]
+              if (length(availableBron) > 1)
+              apply(do.call(cbind, Map(paste, availableBron, results$summarySpaceData()$data[, availableBron], sep = ": ")), 1, function(x)
+                  paste("</br>", paste(x, collapse = "</br>"))) else
+              paste("</br>", Map(paste, availableBron, results$summarySpaceData()$data[, availableBron], sep = ": "))
+            } else
+              round(results$summarySpaceData()$data$freq, 2)
+        
           textPopup <- paste0("<h4>", regionNames, "</h4>",  
             "<strong>", titleText, "</strong>: ", 
-            round(results$summarySpaceData()$data$freq, 2)
+            contentText
           )
           
           return(textPopup)

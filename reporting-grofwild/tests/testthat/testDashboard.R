@@ -73,13 +73,20 @@ test_that("F17_1", {
     
     regionLevel <- c("communes", "utm5")[2]
     
+    everWaarnemingen <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))[, 
+      c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
+    everGeoAll <- rbind(everWaarnemingen, cbind(geoData, data.frame(dataSource = "afschot")), fill = TRUE)
+    everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
+    
     spaceData <- createSpaceData(
-      data = geoData, 
+      data = everGeoAll, 
       allSpatialData = spatialData,
       year = 2016,
       species = "Wild zwijn",
       regionLevel = regionLevel,
-      unit = c("absolute", "relative")[2]
+      sourceIndicator = "waarnemingen.be",
+      unit = c("absolute", "relative")[2],
+      countVariable = "aantal"
     )
     
     myPlot <- mapFlanders(

@@ -249,7 +249,7 @@ observe({
 mapFlandersServer(id = "dash_F17_1",
   defaultYear = defaultYear,
   species = results$dash_species,
-  type = "grofwild",
+  type = "dash",
   regionLevel = reactive(input$dash_regionLevel),
   locaties = reactive(input$dash_locaties),
   geoData = reactive(everGeoAll),

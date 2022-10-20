@@ -47,13 +47,13 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 } else {
   # Local testing
   
-  currentKbo <- "[445465768]"  ## 441 - fixed AREA
-#  currentKbo <- "[450506996]"   ## 101 - evolving AREA
-#  currentKbo <- "[454472813]"  # including Damhert data
-#  currentKbo <- "[417187694]"   # including Edelhert data
-#  currentKbo <- "[454472813]"   # no data Wild zwijn
+  currentKbo <- '["445465768"]'  ## 441 - fixed AREA
+#  currentKbo <- '["450506996"]'   ## 101 - evolving AREA
+#  currentKbo <- '["454472813"]'  # including Damhert data
+#  currentKbo <- '["417187694"]'   # including Edelhert data
+#  currentKbo <- '["454472813"]'   # no data Wild zwijn
 #  currentKbo <- "admin"
-#  currentKbo <- "[445465768,450506996,454472813]"
+  currentKbo <- '["445465768","450506996","454472813"]'
   
 }
 
@@ -83,7 +83,7 @@ toekenningsData <- loadToekenningen(dataDir = dataDir)
 # Manipulate kbo: admin, multiple kbo
 if (currentKbo == "admin")
   currentKbo <- unique(geoData$KboNummer_Toek) else
-  currentKbo <- trimws(strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]])
+  currentKbo <- as.integer(gsub('\\"', "", strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]]))
 
 names(currentKbo) <- geoData$WBE_Naam_Toek[match(currentKbo, geoData$KboNummer_Toek)]
 currentKbo <- currentKbo[order(names(currentKbo))]

@@ -114,6 +114,7 @@ tagList(
     
     conditionalPanel("output.dash_jachtIndicatoren.indexOf('F05_1') > -1", 
       trendYearRegionUI(id = "dash", uiText = uiText, 
+        showCombinatie = TRUE,
         plotFunction = "F05_1", doHide = FALSE
       )
     ),

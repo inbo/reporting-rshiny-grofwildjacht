@@ -2,13 +2,15 @@
 % Please edit documentation in R/trendYearRegion.R
 \name{trendYearRegionUI}
 \alias{trendYearRegionUI}
-\title{Shiny module for creating the plot \code{\link{trendYearRegion}} - ui side}
+\title{Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side}
 \usage{
 trendYearRegionUI(
   id,
   uiText,
   plotFunction = "trendYearRegionUI",
-  doHide = TRUE
+  showCombinatie = FALSE,
+  doHide = TRUE,
+  unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative")
 )
 }
 \arguments{
@@ -16,15 +18,19 @@ trendYearRegionUI(
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
+\item{plotFunction}{character, for matching uiText}
+
+\item{showCombinatie}{boolean, whether to show the option to combine lines}
+
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
 
-\item{title}{character, plot title in the app, overrides the automatic title}
+\item{unitChoices, }{character vector with choices for the units}
 }
 \value{
 HTML object
 }
 \description{
-Shiny module for creating the plot \code{\link{trendYearRegion}} - ui side
+Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 }
 \author{
 mvarewyck

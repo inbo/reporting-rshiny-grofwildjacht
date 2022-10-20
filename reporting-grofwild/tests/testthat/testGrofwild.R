@@ -260,6 +260,9 @@ test_that("Percentages per age and gender", {
       })
     allPlots
     
+    countAgeGender(data = wildEcoData, sourceIndicator_leeftijd = "inbo", 
+      sourceIndicator_geslacht = "both", jaartallen = 2007:2021)
+    
     countAgeGender(data = wildEcoData, jaartallen = 2016)
     countAgeGender(data = wildEcoData, jaartallen = 2016:2017)
     
@@ -283,24 +286,13 @@ test_that("Distribution of weight ifo age", {
     allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
         
         plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-        boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), 
+        boxAgeWeight(data = plotData, type = loadMetaEco(species = wildsoort)$leeftijd_comp, 
           sourceIndicator_leeftijd = "both")$plot
-        boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
-          sourceIndicator_leeftijd = "inbo")$plot
-        
+        boxAgeWeight(data = plotData, type = loadMetaEco(species = wildsoort)$leeftijd_comp_inbo, 
+          sourceIndicator_leeftijd = "inbo")$plot        
         
       })
     allPlots
-    
-# Some special cases
-    boxAgeWeight(data = wildEcoData, jaartallen = 2016, 
-      type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
-    boxAgeWeight(data = wildEcoData, jaartallen = 2016:2017,
-      type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
-    tmp <- boxAgeWeight(data = wildEcoData, jaartallen = 2006:2020,
-      type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
-      sourceIndicator_leeftijd = "both",
-      sourceIndicator_geslacht = "both")$plot
     
   })
 
@@ -350,8 +342,8 @@ test_that("Distribution of cheek length vs class", {
     boxAgeGenderLowerJaw(
       data = reeEcoData, 
       jaartallen = unique(reeEcoData$afschotjaar),
-      type = unique(reeEcoData$leeftijd_comp)
-    )
+      type = loadMetaEco(species = "Ree")$leeftijd_comp
+    )$plot
     
   })
 
@@ -430,20 +422,24 @@ test_that("The interactive map", {
           unit = c("absolute", "relative")[2]
         )
         
-        cat("*", regionLevel, "\n")
-        print(summary(spaceData$data$freq))
+        if (doPrint) {
+          cat("*", regionLevel, "\n")
+          print(summary(spaceData$data$freq))
+        }
+        
+        colorScheme <- suppressWarnings(c("white", RColorBrewer::brewer.pal(
+              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr"))) 
         
         myPlot <- mapFlanders(
           allSpatialData = spatialData, 
           regionLevel = regionLevel, 
-          colorScheme = c("white", RColorBrewer::brewer.pal(
-              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+          colorScheme = colorScheme,
           summaryData = spaceData$data,
           legend = "topright",
           species = iSpecies
         )
-        
-        print(myPlot)
+        if (doPrint)
+          print(myPlot)
         
       }
       
@@ -458,7 +454,8 @@ test_that("Trend plots according with the interactive map", {
     
     for (iSpecies in species) {
       
-#    print(iSpecies)
+      if (doPrint)
+        print(iSpecies)
       unitChoice <- c("absolute", "relative")[1]
       
       trendData <-  createTrendData(
@@ -478,7 +475,8 @@ test_that("Trend plots according with the interactive map", {
       
       for (regionLevel in names(spatialData)[1:6]) {
         
-#        print(regionLevel)
+        if (doPrint)
+          print(regionLevel)
         
         trendRegionData <- createTrendData(
           data = geoData[geoData$wildsoort == iSpecies, ],
@@ -505,14 +503,12 @@ test_that("Trend plots according with the interactive map", {
   
   test_that("Biotoop plot according with the interactive map", {
       
-      for (iName in names(spatialData)[1:6]) {
-        if (iName != "fbz_gemeentes")
-        print(barBiotoop(data = biotoopData[[ iName ]])$plot)
-      }
+      for (iName in names(spatialData)[1:4])
+         if (doPrint) {
+            print(iName)
+            print(barBiotoop(data = biotoopData[[ iName ]])$plot)
+          }
       
       barBiotoop(data = subset(biotoopData[[ "provinces" ]], regio %in% c("West-Vlaanderen", "Oost-Vlaanderen")))$plot
-      
-      expect_error(barBiotoop(data = 
-            subset(biotoopData[[ names(spatialData)[2] ]], regio %in% "Vlaanderen")))
-      
+          
     })

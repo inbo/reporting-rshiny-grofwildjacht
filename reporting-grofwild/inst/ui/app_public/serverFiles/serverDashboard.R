@@ -289,7 +289,7 @@ results$dash_F05_1 <- trendYearRegionServer(id = "dash",
   locaties = reactive({
       if (req(input$dash_regionLevel) == "flanders")
         "Vlaams Gewest" else 
-        input$dash_locaties
+        req(input$dash_locaties)
     }),
   geoData = reactive(everGeoData),
   allSpatialData = spatialData,
@@ -300,7 +300,7 @@ results$dash_F05_1 <- trendYearRegionServer(id = "dash",
 results$dash_F05_2 <- countYearAgeServer(id = "dash",
   data = results$dash_ecoData,
   timeRange = results$dash_timeRange,
-  title = reactive(names(results$dash_popTitles()[results$dash_popTitles() == "F05_2"])) 
+  title = reactive(names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_2"])) 
 )
 
 

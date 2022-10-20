@@ -10,7 +10,7 @@ output:
       latex_engine: pdflatex
 ---
 
-```{r knitr, echo = FALSE, results = 'hide'}
+```{r knitr, echo = FALSE, results = 'hide', warning = FALSE}
 library(knitr)
 knitr::opts_chunk$set(
   echo = FALSE,

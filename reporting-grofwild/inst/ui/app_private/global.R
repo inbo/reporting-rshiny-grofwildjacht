@@ -4,6 +4,7 @@ library(reportingGrofwild)
 library(leaflet)           # for interactive map
 library(plotly)            # for interactive graphs
 library(shinycssloaders)   # for busy indicator
+library(shinyjs)
 
 # Other packages needed, but not loaded
 # mapview
@@ -45,7 +46,10 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
   
   currentKbo <- "445465768"  ## 441 - fixed AREA
 #  currentKbo <- "450506996"   ## 101 - evolving AREA
-#  currentKbo <- "446912355"
+#  currentKbo <- "454472813"  # including Damhert data
+#  currentKbo <- "417187694"   # including Edelhert data
+#  currentKbo <- "454472813"   # no data Wild zwijn
+  currentKbo <- "admin"
   
 } else {
   # Inside shinyProxy
@@ -53,6 +57,8 @@ if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
   currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
   
 }
+
+
 
 
 
@@ -73,36 +79,33 @@ if (!doDebug | !exists("ecoData")) {
   ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 }
 
-if (!doDebug | !exists("geoData")) {
-  geoData <- loadRawData(type = "geo")
-  geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
+geoData <- loadRawData(type = "geo")
+
+# Special case for 'admin'
+if (currentKbo == "admin") {
+  
+  currentKbo <- unique(geoData$KboNummer_Toek)
+  names(currentKbo) <- geoData$WBE_Naam_Toek[match(currentKbo, geoData$KboNummer_Toek)]
+  currentKbo <- currentKbo[order(names(currentKbo))]
+  
 }
 
-if (!doDebug | !exists("schadeData")) {
-  schadeData <- loadRawData(type = "wildschade")
-  schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
-}
-
-currentWbe <- unique(geoData$PartijNummer)
-currentWbe <- currentWbe[!is.na(currentWbe)]
-
-if (!doDebug | !exists("biotoopData")) {
-  biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
+schadeData <- loadRawData(type = "wildschade")
+biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
     regionLevels = "wbe")[["wbe"]]
-  biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
-}
+toekenningsData <- loadToekenningen(dataDir = dataDir)
 
-if (!doDebug | !exists("toekenningsData")) {
-  toekenningsData <- loadToekenningen(dataDir = dataDir)
-  toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
-}
+
+toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
+
 gc()
 
 if (!doDebug | !exists("uiText")) {
   uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wbe")]
   uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
-  if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
+  uiCheck <- uiFunctions[!startsWith(uiFunctions, "F")]
+  if (!all(uiCheck %in% ls("package:reportingGrofwild")))
     warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
       paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
-  rm(uiFunctions)
+  rm(uiFunctions, uiCheck)
 }

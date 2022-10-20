@@ -1,5 +1,3 @@
-
-
 #' read openingstijden data
 #' @inheritParams createShapeData
 #' @return data.frame with columns:
@@ -106,9 +104,11 @@ loadRawData <- function(
   if ("ontweid_gewicht" %in% names(rawData))
     rawData$ontweid_gewicht <- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
   
-  ## Replace decimal comma by dot
-  if ("lengte_mm" %in% names(rawData))
-    rawData$lengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+  ## Replace decimal comma by dot & rename
+  if ("lengte_mm" %in% names(rawData)) {
+    rawData$onderkaaklengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+    rawData$lengte_mm <- NULL
+  }
   
   ## Replace decimal comma by dot
   if ("onderkaaklengte_comp" %in% names(rawData))
@@ -357,7 +357,7 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
       
       merge(habitatData[[iLevel]], iData, by.x = "regio", by.y = "weg_NAAM")
     
-    })
+    }, simplify = FALSE)
   
   
   

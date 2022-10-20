@@ -10,8 +10,6 @@ mapSpreadUI(id, uiText, showLayer = FALSE)
 \item{id}{character, unique identifier for the module}
 
 \item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-
-\item{showLayer}{boolean, whether to show the option to select spatial layers}
 }
 \value{
 HTML object

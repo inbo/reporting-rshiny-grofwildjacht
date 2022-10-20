@@ -7,14 +7,15 @@
 trendYearRegionServer(
   id,
   data,
-  timeRange,
+  timeRange = reactive(NULL),
   species,
-  regionLevel,
+  regionLevel = reactive("WBE_buitengrenzen"),
   locaties,
   geoData,
   allSpatialData,
   biotoopData = NULL,
-  title = reactive(NULL)
+  title = reactive(NULL),
+  type = "wbe"
 )
 }
 \arguments{
@@ -29,15 +30,17 @@ trendYearRegionServer(
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
 
-\item{locaties}{character vector, regions that were selected to plot}
+\item{locaties}{reactive character vector, region name to be shown in the plot title}
 
-\item{geoData}{reactive object, geographical data for the selected species}
+\item{geoData}{reactive data.frame, geographical data for the selected species}
 
 \item{allSpatialData}{list of sp, spatial data for all spatial levels}
 
 \item{biotoopData}{data.frame, background data for the WBE, as read from \code{loadHabitats}}
 
 \item{title}{reactive character, title with asterisk to show in the \code{actionLink}}
+
+\item{type}{character, type of module e.g. "wbe"}
 }
 \value{
 no return value

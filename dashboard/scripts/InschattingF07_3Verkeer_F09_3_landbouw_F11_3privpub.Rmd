@@ -1,0 +1,31 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Data_inschatting.csv")
+```
+
+#Grafiek
+```{r}
+verkeer_inschatting <- Data_inschatting %>%
+  filter(Vraag != "populatie_evolutie")
+
+verkeer_inschatting$Antwoord <- factor(verkeer_inschatting$Antwoord , 
+                                    levels = c('Erg veel toegenomen','Veel toegenomen',
+                                               'Beetje toegenomen', 'Hetzelfde gebleven',
+                                               'Beetje afgenomen', 'Veel afgenomen',
+                                               'Erg veel afgenomen', 'Geen mening'))
+
+plot_inschatting_verkeer <- ggplot(data = verkeer_inschatting,
+                           aes(x = percentage,
+                               y = Vraag,
+                               fill = Antwoord)) +
+  geom_bar(stat = "identity", 
+           position = "stack")
+
+plot_inschatting_verkeer
+
+```

@@ -54,6 +54,10 @@ barDraagkracht <- function(data, groupVariable = NULL,
   } else if (yVar == "Year" | "Year" %in% groupVariable) {
     totalCounts <- data$totaal[!duplicated(data$Year)]
     names(totalCounts) <- as.character(unique(data$Year))
+#    myCols <- c(yVar, groupVariable)
+#    totalCounts <- data$totaal[!duplicated(data[,myCols, with = FALSE])]
+#    # TODO update here for multiple groups
+#    names(totalCounts) <- as.character(unique(data$Year))
   } else {
     totalCounts <- data$totaal[!duplicated(data[[groupVariable]])]  
     names(totalCounts) <- as.character(unique(data[[groupVariable]]))

@@ -481,9 +481,12 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       ## Geselecteerd Jaar (kaart)
       # freeze value - when input$regionLevel changes
-      observeEvent(input$year, {
+      observeEvent(input$regionLevel, {
           
-          results$year_value <- input$year
+          req(input$year)
+          
+          if (results$year_value != input$year)
+            results$year_value <- input$year
           
         })
       
@@ -504,7 +507,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       ## Periode (grafiek)
       # freeze value - when input$regionLevel changes
-      observe({
+      observeEvent(input$regionLevel, {
           
           if (is.null(input$period)) {
             results$period_value <- c(results$minYear(), defaultYear)

@@ -95,7 +95,7 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
       title = if (grepl("model", unit))
           "Waarschijnlijkheid verspreiding" else 
           "Risico klasse",
-      opacity = 1,
+      opacity = if (spatialLevel == "pixels") 1 else 0.5,
       na.label = "",
       layerId = "legend")
     
@@ -348,7 +348,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               title = if (grepl("model", input$unit))
                   "Waarschijnlijkheid verspreiding" else 
                   "Risico klasse",
-              opacity = 1,
+              opacity = if (!is.null(input$spatialLevel) && input$spatialLevel != "pixels") 0.5 else 1,
               na.label = "",
               layerId = "legend")
             

@@ -18,13 +18,17 @@ Aantrekking_data$Antwoord <- factor(Aantrekking_data$Antwoord ,
                                     levels = c('Ja, zeker wel', 'Ja, waarschijnlijk wel', 
                                                'Nee, waarschijnlijk niet', 'Nee, zeker niet'))
 
-plot_aantrekking <- ggplot(data = Aantrekking_data,
-                           aes(x = percentage,
-                               y = Sector,
-                               fill = Antwoord)) +
-  geom_bar(stat = "identity", 
-           position = "stack") +
-  facet_wrap(~ Year)
+plot_aantrekking <- ggplot(data = Aantrekking_data, 
+                   aes(x="", 
+                       y=percentage, 
+                       fill=Antwoord)) +
+  geom_bar(stat="identity", 
+           width=1,
+           color="white") +
+  coord_polar("y", 
+              start=0) +
+  facet_grid (Year ~ Sector) +
+  theme_void()
 
 plot_aantrekking
 

@@ -16,14 +16,17 @@ Data_houding$Antwoord <- factor(Data_houding$Antwoord ,
                                     levels = c('Heel erg positief', 'Positief', 'Neutraal',
                                                'Negatief', 'Heel erg negatief', 'Geen mening'))
 
-plot_houding <- ggplot(data = Data_houding,
-                           aes(x = percentage,
-                               y = Sector,
-                               fill = Antwoord)) +
-  geom_bar(stat = "identity", 
-           position = "stack") +
-  facet_wrap(~ Year)
-
+plot_houding <- ggplot(data = Data_houding, 
+                   aes(x="", 
+                       y=percentage, 
+                       fill=Antwoord)) +
+  geom_bar(stat="identity", 
+           width=1,
+           color="white") +
+  coord_polar("y", 
+              start=0) +
+  facet_grid (Year ~ Sector) +
+  theme_void()
 plot_houding
 
 ```

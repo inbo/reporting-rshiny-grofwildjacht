@@ -526,6 +526,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           req(nrow(geoData()) > 0)
           
+          # initialize
+          if (is.null(results$period_value))
+            results$period_value <- c(results$minYear(), defaultYear)
+          
           sliderInput(inputId = ns("period"), 
             label = if (type == "wbe") "Periode" else "Periode (grafiek)", 
             value = results$period_value,

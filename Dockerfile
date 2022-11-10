@@ -10,14 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     pandoc \
     libudunits2-0 \
-    texlive-full \
     libmagick++-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs', 'data.table', 'rmarkdown', 'magick'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs', 'data.table', 'rmarkdown', 'tinytex', 'magick'))"
 RUN R -q -e "remotes::install_version('plotly', version = '4.9.2.1')"
 RUN R -q -e "remotes::install_version('DT', version = '0.12')"
 RUN R -q -e "remotes::install_github('inbo/INBOtheme')"
@@ -25,6 +24,11 @@ RUN R -q -e "install.packages('oaStyle', repos = c(rdepot = 'https://repos.opena
 
 # to prevent bobbing with shinycssloaders
 RUN R -q -e "remotes::install_github('daattali/shinycssloaders')"
+
+# For the rmarkdown pdf report
+RUN R -e "tinytex::install_tinytex()" 
+ENV PATH="/root/bin:${PATH}" 
+RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling'))" 
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!

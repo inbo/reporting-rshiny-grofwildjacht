@@ -52,12 +52,10 @@ barDraagkracht <- function(data, groupVariable = NULL,
   if (is.null(groupVariable)) {
     totalCounts <- sum(data$totaal[!duplicated(data[[yVar]])]) 
   } else if (yVar == "Year" | "Year" %in% groupVariable) {
-    totalCounts <- data$totaal[!duplicated(data$Year)]
-    names(totalCounts) <- as.character(unique(data$Year))
-#    myCols <- c(yVar, groupVariable)
-#    totalCounts <- data$totaal[!duplicated(data[,myCols, with = FALSE])]
-#    # TODO update here for multiple groups
-#    names(totalCounts) <- as.character(unique(data$Year))
+    myCols <- c(yVar, groupVariable)
+    totalCounts <- data[!duplicated(data$totaal), c(myCols, "totaal"), with = FALSE]
+    if (length(unique(data$Year)) == 1)
+      totalCounts <- totalCounts[!duplicated(totalCounts[[groupVariable[groupVariable != "Year"]]]), ]
   } else {
     totalCounts <- data$totaal[!duplicated(data[[groupVariable]])]  
     names(totalCounts) <- as.character(unique(data[[groupVariable]]))
@@ -66,6 +64,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
   if (!is.null(groupVariable)) {
     
     groupLevels <- sapply(groupVariable, function(x) unique(data[[x]]), simplify = FALSE)
+    yLevels <- levels(as.factor(data[[yVar]]))
     
     plotList <- list()
     
@@ -96,24 +95,31 @@ barDraagkracht <- function(data, groupVariable = NULL,
               # columns
               list(x = 50, y = 1.1, 
                 text = if (jVar == secondGroup[1]) paste(as.character(iVar),
-                  if (!(yVar == "Year" | "Year" %in% groupVariable)) 
-                    paste0("\n(n = ", totalCounts[[iVar]], ")\n")) else "",
+                      if (!(yVar == "Year" | "Year" %in% groupVariable) | length(secondGroup) == 1) 
+                        paste0("\n(n = ", totalCounts[[iVar]], ")\n")) else "",
                 showarrow = FALSE, font = list(size = 16), 
                 yref = 'paper'),
               # rows
-              list(x = 1.1, y = 0.5, 
-                text = if (iVar == tail(groupLevels[[1]], n=1)) paste(as.character(jVar),
-                  if ("Year" %in% groupVariable) 
-                    paste0("\n(n = ", totalCounts[[as.character(jVar)]], ")\n")) else "",
-                showarrow = FALSE, font = list(size = 16), textangle = 90,
+              list(x = if (iVar == head(groupLevels[[1]], n = 1)) -0.1 else 1.1, y = 0.5, 
+                text = paste(as.character(jVar),
+                  if ("Year" %in% groupVariable & length(secondGroup) > 1) 
+                    paste0("\n(n = ", totalCounts[get(names(groupLevels)[1]) %in% iVar & Year %in% jVar, "totaal"], ")\n")),
+                showarrow = FALSE, font = list(size = 16), 
+                textangle = if (iVar == head(groupLevels[[1]], n = 1)) -90 else 90,
                 xref = 'paper', yref = 'paper')
+#              list(x = 0, y = yLevels, 
+#                text = paste(as.character(jVar),
+#                  if ((yVar == "Year" | "Year" %in% groupVariable)) 
+#                    paste0("\n(n = ", totalCounts[get(groupVariable) %in% iVar, totaal], ")\n")),
+#                showarrow = FALSE, font = list(size = 16), textangle = 90)
             ),
             legend = list(title = list(text = "<b>Antwoord</b>")),
             barmode = "stack",
             yaxis = if (yVar == "Year")
                 list(title = "", 
-                  ticktext = lapply(names(totalCounts), function(x) paste0(x, "\n (n = ", totalCounts[[x]], ")")),
-                  tickvals = lapply(names(totalCounts), function(x) x),
+                  ticktext = as.list(apply(totalCounts[get(names(groupLevels)[1]) %in% iVar, ], 1, function(x) 
+                        paste0(x[yVar], "\n(n = ", x["totaal"], ")\n"))),
+                  tickvals = as.list(yLevels),
                   tickmode = "array") else
                 list(title = ""),
             xaxis = list(title = "Percentage", range = list(0, 100)),
@@ -124,7 +130,9 @@ barDraagkracht <- function(data, groupVariable = NULL,
         
       }
     
-    myPlot <- do.call(subplot, c(plotList, shareY = TRUE, shareX = TRUE, nrows = length(secondGroup)))
+    myPlot <- do.call(subplot, c(plotList, 
+        shareY = (!(yVar == "Year" | "Year" %in% groupVariable) | length(secondGroup) == 1),
+        shareX = TRUE, nrows = length(secondGroup)))
     
     extraVars <- c("Antwoord", groupVariable)
     

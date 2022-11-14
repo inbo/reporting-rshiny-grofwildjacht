@@ -297,8 +297,9 @@ test_that("F14_3, F14_4", {
     
     # F14_4
     plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[2]))
-    subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
-    
+#    subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
+    subData <- subset(plotData, Groep %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
+    # TODO -> also different counts per yVar in practice => ask INBO
     myResult <- barDraagkracht(data = subData, groupVariable = c("Groep", "Year"), yVar = "Question_label")
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

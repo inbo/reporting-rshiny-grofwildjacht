@@ -47,7 +47,10 @@ RUN R -e "remotes::install_github('daattali/shinycssloaders')"
 # Attention: do not install phantomjs directly, will not work then!
 RUN R -e "webshot::install_phantomjs()"
 
- 
+ # For access to S3 on UAT
+RUN R -e "install.packages('aws.ec2metadata', repos='https://cloud.r-project.org/')"
+
+
 # copy the app to the image by installing package (need latest version!!)
 ENV latestApp reporting-grofwild.tar.gz
 COPY $latestApp /root/

@@ -97,3 +97,6 @@ onStop(function() {
 
 if (!exists("doDebug"))
 	doDebug <- FALSE
+
+if (doDebug)
+  checkS3()

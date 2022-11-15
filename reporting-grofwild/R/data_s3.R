@@ -36,8 +36,6 @@ checkS3 <- function() {
 #' @export
 readS3 <- function(FUN, ..., file, bucket = config::get("bucket")) {
   
-  checkS3()
-  
   if (tolower(tools::file_ext(file)) == "rdata") {
     
     s3load(bucket = bucket, object = basename(file), envir = .GlobalEnv)

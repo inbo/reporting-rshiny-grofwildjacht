@@ -119,3 +119,6 @@ if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
 
 if (!exists("doDebug"))
 	doDebug <- FALSE
+
+if (doDebug)
+  checkS3()

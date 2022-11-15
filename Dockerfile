@@ -28,7 +28,7 @@ RUN R -q -e "remotes::install_github('daattali/shinycssloaders')"
 # For the rmarkdown pdf report
 RUN R -e "tinytex::install_tinytex()" 
 ENV PATH="/root/bin:${PATH}" 
-RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling'))" 
+RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grffile'))" 
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!

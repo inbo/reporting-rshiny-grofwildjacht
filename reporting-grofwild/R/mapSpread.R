@@ -13,11 +13,12 @@
 #' 
 #' @author mvarewyck
 #' @importFrom grDevices palette
+#' @importFrom RColorBrewer brewer.pal
 #' @export
 paletteMap <- function(variable, groupNames) {
   
   myColors <- if (grepl("model", variable))
-      c("deepskyblue1", "deepskyblue3", "deepskyblue4") else if (grepl("risk", variable))
+      c(RColorBrewer::brewer.pal(n = length(groupNames) - 1, "YlOrBr"), "gray") else if (grepl("risk", variable))
       c('red', 'orange', 'green', 'white') else if (grepl("start", variable))
       "black"
   
@@ -58,10 +59,10 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
       data = spreadShape,
       stroke = spatialLevel != "pixels",
       smoothFactor = 1,
-      fillOpacity = if (spatialLevel == "pixels") 1 else 0.5,
+      fillOpacity = if (spatialLevel == "pixels") 1 else 0.8,
       fillColor =  ~pal_model(outcome),
       weight = if (spatialLevel == "pixels") 0 else 0.75,
-      color = "black",
+      color = "gray",
       group = "modelPolygons")
   
   
@@ -95,7 +96,7 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
       title = if (grepl("model", unit))
           "Waarschijnlijkheid verspreiding" else 
           "Risico klasse",
-      opacity = if (spatialLevel == "pixels") 1 else 0.5,
+      opacity = if (spatialLevel == "pixels") 1 else 0.8,
       na.label = "",
       layerId = "legend")
     
@@ -348,7 +349,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               title = if (grepl("model", input$unit))
                   "Waarschijnlijkheid verspreiding" else 
                   "Risico klasse",
-              opacity = if (!is.null(input$spatialLevel) && input$spatialLevel != "pixels") 0.5 else 1,
+              opacity = if (!is.null(input$spatialLevel) && input$spatialLevel != "pixels") 0.8 else 1,
               na.label = "",
               layerId = "legend")
             

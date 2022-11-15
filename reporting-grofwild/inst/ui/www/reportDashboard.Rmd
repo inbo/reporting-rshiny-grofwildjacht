@@ -4,6 +4,7 @@ subtitle: "`r paste0('Dashboard v', packageVersion('reportingGrofwild'))`"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output: 
    oaStyle::pdf_report:
+      keep_tex: true
       logo: NULL
       bigLogoSize: 15cm
       always_allow_html: yes

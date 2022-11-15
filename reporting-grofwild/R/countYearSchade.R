@@ -22,7 +22,7 @@
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
-    sourceIndicator = NULL, width = NULL, height = NULL) {
+    sourceIndicator = NULL, width = 800, height = 600) {
   
   # For R CMD check
   freq <- NULL
@@ -79,7 +79,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   
   
   # Make full schade names
-  if (type == "schadeCode") {
+  if (type == "schadeCode" & !is.null(fullNames)) {
     summaryData$variabele <- names(fullNames)[match(summaryData$variabele, fullNames)]
   }
   
@@ -126,8 +126,6 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
           barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
           # hardcode graph size to prevent legend overlapping plot
           autosize = FALSE,
-          width = 800, 
-          height = 600,
           margin = list(b = 120, t = 100),
           legend = list(y = 0.1),
           annotations = list(

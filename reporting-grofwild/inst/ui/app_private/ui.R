@@ -2,6 +2,7 @@ shinyUI(
         
         bootstrapPage(
                 
+                shinyjs::useShinyjs(),
                 ## For debugging
                 uiOutput("debug"),
                 

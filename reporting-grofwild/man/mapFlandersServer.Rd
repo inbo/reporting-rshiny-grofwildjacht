@@ -8,7 +8,7 @@ mapFlandersServer(
   id,
   defaultYear,
   species,
-  currentWbe = NULL,
+  currentWbe = reactive(NULL),
   hideGlobeDefault = TRUE,
   type = c("grofwild", "wildschade", "wbe"),
   geoData,

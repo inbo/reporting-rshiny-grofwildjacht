@@ -44,6 +44,16 @@ Creation of this file was discussed in https://github.com/inbo/reporting-rshiny-
 
 # Remote Data (S3)
 
+## Update Remote Data
+
+To update a specific file in the S3 bucket, run the following piece of code
+Load the data into an R object
+
+```
+tmpData <- read.csv(file.path(dataDir, "WBE_habitats_2022.csv"))
+aws.s3::s3write_using(x = tmpData, FUN = write.csv, row.names = FALSE, object = "WBE_habitats_2022.csv", bucket = config::get("bucket"))
+```
+
 ## reporting data files
 
 ### grofwild 

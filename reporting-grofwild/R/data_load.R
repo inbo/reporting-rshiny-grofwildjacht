@@ -2,6 +2,7 @@
 #' 
 #' @param jsonDir character, path to json shape files
 #' @inheritParams loadRawData
+#' @param dataDir character, path to write data files
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
 #' @return save to S3 bucket object spatialData, i.e. a list with for each 
@@ -20,7 +21,9 @@
 #' @importFrom aws.s3 s3save put_object
 #' @importFrom config get
 #' @export
-readShapeData <- function(jsonDir, bucket = config::get("bucket"), tolerance = 0.0001) {
+readShapeData <- function(jsonDir, bucket = config::get("bucket"),
+  dataDir = system.file("extdata", package = "reportingGrofwild"), 
+  tolerance = 0.0001) {
   
   
   allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
@@ -68,7 +71,7 @@ readShapeData <- function(jsonDir, bucket = config::get("bucket"), tolerance = 0
           
         } else if (grepl("Jachtter_", iLevel)) {
           
-          shapeData$NAAM <- factor(shapeData$WBENR)
+          shapeData$NAAM <- factor(shapeData$WBE_NR_wbe)
           
         }
         
@@ -130,7 +133,7 @@ readShapeData <- function(jsonDir, bucket = config::get("bucket"), tolerance = 0
         iData@data$AREA <- raster::area(iData)/1e06
         
         # No simplification
-        if (iName %in% c("fbz_gemeentes", "utm5"))
+        if (iName %in% c("fbz_gemeentes", "utm5") | grepl("WBE", iName))
           return(iData)
         
         simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
@@ -304,9 +307,11 @@ loadRawData <- function(bucket = config::get("bucket"),
   if ("ontweid_gewicht" %in% names(rawData))
     rawData$ontweid_gewicht <- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
   
-  ## Replace decimal comma by dot
-  if ("lengte_mm" %in% names(rawData))
-    rawData$lengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+  ## Replace decimal comma by dot & rename
+  if ("lengte_mm" %in% names(rawData)) {
+    rawData$onderkaaklengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+    rawData$lengte_mm <- NULL
+  }
   
   ## Replace decimal comma by dot
   if ("onderkaaklengte_comp" %in% names(rawData))

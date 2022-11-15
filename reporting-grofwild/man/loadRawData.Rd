@@ -5,12 +5,13 @@
 \title{Read ecology or geography data}
 \usage{
 loadRawData(
-  dataDir = system.file("extdata", package = "reportingGrofwild"),
+  bucket = config::get("bucket"),
   type = c("eco", "geo", "wildschade")
 )
 }
 \arguments{
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
 
 \item{type}{data type, "eco" for ecology data and "geo" for geography data}
 }

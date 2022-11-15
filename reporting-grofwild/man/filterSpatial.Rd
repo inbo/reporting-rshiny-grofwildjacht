@@ -15,7 +15,7 @@ filterSpatial(
 }
 \arguments{
 \item{allSpatialData}{list with SpatialPolygonsDataFrame as loaded by 
-\code{load(file = file.path(system.file("extdata", package = "reportingGrofwild"), "spatialData.RData"))}}
+\code{readS3(file = "spatialData.RData")}}
 
 \item{species}{character, animal species}
 

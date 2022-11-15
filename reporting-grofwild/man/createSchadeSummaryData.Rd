@@ -18,7 +18,7 @@ wildschade and descriptives in data.frame}
 
 \item{timeRange}{numeric vector, year span of interest}
 
-\item{dataDir}{character, path to data files}
+\item{dataDir}{character, path to write data files}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}

@@ -57,6 +57,10 @@ test_that("Upload data", {
     
   })
 
+# This will update 
+# (1) spatialData.RData, spatialDataWBE.RData shape data and
+# (2) gemeentecodes.csv, file for matching NIS to NAAM
+# Next, install the package for the latest files to be available from the extdata folder
 
 
 
@@ -105,9 +109,7 @@ test_that("Ecological data", {
         
         myData <- subset(ecoData, wildsoort == iSoort)
         myData$onderkaaklengte <- rowMeans(myData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
-        
-        expect_true(all(myData$doodsoorzaak == "afschot"))
-        
+                
         hist(myData$afschotjaar, main = paste(iSoort, "- afschotjaar"))
         barplot(table(myData$provincie), main = paste(iSoort, "- provincie"))
         barplot(table(myData$geslacht_comp), main = paste(iSoort, "- geslacht"))
@@ -121,8 +123,8 @@ test_that("Ecological data", {
         
         if (iSoort %in% c("Ree")) {
           
-          hist(myData$lengte_mm, main = paste(iSoort, "- onderkaaklengte"), border = "red",
-            xlim = range(myData[ , c("lengte_mm", "onderkaaklengte", "onderkaaklengte_comp")], na.rm = TRUE))
+          hist(myData$onderkaaklengte_mm, main = paste(iSoort, "- onderkaaklengte"), border = "red",
+            xlim = range(myData[ , c("onderkaaklengte_mm", "onderkaaklengte", "onderkaaklengte_comp")], na.rm = TRUE))
           hist(myData$onderkaaklengte, add = TRUE, border = "blue")
           hist(myData$onderkaaklengte_comp, add = TRUE)
           
@@ -150,7 +152,7 @@ test_that("Spatial data", {
     pdf(plotFile)
     for (iLevel in names(spatialData)) {
       print(iLevel)
-      plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(10, "Set1"))
+      plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(9, "Set1"))
     }
     dev.off()
     
@@ -179,7 +181,7 @@ test_that("Geographical data", {
 test_that("Wildschade data", {
     
     # Can we combine data sources? 
-    wildschadeData <- loadRawData(type = "wildschade")
+    expect_warning(wildschadeData <- loadRawData(type = "wildschade"))
     
     dim(wildschadeData)
     head(wildschadeData)
@@ -256,18 +258,3 @@ test_that("Speed up reading data", {
 #    close(con)
     
   })
-
-
-## How to configure the application.yaml
-#- id: euraa
-#display-name: EU-RAA
-#description: EU Risk Assessment Agenda Projects and Partnering
-#container-env:
-#EMAIL_USERNAME: no.reply@efsa.europa.eu
-#EMAIL_SMTP_HOST: smtp.office365.com
-#EMAIL_SMTP_PORT: 587
-#EMAIL_FROM: no.reply@efsa.europa.eu
-#R_CONFIG_ACTIVE: shiny-efsa
-#container-cmd: ["R", "-e euraa::runEURAA()"]
-#container-image: r4eucr.azurecr.io/efsa/euraa:latest
-#access-groups: [R4EU_ra, R4EU_efsastaff]

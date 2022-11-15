@@ -6,6 +6,7 @@
 \usage{
 readShapeData(
   jsonDir,
+  bucket = config::get("bucket"),
   dataDir = system.file("extdata", package = "reportingGrofwild"),
   tolerance = 1e-04
 )
@@ -13,15 +14,18 @@ readShapeData(
 \arguments{
 \item{jsonDir}{character, path to json shape files}
 
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
+
+\item{dataDir}{character, path to write data files}
 
 \item{tolerance}{numeric, defines the tolerance in the Douglas-Peuker algorithm;
 larger values will impose stronger simplification; default value is 0.001}
 }
 \value{
-save to dataDir object spatialData, i.e. a list with for each 
+save to S3 bucket object spatialData, i.e. a list with for each 
 spatial level a SpatialPolygonsDataFrame object, 
-with polygons and data as provided in the dataDir; spatial levels are 
+with polygons and data as provided in the jsonDir; spatial levels are 
 flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
 and provincesVoeren (Voeren as separate province)
 }

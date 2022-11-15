@@ -38,6 +38,12 @@ schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
 sourcesSchade <- metaSchade$sources
+fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+
+tmpWildsoorten <- schadeWildsoorten
+names(tmpWildsoorten) <- NULL
+tmpWildsoorten <- unlist(tmpWildsoorten)
+names(tmpWildsoorten) <- tmpWildsoorten
 
 tmpWildsoorten <- schadeWildsoorten
 names(tmpWildsoorten) <- NULL

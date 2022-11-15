@@ -8,29 +8,31 @@
 #' @param installDependencies boolean, whether to first install packages listed
 #' in the Suggests field of DESCRIPTION; default value is FALSE
 #' @param public boolean, whether to start the public or private version of the app
-#' @param kbo numeric, specific KBO number for which to show the WBE (private) app;
-#' only relevant if \code{public} is FALSE
+#' @param kbo character, specific KBO number(s) or 'admin' login to start the WBE (private) app;
+#' only relevant if \code{public} is FALSE;
+#' examples are "admin", '["454472813"]' or '["445465768","450506996","454472813"]'
+#' Note: brackets can be left out, but are there if sent from shinyproxy
 #' @param ... further arguments that can be passed to \code{\link[shiny]{runApp}}
 #' @return no return value
 #' @import shiny
-#' @importFrom devtools install_github dev_package_deps
+#' @importFrom remotes install_github dev_package_deps
 #' @importFrom stats update
 #' @export
 runWildApp <- function(installDependencies = FALSE, 
-  public = TRUE, kbo = NULL, ...) {
+  public = TRUE, kbo = "", ...) {
   
   # (1) Install all suggested R packages (see DESCRIPTION)
   if (installDependencies) {
     
     ## (a) CRAN packages
-    update(dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
+    update(remotes::dev_package_deps(pkgdir = system.file("", package = "reportingGrofwild"), 
             dependencies = "Suggests"))
     
     
     ## (b) non-CRAN packages - by hand
     if (!requireNamespace("INBOtheme")) {
       
-      install_github('inbo/INBOtheme')
+      remotes::install_github('inbo/INBOtheme')
       
     }
     
@@ -45,10 +47,11 @@ runWildApp <- function(installDependencies = FALSE,
   
   # (3) Specific WBE
   # WARNING: This overrides the kbo read from shinyproxy
-  if (!is.null(kbo))
-    Sys.setenv("SHINYPROXY_USERNAME" = kbo)
-  
-  
+  if (kbo != "") {
+    if (kbo == "admin")
+      Sys.setenv("SHINYPROXY_USERGROUPS" = "WBE_ADMIN") else
+      Sys.setenv("SHINYPROXY_KBO_NUMMERS" = kbo)
+  }
   
   # (4) Run the application
   runApp(appDir = appDir, ...)

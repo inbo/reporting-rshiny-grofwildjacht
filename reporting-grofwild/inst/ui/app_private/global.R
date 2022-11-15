@@ -4,6 +4,7 @@ library(reportingGrofwild)
 library(leaflet)           # for interactive map
 library(plotly)            # for interactive graphs
 library(shinycssloaders)   # for busy indicator
+library(shinyjs)
 
 # Other packages needed, but not loaded
 # mapview
@@ -34,18 +35,28 @@ outTempFileName <- tempfile(fileext = ".html")
 ### WBE configuration
 ### -----------
 
-if (Sys.getenv("SHINYPROXY_USERNAME") == "") {
+if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
   
-  currentKbo <- "445465768"  ## 441 - fixed AREA
-#  currentKbo <- "450506996"   ## 101 - evolving AREA
-#  currentKbo <- "446912355"
+  currentKbo <- "admin"
   
-} else {
+} else if (Sys.getenv("SHINYPROXY_KBO_NUMMERS") != "") {
   # Inside shinyProxy
   
-  currentKbo <- Sys.getenv("SHINYPROXY_USERNAME")
+  currentKbo <- Sys.getenv("SHINYPROXY_KBO_NUMMERS")
+  
+} else {
+  # Local testing
+  
+  currentKbo <- '["445465768"]'  ## 441 - fixed AREA
+#  currentKbo <- '["450506996"]'   ## 101 - evolving AREA
+#  currentKbo <- '["454472813"]'  # including Damhert data
+#  currentKbo <- '["417187694"]'   # including Edelhert data
+#  currentKbo <- '["454472813"]'   # no data Wild zwijn
+#  currentKbo <- "admin"
+  currentKbo <- '["445465768","450506996","454472813"]'
   
 }
+
 
 
 
@@ -63,19 +74,18 @@ ecoData <- loadRawData(type = "eco")
 ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 
 geoData <- loadRawData(type = "geo")
-geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
-
 schadeData <- loadRawData(type = "wildschade")
-schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
-
-currentWbe <- unique(geoData$PartijNummer)
-currentWbe <- currentWbe[!is.na(currentWbe)]
-
 biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
-biotoopData <- biotoopData[biotoopData$regio %in% currentWbe, ]
-
 toekenningsData <- loadToekenningen()
-toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
+
+
+# Manipulate kbo: admin, multiple kbo
+if (currentKbo == "admin")
+  currentKbo <- unique(geoData$KboNummer_Toek) else
+  currentKbo <- as.integer(gsub('\\"', "", strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]]))
+
+names(currentKbo) <- geoData$WBE_Naam_Toek[match(currentKbo, geoData$KboNummer_Toek)]
+currentKbo <- currentKbo[order(names(currentKbo))]
 
 gc()
 

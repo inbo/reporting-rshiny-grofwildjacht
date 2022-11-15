@@ -38,7 +38,7 @@ should be reported,}
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
-\item{dataDir}{character, path to data files}
+\item{dataDir}{character, path to write data files}
 }
 \value{
 a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics

@@ -38,7 +38,7 @@ should be reported,}
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
-\item{dataDir}{character, path to data files}
+\item{dataDir}{character, path to write data files}
 }
 \value{
 data.frame, summary of number of animals per species, region and year.

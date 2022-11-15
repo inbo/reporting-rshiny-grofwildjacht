@@ -4,12 +4,11 @@
 \alias{loadToekenningen}
 \title{Read toekenningen (Ree) data}
 \usage{
-loadToekenningen(
-  dataDir = system.file("extdata", package = "reportingGrofwild")
-)
+loadToekenningen(bucket = config::get("bucket"))
 }
 \arguments{
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
 }
 \value{
 data.frame with columns:

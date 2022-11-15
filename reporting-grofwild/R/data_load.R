@@ -513,7 +513,11 @@ loadHabitats <- function(bucket = config::get("bucket"), spatialData,
         } else { 
           
           tmpData <- readS3(FUN = read.csv, file = allFiles)
-          colnames(tmpData)[1] <- "regio"
+          if ("NISCODE" %in% colnames(tmpData)) {
+            colnames(tmpData)[colnames(tmpData) == "NISCODE"] <- "regio"
+          } else {
+            colnames(tmpData)[1] <- "regio"
+          }
           
           # Match region names
           if ("NISCODE" %in% colnames(spatialData[[iRegion]]@data))

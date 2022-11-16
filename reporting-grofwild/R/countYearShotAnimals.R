@@ -159,13 +159,14 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   # For optimal displaying in the plot
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+  summaryData$colorGroup <- summaryData[, groupVariable]
   
   # Create plot per year
   if (interval == "Per jaar") {
     allPlots <- plot_ly(data = summaryData,
             x = ~timeChar, y = ~value, type = "bar", 
-            color = ~get(groupVariable), colors = colors,
-            legendgroup = ~get(groupVariable), 
+            color = ~colorGroup, colors = colors,
+            legendgroup = ~colorGroup, 
             width = width, height = height) %>%
           layout(
             xaxis = list(title = ''),            
@@ -179,15 +180,16 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         iYear <- levels(summaryData$afschotjaar)[i]
         tmp <- plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
             x = ~timeChar, y = ~value, type = "bar", 
-            color = ~get(groupVariable), colors = colors,
-            legendgroup = ~get(groupVariable), showlegend = i == 1,
+            color = ~colorGroup, colors = colors,
+            legendgroup = ~colorGroup, showlegend = i == 1,
             width = width, height = height) %>%
           layout(xaxis = list(
-              title = paste0(iYear, "<br>", "(n= ", totalCount$value[totalCount$year == iYear], ")"),
+              title = paste0(iYear, "<br>", "(n = ", totalCount$value[totalCount$year == iYear], ")"),
               showticklabels = FALSE)
           )
       })
   }
+ 
   
   # Combine all plots
   pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE) %>%
@@ -196,7 +198,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
       yaxis = list(title = "Aantal"),
       margin = list(b = 120, t = 100)) %>% 
     add_annotations(text = percentCollected(
-        nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, groupVariable] != "Onbekend"), 
+        nAvailable = sum(!is.na(plotData$afschot_datum) & plotData$colorGroup != "Onbekend"), 
         nTotal = nRecords,
         text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
@@ -204,7 +206,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
  
   colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
   summaryData$group <- NULL
-  
+  summaryData$colorGroup <- NULL
   
   # To prevent warnings in UI
   pl$elementId <- NULL

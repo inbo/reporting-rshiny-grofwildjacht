@@ -19,7 +19,7 @@ years <- years[!is.na(years)]
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- loadRawData(type = "wildschade")
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+toekenningsData <- loadToekenningen()
 biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 

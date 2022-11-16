@@ -16,9 +16,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs', 'data.table', 'rmarkdown', 'tinytex', 'magick'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs', 'data.table', 'tinytex', 'magick'))"
 RUN R -q -e "remotes::install_version('plotly', version = '4.9.2.1')"
 RUN R -q -e "remotes::install_version('DT', version = '0.12')"
+RUN R -q -e "remotes::install_version('rmarkdown', version = '2.14', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
 RUN R -q -e "remotes::install_github('inbo/INBOtheme')"
 RUN R -q -e "install.packages('oaStyle', repos = c(rdepot = 'https://repos.openanalytics.eu/repo/public', getOption('repos')))"
 

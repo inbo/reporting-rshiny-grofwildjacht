@@ -99,7 +99,7 @@ RUN R -q -e "remotes::install_version('class', version = '7.3-20', upgrade = FAL
     R -q -e "remotes::install_version('jsonify', version = '1.2.2', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('later', version = '1.3.0', upgrade = FALSE)"
 RUN R -q -e "remotes::install_version('lifecycle', version = '1.0.3', upgrade = FALSE)" && \
-    R -q -e "remotes::install_version('magick', version = '2.7.3', upgrade = FALSE)" && \
+    R -q -e "remotes::install_version('magick', version = '2.7.2', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('markdown', version = '1.3', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('Matrix', version = '1.5-3', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('munsell', version = '0.5.0', upgrade = FALSE)" && \
@@ -168,12 +168,23 @@ RUN R -q -e "remotes::install_version('ggplot2', version = '3.4.0', upgrade = FA
     R -q -e "remotes::install_version('viridis', version = '0.6.2', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('waldo', version = '0.4.0', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('leaflet', version = '2.1.1', upgrade = FALSE)"
-RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', upgrade = FALSE)" && \
+RUN R -q -e "remotes::install_version('plotly', version = '4.9.2.1', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('testthat', version = '3.1.5', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('leafem', version = '0.2.0', upgrade = FALSE)" && \
     R -q -e "remotes::install_version('mapview', version = '2.11.0', upgrade = FALSE)" && \
     R -q -e "remotes::install_github('inbo/INBOtheme')"
 
+# Missing installation - rmd pdf
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl
+RUN R -e "webshot::install_phantomjs()"
+
+# For the rmarkdown pdf report
+RUN R -e "tinytex::install_tinytex()" 
+ENV PATH="/root/bin:${PATH}" 
+RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grffile'))" 
+
+  
 # install local package(s)
 RUN mkdir -p /tmp
 WORKDIR /tmp

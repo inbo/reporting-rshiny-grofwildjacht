@@ -13,18 +13,23 @@ Beheer_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_5_da
 
 #Plot Stakeholders
 ```{r}
-Beheer_data$Antwoord <- factor(Beheer_data$Antwoord , 
-                                    levels = c('Erg belangrijk', 'Belangrijk', 'Neutraal',
-                                               'Niet belangrijk', 'Helemaal niet belangrijk',
-                                               'Geen mening'))
 
-plot_Beheer <- ggplot(data = Beheer_data,
-                           aes(x = percentage,
-                               y = Question_label,
-                               fill = Antwoord)) +
-  geom_bar(stat = "identity", 
-           position = "stack") +
-  facet_grid( ~ Sector)
+Beheer_data$Antwoord_reclass <- factor(Beheer_data$Antwoord_reclass , 
+                                    levels = c('Belangrijk', 'Neutraal', 'Onbelangrijk', 'Neutraal '))
 
-plot_Beheer
+cols <- c("Belangrijk" = "darkgreen", "Neutraal" = "gray53", "Onbelangrijk" = "darkred", "Neutraal" = "gray53")
+#Kleuren mogen worden aangepast, het is gewoon belangrijk dat beide neutraal factors dezelfde kleur hebben
+
+Beheer_plot <- ggplot(data = Beheer_data,
+                                        aes(x = Sector,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Question_label)+
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = cols) 
+Beheer_plot
+
 ```

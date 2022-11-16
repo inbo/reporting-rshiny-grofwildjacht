@@ -18,17 +18,22 @@ stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
 Draagkracht_stakeholders <- Draagkracht_data %>%
   filter(Groep %in% stakeholders)
 
-Draagkracht_stakeholders$Antwoord <- factor(Draagkracht_stakeholders$Antwoord , 
-                                    levels = c('Erg belangrijk', 'Belangrijk', 'Neutraal',
-                                               'Niet belangrijk', 'Helemaal niet belangrijk'))
+Draagkracht_stakeholders$Antwoord_reclass <- factor(Draagkracht_stakeholders$Antwoord_reclass , 
+                                    levels = c('Belangrijk', 'Neutraal', 'Onbelangrijk', 'Neutraal '))
+
+cols <- c("Belangrijk" = "darkgreen", "Neutraal" = "gray53", "Onbelangrijk" = "darkred", "Neutraal" = "gray53")
+#Kleuren mogen worden aangepast, het is gewoon belangrijk dat beide neutraal factors dezelfde kleur hebben
 
 plot_draagkracht_stakeholders <- ggplot(data = Draagkracht_stakeholders,
-                           aes(x = percentage,
-                               y = Question_label,
-                               fill = Antwoord)) +
-  geom_bar(stat = "identity", 
-           position = "stack") +
-  facet_grid( ~ Groep)
+                                        aes(x = Groep,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Question_label)+
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = cols)
 
 plot_draagkracht_stakeholders
 ```
@@ -39,17 +44,22 @@ breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied
 Draagkracht_breed_publiek <- Draagkracht_data %>%
   filter(Groep %in% breed_publiek)
 
-Draagkracht_breed_publiek$Antwoord <- factor(Draagkracht_breed_publiek$Antwoord , 
-                                    levels = c('Erg belangrijk', 'Belangrijk', 'Neutraal',
-                                               'Niet belangrijk', 'Helemaal niet belangrijk'))
+Draagkracht_breed_publiek$Antwoord_reclass <- factor(Draagkracht_breed_publiek$Antwoord_reclass , 
+                                    levels = c('Belangrijk', 'Neutraal', 'Onbelangrijk', 'Neutraal '))
+
+cols <- c("Belangrijk" = "darkgreen", "Neutraal" = "gray53", "Onbelangrijk" = "darkred", "Neutraal" = "gray53")
+#Kleuren mogen worden aangepast, het is gewoon belangrijk dat beide neutraal factors dezelfde kleur hebben
 
 plot_draagkracht_breed_publiek <- ggplot(data = Draagkracht_breed_publiek,
-                           aes(x = percentage,
-                               y = Question_label,
-                               fill = Antwoord)) +
-  geom_bar(stat = "identity", 
-           position = "stack") +
-  facet_grid(Year ~ Groep)
+                                        aes(x = Groep,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Question_label)+
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = cols)
 
 plot_draagkracht_breed_publiek
 ```

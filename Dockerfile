@@ -28,7 +28,7 @@ RUN R -q -e "remotes::install_github('daattali/shinycssloaders')"
 RUN R -q -e "webshot::install_phantomjs()"
 
 # For access to S3 on UAT
-RUN R -q -e "remotes::install_cran('aws.ec2metadata')"
+RUN R -q -e "remotes::install_cran(c('config', 'aws.s3', 'aws.ec2metadata'))"
 
 FROM builder as tmp
 

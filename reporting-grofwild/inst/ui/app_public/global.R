@@ -9,6 +9,10 @@ library(shinycssloaders)   # for busy indicator
 # mapview
 
 
+### Data check
+### ------------
+
+#if (config::get("datacheck"))
 
 ### General
 ### ------------
@@ -57,6 +61,9 @@ defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 
 # create temp html file to store grofwild landkaart
 outTempFileName <- tempfile(fileext = ".html")
+
+
+
 
 ### Load all data
 ### -------------

@@ -6,4 +6,4 @@ default:
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
   
 production:
-  bucket: inbo-wbe-uat-data
+  bucket: inbo-wbe-prd-data

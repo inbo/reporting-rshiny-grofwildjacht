@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Use the remotes package instead of devtools as it is mutch lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'shinyjs'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'testthat', 'shinyjs'))"
 RUN R -q -e "remotes::install_version('plotly', version = '4.9.2.1')"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
 RUN R -q -e "remotes::install_github('inbo/INBOtheme')"

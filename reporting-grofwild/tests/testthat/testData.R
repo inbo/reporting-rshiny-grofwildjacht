@@ -15,8 +15,9 @@ test_that("Connection to S3", {
     # List all available files on the S3 bucket
     tmpTable <- data.table::rbindlist(aws.s3::get_bucket(
         bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
-    unique(tmpTable$Key)
+    # unique(tmpTable$Key)
     
+    # Bucket is not empty
     expect_gte(length(unique(tmpTable$Key)), 1)
     
 #    # Read single file
@@ -102,7 +103,7 @@ test_that("Eco, geo, schade data", {
     
     
     expect_warning(schadeData <- loadRawData(type = "wildschade"))
-    expect_is(schadeData, "SpatialPontsDataFrame", info = "WildSchade_georef.csv")
+    expect_is(schadeData, "SpatialPointsDataFrame", info = "WildSchade_georef.csv")
     
     # Correct names for commune shape data?
     notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
@@ -116,9 +117,26 @@ test_that("Eco, geo, schade data", {
 
 test_that("Habitat data", {
     
+    regionLevels <- list(
+      "flanders" = "flanders_habitats", 
+      "provinces" = "Provincies_habitats", 
+      "communes" = "Gemeentes_habitats", 
+      "faunabeheerzones" = "Faunabeheerzones_habitats", 
+      # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
+      "utm5" = "utm5_vlgrens_habitats", 
+      "wbe" = "WBE_habitats"
+    ) 
+    
     # Tests both public & private (wbe)
-    biotoopData <- loadHabitats(spatialData = spatialData)
-    expect_is(biotoopData, "list", info = "habitats data files")
+    for (i in seq_along(regionLevels)) {
+      
+      biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = names(regionLevels)[i])
+      infoFiles <- grep(pattern = regionLevels[[i]],
+        x = sapply(aws.s3::get_bucket(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))), function(x) as.list(x)$Key),
+        value = TRUE)
+      expect_is(biotoopData, "list", info = toString(infoFiles))
+      
+    }
     
   })
 

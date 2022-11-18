@@ -30,11 +30,11 @@ Imports:
     shinycssloaders, 
     sp, 
     stringr,
+    testthat,
     webshot
 Depends: 
     maptools    
 Suggests:
-    testthat,
     shinyjs
 Encoding: UTF-8
 RoxygenNote: 7.2.2

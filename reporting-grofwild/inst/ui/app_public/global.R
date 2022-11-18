@@ -12,15 +12,12 @@ library(shinycssloaders)   # for busy indicator
 ### Data check
 ### ------------
 
-if (config::get("datacheck")) {
-  
-  currentDir <- getwd()
-  testDir <- gsub("inst/ui/app_public", "tests/testthat", currentDir)
-  testResult <- test_file(file.path(testDir, "testData.R"))
-  
-  toPrint <- as.data.frame(testResult)$test[as.data.frame(testResult)$failed > 0]
-  
-}
+# On UAT only, not PRD
+if (config::get("datacheck"))
+  testS3()
+
+
+
 
 ### General
 ### ------------

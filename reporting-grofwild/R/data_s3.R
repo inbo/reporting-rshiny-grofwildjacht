@@ -40,6 +40,36 @@ checkS3 <- function() {
 }
 
 
+#' Test all data files before launching the app
+#' @return no return value; if any of the tests failed, stop with error message
+#' 
+#' @author mvarewyck
+#' @importFrom testthat test_file
+#' @export
+testS3 <- function() {
+  
+  currentDir <- getwd()
+  testDir <- gsub("inst/ui/app_\\w{1,}", "tests/testthat", currentDir)
+  cat("Test Data in S3 bucket\n")
+  testResult <- test_file(file.path(testDir, "testData.R"), reporter = "minimal")
+  
+  isFailed <- as.data.frame(testResult)$failed > 0
+  if (any(isFailed)) {
+    errorMessage <- paste("\nPlease check data in S3 bucket:",
+      config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+      "\nFollowing tests in tests/testthat/testData.R failed\n")
+    for (i in which(isFailed)) {
+      toPrint <- as.data.frame(testResult)$test[i]
+      tmp <- testResult[[i]]$results
+      errorMessage <- paste(errorMessage, "\nTest:", toPrint, "\nError message:\n", 
+        tmp[sapply(tmp, is, "expectation_failure")][[1]]$message, "\n")
+    }
+    stop(errorMessage)
+  } else cat("Finished successfully\n")
+  
+}
+
+
 #' Download files from the S3 bucket
 #' @param FUN function, which function should be called to download the data;
 #' if .RData file this argument can be empty 

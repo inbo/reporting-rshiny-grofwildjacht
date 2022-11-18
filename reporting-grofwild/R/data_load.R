@@ -189,7 +189,7 @@ readShapeData <- function(jsonDir, bucket = config::get("bucket"),
 #' 
 #' @author mvarewyck
 #' @export
-loadGemeentes <- function(bucket = config::get("bucket")) {
+loadGemeentes <- function(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   readS3(FUN = read.csv, header = TRUE, file = "gemeentecodes.csv", bucket = bucket)
   
@@ -210,7 +210,7 @@ loadGemeentes <- function(bucket = config::get("bucket")) {
 #' @importFrom data.table rbindlist
 #' @importFrom aws.s3 get_bucket
 #' @export
-loadOpeningstijdenData <- function(bucket = config::get("bucket")){
+loadOpeningstijdenData <- function(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))){
   
   pathFile <- "Openingstijden_grofwild.csv"
   rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
@@ -242,7 +242,7 @@ loadOpeningstijdenData <- function(bucket = config::get("bucket")){
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
-loadToekenningen <- function(bucket = config::get("bucket")) {
+loadToekenningen <- function(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   pathFile <- "Verwezenlijkt_categorie_per_afschotplan.csv"
   rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
@@ -288,7 +288,8 @@ loadToekenningen <- function(bucket = config::get("bucket")) {
 #' @importFrom sp CRS proj4string
 #' @importFrom raster coordinates
 #' @export
-loadRawData <- function(bucket = config::get("bucket"),
+loadRawData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
   type = c("eco", "geo", "wildschade")) {
   
   type <- match.arg(type)
@@ -477,7 +478,9 @@ loadRawData <- function(bucket = config::get("bucket"),
 #' 
 #' @author mvarewyck
 #' @export
-loadHabitats <- function(bucket = config::get("bucket"), spatialData, 
+loadHabitats <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  spatialData, 
   regionLevels = NULL) {
   
   allLevels <- list(

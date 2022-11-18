@@ -158,14 +158,18 @@ The object `spatialData` can easily be loaded in R by
 
 ## reference data
 
-* `Toekenningen_ree.csv`: this provides the *toegekende* numbers per province/year, will be updated each year.
+* `Verwezenlijkt_categorie_per_afschotplan.csv`: this provides the *realised* (verwezenlijkt) numbers per province/year, will be updated each year.
 
-| Kolom     | Eigenschappen | Toelichting                            |
-| --------- | ------------- | -------------------------------------- |
-| Provincie | factor        | Provincie-namen                        |
-| Jaar      | int           | het jaar van afschot (2002-..., of NA) |
-| Labeltype | str           | het type ree                           |
-| Aantal    | int           | toegekende aantal afschot              |
+| Kolom          | Eigenschappen | Toelichting                            |
+| -------------- | ------------- | -------------------------------------- |
+| labeltype      | factor        | het labeltype van wildsoort            |
+| WBE_Naam_Toek  | str           | WBE namen                              |
+| labeljaar      | int           | het jaar van afschot (2002-..., of NA) |
+| provincie_toek | factor        | Provincie-namen                        |
+| toegekend      | int           | aantal toegekend afschot               |
+| verwezenlijkt  | int           | aantal verwezenlijkt afschot           |
+| percentage_verwezelijkt | num  | percentage verwezenlijkt afschot       |
+| KboNummer_Toek | int           | KBO nummer van WBE                     |
 
 
 * `Openingstijden_grofwild.csv`:  De periode waarin het wildseizoen open is op jaarbasis voor elke wild soort/type:

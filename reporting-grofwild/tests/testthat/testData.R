@@ -4,72 +4,61 @@
 ###############################################################################
 
 
-context("Test Data Loading")
+context(paste("Test Data Loading", config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
 
+# setupS3()
 
-## INFO: https://www.gormanalysis.com/blog/connecting-to-aws-s3-with-r/
-
-# credentials are in ~/.aws/credentials OR manually copy/paste OR using aws.signature::
-x <- rawToChar(readBin("~/.aws/credentials", "raw", n = 1e5L))
-profile <- Sys.getenv("AWS_PROFILE", "inbo")
-credentials <- strsplit(x, profile)[[1]][2]
-
-Sys.setenv(
-  AWS_DEFAULT_REGION = eval(parse(text = config::get("credentials")$region)),
-  AWS_ACCESS_KEY_ID = strsplit(strsplit(credentials, "aws_access_key_id = ")[[1]][2], "\n")[[1]][1], 
-  AWS_SECRET_ACCESS_KEY = strsplit(strsplit(credentials, "aws_secret_access_key = ")[[1]][2], "\n")[[1]][1]
-)
-
-#Sys.setenv(
-#  AWS_DEFAULT_REGION = config::get("credentials")$region,
-#  AWS_ACCESS_KEY_ID = config::get("credentials")$id, 
-#  AWS_SECRET_ACCESS_KEY = config::get("credentials")$secret
-#)
-
-test_that("Connection S3", {
+test_that("Connection to S3", {
     
     checkS3()
     
     # List all available files on the S3 bucket
-    tmpTable <- data.table::rbindlist(aws.s3::get_bucket(bucket = config::get("bucket")))
+    tmpTable <- data.table::rbindlist(aws.s3::get_bucket(
+        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
     unique(tmpTable$Key)
     
+    expect_gte(length(unique(tmpTable$Key)), 1)
+    
+#    # Read single file
+#    rawData <- readS3(FUN = read.csv, file = unique(tmpTable$Key)[1]) 
+#    expect_is(rawData, "data.frame")
+        
   })
 
 
 test_that("Upload data", {
     
-    skip("WARNING: This will add/remove files")
+    skip("WARNING: This will add/remove files from S3 bucket")
     
     dataFiles <- list.files(system.file("extdata", package = "reportingGrofwild"), full.names = TRUE)
     dataFiles <- dataFiles[!grepl("readme|uiText|meta_schade", dataFiles)]
     
-    response <- sapply(dataFiles, function(iFile) {
-        put_object(file = iFile, object = basename(iFile), bucket = config::get("bucket"), multipart = TRUE)
-      })
+    response <- writeS3(dataFiles = dataFiles)
     # Warning messages: https://github.com/cloudyr/aws.s3/issues/354
     expect_true(all(response))
     
     if (FALSE) {
       iFile <- basename(grep("meta_schade", dataFiles, value = TRUE))
-      aws.s3::delete_object(iFile, bucket = config::get("bucket"))
+      aws.s3::delete_object(iFile, 
+        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
     }
-    
+        
   })
+
+
+
+
+## 1. Shape Data
+## --------------
 
 # This will update 
 # (1) spatialData.RData, spatialDataWBE.RData shape data and
 # (2) gemeentecodes.csv, file for matching NIS to NAAM
 # Next, install the package for the latest files to be available from the extdata folder
 
-
-
-## 0. Update Shape Data
-## --------------------
-
 test_that("Create Shape Data", {
     
-    skip("WARNING: This will update and upload them to the S3 bucket in config::get('bucket')")
+    skip("WARNING: This will update and upload spatial data to the S3 bucket")
     # (1) spatialData.RData, shape data and
     # (2) gemeentecodes.csv, file for matching NIS to NAAM
     
@@ -80,91 +69,31 @@ test_that("Create Shape Data", {
 
 test_that("Read Shape Data", {
     
+    # All
     suppressWarnings(rm(spatialData))
     readS3(file = "spatialData.RData")
-    expect_true("spatialData" %in% ls()) 
+    expect_true(exists("spatialData"), info = "spatialData.RData")
+    
+    # WBE
+    suppressWarnings(rm(spatialDataWBE))
+    readS3(file = "spatialDataWBE.RData")
+    expect_true(exists("spatialDataWBE"), info = "spatialDataWBE.RData")
     
   })
 
 
-## 1. Ecological Data
-## -------------------
+## 2. Raw Data
+## ------------
 
-
-ecoData <- loadRawData(type = "eco")
-
-test_that("Ecological data", {
+test_that("Eco, geo, schade data", {
     
-    expect_equal(unique(ecoData$doodsoorzaak), "afschot")
+    ecoData <- loadRawData(type = "eco")
+    expect_is(ecoData, "data.frame", info = "rshiny_reporting_data_ecology.csv")
     
-    # check ecological data
-    myTab <- table(ecoData$wildsoort)
-    wildsoorten <- names(myTab)[myTab > 1]
-    
-    plotFile <- file.path(tempdir(), "checkEcoData.pdf")
-    pdf(plotFile)
-    lapply(wildsoorten, function(iSoort) {
-        
-        print(iSoort)
-        
-        myData <- subset(ecoData, wildsoort == iSoort)
-        myData$onderkaaklengte <- rowMeans(myData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
-                
-        hist(myData$afschotjaar, main = paste(iSoort, "- afschotjaar"))
-        barplot(table(myData$provincie), main = paste(iSoort, "- provincie"))
-        barplot(table(myData$geslacht_comp), main = paste(iSoort, "- geslacht"))
-        
-        hist(myData$ontweid_gewicht, main = paste(iSoort, "- ontweid_gewicht"))
-#			if (iSoort == "Wild zwijn")
-#				expect_true(myData$ontweid_gewicht < 200) else if (iSoort == "Ree")
-#				expect_true(4 < myData$ontweid_gewicht & myData$ontweid_gewicht < 40)
-        
-        hist(myData$aantal_embryos, main = paste(iSoort, "- aantal_embryos"))
-        
-        if (iSoort %in% c("Ree")) {
-          
-          hist(myData$onderkaaklengte_mm, main = paste(iSoort, "- onderkaaklengte"), border = "red",
-            xlim = range(myData[ , c("onderkaaklengte_mm", "onderkaaklengte", "onderkaaklengte_comp")], na.rm = TRUE))
-          hist(myData$onderkaaklengte, add = TRUE, border = "blue")
-          hist(myData$onderkaaklengte_comp, add = TRUE)
-          
-        }
-        
-        boxplot(as.numeric(leeftijd_maanden) ~ leeftijd_comp, data = myData, main = paste(iSoort, "- leeftijd (maanden)"))
-        
-        xtabs(~ Leeftijdscategorie_onderkaak + leeftijdscategorie_MF + leeftijd_comp, data = myData)
-        
-      })
-    
-    dev.off()
-    
-    expect_true(file.exists(plotFile))
-    
-  })
-
-
-## 2. Geographical Data
-## --------------------
-
-test_that("Spatial data", {
-    
-    plotFile <- file.path(tempdir(), "checkGeoData.pdf")
-    pdf(plotFile)
-    for (iLevel in names(spatialData)) {
-      print(iLevel)
-      plot(spatialData[[iLevel]], col = RColorBrewer::brewer.pal(9, "Set1"))
-    }
-    dev.off()
-    
-    expect_true(file.exists(plotFile))
-    
-  })
-
-
-test_that("Geographical data", {
+    geoData <- loadRawData(type = "geo")
+    expect_is(geoData, "data.frame", info = "rshiny_reporting_data_geography.csv")
     
     # Can we combine data sources? 
-    geoData <- loadRawData(type = "geo")
     tmp <- merge(geoData, ecoData)
     
     # Correct names for commune shape data?
@@ -172,36 +101,49 @@ test_that("Geographical data", {
     expect_equal(0, length(notMatching[!is.na(geoData$gemeente_afschot_locatie[notMatching])]))
     
     
-  })
-
-
-## 3. Wildschade
-## -------------------
-
-test_that("Wildschade data", {
-    
-    # Can we combine data sources? 
-    expect_warning(wildschadeData <- loadRawData(type = "wildschade"))
-    
-    dim(wildschadeData)
-    head(wildschadeData)
+    expect_warning(schadeData <- loadRawData(type = "wildschade"))
+    expect_is(schadeData, "SpatialPontsDataFrame", info = "WildSchade_georef.csv")
     
     # Correct names for commune shape data?
-    notMatching <- which(!wildschadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
-    expect_equal(0, length(notMatching[!is.na(wildschadeData$gemeente_afschot_locatie[notMatching])]))
+    notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
+    expect_equal(0, length(notMatching[!is.na(schadeData$gemeente_afschot_locatie[notMatching])]))
     
   })
+
+
+## 3. Habitat Data
+## ----------------
+
+test_that("Habitat data", {
+    
+    # Tests both public & private (wbe)
+    biotoopData <- loadHabitats(spatialData = spatialData)
+    expect_is(biotoopData, "list", info = "habitats data files")
+    
+  })
+
 
 
 ## 4. Other
 ## --------
 
-test_that("Read csv data from S3", {
+test_that("Extra data", {
     
-    rawData <- readS3(FUN = read.csv, file = "FaunabeheerDeelzones_0000_2018_habitats.csv") 
-    expect_is(rawData, "data.frame")
+    gemeenteData <- loadGemeentes()
+    expect_is(gemeenteData, "data.frame", info = "gemeentecodes.csv")
     
+    openingstijdenData <- loadOpeningstijdenData()
+    expect_is(openingstijdenData, "data.frame", info = "Openingstijden_grofwild.csv")
+    
+    toekenningsData <- loadToekenningen()
+    expect_is(toekenningsData, "data.frame", info = "Verwezenlijkt_categorie_per_afschotplan.csv")
+        
   })
+
+
+
+## 5. Debugging
+## -------------
 
 
 test_that("Speed up reading data", {
@@ -209,7 +151,7 @@ test_that("Speed up reading data", {
     skip("Long runtime")
     
     dataFile <- c("Gemeentes_habitats.csv", "rshiny_reporting_data_ecology.csv")[2]
-    bucket <- config::get("bucket")
+    bucket <- config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))
     
     # High randomnesss in download (connection?)
     nRuns <- 20
@@ -231,7 +173,7 @@ test_that("Speed up reading data", {
       allTimes[3, i] <- Sys.time() - time1
       # Time difference of 7.885844 secs
       
-      allFiles <- aws.s3::get_bucket(bucket = config::get("bucket"))
+      allFiles <- aws.s3::get_bucket(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
       fileNames <- sapply(allFiles, function(x) as.list(x)$Key)
       time1 <- Sys.time()
       tmp3 <- data.table::fread(aws.s3::save_object(allFiles[[grep(dataFile, fileNames)]]))

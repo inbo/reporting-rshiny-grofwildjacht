@@ -12,21 +12,22 @@ Data_houding <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_1_d
 
 #Grafiek
 ```{r}
-Data_houding$Antwoord <- factor(Data_houding$Antwoord , 
-                                    levels = c('Heel erg positief', 'Positief', 'Neutraal',
-                                               'Negatief', 'Heel erg negatief', 'Geen mening'))
+Data_houding$Antwoord_reclass <- factor(Data_houding$Antwoord_reclass , 
+                                    levels = c('Positief', 'Neutraal', 'Negatief', 'Neutraal '))
 
-plot_houding <- ggplot(data = Data_houding, 
-                   aes(x="", 
-                       y=percentage, 
-                       fill=Antwoord)) +
-  geom_bar(stat="identity", 
-           width=1,
-           color="white") +
-  coord_polar("y", 
-              start=0) +
-  facet_grid (Year ~ Sector) +
-  theme_void()
+cols <- c("Positief" = "darkgreen", "Neutraal" = "gray53", "Negatief" = "darkred", "Neutraal" = "gray53")
+#Kleuren mogen worden aangepast, het is gewoon belangrijk dat beide neutraal factors dezelfde kleur hebben
+
+plot_houding <- ggplot(data = Data_houding,
+                                        aes(x = Sector,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Year)+
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = cols)
+
 plot_houding
-
 ```

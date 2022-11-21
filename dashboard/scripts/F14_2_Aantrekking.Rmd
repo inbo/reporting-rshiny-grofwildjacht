@@ -14,24 +14,19 @@ Aantrekking_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14
 
 #Grafiek
 ```{r}
-Aantrekking_data$Antwoord <- factor(Aantrekking_data$Antwoord , 
-                                    levels = c('Ja, zeker wel', 'Ja, waarschijnlijk wel', 
-                                               'Nee, waarschijnlijk niet', 'Nee, zeker niet'))
+Impacts_stakeholders$Antwoord_reclass <- factor(Impacts_stakeholders$Antwoord_reclass , 
+                                    levels = c('Groot', 'Klein'))
 
-plot_aantrekking <- ggplot(data = Aantrekking_data, 
-                   aes(x="", 
-                       y=percentage, 
-                       fill=Antwoord)) +
-  geom_bar(stat="identity", 
-           width=1,
-           color="white") +
-  coord_polar("y", 
-              start=0) +
-  facet_grid (Year ~ Sector) +
-  theme_void()
+plot_aantrekking <- ggplot(data = Aantrekking_data,
+                                        aes(x = Sector,
+                                            y = percentage,
+                                            fill = Antwoord_reclass)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Year)+
+  theme(axis.text.x = element_text(angle = 90)) 
 
 plot_aantrekking
-
 ```
 
 

@@ -13,19 +13,22 @@ Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Dat
 verkeer_inschatting <- Data_inschatting %>%
   filter(Vraag != "populatie_evolutie")
 
-verkeer_inschatting$Antwoord <- factor(verkeer_inschatting$Antwoord , 
-                                    levels = c('Erg veel toegenomen','Veel toegenomen',
-                                               'Beetje toegenomen', 'Hetzelfde gebleven',
-                                               'Beetje afgenomen', 'Veel afgenomen',
-                                               'Erg veel afgenomen', 'Geen mening'))
 
-plot_inschatting_verkeer <- ggplot(data = verkeer_inschatting,
-                           aes(x = percentage,
-                               y = Vraag,
-                               fill = Antwoord)) +
-  geom_bar(stat = "identity", 
-           position = "stack")
+verkeer_inschatting$Antwoord_reclass <- factor(verkeer_inschatting$Antwoord_reclass , 
+                                    levels = c('Toegenomen', 'Hetzelfde', 'Afgenomen', 'Hetzelfde '))
 
-plot_inschatting_verkeer
+cols <- c("Toegenomen" = "darkgreen", "Hetzelfde" = "gray53", "Afgenomen" = "darkred", "Hetzelfde" = "gray53")
+#Kleuren mogen worden aangepast, het is gewoon belangrijk dat beide neutraal factors dezelfde kleur hebben
 
+plot_inschatting <- ggplot(data = verkeer_inschatting,
+                                        aes(x = Vraag,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = cols)
+
+plot_inschatting
 ```

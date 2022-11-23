@@ -5,6 +5,11 @@
 
 
 
+# ------------------ #
+# Filter data on KBO #
+# ------------------ #
+
+
 results$wbe_currentKbo <- reactive({
     
     if (length(currentKbo) > 1)
@@ -73,7 +78,7 @@ observe({
 output$wbe_title <- renderUI({
     
     h1("Welkom op de wildbeheereenheid pagina voor",
-      paste(unique(results$wbe_geoData()$WBE_Naam_Toek), collapse = ","))
+      paste(unique(results$wbe_geoDataKbo()$WBE_Naam_Toek), collapse = ","))
     
   })
 
@@ -122,11 +127,15 @@ output$wbe_emptySchade <- reactive({
 outputOptions(output, "wbe_emptySchade", suspendWhenHidden = FALSE)
 
 
-## Filter Data ##
+
+
+# ---------------------- #
+# Filter data on species #
+# ---------------------- #
 
 results$wbe_geoData <- reactive({
     
-    subset(geoData, wildsoort == req(input$wbe_species) & 
+    subset(results$wbe_geoDataKbo(), wildsoort == req(input$wbe_species) & 
         KboNummer_Toek %in% results$wbe_currentKbo())
     
   })
@@ -211,8 +220,7 @@ trendYearRegionServer(id = "wbe",
   biotoopData = biotoopData,
   geoData = results$wbe_geoData, 
   type = "wbe", 
-  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
-        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))
+  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek))
 )
 
 ## User input for controlling the plots and create plotly

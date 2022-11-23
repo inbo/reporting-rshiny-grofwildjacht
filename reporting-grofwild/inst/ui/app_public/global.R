@@ -9,15 +9,6 @@ library(shinycssloaders)   # for busy indicator
 # mapview
 
 
-### Data check
-### ------------
-
-# On UAT only, not PRD
-if (config::get("datacheck"))
-  testS3()
-
-
-
 
 ### General
 ### ------------

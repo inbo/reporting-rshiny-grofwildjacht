@@ -55,14 +55,15 @@ testS3 <- function() {
   
   isFailed <- as.data.frame(testResult)$failed > 0
   if (any(isFailed)) {
-    errorMessage <- paste("\nPlease check data in S3 bucket:",
+    # Message will be in HTML
+    errorMessage <- paste("</br>Please check data in S3 bucket:",
       config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-      "\nFollowing tests in tests/testthat/testData.R failed\n")
+      "</br>Following tests in tests/testthat/testData.R failed</br>")
     for (i in which(isFailed)) {
       toPrint <- as.data.frame(testResult)$test[i]
       tmp <- testResult[[i]]$results
-      errorMessage <- paste(errorMessage, "\nTest:", toPrint, "\nError message:\n", 
-        tmp[sapply(tmp, is, "expectation_failure")][[1]]$message, "\n")
+      errorMessage <- paste(errorMessage, "<h4>Test:", toPrint, "</h4>Error message:</br>", 
+        gsub("\n", "</br>", tmp[sapply(tmp, is, "expectation_failure")][[1]]$message), "</br>")
     }
     stop(errorMessage)
   } else cat("Finished successfully\n")

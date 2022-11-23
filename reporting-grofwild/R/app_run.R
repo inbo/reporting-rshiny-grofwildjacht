@@ -53,7 +53,21 @@ runWildApp <- function(installDependencies = FALSE,
       Sys.setenv("SHINYPROXY_KBO_NUMMERS" = kbo)
   }
   
-  # (4) Run the application
-  runApp(appDir = appDir, ...)
+  
+  # (4) Check S3 data - On UAT only, not PRD
+  if (config::get("datacheck"))
+    errorApp <- tryCatch(
+      testS3(),
+      error = function(err)
+        shinyApp(ui = fluidPage(
+            tags$h3("Error during Data Check"),
+            HTML(err$message)
+        ), server = function(input, output, session){})
+      )
+    
+  # (5) Run the application
+  if (is(errorApp, "shiny.appobj"))
+    errorApp else 
+    runApp(appDir = appDir, ...)
   
 }

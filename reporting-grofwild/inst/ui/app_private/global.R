@@ -10,10 +10,6 @@ library(shinyjs)
 # mapview
 
 
-# On UAT only, not PRD
-if (config::get("datacheck"))
-  testS3()
-
 
 
 ### General

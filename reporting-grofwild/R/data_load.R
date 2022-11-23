@@ -268,7 +268,7 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' @export
 loadRawData <- function(
     dataDir = system.file("extdata", package = "reportingGrofwild"),
-    type = c("eco", "geo", "wildschade")) {
+    type = c("eco", "geo", "wildschade", "kbo_wbe")) {
   
   type <- match.arg(type)
   
@@ -276,7 +276,8 @@ loadRawData <- function(
   dataFile <- file.path(dataDir, switch(type,
           "eco" = "rshiny_reporting_data_ecology.csv",
           "geo" = "rshiny_reporting_data_geography.csv",
-          "wildschade" = "WildSchade_georef.csv"))
+          "wildschade" = "WildSchade_georef.csv",
+          "kbo_wbe" = "Data_Partij_Cleaned.csv"))
   
   rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
@@ -296,8 +297,9 @@ loadRawData <- function(
     rawData$onderkaaklengte_comp <- as.numeric(sub("\\,", ".", rawData$onderkaaklengte_comp))
   
   ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
-  rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
-          "Vlaams Brabant", as.character(rawData$provincie)))
+  if ("provincie" %in% names(rawData))
+    rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
+        "Vlaams Brabant", as.character(rawData$provincie)))
 #	xtabs( ~ provincie + wildsoort, data = rawData)
   
   # Gemeente & NIS & postcode
@@ -433,6 +435,11 @@ loadRawData <- function(
         proj4string(rawData) <- CRS("+init=epsg:31370")
         
         rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
+    
+  } else if (type == "kbo_wbe") {
+    
+    # drop unused
+    rawData$WBE_Naam_Partij <- NULL
     
   }
   

@@ -60,7 +60,7 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 #  currentKbo <- '["863669291"]'  # empty afschot, with schade
 #  currentKbo <- '["463729383"]'  # empty schade, with afschot
 #  currentKbo <-  '["463758087]'  # empty afschot, empty schade
-  
+  currentKbo <- "admin"
 }
 
 
@@ -89,12 +89,12 @@ toekenningsData <- loadToekenningen(dataDir = dataDir)
 
 
 # Manipulate kbo: admin, multiple kbo
+matchingWbeData <- loadRawData(type = "kbo_wbe")
 if (currentKbo == "admin")
-  currentKbo <- unique(geoData$KboNummer_Toek) else
+  currentKbo <- unique(c(geoData$KboNummer_Toek, schadeData@data$KboNummer, matchingWbeData$KboNummer_Partij)) else
   currentKbo <- as.integer(gsub('\\"', "", strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]]))
 
 # Naming currentKbo
-matchingWbeData <- loadRawData(type = "kbo_wbe")
 matchingKbo <- match(currentKbo, geoData$KboNummer_Toek)
 names(currentKbo) <- ifelse(is.na(matchingKbo), 
   matchingWbeData$WBE.officieel[match(currentKbo, matchingWbeData$KboNummer_Partij)], 

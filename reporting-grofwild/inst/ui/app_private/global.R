@@ -60,7 +60,7 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 #  currentKbo <- '["863669291"]'  # empty afschot, with schade
 #  currentKbo <- '["463729383"]'  # empty schade, with afschot
 #  currentKbo <-  '["463758087]'  # empty afschot, empty schade
-  currentKbo <- "admin"
+
 }
 
 

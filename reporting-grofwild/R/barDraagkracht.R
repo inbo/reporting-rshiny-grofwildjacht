@@ -27,23 +27,15 @@ barDraagkracht <- function(data, groupVariable = NULL,
   if (xVar == "percentage") {
     
     data$percentage <- as.numeric(data$percentage)
-    data$Antwoord <- factor(data$Antwoord , 
-      levels = c('Erg veel toegenomen',
-        'Heel erg negatief', 'Nee, zeker niet', 'Zeer klein', 'Helemaal niet belangrijk', 'Veel toegenomen',
-        'Negatief', 'Nee, waarschijnlijk niet', 'Klein', 'Niet belangrijk', 'Beetje toegenomen',
-        'Neutraal', 'Hetzelfde gebleven',
-        'Positief', 'Ja, waarschijnlijk wel', 'Groot', 'Belangrijk', 'Beetje afgenomen',
-        'Heel erg positief', 'Ja, zeker wel', 'Zeer groot', 'Erg belangrijk', 'Veel afgenomen',
-        'Erg veel afgenomen',
-        'Onbestaand',
-        'Geen mening', 'Geen idee'))
+    data$Antwoord <- factor(data$Antwoord_reclass , 
+      levels = c('Toegenomen',
+        'Afgenomen',
+        'Hetzelfde'
+      ))
     
     data$Antwoord <- droplevels(data$Antwoord)  
-    nExcept <- sum(c("Onbestaand", "Geen mening", "Geen idee") %in% levels(data$Antwoord))
-    myColors <- c(
-      brewer.pal(n = length(levels(data$Antwoord)) - nExcept, name = "RdBu"),
-      rev(brewer.pal(n = 3, name = "Greys"))
-    )[1:length(levels(data$Antwoord))]
+    nExcept <- sum(c("Hetzelfde") %in% levels(data$Antwoord))
+    myColors <- c("darkgreen", "darkred", "gray53")
     
   }
   

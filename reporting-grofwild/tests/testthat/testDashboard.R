@@ -232,7 +232,7 @@ test_that("F07_3, F09_3, F11_3", {
     
     inschattingData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
     
-    myResult <- barDraagkracht(data = inschattingData[Vraag != "populatie_evolutie", ], yVar = "Vraag")
+    myResult <- barDraagkracht(data = inschattingData[Vraag != "populatie_evolutie", ], xVar = "Vraag")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

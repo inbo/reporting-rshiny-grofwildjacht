@@ -28,43 +28,37 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
     data$percentage <- as.numeric(data$Aantal_tot/data$totaal) * 100
     data$percentageLabel <- paste0(round(data$percentage, 2), "%")
+    
+    answerLevels <- list(
+      neutral = c('Hetzelfde', 'Neutraal'),
+      negative = c('Afgenomen', 'Negatief', 'Nee', 'Groot', 'Onbelangrijk'),
+      positive = c('Toegenomen', 'Positief', 'Ja', 'Klein', 'Belangrijk')
+    )
     data$Antwoord <- factor(data$Antwoord_reclass, 
-      levels = c('Hetzelfde',
-        'Afgenomen',
-        'Toegenomen'
-      ))
+      levels = unlist(answerLevels))
     data$Antwoord <- droplevels(data$Antwoord)  
     
     # Modify percentage for the graph
-    neutralLevel <- levels(data$Antwoord)[1]
-    negativeLevel <- levels(data$Antwoord)[2]
-    dataExtra <- data[data$Antwoord %in% neutralLevel, ]
-    data$percentage[data$Antwoord %in% c(negativeLevel, neutralLevel)] <- -1*data$percentage[data$Antwoord %in% c(negativeLevel, neutralLevel)]
-    data <- rbind(data, dataExtra)
-    data$percentage[data$Antwoord %in% neutralLevel] <- data$percentage[data$Antwoord %in% neutralLevel] / 2
+    neutralLevel <- levels(data$Antwoord)[levels(data$Antwoord) %in% answerLevels$neutral]
+    negativeLevel <- levels(data$Antwoord)[levels(data$Antwoord)  %in% answerLevels$negative]
     
-    myColors <- c("gray53", "darkred", "darkgreen")
+    if (length(neutralLevel) > 0) {
+      dataExtra <- data[data$Antwoord %in% neutralLevel, ]
+      data$percentage[data$Antwoord %in% c(negativeLevel, neutralLevel)] <- -1*data$percentage[data$Antwoord %in% c(negativeLevel, neutralLevel)]
+      data <- rbind(data, dataExtra)
+      data$percentage[data$Antwoord %in% neutralLevel] <- data$percentage[data$Antwoord %in% neutralLevel] / 2
+    } else data$percentage[data$Antwoord %in% negativeLevel] <- -1*data$percentage[data$Antwoord %in% negativeLevel]
+    
+    myColors <- c(
+      if (length(neutralLevel) > 0) "lightgrey", 
+      inbo_palette(n = 3)[c(1, 3)])
     
   }
   
-  
-  # Sample size
-  if (is.null(groupVariable)) {
-    totalCounts <- data$totaal[!duplicated(data[[xVar]])]
-  } else if (xVar == "Year" | "Year" %in% groupVariable) {
-    myCols <- c(xVar, groupVariable)
-    totalCounts <- data[!duplicated(data$totaal), c(myCols, "totaal"), with = FALSE]
-    if (length(unique(data$Year)) == 1)
-      totalCounts <- totalCounts[!duplicated(totalCounts[[groupVariable[groupVariable != "Year"]]]), ]
-  } else {
-    totalCounts <- data$totaal[!duplicated(data[[groupVariable]])]  
-    names(totalCounts) <- as.character(unique(data[[groupVariable]]))
-  }
   
   if (!is.null(groupVariable)) {
     
     groupLevels <- sapply(groupVariable, function(x) unique(data[[x]]), simplify = FALSE)
-    yLevels <- levels(as.factor(data[[xVar]]))
     
     plotList <- list()
     
@@ -79,66 +73,53 @@ barDraagkracht <- function(data, groupVariable = NULL,
             data[data[[groupVariable[1]]] %in% iVar, ] else
             data[data[[groupVariable[1]]] %in% iVar & data[[groupVariable[2]]] %in% jVar, ]
         
+        xLabels <- unique(subData[[xVar]])
+        totalCounts <- subData$totaal[unique(match(subData[[xVar]], xLabels))]
+        
         plotList[[(length(plotList) + 1)]] <- plot_ly(
             data = subData, 
-            x = ~get(xVar), 
-            y = ~as.factor(get(yVar)), 
+            x = ~as.factor(get(xVar)), 
+            y = ~get(yVar), 
+            text = ~percentageLabel, textposition = "none",
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
             legendgroup = ~Antwoord, 
-            showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]), 
-            hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
-              '<b>Antwoord</b>: %{text}'),
-            text = ~Antwoord
+            showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]),
+            hoverinfo = "text+x+name"
           ) %>%
           layout(
             annotations = list(
               # columns
-              list(x = 50, y = 1.1, 
-                text = if (jVar == secondGroup[1]) paste(as.character(iVar),
-                      if (!(xVar == "Year" | "Year" %in% groupVariable) | length(secondGroup) == 1) 
-                        paste0("\n(n = ", totalCounts[[iVar]], ")\n")) else "",
-                showarrow = FALSE, font = list(size = 16), 
-                yref = 'paper'),
-              # rows
-              list(x = if (iVar == head(groupLevels[[1]], n = 1)) -0.1 else 1.1, y = 0.5, 
-                text = paste(as.character(jVar),
-                  if ("Year" %in% groupVariable & length(secondGroup) > 1) 
-                    paste0("\n(n = ", totalCounts[get(names(groupLevels)[1]) %in% iVar & Year %in% jVar, "totaal"], ")\n")),
-                showarrow = FALSE, font = list(size = 16), 
-                textangle = if (iVar == head(groupLevels[[1]], n = 1)) -90 else 90,
-                xref = 'paper', yref = 'paper')
-#              list(x = 0, y = yLevels, 
-#                text = paste(as.character(jVar),
-#                  if ((yVar == "Year" | "Year" %in% groupVariable)) 
-#                    paste0("\n(n = ", totalCounts[get(groupVariable) %in% iVar, totaal], ")\n")),
-#                showarrow = FALSE, font = list(size = 16), textangle = 90)
+              list(x = 0.5, y = 1, 
+                text = if (jVar == secondGroup[1]) gsub(" ", "<br>", as.character(iVar)) else "",
+                showarrow = FALSE, font = list(size = 12), 
+                textangle = if (length(groupLevels[[1]]) > 8) 30,
+                xref = 'paper', yref = 'paper', xanchor = 'center', yanchor = 'bottom')
             ),
             legend = list(title = list(text = "<b>Antwoord</b>")),
-            barmode = "stack",
-            yaxis = if (xVar == "Year")
-                list(title = "", 
-                  ticktext = as.list(apply(totalCounts[get(names(groupLevels)[1]) %in% iVar, ], 1, function(x) 
-                        paste0(x[xVar], "\n(n = ", x["totaal"], ")\n"))),
-                  tickvals = as.list(yLevels),
-                  tickmode = "array") else
-                list(title = ""),
-            xaxis = list(title = "Percentage", range = list(0, 100)),
-            margin = list(
-              t = if (!(xVar == "Year" | "Year" %in% groupVariable)) 50, 
-              r = if ("Year" %in% groupVariable & iVar == tail(groupLevels[[1]], n=1)) 50)
+            barmode = "relative",
+            xaxis = list(
+              title = "",
+              ticktext = as.list(paste0(xLabels, if (length(groupLevels[[1]]) < 5) "\n", " (n = ", totalCounts, ")")), 
+              tickvals = as.list((length(xLabels)-1):0),
+              tickmode = "array",
+              tickangle = if (length(groupLevels[[1]]) < 5) 0 else 30
+            ),
+            yaxis = list(title = "Percentage"),
+            margin = c(0, 0, 1, 0)
           )
         
       }
     
-    myPlot <- do.call(subplot, c(plotList, 
-        shareY = (!(xVar == "Year" | "Year" %in% groupVariable) | length(secondGroup) == 1),
-        shareX = TRUE, nrows = length(secondGroup)))
+    myPlot <- do.call(subplot, c(plotList,
+        shareY = TRUE, 
+        nrows = length(secondGroup),
+        margin = 0.005))
     
     extraVars <- c("Antwoord", groupVariable)
     
   } else if (yVar == "percentage") {
     
-    # rename y-axis ticktext
+    # rename x-axis ticktext
     xLabels <- unique(data[[xVar]])
     totalCounts <- data$totaal[unique(match(data[[xVar]], xLabels))]
     xLabels[xLabels == "populatie_evolutie"] <- "Populatie everzwijnen"
@@ -148,6 +129,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
     myPlot <- plot_ly(data, x = ~get(xVar), y = ~get(yVar), 
         type = 'bar', color = ~Antwoord, colors = myColors, text = ~percentageLabel,
+#        marker = list(line = list(width = 5, color = "lightgray")),
         hoverinfo = "text+x+name",
         width = width, height = height
 #            hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
@@ -157,7 +139,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
         legend = list(title = list(text = "<b> Antwoord </b>"), traceorder = 'normal'),
         barmode = "relative",
         xaxis = list(
-          title = xVar,
+          title = "",
           ticktext = as.list(paste0(xLabels, "\n (n = ", totalCounts, ")")), 
           tickvals = as.list((length(xLabels)-1):0),
           tickmode = "array"),
@@ -171,8 +153,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     colors <- replicateColors(nColors = length(unique(data$Type)))$colors
     names(colors) <- unique(data$Type)
     
-    myPlot <- plot_ly(data, x = as.character(data[[yVar]]), 
-        y = data[[xVar]], type = 'bar',
+    myPlot <- plot_ly(data, x = as.character(data[[xVar]]), y = data[[yVar]], type = 'bar',
         color = ~as.factor(Type), colors = colors) %>%
       layout(
         legend = list(title = list(text = "<b> Type </b>")),
@@ -201,7 +182,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percentage", yVar,
+barDraagkrachtServer <- function(id, data, groupVariable = NULL, yVar = "percentage", xVar,
   title = reactive(NULL)) {
   
   moduleServer(id,
@@ -214,8 +195,8 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
           if (!is.null(input$subGroup)) {
             
             switch(input$subGroup,
-              "stakeholders" = data()[data()[[groupVariable[1]]] %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'), ],
-              "public" = data()[data()[[groupVariable[1]]] %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'), ]
+              "stakeholders" = data()[data()[[xVar]] %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'), ],
+              "public" = data()[data()[[xVar]] %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'), ]
             )
             
           } else {

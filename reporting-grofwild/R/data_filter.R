@@ -208,3 +208,32 @@ filterSpatialWbe <- function(allSpatialData, partijNummer) {
     })
   
 }
+
+
+
+#' Create empty geographical dataset
+#' @param data data.frame, example data of type 'geographical'
+#' @param years numeric vector, years for which to create empty data (nrow)
+#' @param kbo integer, kbo number of relevant WBE to create empty data for
+#' @return data.frame empty data.frame with for each year the matching WBE and name
+#' 
+#' @author mvarewyck
+#' @export
+createEmptyGeo <- function(data, years, kbo) {
+  
+  matchingData <- loadRawData(type = "kbo_wbe")
+  
+  data[!is.na(data)] <- NA
+  data$KboNummer_Toek <- kbo
+  data$WBE_Naam_Toek <- matchingData$WBE.officieel[match(kbo, matchingData$KboNummer_Partij)]
+  data$PartijNummer <- matchingData$PartijNummer[match(kbo, matchingData$KboNummer_Partij)]
+  
+  do.call(rbind, lapply(years, function(iYear) {
+      
+      toReturn <- data
+      toReturn$afschotjaar <- iYear
+      toReturn
+      
+    }))
+  
+}

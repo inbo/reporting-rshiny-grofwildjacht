@@ -92,7 +92,7 @@ output$wbe_empty <- renderUI({
       errorMessage <- tags$p("Momenteel zijn er voor deze WBE geen afschotgegevens van de grofwildsoorten beschikbaar.", 
         "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. afschot.", 
         "Indien dit niet klopt, kijkt u best eerst na of de gegevens juist in het e-loket van ANB zitten.", 
-        "Zijn uw gegevens juist ingevoerd en ingediend dan laat u best iets weten op", 
+        "Zijn uw gegevens toch ingegeven in het e-loket en hier worden ze hier niet weergegeven dan laat u best iets weten op", 
         tags$a(id = "wbe_contact", href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")) 
     
     if (!results$wbe_currentKbo() %in% schadeData@data$KboNummer)
@@ -107,7 +107,7 @@ output$wbe_empty <- renderUI({
         tags$a(href = "https://play.google.com/store/apps/details?id=com.wilderpg.wilder&hl=en&gl=US&pli=1", target = "_blank", "android"), 
         ") van HVV of", 
         tags$a(href = "https://waarnemingen.be/", target = "_blank", "waarnemingen.be"),
-        "van Natuurpunt. Bent u zeker dat er toch gegevens bij één van de partners ingevoerd werden, dan laat u best iets weten op",
+        "van Natuurpunt. Bent u zeker dat er toch gegevens bij één van de partners ingevoerd werden die hier niet worden weergegeven, dan laat u best iets weten op",
         tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")
       )
     

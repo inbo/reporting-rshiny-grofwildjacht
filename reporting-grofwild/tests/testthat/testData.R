@@ -20,6 +20,9 @@ test_that("Connection to S3", {
     # Bucket is not empty
     expect_gte(length(unique(tmpTable$Key)), 1)
     
+    # Size of S3 files should be > 100
+    expect_true(all(tmpTable$Size > 100), info = paste("Empty data files:", toString(unique(tmpTable$Key[tmpTable$Size < 100]))))
+    
 #    # Read single file
 #    rawData <- readS3(FUN = read.csv, file = unique(tmpTable$Key)[1]) 
 #    expect_is(rawData, "data.frame")

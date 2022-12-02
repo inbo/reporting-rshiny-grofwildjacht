@@ -54,6 +54,16 @@ tmpData <- read.csv(file.path(dataDir, "WBE_habitats_2022.csv"))
 aws.s3::s3write_using(x = tmpData, FUN = write.csv, row.names = FALSE, object = "WBE_habitats_2022.csv", bucket = config::get("bucket"))
 ```
 
+## Update Spatial Data
+
+To update the following files in the S3 bucket
+(1) spatialData.RData, spatialDataWBE.RData, shape data and
+(2) gemeentecodes.csv, file for matching NIS to NAAM
+    
+```
+readShapeData(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data")   # created shape data
+```
+
 ## reporting data files
 
 ### grofwild 

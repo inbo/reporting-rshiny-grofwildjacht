@@ -298,8 +298,8 @@ loadRawData <- function(
   dataFile <- switch(type,
           "eco" = "rshiny_reporting_data_ecology.csv",
           "geo" = "rshiny_reporting_data_geography.csv",
-          "wildschade" = "WildSchade_georef.csv")
-          "kbo_wbe" = "Data_Partij_Cleaned.csv"))
+          "wildschade" = "WildSchade_georef.csv",
+          "kbo_wbe" = "Data_Partij_Cleaned.csv")
   
   rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE, 
     file = dataFile, bucket = bucket)

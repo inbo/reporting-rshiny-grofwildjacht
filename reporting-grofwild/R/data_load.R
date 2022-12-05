@@ -2,7 +2,6 @@
 #' 
 #' @param jsonDir character, path to json shape files
 #' @inheritParams loadRawData
-#' @param dataDir character, path to write data files
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
 #' @return save to S3 bucket object spatialData, i.e. a list with for each 
@@ -22,7 +21,6 @@
 #' @importFrom config get
 #' @export
 readShapeData <- function(jsonDir, bucket = config::get("bucket"),
-  dataDir = system.file("extdata", package = "reportingGrofwild"), 
   tolerance = 0.0001) {
   
   

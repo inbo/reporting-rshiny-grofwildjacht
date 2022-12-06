@@ -65,7 +65,7 @@ F17_4;Toekomstig verspreidingsgebied;;;Het toekomstig verspreidingsgebied is het
 "</ul>""";;;;;
 F18_1;Inschatting v.d. populatiegroei;;;;
 F01_1;Biotoop beschrijving;;;Deze klasses werden ingedeeld op basis van de Corine landgebruik data (https://land.copernicus.eu/pan-european/corine-land-cover/clc2018).;
-F02_1;Wegdensiteit;;;Aantal kilometers per vierkante kilometer oppervlakte weergeeft. ;
+F02_1;Wegdensiteit;;;Aantal kilometers weg per vierkante kilometer oppervlakte. ;
 F03_1;Bosperimeter;;;Aantal kilometer bosrand per vierkante kilometer bosoppervlakte (op basis van biotoop klasses).;
 F03_2;Bosdensiteit;;;Bosdensiteit geeft het aantal bospatches per vierkante kilometer weer (op basis van biotoop klasses).;
 F03_3;Gemiddelde bosoppervlakte;;;Gemiddelde oppervlakte van een bospatch (op basis van biotoop klasses).;

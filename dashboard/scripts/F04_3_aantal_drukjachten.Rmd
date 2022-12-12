@@ -1,0 +1,28 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+#Data
+```{r}
+drukjachten_data <- read.csv("./dashboard/input/F04_3_data.csv",
+                         sep = ",",
+                         header = TRUE)
+
+```
+
+#Grafiek
+```{r}
+Plot_aantal_DMOGG <- ggplot(data = drukjachten_data,
+                      aes(x = as.factor(Jaar),
+                          y = Aantal_drukjachten,
+                          fill =provincie_toek)) +
+  geom_bar(stat = "identity", 
+           position = "stack") +
+  labs(x = "Jaar",
+       y = "Aantal drukjachten") 
+
+
+Plot_aantal_DMOGG
+```

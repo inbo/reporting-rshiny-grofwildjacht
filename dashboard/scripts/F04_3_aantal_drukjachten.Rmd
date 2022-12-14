@@ -6,18 +6,48 @@ library(ggplot2)
 
 #Data
 ```{r}
-drukjachten_data <- read.csv("./dashboard/input/F04_3_data.csv",
-                         sep = ",",
+ecology <- read.csv("../backoffice-wild-analyse/Projecten/Grofwild_Dataviz/Output/rshiny_reporting_data_ecology.csv",
+                         sep = ";",
+                         header = TRUE)
+
+geography <- read.csv("../backoffice-wild-analyse/Projecten/Grofwild_Dataviz/Output/rshiny_reporting_data_geography.csv",
+                         sep = ";",
                          header = TRUE)
 
 ```
 
+```{r}
+#Data voorbereiding
+geography <- geography %>%
+  select(ID, WBE_Naam_Toek)
+
+eco_geo <- merge(ecology,
+                 geography,
+                 by = "ID")
+
+Drukjachten <- eco_geo %>%
+  filter(jachtmethode_comp == "drukjacht",
+         wildsoort == "Wild zwijn") 
+
+  
+
+#Overzicht drukjachten
+DMOGG_summary <- Drukjachten %>%
+  mutate(afschot_datum = as.Date(afschot_datum),
+         Jaar = as.numeric(format(afschot_datum, "%Y"))) %>%
+  group_by(Jaar, WBE_Naam_Toek, provincie) %>%
+  summarise(Aantal_drukjachten = length(unique(afschot_datum))) %>%
+  group_by(Jaar, provincie) %>%
+  summarise(Aantal_drukjachten = sum(Aantal_drukjachten)) %>%
+  drop_na()
+```
+
 #Grafiek
 ```{r}
-Plot_aantal_DMOGG <- ggplot(data = drukjachten_data,
+Plot_aantal_DMOGG <- ggplot(data = DMOGG_summary,
                       aes(x = as.factor(Jaar),
                           y = Aantal_drukjachten,
-                          fill =provincie_toek)) +
+                          fill =provincie)) +
   geom_bar(stat = "identity", 
            position = "stack") +
   labs(x = "Jaar",

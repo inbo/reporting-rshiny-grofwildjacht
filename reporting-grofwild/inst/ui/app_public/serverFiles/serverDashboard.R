@@ -9,8 +9,14 @@ everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 # Combine waarnemingen.be & afschot
-everWaarnemingen <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))[, 
+everWaarnemingen <- fread(file = file.path(dataDir, "waarnemingen_2022.csv"), drop = 1)[, 
   c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
+#rename variables to keep
+data.table::setnames(everWaarnemingen, 
+  # TODO update when utm5 provided
+  old = c("jaar", "gemeente", "utm1"),
+  new = c("afschotjaar", "gemeente_afschot_locatie", "UTM5")
+)
 everGeoAll <- rbind(everWaarnemingen, cbind(everGeoData, data.frame(dataSource = "afschot")), fill = TRUE)
 everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
 

@@ -133,7 +133,7 @@ if (!all(isPresent)) {
 rm(list = c("indieningTypes", "isPresent"))
 
 # UI text for each plot/table
-uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))
+uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")
 uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
 uiCheck <- uiFunctions[!startsWith(uiFunctions, "F")]
 if (!all(uiCheck %in% ls("package:reportingGrofwild")))

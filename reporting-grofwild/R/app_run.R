@@ -17,6 +17,7 @@
 #' @import shiny
 #' @importFrom remotes install_github dev_package_deps
 #' @importFrom stats update
+#' @importFrom config get
 #' @export
 runWildApp <- function(installDependencies = FALSE, 
   public = TRUE, kbo = "", ...) {
@@ -55,7 +56,7 @@ runWildApp <- function(installDependencies = FALSE,
   
   
   # (4) Check S3 data - On UAT only, not PRD
-  if (config::get("datacheck"))
+  if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild")))
     errorApp <- tryCatch(
       testS3(),
       error = function(err)

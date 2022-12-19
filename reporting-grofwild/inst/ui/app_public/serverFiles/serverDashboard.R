@@ -13,8 +13,7 @@ everWaarnemingen <- fread(file = file.path(dataDir, "waarnemingen_2022.csv"), dr
   c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
 #rename variables to keep
 data.table::setnames(everWaarnemingen, 
-  # TODO update when utm5 provided
-  old = c("jaar", "gemeente", "utm1"),
+  old = c("jaar", "gemeente", "TAG"),
   new = c("afschotjaar", "gemeente_afschot_locatie", "UTM5")
 )
 everGeoAll <- rbind(everWaarnemingen, cbind(everGeoData, data.frame(dataSource = "afschot")), fill = TRUE)

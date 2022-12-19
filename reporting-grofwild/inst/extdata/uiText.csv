@@ -45,6 +45,7 @@ trendYearRegionUI;FIGUUR: Evolutie gerapporteerd afschot;;;;
 yearlyShotAnimalsUI;FIGUUR: Percentage jaarlijks afschot;Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode.              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.;;;
 welcomeSection;;Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.;;Hier vindt u gedetailleerde info mbt tot uw wbe. Deze info is wachtwoord beschermd. U kan een login bekomen via HVV of de wbe secretaris.;Kies hieronder de indicatoren die u wilt weergeven
 ;;;;;
+F04_3;Aantal drukjachten;;;;
 F05_1;Afschot;;;;Het aantal geschoten dieren gemeld via het e-loket van ANB.
 F05_2;Samenstelling afschot;;;;De leeftijdsklasses worden bepaald op basis van leeftijdsbepaling van onderkaken. Indien onderkaken niet werden ingezameld en de leeftijd niet werd bepaald op het afschotformulier, kon de leeftijdsklasse niet worden bepaald.
 F06_1;Preventieve maatregelen;;;;

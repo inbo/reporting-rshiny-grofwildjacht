@@ -526,9 +526,8 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
                     "<geen>" = "none")) 
               ),
               column(4, selectInput(inputId = ns("unit"), label = "Startpopulatie",
-                  choices = c(
-                    "Exacte pixels" = "model_EP", 
-                    "Optimaal habitat" = "model_OH")
+                  choices = c("Exacte pixels" = "model_EP") 
+#                    "Optimaal habitat" = "model_OH")
                 )
               )
             )

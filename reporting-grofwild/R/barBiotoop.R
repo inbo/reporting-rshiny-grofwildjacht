@@ -76,7 +76,7 @@ barBiotoop <- function(data, jaar = NULL,
   # Create plot
   pl <- plot_ly(data = plotData, x = ~value, y = ~variable, 
       color = ~as.factor(regio), colors = colors,
-      hovertemplate = paste('%{y} <br>%{x:/100\U0025}'),
+      hovertemplate = paste('%{y} <br>%{x:/100}%'),
       type = "bar", orientation = 'h', width = width, height = height) %>%
     
     layout(title = paste0("Totale oppervlakte: ", 
@@ -84,12 +84,8 @@ barBiotoop <- function(data, jaar = NULL,
       xaxis = list(title = "", zeroline = FALSE, showline = FALSE, ticksuffix = "%"), 
       yaxis = list(title = "", zeroline = FALSE, showline = FALSE),    
       margin = list(l = 100)
-    ) %>%
-    
-    add_annotations(text = "Percentages (%)",
-      xref = "paper", yref = "paper", x = 0, xanchor = "right",
-      y = 1, yanchor = "top", showarrow = FALSE)  
-  
+    )
+   
   
   # Percentage printed at top of bar
   if (length(unique(plotData$regio)) == 1) {

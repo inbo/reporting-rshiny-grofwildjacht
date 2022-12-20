@@ -45,25 +45,25 @@ checkS3 <- function() {
 #' 
 #' @author mvarewyck
 #' @importFrom testthat test_file
+#' @importFrom methods is
 #' @export
 testS3 <- function() {
   
-  currentDir <- getwd()
-  testDir <- gsub("inst/ui/app_\\w{1,}", "tests/testthat", currentDir)
   cat("Test Data in S3 bucket\n")
-  testResult <- test_file(file.path(testDir, "testData.R"), reporter = "minimal")
+  testResult <- test_file(system.file("tests/testData.R", package = "reportingGrofwild"), reporter = "minimal")
   
-  isFailed <- as.data.frame(testResult)$failed > 0
+  isFailed <- !as.data.frame(testResult)$skipped & !as.data.frame(testResult)$passed > 0
   if (any(isFailed)) {
     # Message will be in HTML
     errorMessage <- paste("</br>Please check data in S3 bucket:",
       config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-      "</br>Following tests in tests/testthat/testData.R failed</br>")
+      "</br>Following tests in tests/testData.R failed. Please fix in order of occurrence.</br>")
     for (i in which(isFailed)) {
       toPrint <- as.data.frame(testResult)$test[i]
       tmp <- testResult[[i]]$results
       errorMessage <- paste(errorMessage, "<h4>Test:", toPrint, "</h4>Error message:</br>", 
-        gsub("\n", "</br>", tmp[sapply(tmp, is, "expectation_failure")][[1]]$message), "</br>")
+        gsub("\n", "</br>", tmp[sapply(tmp, function(x)
+                is(x, "expectation_failure") | is(x, "expectation_error"))][[1]]$message), "</br>")
     }
     stop(errorMessage)
   } else cat("Finished successfully\n")

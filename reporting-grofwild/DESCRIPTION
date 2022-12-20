@@ -9,6 +9,8 @@ Version: 0.2.8
 Date: 2022-05-25
 Imports:
     aws.s3,
+    config,
+    data.table,
     DT, 
     flexdashboard,
     ggplot2,
@@ -22,7 +24,8 @@ Imports:
     plotly,
     plyr, 
     raster,
-    RColorBrewer, 
+    RColorBrewer,
+    remotes, 
     reshape2, 
     rgdal, 
     rgeos, 

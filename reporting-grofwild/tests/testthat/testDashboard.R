@@ -73,8 +73,13 @@ test_that("F17_1", {
     
     regionLevel <- c("communes", "utm5")[2]
     
-    everWaarnemingen <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))[, 
+    everWaarnemingen <- fread(file = file.path(dataDir, "waarnemingen_2022.csv"), drop = 1)[, 
       c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
+    #rename variables to keep
+    data.table::setnames(everWaarnemingen, 
+      old = c("jaar", "gemeente", "TAG"),
+      new = c("afschotjaar", "gemeente_afschot_locatie", "UTM5")
+    )
     everGeoAll <- rbind(everWaarnemingen, cbind(geoData, data.frame(dataSource = "afschot")), fill = TRUE)
     everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
     

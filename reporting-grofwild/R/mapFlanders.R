@@ -175,6 +175,9 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     allData <- merge(summaryData, fullData, all = TRUE)
     allData$freq[is.na(allData$freq)] <- 0
     
+    if (!is.null(sourceIndicator))
+      allData[, sourceIndicator][is.na(allData[, sourceIndicator])] <- 0
+    
   }
   
   ## stats
@@ -715,14 +718,16 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           validate(need(results$summarySpaceData()$data, "Geen data beschikbaar"))
           
           regionNames <- results$summarySpaceData()$data$locatie
-          titleText <- paste("Gerapporteerd", results$unitText(), "in", input$year[1])
+          titleText <- paste(if (type != "dash") "Gerapporteerd", 
+            results$unitText(), "in", input$year[1])
           
           contentText <- if (!is.null(input$bronMap)) {
               availableBron <- input$bronMap[input$bronMap %in% colnames(results$summarySpaceData()$data)]
+              names(availableBron) <- sapply(availableBron, function(x) strsplit(x, split = "\\.")[[1]][1])
               if (length(availableBron) > 1)
-              apply(do.call(cbind, Map(paste, availableBron, results$summarySpaceData()$data[, availableBron], sep = ": ")), 1, function(x)
+              apply(do.call(cbind, Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron], sep = ": ")), 1, function(x)
                   paste("</br>", paste(x, collapse = "</br>"))) else
-              paste("</br>", Map(paste, availableBron, results$summarySpaceData()$data[, availableBron], sep = ": "))
+              paste("</br>", Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron], sep = ": "))
             } else
               round(results$summarySpaceData()$data$freq, 2)
         

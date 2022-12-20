@@ -1186,11 +1186,23 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           tagList(
             h3(uiText$title, tags$br(), 
               req(results$regionLevelName()), 
-              if (!is.null(input$year)) paste("in", input$year)),
-            tags$p(HTML(uiText[, strsplit(id, "_")[[1]][1]]))
+              if (!is.null(input$year)) paste("in", input$year))
           )
         
         })
+      
+      output$biotoopPlotText <- renderUI({
+          
+          tags$p(HTML(uiText[uiText$plotFunction == "barBiotoop", strsplit(id, "_")[[1]][1]]))
+          
+        })
+      
+      output$biotoopTableText <- renderUI({
+          
+          tags$p(HTML(uiText[uiText$plotFunction == "tableBackground", strsplit(id, "_")[[1]][1]]))
+          
+        })
+      
       
       # Plot
       results$biotoopPlotData <- reactive({
@@ -1366,12 +1378,14 @@ mapFlandersUI <- function(id, showRegion = TRUE,
           
       if ("biotoop" %in% plotDetails)
         column(6, 
+          uiOutput(ns("biotoopPlotText")),
           plotModuleUI(id = ns("biotoopPlot"), height = "400px"),
           optionsModuleUI(id = ns("biotoopPlot"), exportData = TRUE,
             doWellPanel = FALSE)
         ),
       if ("biotoopTable" %in% plotDetails)
         column(6,
+          uiOutput(ns("biotoopTableText")),
           tableModuleUI(id = ns("biotoopTable")),
           optionsModuleUI(id = ns("biotoopTable"), exportData = TRUE,
             doWellPanel = FALSE)

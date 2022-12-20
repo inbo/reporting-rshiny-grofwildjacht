@@ -103,6 +103,12 @@ cat("#", toupper("Jacht"), "\n\n")
 
 incProgress(amount = 0.2, detail = "Jacht")
 
+if ("F04_3" %in% results$dash_showJacht()) {
+  cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F04_3"]), "\n\n")
+  results$dash_F04_3()$plot %>%
+    config(displayModeBar = FALSE)
+}
+
 if ("F05_1" %in% results$dash_showJacht()) {
   cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_1"]), "\n\n")
   results$dash_F05_1()$plot %>%

@@ -135,19 +135,27 @@ countYearProvince <- function(data, jaartallen = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - server side
-#' @inheritParams countAgeGenderServer 
+#' @inheritParams trendYearRegionServer
 #' @inheritParams countYearProvince
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearProvinceServer <- function(id, data, timeRange) {
+countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
+      
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkYearProvince",
+            label = paste("FIGUUR:", title()))
+          
+        })
       
       # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearProvince", 
@@ -166,20 +174,22 @@ countYearProvinceServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - UI side
 #' @template moduleUI
+#' @inheritParams trendYearRegionUI
 #' 
 #' @author mvarewyck
 #' @export
-countYearProvinceUI <- function(id, uiText) {
+countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvince",
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == plotFunction, ]
   
   tagList(
     
-    actionLink(inputId = ns("linkYearProvince"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearProvince % 2 == 1", ns = ns,
+    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(uiText$title)), 
+      class = "action-h3"),
+    conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         

@@ -286,6 +286,22 @@ results$dash_jachtTitles <- reactive({
     
   })
 
+results$dash_drukjachtData <- reactive({      
+    drukjachtData <- merge(
+      results$dash_ecoData()[results$dash_ecoData()$jachtmethode_comp == "Drukjacht", 
+        c("ID", "afschot_datum", "afschotjaar", "provincie", "wildsoort")], 
+      everGeoData[, c("ID", "WBE_Naam_Toek")], 
+      by = "ID", all.x = TRUE)[, c("afschot_datum", "afschotjaar", "WBE_Naam_Toek", "provincie", "wildsoort")]
+    # Keep unique records per WBE & date
+    drukjachtData[!duplicated(drukjachtData), ]      
+  })
+
+results$dash_F04_3 <- countYearProvinceServer(id = "dash", 
+  data = results$dash_drukjachtData,
+  timeRange = reactive(range(results$dash_drukjachtData()$afschotjaar)),
+  title = reactive(names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F04_3"]))
+  )
+
 results$dash_F05_1 <- trendYearRegionServer(id = "dash",
   data = results$dash_ecoData, 
   species = results$dash_species,

@@ -325,7 +325,11 @@ test_that("F18_1", {
     
     plotData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
     
-    barDraagkracht(data = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
+    myResult <- barDraagkracht(data = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
     # Remark:
     # There is a problem with hovertemplate when there is only 1 data point on the plot:
@@ -367,5 +371,24 @@ test_that("F17_4", {
       clearGroup(group = "regionLines") %>%
       addPolylines(data = selectedPolygons, color = "gray", weight = 5,
         group = "regionLines")
+    
+  })
+
+
+test_that("F04_3", {
+    
+    # Data voorbereiding
+    drukjachtData <- merge(
+      ecoData[ecoData$jachtmethode_comp == "Drukjacht", c("ID", "afschot_datum", "afschotjaar", "provincie")], 
+      geoData[, c("ID", "WBE_Naam_Toek")], 
+      by = "ID", all.x = TRUE)[, c("afschot_datum", "afschotjaar", "WBE_Naam_Toek", "provincie")]
+    # Keep unique records per WBE & date
+    drukjachtData <- drukjachtData[!duplicated(drukjachtData), ]
+    
+    myResult <- countYearProvince(data = drukjachtData)
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")    
     
   })

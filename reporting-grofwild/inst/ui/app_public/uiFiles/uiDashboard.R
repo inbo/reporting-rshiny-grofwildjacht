@@ -112,6 +112,11 @@ tagList(
     conditionalPanel("output.dash_jachtIndicatoren.length > 0",
       h2(toupper("Jacht"))),
     
+    conditionalPanel("output.dash_jachtIndicatoren.indexOf('F04_3') > -1", 
+      countYearProvinceUI(id = "dash", uiText = uiText,
+        plotFunction = "F04_3", doHide = FALSE)
+    ),
+    
     conditionalPanel("output.dash_jachtIndicatoren.indexOf('F05_1') > -1", 
       trendYearRegionUI(id = "dash", uiText = uiText, 
         showCombinatie = TRUE,

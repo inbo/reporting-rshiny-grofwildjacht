@@ -347,6 +347,7 @@ test_that("F18_1", {
 test_that("F17_4", {
     
     spreadShape <- loadSpreadData(spatialLevel = "municipalities")
+#    spreadShape <- loadSpreadData(spatialLevel = "pixels")
     
     myMap <- mapSpread(
       spreadShape = spreadShape, 

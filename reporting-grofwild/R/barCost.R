@@ -106,9 +106,14 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       
       subData <- reactive({
           
-          if (!is.null(input$typeMelding))
+          # Type melding
+          plotData <- if (!is.null(input$typeMelding))
             subset(data(), typeMelding %in% input$typeMelding) else 
             data()
+          
+          # Bron
+          filterSchade(plotData = plotData,
+            sourceIndicator = input$bron, returnStop = "message")
           
         })
       
@@ -155,6 +160,7 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
   ns <- NS(id)
   
   uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+  metaSchade <- loadMetaSchade()
   
   tagList(
     
@@ -170,6 +176,10 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
               selectInput(inputId = ns("typeMelding"), label = "Type schade",
                 choices = typeMelding),
             uiOutput(ns("unitChoices")),
+            selectInput(inputId = ns("bron"), label = "Data bron",
+              choices = names(metaSchade$sources),
+              selected = names(metaSchade$sources),
+              multiple = TRUE),
             optionsModuleUI(id = ns("barCost"), exportData = TRUE, doWellPanel = FALSE)
           ),
           tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))

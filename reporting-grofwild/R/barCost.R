@@ -29,7 +29,8 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   groupLabel <- if (!is.null(unit))
       switch(unit,
         SoortNaam = "Gewas",
-        season = "Seizoen"
+        season = "Seizoen",
+        typeMelding = "Type schade"
       ) else 
       NULL
   
@@ -107,7 +108,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       subData <- reactive({
           
           # Type melding
-          plotData <- if (!is.null(input$typeMelding))
+          plotData <- if (!is.null(input$typeMelding) && input$typeMelding != "all")
             subset(data(), typeMelding %in% input$typeMelding) else 
             data()
           
@@ -120,7 +121,8 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       output$unitChoices <- renderUI({
           
           choices <- c("Seizoen" = "season", "Soortnaam" = "SoortNaam")
-          if (input$typeMelding != "landbouw") 
+          if (input$typeMelding == "all") 
+            choices <- c(choices, "Type schade" = "typeMelding") else if (input$typeMelding != "landbouw") 
             choices <- choices[1]
           
           selectInput(inputId = ns("unit"), label = "Groep per",

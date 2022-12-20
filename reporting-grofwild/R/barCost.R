@@ -34,11 +34,7 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
       NULL
   
   
-  if (!is.null(unit))
-    subData <- subset(data, schadeBasisCode == "GEWAS", 
-      c(if (yVar != "count") yVar, unit, "afschotjaar")) else 
-    subData <- subset(data, ,
-      c(if (yVar != "count") yVar, "afschotjaar"))
+  subData <- data[, c(if (yVar != "count") yVar, unit, "afschotjaar")] 
   
   summaryData <- count(df = subData, vars = names(subData))
   if (yVar %in% names(summaryData))
@@ -118,10 +114,12 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       
       output$unitChoices <- renderUI({
           
-          req(input$typeMelding == "landbouw")
+          choices <- c("Seizoen" = "season", "Soortnaam" = "SoortNaam")
+          if (input$typeMelding != "landbouw") 
+            choices <- choices[1]
           
           selectInput(inputId = ns("unit"), label = "Groep per",
-            choices = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
+            choices = choices)
         
         })
       
@@ -135,7 +133,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
-        unit = reactive(if (input$typeMelding == "landbouw") input$unit)
+        unit = reactive(input$unit)
       )
       
       return(reactive(toReturn()))

@@ -24,7 +24,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
   yVar = "percentage", xVar = NULL, width = 1000, height = NULL) {
   
   
-  if (yVar == "percentage") {
+  if ("percentage" %in% c(xVar, yVar)) {
     
     data$percentage <- as.numeric(data$Aantal_tot/data$totaal) * 100
     data$percentageLabel <- paste0(round(data$percentage, 2), "%")
@@ -51,7 +51,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
     myColors <- c(
       if (length(neutralLevel) > 0) "lightgrey", 
-      inbo_palette(n = 3)[c(1, 3)])
+      inbo_palette(n = 4)[c(4, 2)])
     
   }
   

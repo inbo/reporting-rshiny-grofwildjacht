@@ -37,6 +37,13 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   
   subData <- data[, c(if (yVar != "count") yVar, unit, "afschotjaar")] 
   
+  # Replace by group name
+  if (unit == "SoortNaam") {
+    fullNames <- loadMetaSchade()$gewassen
+    newNames <- unlist(sapply(names(fullNames), function(x) rep(x, length(fullNames[[x]]))))
+    subData[[unit]] <- newNames[match(subData[[unit]], unlist(fullNames))]
+  }
+  
   summaryData <- count(df = subData, vars = names(subData))
   if (yVar %in% names(summaryData))
     summaryData$yVar <- summaryData[, yVar] * summaryData$freq else

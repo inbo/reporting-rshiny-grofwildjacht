@@ -452,6 +452,11 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   schadeWildsoorten <- sapply(unique(wildsoorten$group), function(x)
       wildsoorten$name[wildsoorten$group == x], simplify = FALSE)
   
+  # Specify currently used SoortNaam (gewas)
+  gewassen <- rawData[rawData$variable == "SoortNaam", c("group", "name")]
+  schadeGewassen <- sapply(unique(gewassen$group), function(x)
+      gewassen$name[gewassen$group == x], simplify = FALSE)
+  
   # Specify currently used types schade
   types <- rawData[rawData$variable == "type", c("group", "name")]
   schadeTypes <- unique(types$group)
@@ -476,7 +481,8 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
     wildsoorten = schadeWildsoorten,
     types = schadeTypes,
     codes = schadeCodes,
-    sources = sourcesSchade
+    sources = sourcesSchade,
+    gewassen = schadeGewassen
   )
   
 }

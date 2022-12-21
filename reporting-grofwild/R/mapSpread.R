@@ -17,10 +17,11 @@
 #' @export
 paletteMap <- function(variable, groupNames) {
   
-  myColors <- if (grepl("model", variable))
-      c(RColorBrewer::brewer.pal(n = length(groupNames) - 1, "YlOrBr"), "gray") else if (grepl("risk", variable))
+  myColors <- if (grepl("model", variable) && "Al aanwezig" %in% groupNames)
+      c(RColorBrewer::brewer.pal(n = length(groupNames) - 1, "YlOrBr"), "gray") else if (grepl("model", variable))
+      RColorBrewer::brewer.pal(n = length(groupNames), "YlOrBr") else if (grepl("risk", variable))
       c('red', 'orange', 'green', 'white') else if (grepl("start", variable))
-      "black"
+      "gray"
   
   list(
     colors = myColors,

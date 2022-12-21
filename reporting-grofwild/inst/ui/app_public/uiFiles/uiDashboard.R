@@ -141,7 +141,8 @@ tagList(
     conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_1') > -1", 
       barCostUI(id = "dash_F07_1", uiText = uiText, 
         typeMelding = c("Verkeer" = "verkeersongeluk", "Landbouw" = "landbouw", 
-          "Private en publieke gebieden" = "private en publieke gebieden"))
+          "Private en publieke gebieden" = "private en publieke gebieden",
+          "Alle" = "all"))
     ),
     
     conditionalPanel("output.dash_schadeIndicatoren.indexOf('F09_2') > -1", 

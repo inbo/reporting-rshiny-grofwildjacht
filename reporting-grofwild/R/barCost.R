@@ -29,16 +29,13 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   groupLabel <- if (!is.null(unit))
       switch(unit,
         SoortNaam = "Gewas",
-        season = "Seizoen"
+        season = "Seizoen",
+        typeMelding = "Type schade"
       ) else 
       NULL
   
   
-  if (!is.null(unit))
-    subData <- subset(data, schadeBasisCode == "GEWAS", 
-      c(if (yVar != "count") yVar, unit, "afschotjaar")) else 
-    subData <- subset(data, ,
-      c(if (yVar != "count") yVar, "afschotjaar"))
+  subData <- data[, c(if (yVar != "count") yVar, unit, "afschotjaar")] 
   
   summaryData <- count(df = subData, vars = names(subData))
   if (yVar %in% names(summaryData))
@@ -110,18 +107,26 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       
       subData <- reactive({
           
-          if (!is.null(input$typeMelding))
+          # Type melding
+          plotData <- if (!is.null(input$typeMelding) && input$typeMelding != "all")
             subset(data(), typeMelding %in% input$typeMelding) else 
             data()
+          
+          # Bron
+          filterSchade(plotData = plotData,
+            sourceIndicator = input$bron, returnStop = "message")
           
         })
       
       output$unitChoices <- renderUI({
           
-          req(input$typeMelding == "landbouw")
+          choices <- c("Seizoen" = "season", "Soortnaam" = "SoortNaam")
+          if (input$typeMelding == "all") 
+            choices <- c(choices, "Type schade" = "typeMelding") else if (input$typeMelding != "landbouw") 
+            choices <- choices[1]
           
           selectInput(inputId = ns("unit"), label = "Groep per",
-            choices = c("Seizoen" = "season", "Soortnaam" = "SoortNaam"))
+            choices = choices)
         
         })
       
@@ -135,7 +140,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
-        unit = reactive(if (input$typeMelding == "landbouw") input$unit)
+        unit = reactive(input$unit)
       )
       
       return(reactive(toReturn()))
@@ -157,6 +162,7 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
   ns <- NS(id)
   
   uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+  metaSchade <- loadMetaSchade()
   
   tagList(
     
@@ -172,6 +178,10 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
               selectInput(inputId = ns("typeMelding"), label = "Type schade",
                 choices = typeMelding),
             uiOutput(ns("unitChoices")),
+            selectInput(inputId = ns("bron"), label = "Data bron",
+              choices = names(metaSchade$sources),
+              selected = names(metaSchade$sources),
+              multiple = TRUE),
             optionsModuleUI(id = ns("barCost"), exportData = TRUE, doWellPanel = FALSE)
           ),
           tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))

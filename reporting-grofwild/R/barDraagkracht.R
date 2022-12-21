@@ -9,9 +9,9 @@
 #' @param data data.frame 
 #' @param groupVariable character vector containing the name of the column in plotData
 #' for which each unique value a separate subplot is created
-#' @param yVar character, column in \code{plotData} for x-axis;
+#' @param xVar character, column in \code{plotData} for x-axis;
 #' default value is 'percentage'
-#' @param xVar character, column in \code{plotData} for y-axis
+#' @param yVar character, column in \code{plotData} for y-axis
 #' @inheritParams barBiotoop
 #' 
 #' @return list with plotly object and data.frame
@@ -21,13 +21,13 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @export 
 barDraagkracht <- function(data, groupVariable = NULL, 
-  yVar = "percentage", xVar = NULL, width = 1000, height = NULL) {
+  xVar = "percentage", yVar = NULL, width = 1000, height = NULL) {
   
   
-  if ("percentage" %in% c(xVar, yVar)) {
+  if (xVar == "percentage") {
     
     data$percentage <- as.numeric(data$Aantal_tot/data$totaal) * 100
-    data$percentageLabel <- paste0(round(data$percentage, 2), "%")
+    data$percentageLabel <- paste0(round(data$percentage, 2), "% (n = ", data$totaal, ")")
     
     answerLevels <- list(
       neutral = c('Hetzelfde', 'Neutraal'),
@@ -65,7 +65,6 @@ barDraagkracht <- function(data, groupVariable = NULL,
     secondGroup <- if (length(groupVariable) > 1)
         groupLevels[[2]] else
         ""
-    
     for (jVar in secondGroup) 
       for (iVar in groupLevels[[1]]) {
         
@@ -73,64 +72,73 @@ barDraagkracht <- function(data, groupVariable = NULL,
             data[data[[groupVariable[1]]] %in% iVar, ] else
             data[data[[groupVariable[1]]] %in% iVar & data[[groupVariable[2]]] %in% jVar, ]
         
-        xLabels <- unique(subData[[xVar]])
-        totalCounts <- subData$totaal[unique(match(subData[[xVar]], xLabels))]
+        yLabels <- unique(subData[[yVar]])
+        totalCounts <- subData$totaal[unique(match(subData[[yVar]], yLabels))]
         
         plotList[[(length(plotList) + 1)]] <- plot_ly(
             data = subData, 
-            x = ~as.factor(get(xVar)), 
-            y = ~get(yVar), 
-            text = ~percentageLabel, textposition = "none",
+            x = ~get(xVar), 
+            y = ~as.factor(get(yVar)), 
+            text = ~paste("<b>", get(groupVariable), "</b><br>", get(yVar), "<br>", percentageLabel), 
+            textposition = "none",
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
             legendgroup = ~Antwoord, 
             showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]),
-            hoverinfo = "text+x+name"
+            hoverinfo = "text"
           ) %>%
           layout(
             annotations = list(
-              # columns
-              list(x = 0.5, y = 1, 
+              # groupVariable text
+              list(x = 0, y = 1, 
                 text = if (jVar == secondGroup[1]) gsub(" ", "<br>", as.character(iVar)) else "",
-                showarrow = FALSE, font = list(size = 12), 
-                textangle = if (length(groupLevels[[1]]) > 8) 30,
-                xref = 'paper', yref = 'paper', xanchor = 'center', yanchor = 'bottom')
+                showarrow = FALSE, font = list(size = 12),
+                textangle = -90,
+                xref = 'paper', yref = 'paper', xanchor = 'bottom', yanchor = 'top')
+            ),
+            # groupVariable gray bar
+            shapes = list(
+              type = "rect",
+              x0 = 0,
+              x1 = 40,
+              xref = "paper",
+              xanchor = 0,
+              xsizemode = "pixel",
+              y0 = 0, 
+              y1 = 1,
+              yref = "paper",
+              fillcolor = toRGB("gray80"),
+              line = list(color = "transparent")
             ),
             legend = list(title = list(text = "<b>Antwoord</b>")),
             barmode = "relative",
-            xaxis = list(
-              title = "",
-              ticktext = as.list(paste0(xLabels, if (length(groupLevels[[1]]) < 5) "\n", " (n = ", totalCounts, ")")), 
-              tickvals = as.list((length(xLabels)-1):0),
-              tickmode = "array",
-              tickangle = if (length(groupLevels[[1]]) < 5) 0 else 30
-            ),
-            yaxis = list(title = "Percentage"),
-            margin = c(0, 0, 1, 0)
+            xaxis = list(title = "Percentage"),
+            yaxis = list(title = "", ticksuffix = "  "),
+            margin = c(200, 0, 0, 0)
           )
         
       }
     
     myPlot <- do.call(subplot, c(plotList,
-        shareY = TRUE, 
-        nrows = length(secondGroup),
+        shareX = TRUE,
+        nrows = length(groupLevels[[1]]),
         margin = 0.005))
     
     extraVars <- c("Antwoord", groupVariable)
     
-  } else if (yVar == "percentage") {
+  } else if (xVar == "percentage") {
     
     # rename x-axis ticktext
-    xLabels <- unique(data[[xVar]])
-    totalCounts <- data$totaal[unique(match(data[[xVar]], xLabels))]
-    xLabels[xLabels == "populatie_evolutie"] <- "Populatie everzwijnen"
-    xLabels[xLabels == "schade_landbouw_evolutie"] <- "Schade aan de landbouw"
-    xLabels[xLabels == "schade_privpub_evolutie"] <- "Schade aan privéterreinen"
-    xLabels[xLabels == "schade_verkeer_evolutie"] <- "Schade in het verkeer"
+    yLabels <- unique(data[[yVar]])
+    totalCounts <- data$totaal[unique(match(data[[yVar]], yLabels))]
+    yLabels[yLabels == "populatie_evolutie"] <- "Populatie everzwijnen"
+    yLabels[yLabels == "schade_landbouw_evolutie"] <- "Schade aan de landbouw"
+    yLabels[yLabels == "schade_privpub_evolutie"] <- "Schade aan privéterreinen"
+    yLabels[yLabels == "schade_verkeer_evolutie"] <- "Schade in het verkeer"
     
     myPlot <- plot_ly(data, x = ~get(xVar), y = ~get(yVar), 
         type = 'bar', color = ~Antwoord, colors = myColors, text = ~percentageLabel,
 #        marker = list(line = list(width = 5, color = "lightgray")),
-        hoverinfo = "text+x+name",
+        hoverinfo = "text+y+name",
         width = width, height = height
 #            hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
 #                '<b>Antwoord</b>: %{text}')
@@ -138,12 +146,8 @@ barDraagkracht <- function(data, groupVariable = NULL,
       layout(
         legend = list(title = list(text = "<b> Antwoord </b>"), traceorder = 'normal'),
         barmode = "relative",
-        xaxis = list(
-          title = "",
-          ticktext = as.list(paste0(xLabels, "\n (n = ", totalCounts, ")")), 
-          tickvals = as.list((length(xLabels)-1):0),
-          tickmode = "array"),
-        yaxis = list(title = "Percentage") 
+        yaxis = list(title = ""),
+        xaxis = list(title = "Percentage") 
       )
     
     extraVars <- c("Antwoord")
@@ -167,7 +171,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
   } 
   
   
-  return(list(plot = myPlot, data = data[, c(extraVars, yVar, xVar), with = FALSE]))
+  return(list(plot = myPlot, data = data[, c(extraVars, xVar, yVar), with = FALSE]))
   
 }
 
@@ -182,7 +186,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barDraagkrachtServer <- function(id, data, groupVariable = NULL, yVar = "percentage", xVar,
+barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percentage", yVar,
   title = reactive(NULL)) {
   
   moduleServer(id,
@@ -190,22 +194,46 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, yVar = "percent
       
       ns <- session$ns
       
+      sectors <- list(
+        stakeholders = c('Jagers', 'Landbouwers', 'Natuurvereniging'),
+        public = c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
+      )
+      
+      observeEvent(input$sectorMain, {
+          
+          updateSelectInput(session, inputId = "sectorUsers", 
+            choices = sectors[[input$sectorMain]], 
+            selected = sectors[[input$sectorMain]])
+          
+        })
+      
+      output$groupChoices <- renderUI({
+          
+          choices <- unique(data()[[groupVariable]])
+          
+          selectInput(inputId = ns("groups"), label = NULL,
+            choices = choices, selected = choices, multiple = TRUE, width = "100%")
+          
+        })
+      
       subData <- reactive({
           
-          if (!is.null(input$subGroup)) {
-            
-            switch(input$subGroup,
-              "stakeholders" = data()[data()[[xVar]] %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'), ],
-              "public" = data()[data()[[xVar]] %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'), ]
-            )
-            
-          } else {
-                        
-            data()
-            
-          } 
+          toReturn <- data()
+          
+          if (!is.null(input$sectorMain))
+            validate(need(input$sectorUsers, "Gelieve groepen te selecteren"))
+          
+          if (!is.null(input$sectorUsers))
+            toReturn <- toReturn[toReturn[[yVar]] %in% input$sectorUsers, ]
+          
+          if (!is.null(input$groups))
+            toReturn <- toReturn[toReturn[[groupVariable]] %in% input$groups, ]
+          
+          
+          toReturn
             
         })
+     
       
       observeEvent(title(), {
           
@@ -234,10 +262,14 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, yVar = "percent
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side
 #' @template moduleUI
+#' @param sectorChoices named character vector, choices for sector
+#' @param selectGroups boolean, whether user should be able to select groups
+#' @param height character, height of the plot
 #' 
 #' @author mvarewyck
 #' @export
-barDraagkrachtUI <- function(id, uiText, subGroups = NULL) {
+barDraagkrachtUI <- function(id, uiText, sectorChoices = NULL, 
+  selectGroups = FALSE, height = "600px") {
   
   ns <- NS(id)
   
@@ -249,13 +281,26 @@ barDraagkrachtUI <- function(id, uiText, subGroups = NULL) {
       label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkDraagkracht % 2 == 0", ns = ns,
       
-      if (!is.null(subGroups))
+      if (!is.null(sectorChoices) | selectGroups)
         wellPanel(
-          radioButtons(inputId = ns("subGroup"), label = NULL, choices = subGroups)
+          fluidRow(
+            column(3,
+              if (!is.null(sectorChoices))
+                radioButtons(inputId = ns("sectorMain"), label = NULL, choices = sectorChoices, inline = TRUE),
+              selectInput(inputId = ns("sectorUsers"), label = NULL,
+                choices = c('Jagers', 'Landbouwers', 'Natuurvereniging'), 
+                selected = c('Jagers', 'Landbouwers', 'Natuurvereniging'),
+                multiple = TRUE)
+            ),
+            if (selectGroups)
+              column(9, uiOutput(ns("groupChoices")))
+          
+          )
         ),
+      
       tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
       
-      plotModuleUI(id = ns("barDraagkracht")),
+      plotModuleUI(id = ns("barDraagkracht"), height = height),
       optionsModuleUI(id = ns("barDraagkracht"), exportData = TRUE,
         doWellPanel = FALSE),
       tags$hr()

@@ -355,7 +355,7 @@ results$dash_F09_2 <- barCostServer(id = "dash_F09_2",
 
 results$dash_F07_3 <- barDraagkrachtServer(id = "dash_F07_3", 
   data = reactive(inschattingData[Vraag != "populatie_evolutie", ]), 
-  xVar = "Vraag",
+  yVar = "Vraag",
   title = reactive(names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_3"]))
 )
 
@@ -371,36 +371,36 @@ results$dash_maatschappijTitles <- reactive({
 
 results$dash_F12_1 <- barDraagkrachtServer(id = "dash_F12_1",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F12_1_data.csv"))),
-  xVar = "Jaar", yVar = "Aantal",
+  yVar = "Jaar", xVar = "Aantal",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F12_1"]))
 )
 
 results$dash_F14_1 <- barDraagkrachtServer(id = "dash_F14_1",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv"))),
-  xVar = "Sector", groupVariable = "Year",
+  yVar = "Sector", groupVariable = "Year",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_1"]))
 )
 
 results$dash_F14_2 <- barDraagkrachtServer(id = "dash_F14_2",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv"))),
-  xVar = "Sector", groupVariable = "Year",
+  yVar = "Sector", groupVariable = "Year",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_2"]))
 )
 
 results$dash_F14_3 <- barDraagkrachtServer(id = "dash_F14_3",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_3_data.csv"))),
-  groupVariable = "Question_label", xVar = "Sector",
+  groupVariable = "Question_label", yVar = "Sector",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_3"]))
 )
 
 results$dash_F14_4 <- barDraagkrachtServer(id = "dash_F14_4",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
-  groupVariable = "Question_label", xVar = "Groep",
+  groupVariable = "Question_label", yVar = "Groep",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_4"]))
 )
 
 results$dash_F14_5 <- barDraagkrachtServer(id = "dash_F14_5",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv"))),
-  groupVariable = "Question_label", xVar = "Sector",
+  groupVariable = "Question_label", yVar = "Sector",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_5"]))
 )

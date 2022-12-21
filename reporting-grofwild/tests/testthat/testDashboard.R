@@ -221,8 +221,8 @@ test_that("F07_1, F09_1", "F11_1", {
     
     myResult <- barCost(
       data = subset(schadeData@data, typeMelding %in% sources[4]), 
-      yVar = "count",
-      summarizeBy = NULL # c("SoortNaam", "season")[1]
+      yVar = "schadeBedrag",
+      unit = "season" # c("SoortNaam", "season")[1]
     )
     
     expect_type(myResult, "list")
@@ -250,7 +250,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     # F12_1
     myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F12_1_data.csv")),
-      xVar = "Jaar", yVar = "Aantal")
+      yVar = "Jaar", xVar = "Aantal")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -258,7 +258,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     # F14_1
     myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv")), 
-      groupVariable = "Year", xVar = "Sector")
+      groupVariable = "Year", yVar = "Sector")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -267,7 +267,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     # F14_2
     myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv")), 
-      groupVariable = "Year", xVar = "Sector")         
+      groupVariable = "Year", yVar = "Sector")         
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -285,7 +285,8 @@ test_that("F14_3, F14_4", {
     
     # Stakeholders
     subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
-    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", xVar = "Sector")
+    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", 
+      yVar = "Sector")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -293,7 +294,7 @@ test_that("F14_3, F14_4", {
     
     # Plot Breed publiek
     subData <- subset(plotData, Sector %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
-    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", xVar = "Sector")
+    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", yVar = "Sector")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -304,7 +305,7 @@ test_that("F14_3, F14_4", {
     plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[2]))
 #    subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
     subData <- subset(plotData, Groep %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
-    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", xVar = "Groep")
+    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", yVar = "Groep")
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
@@ -316,7 +317,7 @@ test_that("F14_3, F14_4", {
 test_that("F14_5", {
     
     myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv")),
-      groupVariable = "Question_label", xVar = "Sector")
+      groupVariable = "Question_label", yVar = "Sector")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

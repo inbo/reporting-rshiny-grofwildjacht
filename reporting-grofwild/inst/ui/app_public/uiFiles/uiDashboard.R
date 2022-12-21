@@ -30,25 +30,25 @@ tagList(
       column(4,
         dashboardChoices(id = "dash_populatie", 
           choices = populatieChoices,
-          selected = if (doDebug) c("F16_1", "F17_4"),
+#          selected = if (doDebug) c("F16_1", "F17_4"),
           uiText = uiText
         ),
         dashboardChoices(id = "dash_jacht",
           choices = jachtChoices,
-          selected = if (doDebug) c("F05_1", "F05_2"),
+#          selected = if (doDebug) c("F05_1", "F05_2"),
           uiText = uiText
         )
       ),
       column(4,
         dashboardChoices(id = "dash_schade",
           choices = schadeChoices, uiText = uiText,
-          selected = if (doDebug) c("F07_1", "F07_3")
+          selected = if (doDebug) c("F07_3")
         )
       ),
       column(4, 
         dashboardChoices(id = "dash_maatschappij",
           choices = maatschappijChoices,
-          selected = if (doDebug) c("F14_1"),
+          selected = if (doDebug) maatschappijChoices,
           uiText = uiText)
       )
     ),
@@ -174,16 +174,19 @@ tagList(
     
     conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_3') > -1",
       barDraagkrachtUI(id = "dash_F14_3", uiText = uiText,
-        subGroups = c("Stakeholders" = "stakeholders", "Publiek" = "public"))
+        sectorChoices = c("Stakeholders" = "stakeholders", "Publiek" = "public"),
+        selectGroups = TRUE, height = "1000px")
     ),
     
     conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_4') > -1",
       barDraagkrachtUI(id = "dash_F14_4", uiText = uiText,
-        subGroups = c("Stakeholders" = "stakeholders", "Publiek" = "public"))
+        sectorChoices = c("Stakeholders" = "stakeholders", "Publiek" = "public"), 
+        selectGroups = TRUE, height = "800px")
     ),
     
     conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_5') > -1",
-      barDraagkrachtUI(id = "dash_F14_5", uiText = uiText)
+      barDraagkrachtUI(id = "dash_F14_5", uiText = uiText, 
+        selectGroups = TRUE, height = "1000px")
     ),
     
     # White space at the bottom

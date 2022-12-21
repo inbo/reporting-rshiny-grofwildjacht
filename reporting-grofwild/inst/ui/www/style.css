@@ -9,9 +9,9 @@ src: url("FlandersArtSans-Regular.ttf");
   font-size: 16px;
 }
 
-.sliderBlank .irs-bar-edge, .sliderBlank .irs-bar {
-background: none;
-border: none;
+.sliderBlank .form-group .irs .irs-bar {
+  background: none;
+  border: none;
 }
 
 

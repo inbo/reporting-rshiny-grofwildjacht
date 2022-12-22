@@ -67,7 +67,7 @@ runWildApp <- function(installDependencies = FALSE,
       )
     
   # (5) Run the application
-  if (is(errorApp, "shiny.appobj"))
+  if (exists("errorApp") && is(errorApp, "shiny.appobj"))
     errorApp else 
     runApp(appDir = appDir, ...)
   

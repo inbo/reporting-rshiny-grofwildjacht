@@ -186,7 +186,7 @@ tagList(
     
     conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_5') > -1",
       barDraagkrachtUI(id = "dash_F14_5", uiText = uiText, 
-        selectGroups = TRUE, height = "1000px")
+        selectGroups = TRUE, height = "1500px")
     ),
     
     # White space at the bottom

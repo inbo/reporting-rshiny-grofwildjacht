@@ -441,7 +441,7 @@ datatableModuleUI <- function(id) {
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
-#' @inheritParams barDraagkracht
+#' @inheritParams barDraagkrachtServer
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' 
@@ -459,6 +459,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, schadeTitles = FALSE,
+    verticalGroups = NULL,
     fullNames = NULL) {
   
   subData <- reactive({
@@ -553,6 +554,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(xVar = xVar),
             if(!is.null(yVar))
               list(yVar = yVar),
+            if(!is.null(verticalGroups))
+              list(verticalGroups = verticalGroups()),
             if(!is.null(fullNames))
               list(fullNames = fullNames),
             

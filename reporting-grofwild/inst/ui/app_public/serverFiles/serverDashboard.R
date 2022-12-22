@@ -390,17 +390,21 @@ results$dash_F14_2 <- barDraagkrachtServer(id = "dash_F14_2",
 results$dash_F14_3 <- barDraagkrachtServer(id = "dash_F14_3",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_3_data.csv"))),
   groupVariable = "Question_label", yVar = "Sector",
+  groupLabel = "Impacts",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_3"]))
 )
 
 results$dash_F14_4 <- barDraagkrachtServer(id = "dash_F14_4",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
   groupVariable = "Question_label", yVar = "Groep",
+  groupLabel = "Maatregelen",
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_4"]))
 )
 
 results$dash_F14_5 <- barDraagkrachtServer(id = "dash_F14_5",
   data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv"))),
-  groupVariable = "Question_label", yVar = "Sector",
+  groupVariable = "Question_label",
+  yVar = "Sector",
+  groupLabel = "Belang in beheer", 
   title = reactive(names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_5"]))
 )

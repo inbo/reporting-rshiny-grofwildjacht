@@ -12,6 +12,8 @@
 #' @param xVar character, column in \code{plotData} for x-axis;
 #' default value is 'percentage'
 #' @param yVar character, column in \code{plotData} for y-axis
+#' @param verticalGroups boolean, whether the group labels should be printed 
+#' vertically
 #' @inheritParams barBiotoop
 #' 
 #' @return list with plotly object and data.frame
@@ -21,7 +23,8 @@
 #' @importFrom RColorBrewer brewer.pal
 #' @export 
 barDraagkracht <- function(data, groupVariable = NULL, 
-  xVar = "percentage", yVar = NULL, width = 1000, height = NULL) {
+  xVar = "percentage", yVar = NULL, verticalGroups = FALSE, 
+  width = 1000, height = NULL) {
   
   
   if (xVar == "percentage") {
@@ -90,16 +93,18 @@ barDraagkracht <- function(data, groupVariable = NULL,
             annotations = list(
               # groupVariable text
               list(x = 0, y = 1, 
-                text = if (jVar == secondGroup[1]) gsub(" ", "<br>", as.character(iVar)) else "",
+                text = if (jVar == secondGroup[1]) paste0("<b>", as.character(iVar), "</b>") else "",
                 showarrow = FALSE, font = list(size = 12),
-                textangle = -90,
-                xref = 'paper', yref = 'paper', xanchor = 'bottom', yanchor = 'top')
+                textangle = if (verticalGroups) -90 else 0, 
+                xref = 'paper', yref = 'paper',
+                xanchor = if (verticalGroups) 'bottom' else 'right', 
+                yanchor = if (verticalGroups) 'top' else 'bottom')
             ),
             # groupVariable gray bar
             shapes = list(
               type = "rect",
               x0 = 0,
-              x1 = 40,
+              x1 = 20,
               xref = "paper",
               xanchor = 0,
               xsizemode = "pixel",
@@ -112,8 +117,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
             legend = list(title = list(text = "<b>Antwoord</b>")),
             barmode = "relative",
             xaxis = list(title = "Percentage"),
-            yaxis = list(title = "", ticksuffix = "  "),
-            margin = c(200, 0, 0, 0)
+            yaxis = list(title = "", ticksuffix = "  ")
           )
         
       }
@@ -121,7 +125,9 @@ barDraagkracht <- function(data, groupVariable = NULL,
     myPlot <- do.call(subplot, c(plotList,
         shareX = TRUE,
         nrows = length(groupLevels[[1]]),
-        margin = 0.005))
+        margin = 0.01))
+    
+    myPlot$x$layout$margin <- list(b = 40, l = if (verticalGroups) 60 else 250, t = 25, r = 10)
     
     extraVars <- c("Antwoord", groupVariable)
     
@@ -185,14 +191,16 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param title reactive, plot title to be displayed
+#' @param groupLabel character, label for the grouping variable choices
 #' @inheritParams barDraagkracht
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percentage", yVar,
-  title = reactive(NULL)) {
+barDraagkrachtServer <- function(id, data, groupVariable = NULL, 
+  xVar = "percentage", yVar,
+  groupLabel = NULL, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -216,8 +224,8 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
           
           choices <- unique(data()[[groupVariable]])
           
-          selectInput(inputId = ns("groups"), label = NULL,
-            choices = choices, selected = choices, multiple = TRUE, width = "100%")
+          tags$div(class = "columns-3", checkboxGroupInput(inputId = ns("groups"), 
+              label = groupLabel, choices = choices, selected = choices, width = "100%"))
           
         })
       
@@ -255,7 +263,8 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL, xVar = "percent
         data = subData,
         groupVariable = groupVariable,
         xVar = xVar,
-        yVar = yVar
+        yVar = yVar,
+        verticalGroups = reactive(is.null(input$groups))
       )
       
       return(reactive(toReturn()))

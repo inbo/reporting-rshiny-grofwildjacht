@@ -44,9 +44,17 @@ webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewpo
 
 ## Biotoop beschrijving
 
+```{r 'biotoopPlotText', results = 'asis'}
+print(HTML(uiText[uiText$plotFunction == "barBiotoop", "dash"]))
+```
+
 ```{r 'biotoopPlot'}
 barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot %>%
   config(displayModeBar = FALSE)
+```
+
+```{r 'biotoopTableText', results = 'asis'}
+print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
 ```
 
 ```{r 'biotoopTable'}
@@ -72,12 +80,14 @@ incProgress(amount = 0.2, detail = "Populatie")
 
 if ("F16_1" %in% results$dash_showPopulatie()) {
   cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F16_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F16_1", "dash"]))
   results$dash_F16_1()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F17_1" %in% results$dash_showPopulatie()) {
   cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F17_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F17_1", "dash"]))
   tmpFile <- tempfile(fileext = ".html")
   htmlwidgets::saveWidget(results$dash_F17_1(), file = tmpFile, selfcontained = FALSE)
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
@@ -85,6 +95,7 @@ if ("F17_1" %in% results$dash_showPopulatie()) {
 
 if ("F17_4" %in% results$dash_showPopulatie()) {
   cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F17_4"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F17_4", "dash"]))
   tmpFile <- tempfile(fileext = ".html")
   htmlwidgets::saveWidget(results$dash_F17_4(), file = tmpFile, selfcontained = FALSE)
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
@@ -92,6 +103,7 @@ if ("F17_4" %in% results$dash_showPopulatie()) {
 
 if ("F18_1" %in% results$dash_showPopulatie()) {
   cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F18_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F18_1", "dash"]))
   results$dash_F18_1()$plot %>%
     config(displayModeBar = FALSE)
 }
@@ -105,18 +117,21 @@ incProgress(amount = 0.2, detail = "Jacht")
 
 if ("F04_3" %in% results$dash_showJacht()) {
   cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F04_3"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F04_3", "dash"]))
   results$dash_F04_3()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F05_1" %in% results$dash_showJacht()) {
   cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F05_1", "dash"]))
   results$dash_F05_1()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F05_2" %in% results$dash_showJacht()) {
   cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_2"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F05_2", "dash"]))
   results$dash_F05_2()$plot %>%
     config(displayModeBar = FALSE)
 }
@@ -130,6 +145,7 @@ incProgress(amount = 0.2, detail = "Schade")
 
 if ("F06_1" %in% results$dash_showSchade()) {
   cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F06_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F06_1", "dash"]))
   tmpFile <- tempfile(fileext = ".html")
   htmlwidgets::saveWidget(results$dash_F06_1(), file = tmpFile, selfcontained = FALSE)
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
@@ -137,18 +153,21 @@ if ("F06_1" %in% results$dash_showSchade()) {
 
 if ("F07_1" %in% results$dash_showSchade()) {
   cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F07_1", "dash"]))
   results$dash_F07_1()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F09_2" %in% results$dash_showSchade()) {
   cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F09_2"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F09_2", "dash"]))
   results$dash_F09_2()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F07_3" %in% results$dash_showSchade()) {
   cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_3"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F07_3", "dash"]))
   results$dash_F07_3()$plot %>%
     config(displayModeBar = FALSE)
 }
@@ -162,37 +181,52 @@ incProgress(amount = 0.2, detail = "Maatschappelijk draagvlak")
 
 if ("F12_1" %in% results$dash_showMaatschappij()) {
   cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F12_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F12_1", "dash"]))
   results$dash_F12_1()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F14_1" %in% results$dash_showMaatschappij()) {
   cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_1"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F14_1", "dash"]))
   results$dash_F14_1()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F14_2" %in% results$dash_showMaatschappij()) {
   cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_2"]), "\n\n")
+  print(HTML(uiText[uiText$plotFunction == "F14_2", "dash"]))
   results$dash_F14_2()$plot %>%
     config(displayModeBar = FALSE)
 }
 
 if ("F14_3" %in% results$dash_showMaatschappij()) {
   cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_3"]), "\n\n")
-  results$dash_F14_3()$plot %>%
+  print(HTML(uiText[uiText$plotFunction == "F14_3", "dash"]))
+  tmp <- results$dash_F14_3()$plot %>%
     config(displayModeBar = FALSE)
+  tmp$height <- "1200px"
+  tmp$width <- "900px"
+  tmp
 }
 
 if ("F14_4" %in% results$dash_showMaatschappij()) {
   cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_4"]), "\n\n")
-  results$dash_F14_4()$plot %>%
+  print(HTML(uiText[uiText$plotFunction == "F14_4", "dash"]))
+  tmp <- results$dash_F14_4()$plot %>%
     config(displayModeBar = FALSE)
+  tmp$height <- "800px"
+  tmp$width <- "900px"
+  tmp
 }
 
 if ("F14_5" %in% results$dash_showMaatschappij()) {
   cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_5"]), "\n\n")
-  results$dash_F14_5()$plot %>%
+  print(HTML(uiText[uiText$plotFunction == "F14_5", "dash"]))
+  tmp <- results$dash_F14_5()$plot %>%
     config(displayModeBar = FALSE)
+  tmp$height <- "1200px"
+  tmp$width <- "900px"
+  tmp
 }
 ```

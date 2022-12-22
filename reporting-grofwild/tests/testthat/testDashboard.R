@@ -292,7 +292,7 @@ test_that("F14_3, F14_4", {
     # Stakeholders
     subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
     myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", 
-      yVar = "Sector")
+      yVar = "Sector", verticalGroups = FALSE)
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

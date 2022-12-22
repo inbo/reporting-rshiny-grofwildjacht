@@ -131,7 +131,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
           
           choices <- c("Seizoen" = "season", "Soortnaam" = "SoortNaam")
           if (input$typeMelding == "all") 
-            choices <- c(choices, "Type schade" = "typeMelding") else if (input$typeMelding != "landbouw") 
+            choices <- c(choices[1], "Type schade" = "typeMelding") else if (input$typeMelding != "landbouw") 
             choices <- choices[1]
           
           selectInput(inputId = ns("unit"), label = "Groep per",

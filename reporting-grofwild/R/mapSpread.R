@@ -232,7 +232,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
             loadSpreadData(
               spatialLevel = req(input$spatialLevel),
-              unit = req(input$unit)
+              unit = "model_EP"
             )
             
           } else if (type == "F06") {
@@ -350,7 +350,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               position = input$legend,
               pal = pal_model, 
               values = modelColors$levels,
-              title = if (grepl("model", input$unit))
+              title = if (grepl("model", "model_EP"))
                   "Waarschijnlijkheid verspreiding" else 
                   "Risico klasse",
               opacity = if (!is.null(input$spatialLevel) && input$spatialLevel != "pixels") 0.8 else 1,
@@ -515,24 +515,24 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
           } else {
             
             fixedRow(
-              column(4, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
+              column(6, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
                   choices = c(
                     "Gemeente" = "municipalities",
                     "2x2 UTM" = "pixels"
                   ))      
               ),
-              column(4, selectInput(inputId = ns("legend"), label = "Legende",
+              column(6, selectInput(inputId = ns("legend"), label = "Legende",
                   choices = c(
                     "Bovenaan rechts" = "topright",
                     "Onderaan rechts" = "bottomright",
                     "Bovenaan links" = "topleft",
                     "Onderaan links" = "bottomleft",
                     "<geen>" = "none")) 
-              ),
-              column(4, selectInput(inputId = ns("unit"), label = "Startpopulatie",
-                  choices = c("Exacte pixels" = "model_EP") 
-#                    "Optimaal habitat" = "model_OH")
-                )
+#              ),
+#              column(4, selectInput(inputId = ns("unit"), label = "Startpopulatie",
+#                  choices = c("Exacte pixels" = "model_EP") 
+##                    "Optimaal habitat" = "model_OH")
+#                )
               )
             )
             

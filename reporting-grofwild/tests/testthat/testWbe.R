@@ -138,6 +138,28 @@ test_that("Biotoop", {
   })
 
 
+test_that("Afschot locaties", {
+    
+    afschotData <- combinedRee[, c("season", "afschotjaar", 
+        "verbatimLatitude", "verbatimLongitude", "PuntLocatieTypeID")]
+    afschotData <- afschotData[!is.na(afschotData$verbatimLatitude) & !is.na(afschotData$verbatimLongitude), ]
+    
+    projcrs <- "+init=epsg:31370"
+    df <- sf::st_as_sf(x = afschotData,                         
+      coords = c("verbatimLongitude", "verbatimLatitude"),
+      crs = projcrs) %>% sf::st_transform(4326)
+    leaflet(df) %>% addTiles()
+    
+#    coordinates(afschotData) <- ~verbatimLongitude + verbatimLatitude
+#    proj4string(afschotData) <- CRS("+init=epsg:31370")
+#    
+#    afschotData <- spTransform(afschotData, CRS("+proj=longlat +datum=WGS84"))
+#    
+#    mapSchade(schadeData = afschotData, regionLevel = NULL) %>% addTiles()
+    
+  })
+
+
 
 test_that("Summary Table", {
     

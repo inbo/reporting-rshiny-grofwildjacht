@@ -23,7 +23,7 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   yVar <- match.arg(yVar)  
   
   yLabel <- switch(yVar,
-    schadeBedrag = "Bedrag",
+    schadeBedrag = "Bedrag (x 1000 EUR)",
     count = "Aantal"
   )
   groupLabel <- if (!is.null(unit))
@@ -43,6 +43,8 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
     newNames <- unlist(sapply(names(fullNames), function(x) rep(x, length(fullNames[[x]]))))
     subData[[unit]] <- newNames[match(subData[[unit]], unlist(fullNames))]
   }
+  if (yVar == "schadeBedrag")
+    subData[, yVar] <- subData[, yVar]/1000
   
   summaryData <- count(df = subData, vars = names(subData))
   if (yVar %in% names(summaryData))

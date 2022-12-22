@@ -341,7 +341,7 @@ mapFlanders <- function(
     
     if (!is.null(jachtData)) {
       # Retain only 'aangesloten' #327
-      jachtData <- subset(jachtData, WBELID == "aangesloten")
+      jachtData <- jachtData[jachtData$WBELID == "aangesloten", ]
       jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
       jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
       jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
@@ -1213,7 +1213,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       results$biotoopPlotData <- reactive({
           
           if (!is.null(currentWbe()))
-            subset(biotoopData, year == input$year & regio %in% currentWbe()) else
+            biotoopData[biotoopData$year == input$year & biotoopData$regio %in% currentWbe(), ] else
             subset(biotoopData[[req(results$regionLevel())]], regio %in% results$region_value)
           
         })

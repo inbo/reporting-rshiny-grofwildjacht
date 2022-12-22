@@ -224,6 +224,7 @@ createWaarnemingenData <- function(
 #' @return boolean, whether file is successfully saved
 #'  
 #' @author mvarewyck
+#' @importFrom sf st_read
 #' @export
 createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
   dataDir = system.file("extdata", package = "reportingGrofwild")) {

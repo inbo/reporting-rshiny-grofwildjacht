@@ -118,7 +118,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
           
           # Type melding
           plotData <- if (!is.null(input$typeMelding) && input$typeMelding != "all")
-            subset(data(), typeMelding %in% input$typeMelding) else 
+            data()[data()$typeMelding %in% input$typeMelding, ] else 
             data()
           
           # Bron

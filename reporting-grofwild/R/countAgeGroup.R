@@ -113,6 +113,8 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
+#' @inheritParams countAgeGroup
+#'  
 #' @return no return value
 #' 
 #' @author mvarewyck

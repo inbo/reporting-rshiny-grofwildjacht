@@ -88,7 +88,7 @@ plotBioindicator <- function(data,
 	if (bioindicator == "ontweid_gewicht") {
 		
 		# remove weights < 5kg or > 25kg
-		plotData <- subset(plotData, variable >= 5 & variable <= 25)    
+		plotData <- plotData[plotData$variable >= 5 & plotData$variable <= 25, ]    
 		
 	}
 	

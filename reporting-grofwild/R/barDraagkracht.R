@@ -146,7 +146,11 @@ barDraagkracht <- function(data, groupVariable = NULL,
       layout(
         legend = list(title = list(text = "<b> Antwoord </b>"), traceorder = 'normal'),
         barmode = "relative",
-        yaxis = list(title = ""),
+        yaxis = list(
+          title = "",
+          ticktext = as.list(paste0(yLabels, "\n (n = ", totalCounts, ")")), 
+          tickvals = as.list((length(yLabels)-1):0),
+          tickmode = "array"),
         xaxis = list(title = "Percentage") 
       )
     
@@ -180,6 +184,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - server side
 #' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
+#' @param title reactive, plot title to be displayed
 #' @inheritParams barDraagkracht
 #' @return no return value
 #' 

@@ -32,7 +32,7 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
       
     } else {
       
-      plotData <- plotData[dataSource %in% sourceIndicator]
+      plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
       
     }
     

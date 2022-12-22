@@ -6,7 +6,7 @@
 
 #' Function to generate barplot for Inschatting van het risico op verkeersongelukken (F07_3)
 #' 
-#' @param plotData dataframe with columns including percentage, Vraag and Antwoord 
+#' @param data dataframe with columns including percentage, Vraag and Antwoord 
 
 #' @return list with plotly object and data.frame
 #' 
@@ -15,7 +15,7 @@
 #' @export 
 barInschatting <- function(data) {
   
-  plotData <- subset(data, Vraag != "populatie_evolutie")
+  plotData <- data[data$Vraag != "populatie_evolutie", ]
   plotData$percentage <- as.numeric(plotData$percentage)
   
   plotData$Antwoord <- factor(plotData$Antwoord , 

@@ -64,7 +64,11 @@ test_that("F16_1", {
     plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
       ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig"))
     
-    countAgeGroup(data = plotData, groupVariable = "reproductiestatus")
+    myResult <- countAgeGroup(data = plotData, groupVariable = "reproductiestatus")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })
 
@@ -116,7 +120,7 @@ test_that("F17_2", {
     
     regionLevel <- c("utm5", "communes")[1]
     
-    df <- data.table::fread(file.path(dataDir, "waarnemingen_2018.csv"))
+    df <- data.table::fread(file.path(dataDir, "waarnemingen_2022.csv"))
     df$wildsoort <- "Wild zwijn"
     
     spaceData <- createSpaceData(
@@ -185,11 +189,10 @@ test_that("F03_1", {
     # Add Vlaams Gewest
     toReport <- rbind(toReport, biotoopData$flanders)
     
-    tableBackground(data = toReport)
+    tmpDf <- tableBackground(data = toReport)
     
     expect_s3_class(tmpDf, "data.frame")
-    
-    
+        
   })
 
 
@@ -215,7 +218,7 @@ test_that("F06", {
 
 # F09_1: Meldingen schade
 
-test_that("F07_1, F09_1", "F11_1", {
+test_that("F07_1, F09_1, F11_1", {
     
     sources <- unique(schadeData@data$typeMelding)
     
@@ -237,7 +240,10 @@ test_that("F07_3, F09_3, F11_3", {
     
     inschattingData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
     
-    myResult <- barDraagkracht(data = inschattingData[Vraag != "populatie_evolutie", ], xVar = "Vraag")
+    myResult <- barDraagkracht(
+      data = inschattingData[inschattingData$Vraag != "populatie_evolutie", ], 
+      yVar = "Vraag"
+    )
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -378,6 +384,8 @@ test_that("F17_4", {
       clearGroup(group = "regionLines") %>%
       addPolylines(data = selectedPolygons, color = "gray", weight = 5,
         group = "regionLines")
+    
+    expect_s3_class(myMap, "leaflet")
     
   })
 

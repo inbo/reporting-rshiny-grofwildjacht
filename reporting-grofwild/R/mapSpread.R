@@ -5,9 +5,10 @@
 
 
 
-#' Necessary info for the color palette of \code{\link{mapCube}}
-#' @param groupNames character vector, labels to be shown in the color legend
-#' @param groupVariable character, variable for which the \code{groupNames} are defined
+#' Necessary info for the color palette of \code{\link{mapSpread}}
+#' @param variable character, data variable for which the \code{groupNames} are defined
+#' and that will be used for coloring
+#' @param groupNames character, factor levels that will be used as labels for colors
 #' @return list with colors, character vector and levels, character vector. 
 #' Each item has same length as \code{units}
 #' 
@@ -172,7 +173,7 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 
 
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - server side
-#' @inheritParams mapFlanders
+#' @inheritParams mapFlandersServer
 #' @param title reactive object, title with asterisk to show in the \code{actionLink}
 #' 
 #' @return no return value
@@ -237,6 +238,8 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           } else if (type == "F06") {
             
             dataDir <- system.file("extdata", package = "reportingGrofwild")
+            # For R CMD check
+            trafficData <- NULL
             load(file = file.path(dataDir, "trafficData.RData"))
             return(trafficData)
             
@@ -459,7 +462,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           
-          myData <- spreadShape()@data
+          myData <- shapeData()@data
           
           ## write data to exported file
           write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,
@@ -477,7 +480,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
 
 #' Shiny module for creating the plot \code{\link{mapSpread}} - UI side
 #' @template moduleUI 
-#' @inheritParams mapSpreadServer 
+#' @param showLayer boolean, whether to display option to choose layer
 #' @return UI object
 #' 
 #' @author mvarewyck

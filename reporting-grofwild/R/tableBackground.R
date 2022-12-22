@@ -8,6 +8,7 @@
 #' 
 #' @param data data.frame with row for each location of interest;
 #' columns are measured background variables
+#' @inheritParams mapFlandersServer
 #' @return data.frame
 #' 
 #' @author wverlinden

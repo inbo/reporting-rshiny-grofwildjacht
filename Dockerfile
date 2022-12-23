@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \
     libproj15 \
     libgeos-3.8.0 libgeos-c1v5  \
+    libcurl4-openssl-dev \
     curl \
     ca-certificates \
     pandoc \

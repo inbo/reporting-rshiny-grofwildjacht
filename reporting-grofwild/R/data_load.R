@@ -445,7 +445,7 @@ loadMetaEco <- function(species = NA) {
 #' @export
 loadMetaSchade <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
   
-  rawData <- read.csv(file = file.path(dataDir, "meta_schade.csv"))
+  rawData <- read.csv(file = file.path(dataDir, "meta_schade.csv"), sep = ";")
   
   # Specify currently used wildsoorten
   wildsoorten <- rawData[rawData$variable == "wildsoort", c("group", "name")]

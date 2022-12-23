@@ -9,7 +9,7 @@ everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 # Combine waarnemingen.be & afschot
-everWaarnemingen <- fread(file = file.path(dataDir, "waarnemingen_2022.csv"), drop = 1)[, 
+everWaarnemingen <- data.table::fread(file = file.path(dataDir, "waarnemingen_2022.csv"), drop = 1)[, 
   c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
 #rename variables to keep
 data.table::setnames(everWaarnemingen, 

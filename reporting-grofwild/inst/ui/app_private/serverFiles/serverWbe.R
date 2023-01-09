@@ -5,18 +5,27 @@
 
 
 
+# ------------------ #
+# Filter data on KBO #
+# ------------------ #
+
+
 results$wbe_currentKbo <- reactive({
     
     if (length(currentKbo) > 1)
-      input$wbe_kboChoice else
+      req(input$wbe_kboChoice) else
       currentKbo
     
   })
 
 results$wbe_geoDataKbo <- reactive({
     
-    subset(geoData, KboNummer_Toek %in% results$wbe_currentKbo())
-    
+    if (results$wbe_currentKbo() %in% geoData$KboNummer_Toek)
+      subset(geoData, KboNummer_Toek %in% results$wbe_currentKbo()) else 
+      # when no afschot data, still show map & biotoop
+      createEmptyGeo(geoData[1, ], years = 2014:max(geoData$afschotjaar),
+        kbo = results$wbe_currentKbo())
+  
   })
 
 results$wbe_currentPartij <- reactive({
@@ -26,6 +35,11 @@ results$wbe_currentPartij <- reactive({
     
   })
 
+results$wbe_schadeData <- reactive({
+    
+    schadeData[schadeData$KboNummer %in% results$wbe_currentKbo(), ]
+    
+  })
 
 
 ## Disable species without data
@@ -35,17 +49,20 @@ observe({
     req(input$wbe_species)
     speciesChoices <- c("Wild zwijn", "Ree", "Damhert", "Edelhert")
     
+    isPresent <- sapply(speciesChoices, function(iSpecies) 
+        iSpecies %in% results$wbe_geoDataKbo()$wildsoort | 
+          iSpecies %in% results$wbe_schadeData()@data$wildsoort,
+      simplify  = FALSE)
+    
     for (iSpecies in speciesChoices) {
-      
-      subData <- subset(results$wbe_geoDataKbo(), wildsoort == iSpecies)
       
       jsSelector <- sprintf('[type=radio][name=wbe_species][value="%s"]', iSpecies)
       
-      if (nrow(subData) == 0) {
+      if (!isPresent[[iSpecies]]) {
         
         if (input$wbe_species == iSpecies)
           updateRadioButtons(session = session, inputId = "wbe_species",
-            selected = speciesChoices[which(iSpecies == speciesChoices) + 1])
+            selected = names(isPresent)[unlist(isPresent)][1])
         
         shinyjs::disable(selector = jsSelector)
         shinyjs::runjs(paste0("$('", jsSelector, "').parent().addClass('disabled').css('opacity', 0.4)"))
@@ -61,17 +78,64 @@ observe({
 output$wbe_title <- renderUI({
     
     h1("Welkom op de wildbeheereenheid pagina voor",
-      paste(unique(results$wbe_geoData()$WBE_Naam_Toek), collapse = ","))
+      paste(unique(results$wbe_geoDataKbo()$WBE_Naam_Toek), collapse = ","))
     
   })
 
 
+# Message when no data available for 
+output$wbe_empty <- renderUI({
+    
+    errorMessage <- NULL
+    
+    if (!results$wbe_currentKbo() %in% geoData$KboNummer_Toek)
+      errorMessage <- tags$p("Momenteel zijn er voor deze WBE geen afschotgegevens van de grofwildsoorten beschikbaar.", 
+        "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. afschot.", 
+        "Indien dit niet klopt, kijkt u best eerst na of de gegevens juist in het e-loket van ANB zitten.", 
+        "Zijn uw gegevens juist ingevoerd en ingediend dan laat u best iets weten op", 
+        tags$a(id = "wbe_contact", href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")) 
+    
+    if (!results$wbe_currentKbo() %in% schadeData@data$KboNummer)
+      errorMessage <- tags$p(errorMessage, 
+        "Momenteel zijn er voor deze WBE geen schadegegevens van de grofwildsoorten beschikbaar.", 
+        "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. schademeldingen.",
+        "Indien u denkt dat dit niet klopt, raden wij u aan gebruik te maken van het", 
+        tags$a(href = "https://natuurenbos.vlaanderen.be/e-loketten", target = "_blank", "e-loket"), 
+        "van ANB, de Wilderapp (", 
+        tags$a(href = "https://apps.apple.com/be/app/wilder/id1478282738", target = "_blank", "ios"), 
+        "of", 
+        tags$a(href = "https://play.google.com/store/apps/details?id=com.wilderpg.wilder&hl=en&gl=US&pli=1", target = "_blank", "android"), 
+        ") van HVV of", 
+        tags$a(href = "https://waarnemingen.be/", target = "_blank", "waarnemingen.be"),
+        "van Natuurpunt. Bent u zeker dat er toch gegevens bij één van de partners ingevoerd werden, dan laat u best iets weten op",
+        tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")
+      )
+    
+    tags$em(errorMessage)
+    
+  })
 
-## Filter Data ##
+
+output$wbe_emptyAfschot <- reactive({
+    !results$wbe_currentKbo() %in% geoData$KboNummer_Toek
+  })
+outputOptions(output, "wbe_emptyAfschot", suspendWhenHidden = FALSE)
+
+output$wbe_emptySchade <- reactive({
+    !results$wbe_currentKbo() %in% schadeData@data$KboNummer
+  })
+outputOptions(output, "wbe_emptySchade", suspendWhenHidden = FALSE)
+
+
+
+
+# ---------------------- #
+# Filter data on species #
+# ---------------------- #
 
 results$wbe_geoData <- reactive({
     
-    subset(geoData, wildsoort == req(input$wbe_species) & 
+    subset(results$wbe_geoDataKbo(), wildsoort == req(input$wbe_species) & 
         KboNummer_Toek %in% results$wbe_currentKbo())
     
   })
@@ -89,21 +153,9 @@ results$wbe_combinedData <- reactive({
     
   })
 
-results$wbe_schadeData <- reactive({
-    
-    schadeData[schadeData$KboNummer %in% results$wbe_currentKbo(), ]
-  
-  })
-
 results$wbe_toekenningsData <- reactive({
     
     toekenningsData[toekenningsData$KboNummer_Toek %in% results$wbe_currentKbo(), ]
-    
-  })
-
-results$wbe_schadeData <- reactive({
-    
-    schadeData[schadeData$KboNummer %in% results$wbe_currentKbo(), ]
     
   })
 
@@ -169,9 +221,8 @@ trendYearRegionServer(id = "wbe",
   allSpatialData = spatialData,
   biotoopData = biotoopData,
   geoData = results$wbe_geoData, 
-  regionLevel = reactive("WBE_buitengrenzen"),
-  locaties = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
-        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))
+  type = "wbe", 
+  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek))
 )
 
 ## User input for controlling the plots and create plotly
@@ -202,7 +253,10 @@ countYearShotServer(id = "wbe_jachtmethode",
 mapSchadeServer(id = "wbe",
   schadeData = results$wbe_schadeData, 
   allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())), 
-  timeRange = reactive(c(max(2018, results$wbe_timeRange()[1]), results$wbe_timeRange()[2])), 
+  timeRange = reactive({
+      schadeRange <- range(results$wbe_schadeData()@data$afschotjaar)
+      c(max(2018, schadeRange[1]), schadeRange[2])
+    }), 
   defaultYear = defaultYear, 
   species = reactive(input$wbe_species),
   borderRegion = "WBE_buitengrenzen"

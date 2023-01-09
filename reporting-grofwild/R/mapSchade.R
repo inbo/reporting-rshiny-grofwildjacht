@@ -275,7 +275,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       output$time_schade <- renderUI({
           
           sliderInput(inputId = ns("time_schade"), label = "Periode", 
-            value = c(timeRange()[1], defaultYear),
+            value = c(timeRange()[1], min(timeRange()[2], defaultYear)),
             min = timeRange()[1],
             max = timeRange()[2],
             step = 1,

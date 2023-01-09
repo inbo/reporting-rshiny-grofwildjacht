@@ -117,12 +117,12 @@ output$wbe_empty <- renderUI({
 
 
 output$wbe_emptyAfschot <- reactive({
-    !results$wbe_currentKbo() %in% geoData$KboNummer_Toek
+    !input$wbe_species %in% results$wbe_geoDataKbo()$wildsoort
   })
 outputOptions(output, "wbe_emptyAfschot", suspendWhenHidden = FALSE)
 
 output$wbe_emptySchade <- reactive({
-    !results$wbe_currentKbo() %in% schadeData@data$KboNummer
+    !input$wbe_species %in% results$wbe_schadeData()@data$wildsoort
   })
 outputOptions(output, "wbe_emptySchade", suspendWhenHidden = FALSE)
 

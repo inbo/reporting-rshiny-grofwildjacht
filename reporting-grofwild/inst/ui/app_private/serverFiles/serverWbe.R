@@ -219,7 +219,7 @@ mapFlandersServer(id = "wbe",
 trendYearRegionServer(id = "wbe",
   species = reactive(input$wbe_species),
   allSpatialData = spatialData,
-  biotoopData = biotoopData,
+  biotoopData = reactive(biotoopData),
   geoData = results$wbe_geoData, 
   locaties = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
         match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))

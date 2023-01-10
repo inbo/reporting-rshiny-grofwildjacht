@@ -25,7 +25,7 @@ test_that("F05_1", {
     trendData <- createTrendData(
       data = ecoData,
       allSpatialData = spatialData,
-      biotoopData = biotoopData,
+      biotoopData = biotoopData$provinces,
       timeRange = c(2014, 2019),
       species = "Wild zwijn",
       regionLevel = "provinces",

@@ -332,7 +332,7 @@ results$dash_F05_1 <- trendYearRegionServer(id = "dash",
     }),
   geoData = reactive(everGeoData),
   allSpatialData = spatialData,
-  biotoopData = biotoopData,
+  biotoopData = reactive(biotoopData[[req(input$dash_regionLevel)]]),
   title = reactive(names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_1"]))
 )
 

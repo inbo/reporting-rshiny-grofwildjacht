@@ -76,9 +76,12 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
           matchLocaties$PartijNummer else unique(spatialData$NAAM)))
   
   if (unit == "relativeDekking") {
+    if ("year" %in% colnames(biotoopData))
     # add dekkingsgraad 100ha bos&natuur      
     fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos", "year")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year"))
+      by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year")) else
+    fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos")],
+      by.x = "locatie", by.y = "regio")
     names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
   } else {
     # add Area
@@ -260,7 +263,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
 #' @export
 trendYearRegionServer <- function(id, data, timeRange = reactive(NULL), 
   species, regionLevel = reactive("WBE_buitengrenzen"), locaties,
-  geoData, allSpatialData, biotoopData = NULL, title = reactive(NULL),
+  geoData, allSpatialData, biotoopData = reactive(NULL), title = reactive(NULL),
   type = "wbe") {
   
   type <- match.arg(type)
@@ -306,7 +309,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
           createTrendData(
             data = geoData(),
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData,
+            biotoopData = biotoopData(),
             timeRange = req(input$trendPeriod),
             species = req(species()),
             regionLevel = regionLevel(),
@@ -355,7 +358,9 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
 #' @export
 trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI", 
   showCombinatie = FALSE, doHide = TRUE,
-  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative")) {
+  unitChoices = c("Aantal" = "absolute", 
+    "Aantal/100ha" = "relative", 
+    "Aantal/100ha bos & natuur" = "relativeDekking")) {
   
   ns <- NS(id)
   

@@ -115,6 +115,24 @@ output$dash_region <- renderUI({
     
   })
 
+
+output$dash_regionWarning <- renderUI({
+    
+    if (req(input$dash_regionLevel) != "flanders")
+      validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
+      
+  })
+
+
+observe({
+    
+    req(input$dash_regionLevel)
+    shinyjs::toggle(id = "dash_results", 
+      condition = input$dash_regionLevel == "flanders" || !is.null(input$dash_locaties)) 
+       
+  })
+
+
 results$dash_ecoData <- reactive({
     
     if (input$dash_regionLevel != "flanders") {
@@ -205,7 +223,7 @@ results$dash_finalMap <- mapFlandersServer(id = "dash_background",
   species = results$dash_species,
   type = "empty",
   regionLevel = reactive(req(input$dash_regionLevel)),
-  locaties = reactive(input$dash_locaties),
+  locaties = reactive(if(req(input$dash_regionLevel) == "flanders") "flanders" else input$dash_locaties),
   geoData = reactive(everGeoData),
   biotoopData = biotoopData,
   allSpatialData = spatialData,

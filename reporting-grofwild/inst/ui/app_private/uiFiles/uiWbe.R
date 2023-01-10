@@ -57,6 +57,7 @@ tagList(
   conditionalPanel("output.wbe_emptyAfschot == false",
     
     trendYearRegionUI(id = "wbe", 
+      uiText = uiText,
       unitChoices = c("Aantal" = "absolute", 
         "Aantal/100ha" = "relative", 
         "Aantal/100ha bos & natuur" = "relativeDekking")

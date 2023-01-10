@@ -62,15 +62,16 @@ barBiotoop <- function(data, jaar = NULL,
     "Totale oppervlakte (ha)", "Totale oppervlakte (km2)")
   
   # More than 9 regions -> total
-  warningText <- NULL
   selectedRegions <- unique(plotData$regio)
+  colorList <- replicateColors(nColors = length(selectedRegions))
+  warningText <- colorList$warning
+  colors <- colorList$colors
   if (length(selectedRegions) > 9) {
     plotData <- totalRegions
     plotData$regio <- "Totaal"
     selectedRegions <- "Totaal"
-    warningText <- "Door het grote aantal gekozen regio's wordt het gemiddelde percentage weergegeven. Selecteer minder regio's om individuele percentages te bekomen." 
+    colors <- colors[1]
   }
-  colors <- replicateColors(nColors = length(selectedRegions))$colors
   names(colors) <- selectedRegions
   
   # Create plot

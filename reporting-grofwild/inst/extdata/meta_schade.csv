@@ -1,4 +1,4 @@
-﻿variable;group;group_display;name;name_display
+variable;group;group_display;name;name_display
 wildsoort;Grof wild;;Wild zwijn;
 wildsoort;Grof wild;;Edelhert;
 wildsoort;Grof wild;;Ree;
@@ -17,7 +17,7 @@ wildsoort;Overig;;Vos;
 wildsoort;Overig;;Verwilderde kat;
 type;GEWAS;Gewas;WLSCHD;Woelschade
 type;GEWAS;Gewas;VRTSCHD;Vraatschade
-type;GEWAS;Gewas;GEWASANDR;Gewas â€“ andere
+type;GEWAS;Gewas;GEWASANDR;Gewas - andere
 type;GEWAS;Gewas;VGSCHD;Veegschade
 type;GEWAS;Gewas;GRFSCHD;Graafschade
 type;VRTG;Voertuig;GNPERSLTSL;Verkeersongeluk zonder letsel
@@ -52,14 +52,14 @@ SoortNaam;Grasland;;Gele mosterd;
 SoortNaam;Grasland;;Tuin ;
 SoortNaam;Groenten;;Groenten;
 SoortNaam;Mais;;Silomais;
-SoortNaam;Mais;;MaÃ¯s;
+SoortNaam;Mais;;Maïs;
 SoortNaam;Voedergewas;;Andere voedergewassen;
 SoortNaam;Voedergewas;;Voedergewas;
 SoortNaam;Groenten;;Brocolli;
 SoortNaam;Fruitbomen;;Meerjarige fruitteelten (peer);
 SoortNaam;Groenten;;Spruitkolen;
 SoortNaam;Graangewassen;;Wintergerst;
-SoortNaam;Groenten;;Kropsla â€“ vers;
+SoortNaam;Groenten;;Kropsla - vers;
 SoortNaam;Groenten;;Bloemkool;
 SoortNaam;Ander;;Vezelvlas (bestemd voor vezelproductie);
 SoortNaam;Graangewassen;;Zomertarwe;

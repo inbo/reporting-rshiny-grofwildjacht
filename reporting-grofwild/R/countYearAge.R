@@ -232,7 +232,8 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   
   tagList(
     
-    actionLink(inputId = ns("linkYearAge"), label = uiText$title, class = "action-h3"),
+    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(uiText$title)),
+      class = "action-h3"),
     conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(

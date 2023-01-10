@@ -21,7 +21,8 @@ tagList(
             ),
             selected = "provinces")
         ),
-        column(8, uiOutput("dash_region")))   
+        column(8, uiOutput("dash_region"))),
+      uiOutput("dash_regionWarning")
     ),
     
     welcomeSection(id = "dash", uiText = uiText),
@@ -63,6 +64,8 @@ tagList(
     downloadLink("dash_downloadReport", " "),
     
     tags$hr(),
+    
+    tags$div(id = "dash_results", 
     
     # Achtergrond
     tags$h2(toupper("Achtergrondinformatie")),
@@ -192,5 +195,6 @@ tagList(
     # White space at the bottom
     tags$br()
   
+  )
   )
 )

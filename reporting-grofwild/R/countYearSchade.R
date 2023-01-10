@@ -18,7 +18,7 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
-#' @importFrom RColorBrewer brewer.pal
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
@@ -46,6 +46,13 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
       c("afschotjaar", type)]
   names(plotData) <- c("jaar", "variabele")
+  
+  # Replace by group names
+  if (type == "SoortNaam") {
+    fullNames <- loadMetaSchade()$gewassen
+    newNames <- unlist(sapply(names(fullNames), function(x) rep(x, length(fullNames[[x]]))))
+    plotData$variabele <- newNames[match(plotData$variabele, unlist(fullNames))]
+  }
   
   # Percentage collected
   nRecords <- nrow(plotData)
@@ -100,12 +107,12 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   }
   
   # Max. 40 colors
-  paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
-  colors <- unlist(sapply(paletteNames, function(x)
-            suppressWarnings(brewer.pal(n = 12, name = x))))[1:length(unique(summaryData$variabele))]
-  names(colors) <- unique(summaryData$variabele)
-  if ("onbekend" %in% tolower(unique(summaryData$variabele)))
-    colors[tolower(names(colors)) == "onbekend"] <- "gray"
+  colorNames <- unique(summaryData$variabele)
+  colorList <- replicateColors(nColors = length(colorNames))
+  colors <- colorList$colors
+  names(colors) <- colorNames
+  if ("onbekend" %in% tolower(colorNames))
+    colors[tolower(names(colors)) == "onbekend"] <- inbo_lichtgrijs
   
   title <- paste0(typeNaam, " ",
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
@@ -159,5 +166,5 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   toPlot$elementId <- NULL
   
   
-  return(list(plot = toPlot, data = summaryDataFinal))
+  return(list(plot = toPlot, data = summaryDataFinal, warning = colorList$warning))
 }

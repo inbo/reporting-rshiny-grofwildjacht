@@ -238,9 +238,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
   names(plotData)[names(plotData) == "freq"] <- paste0("aantal", unitName)
   
   
-  return(list(plot = pl, data = plotData, warning = if (!is.null(colorList$warning))
-        "Door het grote aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
-          Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."))
+  return(list(plot = pl, data = plotData, warning = colorList$warning))
   
 }
 

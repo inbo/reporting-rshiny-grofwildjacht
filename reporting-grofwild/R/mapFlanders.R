@@ -1399,26 +1399,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     
     
        
-    if (type == "wbe") {
-        tags$div(style = "margin-top:20px;",
-          uiOutput(ns("timeTitle")),
-          fixedRow(
-            column(4,
-              wellPanel(
-                uiOutput(ns("period")),
-                selectInput(inputId = ns("unit"), label = "Eenheid",
-                  choices = unitChoices),
-                optionsModuleUI(id = ns("timePlot"), exportData = TRUE,
-                  doWellPanel = FALSE)
-              ) 
-            ),
-            column(8, 
-              plotModuleUI(id = ns("timePlot"), height = "400px")
-            )
-          )
-        )
-        
-      } else {
+    if (type != "wbe") {
         
         fixedRow(
           if ("flanders" %in% plotDetails) 

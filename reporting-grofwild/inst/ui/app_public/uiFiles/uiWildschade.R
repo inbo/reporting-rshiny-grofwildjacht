@@ -62,8 +62,11 @@ tagList(
                 
                 # Select gewas & voertuig
                 column(4, uiOutput("schade_subcode"))
-            )
+            ),
+            uiOutput("schade_warning")
         ),
+        
+        tags$div(id = "schade_results", 
         
         h2("Schademeldingen"),
         
@@ -232,5 +235,6 @@ tagList(
         tags$hr()
     )
 
+    )
 
 )

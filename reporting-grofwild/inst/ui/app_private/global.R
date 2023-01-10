@@ -116,7 +116,7 @@ toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKb
 gc()
 
 if (!doDebug | !exists("uiText")) {
-  uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wbe")]
+  uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")[, c("plotFunction", "title", "wbe")]
   uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
   uiCheck <- uiFunctions[!startsWith(uiFunctions, "F")]
   if (!all(uiCheck %in% ls("package:reportingGrofwild")))

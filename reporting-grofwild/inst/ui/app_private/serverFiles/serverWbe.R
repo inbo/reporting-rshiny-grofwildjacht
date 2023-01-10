@@ -221,8 +221,8 @@ trendYearRegionServer(id = "wbe",
   allSpatialData = spatialData,
   biotoopData = biotoopData,
   geoData = results$wbe_geoData, 
-  type = "wbe", 
-  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek))
+  locaties = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
+        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))
 )
 
 ## User input for controlling the plots and create plotly

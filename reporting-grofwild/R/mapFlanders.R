@@ -601,7 +601,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           filterSpatial(
             allSpatialData = allSpatialData, 
-            species = req(!is.null(species())), 
+            species = if (!is.null(species())) species(), 
             regionLevel = results$regionLevel(), 
             year = req(input$year),
             locaties = if (!is.null(currentWbe())) currentWbe()

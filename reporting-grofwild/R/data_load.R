@@ -323,6 +323,10 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
           
         } else { 
           
+          # Special case
+          if (iRegion == "provinces")
+            iRegion <- "provincesVoeren"
+          
           tmpData <- read.csv(file = allFiles)
           if ("NISCODE" %in% colnames(tmpData)) {
             colnames(tmpData)[colnames(tmpData) == "NISCODE"] <- "regio"
@@ -358,11 +362,15 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
       )
       if (is.null(iData))
         return(habitatData[[iLevel]])
+      # Special case
+      if (iLevel == "provinces")
+        iData <- rbind(iData, 
+          densiteitData[densiteitData$Niveau == "Gemeente" & densiteitData$NAAM == "Voeren", ])
       
       iData$Niveau <- NULL
       colnames(iData) <- paste0("weg_", colnames(iData))
       
-      merge(habitatData[[iLevel]], iData, by.x = "regio", by.y = "weg_NAAM")
+      merge(habitatData[[iLevel]], iData, by.x = "regio", by.y = "weg_NAAM", all.x = TRUE)
     
     }, simplify = FALSE)
   

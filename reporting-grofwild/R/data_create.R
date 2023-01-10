@@ -111,6 +111,7 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
   limburgData <- spatialData$provinces@data[isLimburgProvince, ]
   voerenData <- limburgData
   voerenData$NAAM <- "Voeren"
+  voerenData$NISCODE <- spatialData$communes@data$NISCODE[spatialData$communes@data$NAAM == "Voeren"]
   
   # Bind all province polygons and data
   allPolygons <- spRbind(spatialData$provinces[!isLimburgProvince, ],

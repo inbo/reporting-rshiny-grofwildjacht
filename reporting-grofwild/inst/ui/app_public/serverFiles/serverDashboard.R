@@ -250,7 +250,7 @@ results$dash_popTitles <- reactive({
 results$dash_F16_1 <- countAgeGroupServer(
   id = "dash_F16_1",
   data = reactive({
-      plotData <- everEcoData[everEcoData$geslacht_comp == "Vrouwelijk", ]
+      plotData <- results$dash_ecoData()[results$dash_ecoData()$geslacht_comp == "Vrouwelijk", ]
       plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
         ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig"))
       plotData

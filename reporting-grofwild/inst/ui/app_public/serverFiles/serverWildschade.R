@@ -34,8 +34,7 @@ output$schade_subcode <- renderUI({
   
   output$schade_warning <- renderUI({
       
-      if (req(input$dash_regionLevel) != "flanders")
-        validate(need(input$schade_species, "Gelieve wildsoort(en) te selecteren"),
+      validate(need(input$schade_species, "Gelieve wildsoort(en) te selecteren"),
           need(input$schade_code, "Gelieve type(s) schade te selecteren"))
       
     })

@@ -224,7 +224,7 @@ test_that("F07_1, F09_1, F11_1", {
     
     myResult <- barCost(
       data = subset(schadeData@data, typeMelding %in% sources[4]), 
-      yVar = "schadeBedrag",
+      yVar = "count",
       unit = "season" # c("SoortNaam", "season")[1]
     )
     

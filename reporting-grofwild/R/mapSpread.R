@@ -231,7 +231,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           if (type == "F17_4") {
             
             loadSpreadData(
-              spatialLevel = req(input$spatialLevel),
+              spatialLevel = req(input$regionLevel),
               unit = "model_EP"
             )
             
@@ -353,7 +353,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               title = if (grepl("model", "model_EP"))
                   "Waarschijnlijkheid verspreiding" else 
                   "Risico klasse",
-              opacity = if (!is.null(input$spatialLevel) && input$spatialLevel != "pixels") 0.8 else 1,
+              opacity = if (!is.null(input$regionLevel) && input$regionLevel != "pixels") 0.8 else 1,
               na.label = "",
               layerId = "legend")
             
@@ -470,7 +470,17 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
-      return(reactive(finalMap()))
+        
+    return(reactive({
+          # Update when any of these change
+          finalMap()
+          input
+          # Return the static values
+          c(
+            list(plot = isolate(finalMap())),
+            isolate(reactiveValuesToList(input))
+          )
+        }))
       
     })
   
@@ -515,7 +525,7 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
           } else {
             
             fixedRow(
-              column(6, selectInput(inputId = ns("spatialLevel"), label = "Regio-schaal",
+              column(6, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                   choices = c(
                     "Gemeente" = "municipalities",
                     "2x2 UTM" = "pixels"

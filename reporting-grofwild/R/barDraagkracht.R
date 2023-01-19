@@ -267,7 +267,10 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL,
         verticalGroups = reactive(is.null(input$groups))
       )
       
-      return(reactive(toReturn()))
+      return(reactive(c(
+            toReturn(),
+            isolate(reactiveValuesToList(input))
+          )))
       
     })
   

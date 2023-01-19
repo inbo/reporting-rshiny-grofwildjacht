@@ -339,8 +339,11 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
         isSchade = (type == "wildschade")
       )
       
-      return(reactive(toReturn()))
-      
+      return(reactive(c(
+            toReturn(),
+            isolate(reactiveValuesToList(input))
+          )))
+            
     })
   
 }

@@ -118,7 +118,7 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
   # Rename columns
   colnames(toReturn)[1:3] <- c("Categorie", "Afschot", "Afschot relatief")
   
-  return(toReturn)
+  return(list(data = toReturn))
   
 }
 

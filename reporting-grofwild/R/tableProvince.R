@@ -262,7 +262,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	names(toReturn)[names(toReturn) == "provincie"] <- "Provincie"
 	
 	
-	return(toReturn)
+	return(list(data = toReturn))
 	
 }
 

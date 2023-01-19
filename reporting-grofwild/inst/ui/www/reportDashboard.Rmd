@@ -1,14 +1,16 @@
 ---
 title: "Rapport Dashboard Wilde Zwijnen"
-subtitle: "`r paste0('Dashboard v', packageVersion('reportingGrofwild'))`"
-date: "`r format(Sys.Date(), '%B %d, %Y')`"
+subtitle: "`r paste0(getRegionLevel(input$dash_regionLevel), ': ', toString(input$dash_locaties))`"
+author: "`r paste0('Dashboard v', packageVersion('reportingGrofwild'))`"
+date: "`r format(Sys.Date(), '%d-%m-%Y')`"
+toc-title: "Inhoudsopgave"
 output: 
    oaStyle::pdf_report:
       keep_tex: true
       logo: NULL
       bigLogoSize: 15cm
       always_allow_html: yes
-      latex_engine: pdflatex
+      latex_engine: pdflatex 
 ---
 
 ```{r knitr, echo = FALSE, results = 'hide', warning = FALSE}
@@ -26,11 +28,7 @@ knitr::opts_chunk$set(
 
 # ACHTERGRONDINFORMATIE
 
-* Regio-schaal: `r switch(input$dash_regionLevel, 
-  "flanders" = "Vlaanderen",
-  "provinces" = "Provincie", 
-  "faunabeheerzones" = "Faunabeheerzones",
-  "communes" = "Gemeente")`
+* Regio-schaal: `r getRegionLevel(input$dash_regionLevel)`
 * Regio('s): `r toString(input$dash_locaties)`
 
 
@@ -38,7 +36,7 @@ knitr::opts_chunk$set(
 incProgress(amount = 0.1, detail = "Achtergrondinformatie")
 
 tmpFile <- tempfile(fileext = ".html")
-htmlwidgets::saveWidget(results$dash_finalMap(), file = tmpFile, selfcontained = FALSE)
+htmlwidgets::saveWidget(results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
 webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 ```
 
@@ -60,7 +58,7 @@ print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
 ```{r 'biotoopTable'}
 myTable <- tableBackground(data = rbind(
     subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
-    biotoopData$flanders))
+    biotoopData$flanders))$data
 DT::datatable(myTable, rownames = FALSE,
     options = list(dom = 't', pageLength = -1)) %>%
   DT::formatStyle(
@@ -74,159 +72,56 @@ Voor indicatoren met (*) zijn slechts gedeeltelijke gegevens
 beschikbaar op het gekozen niveau.
 
 ```{r popSection, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
+cat("\\newpage")
 cat("#", toupper("Populatie"), "\n\n")
 
 incProgress(amount = 0.2, detail = "Populatie")
 
-if ("F16_1" %in% results$dash_showPopulatie()) {
-  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F16_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F16_1", "dash"]))
-  results$dash_F16_1()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F17_1" %in% results$dash_showPopulatie()) {
-  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F17_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F17_1", "dash"]))
-  tmpFile <- tempfile(fileext = ".html")
-  htmlwidgets::saveWidget(results$dash_F17_1(), file = tmpFile, selfcontained = FALSE)
-  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
-}
-
-if ("F17_4" %in% results$dash_showPopulatie()) {
-  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F17_4"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F17_4", "dash"]))
-  tmpFile <- tempfile(fileext = ".html")
-  htmlwidgets::saveWidget(results$dash_F17_4(), file = tmpFile, selfcontained = FALSE)
-  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
-}
-
-if ("F18_1" %in% results$dash_showPopulatie()) {
-  cat("##", names(results$dash_popTitles()[results$dash_popTitles() == "F18_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F18_1", "dash"]))
-  results$dash_F18_1()$plot %>%
-    config(displayModeBar = FALSE)
-}
+section <- "Populatie"
+childOutput <- lapply(results$dash_showPopulatie(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
 ```
 
 
 ```{r jachtSection, eval = !is.null(results$dash_showJacht()), results = "asis"}
+cat("\\newpage")
 cat("#", toupper("Jacht"), "\n\n")
 
 incProgress(amount = 0.2, detail = "Jacht")
 
-if ("F04_3" %in% results$dash_showJacht()) {
-  cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F04_3"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F04_3", "dash"]))
-  results$dash_F04_3()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F05_1" %in% results$dash_showJacht()) {
-  cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F05_1", "dash"]))
-  results$dash_F05_1()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F05_2" %in% results$dash_showJacht()) {
-  cat("##", names(results$dash_jachtTitles()[results$dash_jachtTitles() == "F05_2"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F05_2", "dash"]))
-  results$dash_F05_2()$plot %>%
-    config(displayModeBar = FALSE)
-}
+section <- "Jacht"
+childOutput <- lapply(results$dash_showJacht(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
 ```
 
 
 ```{r schadeSection, eval = !is.null(results$dash_showSchade()), results = "asis"}
+cat("\\newpage")
 cat("#", toupper("Schade"), "\n\n")
 
 incProgress(amount = 0.2, detail = "Schade")
 
-if ("F06_1" %in% results$dash_showSchade()) {
-  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F06_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F06_1", "dash"]))
-  tmpFile <- tempfile(fileext = ".html")
-  htmlwidgets::saveWidget(results$dash_F06_1(), file = tmpFile, selfcontained = FALSE)
-  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
-}
-
-if ("F07_1" %in% results$dash_showSchade()) {
-  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F07_1", "dash"]))
-  results$dash_F07_1()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F09_2" %in% results$dash_showSchade()) {
-  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F09_2"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F09_2", "dash"]))
-  results$dash_F09_2()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F07_3" %in% results$dash_showSchade()) {
-  cat("##", names(results$dash_schadeTitles()[results$dash_schadeTitles() == "F07_3"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F07_3", "dash"]))
-  results$dash_F07_3()$plot %>%
-    config(displayModeBar = FALSE)
-}
+section <- "Schade"
+childOutput <- lapply(results$dash_showSchade(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
 ```
 
 
 ```{r maatschappijSection, eval = !is.null(results$dash_showMaatschappij()), results = "asis"}
+cat("\\newpage")
 cat("#", toupper("Maatschappelijk draagvlak"), "\n\n")
 
 incProgress(amount = 0.2, detail = "Maatschappelijk draagvlak")
 
-if ("F12_1" %in% results$dash_showMaatschappij()) {
-  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F12_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F12_1", "dash"]))
-  results$dash_F12_1()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F14_1" %in% results$dash_showMaatschappij()) {
-  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_1"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F14_1", "dash"]))
-  results$dash_F14_1()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F14_2" %in% results$dash_showMaatschappij()) {
-  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_2"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F14_2", "dash"]))
-  results$dash_F14_2()$plot %>%
-    config(displayModeBar = FALSE)
-}
-
-if ("F14_3" %in% results$dash_showMaatschappij()) {
-  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_3"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F14_3", "dash"]))
-  tmp <- results$dash_F14_3()$plot %>%
-    config(displayModeBar = FALSE)
-  tmp$height <- "1200px"
-  tmp$width <- "900px"
-  tmp
-}
-
-if ("F14_4" %in% results$dash_showMaatschappij()) {
-  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_4"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F14_4", "dash"]))
-  tmp <- results$dash_F14_4()$plot %>%
-    config(displayModeBar = FALSE)
-  tmp$height <- "800px"
-  tmp$width <- "900px"
-  tmp
-}
-
-if ("F14_5" %in% results$dash_showMaatschappij()) {
-  cat("##", names(results$dash_maatschappijTitles()[results$dash_maatschappijTitles() == "F14_5"]), "\n\n")
-  print(HTML(uiText[uiText$plotFunction == "F14_5", "dash"]))
-  tmp <- results$dash_F14_5()$plot %>%
-    config(displayModeBar = FALSE)
-  tmp$height <- "1200px"
-  tmp$width <- "900px"
-  tmp
-}
+section <- "Maatschappij"
+childOutput <- lapply(results$dash_showMaatschappij(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
 ```

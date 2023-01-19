@@ -31,19 +31,19 @@ tagList(
       column(4,
         dashboardChoices(id = "dash_populatie", 
           choices = populatieChoices,
-#          selected = if (doDebug) c("F16_1", "F17_4"),
+          selected = if (doDebug) populatieChoices,
           uiText = uiText
         ),
         dashboardChoices(id = "dash_jacht",
           choices = jachtChoices,
-#          selected = if (doDebug) c("F05_1", "F05_2"),
+          selected = if (doDebug) jachtChoices,
           uiText = uiText
         )
       ),
       column(4,
         dashboardChoices(id = "dash_schade",
           choices = schadeChoices, uiText = uiText,
-          selected = if (doDebug) c("F07_3")
+          selected = if (doDebug) schadeChoices
         )
       ),
       column(4, 

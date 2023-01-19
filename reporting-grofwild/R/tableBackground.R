@@ -30,7 +30,7 @@ tableBackground <- function(data, regionLevel, locaties){
   colnames(data) <- c("Studiegebied", "Wegdensiteit (km/km\U00B2)", 
     "Bos perimeter (km/km\U00B2)", "Bos densiteit (#/km\U00B2)", "Gemiddelde bos oppervlakte (km\U00B2)")
   
-  return(data)
+  return(list(data = data))
   
   
 }

@@ -29,6 +29,27 @@ getProvince <- function(NISCODE, allSpatialData) {
   
 }
 
+#' Get display name for region level
+#' @param level character, regionLevel
+#' @return character, name for region level to be displayed
+#' 
+#' @author mvarewyck
+#' @export
+getRegionLevel <- function(level) {
+  
+  switch(level,
+    "flanders" = "Vlaanderen",
+    "provinces" = "Provincie",
+    "faunabeheerzones" = "Faunabeheerzones",
+    "communes" = "Gemeente",
+    "municipalities" = "Gemeente",
+    "fbz_gemeentes" = "Gemeente per faunabeheerzone",
+    "utm5" = "5x5 UTM",
+    "pixels" = "2x2 UTM"
+  )
+  
+}
+
 
 
 #' Create summary data of geographical data for selected year, species and region level
@@ -493,16 +514,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       results$regionLevelName <- reactive({
           
-          req(results$regionLevel())
-          
-          switch(results$regionLevel(),
-            "flanders" = "Vlaanderen",
-            "provinces" = "Provincie",
-            "faunabeheerzones" = "Faunabeheerzones",
-            "communes" = "Gemeente",
-            "fbz_gemeentes" = "Gemeente per faunabeheerzone",
-            "utm5" = "5x5 UTM",
-            "WBE_buitengrenzen" = unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe())]))
+          if (req(results$regionLevel()) == "WBE_buitengrenzen")
+            unique(geoData()$WBE_Naam_Toek[match(geoData()$PartijNummer, currentWbe())]) else
+            getRegionLevel(results$regionLevel())
           
         })
       
@@ -1245,9 +1259,17 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       )
       
       
-      
-      return(reactive(results$finalMap()))      
-      
+      return(reactive({
+            # Update when any of these change
+            results$finalMap()
+            input
+            # Return the static values
+            c(
+              list(plot = isolate(results$finalMap())),
+              isolate(reactiveValuesToList(input))
+            )
+          }))
+    
     })  
 }
 
@@ -1314,7 +1336,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
             ),
             column(6, uiOutput(ns("year"))),
             column(6, selectInput(inputId = ns("bronMap"),
-              label = "Data bron",
+              label = "Data Bron",
               choices = sourceChoices, selected = sourceChoices,
               multiple = TRUE))
           )
@@ -1351,7 +1373,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
                 if (!is.null(sourceChoices))
                   column(4, 
                     selectInput(inputId = ns("bronMap"),
-                      label = "Data bron",
+                      label = "Data Bron",
                       choices = sourceChoices,
                       multiple = TRUE)
                   )

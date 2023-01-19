@@ -152,7 +152,11 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
         unit = reactive(input$unit)
       )
       
-      return(reactive(toReturn()))
+      
+      return(reactive(c(
+            toReturn(),
+            isolate(reactiveValuesToList(input))
+          )))
       
     })
   

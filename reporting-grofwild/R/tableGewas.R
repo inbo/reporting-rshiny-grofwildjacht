@@ -83,6 +83,6 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   
   colnames(summaryTable)[colnames(summaryTable) == "varOfInterest"] <- variableLabel
   
-  return(summaryTable)
+  return(list(data = summaryTable))
     
 }

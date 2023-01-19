@@ -52,8 +52,11 @@ optionsModuleUI <- function(id,
       if (!is.null(regionLevels))
         fluidRow(
             column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                    choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                        "Fusiegemeenten" = "communes", "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
+                    choices = c(
+                      "Vlaanderen" = "flanders", 
+                      "Provincie" = "provinces", 
+                      "Fusiegemeenten" = "communes", 
+                      "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
             column(8, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
@@ -328,7 +331,7 @@ optionsModuleServer <- function(input, output, session,
         selectInput(inputId = ns("interval"), label = "Interval", choices = intervals)
         
       })
-  
+ 
 }
 
 
@@ -607,7 +610,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         tryCatch({
             tmpResult <- do.call(plotFunction, args = argList())
             validate(need(!is.null(tmpResult), "Niet beschikbaar"))
-            tmpResult
+            c(tmpResult, isolate(reactiveValuesToList(input)))
           },
             error = function(err) {
               validate(need(FALSE, err$message))
@@ -707,17 +710,19 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       } else {
         
-        DT::datatable(resultFct(), rownames = FALSE,
+        tmpTable <- resultFct()$data
+        
+        DT::datatable(tmpTable, rownames = FALSE,
             options = list(dom = 't', pageLength = -1,
-              columnDefs = list(list(targets = grep("Warning", colnames(resultFct())) - 1, visible = FALSE)))) %>%
+              columnDefs = list(list(targets = grep("Warning", colnames(tmpTable)) - 1, visible = FALSE)))) %>%
           formatStyle(
-            colnames(resultFct())[1],
+            colnames(tmpTable)[1],
             target = "row",
-            fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
+            fontWeight = styleEqual(tail(tmpTable[, 1], n = 1), "bold")
           ) %>%
           formatStyle(
-            grep("Verandering", colnames(resultFct()), value = TRUE),
-            grep("Warning", colnames(resultFct()), value = TRUE),
+            grep("Verandering", colnames(tmpTable), value = TRUE),
+            grep("Warning", colnames(tmpTable), value = TRUE),
             color = styleEqual(c("oranje", "rood"), c("orange", "red"))
           )
         

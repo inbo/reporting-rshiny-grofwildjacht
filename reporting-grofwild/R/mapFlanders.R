@@ -606,6 +606,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             
             myTitle <- paste("WBE grenzen en jachtterreinen in", input$year)
             
+            tagList(
+              h3(myTitle),
+              tags$p(HTML(uiText[uiText$plotFunction == "mapFlandersUI", strsplit(id, "_")[[1]][1]]))
+            )
+            
           } else {
             
             myTitle <- paste("Gerapporteerd", results$unitText(), 
@@ -613,10 +618,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                   paste(paste(tolower(species())[1:nSpecies-1], collapse = ", "), "en", tolower(species()[nSpecies])) else 
                   tolower(species()),
               "in", input$year)
+          
+            h3(myTitle)
             
           }
-          
-          h3(myTitle)
           
         })     
       

@@ -138,6 +138,18 @@ test_that("Biotoop", {
   })
 
 
+test_that("Afschot locaties", {
+    
+    mapData <- createAfschotLocationsData(data = combinedRee[combinedRee$PuntLocatieTypeID == 1, ])
+    mapSchade(schadeData = mapData, 
+      regionLevel = "WBE_buitengrenzen_2018", 
+      variable = c("season", "schadeCode", "afschotjaar")[1],
+      allSpatialData = spatialData,
+      addGlobe = TRUE)
+    
+  })
+
+
 
 test_that("Summary Table", {
     

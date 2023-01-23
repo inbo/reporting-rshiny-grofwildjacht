@@ -84,7 +84,9 @@ tagList(
     
     conditionalPanel("output.wbe_emptySchade == false",
       # When no afschot, might still be schadeData
-      mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText,
+      mapSchadeUI(id = "wbe",
+        uiText = uiText[uiText$plotFunction == "mapSchadeUI", ], 
+        filterCode = TRUE, filterSubcode = TRUE,
         plotDetails = "region")
     ),
     
@@ -95,6 +97,14 @@ tagList(
       conditionalPanel("input.wbe_species == 'Ree'",
         ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
         percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText)
+      ),
+      
+      mapSchadeUI(id = "wbe_afschot",
+        uiText = uiText[uiText$plotFunction == "mapAfschotUI", ],
+        filterSource = FALSE, filterAccuracy = TRUE,
+        variableChoices = c(
+          "Seizoen" = "season",
+          "Jaar" = "afschotjaar")
       ),
       
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",

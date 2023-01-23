@@ -349,3 +349,15 @@ percentageRealisedShotServer(id = "wbe",
   types = reactive(unique(results$wbe_toekenningsData()$labeltype)),
   timeRange = reactive(range(results$wbe_toekenningsData()$labeljaar))
 )
+
+
+# Plot 12: Afschot locaties
+mapSchadeServer(id = "wbe_afschot",
+  schadeData = results$wbe_combinedData, 
+  allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())),
+  type = "afschot",
+  timeRange = results$wbe_timeRange, 
+  defaultYear = defaultYear, 
+  species = reactive(input$wbe_species),
+  borderRegion = "WBE_buitengrenzen"
+)

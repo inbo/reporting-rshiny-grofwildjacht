@@ -72,7 +72,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
 #' @export
 createAfschotLocationsData <- function(data, accuracy = NULL) {
   
-  mapData <- data[, c("season", "afschotjaar", 
+  mapData <- data[, c("wildsoort", "season", "afschotjaar", 
       "verbatimLatitude", "verbatimLongitude", "PuntLocatieTypeID")]
   nTotal <- nrow(mapData)
   
@@ -191,10 +191,16 @@ mapSchade <- function(
                     popup = paste0("<h4>Info</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
-                            "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
-                            "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
-                            "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
-                            "<li><strong> Seizoen </strong>: ", schadeData$season,
+                            if ("wildsoort" %in% colnames(schadeData)) 
+                              paste0("<li><strong> Wildsoort </strong>: ", schadeData$wildsoort),
+                            if ("gemeente_afschot_locatie" %in% colnames(schadeData))
+                              paste0("<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie),
+                            if ("schadeBasisCode" %in% colnames(schadeData))
+                              paste0("<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode),
+                            if ("season" %in% colnames(schadeData))
+                              "<li><strong> Seizoen </strong>: ", schadeData$season,
+#                            "<li><strong> x </strong>: ", coordinates(schadeData)[, 1],
+#                            "<li><strong> y </strong>: ", coordinates(schadeData)[, 2],
                             "</ul>"
                     )
             ) %>%

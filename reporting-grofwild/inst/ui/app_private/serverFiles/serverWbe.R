@@ -228,7 +228,8 @@ trendYearRegionServer(id = "wbe",
 tableSpeciesServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  species = reactive(input$wbe_species))
+  species = reactive(input$wbe_species),
+  uiText = uiText)
 
 
 # Plot2: Verdeling afschot over de jaren

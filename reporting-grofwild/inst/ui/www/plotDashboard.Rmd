@@ -52,6 +52,8 @@ if (any(allParams %in% currentParams)) {
             stakeholders = "Stakeholders",
             public = "Publiek"), ":") else "- Stakeholders:", 
       paste(params$sectorUsers, collapse = ", "), "\n\n")
+  if ("combinatie" %in% currentParams)
+    cat("- Combineer alle geselecteerde regio's:", c("nee", "ja")[as.numeric(params$combinatie) + 1], "\n\n")
   
 }
 
@@ -71,6 +73,9 @@ if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {
   } else if (id == "F14_4") {
     tmp$height <- "800px"
     tmp$width <- "900px"
+  } else if (id %in% c("F14_1", "F14_2")) {
+    tmp$height <- "450px"
+    tmp$width <- "900px"        
   }
   tmp
 }

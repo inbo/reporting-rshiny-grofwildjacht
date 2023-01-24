@@ -281,6 +281,9 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       # Center view
       observe({
           
+          # Update after plot
+          req(spreadPlot())
+          
           coordData <- suppressMessages(ggplot2::fortify(selectedPolygons()))
           centerView <- c(range(coordData$long), range(coordData$lat))
           

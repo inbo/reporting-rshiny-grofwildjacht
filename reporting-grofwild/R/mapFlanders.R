@@ -599,9 +599,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           results$region_value <- if (is.null(input$region)) {
               if (results$regionLevel() == "flanders")
-                spatialData()$NAAM[1] else if (type %in% "empty")
-                locaties() else if (type == "wbe")
-                currentWbe() else
+                spatialData()$NAAM[1] else if (!is.null(currentWbe()))
+                currentWbe() else if (!is.null(locaties()))
+                locaties() else
                 NULL
             } else {
               input$region
@@ -779,7 +779,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       
       # Send map to the UI
-      output$spacePlot <- renderLeaflet({
+      spacePlot <- reactive({
           
           req(allSpatialData)
           
@@ -803,6 +803,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                 ),
             borderLocaties = locaties() 
           )  
+        })
+
+      output$spacePlot <- renderLeaflet({
+          
+          spacePlot()
           
         })
       
@@ -858,7 +863,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Center view for WBE
       observe({
           
-          req(currentWbe() | !is.null(locaties()))
+          # Update after plot
+          req(spacePlot())
+          
+          req(!is.null(currentWbe()) | !is.null(locaties()))
           
           # Polygons to center on (!= selectedPolygons() for F17_1,2)
           tmpSpatial <- filterSpatial(
@@ -866,7 +874,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             species = req(species()), 
             regionLevel = regionLevel(), 
             year = req(input$year),
-            locaties = currentWbe()
+            locaties = if (!is.null(currentWbe())) currentWbe() else locaties()
           )
           validate(need(tmpSpatial, "Geen data beschikbaar"))
           
@@ -886,7 +894,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Pre-selected polygons to highlight
       selectedPolygons <- reactive({
           
-          req(type != "empty")
+          req(!type %in% c("empty", "dash"))
           
           tmpSpatial <- filterSpatial(
             allSpatialData = allSpatialData, 
@@ -1060,7 +1068,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               zoom = input$spacePlot_zoom
             )
             
-          if (type != "empty")
+          if (!type %in% c("empty", "dash"))
             # Selected regions
             newMap <- newMap %>%
               addPolylines(data = selectedPolygons(), color = "gray", weight = 5,

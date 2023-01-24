@@ -177,15 +177,16 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   } else {
     allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
         iYear <- levels(summaryData$afschotjaar)[i]
-        tmp <- plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
+        plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
             x = ~timeChar, y = ~value, type = "bar", 
             color = ~get(groupVariable), colors = colors,
             legendgroup = ~get(groupVariable), showlegend = i == 1,
             width = width, height = height) %>%
-          layout(xaxis = list(
-              title = paste0(iYear, "<br>", "(n= ", totalCount$value[totalCount$year == iYear], ")"),
-              showticklabels = FALSE)
-          )
+          layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
+          add_annotations(
+            text = paste0(iYear, " (n= ", totalCount$value[totalCount$year == iYear], ")"),
+            x = newLevels[round(length(newLevels)/2)], y = 0, xref = paste0("x", if (i != 1) i), yref = "paper", 
+            yanchor = "top", textangle = 90, showarrow = FALSE)
       })
   }
   
@@ -194,13 +195,13 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
     layout(barmode = 'stack', showlegend = TRUE,
       title = title,
       yaxis = list(title = "Aantal"),
-      margin = list(b = 120, t = 100)) %>% 
+      margin = list(b = if (interval == "Per jaar") 120 else 150, t = 100)) %>% 
     add_annotations(text = percentCollected(
         nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, groupVariable] != "Onbekend"), 
         nTotal = nRecords,
         text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-      y = -0.25, yanchor = "bottom", showarrow = FALSE)
+      y = if (interval == "Per jaar") -0.25 else -0.3, yanchor = "bottom", showarrow = FALSE)
  
   colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
   summaryData$group <- NULL

@@ -733,7 +733,7 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
 #' Copy of mapSchadeUI as being used for "WBE" pagina
 #' 
 #' @inheritParams mapSchadeUI 
-#' @return 
+#' @return UI object
 #' 
 #' @author mvarewyck
 #' @export

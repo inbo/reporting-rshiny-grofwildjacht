@@ -2,9 +2,11 @@ shinyUI(
         
         bootstrapPage(
                 
+                shinyjs::useShinyjs(),
+                extendShinyjs(text = js_code, functions = 'browseURL'),
+                
                 ## For debugging
                 uiOutput("debug"),
-                
                 
                 ## Header
                 ## ------
@@ -46,7 +48,7 @@ shinyUI(
                                         uiOutput("grof_content")),
                                 tabPanel(title = "Wildschade", id = "tab-wildschade",
                                         uiOutput("schade_content")),
-#                                tabPanel(title = "WBE"),
+                                tabPanel(title = "WBE", id = "tab-wbe"),
                                 
                                 # Shape data source + contact e-mail
                                 header = tags$header(tags$div(align = "right",

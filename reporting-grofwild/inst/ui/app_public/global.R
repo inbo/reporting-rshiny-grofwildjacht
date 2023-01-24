@@ -13,15 +13,14 @@ library(shinycssloaders)   # for busy indicator
 ### General
 ### ------------
 
-`%then%` <- function(x, y) {
-  
-  if (is.null(x) || isTRUE(is.na(x)))
-    y
-  else
-    x
-  
-}
 `%<>%` <- magrittr::`%<>%`
+
+# define js function for opening urls in new tab/window
+js_code <- "
+  shinyjs.browseURL = function(url) {
+  window.open(url, '_self');
+  }
+  "
 
 
 # Specify directory with data

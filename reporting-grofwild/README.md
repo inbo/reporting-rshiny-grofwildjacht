@@ -25,7 +25,7 @@ When adding elements to the code or ui and you want to test if your local adapta
 * in the field Repository URL, add URL github repo: `https://github.com/inbo/reporting-rshiny-grofwildjacht`
 * This clones the repo to your computer and creates an Rstudio project linked to it
 
-2. To test and try out your adaptations, build and reinstall within Rstudio. As the pacakage itself lives in a subdirectory, you should provide this to the build/install commands:
+2. To test and try out your adaptations, build and reinstall within Rstudio. As the package itself lives in a subdirectory, you should provide this to the build/install commands:
 
 ```
 devtools::build(pkg = "reporting-grofwild/")

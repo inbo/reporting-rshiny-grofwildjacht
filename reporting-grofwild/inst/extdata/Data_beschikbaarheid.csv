@@ -34,7 +34,7 @@ Populatie,verspreiding_afschot,2,2,2,2,2,2,1,F17_1
 Populatie,verspreiding_waarnemingen,2,2,2,2,2,2,1,F17_2
 Populatie,verspreiding_NO,0,0,0,0,0,0,1,F17_3
 Populatie,verspreiding_toekomst,2,2,2,2,2,2,1,F17_4
-Populatie,inschatting_popgroei,0,0,0,1,1,0,1,F18_1
+Populatie,inschatting_popgroei,0,0,0,0,1,0,1,F18_1
 Populatie,aanzitten_waarnemingen,0,0,0,0,0,0,1,F18_2
 Populatie,waarnemingen_uur,0,0,0,0,0,0,1,F18_3
 Populatie,tijd_waarneming,0,0,0,0,0,0,1,F18_4

@@ -133,7 +133,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
         nrows = length(groupLevels[[1]]),
         margin = 0.01))
     
-    myPlot$x$layout$margin <- list(b = 40, l = if (verticalGroups) 60 else 250, t = 25, r = 10)
+    myPlot$x$layout$margin <- list(b = 40, l = if (verticalGroups) 60 else 280, t = 25, r = 10)
     
     extraVars <- c("Antwoord", groupVariable)
     

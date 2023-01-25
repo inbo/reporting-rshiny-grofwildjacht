@@ -36,8 +36,8 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
     answerLevels <- list(
       neutral = c('Hetzelfde', 'Neutraal'),
-      negative = c('Afgenomen', 'Negatief', 'Nee', 'Groot', 'Onbelangrijk'),
-      positive = c('Toegenomen', 'Positief', 'Ja', 'Klein', 'Belangrijk')
+      negative = c('Afgenomen', 'Negatief', 'Nee', 'Klein', 'Onbelangrijk'), #left
+      positive = c('Toegenomen', 'Positief', 'Ja', 'Groot', 'Belangrijk') #right
     )
     data$Antwoord <- factor(data$Antwoord_reclass, 
       levels = unlist(answerLevels))

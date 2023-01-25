@@ -311,6 +311,8 @@ test_that("F14_3, F14_4", {
     plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[2]))
 #    subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
     subData <- subset(plotData, Groep %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
+    subData$Antwoord_reclass <- ifelse(subData$Antwoord_reclass == "Belangrijk", "Aanvaardbaar",
+      ifelse(subData$Antwoord_reclass == "Onbelangrijk", "Niet aanvaardbaar", subData$Antwoord_reclass))
     myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", yVar = "Groep")
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

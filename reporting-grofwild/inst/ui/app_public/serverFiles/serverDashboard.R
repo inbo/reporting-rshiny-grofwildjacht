@@ -420,7 +420,12 @@ results$dash_F14_3 <- barDraagkrachtServer(id = "dash_F14_3",
 )
 
 results$dash_F14_4 <- barDraagkrachtServer(id = "dash_F14_4",
-  data = reactive(data.table::fread(file.path(draagkrachtDir, "F14_4_data.csv"))),
+  data = reactive({
+      tmpData <- data.table::fread(file.path(draagkrachtDir, "F14_4_data.csv"))
+      tmpData$Antwoord_reclass <- ifelse(tmpData$Antwoord_reclass == "Belangrijk", "Aanvaardbaar",
+        ifelse(tmpData$Antwoord_reclass == "Onbelangrijk", "Niet aanvaardbaar", tmpData$Antwoord_reclass))
+      tmpData
+    }),
   groupVariable = "Question_label", yVar = "Groep",
   groupLabel = "Maatregelen",
   title = reactive(names(results$dash_titlesMaatschappij()[results$dash_titlesMaatschappij() == "F14_4"]))

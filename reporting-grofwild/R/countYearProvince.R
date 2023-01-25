@@ -89,13 +89,12 @@ countYearProvince <- function(data, jaartallen = NULL,
 	summaryData <- melt(table(plotData), id.vars = "afschotjaar")
 	
 	# Summarize data per year
-	totalCount <- table(plotData$afschotjaar)
-	
+	totalCount <- as.data.frame(table(plotData$afschotjaar))
 	
 	# For optimal displaying in the plot
   summaryData$locatie <- as.factor(summaryData$locatie)
 	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
-	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+#	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
 	
  
  colorList <- replicateColors(nColors = nlevels(summaryData$locatie))
@@ -103,19 +102,24 @@ countYearProvince <- function(data, jaartallen = NULL,
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
 	)
+  
+  singleYear <- length(unique(summaryData$afschotjaar)) == 1
 	
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~locatie,
 					colors = colorList$colors, type = "bar",  width = width, height = height) %>%
 			layout(title = title,
-					xaxis = list(title = "Jaar"), 
+					xaxis = list(title = "Jaar",
+            tickvals = unique(summaryData$afschotjaar), 
+            ticktext = unique(summaryData$afschotjaar)
+          ), 
 					yaxis = list(title = "Aantal"),
 					margin = list(b = 80, t = 100), 
-					barmode = ifelse(nlevels(summaryData$afschotjaar) == 1, "group", "stack"),
-					annotations = list(x = levels(summaryData$afschotjaar), 
-							y = totalCount, 
-							text = paste(ifelse(nlevels(summaryData$afschotjaar) == 1, "totaal:", ""), totalCount),
+					barmode = if (singleYear) "group" else "stack",
+					annotations = list(x = totalCount$Var1, 
+							y = if (singleYear) max(summaryData$value) else totalCount$Freq, 
+							text = paste(if (singleYear) "totaal:", totalCount$Freq),
 							xanchor = 'center', yanchor = 'bottom',
 							showarrow = FALSE),
           showlegend = TRUE)  

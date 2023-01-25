@@ -91,7 +91,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   }
   
   # For optimal displaying in the plot
-  summaryData$jaar <- as.factor(summaryData$jaar)
+#  summaryData$jaar <- as.factor(summaryData$jaar)
   
   if (summarizeBy == "count") {
     
@@ -119,7 +119,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
           paste("in", jaartallen))
   )
   
-  
+  singleYear <- length(unique(totalCount$jaar)) == 1
   
   # Create plot
   toPlot <- plot_ly(data = summaryData, x = ~jaar,
@@ -128,17 +128,23 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
           colors = colors, type = "bar",
           width = width, height = height) %>%
       layout(title = title,
-          xaxis = list(title = "Jaar"), 
+          xaxis = list(title = "Jaar", 
+            tickvals = unique(summaryData$jaar), 
+            ticktext = unique(summaryData$jaar)), 
           yaxis = list(title = if (summarizeBy == "count") "Aantal" else "Percentage"),
-          barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
+          barmode = if (singleYear) "group" else "stack",
           # hardcode graph size to prevent legend overlapping plot
           autosize = FALSE,
           margin = list(b = 120, t = 100),
           legend = list(y = 0.1),
           annotations = list(
               x = totalCount$jaar, 
-              y = if (summarizeBy == "count") totalCount$totaal else 100, 
-              text = paste(if (length(unique(totalCount$jaar)) == 1) "totaal:" else "", 
+              y = if (summarizeBy == "count") {
+                    if (singleYear) 
+                      max(summaryData$freq) else 
+                      totalCount$totaal 
+                  } else 100, 
+              text = paste(if (singleYear) "totaal:" else "", 
                   totalCount$totaal),
               xanchor = 'center', yanchor = 'bottom',
               showarrow = FALSE),

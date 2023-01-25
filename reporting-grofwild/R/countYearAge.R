@@ -96,7 +96,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	# For optimal displaying in the plot
 	summaryData$kaak <- factor(summaryData$kaak, levels = newLevelsKaak)
-	summaryData$jaar <- as.factor(summaryData$jaar)
+#	summaryData$jaar <- as.factor(summaryData$jaar)
 	
 	if (summarizeBy == "count") {
 		
@@ -124,6 +124,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 				  paste0("\n(in ", paste(regio, collapse = " en "), ")")
 	  )
 	
+  singleYear <- length(unique(summaryData$jaar)) == 1
 	
 	
 	# Create plot
@@ -133,13 +134,16 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 							colors = colors, type = "bar",
 							width = width, height = height) %>%
 					layout(title = title,
-							xaxis = list(title = "Jaar"), 
+							xaxis = list(
+                title = "Jaar", 
+                tickvals = unique(summaryData$jaar), 
+                ticktext = unique(summaryData$jaar)), 
 							yaxis = list(title = "Aantal"),
-							barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
+							barmode = if (singleYear) "group" else "stack",
 							margin = list(b = 120, t = 100),
 							annotations = list(x = totalCount$jaar, 
-									y = totalCount$totaal, 
-									text = paste(if (length(unique(totalCount$jaar)) == 1) "totaal:" else "", 
+									y = if (singleYear) max(summaryData$freq) else totalCount$totaal, 
+									text = paste(if (singleYear) "totaal:" else "", 
 											totalCount$totaal),
 									xanchor = 'center', yanchor = 'bottom',
 									showarrow = FALSE)),
@@ -148,7 +152,9 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 							colors = colors, type = "scatter", mode = "lines+markers",
 							width = width, height = height) %>%
 					layout(title = title,
-							xaxis = list(title = "Jaar"), 
+							xaxis = list(title = "Jaar", 
+                tickvals = unique(summaryData$jaar), 
+                ticktext = unique(summaryData$jaar)), 
 							yaxis = list(title = "Percentage", range = c(0, 100)),
 							margin = list(b = 120, t = 100)) %>% 
 					add_annotations(text = percentCollected(nAvailable = nCollected, nTotal = nRecords,

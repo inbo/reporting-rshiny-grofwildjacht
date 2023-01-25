@@ -29,8 +29,10 @@ barDraagkracht <- function(data, groupVariable = NULL,
   
   if (xVar == "percentage") {
     
-    data$percentage <- as.numeric(data$Aantal_tot/data$totaal) * 100
-    data$percentageLabel <- paste0(round(data$percentage, 2), "% (n = ", data$totaal, ")")
+    data$percentage <- as.numeric(data$Aantal_tot/data$totaal)
+    if (!is.null(groupVariable))
+      data$percentageLabel <- paste0(round(data$percentage * 100, 2), "% (n = ", data$totaal, ")") else
+      data$percentageLabel <- paste0(round(data$percentage * 100, 2), "%")
     
     answerLevels <- list(
       neutral = c('Hetzelfde', 'Neutraal'),
@@ -116,7 +118,11 @@ barDraagkracht <- function(data, groupVariable = NULL,
             ),
             legend = list(title = list(text = "<b>Antwoord</b>")),
             barmode = "relative",
-            xaxis = list(title = "Percentage"),
+            xaxis = list(title = "", 
+              # for absolute values as tickmarks
+              tickvals = seq(-1, 1, by = 0.2),
+              ticktext = paste0(abs(seq(-100, 100, by = 20)), "%")
+            ),
             yaxis = list(title = "", ticksuffix = "  ")
           )
         
@@ -133,13 +139,14 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
   } else if (xVar == "percentage") {
     
-    # rename x-axis ticktext
-    yLabels <- unique(data[[yVar]])
-    totalCounts <- data$totaal[unique(match(data[[yVar]], yLabels))]
-    yLabels[yLabels == "populatie_evolutie"] <- "Populatie everzwijnen"
-    yLabels[yLabels == "schade_landbouw_evolutie"] <- "Schade aan de landbouw"
-    yLabels[yLabels == "schade_privpub_evolutie"] <- "Schade aan privéterreinen"
-    yLabels[yLabels == "schade_verkeer_evolutie"] <- "Schade in het verkeer"
+    # rename y-axis ticktext
+    data$yLabel <- paste0(data[[yVar]], "\n (n = ", data$totaal, ")")
+    yLabels <- unique(data$yLabel)
+    data$yLabel <- NULL
+    yLabels <- gsub("populatie_evolutie", "Populatie everzwijnen", yLabels)
+    yLabels <- gsub("schade_landbouw_evolutie", "Schade aan de landbouw", yLabels)
+    yLabels <- gsub("schade_privpub_evolutie", "Schade aan privéterreinen", yLabels)
+    yLabels <- gsub("schade_verkeer_evolutie", "Schade in het verkeer", yLabels)
     
     myPlot <- plot_ly(data, x = ~get(xVar), y = ~get(yVar), 
         type = 'bar', color = ~Antwoord, colors = myColors, text = ~percentageLabel,
@@ -154,10 +161,13 @@ barDraagkracht <- function(data, groupVariable = NULL,
         barmode = "relative",
         yaxis = list(
           title = "",
-          ticktext = as.list(paste0(yLabels, "\n (n = ", totalCounts, ")")), 
+          ticktext = as.list(yLabels), 
           tickvals = as.list((length(yLabels)-1):0),
           tickmode = "array"),
-        xaxis = list(title = "Percentage") 
+        xaxis = list(title = "", 
+          # for absolute values as tickmarks
+          tickvals = seq(-1, 1, by = 0.2),
+          ticktext = paste0(abs(seq(-100, 100, by = 20)), "%"))
       )
     
     extraVars <- c("Antwoord")

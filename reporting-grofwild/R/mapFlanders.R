@@ -1326,7 +1326,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   
   # Map with according line plot
   
-  tags$div(class = "container",
+  tagList(
     
     if (showTitle)
       h2("Landkaart"),

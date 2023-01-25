@@ -68,11 +68,6 @@ DT::datatable(myTable, rownames = FALSE,
   )
 ```
 
-\newpage
-
-\textbf{Voor indicatoren met (*) zijn slechts gedeeltelijke gegevens beschikbaar
-op het gekozen niveau.}
-
 
 ```{r popSection, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
 cat("\\newpage")

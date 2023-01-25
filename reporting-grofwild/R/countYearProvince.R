@@ -157,6 +157,16 @@ countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL))
           
         })
       
+      output$disclaimerYearProvince <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
+      
+      
       # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearProvince", 
         data = data,
@@ -190,6 +200,8 @@ countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvince",
     actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(uiText$title)), 
       class = "action-h3"),
     conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
+      
+      uiOutput(ns("disclaimerYearProvince")),
       
       fixedRow(
         

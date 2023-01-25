@@ -8,8 +8,13 @@ params <- results[[paste0("dash_", id)]]()
 currentParams <- names(params)
 
 # Title
-cat("##", names(results[[paste0("dash_titles", section)]]())[
-    results[[paste0("dash_titles", section)]]() == id], "\n\n")
+myTitle <- names(results[[paste0("dash_titles", section)]]())[
+  results[[paste0("dash_titles", section)]]() == id]
+cat("##", myTitle, "\n\n")
+
+# Disclaimer
+if (grepl("\\*", myTitle))
+  cat("\\textit{", getDisclaimerLimited(doHTML = FALSE), "}\n\n")
 
 # Parameters
 if (any(allParams %in% currentParams)) {

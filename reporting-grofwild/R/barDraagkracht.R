@@ -265,6 +265,15 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL,
           
         })
       
+      output$disclaimerDraagkracht <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
+      
       callModule(module = optionsModuleServer, id = "barDraagkracht", 
         data = subData
       )
@@ -307,6 +316,8 @@ barDraagkrachtUI <- function(id, uiText, sectorChoices = NULL,
     actionLink(inputId = ns("linkDraagkracht"),
       label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkDraagkracht % 2 == 0", ns = ns,
+      
+      uiOutput(ns("disclaimerDraagkracht")),
       
       if (!is.null(sectorChoices) | selectGroups)
         wellPanel(

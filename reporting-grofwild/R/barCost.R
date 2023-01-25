@@ -112,7 +112,17 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
           updateActionLink(session = session, inputId = "linkBarCost",
             label = paste("FIGUUR:", title()))
           
-        })  
+        })
+      
+      output$disclaimerBarCost <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })      
+      
       
       subData <- reactive({
           
@@ -182,6 +192,8 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
     actionLink(inputId = ns("linkBarCost"), 
       label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkBarCost % 2 == 0", ns = ns,
+      
+      uiOutput(ns("disclaimerBarCost")),
       
       fixedRow(
         

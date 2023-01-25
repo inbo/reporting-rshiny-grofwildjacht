@@ -198,6 +198,16 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
           
         })
       
+      output$disclaimerYearAge <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
+      
+      
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearAge", 
         data = data,
@@ -235,6 +245,8 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
     actionLink(inputId = ns("linkYearAge"), label = h3(HTML(uiText$title)),
       class = "action-h3"),
     conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
+      
+      uiOutput(ns("disclaimerYearAge")),
       
       fixedRow(
         

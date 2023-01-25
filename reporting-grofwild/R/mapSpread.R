@@ -306,6 +306,15 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
+      output$disclaimerMapSpread <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
+      
       # Add world map
       observe({
           
@@ -512,6 +521,8 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
     actionLink(inputId = ns("linkSpread"),
       label = paste("FIGUUR:", uiText$title), class = "action-h3"),
     conditionalPanel("input.linkSpread % 2 == 0", ns = ns,
+      
+      uiOutput(ns("disclaimerMapSpread")),
       
       tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
   

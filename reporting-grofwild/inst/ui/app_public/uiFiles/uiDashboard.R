@@ -54,7 +54,7 @@ tagList(
       )
     ),
     
-    tags$p(tags$em("\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau")),
+    getDisclaimerLimited(),
     
 #    actionButton(inputId = "dash_submit", label = "Maak dashboard"),
     singleton(
@@ -90,7 +90,8 @@ tagList(
         class = "action-h3"
       ),
       conditionalPanel("input.dash_showF17_1 % 2 == 0", 
-        tags$div(class = "container",
+        tagList(
+          uiOutput("dash_disclaimerF17_1"),
           tags$p(HTML(uiText$dash[uiText$plotFunction == "F17_1"]))),
         mapFlandersUI(id = "dash_F17_1", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 

@@ -326,6 +326,16 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
           
         })
       
+      output$disclaimerTrendRegion <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })      
+      
+      
       callModule(module = optionsModuleServer, id = "trendRegion", 
         data = trendRegionData,
         timeRange = trendRange)
@@ -372,6 +382,8 @@ trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI",
   toShow <- tagList(
     
     fixedRow(
+      
+      uiOutput(ns("disclaimerTrendRegion")),
       
       column(4,
         wellPanel(

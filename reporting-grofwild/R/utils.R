@@ -314,3 +314,23 @@ getPathLogo <- function() {
   system.file("ui/www", "logo.png", package = "reportingGrofwild")
   
 }
+
+
+
+#' Disclaimer text when limited information is available
+#' 
+#' @param doHTML boolean, whether to format the text with html tags
+#' @return character
+#' 
+#' @author mvarewyck
+#' @importFrom htmltools tags
+#' @export
+getDisclaimerLimited <- function(doHTML = TRUE) {
+  
+  myText <- "\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau"
+
+  if (doHTML)
+    tags$p(tags$em(myText)) else
+    myText
+
+}

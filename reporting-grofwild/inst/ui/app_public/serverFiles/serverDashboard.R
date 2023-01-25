@@ -261,13 +261,20 @@ results$dash_F16_1 <- countAgeGroupServer(
 )
 
 
-observe({
+output$dash_disclaimerF17_1 <- renderUI({
+    
+    myTitle <- names(namedChoices("F17_1", uiText = uiText, 
+        regionLevel = req(input$dash_regionLevel)))
     
     updateActionLink(session = session, inputId = "dash_showF17_1",
-      label = paste("FIGUUR:", names(namedChoices("F17_1", uiText = uiText, 
-            regionLevel = req(input$dash_regionLevel)))))
+      label = paste("FIGUUR:", myTitle))
+    
+    if (grepl("\\*", myTitle))
+      getDisclaimerLimited() else
+      NULL
     
   })
+
 
 results$dash_F17_1 <- mapFlandersServer(id = "dash_F17_1",
   defaultYear = defaultYear,
@@ -291,7 +298,7 @@ results$dash_F17_4 <- mapSpreadServer(id = "dash_F17_4",
 
 results$dash_F18_1 <- barDraagkrachtServer(id = "dash_F18_1",
   data = reactive(inschattingData[Vraag == "populatie_evolutie", ]),
-  xVar = "Vraag",
+  yVar = "Vraag",
   title = reactive(names(results$dash_titlesPopulatie()[results$dash_titlesPopulatie() == "F18_1"]))
 )
 

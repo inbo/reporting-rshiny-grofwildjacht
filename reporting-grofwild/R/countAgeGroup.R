@@ -134,7 +134,16 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
           updateActionLink(session = session, inputId = "linkAgeGroup",
             label = paste("FIGUUR:", title()))
           
-        })      
+        })
+      
+      output$disclaimerAgeGroup <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
       
       callModule(module = optionsModuleServer, id = "ageGroup", 
         data = data, 
@@ -171,6 +180,8 @@ countAgeGroupUI <- function(id, uiText, doHide = TRUE) {
       label = h3(HTML(uiText$title)),
       class = "action-h3"),
     conditionalPanel(paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), ns = ns,
+      
+      uiOutput(ns("disclaimerAgeGroup")),
       
       fixedRow(
         

@@ -75,7 +75,8 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
       hovertemplate = paste0(
         '<b>', yLabel, '</b>: ', if (yVar == "schadeBedrag") '%{y:.2f}' else '%{y:.0f}', '<br>',
         if (!is.null(groupLabel)) paste0('<b>', groupLabel, '</b>: %{text}'), '<extra></extra>'), 
-      text = if (!is.null(unit)) ~get(unit)) %>%
+      text = if (!is.null(unit)) ~get(unit),
+      textposition = "none") %>%
     layout(
       legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
       yaxis = if (max(totalCount) < 5)

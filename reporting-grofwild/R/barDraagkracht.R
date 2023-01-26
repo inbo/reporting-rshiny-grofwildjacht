@@ -150,6 +150,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
     myPlot <- plot_ly(data, x = ~get(xVar), y = ~get(yVar), 
         type = 'bar', color = ~Antwoord, colors = myColors, text = ~percentageLabel,
+        textposition = "none",
 #        marker = list(line = list(width = 5, color = "lightgray")),
         hoverinfo = "text+y+name",
         width = width, height = height

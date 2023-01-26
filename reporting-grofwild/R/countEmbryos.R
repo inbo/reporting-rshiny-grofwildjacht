@@ -127,7 +127,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     'Wild zwijn' = "wilde zwijnen"))
 	
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
-					text = ~text, hoverinfo = "x+text+name",
+					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
 			layout(title = title,

@@ -94,6 +94,7 @@ barBiotoop <- function(data, jaar = NULL,
         annotations = list(x = totalRegions$value,  
         y = totalRegions$variable,
         text = paste(totalRegions$value, "%"),
+        textposition = "none",
         xanchor = 'left', yanchor = 'center',
         showarrow = FALSE))
   }

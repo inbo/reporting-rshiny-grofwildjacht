@@ -101,7 +101,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~leeftijd, y = ~percent, color = ~geslacht,
-					text = ~text,  hoverinfo = "x+text+name",
+					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar",  width = width, height = height) %>%
 			
 			layout(title = title,

@@ -27,7 +27,8 @@ barInschatting <- function(data) {
   myPlot <- plot_ly(plotData, x = ~percentage, y = ~Vraag, type = 'bar', name = ~Antwoord, 
       hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
         '<b>Antwoord</b>: %{text}<extra></extra>'),
-      text = ~Antwoord) %>%
+      text = ~Antwoord,
+      textposition = "none") %>%
     layout(
       legend = list(title = list(text = "<b> Antwoord </b>")),
       barmode = "stack",

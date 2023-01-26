@@ -65,6 +65,8 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   colors <- replicateColors(nColors = length(selectedGroups))$colors
   names(colors) <- selectedGroups
   
+  totalCount <- table(subData$afschotjaar)
+  
   myPlot <- plot_ly(plotData, 
       x = as.character(plotData$afschotjaar), 
       y = ~x , type = 'bar', name = if (!is.null(unit)) ~get(unit),
@@ -76,7 +78,9 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
       text = if (!is.null(unit)) ~get(unit)) %>%
     layout(
       legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
-      yaxis = list(title = yLabel),
+      yaxis = if (max(totalCount) < 5)
+        list(title = yLabel, dtick = 1) else
+        list(title = yLabel),
       xaxis = list(title = "Jaar"),
       barmode = "stack"
     )

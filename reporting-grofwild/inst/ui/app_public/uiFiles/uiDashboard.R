@@ -69,10 +69,9 @@ tagList(
     
     # Achtergrond
     tags$h2(toupper("Achtergrondinformatie")),
-    mapFlandersUI(id = "dash_background", showRegion = FALSE, showCombine = FALSE,
-      type = "empty",
-      plotDetails = c("biotoop", "biotoopTable"), 
-      showTitle = FALSE
+    mapFlandersUI(id = "dash_background", showRegion = FALSE,
+      type = "empty", showTitle = FALSE, showCombine = TRUE,
+      plotDetails = c("biotoop", "biotoopTable")
     ),
     
     

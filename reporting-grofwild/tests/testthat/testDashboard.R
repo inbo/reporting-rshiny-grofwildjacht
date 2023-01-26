@@ -153,11 +153,24 @@ test_that("F17_2", {
 
 test_that("F02_1", {
     
-    myResult <- barBiotoop(data = subset(biotoopData$provinces, regio %in% c("Limburg", "Antwerpen")))
+    subData <- subset(biotoopData$provinces, regio %in% c("Limburg", "Antwerpen"))
+    
+    # Per province
+    myResult <- barBiotoop(data = subData)
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
+    
+    # Aggregated
+    subData$regio <- "Totaal"
+    subData <- merge(
+      aggregate(subData[, grepl("Area", colnames(subData))], 
+        by = list(regio = subData$regio), FUN = sum),
+      aggregate(subData[, grepl("perc", colnames(subData))], 
+        by = list(regio = subData$regio), FUN = mean)
+    )
+    barBiotoop(data = subData)$plot
     
   })
 

@@ -1208,6 +1208,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Title for selected region level
       output$biotoopTitle <- renderUI({
           
+          req(type != "empty")
+          
           uiText <- uiText[uiText$plotFunction == "barBiotoop", ]
           
           tagList(
@@ -1234,9 +1236,21 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Plot
       results$biotoopPlotData <- reactive({
           
-          if (!is.null(currentWbe()))
+          subData <- if (!is.null(currentWbe()))
             biotoopData[biotoopData$year == input$year & biotoopData$regio %in% currentWbe(), ] else
             subset(biotoopData[[req(results$regionLevel())]], regio %in% results$region_value)
+          
+          if (!is.null(input$combinatieBiotoop) && input$combinatieBiotoop) {
+            subData$regio <- "Totaal"
+            subData <- merge(
+              aggregate(subData[, grepl("Area", colnames(subData))], 
+                by = list(regio = subData$regio), FUN = sum),
+              aggregate(subData[, grepl("perc", colnames(subData))], 
+                by = list(regio = subData$regio), FUN = mean)
+            )
+          }
+          
+          subData
           
         })
       
@@ -1390,7 +1404,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
           
         },
 
-      if (showCombine)
+      if (showCombine & "region" %in% plotDetails)
         checkboxInput(inputId = ns("combinatie"), 
           label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)"),
       actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
@@ -1414,6 +1428,9 @@ mapFlandersUI <- function(id, showRegion = TRUE,
       if ("biotoop" %in% plotDetails)
         column(6, 
           uiOutput(ns("biotoopPlotText")),
+          if (showCombine)
+            checkboxInput(inputId = ns("combinatieBiotoop"), 
+              label = "Combineer alle geselecteerde regio's"),
           plotModuleUI(id = ns("biotoopPlot"), height = "400px"),
           optionsModuleUI(id = ns("biotoopPlot"), exportData = TRUE,
             doWellPanel = FALSE)

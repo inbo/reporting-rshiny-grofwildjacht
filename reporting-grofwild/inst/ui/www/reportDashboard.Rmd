@@ -6,7 +6,6 @@ date: "`r format(Sys.Date(), '%d-%m-%Y')`"
 toc-title: "Inhoudsopgave"
 output: 
    oaStyle::pdf_report:
-      keep_tex: true
       logo: NULL
       bigLogoSize: 15cm
       always_allow_html: yes
@@ -47,8 +46,7 @@ print(HTML(uiText[uiText$plotFunction == "barBiotoop", "dash"]))
 ```
 
 ```{r 'biotoopPlot'}
-barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot %>%
-  config(displayModeBar = FALSE)
+plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot)
 ```
 
 ```{r 'biotoopTableText', results = 'asis'}

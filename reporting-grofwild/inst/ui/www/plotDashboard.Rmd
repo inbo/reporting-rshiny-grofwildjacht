@@ -67,11 +67,15 @@ print(HTML(uiText[uiText$plotFunction == id, "dash"]))
   
 # Plot
 if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {
+  # leaflet
   tmpFile <- tempfile(fileext = ".html")
   htmlwidgets::saveWidget(results[[paste0("dash_", id)]]()$plot, file = tmpFile, selfcontained = FALSE)
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 } else {
-  tmp <- results[[paste0("dash_", id)]]()$plot %>% config(displayModeBar = FALSE)
+  # plotly
+  tmp <- plotlyReport(results[[paste0("dash_", id)]]()$plot)
+  
+  # plot size
   if (id %in% c("F14_3", "F14_5")) {
     tmp$height <- "1200px"
     tmp$width <- "900px"

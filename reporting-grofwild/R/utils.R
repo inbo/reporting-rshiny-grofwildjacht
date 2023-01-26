@@ -334,3 +334,31 @@ getDisclaimerLimited <- function(doHTML = TRUE) {
     myText
 
 }
+
+
+#' Style plotly object for Rmd report
+#' 
+#' @param myPlot plotly object
+#' @return plotly object
+#' 
+#' @author mvarewyck
+#' @import plotly
+#' @export
+plotlyReport <- function(myPlot) {
+  
+  myPlot <- myPlot %>% config(displayModeBar = FALSE)
+  
+  # remove gridlines
+  if (is.null(myPlot$x$layoutAttrs[[1]]$xaxis))
+    myPlot$x$layoutAttrs[[1]]$xaxis <- list(showgrid = FALSE) else
+    myPlot$x$layoutAttrs[[1]]$xaxis$showgrid <- FALSE
+#  myPlot$x$layoutAttrs[[1]]$xaxis$ticks <- "outside"
+  
+  if (is.null(myPlot$x$layoutAttrs[[1]]$yaxis))
+    myPlot$x$layoutAttrs[[1]]$yaxis <- list(showgrid = FALSE) else
+    myPlot$x$layoutAttrs[[1]]$yaxis$showgrid <- FALSE
+#  myPlot$x$layoutAttrs[[1]]$yaxis$ticks <- "outside"
+  
+  myPlot
+  
+}

@@ -32,13 +32,18 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
       
     } else {
       
+      sourcesSchade <- unique(plotData$dataSource)
+      names(sourcesSchade) <- sourcesSchade
+      
       plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
       
     }
     
     if (nrow(plotData) == 0)
       if (returnStop == "message")
-        stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
+        if (all(names(sourcesSchade) %in% sourceIndicator))
+          stop("Geen data beschikbaar") else
+          stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
     
   }
   

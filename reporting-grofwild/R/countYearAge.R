@@ -265,9 +265,9 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
         ),
         column(8, 
           plotModuleUI(id = ns("yearAge"))
-        ),
-        tags$hr()
-      )
+        )
+      ),
+      tags$hr()
     )
   )
   

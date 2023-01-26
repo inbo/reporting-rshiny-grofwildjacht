@@ -251,6 +251,7 @@ results$dash_F16_1 <- countAgeGroupServer(
   id = "dash_F16_1",
   data = reactive({
       plotData <- results$dash_ecoData()[results$dash_ecoData()$geslacht_comp == "Vrouwelijk", ]
+      validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
       plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
         ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig"))
       plotData
@@ -312,13 +313,19 @@ results$dash_titlesJacht <- reactive({
   })
 
 results$dash_drukjachtData <- reactive({      
+    
     drukjachtData <- merge(
       results$dash_ecoData()[results$dash_ecoData()$jachtmethode_comp == "Drukjacht", 
         c("ID", "afschot_datum", "afschotjaar", "provincie", "wildsoort")], 
       everGeoData[, c("ID", "WBE_Naam_Toek")], 
       by = "ID", all.x = TRUE)[, c("afschot_datum", "afschotjaar", "WBE_Naam_Toek", "provincie", "wildsoort")]
     # Keep unique records per WBE & date
-    drukjachtData[!duplicated(drukjachtData), ]      
+    drukjachtData <- drukjachtData[!duplicated(drukjachtData), ]
+    
+    validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
+    
+    drukjachtData
+    
   })
 
 results$dash_F04_3 <- countYearProvinceServer(id = "dash", 

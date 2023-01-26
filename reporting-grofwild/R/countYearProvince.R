@@ -216,9 +216,9 @@ countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvince",
         ),
         column(8, 
           plotModuleUI(id = ns("yearProvince"))
-        ),
-        tags$hr()
-      )
+        )
+      ),
+      tags$hr()
     )
   )
   

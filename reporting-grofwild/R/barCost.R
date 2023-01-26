@@ -213,9 +213,9 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
         ),
         column(8, 
           plotModuleUI(id = ns("barCost"))
-        ),
-        tags$hr()
-      )
+        )
+      ),
+      tags$hr()
     )    
   )
   

@@ -55,14 +55,7 @@ tagList(
     ),
     
     getDisclaimerLimited(),
-    
-#    actionButton(inputId = "dash_submit", label = "Maak dashboard"),
-    singleton(
-      tags$head(tags$script(src = "www/triggerDownload.js"))
-    ),
-    actionButton(inputId = "dash_createReport", label = "Maak pdf"),
-    downloadLink("dash_downloadReport", " "),
-    
+        
     tags$hr(),
     
     tags$div(id = "dash_results", 
@@ -195,6 +188,18 @@ tagList(
     # White space at the bottom
     tags$br()
   
+  ),
+  
+  tags$div(class = "footer",
+    tags$div(class = "footer-content",
+      singleton(
+        tags$head(tags$script(src = "www/triggerDownload.js"))
+      ),
+      actionButton(inputId = "dash_createReport", label = "Maak pdf"),
+      downloadLink("dash_downloadReport", " ")
+    )
   )
-  )
+
+)
+
 )

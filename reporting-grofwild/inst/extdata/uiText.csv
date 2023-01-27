@@ -21,7 +21,7 @@ countYearProvinceUI,FIGUUR: Gerapporteerd aantal per jaar en per regio,Het gerap
 countYearShotUI-jachtmethode_comp,FIGUUR: Afschot per jachtmethode,Aandeel van afschot per jachtmethode over de jaren heen.,,Aandeel van afschot per jachtmethode over de jaren heen.
 countYearShotUI-leeftijd_comp,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.
 mapAfschotUI,KAART: Gerapporteerde afschotlocaties,,,"Het weergegeven afschot werd geselecteerd o.b.v. de aan de WBE toegekende labels.
-Afschot dat zich buiten de grenzen van de wbe of in de bebouwde kom bevind werd zo aangeduid op het e-loket"
+Afschot dat zich buiten de grenzen van de wbe of in de bebouwde kom bevindt, werd zo aangeduid op het e-loket"
 mapFlandersUI,,,,placeholder tekst kaart
 mapSchadeUI,KAART: Schademeldingen,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.

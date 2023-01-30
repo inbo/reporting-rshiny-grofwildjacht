@@ -22,7 +22,7 @@ countYearShotUI-jachtmethode_comp,FIGUUR: Afschot per jachtmethode,Aandeel van a
 countYearShotUI-leeftijd_comp,FIGUUR: Verdeling afschot over de jaren,Verdeling van afschot over de jaren heen opgesplitst per interval.,,Verdeling van afschot over de jaren heen opgesplitst per interval.
 mapAfschotUI,KAART: Gerapporteerde afschotlocaties,,,"Het weergegeven afschot werd geselecteerd o.b.v. de aan de WBE toegekende labels.
 Afschot dat zich buiten de grenzen van de wbe of in de bebouwde kom bevindt, werd zo aangeduid op het e-loket"
-mapFlandersUI,,,,placeholder tekst kaart
+mapFlandersUI,,,,"Op onderstaand kaartje worden de, van 15 april van het gekozen jaar tot 15 april van het volgende jaar, bij de WBE aangesloten jachtterreinen weergegeven. <i>De doorstroom van de jachtterreinen is momenteel een 'work in progress', hierdoor is het mogelijk dat de jachtterreinen voor het recentste jaar niet beschikbaar zijn.</i>"
 mapSchadeUI,KAART: Schademeldingen,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.

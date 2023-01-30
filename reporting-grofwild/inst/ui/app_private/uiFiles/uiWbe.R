@@ -92,6 +92,16 @@ tagList(
     h2("Extra Figuren en Tabellen"),
     
     conditionalPanel("output.wbe_emptyAfschot == false",
+      
+      mapSchadeUI(id = "wbe_afschot",
+        uiText = uiText[uiText$plotFunction == "mapAfschotUI", ],
+        filterSource = FALSE, filterAccuracy = TRUE,
+        variableChoices = c(
+          "Seizoen" = "season",
+          "Jaar" = "afschotjaar",
+          "Jachtmethode" = "jachtmethode_comp")
+      ),
+      
       ## tableSpecies: wild zwijn and ree
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
           
@@ -119,14 +129,7 @@ tagList(
         ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
         percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText)
       ),
-      
-      mapSchadeUI(id = "wbe_afschot",
-        uiText = uiText[uiText$plotFunction == "mapAfschotUI", ],
-        filterSource = FALSE, filterAccuracy = TRUE,
-        variableChoices = c(
-          "Seizoen" = "season",
-          "Jaar" = "afschotjaar")
-      ),
+
       
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
         bioindicatorSection(id = "wbe", uiText = uiText),

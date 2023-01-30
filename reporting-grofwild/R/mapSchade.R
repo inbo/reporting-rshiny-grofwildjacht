@@ -66,19 +66,26 @@ createSchadeSummaryData <- function(schadeData, timeRange,
 #' need at least \code{c("season", "afschotjaar", "verbatimLatitude", "verbatimLongitude", "PuntLocatieTypeID")}
 #' @param accuracy numeric vector, accuracy levels to filter
 #' @return SpatialPointsDataFrame from \code{data}
+#' @inheritParams createSchadeSummaryData
 #' 
 #' @author mvarewyck
 #' @importFrom sp CRS
 #' @export
-createAfschotLocationsData <- function(data, accuracy = NULL) {
+createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
   
-  mapData <- data[, c("wildsoort", "season", "afschotjaar", 
+  mapData <- data[, c("wildsoort", "season", "afschotjaar", "jachtmethode_comp",
       "verbatimLatitude", "verbatimLongitude", "PuntLocatieTypeID")]
-  nTotal <- nrow(mapData)
   
-  mapData <- mapData[!is.na(mapData$verbatimLatitude) & !is.na(mapData$verbatimLongitude), ]
+  # Filter on accuracy
   if (!is.null(accuracy))
     mapData <- mapData[mapData$PuntLocatieTypeID %in% accuracy, ]
+  # Filter on time period
+  mapData <- mapData[mapData$afschotjaar %in% timeRange[1]:timeRange[2], ]
+  
+  nTotal <- nrow(mapData)
+  
+  # Exclude NAs
+  mapData <- mapData[!is.na(mapData$verbatimLatitude) & !is.na(mapData$verbatimLongitude), ]
   nAvailable <- nrow(mapData)
   
   if (nAvailable == 0)
@@ -106,6 +113,11 @@ createAfschotLocationsData <- function(data, accuracy = NULL) {
 formatSchadeSummaryData <- function(summarySchadeData) {
 	
   formatData <- summarySchadeData@data
+  
+  # Change values
+  if ("PuntLocatieTypeID" %in% colnames(formatData))
+    formatData$PuntLocatieTypeID <- ifelse(is.na(formatData$PuntLocatieTypeID), 
+      "Onbekend", c("Exact", NA, "Binnen 250m", NA, "Binnen een gebied")[formatData$PuntLocatieTypeID])
   
   # change variable names
   newNames <- c(
@@ -148,7 +160,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 mapSchade <- function(
         schadeData, 
         regionLevel, 
-        variable = c("season", "schadeCode", "afschotjaar"),
+        variable = c("season", "schadeCode", "afschotjaar", "jachtmethode_comp"),
         allSpatialData,
         addGlobe = FALSE,
         legend = "topright"
@@ -179,8 +191,6 @@ mapSchade <- function(
       centerView <- c(range(coordData$long), range(coordData$lat))
     }
     
-#    print(centerView)
-#    print(apply(coordinates(schadeData), 2, range))
     
     myMap <- leaflet(schadeData) %>%
             
@@ -199,8 +209,6 @@ mapSchade <- function(
                               paste0("<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode),
                             if ("season" %in% colnames(schadeData))
                               "<li><strong> Seizoen </strong>: ", schadeData$season,
-#                            "<li><strong> x </strong>: ", coordinates(schadeData)[, 1],
-#                            "<li><strong> y </strong>: ", coordinates(schadeData)[, 2],
                             "</ul>"
                     )
             ) %>%
@@ -357,7 +365,8 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
               "per", switch(input$variable, 
                 season = "seizoen",
                 schadeCode = "schadetype",
-                afschotjaar = "jaar"),
+                afschotjaar = "jaar",
+                jachtmethode_comp = "jachtmethode"),
               ifelse(input$time_schade[1] != input$time_schade[2],
                 paste0("(", input$time_schade[1], " tot ", input$time_schade[2], ")"),
                 paste0("(", input$time_schade[1], ")")
@@ -433,7 +442,8 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
               need(input$accuracy, "Gelieve nauwkeurigheid te selecteren"))
             
             toReturn <- createAfschotLocationsData(data = schadeData(),
-              accuracy = input$accuracy)            
+              accuracy = input$accuracy,
+              timeRange = input$time_schade)            
             
             # Check after filtering
             validate(need(!is.null(toReturn), "Geen data beschikbaar"))
@@ -544,7 +554,8 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
             content = paste0(type, "Kaart", switch(input$variable, 
               season = "Seizoen", 
               schadeCode = "TypeSchade",
-              afschotjaar = "SchadeJaar")), 
+              afschotjaar = "SchadeJaar",
+              jachtmethode_comp = "Jachtmethode")), 
             fileExt = "png"),
         content = function(file) {
           file.copy(map(), file, overwrite = TRUE)

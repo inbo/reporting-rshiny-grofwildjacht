@@ -141,7 +141,8 @@ test_that("Biotoop", {
 
 test_that("Afschot locaties", {
     
-    mapData <- createAfschotLocationsData(data = combinedRee, accuracy = 1)
+    mapData <- createAfschotLocationsData(data = combinedRee, accuracy = 1, 
+      timeRange = range(combinedRee$afschotjaar))
     mapSchade(schadeData = mapData, 
       regionLevel = "WBE_buitengrenzen_2018", 
       variable = c("season", "schadeCode", "afschotjaar")[3],

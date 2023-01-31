@@ -264,7 +264,7 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 #' @export
 createSpreadData <- function(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
-  saveDir = system.file("extdata/futureSpread", package = "reportingGrofwild"),
+  saveDir = system.file("extdata", package = "reportingGrofwild"),
   spatialData) {
   
   # currently only unit of interest

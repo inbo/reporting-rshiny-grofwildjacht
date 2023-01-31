@@ -370,11 +370,10 @@ test_that("F18_1", {
 # Toekomstig verspreidingsgebied
 test_that("F17_4", {
     
-    spreadShape <- loadSpreadData(spatialLevel = "municipalities")
-#    spreadShape <- loadSpreadData(spatialLevel = "pixels")
+    load(file.path(dataDir, "spreadData.RData"))
     
     myMap <- mapSpread(
-      spreadShape = spreadShape, 
+      spreadShape = spreadData[["municipalities"]], 
       legend = "bottomright",
       addGlobe = TRUE
     )

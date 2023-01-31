@@ -9,13 +9,7 @@ everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 # Combine waarnemingen.be & afschot
-everWaarnemingen <- data.table::fread(file = file.path(dataDir, "waarnemingen_2022.csv"), drop = 1)[, 
-  c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
-#rename variables to keep
-data.table::setnames(everWaarnemingen, 
-  old = c("jaar", "gemeente", "TAG"),
-  new = c("afschotjaar", "gemeente_afschot_locatie", "UTM5")
-)
+everWaarnemingen <- data.table::fread(file = file.path(dataDir, "waarnemingen_wild_zwijn_processed.csv"))
 everGeoAll <- rbind(everWaarnemingen, cbind(everGeoData, data.frame(dataSource = "afschot")), fill = TRUE)
 everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
 
@@ -365,13 +359,13 @@ results$dash_titlesSchade <- reactive({
     
   })
 
-results$dash_F06_1 <- mapSpreadServer(id = "dash_F06_1",
-  regionLevel = reactive(input$dash_regionLevel),
-  locaties = reactive(input$dash_locaties),
-  allSpatialData = spatialData,
-  type = "F06",
-  title = reactive(names(results$dash_titlesSchade()[results$dash_titlesSchade() == "F06_1"]))
-) 
+#results$dash_F06_1 <- mapSpreadServer(id = "dash_F06_1",
+#  regionLevel = reactive(input$dash_regionLevel),
+#  locaties = reactive(input$dash_locaties),
+#  allSpatialData = spatialData,
+#  type = "F06",
+#  title = reactive(names(results$dash_titlesSchade()[results$dash_titlesSchade() == "F06_1"]))
+#) 
 
 results$dash_F07_1 <- barCostServer(id = "dash_F07_1",
   data = reactive(results$dash_schadeData()@data),

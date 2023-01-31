@@ -24,7 +24,11 @@ load(file = file.path(dataDir, "spatialData.RData"))
 # createWaarnemingenData()
 
 # This will update trafficData
-#createTrafficData()
+# createTrafficData()
+
+# This will update spreadData
+# createSpreadData(spatialData = spatialData)
+
 
 
 

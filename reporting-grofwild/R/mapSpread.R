@@ -36,7 +36,7 @@ paletteMap <- function(variable, groupNames) {
 
 #' Create leaflet map for the spread of a species
 #' 
-#' @param spreadShape SpatialPolygonsDataFrame as loaded by \code{loadSpreadData}
+#' @param spreadShape SpatialPolygonsDataFrame as created by \code{createSpreadData}
 #' @param startYear integer, starting year; only relevant for pixels & model unit 
 #' @inheritParams mapFlanders
 #' @return leaflet map
@@ -222,6 +222,22 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
+      observe({
+          
+          dataDir <- system.file("extdata", package = "reportingGrofwild")
+          
+          if (type == "F17_4") {
+            # For R CMD check
+            spreadData <- NULL
+            load(file = file.path(dataDir, "spreadData.RData")) 
+          } else if (type == "F06") {
+            # For R CMD check
+            trafficData <- NULL
+            load(file = file.path(dataDir, "trafficData.RData"))
+          } 
+          
+        })
+      
       
       ## Map for spread ##
       ## -------------- ##
@@ -230,18 +246,13 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
           if (type == "F17_4") {
             
-            loadSpreadData(
-              spatialLevel = req(input$regionLevel),
-              unit = "model_EP"
-            )
+            req(spreadData)
+            spreadData[[req(input$regionLevel)]]
             
           } else if (type == "F06") {
             
-            dataDir <- system.file("extdata", package = "reportingGrofwild")
-            # For R CMD check
-            trafficData <- NULL
-            load(file = file.path(dataDir, "trafficData.RData"))
-            return(trafficData)
+            req(trafficData)
+            trafficData
             
           }
           

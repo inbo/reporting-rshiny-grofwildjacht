@@ -129,10 +129,10 @@ tagList(
     conditionalPanel("output.dash_schadeIndicatoren.length > 0",
       h2(toupper("Schade"))),
     
-    # Note: F06_1, F06_2 and F06_3 combined
-    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F06_1') > -1", 
-      mapSpreadUI(id = "dash_F06_1", uiText = uiText, showLayer = TRUE)
-    ),
+#    # Note: F06_1, F06_2 and F06_3 combined
+#    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F06_1') > -1", 
+#      mapSpreadUI(id = "dash_F06_1", uiText = uiText, showLayer = TRUE)
+#    ),
     
     conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_1') > -1", 
       barCostUI(id = "dash_F07_1", uiText = uiText, 
@@ -195,7 +195,8 @@ tagList(
       singleton(
         tags$head(tags$script(src = "www/triggerDownload.js"))
       ),
-      actionButton(inputId = "dash_createReport", label = "Maak pdf"),
+      actionButton(inputId = "dash_createReport", label = "Maak rapport", 
+        icon = icon("file-pdf")),
       downloadLink("dash_downloadReport", " ")
     )
   )

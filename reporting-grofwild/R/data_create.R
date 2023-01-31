@@ -13,11 +13,13 @@
 #' @param dataDir character, path to data files
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
-#' @return save to dataDir object spatialData, i.e. a list with for each 
-#' spatial level a SpatialPolygonsDataFrame object, 
+#' @return boolean, whether file is successfully saved;
+#' save to dataDir list with spatial list for WBE and non-WBE level.
+#' Each contain a list with for each spatial level a SpatialPolygonsDataFrame object, 
 #' with polygons and data as provided in the dataDir; spatial levels are 
-#' flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
+#' (1) flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
 #' and provincesVoeren (Voeren as separate province)
+#' (2) WBE_buitengrenzen and WBE
 #' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
 #' @importFrom methods slot
 #' @importFrom maptools unionSpatialPolygons spRbind
@@ -185,6 +187,8 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
   spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
   save(spatialData, file = file.path(dataDir, "spatialData.RData"))
   
+  return(TRUE)
+  
 }
 
 
@@ -194,25 +198,27 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
 #' 
 #' @param dataFile path to read current waarnemeningen data
 #' @param saveDir path to write new waarnemingen data
-#' @return TRUE if creation succeeded
+#' @return boolean, whether file is successfully saved
 #' 
 #' @author mvarewyck
 #' @importFrom sf st_as_sf st_transform
 #' @importFrom data.table fread
 #' @export
 createWaarnemingenData <- function(
-  dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2018.csv",
+  dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2022.csv",
   saveDir = system.file("extdata", package = "reportingGrofwild")) {
   
   
   waarnemingen <- data.table::fread(
     dataFile, 
-    select = c("id", "jaar", "NAAM", "TAG", "aantal"),
+    select = c("jaar", "NAAM", "TAG", "aantal"),
     dec = ","
   )
-  colnames(waarnemingen) <- c("id", "afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
+  colnames(waarnemingen) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
   
-  write.csv(waarnemingen, file = file.path(saveDir, basename(dataFile)), 
+  waarnemingen <- waarnemingen[, c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
+  
+  write.csv(waarnemingen, file = file.path(saveDir, "waarnemingen_wild_zwijn_processed.csv"), 
     row.names = FALSE)
   
   return(TRUE)   
@@ -240,3 +246,98 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
   return(TRUE)
   
 }
+
+
+
+
+#' Create shape data for dashboard wild zwijn - future spread F17_4
+#' 
+#' @inheritParams createShapeData
+#' @param unit character, characteristic that defines the polygons and color coding
+#' should be one of \code{c("model_EP", "model_OH", "risk_EP", "risk_OH")}
+
+#' @return boolean, whether file is successfully saved
+#' save list of SpatialPolygonsDataFrame for each spatial level (pixels and municipalities)
+#' as used in \code{\link{mapSpread}}
+#' 
+#' @author mvarewyck
+#' @export
+createSpreadData <- function(
+  jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
+  saveDir = system.file("extdata/futureSpread", package = "reportingGrofwild"),
+  spatialData) {
+  
+  # currently only unit of interest
+  unit <- "model_EP"
+  
+  spatialFiles <- list(
+    # pixels
+    pixels = "Pixels_ModelOutput_toekomst_verspr",
+    # gemeente
+    municipalities = "Municipalities_ModelOutput_toekomst_verspr"
+  )
+  
+  spreadData <- sapply(names(spatialFiles), function(spatialLevel) {
+      
+      spatialFile <- sort(grep(spatialFiles[[spatialLevel]], list.files(jsonDir, pattern = ".shp"), value = TRUE))
+      # Most recent file
+      spatialFile <- spatialFile[length(spatialFile)]
+      
+      unitChoices <- if (spatialLevel == "pixels")
+          c("Mdl_EP_", "Mdl_OH_", "Rsc_ExP", "Rsc_OpH") else
+          c("M_EP_A_", "M_OH_A_", "M_EP__G_", "M_OH__G_")
+      unitVariable <- unitChoices[match(unit, c("model_EP", "model_OH", "risk_EP", "risk_OH"))]
+      
+      baseMap <- rgdal::readOGR(file.path(jsonDir, spatialFile)) %>%
+        sp::spTransform(CRS("+proj=longlat +datum=WGS84"))
+      
+      # Modify data
+      ## Risico
+      riskLevels <- c("Hoog risico", "Gemiddeld risico", "Laag risico", "Verwaarloosbaar risico") 
+      if (spatialLevel == "pixels") {
+        baseMap$Rsc_ExP <- factor(baseMap$Rsc_ExP, levels = riskLevels)
+        baseMap$Rsc_OpH <- factor(baseMap$Rsc_OpH, levels = riskLevels)
+      } else {
+        baseMap$M_EP__G_ <- factor(baseMap$M_EP__G_, levels = riskLevels)
+        baseMap$M_OH__G_ <- factor(baseMap$M_OH__G_, levels = riskLevels)
+      }
+      
+      # Outcome
+      modelShape <- subset(baseMap, !is.na(baseMap@data[, unitVariable]))
+      modelShape[[unitVariable]] <- as.factor(modelShape[[unitVariable]])
+      
+      modelShape$outcome <- modelShape[[unitVariable]]
+        
+      # Start
+      startVariable <- switch(unitVariable,
+        Mdl_EP_ = "Strt_EP",
+        Mdl_OH_ = "Strt_OH",
+        NULL
+      )
+      
+      if (!is.null(startVariable))
+        modelShape$start <- modelShape[[startVariable]]
+      
+      modelShape@data <- modelShape@data[, c(if (spatialLevel == "pixels") "ID" else "Communs", 
+          "outcome", 
+          if (!is.null(startVariable)) "start")]
+      
+      # Add Voeren
+      if (spatialLevel == "municipalities") {
+        voerenShape <- spatialData$communes[spatialData$communes@data$NAAM == "Voeren", ]
+        voerenShape@data <- data.frame(Communs = "Voeren", outcome = "Al aanwezig")
+        modelShape <- rbind(modelShape, voerenShape)
+      }
+      
+      attr(modelShape, "unit") <- unit
+      attr(modelShape, "spatialLevel") <- spatialLevel
+      attr(modelShape, "year") <- as.numeric(tail(strsplit(tools::file_path_sans_ext(spatialFile), split = "_")[[1]], n = 1))
+      
+      modelShape
+      
+    })
+    
+    save(spreadData, file = file.path(dataDir, "spreadData.RData"))
+
+} 
+

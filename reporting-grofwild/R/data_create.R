@@ -265,7 +265,10 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 createSpreadData <- function(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
   saveDir = system.file("extdata", package = "reportingGrofwild"),
-  spatialData) {
+  spatialData = NULL) {
+  
+  if (is.null(spatialData))
+    load(file = file.path(saveDir, "spatialData.RData"))
   
   # currently only unit of interest
   unit <- "model_EP"

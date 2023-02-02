@@ -304,18 +304,16 @@ loadRawData <- function(
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
   ## Replace decimal comma by dot
-  if ("ontweid_gewicht" %in% names(rawData))
-    rawData$ontweid_gewicht <- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
+  for (iVar in c("ontweid_gewicht", "lengte_mm", "onderkaaklengte_comp", "verbatimLatitude", "verbatimLongitude"))
+    if (iVar %in% names(rawData))
+      rawData[, iVar] <- as.numeric(sub("\\,", ".", rawData[, iVar]))
+  
   
   ## Replace decimal comma by dot & rename
   if ("lengte_mm" %in% names(rawData)) {
-    rawData$onderkaaklengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+    rawData$onderkaaklengte_mm <- rawData$lengte_mm
     rawData$lengte_mm <- NULL
   }
-  
-  ## Replace decimal comma by dot
-  if ("onderkaaklengte_comp" %in% names(rawData))
-    rawData$onderkaaklengte_comp <- as.numeric(sub("\\,", ".", rawData$onderkaaklengte_comp))
   
   ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
   if ("provincie" %in% names(rawData))
@@ -356,6 +354,8 @@ loadRawData <- function(
     rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
         NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
     
+    # Drop unused columns
+    rawData$verbatimCoordinateUncertainty <- NULL
     
   } else if (type == "eco") {
     ## ECO data for grofwild
@@ -372,6 +372,8 @@ loadRawData <- function(
       levels = c(newLevels[["leeftijd_comp"]], "Niet ingezameld"))
     rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
     
+    # Define season
+    rawData$season <- getSeason(rawData$afschot_datum)
     
     # Redefine names and ordering of factor levels
     rawData$type_comp <- simpleCap(rawData$type_comp)
@@ -436,7 +438,7 @@ loadRawData <- function(
         rawData$provincie <- factor(ifelse(is.na(rawData$provincie), "Onbekend", as.character(rawData$provincie)), levels = c(levels(rawData$provincie), "Onbekend"))
         rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
         
-              # Define season
+        # Define season
         rawData$season <- getSeason(rawData$afschot_datum)
         # Fix for korrelmais
         rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"

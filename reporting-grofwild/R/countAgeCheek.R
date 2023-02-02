@@ -71,7 +71,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
   # disable graph only when not all age-groups are present 
   if (!all(sapply(newLevels, function(x) x %in% unique(plotData$kaak)))) {
     if (length(jaartallen) >= 2) 
-      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ", min(jaartallen)," en ", max(jaartallen[2]),"!"))
+      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ", min(jaartallen)," en ", max(jaartallen),"!"))
     else 
     stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen in het jaar ", jaartallen,"!"))
 	}

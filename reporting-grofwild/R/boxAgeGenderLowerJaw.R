@@ -70,9 +70,11 @@ boxAgeGenderLowerJaw <- function(data,
 	names(colors) <- unique(plotData$geslacht)
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))
-	nIndices <- nrow(totalCounts)/2
-	totalCounts$index[totalCounts$geslacht == "Mannelijk"] <- (-2/3 + seq_len(nIndices))/nIndices
-	totalCounts$index[totalCounts$geslacht == "Vrouwelijk"] <- (-1/3 + seq_len(nIndices))/nIndices
+  # needed when some groups have NA
+  totalCounts <- merge(expand.grid(geslacht = unique(totalCounts$geslacht), leeftijd = unique(totalCounts$leeftijd)), totalCounts, all.x = TRUE)
+  nIndices <- nrow(totalCounts) / 2
+  totalCounts$index[totalCounts$geslacht == "Vrouwelijk"] <- (-2/3 + seq_len(nIndices))/nIndices
+  totalCounts$index[totalCounts$geslacht == "Mannelijk"] <- (-1/3 + seq_len(nIndices))/nIndices
 	
 	title <- paste0(wildNaam, " onderkaak lengte ",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), 
@@ -89,13 +91,14 @@ boxAgeGenderLowerJaw <- function(data,
 					width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Categorie"), 
-					yaxis = list(title = "Onderkaaklengte (mm)"),
+					yaxis = list(title = "Onderkaaklengte (mm)", range = c(0, max(plotData$onderkaaklengte))),
 					margin = list(b = 120, t = 100),
 					boxmode = "group",
-					annotations = list(x = totalCounts$index, 
-							y = -diff(range(plotData$onderkaaklengte, na.rm = TRUE))/10, 
-							xref = "paper", text = totalCounts$freq, xanchor = 'center', 
-							yanchor = 'bottom', showarrow = FALSE)
+          annotations = list(
+            x = totalCounts$index, xref = "paper", xanchor = 'center',
+            y = 0.05, yref = "paper", yanchor = "top",
+            text = ifelse(is.na(totalCounts$freq), "", totalCounts$freq),  
+            showarrow = FALSE)
 			) %>%
       
       add_annotations(

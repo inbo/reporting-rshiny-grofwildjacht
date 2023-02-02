@@ -27,7 +27,6 @@ mapSchadeUI,KAART: Schademeldingen,,,
 percentageRealisedShotUI,FIGUUR: Gerealiseerd afschot per jaar,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
 Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.
 Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.",,"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.
-Het percentage bovenaan de staven geeft de graad van verwezenlijking weer.
 Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels."
 plotBioindicatorUI-onderkaaklengte,FIGUUR: Onderkaaklengte per jaar (INBO of Meldingsformulier),"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).
 </br>Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.",,"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).

@@ -178,13 +178,15 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
     allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
         iYear <- levels(summaryData$afschotjaar)[i]
         plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
-            x = ~timeChar, y = ~value, type = "bar", 
+            x = ~timeChar, y = ~value, 
+            text = paste0("Totaal in ", iYear, ": ", totalCount$value[totalCount$year == iYear]),
+            type = "bar", hoverinfo = 'x+y+text+name', 
             color = ~get(groupVariable), colors = colors,
             legendgroup = ~get(groupVariable), showlegend = i == 1,
             width = width, height = height) %>%
           layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
           add_annotations(
-            text = paste0(iYear, " (n= ", totalCount$value[totalCount$year == iYear], ")"),
+            text = iYear,
             x = newLevels[round(length(newLevels)/2)], y = 0, xref = paste0("x", if (i != 1) i), yref = "paper", 
             yanchor = "top", textangle = 90, showarrow = FALSE)
       })

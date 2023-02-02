@@ -24,6 +24,7 @@ biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["w
 
 
 currentKbo <- 452846379
+# currentKbo <- unique(geoData$KboNummer_Toek[geoData$WBE_Naam_Toek %in% "De Zwarte Beek"])
 # Find KBO with many species
 # which.max(sapply(allWbe, function(wbe) length(unique(geoData$wildsoort[geoData$KboNummer_Toek == wbe]))))
 
@@ -134,6 +135,19 @@ test_that("Biotoop", {
     
     expect_equal(sum(result$data$Waarde[-(1:2)]), 100)
     
+    
+  })
+
+
+test_that("Afschot locaties", {
+    
+    mapData <- createAfschotLocationsData(data = combinedRee, accuracy = 1, 
+      timeRange = range(combinedRee$afschotjaar))
+    mapSchade(schadeData = mapData, 
+      regionLevel = "WBE_buitengrenzen_2018", 
+      variable = c("season", "schadeCode", "afschotjaar")[3],
+      allSpatialData = spatialData,
+      addGlobe = TRUE)
     
   })
 

@@ -58,6 +58,52 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   plotData
 }
 
+
+#' Create spatial object with afschot locations
+#' which can directly serve as input for \code{\link{mapSchade}}
+#' 
+#' @param data data.frame with ecoData and geoData combined;
+#' need at least \code{c("season", "afschotjaar", "verbatimLatitude", "verbatimLongitude", "PuntLocatieTypeID")}
+#' @param accuracy numeric vector, accuracy levels to filter
+#' @return SpatialPointsDataFrame from \code{data}
+#' @inheritParams createSchadeSummaryData
+#' 
+#' @author mvarewyck
+#' @importFrom sp CRS
+#' @export
+createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
+  
+  mapData <- data[, c("wildsoort", "season", "afschotjaar", "jachtmethode_comp",
+      "verbatimLatitude", "verbatimLongitude", "PuntLocatieTypeID")]
+  
+  # Filter on accuracy
+  if (!is.null(accuracy))
+    mapData <- mapData[mapData$PuntLocatieTypeID %in% accuracy, ]
+  # Filter on time period
+  mapData <- mapData[mapData$afschotjaar %in% timeRange[1]:timeRange[2], ]
+  
+  nTotal <- nrow(mapData)
+  
+  # Exclude NAs
+  mapData <- mapData[!is.na(mapData$verbatimLatitude) & !is.na(mapData$verbatimLongitude), ]
+  nAvailable <- nrow(mapData)
+  
+  if (nAvailable == 0)
+    return(NULL)
+  
+  # Create spatial object
+  coordinates(mapData) <- ~verbatimLongitude + verbatimLatitude
+  proj4string(mapData) <- CRS("+proj=longlat +datum=WGS84")
+  
+  # Annotation on percentage collected
+  attr(mapData, "annotation") <- percentCollected(nAvailable = nAvailable,
+    nTotal = nTotal, text = "gekende afschotlocatie")
+  
+  
+  return(mapData)
+  
+}
+
 #' Format summary schadedata data for download with nice column names and correct column order
 #' @param summarySchadeData spatialPointsDataFrame as obtained from \code{\link{createSchadeSummaryData}}
 #' @return data.frame, dataframe with nicely formatted columnnames and specific column order  
@@ -68,13 +114,24 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 	
   formatData <- summarySchadeData@data
   
-  # change variable names
-  names(formatData)[names(formatData) == "afschotjaar"] <- "jaar"
-  names(formatData)[names(formatData) == "gemeente_afschot_locatie"] <- "locatie"
-  names(formatData)[names(formatData) == "season"] <- "seizoen"
-  names(formatData)[names(formatData) == "schadeBasisCode"] <- "basisTypeSchade"
-  names(formatData)[names(formatData) == "schadeCode"] <- "typeSchade"
+  # Change values
+  if ("PuntLocatieTypeID" %in% colnames(formatData))
+    formatData$PuntLocatieTypeID <- ifelse(is.na(formatData$PuntLocatieTypeID), 
+      "Onbekend", c("Exact", NA, "Binnen 250m", NA, "Binnen een gebied")[formatData$PuntLocatieTypeID])
   
+  # change variable names
+  newNames <- c(
+    "afschotjaar" = "jaar",
+    "gemeente_afschot_locatie" = "locatie",
+    "season" = "seizoen",
+    "schadeBasisCode" = "basisTypeSchade",
+    "schadeCode" = "typeSchade",
+    "PuntLocatieTypeID" = "nauwkeurigheid"
+  )
+  
+  for (i in seq_along(newNames))
+    names(formatData)[names(formatData) == names(newNames)[i]] <- newNames[i]
+    
   
   # re-arrange columns
   firstColumns <- c("jaar", "locatie", "niscode", "postcode")
@@ -103,7 +160,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 mapSchade <- function(
         schadeData, 
         regionLevel, 
-        variable = c("season", "schadeCode", "afschotjaar"),
+        variable = c("season", "schadeCode", "afschotjaar", "jachtmethode_comp"),
         allSpatialData,
         addGlobe = FALSE,
         legend = "topright"
@@ -134,6 +191,7 @@ mapSchade <- function(
       centerView <- c(range(coordData$long), range(coordData$lat))
     }
     
+    
     myMap <- leaflet(schadeData) %>%
             
             addCircleMarkers(
@@ -143,10 +201,14 @@ mapSchade <- function(
                     popup = paste0("<h4>Info</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
-                            "<li><strong> Wildsoort </strong>: ", schadeData$wildsoort, 
-                            "<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie,
-                            "<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode,
-                            "<li><strong> Seizoen </strong>: ", schadeData$season,
+                            if ("wildsoort" %in% colnames(schadeData)) 
+                              paste0("<li><strong> Wildsoort </strong>: ", schadeData$wildsoort),
+                            if ("gemeente_afschot_locatie" %in% colnames(schadeData))
+                              paste0("<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie),
+                            if ("schadeBasisCode" %in% colnames(schadeData))
+                              paste0("<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode),
+                            if ("season" %in% colnames(schadeData))
+                              "<li><strong> Seizoen </strong>: ", schadeData$season,
                             "</ul>"
                     )
             ) %>%
@@ -211,6 +273,9 @@ mapSchade <- function(
 #' @param species character vector, selected species for the plot
 #' @param borderRegion character, for which \code{regionLevel} to show black border;
 #' see also \code{\link{mapSchade}}; default is NULL
+#' @param type character, type of plot this module is used for. Historically
+#' only \code{"schade"}. Later extended to also cover \code{"afschot"}, i.e. 
+#' "gerapporteerde afschot locaties", see also \code{mapAfschotUI}
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -219,7 +284,9 @@ mapSchade <- function(
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
 #' @export
 mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, 
-  defaultYear, species, borderRegion = NULL) {
+  defaultYear, species, borderRegion = NULL, type = c("schade", "afschot")) {
+  
+  type <- match.arg(type)
   
   moduleServer(id,
     function(input, output, session) {
@@ -288,19 +355,29 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           
           nSpecies <- length(species())      
           
-          h3(paste("Schademeldingen", 
+          h3(paste(
+              if (type == "schade")
+                "Schademeldingen" else
+                "Gerapporteerde afschotlocaties", 
               "voor", if (nSpecies > 1) 
                   paste(paste(tolower(species())[1:nSpecies-1], collapse = ", "), "en", tolower(species()[nSpecies])) else
                   tolower(species()),
               "per", switch(input$variable, 
                 season = "seizoen",
                 schadeCode = "schadetype",
-                afschotjaar = "jaar"),
+                afschotjaar = "jaar",
+                jachtmethode_comp = "jachtmethode"),
               ifelse(input$time_schade[1] != input$time_schade[2],
                 paste0("(", input$time_schade[1], " tot ", input$time_schade[2], ")"),
                 paste0("(", input$time_schade[1], ")")
               )
             ))
+          
+        })
+      
+      output$footerPerceel <- renderUI({
+          
+          attr(results$summaryPerceelData(), "annotation")
           
         })
       
@@ -343,19 +420,37 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       # Create data for map, summary of schade data, given year
       results$summaryPerceelData <- reactive({
           
-          validate(need(results$schadeData(), "Geen data beschikbaar"),
-            need(input$time_schade, "Gelieve periode te selecteren"),
-            need(input$bron, "Gelieve data bron te selecteren"))
-         
-          if (nrow(results$schadeData()) == 0)
-            return(results$schadeData())
+          if (type == "schade") {
+            
+            validate(need(results$schadeData(), "Geen data beschikbaar"),
+              need(input$time_schade, "Gelieve periode te selecteren"),
+              need(input$bron, "Gelieve data bron te selecteren"))
+            
+            if (nrow(results$schadeData()) == 0)
+              return(results$schadeData())
+            
+            createSchadeSummaryData(
+              schadeData = results$schadeData(),
+              timeRange = input$time_schade,
+              sourceIndicator = input$bron,
+              fullNames = fullNames)
+            
+          } else {
+            
+            validate(need(schadeData(), "Geen data beschikbaar"),
+              need(input$time_schade, "Gelieve periode te selecteren"),
+              need(input$accuracy, "Gelieve nauwkeurigheid te selecteren"))
+            
+            toReturn <- createAfschotLocationsData(data = schadeData(),
+              accuracy = input$accuracy,
+              timeRange = input$time_schade)            
+            
+            # Check after filtering
+            validate(need(!is.null(toReturn), "Geen data beschikbaar"))
+            toReturn
           
-          createSchadeSummaryData(
-            schadeData = results$schadeData(),
-            timeRange = input$time_schade,
-            sourceIndicator = input$bron,
-            fullNames = fullNames)
-          
+          }
+        
         })
       
       # Map for UI
@@ -394,12 +489,6 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
             legend = input$legend_schade,
             addGlobe = input$globe_schade %% 2 == 0
           )
-          
-          print(list(
-              lng = input$perceelPlot_center$lng,
-              lat = input$perceelPlot_center$lat,
-              zoom = input$perceelPlot_zoom
-            ))
           
           # save the zoom level and centering
           newPerceelMap %>%  setView(
@@ -462,10 +551,11 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
         filename = function()
           nameFile(species = species(),
             year = unique(input$time_schade), 
-            content = switch(input$variable, 
-              season = "kaartSchadeSeizoen", 
-              schadeCode = "kaartSchadeTypeSchade",
-              afschotjaar = "kaartSchadeJaar"), 
+            content = paste0(type, "Kaart", switch(input$variable, 
+              season = "Seizoen", 
+              schadeCode = "TypeSchade",
+              afschotjaar = "SchadeJaar",
+              jachtmethode_comp = "Jachtmethode")), 
             fileExt = "png"),
         content = function(file) {
           file.copy(map(), file, overwrite = TRUE)
@@ -533,18 +623,25 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
 #' default value is FALSE
 #' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
 #' default value is FALSE
+#' @param filterSource boolean, whether to show filter option for source
+#' @param filterAccuracy boolean, whether to show filter option for accuracy
+#' @param variableChoices named character vector, choices for coloring variable
 #' @inheritParams mapFlandersUI
 #' @template moduleUI
 #' 
 #' @author mvarewyck
 #' @importFrom leaflet leafletOutput
 #' @export
-mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText,
-  plotDetails = NULL) {
+mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,  
+  filterSource = TRUE, filterAccuracy = FALSE,
+  variableChoices = c(
+    "Seizoen" = "season",
+    "Jaar" = "afschotjaar",
+    "Type schade" = "schadeCode"),
+  uiText, plotDetails = NULL) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
   metaSchade <- loadMetaSchade()
   
   tagList(
@@ -575,19 +672,24 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText,
         fixedRow(
           column(6, uiOutput(ns("time_schade"))),
           column(6, selectInput(inputId = ns("variable"), label = "Variabele",
-              choices = c(
-                "Seizoen" = "season",
-                "Jaar" = "afschotjaar",
-                "Type schade" = "schadeCode"))
+              choices = variableChoices)
           )
         ),
         fixedRow(
           column(6,
-            selectInput(inputId = ns("bron"),
-              label = "Data bron",
-              choices = names(metaSchade$sources),
-              selected = names(metaSchade$sources),
-              multiple = TRUE)
+            if (filterSource)
+              selectInput(inputId = ns("bron"),
+                label = "Data bron",
+                choices = names(metaSchade$sources),
+                selected = names(metaSchade$sources),
+                multiple = TRUE),
+            if (filterAccuracy)
+              selectInput(inputId = ns("accuracy"),
+                label = "Nauwkeurigheid",
+                choices = c("Exact" = 1, "Binnen 250m" = 3, 
+                  "Binnen een gebied" = 5, "Onbekend" = NA),
+                selected = c(1, 3),
+                multiple = TRUE)
           ),
           column(6, selectInput(inputId = ns("legend_schade"), "Legende (kaart)",
               choices = c("Bovenaan rechts" = "topright",
@@ -602,13 +704,15 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText,
           icon = icon("globe"))
       ),
       
-      tags$p(HTML(uiText[, id])),
+      
+      tags$p(HTML(uiText[, strsplit(id, "_")[[1]][1]])),
       
       fixedRow(
         column(if (length(plotDetails) == 1) 6 else 12,
           
           uiOutput(ns("titlePerceel")),        
           withSpinner(leafletOutput(ns("perceelPlot"))),
+          uiOutput(ns("footerPerceel")),
           tags$br(),
           actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),
           singleton(
@@ -635,5 +739,21 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE, uiText,
   )
 
   
+}
+
+#' Copy of mapSchadeUI as being used for "WBE" pagina
+#' 
+#' @inheritParams mapSchadeUI 
+#' @return UI object
+#' 
+#' @author mvarewyck
+#' @export
+mapAfschotUI <- function(id, filterCode, filterSubcode, filterSource, filterAccuracy,
+  variableChoices, uiText, plotDetails) {
+  
+  mapSchadeUI(id = id, filterCode = filterCode, filterSubcode = filterSubcode, 
+    filterSource = filterSource, filterAccuracy = filterAccuracy,
+    variableChoices = variableChoices, uiText = uiText, plotDetails = plotDetails)
+
 }
 

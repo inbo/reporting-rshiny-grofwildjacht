@@ -57,13 +57,14 @@ shinyServer(function(input, output, session) {
       
       # Tabpanel wildschade
       output$schade_content <- renderUI({
+          
             source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
             
           })
         
         observeEvent(input$tabs, {
-            if (input$tabs == "WBE")
-              browseURL("https://grofwildjacht.inbo.be/WBE")
+            if (input$tabs %in% "WBE")
+              js$browseURL("https://wbe.inbo.be")
           })
       
     })

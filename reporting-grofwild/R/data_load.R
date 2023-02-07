@@ -20,7 +20,9 @@
 #' @importFrom aws.s3 s3save put_object
 #' @importFrom config get
 #' @export
-readShapeData <- function(jsonDir, bucket = config::get("bucket"),
+readShapeData <- function(
+  jsonDir = "~/git/reporting-rshiny-grofwildjacht/data", 
+  bucket = config::get("bucket"),
   tolerance = 0.0001) {
   
   

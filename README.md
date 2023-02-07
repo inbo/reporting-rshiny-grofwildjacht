@@ -25,10 +25,10 @@ If you want to check on the EC2 or locally how the Rshiny App inside the Docker 
 sudo docker run -p 3838:3838 openanalytics/wildapp R -e 'reportingGrofwild::runWildApp()'
 ```
 
-In a similar way, specific R functions can be tested as well. Remember that the data is ported as part of the R-package and stored as such on the Docker:
+In a similar way, an R session can be started to run specific functions of the reportingGrofwild R package.
 
 ```
-sudo docker run -p 3838:3838 openanalytics/wildapp R -e 'library(reportingGrofwild);shapefiles<-readShapeData()'
+sudo docker run -p 3838:3838 openanalytics/wildapp R
 ```
 
 

@@ -1,13 +1,14 @@
 
 In this folder, only the meta data is collected for the Rshiny application.
-All data is moved to an AWS S3 bucket *inbo-wbe-uat-data*. Access keys can be requested with Johan Ripoli.
+All data sources are locked in AWS S3 buckets as specified in the file `reporting-grofwild/inst/config.yml`. 
+Access keys can be obtained upon request. Via the docker image, connection to the data is automatically set up.
 
 # Local Data
 
 ## meta_schade
 
 The `meta_schade.csv` file provides the choices to be shown on the wildschade page for filtering.
-The choices should be a valid subset of all available choices in the schade data ("WildSchade_georef.csv")
+The choices should be a valid subset of all available choices in the schade data ("WildSchade_georef.csv").
 Creation of this file was discussed in https://github.com/inbo/reporting-rshiny-grofwildjacht/issues/254
  
 Column metadata is as follows:
@@ -23,8 +24,9 @@ Column metadata is as follows:
 
 ## uiText
  
-The `uiText.csv` file provides the according text to be shown for each plot/table in the app.
-The text (except for plotFunction column) can be formatted using HTML. E.g.
+The `uiText.csv` file provides the titles and descriptive texts to be shown for each plot/table in the app.
+The column `plotFunction` is used as an identifier to which plot/table the text should be attached, please do not change this column.
+The title and descriptive text can be formatted using HTML. E.g.
 ```
 - Italic font: <i>text</i>
 - Line break: a</br>b
@@ -46,7 +48,8 @@ Creation of this file was discussed in https://github.com/inbo/reporting-rshiny-
 
 ## Update Remote Data
 
-To update a specific file in the S3 bucket, run the following piece of code
+To update a specific file in the S3 bucket, run the following piece of code.
+
 Load the data into an R object
 
 ```
@@ -56,15 +59,45 @@ aws.s3::s3write_using(x = tmpData, FUN = write.csv, row.names = FALSE, object = 
 
 ## Update Spatial Data
 
-To update the following files in the S3 bucket
-(1) spatialData.RData, spatialDataWBE.RData, shape data and
-(2) gemeentecodes.csv, file for matching NIS to NAAM
+The R objects with spatial data are created beforehand and saved in the S3 bucket. 
     
 ```
-readShapeData(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data")   # created shape data
+readShapeData(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data")
 ```
 
-## reporting data files
+This will update the following files in the S3 bucket
+
+* spatialData.RData, shape data for the public app. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), faunabeheerzones, fbz_gemeentes and utm5.
+* spatialDataWBE.RData, shape data for the private app
+* gemeentecodes.csv, file for matching NIS to NAAM
+
+
+When any of the geosjon files (in `jsonDir`) are changed, this function should be run.
+The object `spatialData` can easily be loaded in R by
+
+`readS3(file = "spatialData.RData")`
+
+## GIS data files
+
+The `*.geojson` files are providing GIS data for the grofwild reporting at the geographical levels
+
+* flanders (gewesten): Vlaams Gewest
+* provinces (provincies): West-Vlaanderen, Oost-Vlaanderen, Antwerpen, Vlaams Brabant, Limburg
+* communes (gemeenten): 308 communes following "referentiebestand gemeentegrenzen 2016-01-29"
+* faunabeheerzones: 11 meaningful regions defined by natural and unnatural borders
+* fbz_gemeentes: overlap of faunabeheerzones and communes
+* utm5: 5 x 5 UTM squares
+* WBE_binnengrenzen: per year, outer boundaries of the WBE region
+* Jachtter: per hunting season, boundaries of the hunting areas of each WBE
+
+Data projection is EPSG:31370. 
+Source: [www.geopunt.be](http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen)
+Conversion of data from source to geojson (in terminal)
+`$ ogr2ogr -f "GeoJSON"  -t_srs "EPSG:31370" -s_srs "EPSG:31370" "flanders.geojson" "Refgew.shp"`
+
+
+
+## Data Description
 
 ### grofwild 
 
@@ -139,31 +172,6 @@ In the R-code we rename column variables as indicated in the "Nieuwe Naam" colum
 | x                            | x               | numeric        | x-coordinaat van schadegeval locatie     |
 | y                            | y               | numeric        | y-coordinaat van schadegeval locatie     |
 
-
-
-## GIS data files
-
-The `*.geojson` files are providing GIS data for the grofwild reporting at the geographical levels
-
-* flanders (gewesten): Vlaams Gewest
-* provinces (provincies): West-Vlaanderen, Oost-Vlaanderen, Antwerpen, Vlaams Brabant, Limburg
-* communes (gemeenten): 308 communes following "referentiebestand gemeentegrenzen 2016-01-29"
-* faunabeheerzones: 11 meaningful regions defined by natural and unnatural borders
-* fbz_gemeentes: overlap of faunabeheerzones and communes
-* utm5: 5 x 5 UTM squares
-
-Data projection is EPSG:31370. 
-Source: [www.geopunt.be](http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen)
-Conversion of data from source to geojson (in terminal)
-`$ ogr2ogr -f "GeoJSON"  -t_srs "EPSG:31370" -s_srs "EPSG:31370" "flanders.geojson" "Refgew.shp"`
-
-
-## R data files
-
-The `spatialData.RData` contains a list with for each spatial level a SpatialPolygonsDataFrame object, with polygons and data as loaded with the R function `readShapeData()`. Spatial levels are flanders, provinces, communes, provincesVoeren (Voeren as separate province), faunabeheerzones, fbz_gemeentes and utm5. When any of the geosjon files are changed, this object should be updated by executing in R `readShapeData()`. Next, install the package such that the latest shape data are available in the extdata folder.
-The object `spatialData` can easily be loaded in R by
-
-`readS3(file = "spatialData.RData")`
 
 
 ## reference data

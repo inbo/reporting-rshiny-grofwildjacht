@@ -39,8 +39,7 @@ runWildApp <- function(installDependencies = FALSE,
     
   }
   
-  # (2) Copy the UI files & folders from "inst/ui" for local use
-  
+  # (2) Point to the correct app directory  
   if (public)
     appDir <- system.file("ui/app_public", package = "reportingGrofwild") else
     appDir <- system.file("ui/app_private", package = "reportingGrofwild")

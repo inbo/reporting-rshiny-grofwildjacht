@@ -63,10 +63,11 @@ test_that("Upload data", {
 test_that("Create Shape Data", {
     
     skip("WARNING: This will update and upload spatial data to the S3 bucket")
-    # (1) spatialData.RData, shape data and
-    # (2) gemeentecodes.csv, file for matching NIS to NAAM
+    # spatialData.RData, shape data public app
+    # spatialDataWBE.RData, shape data private app
+    # gemeentecodes.csv, file for matching NIS to NAAM
     
-    readShapeData(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data")   # created shape data
+    readShapeData()   # created shape data
     
   })
 

@@ -23,7 +23,6 @@
 #' @author Eva Adriaensen
 #' @export
 createSchadeSummaryData <- function(schadeData, timeRange,
-    dataDir = system.file("extdata", package = "reportingGrofwild"),
     sourceIndicator = NULL, fullNames = NULL) {
 	
   
@@ -201,14 +200,14 @@ mapSchade <- function(
                     popup = paste0("<h4>Info</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
-                            if ("wildsoort" %in% colnames(schadeData)) 
+                            if ("wildsoort" %in% colnames(schadeData@data)) 
                               paste0("<li><strong> Wildsoort </strong>: ", schadeData$wildsoort),
-                            if ("gemeente_afschot_locatie" %in% colnames(schadeData))
+                            if ("gemeente_afschot_locatie" %in% colnames(schadeData@data))
                               paste0("<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie),
-                            if ("schadeBasisCode" %in% colnames(schadeData))
+                            if ("schadeBasisCode" %in% colnames(schadeData@data))
                               paste0("<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode),
-                            if ("season" %in% colnames(schadeData))
-                              "<li><strong> Seizoen </strong>: ", schadeData$season,
+                            if ("season" %in% colnames(schadeData@data))
+                              paste0("<li><strong> Seizoen </strong>: ", schadeData$season),
                             "</ul>"
                     )
             ) %>%
@@ -383,6 +382,10 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       
       # Filter schade data
       results$schadeData <- reactive({
+          
+          # Already filtered beforehand - no filters in module
+          if (is.null(input$code))
+            return(schadeData())
           
           # Select species & code & exclude data before 2018
           toRetain <- schadeData()@data$wildsoort %in% req(species()) &
@@ -644,12 +647,10 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
   
   metaSchade <- loadMetaSchade()
   
-  tagList(
+  tagList(  
     
-    actionLink(inputId = ns("linkMapSchade"), label =
-        h3(HTML(uiText$title))),
-    conditionalPanel("input.linkMapSchade % 2 == 1", ns = ns,
-      
+    tags$p(HTML(uiText[, strsplit(id, "_")[[1]][1]])),
+    
       wellPanel(
         if (filterCode || filterSubcode)
           tagList(
@@ -704,9 +705,6 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
           icon = icon("globe"))
       ),
       
-      
-      tags$p(HTML(uiText[, strsplit(id, "_")[[1]][1]])),
-      
       fixedRow(
         column(if (length(plotDetails) == 1) 6 else 12,
           
@@ -734,26 +732,40 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
       
       tags$hr()
     
-    )
-  
   )
 
   
 }
 
 #' Copy of mapSchadeUI as being used for "WBE" pagina
-#' 
+#' @template moduleUI 
 #' @inheritParams mapSchadeUI 
-#' @return UI object
-#' 
 #' @author mvarewyck
 #' @export
-mapAfschotUI <- function(id, filterCode, filterSubcode, filterSource, filterAccuracy,
-  variableChoices, uiText, plotDetails) {
+mapAfschotUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,  
+  filterSource = TRUE, filterAccuracy = FALSE,
+  variableChoices = c(
+    "Seizoen" = "season",
+    "Jaar" = "afschotjaar",
+    "Type schade" = "schadeCode"),
+  uiText, plotDetails = NULL) {
   
-  mapSchadeUI(id = id, filterCode = filterCode, filterSubcode = filterSubcode, 
-    filterSource = filterSource, filterAccuracy = filterAccuracy,
-    variableChoices = variableChoices, uiText = uiText, plotDetails = plotDetails)
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == "mapAfschotUI", ]
+  
+  tagList(
+    actionLink(inputId = ns("linkMapAfschot"), label =
+        h3(HTML(uiText$title))),
+    conditionalPanel("input.linkMapAfschot % 2 == 1", ns = ns,
+      
+      mapSchadeUI(id = id, filterCode = filterCode, filterSubcode = filterSubcode, 
+        filterSource = filterSource, filterAccuracy = filterAccuracy,
+        variableChoices = variableChoices, 
+        uiText = uiText, 
+        plotDetails = plotDetails)
+    )
+  )
 
 }
 

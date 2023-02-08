@@ -9,8 +9,7 @@
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   timeRange, species, regionLevel, 
   unit = c("absolute", "relative", "relativeDekking"),
-  sourceIndicator = NULL,
-  dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  sourceIndicator = NULL) {
   
   
   # To prevent warnings R CMD check
@@ -330,7 +329,6 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' @param unitChoices, character vector with choices for the units
 #' @param id unique identifier
-#' @param unitChoices character vector, user choices for unit
 #' 
 #' @author mvarewyck
 #' @export

@@ -196,6 +196,7 @@ results$jachttypes <- reactive({
 
 
 mapFlandersServer(id = "wbe",
+  uiText = uiText,
   defaultYear = defaultYear,
   species = reactive(""),
   currentWbe = results$wbe_currentPartij,

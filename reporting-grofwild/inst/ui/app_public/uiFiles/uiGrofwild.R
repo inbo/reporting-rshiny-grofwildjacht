@@ -14,26 +14,8 @@ tagList(
             h1("Welkom op de informatiepagina rond grofwildjacht")
         ),
         
-        welcomeSection(id = "wild", uiText = uiText),
-        
-        tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
-            tags$ul(
-                tags$li("Bovenaan deze pagina krijgt u, in functie van de gekozen wildsoort, de regio-schaal en de gewenste jaren en periodes, een kaart met de geografische 
-                        spreiding van het afschot en een figuur met de evolutie van het afschot voor de gekozen periode."), 
-                tags$li("Onder de verspreidingskaart kunnen verdere grafieken en tabellen worden opengeklikt, die telkens kunnen worden aangepast in functie van de informatie 
-                        die u wenst te visualiseren."), 
-                tags$li("Onderstaande tabellen en figuren zijn gebaseerd op de beschikbare gegevens op ", format(max(as.Date(ecoData$afschot_datum), na.rm = T), 
-                        "%d/%m/%Y"), ". Een deel van de data van het voorbije kwartaal kunnen dus mogelijk nog niet opgenomen zijn in de dataset."),
-                tags$li("De bron voor de kaarten, figuren en tabellen wordt gevormd door het",
-                    tags$a(href = "https://www.natuurenbos.be/e-loket", "E-loket van het Agentschap voor Natuur en Bos", target = "_blank"),
-                    ", gecombineerd met door het INBO uitgevoerde metingen op ingezamelde stalen (onderkaken en baarmoeders)."),
-                tags$li("De data achter de figuren en tabellen kan je steeds downloaden als ruwe data."),
-                tags$li("De figuren zelf kan je ook als .png downloaden."),
-                tags$li("Indien u fouten zou ontdekken of merkt dat data ontbreken gelieve dit dan te melden via een email naar",
-                    tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "faunabeheer@inbo.be"), ".")
-            )
-        )
-    
+        welcomeSection(id = "wild", uiText = uiText, 
+          maxDate = max(ecoData$afschot_datum, na.rm = TRUE))
     
     ),
     

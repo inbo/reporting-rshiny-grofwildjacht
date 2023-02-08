@@ -171,7 +171,9 @@ loadRawData <- function(
       levels = c(newLevels[["leeftijd_comp"]], "Niet ingezameld"))
     rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
     
-    
+    # Date format
+    rawData$afschot_datum <- as.Date(ecoData$afschot_datum)
+  
     # Redefine names and ordering of factor levels
     rawData$type_comp <- simpleCap(rawData$type_comp)
     rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
@@ -208,8 +210,7 @@ loadRawData <- function(
                         "geschat_schadebedrag", "type_melding")]
         
         # format date
-        rawData$DatumVeroorzaakt <- format(as.Date(substr(x = rawData$DatumVeroorzaakt, start = 1, stop = 10), 
-                        format = "%Y-%m-%d"), "%d/%m/%Y")
+        rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")
         
         # new column names
         colnames(rawData) <- c("ID", "caseID", "indieningType", "afschotjaar", 

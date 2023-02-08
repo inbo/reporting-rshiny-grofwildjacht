@@ -8,7 +8,11 @@ tagList(
   
   tags$div(class = "container",
     
-    tags$br(),
+    tags$div(align = "center",
+      h1("Welkom op het dashboard voor everzwijnen")
+    ),
+    
+    welcomeSection(id = "dash", uiText = uiText, maxDate = max(ecoData$afschot_datum, na.rm = TRUE)),
     
     wellPanel(
       fixedRow(
@@ -24,8 +28,6 @@ tagList(
         column(8, uiOutput("dash_region"))),
       uiOutput("dash_regionWarning")
     ),
-    
-    welcomeSection(id = "dash", uiText = uiText),
     
     fixedRow(
       column(4,
@@ -183,12 +185,11 @@ tagList(
     conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_5') > -1",
       barDraagkrachtUI(id = "dash_F14_5", uiText = uiText, 
         selectGroups = TRUE, height = "1500px")
-    ),
-    
-    # White space at the bottom
-    tags$br()
+    )
   
   ),
+  
+  tags$div(style = "margin-bottom: 50px;"),
   
   tags$div(class = "footer",
     tags$div(class = "footer-content",

@@ -8,16 +8,23 @@
 #' Section for welcoming (top of the page)
 #' @param id character, from which page this function is called
 #' e.g. 'wbe'
+#' @param maxDate date, the last observation date to be replaced in the text
 #' @template moduleUI 
 #' 
 #' @author mvarewyck
 #' @export
-welcomeSection <- function(id, uiText) {
+welcomeSection <- function(id, uiText, maxDate = NA) {
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
   
-  tags$p(class = "lead", HTML(uiText[, id]))
+  # Replace last date
+  if (!is.na(maxDate))
+    description <- gsub("\\{\\{maxDate\\}\\}", format(maxDate, "%d/%m/%Y"), description)
   
+  tags$div(style = "margin-bottom:20px;",
+    HTML(description)
+  )
+
 }
 
 

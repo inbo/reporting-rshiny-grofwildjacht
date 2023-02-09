@@ -162,10 +162,12 @@ nameFile <- function(species, year = NULL, extraInfo = NULL, content, fileExt) {
 
 #' Capitalize first letter
 #' @param names character vector, names to be capitalized (e.g. countries)
+#' @param keepNames boolean, whether to keep the names for the returned vector;
+#' default is TRUE
 #' @return character vector, capitalized version of \code{names}
 #' @author mvarewyck
 #' @export
-simpleCap <- function(names) {
+simpleCap <- function(names, keepNames = TRUE) {
   
   sapply(names, function(x) {
       
@@ -175,7 +177,7 @@ simpleCap <- function(names) {
       s <- tolower(as.character(x))
       paste0 (toupper(substring(s, 1, 1)), substring(s, 2))
       
-    })
+    }, USE.NAMES = keepNames)
   
 }
 
@@ -327,7 +329,7 @@ getPathLogo <- function() {
 #' @export
 getDisclaimerLimited <- function(doHTML = TRUE) {
   
-  myText <- "\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar op het gekozen niveau"
+  myText <- "\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar voor de gekozen schaal"
 
   if (doHTML)
     tags$p(tags$em(myText)) else

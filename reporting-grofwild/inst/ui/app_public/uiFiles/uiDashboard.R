@@ -16,7 +16,7 @@ tagList(
     
     wellPanel(
       fixedRow(
-        column(4, selectInput(inputId = "dash_regionLevel", label = "Regio-schaal",
+        column(4, selectInput(inputId = "dash_regionLevel", label = "Schaal",
             choices = c(
               "Vlaanderen" = "flanders",
               "Provincie" = "provinces", 

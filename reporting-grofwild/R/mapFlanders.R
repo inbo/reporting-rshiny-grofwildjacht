@@ -324,6 +324,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @param colorScheme character vector, specifies the color palette for the different groups
 #' in the summary data; if NULL map is not colored
 #' @param legend character, legend placement; default is "none", no legend
+#' @param legendText character, legend title; default is 'Legende'
 #' @param addGlobe boolean, whether to add world map to background; default is FALSE
 #' @return leaflet map
 #' @author mvarewyck
@@ -335,7 +336,7 @@ mapFlanders <- function(
   borderRegion = NULL, borderLocaties = NULL,
   species, year = NA,
   allSpatialData, summaryData, colorScheme = NULL,
-  legend = "none", addGlobe = FALSE) {
+  legend = "none", legendText = "Legende", addGlobe = FALSE) {
   
   
   spatialData <- filterSpatial(allSpatialData = allSpatialData, 
@@ -403,7 +404,7 @@ mapFlanders <- function(
         valuesPalette[!is.na(valuesPalette)] else 
         valuesPalette,
       opacity = 0.8,
-      title = "Legende",
+      title = legendText,
       layerId = "legend"
     )
     
@@ -688,7 +689,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           } else {
             
             myTitle <- paste(if (type != "dash") paste("Gerapporteerd", results$unitText()) else "Verspreiding", 
-              "voor", if (nSpecies > 1)
+              "van", if (nSpecies > 1)
                   paste(toString(tolower(species())[1:nSpecies-1]), "en", tolower(species()[nSpecies])) else 
                   tolower(species()),
               "in", input$year)
@@ -801,7 +802,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                   "fbz_gemeentes" = "faunabeheerzones",
                   "utm5" = "provinces"
                 ),
-            borderLocaties = locaties() 
+            borderLocaties = locaties(),
+            legendText = simpleCap(results$unitText(), keepNames = FALSE)
           )  
         })
 
@@ -992,7 +994,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                 pal = palette, 
                 values = valuesPalette,
                 opacity = 0.8,
-                title = "Legende",
+                title = simpleCap(results$unitText(), keepNames = FALSE),
                 layerId = "legend"
               )                      
           
@@ -1051,6 +1053,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               summaryData = results$summarySpaceData()$data,
               colorScheme = results$colorScheme(),
               legend = input$legend,
+              legendText = simpleCap(results$unitText(), keepNames = FALSE),
               addGlobe = input$globe %% 2 == as.numeric(hideGlobeDefault),
               borderRegion = if (!is.null(locaties()))
                   regionLevel() else if (results$regionLevel() %in% c("communes", "fbz_gemeentes", "utm5"))
@@ -1350,7 +1353,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
       if (type == "dash") {
           
           fixedRow(
-            column(6, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+            column(6, selectInput(inputId = ns("regionLevel"), label = "Schaal",
                 choices = regionChoices,
                 selected = "communes")),
             column(6, selectInput(inputId = ns("legend"), label = "Legende",

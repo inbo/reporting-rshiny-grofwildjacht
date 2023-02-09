@@ -108,7 +108,7 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
         position = legend,
         pal = pal_start, 
         values = startColors$levels,
-        title = "Startlocatie",
+        title = "Bevestigde aanwezigheid in",
         opacity = 1,
         layerId = "startLegend")
     

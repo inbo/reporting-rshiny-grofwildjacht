@@ -172,7 +172,7 @@ loadRawData <- function(
     rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
     
     # Date format
-    rawData$afschot_datum <- as.Date(ecoData$afschot_datum)
+    rawData$afschot_datum <- as.Date(rawData$afschot_datum)
   
     # Redefine names and ordering of factor levels
     rawData$type_comp <- simpleCap(rawData$type_comp)

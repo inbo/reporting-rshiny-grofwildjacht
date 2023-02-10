@@ -280,7 +280,8 @@ results$dash_F17_1 <- mapFlandersServer(id = "dash_F17_1",
   geoData = reactive(everGeoAll),
   allSpatialData = spatialData,
   hideGlobeDefault = FALSE,
-  countVariable = "aantal")
+  countVariable = "aantal",
+  uiText = uiText)
 
 
 results$dash_F17_4 <- mapSpreadServer(id = "dash_F17_4",

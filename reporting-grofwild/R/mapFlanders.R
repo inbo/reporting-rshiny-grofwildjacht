@@ -196,8 +196,10 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     allData <- merge(summaryData, fullData, all = TRUE)
     allData$freq[is.na(allData$freq)] <- 0
     
-    if (!is.null(sourceIndicator))
+    if (!is.null(sourceIndicator)) {
+      sourceIndicator <- sourceIndicator[sourceIndicator %in% colnames(allData)]
       allData[, sourceIndicator][is.na(allData[, sourceIndicator])] <- 0
+    }
     
   }
   
@@ -472,7 +474,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
   hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   geoData, biotoopData = NULL, allSpatialData,
   regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL,
-  uiText) {
+  uiText = NULL) {
   moduleServer(id,
     function(input, output, session) {
       
@@ -484,6 +486,31 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       results <- reactiveValues(
         year_value = defaultYear
       )
+      
+      
+      output$descriptionMapFlanders <- renderUI({
+          
+          splitId <- strsplit(id, split = "_")[[1]]
+          
+          if (!is.null(uiText)) {
+            
+            if (is.na(splitId[2]))
+              splitId[2] <- "mapFlandersUI"
+            
+            description <- uiText[uiText$plotFunction == paste(splitId[2:length(splitId)], collapse = "_"), splitId[1]]
+            
+            if (length(description) > 0) {
+              if (grepl("\\{\\{statsMap\\}\\}", description))
+                description <- gsub("\\{\\{statsMap\\}\\}", 
+                  if (!is.null(statsMap())) paste0(statsMap(), ".") else "", description)
+              
+              tags$p(HTML(description))
+              
+            }
+            
+          }
+                  
+        })
       
       
       # Minimum year
@@ -815,16 +842,25 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       
       # Statistics with map
-      output$stats <- renderUI({
+      statsMap <- reactive({
           
           if (req(input$regionLevel) != "flanders") {
             
             percentage <- round(with(results$summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
             
-            h5(paste0("Info beschikbaar en weergegeven voor ", percentage, 
-                "% van de totale gegevens (", results$summarySpaceData()$stats$nAvailable, "/", 
-                results$summarySpaceData()$stats$nTotal, ")" ))
+            paste0("Info beschikbaar en weergegeven voor ", percentage, 
+              "% van de totale gegevens (", results$summarySpaceData()$stats$nAvailable, "/", 
+              results$summarySpaceData()$stats$nTotal, ")" )
           }
+          
+        })
+      
+      output$stats <- renderUI({
+          
+          req(statsMap())
+          
+          if (type != "dash")
+            h5(statsMap())
           
         })
       
@@ -1347,6 +1383,8 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     
     if (showTitle)
       h2("Landkaart"),
+    
+    uiOutput(ns("descriptionMapFlanders")),
     
     ## countMap: all species
     wellPanel(

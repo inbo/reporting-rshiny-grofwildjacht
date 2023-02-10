@@ -78,12 +78,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   colnames(totalCount) <- c("year", "value")
   
   # Extract month/day
-  plotData$maand <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
-        strsplit(datum, split = "-")[[1]][2]
-      }))
-  plotData$dag <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
-        strsplit(datum, split = "-")[[1]][3]
-      }))
+  plotData$maand <- as.numeric(format(plotData$afschot_datum, "%m"))
+  plotData$dag <- as.numeric(format(plotData$afschot_datum, "%d"))
    
   
   if (interval == "Per jaar") {

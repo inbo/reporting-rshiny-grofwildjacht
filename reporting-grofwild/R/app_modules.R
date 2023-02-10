@@ -439,7 +439,6 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
-#' @param schadeTitles boolean, whether title should include 'schade' instead of 'afschot'
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
@@ -461,7 +460,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
-    variable = NULL, combinatie = NULL, schadeTitles = FALSE,
+    variable = NULL, combinatie = NULL, title = NULL,
     verticalGroups = NULL,
     fullNames = NULL) {
   
@@ -583,8 +582,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(timeRange = timeRange()),
             if (!is.null(unit))
               list(unit = unit()),
-            if (isTRUE(schadeTitles))
-              list(schadeTitles = schadeTitles),
             if (!is.null(schadeChoices))
               list(schadeChoices = schadeChoices()),
             if (!is.null(schadeChoicesVrtg))
@@ -597,6 +594,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               if (!is.null(combinatie()))
                 list(combinatie = combinatie())
             },
+            if (!is.null(title))
+              list(title = title),
             if (!is.null(input$interval))
               list(interval = input$interval)
         

@@ -13,6 +13,7 @@
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
 #' @inheritParams filterSchade
+#' @param title character, title prefix; default is NULL
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
@@ -33,7 +34,7 @@
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
-        sourceIndicator = NULL, width = NULL, height = NULL) {
+        sourceIndicator = NULL, title = NULL, width = NULL, height = NULL) {
   
   
   type <- match.arg(type)
@@ -98,7 +99,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
  
  colorList <- replicateColors(nColors = nlevels(summaryData$locatie))
-	title <- paste0(wildNaam, " ",
+	title <- paste0(if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
 	)
@@ -178,6 +179,7 @@ countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL))
       )
       callModule(module = plotModuleServer, id = "yearProvince",
         plotFunction = "countYearProvince", 
+        title = if (id == "dash") "Aantal drukjachten" else NULL,
         data = data)
       
     })
@@ -192,7 +194,7 @@ countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL))
 #' 
 #' @author mvarewyck
 #' @export
-countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvince",
+countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI",
   doHide = TRUE) {
   
   ns <- NS(id)

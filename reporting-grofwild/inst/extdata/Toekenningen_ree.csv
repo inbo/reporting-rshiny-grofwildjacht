@@ -1,19 +1,4 @@
 Provincie;Jaar;Labeltype;Aantal
-Antwerpen;2022;Bokken;758
-Antwerpen;2022;Geiten;545
-Antwerpen;2022;Kitsen;979
-Limburg;2022;Bokken;1147
-Limburg;2022;Geiten;829
-Limburg;2022;Kitsen;1618
-Oost-Vlaanderen;2022;Bokken;417
-Oost-Vlaanderen;2022;Geiten;312
-Oost-Vlaanderen;2022;Kitsen;532
-Vlaams-Brabant;2022;Bokken;420
-Vlaams-Brabant;2022;Geiten;324
-Vlaams-Brabant;2022;Kitsen;559
-West-Vlaanderen;2022;Bokken;121
-West-Vlaanderen;2022;Geiten;95
-West-Vlaanderen;2022;Kitsen;192
 Antwerpen;2002;Bokken;482
 Antwerpen;2002;Geiten;453
 Antwerpen;2002;Kitsen;678
@@ -74,6 +59,9 @@ Antwerpen;2020;Kitsen;1011
 Antwerpen;2021;Bokken;794
 Antwerpen;2021;Geiten;573
 Antwerpen;2021;Kitsen;1028
+Antwerpen;2022;Bokken;798
+Antwerpen;2022;Geiten;575
+Antwerpen;2022;Kitsen;1031
 Limburg;2002;Bokken;603
 Limburg;2002;Geiten;516
 Limburg;2002;Kitsen;881
@@ -134,6 +122,9 @@ Limburg;2020;Kitsen;1634
 Limburg;2021;Bokken;1145
 Limburg;2021;Geiten;827
 Limburg;2021;Kitsen;1619
+Limburg;2022;Bokken;1147
+Limburg;2022;Geiten;829
+Limburg;2022;Kitsen;1618
 Oost-Vlaanderen;2002;Bokken;1
 Oost-Vlaanderen;2002;Kitsen;1
 Oost-Vlaanderen;2004;Bokken;3
@@ -190,6 +181,9 @@ Oost-Vlaanderen;2020;Kitsen;378
 Oost-Vlaanderen;2021;Bokken;368
 Oost-Vlaanderen;2021;Geiten;273
 Oost-Vlaanderen;2021;Kitsen;474
+Oost-Vlaanderen;2022;Bokken;417
+Oost-Vlaanderen;2022;Geiten;312
+Oost-Vlaanderen;2022;Kitsen;532
 Vlaams-Brabant;2002;Bokken;254
 Vlaams-Brabant;2002;Geiten;201
 Vlaams-Brabant;2002;Kitsen;265
@@ -250,6 +244,9 @@ Vlaams-Brabant;2020;Kitsen;552
 Vlaams-Brabant;2021;Bokken;414
 Vlaams-Brabant;2021;Geiten;319
 Vlaams-Brabant;2021;Kitsen;552
+Vlaams-Brabant;2022;Bokken;420
+Vlaams-Brabant;2022;Geiten;324
+Vlaams-Brabant;2022;Kitsen;559
 West-Vlaanderen;2002;Bokken;2
 West-Vlaanderen;2004;Bokken;2
 West-Vlaanderen;2004;Geiten;2
@@ -305,3 +302,6 @@ West-Vlaanderen;2020;Kitsen;165
 West-Vlaanderen;2021;Bokken;107
 West-Vlaanderen;2021;Geiten;87
 West-Vlaanderen;2021;Kitsen;177
+West-Vlaanderen;2022;Bokken;121
+West-Vlaanderen;2022;Geiten;95
+West-Vlaanderen;2022;Kitsen;192

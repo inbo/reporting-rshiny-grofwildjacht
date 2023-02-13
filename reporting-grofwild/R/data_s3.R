@@ -27,15 +27,19 @@ setupS3 <- function(awsFile = "~/.aws/credentials") {
 #' @return no return value
 #' 
 #' @author mvarewyck
+#' @importFrom aws.ec2metadata is_ec2
 #' @export
 checkS3 <- function() {
   
-  credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"))
-  if (any(credentials == ""))
-    stop("Please specify 'Sys.setenv()' for ", 
-      paste(names(credentials)[which(credentials == "")], collapse = ", "))
-  
-  
+  if (is_ec2()) {
+    # Try to retrieve metadata from the instance
+    metadata$instance_id()
+  } else {
+    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"))
+    if (any(credentials == ""))
+      stop("Please specify 'Sys.setenv()' for ", 
+        paste(names(credentials)[which(credentials == "")], collapse = ", "))
+  }
   
 }
 

@@ -5,7 +5,11 @@ default:
     id: Sys.getenv('AWS_ACCESS_KEY_ID')
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
   datacheck: true 
-  
+
+uat:
+  bucket: inbo-wbe-uat-data
+  datacheck: true
+    
 production:
   bucket: inbo-wbe-prd-data
   datacheck: false

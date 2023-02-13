@@ -49,6 +49,7 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
   
   unit <- attr(spreadShape, "unit")
   spatialLevel <- attr(spreadShape, "spatialLevel")
+  year <- attr(spreadShape, "year")
   
   modelColors <- paletteMap(variable = unit, groupNames = levels(spreadShape$outcome))
   pal_model <- colorFactor(palette = modelColors$colors, levels = modelColors$levels, ordered = FALSE)
@@ -95,9 +96,9 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
       position = legend,
       pal = pal_model, 
       values = modelColors$levels,
-      title = if (grepl("model", unit))
+      title = paste(if (grepl("model", unit))
           "Waarschijnlijkheid verspreiding" else 
-          "Risico klasse",
+          "Risico klasse", "in", year),
       opacity = if (spatialLevel == "pixels") 1 else 0.8,
       na.label = "",
       layerId = "legend")
@@ -232,7 +233,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
             if (!exists("spreadData"))
               load(file = file.path(dataDir, "spreadData.RData")) 
-            spreadData[[req(input$regionLevel)]]
+            spreadData[grep(req(input$regionLevel), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
             
@@ -244,12 +245,25 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
+      output$year <- renderUI({
+          
+          choices <- sapply(names(shapeData()), function(x) strsplit(x, split = "_")[[1]][2])
+          names(choices) <- choices
+          
+          selectInput(inputId = ns("year"), label = "Jaar", choices = choices)
+          
+        })
+      
       spreadPlot <- reactive({
           
           baseMap <- if (type == "F17_4") {
               
+              req(input$year)
+              req(shapeData())
+              req(grepl(input$year, names(shapeData())))
+              
               mapSpread(
-                spreadShape = shapeData(),
+                spreadShape = shapeData()[[grep(input$year, names(shapeData()), value = TRUE)]],
                 legend = "topright",
                 addGlobe = TRUE
               ) 
@@ -297,9 +311,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
           req(title())
           updateActionLink(session = session, inputId = "linkSpread",
-            label = paste("FIGUUR:", if (type == "F17_4") 
-                  paste(title(),  "-", toString(attr(shapeData(), "year"))) else 
-                  title()))
+            label = paste("FIGUUR:", title()))
           
         })
       
@@ -359,9 +371,9 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
               position = input$legend,
               pal = pal_model, 
               values = modelColors$levels,
-              title = if (grepl("model", "model_EP"))
+              title = paste(if (grepl("model", "model_EP"))
                   "Waarschijnlijkheid verspreiding" else 
-                  "Risico klasse",
+                  "Risico klasse", "in", input$year),
               opacity = if (!is.null(input$regionLevel) && input$regionLevel != "pixels") 0.8 else 1,
               na.label = "",
               layerId = "legend")
@@ -536,13 +548,14 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
           } else {
             
             fixedRow(
-              column(6, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+              column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                   choices = c(
                     "Gemeente" = "municipalities",
                     "2x2 UTM" = "pixels"
-                  ))      
+                  ))
               ),
-              column(6, selectInput(inputId = ns("legend"), label = "Legende",
+              column(4, uiOutput(ns("year"))),
+              column(4, selectInput(inputId = ns("legend"), label = "Legende",
                   choices = c(
                     "Bovenaan rechts" = "topright",
                     "Onderaan rechts" = "bottomright",

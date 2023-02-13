@@ -373,7 +373,7 @@ test_that("F17_4", {
     load(file.path(dataDir, "spreadData.RData"))
     
     myMap <- mapSpread(
-      spreadShape = spreadData[["municipalities"]], 
+      spreadShape = spreadData[["municipalities_2022"]], 
       legend = "bottomright",
       addGlobe = TRUE
     )

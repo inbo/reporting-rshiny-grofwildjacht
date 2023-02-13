@@ -273,31 +273,40 @@ createSpreadData <- function(
   # currently only unit of interest
   unit <- "model_EP"
   
-  spatialFiles <- list(
+  tmpFiles <- list(
     # pixels
     pixels = "Pixels_ModelOutput_toekomst_verspr",
     # gemeente
     municipalities = "Municipalities_ModelOutput_toekomst_verspr"
   )
   
-  spreadData <- sapply(names(spatialFiles), function(spatialLevel) {
+  spatialFiles <- unlist(sapply(names(tmpFiles), function(spatialLevel) {
       
-      spatialFile <- sort(grep(spatialFiles[[spatialLevel]], list.files(jsonDir, pattern = ".shp"), value = TRUE))
-      # Most recent file
-      spatialFile <- spatialFile[length(spatialFile)]
+      spatialFile <- sort(grep(tmpFiles[[spatialLevel]], list.files(jsonDir, pattern = ".shp"), value = TRUE))
+      # Most recent 2 files
+      toReturn <- tail(spatialFile, n = 2)
+      names(toReturn) <- paste0(spatialLevel, "_",
+        sapply(strsplit(tools::file_path_sans_ext(spatialFile), split = "_"), function(x)
+                tail(x, n = 1)))
       
-      unitChoices <- if (spatialLevel == "pixels")
+      toReturn
+            
+    }, USE.NAMES = FALSE))
+  
+  spreadData <- sapply(names(spatialFiles), function(iFile) {
+      
+      unitChoices <- if (grepl("pixels", iFile))
           c("Mdl_EP_", "Mdl_OH_", "Rsc_ExP", "Rsc_OpH") else
           c("M_EP_A_", "M_OH_A_", "M_EP__G_", "M_OH__G_")
       unitVariable <- unitChoices[match(unit, c("model_EP", "model_OH", "risk_EP", "risk_OH"))]
       
-      baseMap <- rgdal::readOGR(file.path(jsonDir, spatialFile)) %>%
+      baseMap <- rgdal::readOGR(file.path(jsonDir, spatialFiles[iFile])) %>%
         sp::spTransform(CRS("+proj=longlat +datum=WGS84"))
       
       # Modify data
       ## Risico
       riskLevels <- c("Hoog risico", "Gemiddeld risico", "Laag risico", "Verwaarloosbaar risico") 
-      if (spatialLevel == "pixels") {
+      if (grepl("pixels", iFile)) {
         baseMap$Rsc_ExP <- factor(baseMap$Rsc_ExP, levels = riskLevels)
         baseMap$Rsc_OpH <- factor(baseMap$Rsc_OpH, levels = riskLevels)
       } else {
@@ -321,20 +330,20 @@ createSpreadData <- function(
       if (!is.null(startVariable))
         modelShape$start <- modelShape[[startVariable]]
       
-      modelShape@data <- modelShape@data[, c(if (spatialLevel == "pixels") "ID" else "Communs", 
+      modelShape@data <- modelShape@data[, c(if (grepl("pixels", iFile)) "ID" else "Communs", 
           "outcome", 
           if (!is.null(startVariable)) "start")]
       
       # Add Voeren
-      if (spatialLevel == "municipalities") {
+      if (grepl("municipalities", iFile)) {
         voerenShape <- spatialData$communes[spatialData$communes@data$NAAM == "Voeren", ]
         voerenShape@data <- data.frame(Communs = "Voeren", outcome = "Al aanwezig")
         modelShape <- rbind(modelShape, voerenShape)
       }
       
       attr(modelShape, "unit") <- unit
-      attr(modelShape, "spatialLevel") <- spatialLevel
-      attr(modelShape, "year") <- as.numeric(tail(strsplit(tools::file_path_sans_ext(spatialFile), split = "_")[[1]], n = 1))
+      attr(modelShape, "spatialLevel") <- strsplit(iFile, split = "_")[[1]][1]
+      attr(modelShape, "year") <- strsplit(iFile, split = "_")[[1]][2]
       
       modelShape
       

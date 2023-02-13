@@ -17,13 +17,14 @@ tableBackground <- function(data, regionLevel, locaties){
   
   # Subset
   data <- data[, c("regio", "perimeter_bos_m", "gem_opp_bos_km2", "densiteit_bos", 
-      "weg_dens_km", "Area_km2")]
+#      "weg_dens_km", 
+      "Area_km2")]
   
   # Convert from percentages
   data$perimeter_bos_m <- round(data$perimeter_bos_m/1000/data$Area_km2, 2) 
   data$gem_opp_bos_km2 <- round(data$gem_opp_bos_km2)
   data$densiteit_bos <- round(data$densiteit_bos/data$Area_km2, 3)
-  data$weg_dens_km <- round(data$weg_dens_km, 3)
+#  data$weg_dens_km <- round(data$weg_dens_km, 3)
   data$Area_km2 <- round(data$Area_km2)
   
   # Set column names
@@ -32,7 +33,7 @@ tableBackground <- function(data, regionLevel, locaties){
     "perimeter_bos_m" = "Bos perimeter (km/km\U00B2)",
     "gem_opp_bos_km2" = "Bos fragmentatie (#/km\U00B2)",
     "densiteit_bos" = "Gemiddelde bos oppervlakte (km\U00B2)",
-    "weg_dens_km" = "Wegdensiteit (km/km\U00B2)",
+#    "weg_dens_km" = "Wegdensiteit (km/km\U00B2)",
     "Area_km2" = "Totale oppervlakte (km\U00B2)")
   colnames(data) <- newNames[match(colnames(data), names(newNames))]
   

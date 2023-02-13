@@ -12,6 +12,7 @@ Imports:
     DT, 
     flexdashboard,
     ggplot2,
+    htmltools,
     htmlwidgets,
     INBOtheme, 
     leaflet, 

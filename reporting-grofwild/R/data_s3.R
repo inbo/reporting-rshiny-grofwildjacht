@@ -27,7 +27,7 @@ setupS3 <- function(awsFile = "~/.aws/credentials") {
 #' @return no return value
 #' 
 #' @author mvarewyck
-#' @importFrom aws.ec2metadata is_ec2
+#' @importFrom aws.ec2metadata is_ec2 metadata
 #' @export
 checkS3 <- function() {
   

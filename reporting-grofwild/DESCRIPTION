@@ -8,6 +8,7 @@ Description: Data visualization of grof wild in Vlaanderen.
 Version: 0.2.8
 Date: 2022-05-25
 Imports:
+    aws.ec2metadata,
     aws.s3,
     config,
     data.table,

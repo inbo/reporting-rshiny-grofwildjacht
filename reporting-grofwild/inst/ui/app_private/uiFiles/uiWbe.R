@@ -93,8 +93,8 @@ tagList(
     
     conditionalPanel("output.wbe_emptyAfschot == false",
       
-      mapSchadeUI(id = "wbe_afschot",
-        uiText = uiText[uiText$plotFunction == "mapAfschotUI", ],
+      mapAfschotUI(id = "wbe_afschot",
+        uiText = uiText,
         filterSource = FALSE, filterAccuracy = TRUE,
         variableChoices = c(
           "Seizoen" = "season",
@@ -115,10 +115,17 @@ tagList(
     
     conditionalPanel("output.wbe_emptySchade == false",
       # When no afschot, might still be schadeData
-      mapSchadeUI(id = "wbe",
-        uiText = uiText[uiText$plotFunction == "mapSchadeUI", ], 
-        filterCode = TRUE, filterSubcode = TRUE,
-        plotDetails = "region")
+      
+      actionLink(inputId = "wbe_linkMapSchade", label =
+          h3(HTML(uiText$title[uiText$plotFunction == "mapSchadeUI"]))),
+      conditionalPanel("input.wbe_linkMapSchade % 2 == 1",
+        
+        mapSchadeUI(id = "wbe",
+          uiText = uiText[uiText$plotFunction == "mapSchadeUI", ], 
+          filterCode = TRUE, filterSubcode = TRUE,
+          plotDetails = "region")
+  
+      )
     ),
     
     conditionalPanel("output.wbe_emptyAfschot == false",

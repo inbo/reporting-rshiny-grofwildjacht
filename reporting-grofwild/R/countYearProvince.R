@@ -137,21 +137,37 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams countYearProvince
+#' @inheritParams optionsModuleServer
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearProvinceServer <- function(id, data, timeRange) {
+countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
+  typesDefault = types, timeRange, uiText) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
       
+      output$titleYearProvince <- renderUI({
+          
+          title <- uiText$title[uiText$plotFunction == "countYearProvinceUI"]
+          
+          if (id == "schade")
+            title <- gsub("Gerapporteerd aantal", "Aantal schademeldingen", title)
+          
+          h3(HTML(title))
+          
+        })
+      
       # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearProvince", 
         data = data,
+        types = types,
+        labelTypes = labelTypes,
+        typesDefault = typesDefault,
         timeRange = timeRange
       )
       callModule(module = plotModuleServer, id = "yearProvince",
@@ -166,10 +182,11 @@ countYearProvinceServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - UI side
 #' @template moduleUI
+#' @inheritParams optionsModuleUI
 #' 
 #' @author mvarewyck
 #' @export
-countYearProvinceUI <- function(id, uiText) {
+countYearProvinceUI <- function(id, uiText, showType = FALSE, showDataSource = NULL) {
   
   ns <- NS(id)
   
@@ -178,14 +195,16 @@ countYearProvinceUI <- function(id, uiText) {
   tagList(
     
     actionLink(inputId = ns("linkYearProvince"), 
-      label = h3(HTML(uiText$title))),
+      label = uiOutput(ns("titleYearProvince"))),
     conditionalPanel("input.linkYearProvince % 2 == 1", ns = ns,
       
       fixedRow(
         
         column(4,
           optionsModuleUI(id = ns("yearProvince"), 
-            showTime = TRUE, exportData = TRUE),
+            showTime = TRUE, exportData = TRUE,
+            showType = showType,
+            showDataSource = showDataSource),
           tags$p(HTML(uiText[, id]))
         ),
         column(8, 

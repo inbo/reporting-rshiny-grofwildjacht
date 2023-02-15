@@ -255,8 +255,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # Add (hoofd)postcode
   if (regionLevel == "communes") {
     
-    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",")
+    gemeenteData <- loadGemeentes()
     
     summaryData2$postcode <- gemeenteData$Postcode[match(summaryData2$NISCODE, gemeenteData$NIS.code)]
     names(summaryData2)[names(summaryData2) == "NISCODE"] <- "niscode"
@@ -414,7 +413,7 @@ mapFlanders <- function(
 #' @importFrom webshot webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
-mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NULL),
+mapFlandersServer <- function(id, uiText, defaultYear, species, currentWbe = reactive(NULL),
   hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe"),
   geoData, biotoopData = NULL, allSpatialData) {
   moduleServer(id,
@@ -598,7 +597,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         })
       
       # Title for the map
-      output$title <- renderUI({
+      output$mapFlandersTitle <- renderUI({
           
           nSpecies <- length(species())
           
@@ -623,7 +622,13 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             
           }
           
-        })     
+        })  
+      
+      output$mapFlandersDescription <- renderUI({
+          
+          tags$p(HTML(uiText[uiText$plotFunction == "mapFlandersUI", strsplit(id, "_")[[1]][1]]))
+          
+        })
       
       
       # Create data for map, summary of ecological data, given year, species and regionLevel
@@ -1125,7 +1130,10 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
   
   tags$div(class = "container",
     
-    h2("Landkaart"),
+    if (id != "schade")
+      h2("Landkaart"),
+    
+    uiOutput(ns("mapFlandersDescription")),
     
     ## countMap: all species
     wellPanel(
@@ -1191,7 +1199,7 @@ mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE,
     
     fixedRow(
       column(if ("biotoop" %in% plotDetails) 6 else 12,
-        uiOutput(ns("title")),
+        uiOutput(ns("mapFlandersTitle")),
         withSpinner(leafletOutput(ns("spacePlot"))),
         tags$div(align = "center", uiOutput(ns("stats"))),
         tags$br(),

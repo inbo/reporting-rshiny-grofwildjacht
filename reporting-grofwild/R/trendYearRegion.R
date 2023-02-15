@@ -9,8 +9,7 @@
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   timeRange, species, regionLevel, 
   unit = c("absolute", "relative", "relativeDekking"),
-  sourceIndicator = NULL,
-  dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  sourceIndicator = NULL) {
   
   
   # To prevent warnings R CMD check
@@ -105,8 +104,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     
     # NOTE: match returns FIRST match, so gemeentecodes.csv should be correctly sorted
     # in orde to obtain HOOFDpostcode. 
-    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",")
+    gemeenteData <- loadGemeentes()
     
     # Match gemeente NAAM to niscode and (hoofd)postcode
     allData$niscode <- gemeenteData$NIS.code[match(allData$locatie, gemeenteData$Gemeente)]
@@ -118,9 +116,9 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
         setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
     
   } else if (regionLevel == "WBE_buitengrenzen") {
-      
-      allData$locatie <- matchLocaties$WBE_Naam_Toek[
-        match(allData$locatie, matchLocaties$PartijNummer)]
+    
+    allData$locatie <- matchLocaties$WBE_Naam_Toek[
+      match(allData$locatie, matchLocaties$PartijNummer)]
     
   }
   
@@ -331,7 +329,6 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' @param unitChoices, character vector with choices for the units
 #' @param id unique identifier
-#' @param unitChoices character vector, user choices for unit
 #' 
 #' @author mvarewyck
 #' @export

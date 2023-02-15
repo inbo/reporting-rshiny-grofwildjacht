@@ -7,14 +7,7 @@
 countAgeCheekUI(id, showAccuracy = FALSE, uiText)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
-
 \item{showAccuracy}{boolean, whether to show gauge for accuracy}
-
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side

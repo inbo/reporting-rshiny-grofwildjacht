@@ -19,11 +19,6 @@ with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 
 \item{regionLevels}{numeric vector, if not NULL, defines the choices for 
 region levels: 1 = flanders, 2 = provinces, 3 = communes}
-
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side

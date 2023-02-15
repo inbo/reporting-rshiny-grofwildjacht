@@ -164,8 +164,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   if (interval == "Per jaar") {
     allPlots <- plot_ly(data = summaryData,
             x = ~timeChar, y = ~value, type = "bar", 
-            color = ~get(groupVariable), colors = colors,
-            legendgroup = ~get(groupVariable), 
+            color = ~base::get(groupVariable), colors = colors,
+            legendgroup = ~base::get(groupVariable), 
             width = width, height = height) %>%
           layout(
             xaxis = list(title = ''),            
@@ -181,8 +181,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             x = ~timeChar, y = ~value, 
             text = paste0("Totaal in ", iYear, ": ", totalCount$value[totalCount$year == iYear]),
             type = "bar", hoverinfo = 'x+y+text+name', 
-            color = ~get(groupVariable), colors = colors,
-            legendgroup = ~get(groupVariable), showlegend = i == 1,
+            color = ~base::get(groupVariable), colors = colors,
+            legendgroup = ~base::get(groupVariable), showlegend = i == 1,
             width = width, height = height) %>%
           layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
           add_annotations(

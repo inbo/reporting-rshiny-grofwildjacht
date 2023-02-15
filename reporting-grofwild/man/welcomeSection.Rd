@@ -7,12 +7,8 @@
 welcomeSection(id, uiText)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
-
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
+\item{id}{character, from which page this function is called
+e.g. 'wbe'}
 }
 \description{
 Section for welcoming (top of the page)

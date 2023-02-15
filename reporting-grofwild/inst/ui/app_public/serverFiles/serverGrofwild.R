@@ -89,7 +89,8 @@ countYearProvinceServer(id = "wild",
   data = results$wild_ecoData,
   timeRange = reactive(if (input$wild_species == "Edelhert")
         c(2008, max(results$wild_timeRange())) else 
-        results$wild_timeRange())
+        results$wild_timeRange()),
+  uiText = uiText
   )
 
 
@@ -268,6 +269,7 @@ boxRealisedShotServer(id = "wild",
 ### -------------
 
 mapFlandersServer(id = "wild",
+  uiText = uiText,
   defaultYear = defaultYear,
   species = reactive(input$wild_species),
   type = "grofwild",

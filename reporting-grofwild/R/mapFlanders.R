@@ -639,7 +639,9 @@ mapFlandersServer <- function(id, uiText, defaultYear, species, currentWbe = rea
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData,
+            biotoopData = if (is.list(biotoopData))
+              biotoopData[[results$regionLevel()]] else
+              biotoopData,
             year = input$year,
             species = species(),
             regionLevel = results$regionLevel(),
@@ -1120,7 +1122,7 @@ mapFlandersServer <- function(id, uiText, defaultYear, species, currentWbe = rea
 #' @export
 mapFlandersUI <- function(id, showRegion = TRUE, showSource = FALSE, 
   showCombine = TRUE, type = c("grofwild", "wildschade", "wbe"),
-  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("flanders", "region")) {
   
   ns <- NS(id)

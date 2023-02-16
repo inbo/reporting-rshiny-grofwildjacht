@@ -19,11 +19,13 @@ createShapeData(
 larger values will impose stronger simplification; default value is 0.001}
 }
 \value{
-save to dataDir object spatialData, i.e. a list with for each 
-spatial level a SpatialPolygonsDataFrame object, 
+boolean, whether file is successfully saved;
+save to dataDir list with spatial list for WBE and non-WBE level.
+Each contain a list with for each spatial level a SpatialPolygonsDataFrame object, 
 with polygons and data as provided in the dataDir; spatial levels are 
-flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
+(1) flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
 and provincesVoeren (Voeren as separate province)
+(2) WBE_buitengrenzen and WBE
 }
 \description{
 Read all shape data from geojson files

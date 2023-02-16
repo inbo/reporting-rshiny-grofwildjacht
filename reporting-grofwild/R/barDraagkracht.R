@@ -82,9 +82,9 @@ barDraagkracht <- function(data, groupVariable = NULL,
         
         plotList[[(length(plotList) + 1)]] <- plot_ly(
             data = subData, 
-            x = ~get(xVar), 
-            y = ~as.factor(get(yVar)), 
-            text = ~paste("<b>", get(groupVariable), "</b><br>", get(yVar), "<br>", percentageLabel), 
+            x = ~base::get(xVar), 
+            y = ~as.factor(base::get(yVar)), 
+            text = ~paste("<b>", base::get(groupVariable), "</b><br>", base::get(yVar), "<br>", percentageLabel), 
             textposition = "none",
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
             legendgroup = ~Antwoord, 
@@ -148,7 +148,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     yLabels <- gsub("schade_privpub_evolutie", "Schade aan privéterreinen", yLabels)
     yLabels <- gsub("schade_verkeer_evolutie", "Schade in het verkeer", yLabels)
     
-    myPlot <- plot_ly(data, x = ~get(xVar), y = ~get(yVar), 
+    myPlot <- plot_ly(data, x = ~base::get(xVar), y = ~base::get(yVar), 
         type = 'bar', color = ~Antwoord, colors = myColors, text = ~percentageLabel,
         textposition = "none",
 #        marker = list(line = list(width = 5, color = "lightgray")),

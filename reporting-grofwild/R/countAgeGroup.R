@@ -70,7 +70,7 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
   names(groupLabel) <- NULL
   
   # Create plot
-  pl <- plot_ly(data = summaryData, x = ~leeftijd, y = ~freq, color = ~get(groupVariable),
+  pl <- plot_ly(data = summaryData, x = ~leeftijd, y = ~freq, color = ~base::get(groupVariable),
       text = ~text, textposition = "none", hoverinfo = "x+text+name",
       colors = colors, type = "bar") %>%
     

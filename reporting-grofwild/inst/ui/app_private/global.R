@@ -11,10 +11,19 @@ library(shinyjs)
 
 
 
+
 ### General
 ### ------------
 
 `%<>%` <- magrittr::`%<>%`
+
+# define js function for opening urls in new tab/window
+js_code <- "
+  shinyjs.browseURL = function(url) {
+  window.open(url, '_self');
+  }
+  "
+
 
 
 # Specify directory with data
@@ -78,11 +87,10 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 
 # Load object called spatialData
 if (!doDebug | !exists("spatialData")) {
-  load(file = file.path(dataDir, "spatialDataWBE.RData"))
+  readS3(file = "spatialDataWBE.RData")
   spatialData <- spatialDataWBE
   rm(spatialDataWBE)
 }
-gc()
 
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData")) {
@@ -90,13 +98,16 @@ if (!doDebug | !exists("ecoData")) {
   ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 }
 
-geoData <- loadRawData(type = "geo")
-schadeData <- loadRawData(type = "wildschade")
-schadeData <- schadeData[schadeData@data$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
-
-biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData,
-  regionLevels = "wbe")[["wbe"]]
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+if (!doDebug | !exists("geoData"))
+  geoData <- loadRawData(type = "geo")
+if (!doDebug | !exists("schadeData")) {
+  schadeData <- loadRawData(type = "wildschade")
+  schadeData <- schadeData[schadeData@data$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
+}
+if (!doDebug | !exists("biotoopData"))
+  biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
+if (!doDebug | !exists("toekenningsData"))
+  toekenningsData <- loadToekenningen()
 
 # Manipulate kbo: admin, multiple kbo
 matchingWbeData <- loadRawData(type = "kbo_wbe")
@@ -124,3 +135,5 @@ if (!doDebug | !exists("uiText")) {
       paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
   rm(uiFunctions, uiCheck)
 }
+
+

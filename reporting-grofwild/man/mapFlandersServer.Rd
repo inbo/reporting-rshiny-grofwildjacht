@@ -17,7 +17,7 @@ mapFlandersServer(
   regionLevel = reactive(NULL),
   locaties = reactive(NULL),
   countVariable = NULL,
-  uiText
+  uiText = NULL
 )
 }
 \arguments{

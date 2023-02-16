@@ -1,5 +1,203 @@
+#' Read all shape data from geojson files
+#' 
+#' @param jsonDir character, path to json shape files
+#' @inheritParams loadRawData
+#' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
+#' larger values will impose stronger simplification; default value is 0.001
+#' @return save to S3 bucket object spatialData, i.e. a list with for each 
+#' spatial level a SpatialPolygonsDataFrame object, 
+#' with polygons and data as provided in the jsonDir; spatial levels are 
+#' flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 
+#' and provincesVoeren (Voeren as separate province)
+#' @importFrom sp CRS spTransform SpatialPolygonsDataFrame
+#' @importFrom methods slot
+#' @importFrom maptools unionSpatialPolygons spRbind
+#' @importFrom rgdal readOGR
+#' @importFrom rgeos gSimplify
+#' @importFrom shiny incProgress
+#' @importFrom raster area
+#' @importFrom utils write.csv read.csv
+#' @importFrom aws.s3 s3save put_object
+#' @importFrom config get
+#' @export
+readShapeData <- function(
+  jsonDir = "~/git/reporting-rshiny-grofwildjacht/data", 
+  bucket = config::get("bucket"),
+  tolerance = 0.0001) {
+  
+  
+  allLevels <- c("Vlaanderen" = "flanders", "Provincies" = "provinces", 
+      "Gemeenten" = "communes", "FBZ" = "faunabeheerzones", "FBDZ" = "fbz_gemeentes",
+      "UTM5" = "utm5")
+  
+  # WBE per year
+  wbeLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "WBE_binnengrenzen_"))
+  # jachtterein per shared year
+  jachtLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "Jachtter_"))
+  
+  allLevels <- c(allLevels, wbeLevels, jachtLevels)
+  
+  ## New code for geojson files
+  spatialData <- lapply(allLevels, function(iLevel) {
+        
+        file <- file.path(jsonDir, paste0(iLevel, ".geojson"))
+#        # Check whether we can use readOGR()
+#        "GeoJSON" %in% rgdal::ogrDrivers()$name
+        shapeData <- readOGR(dsn = file, verbose = TRUE)
+        shapeData <- sp::spTransform(shapeData, CRS("+proj=longlat +datum=WGS84"))
+        
+        # Create factor for region names
+        if (iLevel == "provinces") {
+          
+          shapeData$NAAM <- factor(shapeData$NAAM, levels = c("West-Vlaanderen",
+                  "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg")) 
+          
+        } else if (iLevel == "faunabeheerzones") {
+          
+          shapeData$NAAM <- factor(shapeData$Code)
+          
+        } else if (iLevel == "fbz_gemeentes") {
+          
+          # Create fbz_gemeente
+          shapeData$NAAM <- factor(paste0(shapeData$Code, "_", shapeData$NAAM))
+          
+        } else if (iLevel == "utm5") {
+          
+          shapeData$NAAM <- factor(shapeData$TAG)
+          
+        } else if (grepl("WBE_binnengrenzen", iLevel)) {
+          
+          shapeData$NAAM <- factor(shapeData$WBE_NR)
+          
+        } else if (grepl("Jachtter_", iLevel)) {
+          
+          shapeData$NAAM <- factor(shapeData$WBE_NR_wbe)
+          
+        }
+        
+        return(shapeData)
+        
+      })
+    
+  # Rename WBE levels  
+  allLevels <- gsub("WBE_binnengrenzen", "WBE_buitengrenzen", allLevels)
+  allLevels[grepl("Jachtter", allLevels)] <- 
+    sapply(strsplit(allLevels[grepl("Jachtter", allLevels)], split = "-"), function(x) x[1])
+  allLevels <- gsub("Jachtter", "WBE", allLevels)
+  
+  names(spatialData) <- allLevels
+  
+  
+  ## Create "province" Voeren
+  
+  # Define provinces based on NIS codes
+  provinceIds <- substr(spatialData$communes$NISCODE, start = 1, stop = 1)
+  # Give Voeren unique code, different from any other province
+  voerenId <- which(spatialData$communes$NAAM == "Voeren")
+  provinceIds[voerenId] <- 100
+  # Select Limburg and Voeren
+  isLimburg <- provinceIds %in% c(7, 100)
+  isLimburgProvince <- spatialData$provinces$NAAM == "Limburg"
+  
+  # Create new polygon for Limburg
+  limburgPolygon <- unionSpatialPolygons(SpP = spatialData$communes[isLimburg,],
+      IDs = provinceIds[isLimburg])
+  limburgData <- spatialData$provinces@data[isLimburgProvince, ]
+  voerenData <- limburgData
+  voerenData$NAAM <- "Voeren"
+  
+  # Bind all province polygons and data
+  allPolygons <- spRbind(spatialData$provinces[!isLimburgProvince, ],
+      limburgPolygon)
+  tmpData <- rbind(spatialData$provinces@data[!isLimburgProvince, ],
+      voerenData, limburgData)
+  rownames(tmpData) <- sapply(slot(allPolygons, "polygons"), function(x) slot(x, "ID")) 
+  
+  newProvinceData <- SpatialPolygonsDataFrame(Sr = allPolygons,
+      data = tmpData)
+  
+  # Attach new province data to spatialData
+  spatialData$provincesVoeren <- newProvinceData
+  
+  
+  
+  
+  newNames <- names(spatialData)
+  
+  # Try to simplify polygons
+  spatialData <- lapply(names(spatialData), function(iName) {
+        
+        iData <- spatialData[[iName]]
+        
+        # Calculate area for each polygon
+        iData@data$AREA <- raster::area(iData)/1e06
+        
+        # No simplification
+        if (iName %in% c("fbz_gemeentes", "utm5") | grepl("WBE", iName))
+          return(iData)
+        
+        simpleShapeData <- gSimplify(spgeom = iData, tol = tolerance)
+        
+        if (length(simpleShapeData) != length(iData))
+          stop("The number of polygons in original shapeData for ", 
+              iName, " is: ", length(iData),
+              "\nThe number of polygons in simplified shapeData is: ", length(simpleShapeData),
+              "\nPlease decrease value for tolerance")
+        
+        iData <- SpatialPolygonsDataFrame(Sr = simpleShapeData, 
+            data = data.frame(iData@data, stringsAsFactors = FALSE))
+        
+        
+        return(iData)
+        
+      })
+  
+  names(spatialData) <- newNames
+  
+  
+  # Update commune names for later matching: geo/wildschade data with shape data
+  # Note: You can use gemeentecode.csv for matching NIS to NAAM
+  # First install the package again!
+  gemeenteData <- loadGemeentes(bucket = bucket)
+      
+  communeData <- spatialData$communes@data
+  gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
+  gemeenteFile <- file.path(tempdir(), "gemeentecodes.csv")
+  write.csv(gemeenteData, file = gemeenteFile, row.names = FALSE)
+  put_object(file = gemeenteFile, object = basename(gemeenteFile), 
+    bucket = bucket, multipart = TRUE)
+  
+  # IF any NIS code not in gemeenteData -> throw error
+  if (any(!spatialData$communes@data$NISCODE %in% gemeenteData$NIS.code))
+    stop("Sommige NIS codes in shape data zijn niet gekend voor matching\n",
+        "Gelieve het referentiebestand gemeentecodes.csv aan te vullen")
+  
+    
+  # Save WBE data separately
+  spatialDataWBE <- spatialData[grep("WBE", names(spatialData))]
+  s3save(spatialDataWBE, bucket = bucket, object = "spatialDataWBE.RData")
+  
+  spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
+  s3save(spatialData, bucket = bucket, object = "spatialData.RData")
+    
+}
+
+
+#' Read gemeentes data
+#' @inheritParams loadRawData
+#' @return data.frame with NIS.code, Postcode and Gemeente
+#' 
+#' @author mvarewyck
+#' @export
+loadGemeentes <- function(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  
+  readS3(FUN = read.csv, header = TRUE, file = "gemeentecodes.csv", bucket = bucket)
+  
+}
+
+
 #' read openingstijden data
-#' @inheritParams createShapeData
+#' @inheritParams readShapeData
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'Soort': }{specie}
@@ -10,15 +208,20 @@
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
+#' @importFrom data.table rbindlist
+#' @importFrom aws.s3 get_bucket
 #' @export
-loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "reportingGrofwild")){
+loadOpeningstijdenData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))){
   
-  pathFile <- file.path(dataDir, "Openingstijden_grofwild.csv")
+  pathFile <- "Openingstijden_grofwild.csv"
+  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
+    file = pathFile, bucket = bucket)
   
-  rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
   rawData$Type <- simpleCap(rawData$Type)
   
-  attr(rawData, "Date") <- file.mtime(pathFile)
+  tmpInfo <- data.table::rbindlist(aws.s3::get_bucket(bucket = bucket))
+  attr(rawData, "Date") <- as.Date(tmpInfo[tmpInfo$Key == pathFile, ]$LastModified[1])
   
   return(rawData)
   
@@ -26,7 +229,7 @@ loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "r
 
 
 #' Read toekenningen (Ree) data
-#' @inheritParams createShapeData
+#' @inheritParams readShapeData
 #' @return data.frame with columns:
 #' \itemize{
 #' \item{'labeltype': }{character, type of Ree, one of \code{c("geit", "bok", "kits")}}
@@ -41,11 +244,12 @@ loadOpeningstijdenData <- function(dataDir = system.file("extdata", package = "r
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
-loadToekenningen <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+loadToekenningen <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
-  pathFile <- file.path(dataDir, "Verwezenlijkt_categorie_per_afschotplan.csv")
-  
-  rawData <- read.csv(pathFile, sep = ";", stringsAsFactors = FALSE)
+  pathFile <- "Verwezenlijkt_categorie_per_afschotplan.csv"
+  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
+    file = pathFile, bucket = bucket)
   
   # Rename LabelType to non-plural
   rawData$labeltype[rawData$labeltype == "Geiten"] <- "Geit"
@@ -76,8 +280,11 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 
 
 #' Read ecology or geography data
-#' @inheritParams createShapeData
+#' 
+#' @param bucket character, name of the S3 bucket as specified in the config.yml file;
+#' default value is "inbo-wbe-uat-data"
 #' @param type data type, "eco" for ecology data and "geo" for geography data
+#' 
 #' @return data.frame, loaded ecology or geography data; 
 #' and attribute 'Date', the date that this data file was created
 #' @author mvarewyck
@@ -86,34 +293,33 @@ loadToekenningen <- function(dataDir = system.file("extdata", package = "reporti
 #' @importFrom raster coordinates
 #' @export
 loadRawData <- function(
-    dataDir = system.file("extdata", package = "reportingGrofwild"),
-    type = c("eco", "geo", "wildschade", "kbo_wbe")) {
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  type = c("eco", "geo", "wildschade", "kbo_wbe")) {
   
   type <- match.arg(type)
   
   
-  dataFile <- file.path(dataDir, switch(type,
+  dataFile <- switch(type,
           "eco" = "rshiny_reporting_data_ecology.csv",
           "geo" = "rshiny_reporting_data_geography.csv",
           "wildschade" = "WildSchade_georef.csv",
-          "kbo_wbe" = "Data_Partij_Cleaned.csv"))
+          "kbo_wbe" = "Data_Partij_Cleaned.csv")
   
-  rawData <- read.csv(dataFile, sep = ";", stringsAsFactors = FALSE)
+  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE, 
+    file = dataFile, bucket = bucket)
 #  xtabs( ~ provincie + wildsoort, data = rawData)
   
   ## Replace decimal comma by dot
-  if ("ontweid_gewicht" %in% names(rawData))
-    rawData$ontweid_gewicht <- as.numeric(sub("\\,", ".", rawData$ontweid_gewicht))
+  for (iVar in c("ontweid_gewicht", "lengte_mm", "onderkaaklengte_comp", "verbatimLatitude", "verbatimLongitude"))
+    if (iVar %in% names(rawData))
+      rawData[, iVar] <- as.numeric(sub("\\,", ".", rawData[, iVar]))
+  
   
   ## Replace decimal comma by dot & rename
   if ("lengte_mm" %in% names(rawData)) {
-    rawData$onderkaaklengte_mm <- as.numeric(sub("\\,", ".", rawData$lengte_mm))
+    rawData$onderkaaklengte_mm <- rawData$lengte_mm
     rawData$lengte_mm <- NULL
   }
-  
-  ## Replace decimal comma by dot
-  if ("onderkaaklengte_comp" %in% names(rawData))
-    rawData$onderkaaklengte_comp <- as.numeric(sub("\\,", ".", rawData$onderkaaklengte_comp))
   
   ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
   if ("provincie" %in% names(rawData))
@@ -123,8 +329,7 @@ loadRawData <- function(
   
   # Gemeente & NIS & postcode
   # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
-  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",")
+  gemeenteData <- loadGemeentes()
   
   
   ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
@@ -155,6 +360,8 @@ loadRawData <- function(
     rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
         NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
     
+    # Drop unused columns
+    rawData$verbatimCoordinateUncertainty <- NULL
     
   } else if (type == "eco") {
     ## ECO data for grofwild
@@ -173,7 +380,9 @@ loadRawData <- function(
     
     # Date format
     rawData$afschot_datum <- as.Date(rawData$afschot_datum)
-  
+    # Define season
+    rawData$season <- getSeason(rawData$afschot_datum)
+    
     # Redefine names and ordering of factor levels
     rawData$type_comp <- simpleCap(rawData$type_comp)
     rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
@@ -277,7 +486,8 @@ loadRawData <- function(
 
 
 #' Load Habitats (Background) data
-#' @inheritParams createShapeData
+#' 
+#' @inheritParams loadRawData
 #' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
 #' by \code{\link{createShapeData}}
 #' @param regionLevels character vector, for which regions load the habitat data;
@@ -286,8 +496,10 @@ loadRawData <- function(
 #' 
 #' @author mvarewyck
 #' @export
-loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGrofwild"),
-  spatialData, regionLevels = NULL) {
+loadHabitats <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  spatialData, 
+  regionLevels = NULL) {
   
   allLevels <- list(
     "flanders" = "flanders_habitats", 
@@ -307,13 +519,15 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
       
       iLevel <- allLevels[[match(iRegion, names(allLevels))]]
       
-      allFiles <- list.files(dataDir, pattern = iLevel, full.names = TRUE)
+      allFiles <- grep(pattern = iLevel,
+        x = sapply(aws.s3::get_bucket(bucket = bucket), function(x) as.list(x)$Key),
+        value = TRUE)
       
       if (iRegion == "wbe") {
           
           tmpData <- do.call(rbind, lapply(allFiles, function(iFile) {
                 
-                iData <- read.csv(file = iFile)
+                iData <- readS3(FUN = read.csv, file = iFile)
                 iData$year <- as.numeric(gsub("WBE_|habitats_|\\.csv", "", basename(iFile)))
              
                 iData
@@ -328,7 +542,8 @@ loadHabitats <- function(dataDir = system.file("extdata", package = "reportingGr
           if (iRegion == "provinces")
             iRegion <- "provincesVoeren"
           
-          tmpData <- read.csv(file = allFiles)
+          tmpData <- readS3(FUN = read.csv, file = allFiles)
+
           if ("NISCODE" %in% colnames(tmpData)) {
             colnames(tmpData)[colnames(tmpData) == "NISCODE"] <- "regio"
           } else {
@@ -452,8 +667,8 @@ loadMetaEco <- function(species = NA) {
 }
 
 #' Specify currently used type schades
-#' @param dataDir character, path to data files
 #' 
+#' @param dataDir character, path to data files
 #' @return list with meta data for wildschade
 #' 
 #' @author mvarewyck

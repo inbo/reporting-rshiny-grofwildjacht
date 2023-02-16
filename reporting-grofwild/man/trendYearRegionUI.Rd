@@ -10,13 +10,12 @@ trendYearRegionUI(
   plotFunction = "trendYearRegionUI",
   showCombinatie = FALSE,
   doHide = TRUE,
-  unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative")
+  unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative",
+    `Aantal/100ha bos & natuur` = "relativeDekking")
 )
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
-
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+\item{id}{unique identifier}
 
 \item{plotFunction}{character, for matching uiText}
 
@@ -25,9 +24,6 @@ trendYearRegionUI(
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
 
 \item{unitChoices, }{character vector with choices for the units}
-}
-\value{
-HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side

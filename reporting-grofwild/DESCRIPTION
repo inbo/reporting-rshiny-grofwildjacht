@@ -8,6 +8,9 @@ Description: Data visualization of grof wild in Vlaanderen.
 Version: 0.2.8
 Date: 2022-05-25
 Imports:
+    aws.ec2metadata,
+    aws.s3,
+    config,
     data.table,
     DT, 
     flexdashboard,
@@ -23,8 +26,8 @@ Imports:
     plotly,
     plyr, 
     raster,
-    RColorBrewer, 
-    remotes,
+    RColorBrewer,
+    remotes, 
     reshape2, 
     rgdal, 
     rgeos, 
@@ -33,11 +36,11 @@ Imports:
     shinycssloaders, 
     sp, 
     stringr,
+    testthat,
     webshot
 Depends: 
     maptools    
 Suggests:
-    testthat,
     rmarkdown,
     magick,
     oaStyle,

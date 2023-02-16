@@ -12,8 +12,7 @@ createTrendData(
   species,
   regionLevel,
   unit = c("absolute", "relative", "relativeDekking"),
-  sourceIndicator = NULL,
-  dataDir = system.file("extdata", package = "reportingGrofwild")
+  sourceIndicator = NULL
 )
 }
 \arguments{
@@ -36,8 +35,6 @@ the legend shows different types of regions for WBE}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
-
-\item{dataDir}{character, path to data files}
 }
 \value{
 data.frame, summary of number of animals per species, region and year.

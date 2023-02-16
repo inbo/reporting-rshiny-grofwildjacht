@@ -46,3 +46,7 @@ vignettes/*.pdf
 
 # Large files - can be built again from code
 reporting-grofwild/inst/extdata/spatialData*.RData
+
+# Docs - built from code
+/reporting-grofwild/man/
+

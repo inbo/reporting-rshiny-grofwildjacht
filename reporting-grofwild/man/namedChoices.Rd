@@ -8,9 +8,12 @@ namedChoices(choices, uiText, regionLevel)
 }
 \arguments{
 \item{choices}{character vector, plotFunction names in \code{uiText} 
-for which to create named choices}
+for which to create named choices, i.e. F_* codes}
 
 \item{uiText}{data.frame as loaded by \code{read.csv(file = file.path(dataDir, "uiText.csv"))}}
+
+\item{regionLevel}{character, selected regional level; to define whether 
+info is partially known (* indicator)}
 }
 \value{
 named character vector

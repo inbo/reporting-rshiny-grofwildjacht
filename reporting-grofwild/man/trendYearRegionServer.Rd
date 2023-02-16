@@ -13,7 +13,7 @@ trendYearRegionServer(
   locaties,
   geoData,
   allSpatialData,
-  biotoopData = NULL,
+  biotoopData = reactive(NULL),
   title = reactive(NULL),
   type = "wbe"
 )

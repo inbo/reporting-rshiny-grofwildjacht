@@ -4,15 +4,20 @@
 \alias{barDraagkrachtUI}
 \title{Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side}
 \usage{
-barDraagkrachtUI(id, uiText, subGroups = NULL)
+barDraagkrachtUI(
+  id,
+  uiText,
+  sectorChoices = NULL,
+  selectGroups = FALSE,
+  height = "600px"
+)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
+\item{sectorChoices}{named character vector, choices for sector}
 
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
+\item{selectGroups}{boolean, whether user should be able to select groups}
+
+\item{height}{character, height of the plot}
 }
 \description{
 Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side

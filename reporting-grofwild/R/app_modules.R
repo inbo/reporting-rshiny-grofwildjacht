@@ -439,6 +439,7 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
+#' @param verticalGroups 
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData

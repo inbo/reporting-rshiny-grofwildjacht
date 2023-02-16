@@ -9,6 +9,12 @@ tableBackground(data, regionLevel, locaties)
 \arguments{
 \item{data}{data.frame with row for each location of interest;
 columns are measured background variables}
+
+\item{regionLevel}{reactive, pre-selected value of regionLevel chosen outside module;
+to draw black borders and zoom}
+
+\item{locaties}{reactive, pre-selected value of region chosen outside module;
+to draw black borders and zoom}
 }
 \value{
 data.frame

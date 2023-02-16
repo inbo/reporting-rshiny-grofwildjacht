@@ -15,6 +15,7 @@ mapFlanders(
   summaryData,
   colorScheme = NULL,
   legend = "none",
+  legendText = "Legende",
   addGlobe = FALSE
 )
 }
@@ -40,6 +41,8 @@ if NULL default regions are selected}
 in the summary data; if NULL map is not colored}
 
 \item{legend}{character, legend placement; default is "none", no legend}
+
+\item{legendText}{character, legend title; default is 'Legende'}
 
 \item{addGlobe}{boolean, whether to add world map to background; default is FALSE}
 }

@@ -69,13 +69,13 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   
   myPlot <- plot_ly(plotData, 
       x = as.character(plotData$afschotjaar), 
-      y = ~x , type = 'bar', name = if (!is.null(unit)) ~get(unit),
-      color = if (!is.null(unit)) ~as.factor(get(unit)) else "group", 
+      y = ~x , type = 'bar', name = if (!is.null(unit)) ~base::get(unit),
+      color = if (!is.null(unit)) ~as.factor(base::get(unit)) else "group", 
       colors = colors,
       hovertemplate = paste0(
         '<b>', yLabel, '</b>: ', if (yVar == "schadeBedrag") '%{y:.2f}' else '%{y:.0f}', '<br>',
         if (!is.null(groupLabel)) paste0('<b>', groupLabel, '</b>: %{text}'), '<extra></extra>'), 
-      text = if (!is.null(unit)) ~get(unit),
+      text = if (!is.null(unit)) ~base::get(unit),
       textposition = "none") %>%
     layout(
       legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),

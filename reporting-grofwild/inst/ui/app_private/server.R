@@ -57,7 +57,7 @@ shinyServer(function(input, output, session) {
                 
         observeEvent(input$tabs, {
             if (input$tabs %in% c("Grofwild", "Wildschade", "Dashboard"))
-              browseURL("https://grofwildjacht.inbo.be")
+              js$browseURL("https://faunabeheer.inbo.be")
           })
       
     })

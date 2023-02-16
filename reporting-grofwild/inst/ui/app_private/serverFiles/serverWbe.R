@@ -92,7 +92,7 @@ output$wbe_empty <- renderUI({
       errorMessage <- tags$p("Momenteel zijn er voor deze WBE geen afschotgegevens van de grofwildsoorten beschikbaar.", 
         "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. afschot.", 
         "Indien dit niet klopt, kijkt u best eerst na of de gegevens juist in het e-loket van ANB zitten.", 
-        "Zijn uw gegevens juist ingevoerd en ingediend dan laat u best iets weten op", 
+        "Zijn uw gegevens toch ingegeven in het e-loket en hier worden ze hier niet weergegeven dan laat u best iets weten op", 
         tags$a(id = "wbe_contact", href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")) 
     
     if (!results$wbe_currentKbo() %in% schadeData@data$KboNummer)
@@ -107,7 +107,7 @@ output$wbe_empty <- renderUI({
         tags$a(href = "https://play.google.com/store/apps/details?id=com.wilderpg.wilder&hl=en&gl=US&pli=1", target = "_blank", "android"), 
         ") van HVV of", 
         tags$a(href = "https://waarnemingen.be/", target = "_blank", "waarnemingen.be"),
-        "van Natuurpunt. Bent u zeker dat er toch gegevens bij één van de partners ingevoerd werden, dan laat u best iets weten op",
+        "van Natuurpunt. Bent u zeker dat er toch gegevens bij één van de partners ingevoerd werden die hier niet worden weergegeven, dan laat u best iets weten op",
         tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")
       )
     
@@ -117,12 +117,12 @@ output$wbe_empty <- renderUI({
 
 
 output$wbe_emptyAfschot <- reactive({
-    !results$wbe_currentKbo() %in% geoData$KboNummer_Toek
+    !input$wbe_species %in% results$wbe_geoDataKbo()$wildsoort
   })
 outputOptions(output, "wbe_emptyAfschot", suspendWhenHidden = FALSE)
 
 output$wbe_emptySchade <- reactive({
-    !results$wbe_currentKbo() %in% schadeData@data$KboNummer
+    !input$wbe_species %in% results$wbe_schadeData()@data$wildsoort
   })
 outputOptions(output, "wbe_emptySchade", suspendWhenHidden = FALSE)
 
@@ -196,6 +196,7 @@ results$jachttypes <- reactive({
 
 
 mapFlandersServer(id = "wbe",
+  uiText = uiText,
   defaultYear = defaultYear,
   species = reactive(""),
   currentWbe = results$wbe_currentPartij,
@@ -203,8 +204,7 @@ mapFlandersServer(id = "wbe",
   hideGlobeDefault = FALSE,
   geoData = results$wbe_geoDataKbo,  # independent of species
   biotoopData = biotoopData,
-  allSpatialData = spatialData,
-  uiText = uiText
+  allSpatialData = spatialData
 )
 
 
@@ -230,7 +230,8 @@ trendYearRegionServer(id = "wbe",
 tableSpeciesServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  species = reactive(input$wbe_species))
+  species = reactive(input$wbe_species),
+  uiText = uiText)
 
 
 # Plot2: Verdeling afschot over de jaren
@@ -350,4 +351,16 @@ percentageRealisedShotServer(id = "wbe",
   data = results$wbe_toekenningsData,
   types = reactive(unique(results$wbe_toekenningsData()$labeltype)),
   timeRange = reactive(range(results$wbe_toekenningsData()$labeljaar))
+)
+
+
+# Plot 12: Afschot locaties
+mapSchadeServer(id = "wbe_afschot",
+  schadeData = results$wbe_combinedData, 
+  allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())),
+  type = "afschot",
+  timeRange = results$wbe_timeRange, 
+  defaultYear = defaultYear, 
+  species = reactive(input$wbe_species),
+  borderRegion = "WBE_buitengrenzen"
 )

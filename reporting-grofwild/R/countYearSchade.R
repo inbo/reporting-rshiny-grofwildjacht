@@ -172,6 +172,81 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   # To prevent warnings in UI
   toPlot$elementId <- NULL
   
-  
   return(list(plot = toPlot, data = summaryDataFinal, warning = colorList$warning))
+  
+}
+
+
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearSchade}} - server side
+#' @inheritParams countYearSchade
+#' @inheritParams countAgeGenderServer
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearSchadeServer <- function(id, data, types, labelTypes, typesDefault, 
+  timeRange, fullNames) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      callModule(module = optionsModuleServer, id = "yearSchade", 
+        data = data,
+        types = types,
+        labelTypes = labelTypes,
+        typesDefault = typesDefault,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "yearSchade",
+        plotFunction = "countYearSchade", 
+        data = data,
+        fullNames = fullNames)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearSchade}} - UI side
+#' @template moduleUI
+#' 
+#' @author mvarewyck
+#' @export
+countYearSchadeUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearSchade"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkYearSchade % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("yearSchade"), 
+            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
+            showTime = TRUE, 
+            showType = TRUE, 
+            showDataSource = "schade",
+            exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("yearSchade"))
+        ),
+        tags$hr()
+      )
+    )
+  )
 }

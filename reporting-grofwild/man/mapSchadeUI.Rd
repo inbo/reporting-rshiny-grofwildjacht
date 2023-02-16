@@ -8,6 +8,10 @@ mapSchadeUI(
   id,
   filterCode = FALSE,
   filterSubcode = FALSE,
+  filterSource = TRUE,
+  filterAccuracy = FALSE,
+  variableChoices = c(Seizoen = "season", Jaar = "afschotjaar", `Type schade` =
+    "schadeCode"),
   uiText,
   plotDetails = NULL
 )
@@ -21,13 +25,14 @@ default value is FALSE}
 \item{filterSubcode}{boolean, whether to include the option to filter on schade subcode;
 default value is FALSE}
 
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+\item{filterSource}{boolean, whether to show filter option for source}
+
+\item{filterAccuracy}{boolean, whether to show filter option for accuracy}
+
+\item{variableChoices}{named character vector, choices for coloring variable}
 
 \item{plotDetails}{character vector, detail plots to be shown below the map;
 should be subset of \code{c("flanders", "region", "biotoop")}}
-}
-\value{
-HTML object
 }
 \description{
 Shiny module for creating map on schade data - UI side

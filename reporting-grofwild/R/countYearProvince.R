@@ -142,12 +142,14 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - server side
 #' @inheritParams trendYearRegionServer
 #' @inheritParams countYearProvince
+#' @inheritParams optionsModuleServer
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL)) {
+countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
+  typesDefault = types, timeRange, title) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -170,11 +172,14 @@ countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL))
             getDisclaimerLimited()
           
         })
-      
+
       
       # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearProvince", 
         data = data,
+        types = types,
+        labelTypes = labelTypes,
+        typesDefault = typesDefault,
         timeRange = timeRange
       )
       callModule(module = plotModuleServer, id = "yearProvince",
@@ -195,7 +200,7 @@ countYearProvinceServer <- function(id, data, timeRange, title = reactive(NULL))
 #' @author mvarewyck
 #' @export
 countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI",
-  doHide = TRUE) {
+  showType = FALSE, showDataSource = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -208,12 +213,15 @@ countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI"
     conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
       
       uiOutput(ns("disclaimerYearProvince")),
+
       
       fixedRow(
         
         column(4,
           optionsModuleUI(id = ns("yearProvince"), 
-            showTime = TRUE, exportData = TRUE),
+            showTime = TRUE, exportData = TRUE,
+            showType = showType,
+            showDataSource = showDataSource),
           tags$p(HTML(uiText[, id]))
         ),
         column(8, 

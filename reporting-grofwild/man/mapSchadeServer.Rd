@@ -11,7 +11,8 @@ mapSchadeServer(
   timeRange,
   defaultYear,
   species,
-  borderRegion = NULL
+  borderRegion = NULL,
+  type = c("schade", "afschot")
 )
 }
 \arguments{
@@ -30,6 +31,10 @@ spatial data for selected region (and year for WBE)}
 
 \item{borderRegion}{character, for which \code{regionLevel} to show black border;
 see also \code{\link{mapSchade}}; default is NULL}
+
+\item{type}{character, type of plot this module is used for. Historically
+only \code{"schade"}. Later extended to also cover \code{"afschot"}, i.e. 
+"gerapporteerde afschot locaties", see also \code{mapAfschotUI}}
 }
 \value{
 no return value

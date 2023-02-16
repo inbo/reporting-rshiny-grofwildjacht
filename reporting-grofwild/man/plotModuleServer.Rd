@@ -27,7 +27,8 @@ plotModuleServer(
   schadeChoicesGewas = NULL,
   variable = NULL,
   combinatie = NULL,
-  schadeTitles = FALSE,
+  title = NULL,
+  verticalGroups = NULL,
   fullNames = NULL
 )
 }
@@ -82,7 +83,9 @@ defined externally for large map}
 
 \item{combinatie}{logical, summarised view of selected regions}
 
-\item{schadeTitles}{boolean, whether title should include 'schade' instead of 'afschot'}
+\item{title}{reactive, plot title to be displayed}
+
+\item{verticalGroups}{}
 
 \item{fullNames}{named character vector, values for the \code{variable} to be 
 displayed instead of original data values}

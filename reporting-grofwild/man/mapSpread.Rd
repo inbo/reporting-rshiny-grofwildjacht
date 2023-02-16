@@ -7,7 +7,7 @@
 mapSpread(spreadShape, startYear = 2019, legend = "none", addGlobe = FALSE)
 }
 \arguments{
-\item{spreadShape}{SpatialPolygonsDataFrame as loaded by \code{loadSpreadData}}
+\item{spreadShape}{SpatialPolygonsDataFrame as created by \code{createSpreadData}}
 
 \item{startYear}{integer, starting year; only relevant for pixels & model unit}
 

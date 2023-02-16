@@ -9,6 +9,7 @@ countYearProvince(
   jaartallen = NULL,
   type = c("provinces", "flanders", "faunabeheerzones"),
   sourceIndicator = NULL,
+  title = NULL,
   width = NULL,
   height = NULL
 )
@@ -24,6 +25,8 @@ in the plot; if NULL no selection on year(s) is made}
 
 \item{sourceIndicator}{character, source used to filter \code{data} ('indieningType' column)
 should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
+
+\item{title}{character, title prefix; default is NULL}
 
 \item{width}{plot width (optional)}
 

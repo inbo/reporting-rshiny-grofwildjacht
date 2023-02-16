@@ -7,13 +7,9 @@
 mapSpreadUI(id, uiText, showLayer = FALSE)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
-
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+\item{showLayer}{boolean, whether to display option to choose layer}
 }
 \value{
-HTML object
-
 UI object
 }
 \description{

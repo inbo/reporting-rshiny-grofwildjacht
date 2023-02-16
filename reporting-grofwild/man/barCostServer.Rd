@@ -12,6 +12,8 @@ barCostServer(id, yVar, data, title = reactive(NULL))
 \item{yVar}{character, column in \code{plotData} for y-axis}
 
 \item{data}{data.frame for the plot function}
+
+\item{title}{reactive, plot title to be displayed}
 }
 \value{
 no return value

@@ -14,10 +14,18 @@ mapSpreadServer(
 )
 }
 \arguments{
-\item{regionLevel}{character, regional level of interest should be one of 
-\code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
+\item{id}{character, unique identifier for the module}
 
-\item{allSpatialData}{list of sp, spatial data for all spatial levels}
+\item{regionLevel}{reactive, pre-selected value of regionLevel chosen outside module;
+to draw black borders and zoom}
+
+\item{locaties}{reactive, pre-selected value of region chosen outside module;
+to draw black borders and zoom}
+
+\item{allSpatialData}{list with SpatialPolygonsDataFrame}
+
+\item{type}{character, defines the layout depending on which page it is shown;
+should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}}
 
 \item{title}{reactive object, title with asterisk to show in the \code{actionLink}}
 }

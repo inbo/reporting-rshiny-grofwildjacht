@@ -4,10 +4,13 @@
 \alias{simpleCap}
 \title{Capitalize first letter}
 \usage{
-simpleCap(names)
+simpleCap(names, keepNames = TRUE)
 }
 \arguments{
 \item{names}{character vector, names to be capitalized (e.g. countries)}
+
+\item{keepNames}{boolean, whether to keep the names for the returned vector;
+default is TRUE}
 }
 \value{
 character vector, capitalized version of \code{names}

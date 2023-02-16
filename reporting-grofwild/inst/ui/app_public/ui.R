@@ -3,9 +3,10 @@ shinyUI(
         bootstrapPage(
                 
                 shinyjs::useShinyjs(),
+                extendShinyjs(text = js_code, functions = 'browseURL'),
+                
                 ## For debugging
                 uiOutput("debug"),
-                
                 
                 ## Header
                 ## ------
@@ -50,7 +51,7 @@ shinyUI(
                                         uiOutput("schade_content")),
                                 tabPanel(title = "Dashboard", id = "tab-dashboard",
                                         uiOutput("dash_content")),
-#                                tabPanel(title = "WBE"),
+                                tabPanel(title = "WBE", id = "tab-wbe"),
                                 
                                 # Shape data source + contact e-mail
                                 header = tags$header(tags$div(align = "right",

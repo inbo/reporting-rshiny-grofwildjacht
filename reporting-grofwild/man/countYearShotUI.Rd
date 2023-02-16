@@ -7,17 +7,10 @@
 countYearShotUI(id, groupVariable, regionLevels = NULL, uiText)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
-
 \item{groupVariable}{character, variable name in \code{data} for 
 which colored bars should be plot}
 
 \item{regionLevels}{numeric vector, region level choices}
-
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side

@@ -7,7 +7,7 @@
 barInschatting(data)
 }
 \arguments{
-\item{plotData}{dataframe with columns including percentage, Vraag and Antwoord}
+\item{data}{dataframe with columns including percentage, Vraag and Antwoord}
 }
 \value{
 list with plotly object and data.frame

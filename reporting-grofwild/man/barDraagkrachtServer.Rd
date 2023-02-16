@@ -10,6 +10,7 @@ barDraagkrachtServer(
   groupVariable = NULL,
   xVar = "percentage",
   yVar,
+  groupLabel = NULL,
   title = reactive(NULL)
 )
 }
@@ -25,6 +26,10 @@ for which each unique value a separate subplot is created}
 default value is 'percentage'}
 
 \item{yVar}{character, column in \code{plotData} for y-axis}
+
+\item{groupLabel}{character, label for the grouping variable choices}
+
+\item{title}{reactive, plot title to be displayed}
 }
 \value{
 no return value

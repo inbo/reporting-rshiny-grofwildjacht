@@ -5,7 +5,7 @@
 \title{Enrich waarnemingen data with CELLCODE and gemeentecode}
 \usage{
 createWaarnemingenData(
-  dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2018.csv",
+  dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2022.csv",
   saveDir = system.file("extdata", package = "reportingGrofwild")
 )
 }
@@ -15,7 +15,7 @@ createWaarnemingenData(
 \item{saveDir}{path to write new waarnemingen data}
 }
 \value{
-TRUE if creation succeeded
+boolean, whether file is successfully saved
 }
 \description{
 Enrich waarnemingen data with CELLCODE and gemeentecode

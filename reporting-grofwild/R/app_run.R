@@ -17,6 +17,7 @@
 #' @import shiny
 #' @importFrom remotes install_github dev_package_deps
 #' @importFrom stats update
+#' @importFrom config get
 #' @export
 runWildApp <- function(installDependencies = FALSE, 
   public = TRUE, kbo = "", ...) {
@@ -38,8 +39,7 @@ runWildApp <- function(installDependencies = FALSE,
     
   }
   
-  # (2) Copy the UI files & folders from "inst/ui" for local use
-  
+  # (2) Point to the correct app directory  
   if (public)
     appDir <- system.file("ui/app_public", package = "reportingGrofwild") else
     appDir <- system.file("ui/app_private", package = "reportingGrofwild")
@@ -53,7 +53,21 @@ runWildApp <- function(installDependencies = FALSE,
       Sys.setenv("SHINYPROXY_KBO_NUMMERS" = kbo)
   }
   
-  # (4) Run the application
-  runApp(appDir = appDir, ...)
+  
+  # (4) Check S3 data - On UAT only, not PRD
+  if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild")))
+    errorApp <- tryCatch(
+      testS3(),
+      error = function(err)
+        shinyApp(ui = fluidPage(
+            tags$h3("Error during Data Check"),
+            HTML(err$message)
+        ), server = function(input, output, session){})
+      )
+    
+  # (5) Run the application
+  if (exists("errorApp") && is(errorApp, "shiny.appobj"))
+    errorApp else 
+    runApp(appDir = appDir, ...)
   
 }

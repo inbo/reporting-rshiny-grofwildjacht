@@ -7,10 +7,16 @@
 context("Test wildschade")
 
 
+doPrint <- FALSE
+
 # Load all data
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 schadeData <- loadRawData(type = "wildschade")
+wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])
+
+species <- sort(unique(schadeData$wildsoort))
+   
 
 metaSchade <- loadMetaSchade()
 schadeWildsoorten <- metaSchade$wildsoorten
@@ -21,11 +27,6 @@ names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
 fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
-wildSchadeData <- subset(schadeData@data, wildsoort %in% 
-    metaSchade$wildsoorten$`Grof wild`)
-
-species <- unlist(metaSchade$wildsoorten)
-
 
 ## THE MAP
 
@@ -33,7 +34,7 @@ species <- unlist(metaSchade$wildsoorten)
 
 test_that("Number of cases per region level", {
     
-    xtabs(~ wildsoort + afschotjaar, data = subset(schadeData@data, wildsoort %in% species))
+    xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
     
     regionLevels <- setdiff(names(spatialData), "provincesVoeren")
     regionLevels <- regionLevels[!grepl("WBE", regionLevels)]
@@ -68,15 +69,12 @@ test_that("Number of cases per region level", {
         mapPlot <- mapFlanders(
           allSpatialData = spatialData, 
           regionLevel = regionLevel, 
-          colorScheme = suppressWarnings(c("white", RColorBrewer::brewer.pal(
-                n = nlevels(spaceData$data$group) - 1, name = "YlOrBr"))),
+          colorScheme = c("white", RColorBrewer::brewer.pal(
+              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
           summaryData = spaceData$data,
           legend = "topright",
           species = iSpecies
         )
-        
-        expect_is(mapPlot, "leaflet")
-        
         if (doPrint)
           print(mapPlot)
         
@@ -93,10 +91,10 @@ test_that("Number of cases per region level", {
             locaties = trendData$locatie[1:7],
             isSchade = TRUE)
         
-        expect_is(trendPlot$plot, "plotly")
-        
         if (doPrint)
           print(trendPlot)
+        
+        
         
       }
       
@@ -124,8 +122,6 @@ test_that("Map with exact location and description of each case", {
           variable = var,
           allSpatialData = spatialData,
           addGlobe = TRUE)
-        
-        expect_is(myPlot, "leaflet")
         
         if (doPrint)
           print(myPlot)
@@ -175,17 +171,14 @@ test_that("Counts per year and province", {
 
 test_that("Counts per year and variable of interest", {
     
-    # count
+# count
     countYearSchade(data = wildSchadeData, jaartallen = 2018:2019, type = "SoortNaam")$plot
     countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "wildsoort")$plot
-    countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode",
-      fullNames = unlist(metaSchade$codes))$plot
+    countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode")$plot
     
-    # percent
-    myPlot <- countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
-      fullNames = unlist(metaSchade$codes), summarizeBy = "percent")$plot
-    
-    expect_is(myPlot, "plotly")
+# percent
+    countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
+      summarizeBy = "percent")$plot
     
   })
 

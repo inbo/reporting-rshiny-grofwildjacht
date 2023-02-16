@@ -4,6 +4,7 @@ library(reportingGrofwild)
 library(leaflet)           # for interactive map
 library(plotly)            # for interactive graphs
 library(shinycssloaders)   # for busy indicator
+library(shinyjs)
 
 # Other packages needed, but not loaded
 # mapview
@@ -13,15 +14,14 @@ library(shinycssloaders)   # for busy indicator
 ### General
 ### ------------
 
-`%then%` <- function(x, y) {
-  
-  if (is.null(x) || isTRUE(is.na(x)))
-    y
-  else
-    x
-  
-}
 `%<>%` <- magrittr::`%<>%`
+
+# define js function for opening urls in new tab/window
+js_code <- "
+  shinyjs.browseURL = function(url) {
+  window.open(url, '_self');
+  }
+  "
 
 
 # Specify directory with data
@@ -72,17 +72,20 @@ defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 # create temp html file to store grofwild landkaart
 outTempFileName <- tempfile(fileext = ".html")
 
+
+
+
 ### Load all data
 ### -------------
 
 if (!doDebug | !exists("openingstijdenData"))
-  openingstijdenData <- loadOpeningstijdenData(dataDir = dataDir)
+  openingstijdenData <- loadOpeningstijdenData()
 if (!doDebug | !exists("toekenningsData"))
-  toekenningsData <- loadToekenningen(dataDir = dataDir)
+  toekenningsData <- loadToekenningen()
 
 # Load object called spatialData
 if (!doDebug | !exists("spatialData"))
-  load(file = file.path(dataDir, "spatialData.RData"))
+  readS3(file = "spatialData.RData")
 
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData"))
@@ -92,9 +95,7 @@ if (!doDebug | !exists("geoData"))
 if (!doDebug | !exists("schadeData"))
   schadeData <- loadRawData(type = "wildschade")
 if (!doDebug | !exists("biotoopData"))
-  biotoopData <- loadHabitats(dataDir = dataDir, spatialData = spatialData)
-
-gc()
+  biotoopData <- loadHabitats(spatialData = spatialData)
 
 
 # TODO temporary fix
@@ -157,4 +158,5 @@ populatieChoices <- c("F16_1", "F17_1", "F17_4", "F18_1")
 jachtChoices <- c("F04_3", "F05_1", "F05_2")
 schadeChoices <- c("F07_1", "F09_2", "F07_3")
 maatschappijChoices <- c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
+
 

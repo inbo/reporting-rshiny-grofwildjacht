@@ -9,8 +9,8 @@ mapFlandersUI(
   showRegion = TRUE,
   showCombine = TRUE,
   type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
-  regionChoices = c(Vlaanderen = "flanders", Provincie = "provinces", Faunabeheerzones
-    = "faunabeheerzones", Gemeente = "communes", `Gemeente per Faunabeheerzone` =
+  regionChoices = c(Vlaanderen = "flanders", Provincie = "provinces", Faunabeheerzones =
+    "faunabeheerzones", Gemeente = "communes", `Gemeente per Faunabeheerzone` =
     "fbz_gemeentes", `5x5 UTM` = "utm5"),
   unitChoices = c(Aantal = "absolute", `Aantal/100ha` = "relative"),
   sourceChoices = NULL,

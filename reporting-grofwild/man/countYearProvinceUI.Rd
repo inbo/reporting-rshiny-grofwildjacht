@@ -4,15 +4,21 @@
 \alias{countYearProvinceUI}
 \title{Shiny module for creating the plot \code{\link{countYearProvince}} - UI side}
 \usage{
-countYearProvinceUI(id, uiText)
+countYearProvinceUI(
+  id,
+  uiText,
+  plotFunction = "countYearProvinceUI",
+  showType = FALSE,
+  showDataSource = NULL,
+  doHide = TRUE
+)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
+\item{id}{unique identifier}
 
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
+\item{plotFunction}{character, for matching uiText}
+
+\item{doHide}{boolean, whether to initially hide the plot; default TRUE}
 }
 \description{
 Shiny module for creating the plot \code{\link{countYearProvince}} - UI side

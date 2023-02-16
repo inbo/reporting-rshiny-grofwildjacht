@@ -253,9 +253,6 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 #' Create shape data for dashboard wild zwijn - future spread F17_4
 #' 
 #' @inheritParams createShapeData
-#' @param unit character, characteristic that defines the polygons and color coding
-#' should be one of \code{c("model_EP", "model_OH", "risk_EP", "risk_OH")}
-
 #' @return boolean, whether file is successfully saved
 #' save list of SpatialPolygonsDataFrame for each spatial level (pixels and municipalities)
 #' as used in \code{\link{mapSpread}}

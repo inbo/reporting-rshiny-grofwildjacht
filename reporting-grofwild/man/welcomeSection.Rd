@@ -4,15 +4,13 @@
 \alias{welcomeSection}
 \title{Section for welcoming (top of the page)}
 \usage{
-welcomeSection(id, uiText)
+welcomeSection(id, uiText, maxDate = NA)
 }
 \arguments{
-\item{id}{character, unique identifier for the module}
+\item{id}{character, from which page this function is called
+e.g. 'wbe'}
 
-\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
-}
-\value{
-HTML object
+\item{maxDate}{date, the last observation date to be replaced in the text}
 }
 \description{
 Section for welcoming (top of the page)

@@ -9,8 +9,7 @@
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   timeRange, species, regionLevel, 
   unit = c("absolute", "relative", "relativeDekking"),
-  sourceIndicator = NULL,
-  dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  sourceIndicator = NULL) {
   
   
   # To prevent warnings R CMD check
@@ -106,8 +105,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     
     # NOTE: match returns FIRST match, so gemeentecodes.csv should be correctly sorted
     # in orde to obtain HOOFDpostcode. 
-    gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-      header = TRUE, sep = ",")
+    gemeenteData <- loadGemeentes()
     
     # Match gemeente NAAM to niscode and (hoofd)postcode
     allData$niscode <- gemeenteData$NIS.code[match(allData$locatie, gemeenteData$Gemeente)]
@@ -362,6 +360,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' 
 #' @template moduleUI
+#' @param id unique identifier
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
 #' @param doHide boolean, whether to initially hide the plot; default TRUE

@@ -9,11 +9,12 @@ dashboardChoices(id, choices, selected = NULL, uiText)
 \arguments{
 \item{id}{character, unique identifier for module}
 
-\item{choices}{character vector, indicator choices to list, i.e. F_* codes}
+\item{choices}{character vector, plotFunction names in \code{uiText} 
+for which to create named choices, i.e. F_* codes}
 
 \item{selected}{character vector, subset of \code{choices} pre-selected choices}
 
-\item{uiText}{data.frame}
+\item{uiText}{data.frame as loaded by \code{read.csv(file = file.path(dataDir, "uiText.csv"))}}
 }
 \value{
 named character vector

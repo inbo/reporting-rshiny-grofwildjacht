@@ -9,6 +9,7 @@ barDraagkracht(
   groupVariable = NULL,
   xVar = "percentage",
   yVar = NULL,
+  verticalGroups = FALSE,
   width = 1000,
   height = NULL
 )
@@ -23,6 +24,9 @@ for which each unique value a separate subplot is created}
 default value is 'percentage'}
 
 \item{yVar}{character, column in \code{plotData} for y-axis}
+
+\item{verticalGroups}{boolean, whether the group labels should be printed 
+vertically}
 
 \item{width}{plot width (optional)}
 

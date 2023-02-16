@@ -28,6 +28,33 @@ welcomeSection <- function(id, uiText, maxDate = NA) {
 }
 
 
+#' Decode species indicator in description
+#' @param text character, input from uiText
+#' @param species character, currently selected species
+#' @return character, modified for the conditional species mentioned in the text  
+#' 
+#' @author mvarewyck
+#' @export
+decodeText <- function(text, species) {
+  
+  newText <- strsplit(text, split = "\\{")[[1]]
+  toRetain <- sapply(newText, function(x)
+      if (grepl("\\}", x)) {
+        doInvert <- grepl("\\!", strsplit(x, "\\}")[[1]][1])
+        doSpecies <- grepl(species, strsplit(x, "\\}")[[1]][1])
+        if (!doInvert & doSpecies)
+          strsplit(x, "\\}")[[1]][2] else if (doInvert & !doSpecies)
+          strsplit(x, "\\}")[[1]][2] else 
+          ""
+      } else {
+        x
+      } 
+  )
+  trimws(paste(toRetain, collapse = ""))
+  
+}
+
+
 
 #' Section title and text for bio-indicator - server side
 #' @inheritParams bioindicatorSection
@@ -46,17 +73,7 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
       
       output$textBioindicator <- renderUI({
           
-          newText <- strsplit(oldText, split = "\\{")[[1]]
-          toRetain <- sapply(newText, function(x)
-              if (grepl("\\}", x)) {
-                if (grepl(wildsoort(), strsplit(x, "\\}")[[1]][1]))
-                  strsplit(x, "\\}")[[1]][2] else
-                  ""
-              } else {
-                x
-              } 
-            )
-          HTML(trimws(paste(toRetain, collapse = "")))
+          HTML(decodeText(text = oldText, species = wildsoort()))
           
         })
       

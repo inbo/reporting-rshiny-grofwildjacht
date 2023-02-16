@@ -8,7 +8,7 @@
 context("Test WBE")
 
 # Load all data
-load(file = file.path(dataDir, "spatialDataWBE.RData"))
+readS3(file = "spatialDataWBE.RData")
 spatialData <- spatialDataWBE
 rm(spatialDataWBE)
 
@@ -23,9 +23,13 @@ toekenningsData <- loadToekenningen()
 biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 
-currentKbo <- 452846379
+currentKbo <- 445465768
+# currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
+# currentKbo <- unique(geoData$KboNummer_Toek[geoData$WBE_Naam_Toek %in% "De Zwarte Beek"])
 # Find KBO with many species
 # which.max(sapply(allWbe, function(wbe) length(unique(geoData$wildsoort[geoData$KboNummer_Toek == wbe]))))
+
+currentYear <- 2020
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
@@ -35,17 +39,12 @@ ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
-currentPartij <- unique(geoData$PartijNummer)
-biotoopData <- biotoopData[biotoopData$regio == currentPartij, ]
+biotoopData <- biotoopData[biotoopData$regio == unique(geoData$PartijNummer), ]
 
 # Combine data
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
 combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ], 
   ecoData, by = commonNames, all.x = TRUE)
-combinedZwijn <- merge(geoData[geoData$wildsoort == "Wild zwijn", ], 
-  ecoData[ecoData$wildsoort == "Wild zwijn", ], by = commonNames, all.x = TRUE)
-
-spatialData <- filterSpatialWbe(allSpatialData = spatialData, partijNummer = currentPartij)
 
 gc()
 
@@ -57,37 +56,41 @@ test_that("The map", {
       if (doPrint)
       cat("*", iYear, "\n")
       
+      for (iSpecies in species) {
+        
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
           biotoopData = biotoopData,
           year = iYear,
-          species = "",
+          species = iSpecies,
           regionLevel = "WBE_buitengrenzen",
           unit = "region"
         )
+        
+        if (doPrint)
+        cat("*", iSpecies, "\n")
         
         if (!is.null(spaceData) && nrow(spaceData$data) && !all(spaceData$data$freq == 0)) {
           
           expect_is(spaceData$data, "data.frame")
           
-          colorScheme <- c("grey", suppressWarnings(RColorBrewer::brewer.pal(
-                n = nlevels(spaceData$data$group), name = "YlOrBr")))
-          
           myPlot <- mapFlanders(
             allSpatialData = spatialData, 
             regionLevel = "WBE_buitengrenzen", 
             year = iYear,
-            colorScheme = colorScheme,
+            colorScheme = RColorBrewer::brewer.pal(
+                n = nlevels(spaceData$data$group), name = "YlOrBr"),
             summaryData = spaceData$data,
             legend = "topright",
-            species = ""
+            species = iSpecies
           )
           
-          expect_is(myPlot, "leaflet")
+          expect_is(myPlot, "plotly")
           
         }
-     }
+      }
+    }
     
   })
 
@@ -99,9 +102,6 @@ test_that("Trend plot", {
     unit <- c("absolute", "relative", "relativeDekking")[3]
     
     for (iSpecies in species) {
-      
-      if (doPrint)
-        print(iSpecies)
       
       trendRegionData <- createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
@@ -138,28 +138,38 @@ test_that("Biotoop", {
   })
 
 
+test_that("Afschot locaties", {
+    
+    mapData <- createAfschotLocationsData(data = combinedRee, accuracy = 1, 
+      timeRange = range(combinedRee$afschotjaar))
+    mapSchade(schadeData = mapData, 
+      regionLevel = "WBE_buitengrenzen_2018", 
+      variable = c("season", "schadeCode", "afschotjaar")[3],
+      allSpatialData = spatialData,
+      addGlobe = TRUE)
+    
+  })
+
+
 
 test_that("Summary Table", {
     
     for (iSpecies in species) {
       
-      if (doPrint)
-        print(iSpecies)
-      
       combinedData <- merge(geoData[geoData$wildsoort == iSpecies, ], 
         ecoData, by = commonNames, all.x = TRUE)
       
-      if (sum(combinedData$afschotjaar == 2020) > 0) {
+      if (nrow(combinedData) > 0) {
         
-        myTable <- tableSpecies(
-          data = combinedData, 
-          jaar = 2020
-        ) 
-        
-        expect_is(myTable, "data.frame")
-        
-      }
+      myTable <- tableSpecies(
+        data = combinedData, 
+        jaar = 2020
+      ) 
       
+      expect_is(myTable, "data.frame")
+      
+    }
+    
     }  
     
     tableSpecies(
@@ -173,31 +183,16 @@ test_that("Summary Table", {
 
 test_that("Map schade", {
     
-    # Metadata schade
-    metaSchade <- loadMetaSchade()
-    schadeWildsoorten <- metaSchade$wildsoorten
-    schadeTypes <- metaSchade$types
-    schadeCodes <- metaSchade$codes
-    names(schadeCodes) <- NULL
-    schadeCodes <- unlist(schadeCodes)
-    sourcesSchade <- metaSchade$sources
-    fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
-    
-    
-    schadeDataSub <- subset(schadeData, wildsoort == "Ree")  
+    schadeDataSub <- subset(schadeData, wildsoort == "ree")  
     schadeDataSub <- createSchadeSummaryData(
       schadeData = schadeDataSub,
-      timeRange = range(schadeDataSub$afschotjaar),
-      fullNames = fullNames)
+      timeRange = range(schadeDataSub$afschotjaar))
     
     for (var in c("season", "schadeCode", "afschotjaar")) {
       
-      if (doPrint)
-        print(var)
-      
       myPlot <- mapSchade(
         schadeData = schadeDataSub,
-        regionLevel = "WBE_buitengrenzen_2018",
+        regionLevel = "provinces",
         variable = var,
         allSpatialData = spatialData,
         addGlobe = TRUE)
@@ -243,23 +238,22 @@ test_that("Additional plots", {
       interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
     )$plot
     
-    countAgeGender(data = combinedRee)$plot
+    countAgeGender(data = combinedRee)
     
-    countAgeCheek(data = combinedRee, jaartallen = 2009:2020)$plot
+    countAgeCheek(data = combinedRee, 
+      jaartallen = 2009:2020)
     
-    boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))$plot
+    boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))
     
     percentageRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
-      jaartallen = 2009:2020,
-      unit = "percentage")$plot
+      jaartallen = 2009:2020)
     
-    plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")$plot
+    plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")
     
-    plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")$plot
+    plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
     
-    countEmbryos(data = combinedZwijn, jaartallen = 2009:2020,
-      type = c("Zeug", "Overloper (v)", "Frisling (v)"))$plot
+    countEmbryos(data = combinedRee, jaartallen = 2009:2020,
+      sourceIndicator = "both", sourceIndicator_leeftijd = "both", sourceIndicator_geslacht = "both")
     
   })
-

@@ -55,7 +55,7 @@ welcomeSection;;"<p class=""lead"">Op deze pagina kunt u de afschotgegevens voor
 <li>De figuren zelf kan u ook als png downloaden. De gekozen indicatoren kan u samen in één document downloaden. <li>Indien u fouten ontdekt of merkt dat data ontbreken, gelieve dit dan te melden via een email naar <a href=""mailto:faunabeheer@inbo.be?SUBJECT=Dashboard web applicatie"" target=""_blank"">faunabeheer@inbo.be</a>.
 </ul>"
 ;;;;;
-F04_3;Aantal drukjachten;;;;
+F04_3;Aantal drukjachten;;;;Het aantal drukjachten waarbij minstens 1 everzwijn werd geschoten op basis van het e-loket van ANB. Er wordt hierbij geen rekening gehouden met mogelijke drukjachten waarbij verschillende WBE's samen een drukjacht organiseren.
 F05_1;Afschot;;;;Het aantal geschoten dieren gemeld via het e-loket van ANB.
 F05_2;Samenstelling afschot;;;;De leeftijdsklasses worden bepaald op basis van leeftijdsbepaling van onderkaken. Indien onderkaken niet werden ingezameld en de leeftijd niet werd bepaald op het afschotformulier, kon de leeftijdsklasse niet worden bepaald.
 F06_1;Preventieve maatregelen;;;;

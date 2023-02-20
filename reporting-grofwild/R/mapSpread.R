@@ -193,8 +193,6 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       
       ns <- session$ns
       
-      dataDir <- system.file("extdata", package = "reportingGrofwild")
-      
       ## User Input ##
       ## ---------- ##
       
@@ -232,13 +230,13 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           if (type == "F17_4") {
             
             if (!exists("spreadData"))
-              load(file = file.path(dataDir, "spreadData.RData")) 
+              readS3(file = "spreadData.RData")
             spreadData[grep(req(input$regionLevel), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
             
             if (!exists("trafficData"))
-              load(file = file.path(dataDir, "trafficData.RData"))
+              readS3(file = "trafficData.RData")            
             trafficData
             
           }

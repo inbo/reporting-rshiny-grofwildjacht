@@ -74,8 +74,7 @@ getRegionLevel <- function(level) {
 createSpaceData <- function(data, allSpatialData, biotoopData, 
   year, species, regionLevel,
   unit = c("absolute", "relative", "absoluteCases", "relativeDekking", "region"), 
-  sourceIndicator = NULL, countVariable = NULL,
-  dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  sourceIndicator = NULL, countVariable = NULL) {
   
   
   # To prevent warnings with R CMD check

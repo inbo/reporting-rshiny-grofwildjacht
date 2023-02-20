@@ -5,18 +5,17 @@
 # Author: mvarewyck
 ###############################################################################
 
-
-
-#' Read all shape data from geojson files
+#' Create all shape data from geojson files
 #' 
 #' @param jsonDir character, path to json shape files
-#' @param dataDir character, path to data files
+#' @inheritParams loadRawData
 #' @param tolerance numeric, defines the tolerance in the Douglas-Peuker algorithm;
 #' larger values will impose stronger simplification; default value is 0.001
+#' 
 #' @return boolean, whether file is successfully saved;
-#' save to dataDir list with spatial list for WBE and non-WBE level.
+#' save to \code{bucket} list with spatial list for WBE and non-WBE level.
 #' Each contain a list with for each spatial level a SpatialPolygonsDataFrame object, 
-#' with polygons and data as provided in the dataDir; spatial levels are 
+#' with polygons and data as provided in the \code{jsonDir}; spatial levels are 
 #' (1) flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
 #' and provincesVoeren (Voeren as separate province)
 #' (2) WBE_buitengrenzen and WBE
@@ -28,9 +27,12 @@
 #' @importFrom shiny incProgress
 #' @importFrom raster area
 #' @importFrom utils write.csv read.csv
+#' @importFrom aws.s3 s3save
+#' @importFrom config get
 #' @export
-createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
-  dataDir = system.file("extdata", package = "reportingGrofwild"),
+createShapeData <- function(
+  jsonDir = "~/git/reporting-rshiny-grofwildjacht/data", 
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
   tolerance = 0.0001) {
   
   
@@ -167,12 +169,13 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
   # Update commune names for later matching: geo/wildschade data with shape data
   # Note: You can use gemeentecode.csv for matching NIS to NAAM
   # First install the package again!
-  gemeenteData <- read.csv(file.path(dataDir, "gemeentecodes.csv"), 
-    header = TRUE, sep = ",",stringsAsFactors = FALSE)
+  gemeenteData <- loadGemeentes(bucket = bucket)
   
   communeData <- spatialData$communes@data
   gemeenteData$Gemeente <- communeData$NAAM[match(gemeenteData$NIS.code, communeData$NISCODE)]
-  write.csv(gemeenteData, file = file.path(dataDir, "gemeentecodes.csv"), row.names = FALSE)
+  gemeenteFile <- file.path(tempdir(), "gemeentecodes.csv")
+  write.csv(gemeenteData, file = gemeenteFile, row.names = FALSE)
+  writeS3(dataFiles = gemeenteFile, bucket = bucket)
   
   # IF any NIS code not in gemeenteData -> throw error
   if (any(!spatialData$communes@data$NISCODE %in% gemeenteData$NIS.code))
@@ -182,10 +185,10 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
   
   # Save WBE data separately
   spatialDataWBE <- spatialData[grep("WBE", names(spatialData))]
-  save(spatialDataWBE, file = file.path(dataDir, "spatialDataWBE.RData"))
+  s3save(spatialDataWBE, bucket = bucket, object = "spatialDataWBE.RData")
   
   spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
-  save(spatialData, file = file.path(dataDir, "spatialData.RData"))
+  s3save(spatialData, bucket = bucket, object = "spatialData.RData")
   
   return(TRUE)
   
@@ -197,7 +200,6 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
 #' Enrich waarnemingen data with CELLCODE and gemeentecode
 #' 
 #' @param dataFile path to read current waarnemeningen data
-#' @param saveDir path to write new waarnemingen data
 #' @return boolean, whether file is successfully saved
 #' 
 #' @author mvarewyck
@@ -206,7 +208,7 @@ createShapeData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data
 #' @export
 createWaarnemingenData <- function(
   dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2022.csv",
-  saveDir = system.file("extdata", package = "reportingGrofwild")) {
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   
   waarnemingen <- data.table::fread(
@@ -218,8 +220,10 @@ createWaarnemingenData <- function(
   
   waarnemingen <- waarnemingen[, c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
   
-  write.csv(waarnemingen, file = file.path(saveDir, "waarnemingen_wild_zwijn_processed.csv"), 
-    row.names = FALSE)
+  waarnemingenFile <- file.path(tempdir(), "waarnemingen_wild_zwijn_processed.csv")
+  write.csv(waarnemingen, file = waarnemingenFile, row.names = FALSE)
+  writeS3(dataFiles = waarnemingenFile, bucket = bucket)
+  
   
   return(TRUE)   
   
@@ -234,14 +238,14 @@ createWaarnemingenData <- function(
 #' @importFrom sf st_read
 #' @export
 createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
-  dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   trafficData <- list(
     ecorasters = st_read(dsn = file.path(jsonDir, "wildrasters.shp")), #F06_1
     oversteek = st_read(dsn = file.path(jsonDir, "oversteekplaatsen.shp")) #F06_2 & F06_3
   )
   
-  save(trafficData, file = file.path(dataDir, "trafficData.RData"))
+  s3save(trafficData, bucket = bucket, object = "trafficData.RData")
   
   return(TRUE)
   
@@ -261,11 +265,11 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 #' @export
 createSpreadData <- function(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
-  saveDir = system.file("extdata", package = "reportingGrofwild"),
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
   spatialData = NULL) {
   
   if (is.null(spatialData))
-    load(file = file.path(saveDir, "spatialData.RData"))
+    readS3(file = "spatialData.RData")
   
   # currently only unit of interest
   unit <- "model_EP"
@@ -346,7 +350,9 @@ createSpreadData <- function(
       
     })
     
-    save(spreadData, file = file.path(dataDir, "spreadData.RData"))
+    s3save(spreadData, bucket = bucket, object = "spreadData.RData")
+    
+    return(TRUE)
 
 } 
 

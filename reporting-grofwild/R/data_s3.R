@@ -117,12 +117,12 @@ readS3 <- function(FUN = read.csv, ..., file,
 #' @importFrom aws.s3 put_object
 #' @importFrom config get
 #' @export
-writeS3 <- function(dataFiles) {
+writeS3 <- function(dataFiles,
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
       
       response <- sapply(dataFiles, function(iFile) {
           put_object(file = iFile, object = basename(iFile), 
-            bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-            multipart = TRUE)
+            bucket = bucket, multipart = TRUE)
         })
       
       response

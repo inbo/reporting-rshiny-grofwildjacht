@@ -172,9 +172,8 @@ countAgeGenderServer <- function(id, data, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 countAgeGenderUI <- function(id, uiText) {
   

@@ -126,13 +126,15 @@ toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKb
 
 gc()
 
-if (!doDebug | !exists("uiText")) {
-  uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")[, c("plotFunction", "title", "wbe")]
+
+uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")[, c("plotFunction", "title", "wbe")]
+if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild"))) {
   uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
+  uiFunctions <- uiFunctions[!is.na(uiFunctions)] 
   uiCheck <- uiFunctions[!startsWith(uiFunctions, "F")]
   if (!all(uiCheck %in% ls("package:reportingGrofwild")))
     warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
-      paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
+      paste(uiCheck[!uiCheck %in% ls("package:reportingGrofwild")], collapse = ","))
   rm(uiFunctions, uiCheck)
 }
 

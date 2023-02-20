@@ -298,12 +298,11 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' @param sectorChoices named character vector, choices for sector
 #' @param selectGroups boolean, whether user should be able to select groups
 #' @param height character, height of the plot
-#' 
-#' @author mvarewyck
+#'
 #' @export
 barDraagkrachtUI <- function(id, uiText, sectorChoices = NULL, 
   selectGroups = FALSE, height = "600px") {

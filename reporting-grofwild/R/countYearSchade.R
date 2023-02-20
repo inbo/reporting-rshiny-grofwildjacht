@@ -183,6 +183,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
 #' Shiny module for creating the plot \code{\link{countYearSchade}} - server side
 #' @inheritParams countYearSchade
 #' @inheritParams countAgeGenderServer
+#' @inheritParams optionsModuleServer
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -215,9 +216,8 @@ countYearSchadeServer <- function(id, data, types, labelTypes, typesDefault,
 
 
 #' Shiny module for creating the plot \code{\link{countYearSchade}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 countYearSchadeUI <- function(id, uiText) {
   

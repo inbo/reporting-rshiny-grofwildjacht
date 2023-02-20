@@ -254,9 +254,8 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
 #' @param regionLevels numeric vector, region level choices
 #' @inheritParams countYearShotAnimals
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
   

@@ -114,7 +114,8 @@ optionsModuleUI <- function(id,
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE, definedYear = defaultYear,
+    multipleTypes = FALSE, 
+    definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
     categories = NULL, intervals = NULL) {
   
   ns <- session$ns
@@ -439,7 +440,8 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
-#' @param verticalGroups 
+#' @param verticalGroups reactive boolean; see also \link{barDraagkracht};
+#' default is NULL
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData

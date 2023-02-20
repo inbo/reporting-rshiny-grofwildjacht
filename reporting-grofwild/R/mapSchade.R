@@ -630,7 +630,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
 #' @param variableChoices named character vector, choices for coloring variable
 #' @inheritParams mapFlandersUI
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
 #' @author mvarewyck
 #' @importFrom leaflet leafletOutput
@@ -738,9 +738,8 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
 }
 
 #' Copy of mapSchadeUI as being used for "WBE" pagina
-#' @template moduleUI 
+#' @inherit welcomeSectionUI
 #' @inheritParams mapSchadeUI 
-#' @author mvarewyck
 #' @export
 mapAfschotUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,  
   filterSource = TRUE, filterAccuracy = FALSE,

@@ -194,10 +194,10 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 
 
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' @inheritParams trendYearRegionUI
+#' @inheritParams optionsModuleUI 
 #' 
-#' @author mvarewyck
 #' @export
 countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI",
   showType = FALSE, showDataSource = NULL, doHide = TRUE) {

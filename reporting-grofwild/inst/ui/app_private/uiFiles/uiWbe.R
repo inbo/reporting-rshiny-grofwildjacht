@@ -19,7 +19,7 @@ tagList(
       uiOutput("wbe_title")
     ),
     
-    welcomeSection(id = "wbe", uiText = uiText),
+    welcomeSectionUI(id = "wbe", uiText = uiText),
            
            tags$p(tags$b(tags$u("Gebruiksinfo:")), tags$br(),
             tags$ul(

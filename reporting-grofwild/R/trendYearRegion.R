@@ -293,7 +293,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
        
           sliderInput(inputId = ns("trendPeriod"), 
             label = if (type == "wbe") "Periode" else "Periode (grafiek)", 
-            value = c(trendRange()[1], defaultYear),
+            value = c(trendRange()[1], config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))),
             min = trendRange()[1],
             max = trendRange()[2],
             step = 1,
@@ -359,14 +359,12 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
 
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' 
-#' @template moduleUI
-#' @param id unique identifier
+#' @inherit welcomeSectionUI
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @param unitChoices, character vector with choices for the units
 #' 
-#' @author mvarewyck
 #' @export
 trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI", 
   showCombinatie = FALSE, doHide = TRUE,

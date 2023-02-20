@@ -23,7 +23,7 @@ tagList(
             h1("Welkom op de informatiepagina rond wildschade")
         ),
         
-        welcomeSection(id = "schade", uiText = uiText, maxDate = max(schadeData$afschot_datum, na.rm = TRUE)),
+        welcomeSectionUI(id = "schade", uiText = uiText, maxDate = max(schadeData$afschot_datum, na.rm = TRUE)),
         
         tags$h2("Keuzemenu"),
         wellPanel(

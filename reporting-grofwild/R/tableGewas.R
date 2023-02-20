@@ -94,6 +94,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
 #' @inheritParams optionsModuleServer 
 #' @inheritParams plotModuleServer
 #' @inheritParams tableSchadeCode
+#' @inheritParams welcomeSectionUI 
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -127,9 +128,8 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
 
 
 #' Shiny module for creating the plot \code{\link{tableGewas}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 tableGewasUI <- function(id, uiText) {
   

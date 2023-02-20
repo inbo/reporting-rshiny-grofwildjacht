@@ -170,9 +170,8 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 tableSpeciesUI <- function(id, uiText) {
   

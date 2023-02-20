@@ -13,11 +13,10 @@ geoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 schadeData <- loadRawData(type = "wildschade")
 schadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 biotoopData <- loadHabitats(spatialData = spatialData)
 
-draagkrachtDir <- system.file("extdata", "maatschappelijke_draagkracht", package = "reportingGrofwild")
 
 # F05_1: Absoluut afschot
 test_that("F05_1", {
@@ -77,15 +76,12 @@ test_that("F17_1", {
     
     regionLevel <- c("communes", "utm5")[2]
     
-    everWaarnemingen <- fread(file = file.path(dataDir, "waarnemingen_2022.csv"), drop = 1)[, 
-      c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
-    #rename variables to keep
-    data.table::setnames(everWaarnemingen, 
-      old = c("jaar", "gemeente", "TAG"),
-      new = c("afschotjaar", "gemeente_afschot_locatie", "UTM5")
-    )
-    everGeoAll <- rbind(everWaarnemingen, cbind(geoData, data.frame(dataSource = "afschot")), fill = TRUE)
-    everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
+    everGeoAll <- rbind(
+      # waarnemingen
+      readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv"), 
+      # afschot
+      geoData,
+      fill = TRUE)
     
     spaceData <- createSpaceData(
       data = everGeoAll, 
@@ -118,10 +114,11 @@ test_that("F17_1", {
 # F17_2: Verspreidingsgebied waarnemingen
 test_that("F17_2", {
     
+    skip("Currently not in the app")
+    
     regionLevel <- c("utm5", "communes")[1]
     
-    df <- data.table::fread(file.path(dataDir, "waarnemingen_2022.csv"))
-    df$wildsoort <- "Wild zwijn"
+    df <- readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv")
     
     spaceData <- createSpaceData(
       data = df, 
@@ -212,7 +209,10 @@ test_that("F03_1", {
 # F06_1,2,3: Verkeer
 test_that("F06", {
     
-    load(file = file.path(dataDir, "trafficData.RData"))
+    skip("Currently not used")
+    
+    readS3(file = "trafficData.RData")
+    
     
     myMap <- leaflet() %>%
       addTiles() %>%
@@ -253,7 +253,7 @@ test_that("F07_1, F09_1, F11_1", {
 # F07_3: Inschatting schade
 test_that("F07_3, F09_3, F11_3", {
     
-    inschattingData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
+    inschattingData <- readS3(FUN = data.table::fread, file = "Data_inschatting.csv")
     
     myResult <- barDraagkracht(
       data = inschattingData[inschattingData$Vraag != "populatie_evolutie", ], 
@@ -270,7 +270,7 @@ test_that("F07_3, F09_3, F11_3", {
 test_that("F12_1, F14_1, F14_2", {
     
     # F12_1
-    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F12_1_data.csv")),
+    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F12_1_data.csv"),
       yVar = "Jaar", xVar = "Aantal")
     
     expect_type(myResult, "list")
@@ -278,7 +278,7 @@ test_that("F12_1, F14_1, F14_2", {
     expect_s3_class(myResult$data, "data.frame")
     
     # F14_1
-    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_1_data.csv")), 
+    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_1_data.csv"), 
       groupVariable = "Year", yVar = "Sector")
     
     expect_type(myResult, "list")
@@ -287,7 +287,7 @@ test_that("F12_1, F14_1, F14_2", {
     
     
     # F14_2
-    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_2_data.csv")), 
+    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_2_data.csv"), 
       groupVariable = "Year", yVar = "Sector")         
     
     expect_type(myResult, "list")
@@ -302,7 +302,7 @@ test_that("F14_3, F14_4", {
     inputFiles <- c("F14_3_data.csv", "F14_4_data.csv")
     
     # F14_3
-    plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[1]))
+    plotData <- readS3(FUN = data.table::fread, file = inputFiles[1])
     
     # Stakeholders
     subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
@@ -323,7 +323,7 @@ test_that("F14_3, F14_4", {
     
     
     # F14_4
-    plotData <- data.table::fread(file.path(draagkrachtDir, inputFiles[2]))
+    plotData <- readS3(FUN = data.table::fread, file = inputFiles[2])
 #    subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
     subData <- subset(plotData, Groep %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
     subData$Antwoord_reclass <- ifelse(subData$Antwoord_reclass == "Belangrijk", "Aanvaardbaar",
@@ -339,7 +339,7 @@ test_that("F14_3, F14_4", {
 
 test_that("F14_5", {
     
-    myResult <- barDraagkracht(data = data.table::fread(file.path(draagkrachtDir, "F14_5_data.csv")),
+    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_5_data.csv"),
       groupVariable = "Question_label", yVar = "Sector")
     
     expect_type(myResult, "list")
@@ -352,7 +352,7 @@ test_that("F14_5", {
 
 test_that("F18_1", {
     
-    plotData <- data.table::fread(file.path(draagkrachtDir, "Data_inschatting.csv"))
+    plotData <- readS3(FUN = data.table::fread, file = "Data_inschatting.csv")
     
     myResult <- barDraagkracht(data = plotData[Vraag == "populatie_evolutie", ], yVar = "Vraag")
     
@@ -370,7 +370,7 @@ test_that("F18_1", {
 # Toekomstig verspreidingsgebied
 test_that("F17_4", {
     
-    load(file.path(dataDir, "spreadData.RData"))
+    readS3(file = "spreadData.RData")
     
     myMap <- mapSpread(
       spreadShape = spreadData[["municipalities_2022"]], 

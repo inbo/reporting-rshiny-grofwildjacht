@@ -164,9 +164,8 @@ countAgeCheekServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 countAgeCheekUI <- function(id, showAccuracy = FALSE, uiText) {
   

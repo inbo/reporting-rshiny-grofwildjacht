@@ -508,12 +508,10 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
 
 
 #' Shiny module for creating the plot \code{\link{mapSpread}} - UI side
-#' @template moduleUI 
+#' @inherit welcomeSectionUI
 #' @param showLayer boolean, whether to display option to choose layer
 #' @return UI object
 #' 
-#' @author mvarewyck
-#' @import shiny
 #' @export
 mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
   

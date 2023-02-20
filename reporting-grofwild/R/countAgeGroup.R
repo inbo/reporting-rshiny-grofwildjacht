@@ -163,10 +163,9 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
-#' @author mvarewyck
 #' @export
 countAgeGroupUI <- function(id, uiText, doHide = TRUE) {
   

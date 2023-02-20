@@ -5,15 +5,17 @@
 
 
 
-#' Section for welcoming (top of the page)
-#' @param id character, from which page this function is called
-#' e.g. 'wbe'
+#' Section for welcoming (top of the page) - UI side (no server side)
+#' 
 #' @param maxDate date, the last observation date to be replaced in the text
-#' @template moduleUI 
+#' @param id character, unique identifier for the module
+#' @param uiText data.frame, HTML formatted text to be displayed in the UI
+#' @return HTML object
 #' 
 #' @author mvarewyck
+#' @import shiny
 #' @export
-welcomeSection <- function(id, uiText, maxDate = NA) {
+welcomeSectionUI <- function(id, uiText, maxDate = NA) {
   
   description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
   
@@ -50,7 +52,8 @@ decodeText <- function(text, species) {
         x
       } 
   )
-  trimws(paste(toRetain, collapse = ""))
+  
+  paste(toRetain, collapse = "")
   
 }
 
@@ -83,9 +86,7 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
 
 #' Section title and text for bio-indicator
 #' 
-#' @template moduleUI 
-#' 
-#' @author mvarewyck
+#' @inherit welcomeSectionUI 
 #' @export
 bioindicatorSection <- function(id, uiText) {
   

@@ -180,10 +180,8 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 
 
 #' Shiny module for creating the plot \code{\link{barCost}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' @param typeMelding character vector, choices for filtering on `typeMelding` in data
-#' 
-#' @author mvarewyck
 #' @export
 barCostUI <- function(id, uiText, typeMelding = NULL) {
   

@@ -177,6 +177,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 #' @inheritParams optionsModuleServer 
 #' @inheritParams plotModuleServer
 #' @inheritParams tableSchadeCode
+#' @inheritParams welcomeSectionUI
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -214,9 +215,8 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 
 
 #' Shiny module for creating the plot \code{\link{tableSchadeCode}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 tableSchadeUI <- function(id, uiText) {
   

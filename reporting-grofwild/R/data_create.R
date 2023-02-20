@@ -29,6 +29,9 @@
 #' @importFrom utils write.csv read.csv
 #' @importFrom aws.s3 s3save
 #' @importFrom config get
+#' 
+#' @examples 
+#' \dontrun{createShapeData()}
 #' @export
 createShapeData <- function(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data", 
@@ -200,11 +203,15 @@ createShapeData <- function(
 #' Enrich waarnemingen data with CELLCODE and gemeentecode
 #' 
 #' @param dataFile path to read current waarnemeningen data
+#' @inheritParams createShapeData
 #' @return boolean, whether file is successfully saved
 #' 
 #' @author mvarewyck
 #' @importFrom sf st_as_sf st_transform
 #' @importFrom data.table fread
+#' 
+#' @examples 
+#' \dontrun{createWaarnemingenData()}
 #' @export
 createWaarnemingenData <- function(
   dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2022.csv",
@@ -236,6 +243,9 @@ createWaarnemingenData <- function(
 #'  
 #' @author mvarewyck
 #' @importFrom sf st_read
+#' 
+#' @examples 
+#' \dontrun{createTrafficData()}
 #' @export
 createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
@@ -257,11 +267,15 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 #' Create shape data for dashboard wild zwijn - future spread F17_4
 #' 
 #' @inheritParams createShapeData
+#' @param spatialData list, with spatialPolygonsDataFrame for each spatial level 
 #' @return boolean, whether file is successfully saved
 #' save list of SpatialPolygonsDataFrame for each spatial level (pixels and municipalities)
 #' as used in \code{\link{mapSpread}}
 #' 
 #' @author mvarewyck
+#' 
+#' @examples 
+#' \dontrun{createSpreadData()}
 #' @export
 createSpreadData <- function(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",

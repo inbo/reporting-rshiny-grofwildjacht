@@ -82,6 +82,10 @@ loadRawData <- function(
     # Drop unused columns
     rawData$verbatimCoordinateUncertainty <- NULL
     
+    # For binding with waarnemingen data
+    rawData$dataSource <- "afschot"
+    rawData$aantal <- 1
+    
   } else if (type == "eco") {
     ## ECO data for grofwild
     

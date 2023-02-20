@@ -14,7 +14,7 @@ tagList(
             h1("Welkom op de informatiepagina rond grofwildjacht")
         ),
         
-        welcomeSection(id = "wild", uiText = uiText, 
+        welcomeSectionUI(id = "wild", uiText = uiText, 
           maxDate = max(ecoData$afschot_datum, na.rm = TRUE))
     
     ),

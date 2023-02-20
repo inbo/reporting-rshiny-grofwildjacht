@@ -9,10 +9,12 @@ everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 # Combine waarnemingen.be & afschot
-everWaarnemingen <- readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv")
-everGeoAll <- rbind(everWaarnemingen, cbind(everGeoData, data.frame(dataSource = "afschot")), fill = TRUE)
-everGeoAll$aantal[is.na(everGeoAll$aantal)] <- 1
-
+everGeoAll <- rbind(
+  # waarnemingen
+  readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv"),
+  # afschot
+  everGeoData,
+  fill = TRUE)
 
 inschattingData <- readS3(FUN = data.table::fread, file = "Data_inschatting.csv")
 

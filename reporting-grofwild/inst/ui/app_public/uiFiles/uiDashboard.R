@@ -12,7 +12,7 @@ tagList(
       h1("Welkom op het dashboard voor everzwijnen")
     ),
     
-    welcomeSection(id = "dash", uiText = uiText, maxDate = max(ecoData$afschot_datum, na.rm = TRUE)),
+    welcomeSectionUI(id = "dash", uiText = uiText, maxDate = max(ecoData$afschot_datum, na.rm = TRUE)),
     
     wellPanel(
       fixedRow(

@@ -184,9 +184,8 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @inheritParams plotBioindicatorServer
 #' @inheritParams optionsModuleUI
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
   regionLevels, uiText) {

@@ -5,6 +5,7 @@ default:
     id: Sys.getenv('AWS_ACCESS_KEY_ID')
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
   datacheck: true 
+  defaultYear: 2022
 
 uat:
   bucket: inbo-wbe-uat-data

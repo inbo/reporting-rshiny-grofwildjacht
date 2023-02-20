@@ -111,6 +111,7 @@ readS3 <- function(FUN = read.csv, ..., file,
 
 #' Write files to the S3 bucket
 #' @param dataFiles character vector, path to files to be uploaded
+#' @inheritParams readS3
 #' @return boolean vector, TRUE for each dataFile that was uploaded correctly
 #' 
 #' @author mvarewyck

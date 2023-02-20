@@ -171,9 +171,8 @@ boxAgeWeightServer <- function(id, data, type, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{boxAgeWeight}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 boxAgeWeightUI <- function(id, uiText) {
   

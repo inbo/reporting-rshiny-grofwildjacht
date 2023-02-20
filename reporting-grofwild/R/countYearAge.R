@@ -234,12 +234,11 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
 
 
 #' Shiny module for creating the plot \code{\link{countYearAge}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
-#' @author mvarewyck
 #' @export
 countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   showRegion = TRUE, doHide = TRUE) {

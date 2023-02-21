@@ -6,6 +6,8 @@
 
 context(paste("Test Data Loading", config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
 
+library(reportingGrofwild)
+
 # setupS3()
 
 test_that("Connection to S3", {

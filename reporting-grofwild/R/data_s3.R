@@ -21,6 +21,30 @@ setupS3 <- function(awsFile = "~/.aws/credentials") {
   )
   
 }
+
+
+#' Print configuration settings
+#' 
+#' @return tagList with information on the current configuration settings 
+#' 
+#' @author mvarewyck
+#' @import htmltools
+#' @importFrom config get
+#' @export
+printConfiguration <- function() {
+  
+  configFile <- system.file("config.yml", package = "reportingGrofwild")
+  
+  tagList(
+    tags$h4("Configuration"),
+    tags$ul(
+      tags$li("R_CONFIG_ACTIVE:", Sys.getenv("R_CONFIG_ACTIVE")),
+      tags$li("bucket:", config::get("bucket", file = configFile)),
+      tags$li("datacheck:", config::get("datacheck", file = configFile))
+    )
+  )
+  
+}
   
   
 #' Quick check for valid user credentials to make connection with S3 bucket

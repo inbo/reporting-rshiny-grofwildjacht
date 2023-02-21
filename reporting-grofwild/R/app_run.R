@@ -61,13 +61,22 @@ runWildApp <- function(installDependencies = FALSE,
       error = function(err)
         shinyApp(ui = fluidPage(
             tags$h3("Error during Data Check"),
+            printConfiguration(),
             HTML(err$message)
-        ), server = function(input, output, session){})
+          ), server = function(input, output, session){})
       )
     
   # (5) Run the application
   if (exists("errorApp") && is(errorApp, "shiny.appobj"))
     errorApp else 
-    runApp(appDir = appDir, ...)
+    tryCatch(
+      runApp(appDir = appDir, ...),
+      error = function(err)
+        shinyApp(ui = fluidPage(
+          tags$h3("Error during Startup"),
+          printConfiguration(),
+          HTML(err$message)
+        ), server = function(input, output, session){})
+    )
   
 }

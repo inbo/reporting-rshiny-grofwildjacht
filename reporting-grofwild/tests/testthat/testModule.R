@@ -1,7 +1,10 @@
-# TODO: Add comment
+# Test shiny plot/table modules
 # 
 # Author: mvarewyck
 ###############################################################################
+
+
+context("Test Shiny Modules")
 
 
 test_that("Module mapFlanders", {

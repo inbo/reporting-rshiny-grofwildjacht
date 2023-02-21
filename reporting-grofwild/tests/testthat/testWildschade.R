@@ -10,7 +10,7 @@ context("Test wildschade")
 readS3(file = "spatialData.RData")
 
 schadeData <- loadRawData(type = "wildschade")
-wildSchadeData <- subset(schadeData@data, wildsoort %in% c("wild zwijn", "edelhert", "ree", "smient")[1])
+wildSchadeData <- subset(schadeData@data, wildsoort %in% c("Wild zwijn", "Edelhert", "Ree", "Smient")[1])
 
 species <- sort(unique(schadeData$wildsoort))
    
@@ -66,8 +66,8 @@ test_that("Number of cases per region level", {
         mapPlot <- mapFlanders(
           allSpatialData = spatialData, 
           regionLevel = regionLevel, 
-          colorScheme = c("white", RColorBrewer::brewer.pal(
-              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+          colorScheme = c("white", suppressWarnings(RColorBrewer::brewer.pal(
+              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr"))),
           summaryData = spaceData$data,
           legend = "topright",
           species = iSpecies
@@ -158,8 +158,13 @@ test_that("Counts per year and province", {
     countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
     countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders")
     
-    countYearProvince(data = wildSchadeData, jaartallen = 2018:2020, type = "provinces",
-      sourceIndicator = "E-loket")$plot
+    myResult <- countYearProvince(data = wildSchadeData, jaartallen = 2018:2020, type = "provinces",
+      sourceIndicator = "E-loket")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
     
   })
 
@@ -174,8 +179,12 @@ test_that("Counts per year and variable of interest", {
     countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode")$plot
     
 # percent
-    countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
-      summarizeBy = "percent")$plot
+    myResult <- countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
+      summarizeBy = "percent")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })
 
@@ -251,12 +260,17 @@ test_that("Counts per type gewas", {
     allGewasTables <- lapply(typeOptions, function(iType) {
         allTablesPerLocation <- lapply(species, function(iSpecies) {
             
+            if (doPrint) {
+              print(iType)
+              print(iSpecies)
+            }
+            
             subData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
             timeRange <- min(subData@data$afschotjaar):max(subData@data$afschotjaar)
             
             res <- tableGewas(data = subData@data, jaartallen = timeRange,
               type = iType,
-              variable = "SoortNaam")
+              variable = "SoortNaam")$data
             
             if (!is.null(res)) {
               expect(nrow(res) > 0, "table with 0 rows detected")

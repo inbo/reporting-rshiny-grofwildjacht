@@ -4,6 +4,10 @@
 ###############################################################################
 
 
+
+context("Test Shiny Apps")
+
+
 test_that("Public app does not crash on startup", {   
     
     expect_warning(shiny::testServer(

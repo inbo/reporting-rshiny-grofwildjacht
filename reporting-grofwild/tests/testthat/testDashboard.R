@@ -4,6 +4,9 @@
 ###############################################################################
 
 
+
+context("Test Everzwijn Dashboard")
+
 ecoData <- loadRawData(type = "eco")
 ecoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 
@@ -395,10 +398,10 @@ test_that("F17_4", {
     centerView <- c(range(coordData$long), range(coordData$lat))
     
     myMap <- myMap %>%
-      fitBounds(lng1 = centerView[1], lng2 = centerView[2],
+      leaflet::fitBounds(lng1 = centerView[1], lng2 = centerView[2],
         lat1 = centerView[3], lat2 = centerView[4]) %>%
-      clearGroup(group = "regionLines") %>%
-      addPolylines(data = selectedPolygons, color = "gray", weight = 5,
+      leaflet::clearGroup(group = "regionLines") %>%
+      leaflet::addPolylines(data = selectedPolygons, color = "gray", weight = 5,
         group = "regionLines")
     
     expect_s3_class(myMap, "leaflet")

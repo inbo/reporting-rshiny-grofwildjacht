@@ -8,9 +8,6 @@
 library(testthat)
 library(reportingGrofwild)
 
-
-
-dataDir <- system.file("extdata", package = "reportingGrofwild")
 doPrint <- FALSE
 
 setupS3()

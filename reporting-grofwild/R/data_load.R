@@ -386,7 +386,7 @@ loadHabitats <- function(
     }, simplify = FALSE)
   
   # Bind wegdensiteit
-  densiteitData <- readS3(FUN = data.table::fread, drop = "V1", file = "wegdensiteit.csv", bucket = bucket)
+  densiteitData <- readS3(FUN = data.table::fread, dec = ",", file = "wegdensiteit.csv", bucket = bucket)
   habitatData <- sapply(names(habitatData), function(iLevel) {
       
       iData <- switch(iLevel, 

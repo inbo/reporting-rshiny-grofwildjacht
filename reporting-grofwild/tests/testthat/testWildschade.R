@@ -6,9 +6,6 @@
 
 context("Test wildschade")
 
-
-doPrint <- FALSE
-
 # Load all data
 readS3(file = "spatialData.RData")
 

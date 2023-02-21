@@ -142,7 +142,7 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
       
       ns <- session$ns
       
-      output$tableText <- renderUI({
+      output$tableSpeciesText <- renderUI({
           
           tags$p(HTML(decodeText(uiText[uiText$plotFunction == "tableSpeciesUI", id], species = species())))
         
@@ -188,7 +188,7 @@ tableSpeciesUI <- function(id, uiText) {
       column(4,
         optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, 
           showCategorie = TRUE, exportData = TRUE),
-        uiOutput(ns("tableText"))
+        uiOutput(ns("tableSpeciesText"))
       ),
       column(8, tableModuleUI(id = ns("tableSpecies")))
     

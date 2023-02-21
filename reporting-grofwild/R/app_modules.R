@@ -401,21 +401,6 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   
 }
 
-#' Interactive table generated with datatable (ui-side)
-#' @inheritParams tableModuleUI
-#' @return ui object 
-#' @author Eva Adriaensen
-#' @importFrom shinycssloaders withSpinner
-#' @importFrom shiny NS
-#' @importFrom DT dataTableOutput
-#' @export
-datatableModuleUI <- function(id) {
-  
-  ns <- NS(id)
-  
-  tagList(withSpinner(DT::dataTableOutput(ns("table"))))
-  
-}
 
 
 #' Interactive plot or table (server-side)

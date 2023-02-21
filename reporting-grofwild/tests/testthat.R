@@ -13,4 +13,6 @@ library(reportingGrofwild)
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 doPrint <- FALSE
 
+setupS3()
+
 test_check("reportingGrofwild")

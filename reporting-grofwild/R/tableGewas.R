@@ -153,7 +153,7 @@ tableGewasUI <- function(id, uiText) {
             exportData = TRUE),
           tags$p(HTML(uiText[, id]))
         ),
-        column(8, datatableModuleUI(id = ns("tableGewas")))  
+        column(8, tableModuleUI(id = ns("tableGewas")))  
       ),
       tags$hr()
     )

@@ -240,7 +240,7 @@ tableSchadeUI <- function(id, uiText) {
             exportData = TRUE),
           tags$p(HTML(uiText[, id]))
         ),
-        column(8, datatableModuleUI(id = ns("tableSchade")))  
+        column(8, tableModuleUI(id = ns("tableSchade")))  
       ),
       tags$hr()
     )

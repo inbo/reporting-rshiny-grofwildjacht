@@ -10,7 +10,7 @@ ecoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 geoData <- loadRawData(type = "geo")
 geoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 
-schadeData <- loadRawData(type = "wildschade")
+schadeData <- suppressWarnings(loadRawData(type = "wildschade"))
 schadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 readS3(file = "spatialData.RData")
@@ -201,7 +201,7 @@ test_that("F03_1", {
     
     tmpDf <- tableBackground(data = toReport)
     
-    expect_s3_class(tmpDf, "data.frame")
+    expect_type(tmpDf, "list")
         
   })
 

@@ -306,7 +306,7 @@ createSpreadData <- function(
       
       toReturn
             
-    }, USE.NAMES = FALSE))
+    }, USE.NAMES = FALSE, simplify = FALSE))
   
   spreadData <- sapply(names(spatialFiles), function(iFile) {
       
@@ -319,15 +319,15 @@ createSpreadData <- function(
         sp::spTransform(CRS("+proj=longlat +datum=WGS84"))
       
       # Modify data
-      ## Risico
-      riskLevels <- c("Hoog risico", "Gemiddeld risico", "Laag risico", "Verwaarloosbaar risico") 
-      if (grepl("pixels", iFile)) {
-        baseMap$Rsc_ExP <- factor(baseMap$Rsc_ExP, levels = riskLevels)
-        baseMap$Rsc_OpH <- factor(baseMap$Rsc_OpH, levels = riskLevels)
-      } else {
-        baseMap$M_EP__G_ <- factor(baseMap$M_EP__G_, levels = riskLevels)
-        baseMap$M_OH__G_ <- factor(baseMap$M_OH__G_, levels = riskLevels)
-      }
+#      ## Risico
+#      riskLevels <- c("Hoog risico", "Gemiddeld risico", "Laag risico", "Verwaarloosbaar risico") 
+#      if (grepl("pixels", iFile)) {
+#        baseMap$Rsc_ExP <- factor(baseMap$Rsc_ExP, levels = riskLevels)
+#        baseMap$Rsc_OpH <- factor(baseMap$Rsc_OpH, levels = riskLevels)
+#      } else {
+#        baseMap$M_EP__G_ <- factor(baseMap$M_EP__G_, levels = riskLevels)
+#        baseMap$M_OH__G_ <- factor(baseMap$M_OH__G_, levels = riskLevels)
+#      }
       
       # Outcome
       modelShape <- subset(baseMap, !is.na(baseMap@data[, unitVariable]))
@@ -342,17 +342,21 @@ createSpreadData <- function(
         NULL
       )
       
-      if (!is.null(startVariable))
+      if (!is.null(startVariable)) {
         modelShape$start <- modelShape[[startVariable]]
+        startYear <- unique(modelShape$start)
+        if (length(unique(startYear[!is.na(startYear)])) != 1)
+          stop("Multiple start years detected in the spread data: ", spatialFiles[iFile])
+      }
       
-      modelShape@data <- modelShape@data[, c(if (grepl("pixels", iFile)) "ID" else "Communs", 
+      modelShape@data <- modelShape@data[, c(if (grepl("pixels", iFile)) "ID" else "NAAM", 
           "outcome", 
           if (!is.null(startVariable)) "start")]
       
       # Add Voeren
       if (grepl("municipalities", iFile)) {
         voerenShape <- spatialData$communes[spatialData$communes@data$NAAM == "Voeren", ]
-        voerenShape@data <- data.frame(Communs = "Voeren", outcome = "Al aanwezig")
+        voerenShape@data <- data.frame(NAAM = "Voeren", outcome = "Al aanwezig")
         modelShape <- rbind(modelShape, voerenShape)
       }
       

@@ -376,7 +376,7 @@ test_that("F17_4", {
     readS3(file = "spreadData.RData")
     
     myMap <- mapSpread(
-      spreadShape = spreadData[["municipalities_2022"]], 
+      spreadShape = spreadData[[1]], 
       legend = "bottomright",
       addGlobe = TRUE
     )

@@ -37,14 +37,13 @@ paletteMap <- function(variable, groupNames) {
 #' Create leaflet map for the spread of a species
 #' 
 #' @param spreadShape SpatialPolygonsDataFrame as created by \code{createSpreadData}
-#' @param startYear integer, starting year; only relevant for pixels & model unit 
 #' @inheritParams mapFlanders
 #' @return leaflet map
 #' 
 #' @author mvarewyck
 #' @import leaflet
 #' @export
-mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe = FALSE) {
+mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
   
   
   unit <- attr(spreadShape, "unit")
@@ -71,7 +70,7 @@ mapSpread <- function(spreadShape, startYear = 2019, legend = "none", addGlobe =
   
   if ("start" %in% colnames(spreadShape@data)) {
     
-    startShape <- subset(spreadShape, spreadShape@data$start == startYear)
+    startShape <- subset(spreadShape, !is.na(spreadShape@data$start))
     
     startColors <- paletteMap(variable = "start", groupNames = unique(startShape$start))
     pal_start <- colorFactor(palette = startColors$colors, levels = startColors$levels, na.color = NA)

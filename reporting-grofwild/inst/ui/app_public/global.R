@@ -19,7 +19,7 @@ library(shinyjs)
 # define js function for opening urls in new tab/window
 js_code <- "
   shinyjs.browseURL = function(url) {
-  window.open(url, '_self');
+  window.open(url, '_parent');
   }
   "
 

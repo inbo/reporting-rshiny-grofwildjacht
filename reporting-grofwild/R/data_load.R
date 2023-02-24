@@ -28,6 +28,16 @@ loadRawData <- function(
   
   rawData <- as.data.frame(readS3(FUN = data.table::fread, file = dataFile, bucket = bucket))
   
+  if (type == "wildschade") {
+    
+    # create shape data
+    coordinates(rawData) <- ~x + y
+    proj4string(rawData) <- CRS("+init=epsg:31370")
+    
+    rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
+    
+  }
+  
   return(rawData)
   
 }

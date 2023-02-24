@@ -6,8 +6,22 @@
 
 context(paste("Test Data Loading", config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
 
+
 # setupS3()
-# createRawData(dataDir = "~/git/reporting-rshiny-grofwildjacht/oldDataS3", type = "eco")
+
+test_that("Preprocess data", {
+
+    skip("For local use only - will overwrite files")
+    
+    downloadS3()
+    
+#    for (iType in c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen"))
+    for (iType in c("eco", "geo", "wildschade", "kbo_wbe"))
+      createRawData(dataDir = "~/git/reporting-rshiny-grofwildjacht/dataS3", type = iType)    
+    
+  })
+
+
 
 test_that("Connection to S3", {
     

@@ -200,10 +200,12 @@ createShapeData <- function(
 
 
 
-#' Enrich waarnemingen data with CELLCODE and gemeentecode
+#' Preprocess the raw data files for use in the app
 #' 
-#' @param dataFile path to read current waarnemeningen data
-#' @inheritParams createShapeData
+#' E.g. clean data by dropping unused variables, handle NA and match with shape data
+#' 
+#' @param dataDir data folder with file to be processed
+#' @inheritParams loadRawData
 #' @return boolean, whether file is successfully saved
 #' 
 #' @author mvarewyck
@@ -389,25 +391,19 @@ createRawData <- function(
     rawData <- rawData[!toExclude, ]
     
     
-    # create shape data
-    coordinates(rawData) <- ~x + y
-    proj4string(rawData) <- CRS("+init=epsg:31370")
-    
-    rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
-    
   } else if (type == "kbo_wbe") {
     
     # drop unused
     rawData$WBE_Naam_Partij <- NULL
     
   } else if (type == "waarnemingen") {
-  
-  rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
-  colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
-  
-  rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
-  
-}
+    
+    rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
+    colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
+    
+    rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
+    
+  }
 
 
   s3write_using(rawData, FUN = write.csv, row.names = FALSE, bucket = bucket,

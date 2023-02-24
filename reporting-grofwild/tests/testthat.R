@@ -8,8 +8,10 @@
 library(testthat)
 library(reportingGrofwild)
 
-doPrint <- FALSE
-
 setupS3()
+
+doPrint <- FALSE
+dataDir <- file.path("~/git/reporting-rshiny-grofwildjacht/dataS3")
+
 
 test_check("reportingGrofwild")

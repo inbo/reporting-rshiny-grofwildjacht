@@ -1,11 +1,11 @@
-#' Read ecology or geography data
+#' Read ecology, geography, wildschade, kbo_wbe or waarnemingen data
 #' 
+#' Data is preprocessed by createRawData() at INBO
 #' @param bucket character, name of the S3 bucket as specified in the config.yml file;
 #' default value is "inbo-wbe-uat-data"
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' 
-#' @return data.frame, loaded ecology or geography data; 
-#' and attribute 'Date', the date that this data file was created
+#' @return data.frame, loaded data
 #' @author mvarewyck
 #' @importFrom utils read.csv
 #' @importFrom sp CRS proj4string
@@ -19,189 +19,14 @@ loadRawData <- function(
   
   
   dataFile <- switch(type,
-          "eco" = "rshiny_reporting_data_ecology.csv",
-          "geo" = "rshiny_reporting_data_geography.csv",
-          "wildschade" = "WildSchade_georef.csv",
-          "kbo_wbe" = "Data_Partij_Cleaned.csv")
+          "eco" = "rshiny_reporting_data_ecology_processed.csv",
+          "geo" = "rshiny_reporting_data_geography_processed.csv",
+          "wildschade" = "WildSchade_georef_processed.csv",
+          "kbo_wbe" = "Data_Partij_Cleaned_processed.csv",
+          "waarnemingen" = "waarnemingen_wild_zwijn_processed.csv"
+        )
   
-  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE, 
-    file = dataFile, bucket = bucket)
-#  xtabs( ~ provincie + wildsoort, data = rawData)
-  
-  ## Replace decimal comma by dot
-  for (iVar in c("ontweid_gewicht", "lengte_mm", "onderkaaklengte_comp", "verbatimLatitude", "verbatimLongitude"))
-    if (iVar %in% names(rawData))
-      rawData[, iVar] <- as.numeric(sub("\\,", ".", rawData[, iVar]))
-  
-  
-  ## Replace decimal comma by dot & rename
-  if ("lengte_mm" %in% names(rawData)) {
-    rawData$onderkaaklengte_mm <- rawData$lengte_mm
-    rawData$lengte_mm <- NULL
-  }
-  
-  ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
-  if ("provincie" %in% names(rawData))
-    rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
-        "Vlaams Brabant", as.character(rawData$provincie)))
-#	xtabs( ~ provincie + wildsoort, data = rawData)
-  
-  # Gemeente & NIS & postcode
-  # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
-  gemeenteData <- loadGemeentes()
-  
-  
-  ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
-  ## Re-order factor levels for plots
-  if ("wildsoort" %in% names(rawData)) {
-    
-    rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
-            as.character(rawData$provincie), 
-            ifelse(rawData$provincie == "Voeren", 
-                "Limburg", 
-                as.character(rawData$provincie))),
-        levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
-#   xtabs( ~ provincie + wildsoort, data = rawData)
-    
-  }
-  
-  
-  if (type == "geo") {
-    ## GEO data for grofwild
-    
-    # Replace "N/B"
-    rawData$provincie[rawData$provincie %in% "#N/B"] <- NA
-    
-    # Match on Postcode: otherwise mismatch with spatialData locatie
-    rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
-    
-    # Create fbz_gemeente
-    rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
-        NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
-    
-    # Drop unused columns
-    rawData$verbatimCoordinateUncertainty <- NULL
-    
-    # For binding with waarnemingen data
-    rawData$dataSource <- "afschot"
-    rawData$aantal <- 1
-    
-  } else if (type == "eco") {
-    ## ECO data for grofwild
-    
-    newLevels <- loadMetaEco()
-    
-    # Re-define "Adult" as "Volwassen" for leeftijd
-    rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
-    rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
-    
-    # Leeftijdscategorie_onderkaak 
-    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-    rawData$Leeftijdscategorie_onderkaak <- factor(rawData$Leeftijdscategorie_onderkaak,
-      levels = c(newLevels[["leeftijd_comp"]], "Niet ingezameld"))
-    rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
-    
-    # Date format
-    rawData$afschot_datum <- as.Date(rawData$afschot_datum)
-    # Define season
-    rawData$season <- getSeason(rawData$afschot_datum)
-    
-    # Redefine names and ordering of factor levels
-    rawData$type_comp <- simpleCap(rawData$type_comp)
-    rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
-    rawData$labeltype <- simpleCap(gsub("REE", "", rawData$labeltype))
-    
-    # New variable: leeftijd_comp_inbo
-    rawData$leeftijd_comp_inbo <- rawData$leeftijd_comp
-    rawData$leeftijd_comp_inbo[rawData$leeftijd_comp_inbo %in% "Frisling"] <- 
-      ifelse(rawData$leeftijd_maanden[rawData$leeftijd_comp_inbo %in% "Frisling"] < 6,
-        "Frisling (<6m)", "Frisling (>6m)")
-  
-    for (iVar in names(newLevels)) {
-      
-      oldValues <- unique(rawData[!is.na(rawData[, iVar]), iVar]) 
-      if (any(!oldValues %in% newLevels[[iVar]]))
-        warning("Volgende waarden zullen worden overschreven als 'Onbekend' voor ", iVar, ": ",
-          paste(oldValues[!oldValues %in% newLevels[[iVar]]], collapse = ", "))
-      
-      rawData[, iVar] <- factor(rawData[, iVar], levels = c(newLevels[[iVar]], "Onbekend"))
-      rawData[is.na(rawData[iVar]), iVar] <- "Onbekend"
-      
-    }  
-    
-  } else if (type == "wildschade") {
-    ## Wildschade data
-
-        # variables to keep
-        rawData <- rawData[, c("UUID", "IndieningID", "IndieningType", "Jaartal", 
-                        "IndieningSchadeBasisCode", "IndieningSchadeCode",
-                        "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
-                        "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
-                        "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
-                        "PolyLocatieWKT", "x", "y",
-                        "geschat_schadebedrag", "type_melding")]
-        
-        # format date
-        rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")
-        
-        # new column names
-        colnames(rawData) <- c("ID", "caseID", "indieningType", "afschotjaar", 
-                "schadeBasisCode", "schadeCode",
-                "SoortNaam", "wildsoort", "afschot_datum",
-                "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
-                "UTM5", "KboNummer", "WBE_Naam_Toek", "PartijNummer",
-                "perceelPolygon", "x", "y", "schadeBedrag", "typeMelding")
-        
-        # Match on NISCODE: otherwise mismatch with spatialData locatie
-        rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
-
-        rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
-        rawData$nieuwe_locatie <- NULL
-        # Remove Voeren as province
-        rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
-        rawData$provincie <- droplevels(rawData$provincie)
-
-        
-        # Define fbz_gemeente
-        rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
-          NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
-        # Onbekende locaties
-        rawData$provincie <- factor(ifelse(is.na(rawData$provincie), "Onbekend", as.character(rawData$provincie)), levels = c(levels(rawData$provincie), "Onbekend"))
-        rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
-        
-        # Define season
-        rawData$season <- getSeason(rawData$afschot_datum)
-        # Fix for korrelmais
-        rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
-        
-        # fix for ANDERE within GEWAS
-        rawData$schadeCode[rawData$schadeBasisCode == "GEWAS" & rawData$schadeCode == "ANDERE"] <- "GEWASANDR"
-        
-        # format schade bedrag
-        rawData$schadeBedrag <- suppressWarnings(as.numeric(gsub("BEDRAG", "", rawData$schadeBedrag)))
-        
-        # TODO what if x/y coordinates missing -> exclude
-        toExclude <- is.na(rawData$x) | is.na(rawData$y)
-        warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
-        rawData <- rawData[!toExclude, ]
-        
-        
-        # create shape data
-        coordinates(rawData) <- ~x + y
-        proj4string(rawData) <- CRS("+init=epsg:31370")
-        
-        rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
-    
-  } else if (type == "kbo_wbe") {
-    
-    # drop unused
-    rawData$WBE_Naam_Partij <- NULL
-    
-  }
-  
-  
-  attr(rawData, "Date") <- file.mtime(dataFile)
-  
+  rawData <- as.data.frame(readS3(FUN = data.table::fread, file = dataFile, bucket = bucket))
   
   return(rawData)
   

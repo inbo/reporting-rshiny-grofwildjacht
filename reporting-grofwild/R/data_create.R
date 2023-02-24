@@ -349,6 +349,10 @@ createSpreadData <- function(
           stop("Multiple start years detected in the spread data: ", spatialFiles[iFile])
       }
       
+      # Compatibility with old data format
+      if (iFile == "municipalities_2022")
+        colnames(modelShape@data)[1] <- "NAAM"
+      
       modelShape@data <- modelShape@data[, c(if (grepl("pixels", iFile)) "ID" else "NAAM", 
           "outcome", 
           if (!is.null(startVariable)) "start")]

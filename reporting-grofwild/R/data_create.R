@@ -316,18 +316,17 @@ createRawData <- function(
   } else if (type == "geo") {
     ## GEO data for grofwild
     
-    # Replace "N/B"
-    rawData$provincie[rawData$provincie %in% "#N/B"] <- NA
-    
     # Match on Postcode: otherwise mismatch with spatialData locatie
-    rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
+    rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
+      match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
     
     # Create fbz_gemeente
     rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
       NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
     
     # Drop unused columns
-    rawData$verbatimCoordinateUncertainty <- NULL
+    rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
+          c("verbatimCoordinateUncertainty", "WBE_Naam_Georef", "KboNummer_Georef")]]
     
     # For binding with waarnemingen data
     rawData$dataSource <- "afschot"
@@ -358,9 +357,9 @@ createRawData <- function(
     
     # Match on NISCODE: otherwise mismatch with spatialData locatie
     rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
-    
     rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
     rawData$nieuwe_locatie <- NULL
+    
     # Remove Voeren as province
     rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
     rawData$provincie <- droplevels(rawData$provincie)

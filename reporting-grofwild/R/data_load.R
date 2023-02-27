@@ -28,6 +28,12 @@ loadRawData <- function(
   
   rawData <- as.data.frame(readS3(FUN = data.table::fread, file = dataFile, bucket = bucket))
   
+  # Convert to factors
+  newLevels <- loadMetaEco()
+  toFactors <- names(newLevels)[names(newLevels) %in% colnames(rawData)]
+  rawData[toFactors] <- lapply(toFactors, function(x) 
+      droplevels(factor(rawData[[x]], levels = c(newLevels[[x]], "Onbekend"))))
+  
   if (type == "wildschade") {
     
     # create shape data
@@ -297,8 +303,11 @@ loadMetaEco <- function(species = NA) {
       c("Kits", "Geit", "Bok"),
       "Damhert",
       "Edelhert"        
-    )
+    ),
+    provincie = list("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")
   )
+  
+  toReturn$Leeftijdscategorie_onderkaak <- c(toReturn$leeftijd_comp, "Niet ingezameld")
   
   if (!is.na(species)) {
     

@@ -201,11 +201,13 @@ results$typesFemale <- reactive({
     
     types <- levels(droplevels(results$wild_ecoData()$type_comp))
     
-    if (input$wild_species == "Ree") {
+    types <- if (input$wild_species == "Ree") {
       types[types %in% c("Reegeit", "Smalree")] 
     } else {
       types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
     }
+  
+    c(types, "Onbekend")
     
   })
 
@@ -253,7 +255,12 @@ countYearShotServer(id = "wild_leeftijd",
 
 # Plot: Gerealiseerd afschot
 percentageRealisedShotServer(id = "wild",
-  data = reactive(toekenningsData),
+  data = reactive({
+      plotData <- toekenningsData
+      plotData$WBE_Naam_Toek <- NULL
+      plotData$KboNummer_Toek <- NULL
+      plotData
+    }),
   types = reactive(unique(toekenningsData$labeltype)),
   timeRange = reactive(range(toekenningsData$labeljaar))
 )

@@ -15,6 +15,8 @@ test_that("Preprocess data", {
     
     downloadS3()
     
+    aws.s3::delete_object(object = "Toekenningen_ree.csv", bucket = "inbo-wbe-uat-data")
+    
 #    for (iType in c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen"))
     for (iType in c("eco", "geo", "wildschade", "kbo_wbe"))
       createRawData(dataDir = "~/git/reporting-rshiny-grofwildjacht/dataS3", type = iType)    

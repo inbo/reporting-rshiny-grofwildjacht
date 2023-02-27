@@ -238,27 +238,26 @@ createRawData <- function(
     dec = ",")
   
   
-  ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
-  if ("provincie" %in% names(rawData))
-    rawData$provincie <- factor(ifelse(rawData$provincie == "Vlaams-Brabant",
-        "Vlaams Brabant", as.character(rawData$provincie)))
+  # Uniform provincie
+  if ("provincie" %in% colnames(rawData)) {
+    
+    rawData$provincie[is.na(rawData$provincie)] <- "Onbekend"
+    
+    ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
+    rawData$provincie[rawData$provincie == "Vlaams-Brabant"] <- "Vlaams Brabant"
+    
+    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
+    ## Re-order factor levels for plots
+    if ("wildsoort" %in% names(rawData))
+      rawData$provincie[rawData$wildsoort != "Wild zwijn" & rawData$provincie == "Voeren"] <-  
+        "Limburg" 
+    
+  }
+  
   
   # Gemeente & NIS & postcode
   # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
   gemeenteData <- loadGemeentes()
-  
-  ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
-  ## Re-order factor levels for plots
-  if ("wildsoort" %in% names(rawData)) {
-    
-    rawData$provincie <- factor(ifelse(rawData$wildsoort == "Wild zwijn", 
-        as.character(rawData$provincie), 
-        ifelse(rawData$provincie == "Voeren", 
-          "Limburg", 
-          as.character(rawData$provincie))),
-      levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"))
-    
-  }
   
   
  if (type == "eco") {
@@ -276,8 +275,6 @@ createRawData <- function(
     
     # Leeftijdscategorie_onderkaak 
     rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
-    rawData$Leeftijdscategorie_onderkaak <- factor(rawData$Leeftijdscategorie_onderkaak,
-      levels = c(newLevels[["leeftijd_comp"]], "Niet ingezameld"))
     rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
     
     # Date format
@@ -299,17 +296,21 @@ createRawData <- function(
     for (iVar in names(newLevels)) {
       
       oldValues <- unique(rawData[!is.na(rawData[, iVar]), iVar]) 
-      if (any(!oldValues %in% newLevels[[iVar]]))
+      if (any(!oldValues %in% c(newLevels[[iVar]], "Onbekend")))
         warning("Volgende waarden zullen worden overschreven als 'Onbekend' voor ", iVar, ": ",
           paste(oldValues[!oldValues %in% newLevels[[iVar]]], collapse = ", "))
       
-      rawData[, iVar] <- factor(rawData[, iVar], levels = c(newLevels[[iVar]], "Onbekend"))
       rawData[is.na(rawData[iVar]), iVar] <- "Onbekend"
       
     }  
     
+    if (any(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)])) {
+      warning(sum(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)], na.rm = TRUE), 
+        " observaties met gekend aantal embryos wordt op onbekend gezet")
+      rawData$aantal_embryos[rawData$aantal_embryos_onbekend] <- NA
+    }
+    
     # Drop unused columns
-    rawData$aantal_embryos <- ifelse(rawData$aantal_embryos_onbekend, NA, rawData$aantal_embryos)
     rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
           c("aantal_embryos_onbekend", "doodsoorzaak", "leeftijd_maanden", "tijdstip_comp", 
             "wettelijk_kader", "periode", "periode_wettelijk")]]
@@ -321,10 +322,6 @@ createRawData <- function(
     # Match on Postcode: otherwise mismatch with spatialData locatie
     rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
       match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
-    
-    # Create fbz_gemeente
-    rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
-      NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
     
     # Drop unused columns
     rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
@@ -358,21 +355,11 @@ createRawData <- function(
       "perceelPolygon", "x", "y", "schadeBedrag", "typeMelding")
     
     # Match on NISCODE: otherwise mismatch with spatialData locatie
-    rawData$nieuwe_locatie <- as.character(gemeenteData$Gemeente)[match(rawData$NISCODE, gemeenteData$NIS.code)] 
-    rawData$gemeente_afschot_locatie <- rawData$nieuwe_locatie
-    rawData$nieuwe_locatie <- NULL
+    rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
+      match(rawData$NISCODE, gemeenteData$NIS.code)] 
     
     # Remove Voeren as province
     rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
-    rawData$provincie <- droplevels(rawData$provincie)
-    
-    
-    # Define fbz_gemeente
-    rawData$fbz_gemeente <- ifelse(is.na(rawData$FaunabeheerZone) | is.na(rawData$gemeente_afschot_locatie),
-      NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
-    # Onbekende locaties
-    rawData$provincie <- factor(ifelse(is.na(rawData$provincie), "Onbekend", as.character(rawData$provincie)), levels = c(levels(rawData$provincie), "Onbekend"))
-    rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
     
     # Define season
     rawData$season <- getSeason(rawData$afschot_datum)
@@ -385,9 +372,10 @@ createRawData <- function(
     # format schade bedrag
     rawData$schadeBedrag <- suppressWarnings(as.numeric(gsub("BEDRAG", "", rawData$schadeBedrag)))
     
-    # TODO what if x/y coordinates missing -> exclude
+    # If x/y coordinates missing -> exclude
     toExclude <- is.na(rawData$x) | is.na(rawData$y)
-    warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
+    if (sum(toExclude) > 0)
+      warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
     rawData <- rawData[!toExclude, ]
     
     
@@ -402,6 +390,23 @@ createRawData <- function(
     colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
     
     rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
+    
+  }
+  
+  
+  # Uniform FBZ
+  if ("FaunabeheerZone" %in% colnames(rawData)) {
+    
+    rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
+    
+  }
+  
+  # Define fbz_gemeente
+  if (type %in% c("geo", "wildschade")) {
+    
+    rawData$fbz_gemeente <- ifelse(
+      rawData$FaunabeheerZone == "Onbekend" | is.na(rawData$gemeente_afschot_locatie),
+      NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
     
   }
 

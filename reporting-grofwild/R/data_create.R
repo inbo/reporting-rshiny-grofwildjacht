@@ -226,11 +226,9 @@ createRawData <- function(
     geo = "rshiny_reporting_data_geography.csv",
     wildschade = "WildSchade_georef.csv",
     kbo_wbe = "Data_Partij_Cleaned.csv",
-    # raw data
-    waarnemingen = "waarnemingen_2022.csv"
-  ) 
-  # already processed waarnemingen data on S3
-    #"waarnemingen" = "waarnemingen_wild_zwijn_processed.csv")
+#    waarnemingen = "waarnemingen_2022.csv"
+    waarnemingen = "waarnemingen_wild_zwijn_processed.csv"
+)
 
   
   rawData <- read.csv(file.path(dataDir, dataFile), 

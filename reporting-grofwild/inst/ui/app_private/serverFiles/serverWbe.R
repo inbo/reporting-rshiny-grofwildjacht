@@ -317,11 +317,12 @@ results$typesFemale <- reactive({
     
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))
     
-    if (input$wbe_species == "Ree") {
+    types <- if (input$wbe_species == "Ree") {
       types[types %in% c("Reegeit", "Smalree")] 
     } else {
       types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
     }
+    c(types, "Onbekend")
     
   })
 

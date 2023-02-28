@@ -13,11 +13,18 @@ countYearAgeUI(
 )
 }
 \arguments{
+\item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
 \item{plotFunction}{character, for matching file with plot titles}
 
 \item{showRegion}{boolean, whether to show the region filter; default is TRUE}
 
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
+}
+\value{
+HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{countYearAge}} - UI side

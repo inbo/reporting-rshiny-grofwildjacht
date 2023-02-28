@@ -31,8 +31,13 @@ default value is FALSE}
 
 \item{variableChoices}{named character vector, choices for coloring variable}
 
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
 \item{plotDetails}{character vector, detail plots to be shown below the map;
 should be subset of \code{c("flanders", "region", "biotoop")}}
+}
+\value{
+HTML object
 }
 \description{
 Shiny module for creating map on schade data - UI side

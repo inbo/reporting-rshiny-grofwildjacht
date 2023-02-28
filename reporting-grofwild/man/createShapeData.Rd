@@ -2,31 +2,36 @@
 % Please edit documentation in R/data_create.R
 \name{createShapeData}
 \alias{createShapeData}
-\title{Read all shape data from geojson files}
+\title{Create all shape data from geojson files}
 \usage{
 createShapeData(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
-  dataDir = system.file("extdata", package = "reportingGrofwild"),
+  bucket = config::get("bucket", file = system.file("config.yml", package =
+    "reportingGrofwild")),
   tolerance = 1e-04
 )
 }
 \arguments{
 \item{jsonDir}{character, path to json shape files}
 
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
 
 \item{tolerance}{numeric, defines the tolerance in the Douglas-Peuker algorithm;
 larger values will impose stronger simplification; default value is 0.001}
 }
 \value{
 boolean, whether file is successfully saved;
-save to dataDir list with spatial list for WBE and non-WBE level.
+save to \code{bucket} list with spatial list for WBE and non-WBE level.
 Each contain a list with for each spatial level a SpatialPolygonsDataFrame object, 
-with polygons and data as provided in the dataDir; spatial levels are 
+with polygons and data as provided in the \code{jsonDir}; spatial levels are 
 (1) flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
 and provincesVoeren (Voeren as separate province)
 (2) WBE_buitengrenzen and WBE
 }
 \description{
-Read all shape data from geojson files
+Create all shape data from geojson files
+}
+\examples{
+\dontrun{createShapeData()}
 }

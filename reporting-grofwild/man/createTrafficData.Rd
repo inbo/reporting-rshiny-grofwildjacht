@@ -6,19 +6,24 @@
 \usage{
 createTrafficData(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
-  dataDir = system.file("extdata", package = "reportingGrofwild")
+  bucket = config::get("bucket", file = system.file("config.yml", package =
+    "reportingGrofwild"))
 )
 }
 \arguments{
 \item{jsonDir}{character, path to json shape files}
 
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
 }
 \value{
 boolean, whether file is successfully saved
 }
 \description{
 Create shape data for dashboard wild zwijn - verkeer (traffic)
+}
+\examples{
+\dontrun{createTrafficData()}
 }
 \author{
 mvarewyck

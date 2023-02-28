@@ -4,12 +4,10 @@
 \alias{mapSpread}
 \title{Create leaflet map for the spread of a species}
 \usage{
-mapSpread(spreadShape, startYear = 2019, legend = "none", addGlobe = FALSE)
+mapSpread(spreadShape, legend = "none", addGlobe = FALSE)
 }
 \arguments{
 \item{spreadShape}{SpatialPolygonsDataFrame as created by \code{createSpreadData}}
-
-\item{startYear}{integer, starting year; only relevant for pixels & model unit}
 
 \item{legend}{character, legend placement; default is "none", no legend}
 

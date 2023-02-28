@@ -14,11 +14,22 @@ countYearProvinceUI(
 )
 }
 \arguments{
-\item{id}{unique identifier}
+\item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
 
 \item{plotFunction}{character, for matching uiText}
 
+\item{showType}{boolean, whether to select a select input field with type}
+
+\item{showDataSource}{character vector, for which variables to show choices 
+of data source levels. 
+Should be one or more of \code{c("schade", "leeftijd", "geslacht", "onderkaak", "embryos")}}
+
 \item{doHide}{boolean, whether to initially hide the plot; default TRUE}
+}
+\value{
+HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{countYearProvince}} - UI side

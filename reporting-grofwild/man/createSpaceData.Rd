@@ -13,8 +13,7 @@ createSpaceData(
   regionLevel,
   unit = c("absolute", "relative", "absoluteCases", "relativeDekking", "region"),
   sourceIndicator = NULL,
-  countVariable = NULL,
-  dataDir = system.file("extdata", package = "reportingGrofwild")
+  countVariable = NULL
 )
 }
 \arguments{
@@ -40,8 +39,6 @@ should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.}
 
 \item{countVariable}{character, column name in \code{data} that contains counts;
 if NULL then each row in the data contains 1 count}
-
-\item{dataDir}{character, path to data files}
 }
 \value{
 a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics

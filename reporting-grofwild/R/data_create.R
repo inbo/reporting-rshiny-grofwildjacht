@@ -200,37 +200,219 @@ createShapeData <- function(
 
 
 
-#' Enrich waarnemingen data with CELLCODE and gemeentecode
+#' Preprocess the raw data files for use in the app
 #' 
-#' @param dataFile path to read current waarnemeningen data
-#' @inheritParams createShapeData
+#' E.g. clean data by dropping unused variables, handle NA and match with shape data
+#' 
+#' @param dataDir data folder with file to be processed
+#' @inheritParams loadRawData
 #' @return boolean, whether file is successfully saved
 #' 
 #' @author mvarewyck
 #' @importFrom sf st_as_sf st_transform
 #' @importFrom data.table fread
+#' @importFrom aws.s3 s3write_using
 #' 
 #' @examples 
 #' \dontrun{createWaarnemingenData()}
 #' @export
-createWaarnemingenData <- function(
-  dataFile = "~/git/reporting-rshiny-grofwildjacht/data/waarnemingen_2022.csv",
-  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+createRawData <- function(
+  dataDir = "~/git/reporting-rshiny-grofwildjacht/dataS3",
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")) {
+  
+  dataFile <- switch(type,
+    eco = "rshiny_reporting_data_ecology.csv",
+    geo = "rshiny_reporting_data_geography.csv",
+    wildschade = "WildSchade_georef.csv",
+    kbo_wbe = "Data_Partij_Cleaned.csv",
+#    waarnemingen = "waarnemingen_2022.csv"
+    waarnemingen = "waarnemingen_wild_zwijn_processed.csv"
+)
+
+  
+  rawData <- read.csv(file.path(dataDir, dataFile), 
+    sep = if (type == "waarnemingen") "," else ";", 
+    dec = ",")
   
   
-  waarnemingen <- data.table::fread(
-    dataFile, 
-    select = c("jaar", "NAAM", "TAG", "aantal"),
-    dec = ","
-  )
-  colnames(waarnemingen) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
+  # Uniform provincie
+  if ("provincie" %in% colnames(rawData)) {
+    
+    rawData$provincie[is.na(rawData$provincie)] <- "Onbekend"
+    
+    ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
+    rawData$provincie[rawData$provincie == "Vlaams-Brabant"] <- "Vlaams Brabant"
+    
+    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
+    ## Re-order factor levels for plots
+    if ("wildsoort" %in% names(rawData))
+      rawData$provincie[rawData$wildsoort != "Wild zwijn" & rawData$provincie == "Voeren"] <-  
+        "Limburg" 
+    
+  }
   
-  waarnemingen <- waarnemingen[, c("wildsoort", "dataSource") := list("Wild zwijn", "waarnemingen.be")]
   
-  waarnemingenFile <- file.path(tempdir(), "waarnemingen_wild_zwijn_processed.csv")
-  write.csv(waarnemingen, file = waarnemingenFile, row.names = FALSE)
-  writeS3(dataFiles = waarnemingenFile, bucket = bucket)
+  # Gemeente & NIS & postcode
+  # Data source: http://portal.openbelgium.be/he/dataset/gemeentecodes
+  gemeenteData <- loadGemeentes()
   
+  
+ if (type == "eco") {
+    ## ECO data for grofwild
+    
+    newLevels <- loadMetaEco()
+    
+    ## Rename
+    rawData$onderkaaklengte_mm <- rawData$lengte_mm
+    rawData$lengte_mm <- NULL
+    
+    # Re-define "Adult" as "Volwassen" for leeftijd
+    rawData$leeftijdscategorie_MF[rawData$leeftijdscategorie_MF == "Adult"] <- "Volwassen"
+    rawData$leeftijd_comp[rawData$leeftijd_comp == "Adult"] <- "Volwassen"
+    
+    # Leeftijdscategorie_onderkaak 
+    rawData$Leeftijdscategorie_onderkaak[rawData$Leeftijdscategorie_onderkaak == "Adult"] <- "Volwassen"
+    rawData$Leeftijdscategorie_onderkaak[is.na(rawData$Leeftijdscategorie_onderkaak)] <- "Niet ingezameld"
+    
+    # Date format
+    rawData$afschot_datum <- as.Date(rawData$afschot_datum)
+    # Define season
+    rawData$season <- getSeason(rawData$afschot_datum)
+    
+    # Redefine names and ordering of factor levels
+    rawData$type_comp <- simpleCap(rawData$type_comp)
+    rawData$jachtmethode_comp <- simpleCap(rawData$jachtmethode_comp)
+    rawData$labeltype <- simpleCap(gsub("REE", "", rawData$labeltype))
+    
+    # New variable: leeftijd_comp_inbo
+    rawData$leeftijd_comp_inbo <- rawData$leeftijd_comp
+    rawData$leeftijd_comp_inbo[rawData$leeftijd_comp_inbo %in% "Frisling"] <- 
+      ifelse(rawData$leeftijd_maanden[rawData$leeftijd_comp_inbo %in% "Frisling"] < 6,
+        "Frisling (<6m)", "Frisling (>6m)")
+    
+    for (iVar in names(newLevels)) {
+      
+      oldValues <- unique(rawData[!is.na(rawData[, iVar]), iVar]) 
+      if (any(!oldValues %in% c(newLevels[[iVar]], "Onbekend")))
+        warning("Volgende waarden zullen worden overschreven als 'Onbekend' voor ", iVar, ": ",
+          paste(oldValues[!oldValues %in% newLevels[[iVar]]], collapse = ", "))
+      
+      rawData[is.na(rawData[iVar]), iVar] <- "Onbekend"
+      
+    }  
+    
+    if (any(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)])) {
+      warning(sum(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)], na.rm = TRUE), 
+        " observaties met gekend aantal embryos wordt op onbekend gezet")
+      rawData$aantal_embryos[rawData$aantal_embryos_onbekend] <- NA
+    }
+    
+    # Drop unused columns
+    rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
+          c("aantal_embryos_onbekend", "doodsoorzaak", "leeftijd_maanden", "tijdstip_comp", 
+            "wettelijk_kader", "periode", "periode_wettelijk")]]
+  
+    
+  } else if (type == "geo") {
+    ## GEO data for grofwild
+    
+    # Match on Postcode: otherwise mismatch with spatialData locatie
+    rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
+      match(rawData$postcode_afschot_locatie, gemeenteData$Postcode)] 
+    
+    # Drop unused columns
+    rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
+          c("verbatimCoordinateUncertainty", "WBE_Naam_Georef", "KboNummer_Georef")]]
+    
+    # For binding with waarnemingen data
+    rawData$dataSource <- "afschot"
+    rawData$aantal <- 1
+    
+  } else if (type == "wildschade") {
+    ## Wildschade data
+    
+    # variables to keep
+    rawData <- rawData[, c("UUID", "IndieningID", "IndieningType", "Jaartal", 
+        "IndieningSchadeBasisCode", "IndieningSchadeCode",
+        "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
+        "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
+        "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
+        "PolyLocatieWKT", "x", "y",
+        "geschat_schadebedrag", "type_melding")]
+    
+    # format date
+    rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")
+    
+    # new column names
+    colnames(rawData) <- c("ID", "caseID", "indieningType", "afschotjaar", 
+      "schadeBasisCode", "schadeCode",
+      "SoortNaam", "wildsoort", "afschot_datum",
+      "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
+      "UTM5", "KboNummer", "WBE_Naam_Toek", "PartijNummer",
+      "perceelPolygon", "x", "y", "schadeBedrag", "typeMelding")
+    
+    # Match on NISCODE: otherwise mismatch with spatialData locatie
+    rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
+      match(rawData$NISCODE, gemeenteData$NIS.code)] 
+    
+    # Remove Voeren as province
+    rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
+    
+    # Define season
+    rawData$season <- getSeason(rawData$afschot_datum)
+    # Fix for korrelmais
+    rawData$SoortNaam[rawData$SoortNaam == "Korrelma\xefs"] <- "Korrelmais"
+    
+    # fix for ANDERE within GEWAS
+    rawData$schadeCode[rawData$schadeBasisCode == "GEWAS" & rawData$schadeCode == "ANDERE"] <- "GEWASANDR"
+    
+    # format schade bedrag
+    rawData$schadeBedrag <- suppressWarnings(as.numeric(gsub("BEDRAG", "", rawData$schadeBedrag)))
+    
+    # If x/y coordinates missing -> exclude
+    toExclude <- is.na(rawData$x) | is.na(rawData$y)
+    if (sum(toExclude) > 0)
+      warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
+    rawData <- rawData[!toExclude, ]
+    
+    
+  } else if (type == "kbo_wbe") {
+    
+    # drop unused
+    rawData$WBE_Naam_Partij <- NULL
+    
+  } else if (type == "waarnemingen") {
+    
+    rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
+    colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
+    
+    rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
+    
+  }
+  
+  
+  # Uniform FBZ
+  if ("FaunabeheerZone" %in% colnames(rawData)) {
+    
+    rawData$FaunabeheerZone[is.na(rawData$FaunabeheerZone)] <- "Onbekend"
+    
+  }
+  
+  # Define fbz_gemeente
+  if (type %in% c("geo", "wildschade")) {
+    
+    rawData$fbz_gemeente <- ifelse(
+      rawData$FaunabeheerZone == "Onbekend" | is.na(rawData$gemeente_afschot_locatie),
+      NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
+    
+  }
+
+
+  s3write_using(rawData, FUN = write.csv, row.names = FALSE, bucket = bucket,
+    object = paste0(tools::file_path_sans_ext(dataFile), "_processed.", tools::file_ext(dataFile)),
+    opts = list(multipart = TRUE))
+
   
   return(TRUE)   
   

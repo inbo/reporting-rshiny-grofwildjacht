@@ -85,7 +85,8 @@ defined externally for large map}
 
 \item{title}{reactive, plot title to be displayed}
 
-\item{verticalGroups}{}
+\item{verticalGroups}{reactive boolean; see also \link{barDraagkracht};
+default is NULL}
 
 \item{fullNames}{named character vector, values for the \code{variable} to be 
 displayed instead of original data values}

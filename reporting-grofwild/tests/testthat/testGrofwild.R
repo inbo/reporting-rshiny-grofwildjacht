@@ -22,14 +22,6 @@ test_that("Load grofwild data", {
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
-getCategories <- function(wildSoort) {
-  
-  switch(wildSoort,
-    "Wild zwijn" = c("Frisling", "Overloper", "Volwassen"),
-    "Ree" = c("Kits", "Jongvolwassen", "Volwassen")
-  )
-}
-
 wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 reeEcoData <- ecoData[ecoData$wildsoort == "Ree", ]
 
@@ -43,9 +35,9 @@ test_that("Summary table for age", {
 # For age
     allTables <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
         
-        plotData <- subset(ecoData, wildsoort == iSoort & doodsoorzaak == "afschot")
+        plotData <- subset(ecoData, wildsoort == iSoort)
         
-        expectedNames <- c("Provincie", getCategories(iSoort), "Onbekend")
+        expectedNames <- c("Provincie", loadMetaEco(species = iSoort)$leeftijd_comp, "Onbekend")
         timeRange <- range(plotData$afschotjaar)
         
         wildTables <- lapply(timeRange[1]:timeRange[2], function(jaar) {
@@ -134,7 +126,7 @@ test_that("Counts age based on cheek", {
     
     allPlots <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
         
-        categories <- getCategories(iSoort)
+        categories <- loadMetaEco(species = iSoort)$leeftijd_comp
         plotData <- ecoData[ecoData$wildsoort == iSoort, ]
         
         if (iSoort == "Ree")
@@ -164,7 +156,7 @@ test_that("Counts per year and age", {
     
     allPlots <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
         
-        categories <- getCategories(iSoort)
+        categories <- loadMetaEco(species = iSoort)$leeftijd_comp
         
         plotData <- ecoData[ecoData$wildsoort == iSoort, ]
         
@@ -253,7 +245,7 @@ test_that("Percentages per age and gender", {
         plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
         res <- countAgeGender(data = plotData)
         
-        expect_equal(levels(res$data$leeftijd), getCategories(wildsoort))
+        expect_equal(levels(res$data$leeftijd),loadMetaEco(species = wildsoort)$leeftijd_comp)
         
         res
         
@@ -297,7 +289,7 @@ test_that("Afschot per jachtmethode", {
     
     myResult <- countYearShotAnimals(data = wildEcoData,
 #      jaartallen = 2014:2020,
-      groupVariable = "labeltype",
+      groupVariable = "jachtmethode_comp",
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[1]
     )
     

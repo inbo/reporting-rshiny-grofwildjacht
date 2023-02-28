@@ -93,10 +93,8 @@ if (!doDebug | !exists("spatialData")) {
 }
 
 # Data with observations and geographical information
-if (!doDebug | !exists("ecoData")) {
+if (!doDebug | !exists("ecoData"))
   ecoData <- loadRawData(type = "eco")
-  ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
-}
 
 if (!doDebug | !exists("geoData"))
   geoData <- loadRawData(type = "geo")

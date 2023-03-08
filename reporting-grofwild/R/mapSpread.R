@@ -251,23 +251,29 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
         })
       
+      selectedShape <- reactive({
+          
+          req(shapeData())
+          
+          if (type == "F06") 
+            shapeData() else
+            shapeData()[[grep(req(input$year), names(shapeData()), value = TRUE)]]
+          
+        })
+      
       spreadPlot <- reactive({
           
           baseMap <- if (type == "F17_4") {
               
-              req(input$year)
-              req(shapeData())
-              req(grepl(input$year, names(shapeData())))
-              
               mapSpread(
-                spreadShape = shapeData()[[grep(input$year, names(shapeData()), value = TRUE)]],
+                spreadShape = selectedShape(),
                 legend = "topright",
                 addGlobe = TRUE
               ) 
               
             } else if (type == "F06") {
               
-              mapVerkeer(trafficData = shapeData(), addGlobe = TRUE)
+              mapVerkeer(trafficData = selectedShape(), addGlobe = TRUE)
               
             }
           
@@ -389,7 +395,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
             if ("oversteek" %in% input$layers) {
               
-              proxy %>% addCircleMarkers(data = shapeData()$oversteek,
+              proxy %>% addCircleMarkers(data = selectedShape()$oversteek,
                 radius = 3,
                 color = "black",
                 stroke = FALSE,
@@ -404,7 +410,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             
             if ("ecorasters" %in% input$layers) {
               
-              proxy %>% addPolylines(data = shapeData()$ecorasters,
+              proxy %>% addPolylines(data = selectedShape()$ecorasters,
                 opacity =  0.5,
                 group = "ecorasters")
               
@@ -425,14 +431,14 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           newMap <- if (type == "F17_4") {
               
               mapSpread(
-                spreadShape = shapeData(),
+                spreadShape = selectedShape(),
                 legend = input$legend,
                 addGlobe = input$globe %% 2 == 0
               ) 
               
             } else if (type == "F06") {
               
-              mapVerkeer(trafficData = shapeData(), 
+              mapVerkeer(trafficData = selectedShape(), 
                 layers = input$layers,
                 addGlobe = input$globe %% 2 == 0
                 )
@@ -480,7 +486,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           
-          myData <- shapeData()@data
+          myData <- selectedShape()@data
           
           ## write data to exported file
           write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,

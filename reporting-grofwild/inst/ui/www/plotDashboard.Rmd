@@ -63,7 +63,7 @@ if (any(allParams %in% currentParams)) {
 }
 
 # Description
-print(HTML(uiText[uiText$plotFunction == id, "dash"]))
+print(HTML(decodeText(text = uiText[uiText$plotFunction == id, "dash"], statsMap = params$statsMap)))
   
 # Plot
 if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {

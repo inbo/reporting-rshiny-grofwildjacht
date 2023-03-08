@@ -497,15 +497,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             
             description <- uiText[uiText$plotFunction == paste(splitId[2:length(splitId)], collapse = "_"), splitId[1]]
             
-            if (length(description) > 0) {
-              if (grepl("\\{\\{statsMap\\}\\}", description))
-                description <- gsub("\\{\\{statsMap\\}\\}", 
-                  if (!is.null(statsMap())) paste0(statsMap(), ".") else "", description)
+            if (length(description) > 0)
+              tags$p(HTML(decodeText(text = description, statsMap = statsMap())))
               
-              tags$p(HTML(description))
-              
-            }
-            
           }
                   
         })
@@ -842,24 +836,15 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Statistics with map
       statsMap <- reactive({
           
-          if (req(input$regionLevel) != "flanders") {
-            
-            percentage <- round(with(results$summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
-            
-            paste0("Info beschikbaar en weergegeven voor ", percentage, 
-              "% van de totale gegevens (", results$summarySpaceData()$stats$nAvailable, "/", 
-              results$summarySpaceData()$stats$nTotal, ")" )
-          }
+          if (is.null(input$regionLevel) || input$regionLevel == "flanders")
+            return(NULL)
           
-        })
-      
-      output$stats <- renderUI({
+          percentage <- round(with(results$summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
           
-          req(statsMap())
-          
-          if (type != "dash")
-            h5(statsMap())
-          
+          paste0("Info beschikbaar en weergegeven voor ", percentage, 
+            "% van de totale gegevens (", results$summarySpaceData()$stats$nAvailable, "/", 
+            results$summarySpaceData()$stats$nTotal, ")" )
+        
         })
       
       
@@ -1322,9 +1307,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             # Update when any of these change
             results$finalMap()
             input
+            statsMap()
             # Return the static values
             c(
               list(plot = isolate(results$finalMap())),
+              statsMap = isolate(statsMap()),
               isolate(reactiveValuesToList(input))
             )
           }))

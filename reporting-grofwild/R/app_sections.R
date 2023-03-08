@@ -37,10 +37,16 @@ welcomeSectionUI <- function(id, uiText, maxDate = NA) {
 #' 
 #' @author mvarewyck
 #' @export
-decodeText <- function(text, species) {
+decodeText <- function(text, species, statsMap = NULL) {
   
-  newText <- strsplit(text, split = "\\{")[[1]]
-  toRetain <- sapply(newText, function(x)
+  if (grepl("\\{\\{statsMap\\}\\}", text))
+    newText <- gsub("\\{\\{statsMap\\}\\}", 
+      if (!is.null(statsMap)) paste0(statsMap, ".") else "", text) else
+    newText <- text
+  
+  
+  splitText <- strsplit(newText, split = "\\{")[[1]]
+  toRetain <- sapply(splitText, function(x)
       if (grepl("\\}", x)) {
         doInvert <- grepl("\\!", strsplit(x, "\\}")[[1]][1])
         doSpecies <- grepl(species, strsplit(x, "\\}")[[1]][1])

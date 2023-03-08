@@ -36,7 +36,7 @@ mapFlandersUI;;;"<p><b><u>Gebruiksinfo:</u></b>
 </ul></p>";Op onderstaand kaartje worden de, van 15 april van het gekozen jaar tot 15 april van het volgende jaar, bij de WBE aangesloten jachtterreinen weergegeven. <i>De doorstroom van de jachtterreinen is momenteel een 'work in progress', hierdoor is het mogelijk dat de jachtterreinen voor het recentste jaar niet beschikbaar zijn.</i>;;
 mapSchadeUI;KAART: Schademeldingen;;"<p><b><u>Gebruiksinfo:</u></b>
 </br><ul>
-<li>De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn <>i>seizoen, jaar</i> en <i>type schade</i>. Welke schademeldingen getoond worden, hangt af van je filterkeuzes in het keuzemenu.
+<li>De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn <i>seizoen, jaar</i> en <i>type schade</i>. Welke schademeldingen getoond worden, hangt af van je filterkeuzes in het keuzemenu.
 <li>Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaalde schademelding te selecteren, krijg je verdere informatie over deze schademelding (jaar, wildsoort, gemeente, schadetype en eventueel seizoen.
 </ul></p>";;;
 mapSpreadUI;KAART: Verspreidingsgebied;;;;;
@@ -85,13 +85,13 @@ F09_2;Inschatting kosten;;;;Kost ingeschat door de melder via schademelding van 
 F12_1;Communicatie;;;;;
 F14_1;Houding publiek;;;;Het betreft hier de resultaten van de bevraging aan breed publiek uitgevoerd door INBO. Deze bevraging werd opgestart in 2017 en wordt driejaarlijks herhaald. De vraag die werd gesteld was <b>'Hoe sta je tegenover de aanwezigheid van everzwijnen in het wild in Vlaanderen?'</b>.;
 F14_2;Aantrekkingskracht ;;;;Het betreft hier de resultaten van de bevraging aan breed publiek uitgevoerd door INBO. Deze bevraging werd opgestart in 2017 en wordt driejaarlijks herhaald. De vraag die werd gesteld was <b>'Stel je voor dat in een bos en/of natuurgebied everzwijnen in het wild aanwezig zijn. Zou deze aanwezigheid van everzwijnen in het wild je dan aantrekken om dat bos en/of natuurgebied zeker te bezoeken?'</b>.;
-F14_3;Inschatting impacts;;;;Het betreft hier de resultaten van de bevraging aan stakeholders (jagers; landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. De vraag die werd gesteld was <b>'Hoe groot schat u de actuele kans op volgende impacts?'</b>.
+F14_3;Inschatting impacts;;;;Het betreft hier de resultaten van de bevraging aan stakeholders (jagers, landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. De vraag die werd gesteld was <b>'Hoe groot schat u de actuele kans op volgende impacts?'</b>.;
 F14_4;Draagkracht beheermaatregelen;;;;"<ul>
 <li> Het betreft hier de resultaten van de bevraging aan stakeholders (jagers, landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016.
 <li> Het betreft hier ook de resultaten van de bevraging aan breed publiek uitgevoerd door INBO, deze bevraging werd opgestart in 2017 er wordt driejaarlijks herhaald. 
 </ul>
 De vraag die werd gesteld was <b>'Hoe aanvaardbaar vind je volgende maatregelen i.f.v. het beheer van everzwijnen?'</b>.";
-F14_5;Beheer;;;;Het betreft hier de resultaten van de bevraging aan stakeholders (jagers; landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. De vraag die werd gesteld was <b>'Hoe belangrijk vind u het dat in Vlaanderen het everzwijnenbeleid rekening houdt met volgende impacts?'</b>.
+F14_5;Beheer;;;;Het betreft hier de resultaten van de bevraging aan stakeholders (jagers, landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. De vraag die werd gesteld was <b>'Hoe belangrijk vind u het dat in Vlaanderen het everzwijnenbeleid rekening houdt met volgende impacts?'</b>.;
 F16_1;Deelname aan reproductie;;;;De reproductiestatus wordt bepaald aan de hand van aan- of afwezigheid van embryo's in de baarmoeder. Indien er geen data van vrouwelijke individuen beschikbaar is over de aan- of afwezigheid van embryo's; is de reproductiestatus onbekend.
 F17_1;Huidig verspreidingsgebied;;;;"{{statsMap}} Info is niet beschikbaar indien data over gemeente niet werd geregistreerd of indien de nauwkeurigheid van de locatie minder is dan 5x5 km.
 <i>Opmerking: Data voor de bron waarnemingen.be is beperkt wegens vertragingen in de dataflow.</i> ";

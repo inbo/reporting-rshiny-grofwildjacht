@@ -6,15 +6,32 @@
 
 context(paste("Test Data Loading", config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
 
+
 # setupS3()
+
+test_that("Preprocess data", {
+
+    skip("For local use only - will overwrite files")
+    
+    downloadS3()
+    
+    aws.s3::delete_object(object = "Toekenningen_ree.csv", bucket = "inbo-wbe-uat-data")
+    
+#    for (iType in c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen"))
+    for (iType in c("eco", "geo", "wildschade", "kbo_wbe"))
+      createRawData(dataDir = "~/git/reporting-rshiny-grofwildjacht/dataS3", type = iType)    
+    
+  })
+
+
 
 test_that("Connection to S3", {
     
     checkS3()
     
     # List all available files on the S3 bucket
-    tmpTable <- data.table::rbindlist(aws.s3::get_bucket(
-        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
+    tmpTable <- aws.s3::get_bucket_df(
+        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
     # unique(tmpTable$Key)
     
     # Bucket is not empty

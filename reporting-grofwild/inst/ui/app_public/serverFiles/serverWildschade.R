@@ -175,9 +175,11 @@ countYearProvinceServer(id = "schade",
     typesDefault = reactive("provinces"), 
     timeRange = results$schade_timeRange,
     title = reactive({
+        input$tabs   # ensure title is updated
         title <- uiText$title[uiText$plotFunction == "countYearProvinceUI"]
         gsub("Gerapporteerd aantal", "Aantal schademeldingen", title)
-      }))
+      })
+  )
 
 
 # Plot 2: Gerapporteerd aantal schadegevallen per jaar en variabele

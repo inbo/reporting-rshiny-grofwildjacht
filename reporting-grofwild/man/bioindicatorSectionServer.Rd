@@ -7,6 +7,10 @@
 bioindicatorSectionServer(id, uiText, wildsoort)
 }
 \arguments{
+\item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
 \item{wildsoort}{reactive, selected wildsoort in the app}
 }
 \value{

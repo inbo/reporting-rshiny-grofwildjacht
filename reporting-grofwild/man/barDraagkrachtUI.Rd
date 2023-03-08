@@ -13,11 +13,18 @@ barDraagkrachtUI(
 )
 }
 \arguments{
+\item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+
 \item{sectorChoices}{named character vector, choices for sector}
 
 \item{selectGroups}{boolean, whether user should be able to select groups}
 
 \item{height}{character, height of the plot}
+}
+\value{
+HTML object
 }
 \description{
 Shiny module for creating the plot \code{\link{barDraagkracht}} - UI side

@@ -38,7 +38,7 @@ countYearProvince <- function(data, jaartallen = NULL,
   
   
   type <- match.arg(type)
-	 wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
+	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
@@ -63,25 +63,13 @@ countYearProvince <- function(data, jaartallen = NULL,
     stop(paste0("Geen data beschikbaar voor de geselecteerde afschotjaren: ", jaartallen, "."))
   }
   
-  # Rename provincie NA to "Onbekend" -  provincie is already factor
-  if (type == "provinces") {
-  	  plotData$locatie <- factor(plotData$locatie, levels = levels(addNA(plotData$locatie)), 
-        labels = c(levels(plotData$locatie), "Onbekend"), exclude = NULL)
   
-  } else {
-  	
-    plotData$locatie[is.na(plotData$locatie)] <- "Onbekend"
-  }
-
 	# Exclude unused provinces/fbz's
-  plotData$locatie <- as.factor(plotData$locatie)    
-	plotData$locatie <- droplevels(plotData$locatie)
+  plotData$locatie <- droplevels(as.factor(plotData$locatie))
   
   # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
-  if (type == "faunabeheerzones") {
+  if (type == "faunabeheerzones")
     plotData$locatie <- factor(plotData$locatie, levels = stringr::str_sort(levels(plotData$locatie), numeric = TRUE))
-#    levels(plotData$locatie) <- stringr::str_sort(levels(plotData$locatie), numeric = TRUE)
-  }
 	
 	# Summarize data per province and year
 	plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
@@ -94,8 +82,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	# For optimal displaying in the plot
   summaryData$locatie <- as.factor(summaryData$locatie)
-	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
-#	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+  summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	
  
  colorList <- replicateColors(nColors = nlevels(summaryData$locatie))

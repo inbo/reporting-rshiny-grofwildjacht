@@ -11,7 +11,7 @@ everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 # Combine waarnemingen.be & afschot
 everGeoAll <- rbind(
   # waarnemingen
-  readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv"),
+  data.table::as.data.table(loadRawData(type = "waarnemingen")),
   # afschot
   everGeoData,
   fill = TRUE)

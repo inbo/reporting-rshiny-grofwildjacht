@@ -19,10 +19,11 @@ namedChoices <- function(choices, uiText, regionLevel) {
   
   matchId <- sapply(choices, function(x) {
       matchId <- which(uiText$plotFunction == x)
-      if (uiText[matchId, regionLevel] == 0)
+      if (length(matchId) == 0 || uiText[matchId, regionLevel] == 0)
         NULL else
         matchId
     })
+  
   choices <- choices[!sapply(matchId, is.null)]
   matchId <- as.integer(matchId[!sapply(matchId, is.null)])
   names(choices) <- paste(uiText$title[matchId], 

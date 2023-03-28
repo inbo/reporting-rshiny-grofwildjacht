@@ -226,9 +226,8 @@ createRawData <- function(
     geo = "rshiny_reporting_data_geography.csv",
     wildschade = "WildSchade_georef.csv",
     kbo_wbe = "Data_Partij_Cleaned.csv",
-#    waarnemingen = "waarnemingen_2022.csv"
-    waarnemingen = "waarnemingen_wild_zwijn_processed.csv"
-)
+    waarnemingen = "waarnemingen_wild_zwijn.csv"
+  )
 
   
   rawData <- read.csv(file.path(dataDir, dataFile), 
@@ -387,6 +386,10 @@ createRawData <- function(
     rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
     colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
     
+    # Restrict to 2023 
+    # https://github.com/inbo/reporting-rshiny-grofwildjacht/issues/395
+    rawData <- rawData[rawData$afschotjaar < 2023, ]
+  
     rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
     
   }

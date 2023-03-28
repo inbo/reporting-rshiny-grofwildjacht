@@ -13,7 +13,7 @@
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  type = c("eco", "geo", "wildschade", "kbo_wbe")) {
+  type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")) {
   
   type <- match.arg(type)
   

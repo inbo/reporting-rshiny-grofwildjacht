@@ -327,7 +327,7 @@ results$dash_drukjachtData <- reactive({
 results$dash_F04_3 <- countYearProvinceServer(id = "dash", 
   data = results$dash_drukjachtData,
   timeRange = reactive(range(results$dash_drukjachtData()$afschotjaar)),
-  title = reactive(names(results$dash_titlesJacht()[results$dash_titlesJacht() == "F04_3"]))
+  title = reactive(paste("FIGUUR:", names(results$dash_titlesJacht()[results$dash_titlesJacht() == "F04_3"])))
   )
 
 results$dash_F05_1 <- trendYearRegionServer(id = "dash",

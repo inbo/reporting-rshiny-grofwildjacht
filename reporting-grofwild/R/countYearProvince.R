@@ -146,8 +146,7 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
       observe({
           
           req(title())
-          updateActionLink(session = session, inputId = "linkYearProvince",
-            label = paste("FIGUUR:", title()))
+          updateActionLink(session = session, inputId = "linkYearProvince", label = title())
           
         })
       

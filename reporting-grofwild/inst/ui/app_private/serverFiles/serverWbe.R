@@ -256,7 +256,7 @@ mapSchadeServer(id = "wbe",
   allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())), 
   timeRange = reactive({
       schadeRange <- range(results$wbe_schadeData()@data$afschotjaar)
-      c(max(2018, schadeRange[1]), schadeRange[2])
+      c(max(2014, schadeRange[1]), schadeRange[2])
     }), 
   defaultYear = defaultYear, 
   species = reactive(input$wbe_species),

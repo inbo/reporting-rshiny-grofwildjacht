@@ -387,10 +387,10 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           if (is.null(input$code))
             return(schadeData())
           
-          # Select species & code & exclude data before 2018
+          # Select species & code & exclude data before 2014
           toRetain <- schadeData()@data$wildsoort %in% req(species()) &
             schadeData()@data$schadeBasisCode %in% req(input$code) &
-            schadeData()@data$afschotjaar >= 2018
+            schadeData()@data$afschotjaar >= 2014
           
           
           # Filter gewas

@@ -12,3 +12,4 @@ uat:
     
 production:
   bucket: inbo-wbe-prd-data
+  datacheck: false

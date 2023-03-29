@@ -17,7 +17,6 @@
 #' }
 #' @author Laure Cougnaud
 #' @import plotly
-#' @importFrom INBOtheme inbo_lichtgrijs
 #' @importFrom plyr count
 #' @export
 boxAgeGenderLowerJaw <- function(data, 
@@ -66,8 +65,7 @@ boxAgeGenderLowerJaw <- function(data,
 		stop("Geen data beschikbaar")
 	
   # For optimal displaying in the plot
-	colors <- inbo_palette(n = 2)
-	names(colors) <- unique(plotData$geslacht)
+	colors <- replicateColors(values = unique(plotData$geslacht))$colors
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))
   # needed when some groups have NA
@@ -89,7 +87,7 @@ boxAgeGenderLowerJaw <- function(data,
 	pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~onderkaaklengte,
 					color = ~geslacht, colors = colors, type = "box", 
 					width = width, height = height) %>%
-			layout(title = title,
+			plotly::layout(title = title,
 					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Onderkaaklengte (mm)", range = c(0, max(plotData$onderkaaklengte))),
 					margin = list(b = 120, t = 100),

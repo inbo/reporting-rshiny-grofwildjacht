@@ -324,9 +324,13 @@ test_that("Verwezenlijkt afschot", {
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
     
-    boxRealisedShot(data = toekenningsData,
+    myResult <- boxRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
       jaartallen = 2009:2020)
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })
 
@@ -419,8 +423,8 @@ test_that("The interactive map", {
         myPlot <- mapFlanders(
           allSpatialData = spatialData, 
           regionLevel = regionLevel, 
-          colorScheme = c("white", RColorBrewer::brewer.pal(
-              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+          colorScheme = suppressWarnings(c("white", RColorBrewer::brewer.pal(
+              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr"))),
           summaryData = spaceData$data,
           legend = "topright",
           species = iSpecies

@@ -104,7 +104,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	pl <- plot_ly(data = summaryData, x = ~kaak, y = ~percent, color = ~jager,
 					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar",  width = width, height = height) %>%
-			layout(title = title,
+        plotly::layout(title = title,
 					xaxis = list(title = "Categorie op basis van onderkaak"), 
 					yaxis = list(title = "Percentage"),
 					legend = list(y = 0.8, yanchor = "top"),

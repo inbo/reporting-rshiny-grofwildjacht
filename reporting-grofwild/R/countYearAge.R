@@ -24,7 +24,6 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @export
 countYearAge <- function(data, jaartallen = NULL, regio = "",
 		summarizeBy = c("count", "percent"),
@@ -114,8 +113,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	
 	
-	colors <- c(inbo_palette(3), inbo_lichtgrijs)
-	names(colors) <- newLevelsKaak
+	colors <- replicateColors(values = newLevelsKaak)$colors
 	
 	title <- paste0(wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
@@ -134,7 +132,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
               textposition = "none", hoverinfo = "text+name",
 							colors = colors, type = "bar",
 							width = width, height = height) %>%
-					layout(title = title,
+            plotly::layout(title = title,
 							xaxis = list(
                 title = "Jaar", 
                 tickvals = unique(summaryData$jaar), 
@@ -153,7 +151,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
               textposition = "none", hoverinfo = "text+name",
 							colors = colors, type = "scatter", mode = "lines+markers",
 							width = width, height = height) %>%
-					layout(title = title,
+            plotly::layout(title = title,
 							xaxis = list(title = "Jaar", 
                 tickvals = unique(summaryData$jaar), 
                 ticktext = unique(summaryData$jaar)), 

@@ -81,12 +81,13 @@ countYearProvince <- function(data, jaartallen = NULL,
 	totalCount <- as.data.frame(table(plotData$afschotjaar))
 	
 	# For optimal displaying in the plot
-  summaryData$locatie <- as.factor(summaryData$locatie)
-  summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
+  newLevels <- unique(summaryData$locatie)
+  summaryData$locatie <- factor(summaryData$locatie, 
+    levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
+  # summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	
- 
- colorList <- replicateColors(nColors = nlevels(summaryData$locatie))
-	title <- paste0(if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
+  colorList <- replicateColors(values = levels(summaryData$locatie))
+  title <- paste0(if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
 	)
@@ -95,9 +96,10 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	
 	# Create plot
-	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~locatie,
-					colors = colorList$colors, type = "bar",  width = width, height = height) %>%
-			layout(title = title,
+	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, 
+      color = ~locatie, colors = colorList$colors,
+      type = "bar",  width = width, height = height) %>%
+        plotly::layout(title = title,
 					xaxis = list(title = "Jaar",
             tickvals = unique(summaryData$afschotjaar), 
             ticktext = unique(summaryData$afschotjaar)

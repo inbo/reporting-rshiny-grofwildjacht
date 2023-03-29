@@ -181,10 +181,10 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
     if (is.null(locaties))
       stop("Gelieve regio('s) te selecteren")
     plotData <- subset(data, locatie %in% locaties)
-    colorList <- replicateColors(nColors = length(locaties))
+    colorList <- replicateColors(values = locaties)
   } else {
     plotData <- data
-    colorList <- replicateColors(nColors = 1)
+    colorList <- replicateColors(values = "Vlaams Gewest")
   }
   
   
@@ -224,7 +224,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
       hoverinfo = "x+y+name",
       type = "scatter", mode = "lines+markers",
       width = width, height = height) %>%
-    layout(title = title,
+    plotly::layout(title = title,
       xaxis = list(title = "Jaar"), 
       yaxis = list(title = paste0("Aantal", unitName),
         range = c(0, ~max(freq)*1.05),

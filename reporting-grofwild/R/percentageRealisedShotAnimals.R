@@ -95,9 +95,7 @@ percentageRealisedShot <- function(data, regio, type = NULL,
     summaryData <- melt(plotData[, c("jaar", "verwezenlijkt", "niet-verwezenlijkt")], id.vars = "jaar")
     summaryData <- merge(summaryData, plotData[, c("jaar", "toegekend")])
     
-    colorList <- replicateColors(nColors = nlevels(summaryData$variable))
-    colors <- colorList$colors
-    names(colors) <- unique(summaryData$variable)
+    colors <- replicateColors(values = levels(summaryData$variable))$colors
     
     pl <- plot_ly(data = summaryData, x = ~jaar, y = ~value, color = ~variable,
       text = ~paste("Toegekend:", toegekend), textposition = "none", 
@@ -106,7 +104,7 @@ percentageRealisedShot <- function(data, regio, type = NULL,
     
   } else {
     
-    colors <- replicateColors(nColors = 3)$colors
+    colors <- replicateColors(value = 1:3)$colors
     
     pl <- plot_ly(data = plotData, x = ~jaar, y = ~round(percent, 2),
       text = ~paste("Toegekend:", toegekend),
@@ -117,7 +115,7 @@ percentageRealisedShot <- function(data, regio, type = NULL,
   }
   
   pl <- pl %>%
-    layout(title = title,
+    plotly::layout(title = title,
       xaxis = list(title = "Labeljaar"), 
       yaxis = list(
         title = if (unit == "absolute") "Aantal" else "Percentage",

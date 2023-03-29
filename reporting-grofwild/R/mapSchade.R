@@ -173,7 +173,7 @@ mapSchade <- function(
     # Color palette
     nColors <- length(levels(schadeData$variable))
     colors <- if (nColors < 10) {
-        inbo_palette(n = nColors) 
+        suppressMessages(inbo_palette(n = nColors)) 
       } else {
         paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
         unlist(sapply(paletteNames, function(x)

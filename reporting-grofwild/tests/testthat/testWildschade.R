@@ -72,6 +72,9 @@ test_that("Number of cases per region level", {
           legend = "topright",
           species = iSpecies
         )
+        
+        expect_is(mapPlot, "leaflet")
+        
         if (doPrint)
           print(mapPlot)
         
@@ -119,6 +122,8 @@ test_that("Map with exact location and description of each case", {
           variable = var,
           allSpatialData = spatialData,
           addGlobe = TRUE)
+        
+        expect_is(myPlot, "leaflet")
         
         if (doPrint)
           print(myPlot)

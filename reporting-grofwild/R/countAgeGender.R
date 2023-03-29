@@ -25,7 +25,6 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @author mvarewyck
 #' @export
 countAgeGender <- function(data, jaartallen = NULL, 
@@ -93,7 +92,7 @@ countAgeGender <- function(data, jaartallen = NULL,
   totalCount[is.na(totalCount)] <- 0
 	names(totalCount) <- levels(summaryData$leeftijd)
   
-	colors <- inbo_palette(n = nlevels(as.factor(summaryData$geslacht)))
+	colors <- replicateColors(values = unique(summaryData$geslacht))$colors
 	title <- paste(wildNaam, paste0("(", 
 					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 							jaartallen), ")"))
@@ -104,7 +103,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar",  width = width, height = height) %>%
 			
-			layout(title = title,
+        plotly::layout(title = title,
 					xaxis = list(title = "Leeftijdscategorie"), 
 					yaxis = list(title = "Percentage"),
 					legend = list(y = 0.8, yanchor = "top"),

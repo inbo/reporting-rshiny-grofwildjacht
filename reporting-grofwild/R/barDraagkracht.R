@@ -27,6 +27,10 @@ barDraagkracht <- function(data, groupVariable = NULL,
   xVar = "percentage", yVar = NULL, verticalGroups = FALSE, 
   width = 1000, height = NULL) {
   
+  # Remove duplicated rows
+  if ("percentage" %in% colnames(data))
+    data <- data[, percentage := NULL]
+  data <- data[!duplicated(data), ]
   
   if (xVar == "percentage") {
     

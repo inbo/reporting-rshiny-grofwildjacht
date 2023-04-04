@@ -7,7 +7,7 @@
 context("Test Grofwildjacht")
 
 # Load all data
-readS3(file = "spatialData.RData")
+readS3(file = "spatialData_sf.RData")
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
@@ -92,15 +92,15 @@ test_that("Map with counts and corresponding line plot", {
     wildGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
     
     # Check province names
-    provinceNames <- levels(spatialData$provinces@data$NAAM)
+    provinceNames <- levels(spatialData$provinces$NAAM)
     levels(wildGeoData$provincie)[which(!levels(wildGeoData$provincie) %in% provinceNames)]
     
-    provinceNames <- levels(spatialData$provincesVoeren@data$NAAM)
+    provinceNames <- levels(spatialData$provincesVoeren$NAAM)
     levels(wildGeoData$provincie)[which(!levels(wildGeoData$provincie) %in% provinceNames)]
     
     
     # Check commune names
-    communeNames <- levels(spatialData$communes@data$NAAM)
+    communeNames <- levels(spatialData$communes$NAAM)
     levels(wildGeoData$gemeente_afschot_locatie)[
       which(!levels(wildGeoData$gemeente_afschot_locatie) %in% communeNames)]
 

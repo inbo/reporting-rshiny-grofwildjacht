@@ -7,10 +7,11 @@
 context("Test wildschade")
 
 # Load all data
-readS3(file = "spatialData.RData")
+readS3(file = "spatialData_sf.RData")
 
 schadeData <- loadRawData(type = "wildschade")
-wildSchadeData <- subset(schadeData@data, wildsoort %in% c("Wild zwijn", "Edelhert", "Ree", "Smient")[1])
+wildSchadeData <- subset(sf::st_drop_geometry(schadeData), 
+  wildsoort %in% c("Wild zwijn", "Edelhert", "Ree", "Smient")[1])
 
 species <- sort(unique(schadeData$wildsoort))
    
@@ -31,7 +32,7 @@ fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
 test_that("Number of cases per region level", {
     
-    xtabs(~ wildsoort + afschotjaar, data = schadeData@data)
+    xtabs(~ wildsoort + afschotjaar, data = schadeData)
     
     regionLevels <- setdiff(names(spatialData), "provincesVoeren")
     regionLevels <- regionLevels[!grepl("WBE", regionLevels)]
@@ -41,7 +42,7 @@ test_that("Number of cases per region level", {
       for (iSpecies in species) {
         
         spaceData <- createSpaceData(
-          data = schadeData@data, 
+          data = sf::st_drop_geometry(schadeData), 
           allSpatialData = spatialData,
           year = 2020,
           species = iSpecies,
@@ -56,7 +57,7 @@ test_that("Number of cases per region level", {
         }
         
         trendData <- createTrendData(
-          data = schadeData@data,
+          data = schadeData,
           allSpatialData = spatialData,
           timeRange = c(2018, 2019),
           species = iSpecies,
@@ -146,10 +147,11 @@ test_that("Counts per year and province", {
         if (doPrint)
           print(iSpecies)
         
-        plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
+        plotData <- subset(sf::st_drop_geometry(schadeData), 
+          wildsoort == iSpecies & afschotjaar >= 2018)
         timeRange <- min(plotData$afschotjaar):max(plotData$afschotjaar)
         
-        res <- countYearProvince(data = plotData@data, jaartallen = timeRange)
+        res <- countYearProvince(data = plotData, jaartallen = timeRange)
         
         expect_equal(names(res), c("plot", "data", "warning"))
         expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
@@ -180,11 +182,11 @@ test_that("Counts per year and variable of interest", {
     
 # count
     countYearSchade(data = wildSchadeData, jaartallen = 2018:2019, type = "SoortNaam")$plot
-    countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "wildsoort")$plot
-    countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode")$plot
+    countYearSchade(data = schadeData, jaartallen = 2018:2019, type = "wildsoort")$plot
+    countYearSchade(data = schadeData, jaartallen = 2018:2019, type = "schadeCode")$plot
     
 # percent
-    myResult <- countYearSchade(data = schadeData@data, jaartallen = 2018:2019, type = "schadeCode", 
+    myResult <- countYearSchade(data = schadeData, jaartallen = 2018:2019, type = "schadeCode", 
       summarizeBy = "percent")
     
     expect_type(myResult, "list")
@@ -210,7 +212,7 @@ test_that("Counts per type schade", {
         plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
         
         schadeTables <- lapply(c("provinces", "flanders", "faunabeheerzones"), function(type)
-            tableSchadeCode(data = plotData@data,
+            tableSchadeCode(data = plotData,
               type = type,
               schadeChoices = choicesSchadecode,
               schadeChoicesVrtg = choicesSchadeVrtg, 
@@ -271,9 +273,9 @@ test_that("Counts per type gewas", {
             }
             
             subData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
-            timeRange <- min(subData@data$afschotjaar):max(subData@data$afschotjaar)
+            timeRange <- min(subData$afschotjaar):max(subData$afschotjaar)
             
-            res <- tableGewas(data = subData@data, jaartallen = timeRange,
+            res <- tableGewas(data = subData, jaartallen = timeRange,
               type = iType,
               variable = "SoortNaam")$data
             

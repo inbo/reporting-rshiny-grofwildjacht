@@ -8,8 +8,6 @@
 #' @return data.frame, loaded data
 #' @author mvarewyck
 #' @importFrom utils read.csv
-#' @importFrom sp CRS proj4string
-#' @importFrom raster coordinates
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
@@ -37,10 +35,8 @@ loadRawData <- function(
   if (type == "wildschade") {
     
     # create shape data
-    coordinates(rawData) <- ~x + y
-    proj4string(rawData) <- CRS("+init=epsg:31370")
-    
-    rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
+    rawData <- st_as_sf(rawData, coords = c("x", "y"), crs = "+init=epsg:31370")
+    rawData <- st_transform(rawData, crs = "+proj=longlat +datum=WGS84")
     
   }
   
@@ -149,7 +145,7 @@ loadToekenningen <- function(
 #' Load Habitats (Background) data
 #' 
 #' @inheritParams loadRawData
-#' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
+#' @param spatialData list with each element an object of class sf as created 
 #' by \code{\link{createShapeData}}
 #' @param regionLevels character vector, for which regions load the habitat data;
 #' if NULL loaded for all levels; default value is NULL
@@ -212,7 +208,7 @@ loadHabitats <- function(
           }
           
           # Match region names
-          if ("NISCODE" %in% colnames(spatialData[[iRegion]]@data))
+          if ("NISCODE" %in% colnames(spatialData[[iRegion]]))
             tmpData$regio <- spatialData[[iRegion]]$NAAM[
               match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
           

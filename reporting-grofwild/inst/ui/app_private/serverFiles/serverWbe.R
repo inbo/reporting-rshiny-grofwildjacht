@@ -51,7 +51,7 @@ observe({
     
     isPresent <- sapply(speciesChoices, function(iSpecies) 
         iSpecies %in% results$wbe_geoDataKbo()$wildsoort | 
-          iSpecies %in% results$wbe_schadeData()@data$wildsoort,
+          iSpecies %in% results$wbe_schadeData()$wildsoort,
       simplify  = FALSE)
     
     for (iSpecies in speciesChoices) {
@@ -95,7 +95,7 @@ output$wbe_empty <- renderUI({
         "Zijn uw gegevens toch ingegeven in het e-loket en hier worden ze hier niet weergegeven dan laat u best iets weten op", 
         tags$a(id = "wbe_contact", href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")) 
     
-    if (!results$wbe_currentKbo() %in% schadeData@data$KboNummer)
+    if (!results$wbe_currentKbo() %in% schadeData$KboNummer)
       errorMessage <- tags$p(errorMessage, 
         "Momenteel zijn er voor deze WBE geen schadegegevens van de grofwildsoorten beschikbaar.", 
         "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. schademeldingen.",
@@ -122,7 +122,7 @@ output$wbe_emptyAfschot <- reactive({
 outputOptions(output, "wbe_emptyAfschot", suspendWhenHidden = FALSE)
 
 output$wbe_emptySchade <- reactive({
-    !input$wbe_species %in% results$wbe_schadeData()@data$wildsoort
+    !input$wbe_species %in% results$wbe_schadeData()$wildsoort
   })
 outputOptions(output, "wbe_emptySchade", suspendWhenHidden = FALSE)
 
@@ -255,7 +255,7 @@ mapSchadeServer(id = "wbe",
   schadeData = results$wbe_schadeData, 
   allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())), 
   timeRange = reactive({
-      schadeRange <- range(results$wbe_schadeData()@data$afschotjaar)
+      schadeRange <- range(results$wbe_schadeData()$afschotjaar)
       c(max(2014, schadeRange[1]), schadeRange[2])
     }), 
   defaultYear = defaultYear, 

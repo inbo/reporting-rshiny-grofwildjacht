@@ -4,8 +4,6 @@ library(reportingGrofwild)
 ### General
 ### ------------
 
-`%<>%` <- magrittr::`%<>%`
-
 # define js function for opening urls in new tab/window
 js_code <- "
   shinyjs.browseURL = function(url) {
@@ -76,7 +74,7 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 
 # Load object called spatialData
 if (!doDebug | !exists("spatialData")) {
-  readS3(file = "spatialDataWBE.RData")
+  readS3(file = "spatialDataWBE_sf.RData")
   spatialData <- spatialDataWBE
   rm(spatialDataWBE)
 }
@@ -89,7 +87,7 @@ if (!doDebug | !exists("geoData"))
   geoData <- loadRawData(type = "geo")
 if (!doDebug | !exists("schadeData")) {
   schadeData <- loadRawData(type = "wildschade")
-  schadeData <- schadeData[schadeData@data$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
+  schadeData <- schadeData[schadeData$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
 }
 if (!doDebug | !exists("biotoopData"))
   biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
@@ -99,7 +97,7 @@ if (!doDebug | !exists("toekenningsData"))
 # Manipulate kbo: admin, multiple kbo
 matchingWbeData <- loadRawData(type = "kbo_wbe")
 if (currentKbo == "admin")
-  currentKbo <- unique(c(geoData$KboNummer_Toek, schadeData@data$KboNummer, matchingWbeData$KboNummer_Partij)) else
+  currentKbo <- unique(c(geoData$KboNummer_Toek, schadeData$KboNummer, matchingWbeData$KboNummer_Partij)) else
   currentKbo <- as.integer(gsub('\\"', "", strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]]))
 
 # Naming currentKbo

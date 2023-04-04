@@ -36,7 +36,7 @@ paletteMap <- function(variable, groupNames) {
 
 #' Create leaflet map for the spread of a species
 #' 
-#' @param spreadShape SpatialPolygonsDataFrame as created by \code{createSpreadData}
+#' @param spreadShape sf as created by \code{createSpreadData}
 #' @inheritParams mapFlanders
 #' @return leaflet map
 #' 
@@ -68,9 +68,9 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
       group = "modelPolygons")
   
   
-  if ("start" %in% colnames(spreadShape@data)) {
+  if ("start" %in% colnames(spreadShape)) {
     
-    startShape <- subset(spreadShape, !is.na(spreadShape@data$start))
+    startShape <- subset(spreadShape, !is.na(spreadShape$start))
     
     startColors <- paletteMap(variable = "start", groupNames = unique(startShape$start))
     pal_start <- colorFactor(palette = startColors$colors, levels = startColors$levels, na.color = NA)
@@ -102,7 +102,7 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
       na.label = "",
       layerId = "legend")
     
-    if ("start" %in% colnames(spreadShape@data))
+    if ("start" %in% colnames(spreadShape))
       finalMap <- addLegend(
         map = finalMap,
         position = legend,
@@ -181,7 +181,6 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 #' @author mvarewyck
 #' @import shiny
 #' @import leaflet
-#' @importFrom ggplot2 fortify
 #' @importFrom webshot webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
@@ -229,7 +228,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           if (type == "F17_4") {
             
             if (!exists("spreadData"))
-              readS3(file = "spreadData.RData")
+              readS3(file = "spreadData_sf.RData")
             spreadData[grep(req(input$regionLevel), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
@@ -298,13 +297,12 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           # Update after plot
           req(spreadPlot())
           
-          coordData <- suppressMessages(ggplot2::fortify(selectedPolygons()))
-          centerView <- c(range(coordData$long), range(coordData$lat))
+          centerValues <- getCenterView(sf_object = selectedPolygons())
           
           leafletProxy("spreadPlot", data = spatialData()) %>%
             
-            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-              lat1 = centerView[3], lat2 = centerView[4])
+            fitBounds(lng1 = centerValues[1], lng2 = centerValues[2],
+              lat1 = centerValues[3], lat2 = centerValues[4])
           
         })
       
@@ -486,7 +484,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           
-          myData <- selectedShape()@data
+          myData <- sf::st_drop_geometry(selectedShape())
           
           ## write data to exported file
           write.table(x = myData, file = file, quote = FALSE, row.names = FALSE,

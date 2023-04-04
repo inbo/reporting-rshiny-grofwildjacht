@@ -18,6 +18,7 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
+#' @importFrom sf st_drop_geometry
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
@@ -38,8 +39,11 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  plotData <- filterSchade(plotData= data, sourceIndicator = sourceIndicator,
+  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
+  
+  if (inherits(plotData, "sf"))
+    plotData <- sf::st_drop_geometry(plotData)
   
   # Select data
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 

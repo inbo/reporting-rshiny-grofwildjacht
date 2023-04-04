@@ -370,13 +370,13 @@ results$dash_titlesSchade <- reactive({
 #) 
 
 results$dash_F07_1 <- barCostServer(id = "dash_F07_1",
-  data = reactive(results$dash_schadeData()@data),
+  data = reactive(sf::st_drop_geometry(results$dash_schadeData())),
   yVar = "count",
   title = reactive(names(results$dash_titlesSchade()[results$dash_titlesSchade() == "F07_1"])) 
 )
 
 results$dash_F09_2 <- barCostServer(id = "dash_F09_2",
-  data = reactive(results$dash_schadeData()@data),
+  data = reactive(sf::st_drop_geometry(results$dash_schadeData())),
   yVar = "schadeBedrag",
   title = reactive(names(results$dash_titlesSchade()[results$dash_titlesSchade() == "F09_2"]))
 )

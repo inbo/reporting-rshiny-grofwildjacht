@@ -241,9 +241,9 @@ replicateColors <- function(values) {
   colors <- c()
   
   if (times > 0)
-    colors <- rep(suppressMessages(inbo_palette(n = 9)), times)
+    colors <- rep(inbo_palette(n = 9), times)
   if (rest > 0)
-    colors <- c(colors, suppressMessages(inbo_palette(n = rest)))
+    colors <- c(colors, inbo_palette(n = rest))
   
   names(colors) <- values
   

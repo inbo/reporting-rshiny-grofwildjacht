@@ -5,8 +5,6 @@ library(reportingGrofwild)
 ### General
 ### ------------
 
-`%<>%` <- magrittr::`%<>%`
-
 # define js function for opening urls in new tab/window
 js_code <- "
   shinyjs.browseURL = function(url) {
@@ -76,7 +74,7 @@ if (!doDebug | !exists("toekenningsData"))
 
 # Load object called spatialData
 if (!doDebug | !exists("spatialData"))
-  readS3(file = "spatialData.RData")
+  readS3(file = "spatialData_sf.RData")
 
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData"))

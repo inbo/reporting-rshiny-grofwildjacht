@@ -69,7 +69,8 @@ countYearProvince <- function(data, jaartallen = NULL,
   
   # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
   if (type == "faunabeheerzones")
-    plotData$locatie <- factor(plotData$locatie, levels = stringr::str_sort(levels(plotData$locatie), numeric = TRUE))
+    plotData$locatie <- factor(plotData$locatie, 
+      levels = stringr::str_sort(levels(plotData$locatie), numeric = TRUE))
 	
 	# Summarize data per province and year
 	plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 

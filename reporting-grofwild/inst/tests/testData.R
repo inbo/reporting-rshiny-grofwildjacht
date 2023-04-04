@@ -82,7 +82,7 @@ test_that("Read Shape Data", {
     shapeFiles <- c("spatialData", "spatialDataWBE", "spreadData")
     
     for (iShape in shapeFiles) {
-      readS3(file = paste0(iShape, ".RData"))
+      readS3(file = paste0(iShape, "_sf.RData"))
       expect_true(exists(iShape), info = paste0(iShape, ".RData"))
     }
     
@@ -113,15 +113,15 @@ test_that("Eco, geo, schade data", {
     tmp <- merge(geoData, ecoData)
     
     # Correct names for commune shape data?
-    notMatching <- which(!geoData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
+    notMatching <- which(!geoData$gemeente_afschot_locatie %in% spatialData$communes$NAAM)
     expect_equal(0, length(notMatching[!is.na(geoData$gemeente_afschot_locatie[notMatching])]))
     
     
-    expect_warning(schadeData <- loadRawData(type = "wildschade"))
-    expect_is(schadeData, "SpatialPointsDataFrame", info = "WildSchade_georef.csv")
+    schadeData <- loadRawData(type = "wildschade")
+    expect_is(schadeData, "sf", info = "WildSchade_georef.csv")
     
     # Correct names for commune shape data?
-    notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
+    notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes$NAAM)
     expect_equal(0, length(notMatching[!is.na(schadeData$gemeente_afschot_locatie[notMatching])]))
     
     

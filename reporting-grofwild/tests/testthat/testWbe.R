@@ -8,7 +8,7 @@
 context("Test WBE")
 
 # Load all data
-readS3(file = "spatialDataWBE.RData")
+readS3(file = "spatialDataWBE_sf.RData")
 spatialData <- spatialDataWBE
 rm(spatialDataWBE)
 
@@ -210,7 +210,7 @@ test_that("Trend schade", {
     schadeDataSub <- subset(schadeData, wildsoort = species[1])
     
     trendRegionData <- createTrendData(
-      data = schadeDataSub@data,
+      data = sf::st_drop_geometry(schadeDataSub),
       allSpatialData = spatialData,
       timeRange = range(years),
       species = species[1],

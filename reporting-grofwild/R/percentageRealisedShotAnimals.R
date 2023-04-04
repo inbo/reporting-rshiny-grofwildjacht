@@ -104,7 +104,7 @@ percentageRealisedShot <- function(data, regio, type = NULL,
     
   } else {
     
-    colors <- replicateColors(value = 1:3)$colors
+    colors <- replicateColors(values = 1:3)$colors
     
     pl <- plot_ly(data = plotData, x = ~jaar, y = ~round(percent, 2),
       text = ~paste("Toegekend:", toegekend),

@@ -61,7 +61,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
     myColors <- c(
       if (length(neutralLevel) > 0) inbo_lichtgrijs, 
-      suppressMessages(inbo_palette(n = 9))[c(8, 9)])
+      inbo_palette(n = 4)[c(4, 2)])
     
   }
   

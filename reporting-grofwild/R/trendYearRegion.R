@@ -5,6 +5,7 @@
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
+#' @importFrom sf st_drop_geometry
 #' @export
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   timeRange, species, regionLevel, 
@@ -21,22 +22,25 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   # Select correct spatial data
   chosenTimes <- timeRange[1]:timeRange[2]
   spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
-        tmp <- filterSpatial(
+        tmp <- sf::st_drop_geometry(filterSpatial(
           allSpatialData = allSpatialData,
           species = species,
           regionLevel = regionLevel,
-          year = iYear)
-        if (!is.null(tmp) && nrow(tmp@data) > 0)
-          tmpData <- tmp@data else
+          year = iYear))
+        if (!is.null(tmp) && nrow(tmp) > 0)
+          tmpData <- tmp else
           return(NULL)
         tmpData$YEAR <- iYear
         tmpData
       }))
   
   # filter for source
-  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+  plotData <- filterSchade(plotData = data, 
+    sourceIndicator = sourceIndicator,
     returnStop = "message")
   
+  if (inherits(plotData, "sf"))
+    plotData <- sf::st_drop_geometry(plotData)
   
   # Generic location name
   plotData$locatie <- as.character(switch(regionLevel,

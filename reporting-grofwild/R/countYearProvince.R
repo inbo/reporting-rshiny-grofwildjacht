@@ -82,7 +82,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 	totalCount <- as.data.frame(table(plotData$afschotjaar))
 	
 	# For optimal displaying in the plot
-  newLevels <- unique(summaryData$locatie)
+  newLevels <- unique(as.character(summaryData$locatie))
   summaryData$locatie <- factor(summaryData$locatie, 
     levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
   # summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))

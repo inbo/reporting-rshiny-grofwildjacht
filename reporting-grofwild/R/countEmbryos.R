@@ -103,8 +103,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 		stop("Geen data beschikbaar")
 	
 	# Summarize data per year
-	totalCounts <- table(plotData$afschotjaar)
-	
+	totalCounts <- as.data.frame(table(plotData$afschotjaar))
+	colnames(totalCounts) <- c("afschotjaar", "value")
 	
   title <- paste0(wildNaam, " ", bioindicatorName, " ",
     paste0("(", 
@@ -128,15 +128,16 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
         plotly::layout(title = title,
-					xaxis = list(title = "afschotjaar"), 
-					yaxis = list(title = yTitle),
-					margin = list(b = 120, t = 100, r = 200),
-					legend = list(y = 0.8, yanchor = "top"),
-					barmode = if(length(totalCounts) == 1) "group" else "stack",
-					annotations = list(x = as.numeric(names(totalCounts)), y = totalCounts, 
-							text = paste(if(length(totalCounts) == 1) "totaal:" else "", totalCounts),
-							xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) %>%
-			
+          xaxis = list(title = "afschotjaar"), 
+          yaxis = list(title = yTitle),
+          margin = list(b = 120, t = 100, r = 200),
+          legend = list(y = 0.8, yanchor = "top"),
+          barmode = if(nrow(totalCounts) == 1) "group" else "stack",
+          annotations = list(x = as.numeric(totalCounts$afschotjaar) - 1, 
+            y = totalCounts$value, 
+            text = paste(if(nrow(totalCounts) == 1) "totaal:" else "", totalCounts$value),
+            xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) %>%
+        
 			add_annotations(text = "Aantal embryo's", 
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
 					y = 0.8, yanchor = "bottom",    # Same y as legend below

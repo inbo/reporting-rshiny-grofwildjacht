@@ -33,8 +33,6 @@ Imports:
     testthat,
     units,
     webshot
-Depends: 
-    maptools    
 Suggests:
     rmarkdown,
     magick,

@@ -160,7 +160,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             width = width, height = height) %>%
           plotly::layout(
             xaxis = list(title = ''),            
-            annotations = list(x = totalCount$year,
+            annotations = list(x = as.numeric(totalCount$year) - 1,
               y = totalCount$value,
               text = totalCount$value,
               xanchor = 'center', yanchor = 'bottom',
@@ -171,6 +171,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
             x = ~timeChar, y = ~value, 
             text = paste0("Totaal in ", iYear, ": ", totalCount$value[totalCount$year == iYear]),
+            textposition = 'none',
             type = "bar", hoverinfo = 'x+y+text+name', 
             color = ~base::get(groupVariable), colors = colors,
             showlegend = i == 1,

@@ -25,7 +25,7 @@ RUN R -q -e "remotes::install_version('rmarkdown', version = '2.18', repos = 'ht
 RUN R -q -e "remotes::install_version('magick', version = '2.7.3', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
 # NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work
 
-RUN R -q -e "remotes::install_github("inbo/INBOtheme@v0.5.9")"
+RUN R -q -e "remotes::install_github('inbo/INBOtheme@v0.5.9')"
 RUN R -q -e "install.packages('oaStyle', repos = c(rdepot = 'https://repos.openanalytics.eu/repo/public', getOption('repos')))"
 
 # to prevent bobbing with shinycssloaders
@@ -38,6 +38,7 @@ RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grf
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!
+RUN R -q -e "remotes::install_cran('webshot')"
 RUN R -e "webshot::install_phantomjs()"
 
 # For access to S3 on UAT

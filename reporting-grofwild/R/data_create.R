@@ -20,7 +20,6 @@
 #' and provincesVoeren (Voeren as separate province)
 #' (2) WBE_buitengrenzen and WBE
 #' @importFrom methods slot
-#' @importFrom maptools unionSpatialPolygons spRbind
 #' @importFrom shiny incProgress
 #' @importFrom utils write.csv read.csv
 #' @importFrom aws.s3 s3save

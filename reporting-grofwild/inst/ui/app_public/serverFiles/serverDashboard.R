@@ -8,10 +8,15 @@ everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
+waarnemingenData <- loadRawData(type = "waarnemingen")
+# Restrict all to same date
+waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
+    format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
+
 # Combine waarnemingen.be & afschot
 everGeoAll <- rbind(
   # waarnemingen
-  data.table::as.data.table(loadRawData(type = "waarnemingen")),
+  data.table::as.data.table(waarnemingenData),
   # afschot
   everGeoData,
   fill = TRUE)

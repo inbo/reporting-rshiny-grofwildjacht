@@ -382,10 +382,6 @@ createRawData <- function(
     rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
     colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
     
-    # Restrict to 2023 
-    # https://github.com/inbo/reporting-rshiny-grofwildjacht/issues/395
-    rawData <- rawData[rawData$afschotjaar < 2023, ]
-  
     rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
     
   }

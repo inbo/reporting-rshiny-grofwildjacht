@@ -383,7 +383,6 @@ mapFlanders <- function(
       # Retain only 'aangesloten' #327
       jachtData <- jachtData[jachtData$WBELID == "aangesloten", ]
       jachtData$NAAM <- paste0("Jachtterrein (", jachtData$WBELID, ")")
-      jachtData$WBE_NR <- jachtData$WBE_NR_wbe
       jachtData <- jachtData[, c("WBE_NR", "NAAM", "AREA")]
       
       spatialData <- rbind(spatialData, jachtData)

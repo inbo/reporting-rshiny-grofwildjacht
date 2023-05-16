@@ -67,17 +67,21 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 }
 
 
+# Manipulate kbo: admin, multiple kbo
+if (currentKbo == "admin")
+  currentKbo <- unique(c(geoData$KboNummer_Toek, schadeData$KboNummer, matchingWbeData$KboNummer_Partij)) else
+  currentKbo <- as.integer(gsub('\\"', "", strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]]))
 
 
 ### Load all data
 ### -------------
 
+matchingWbeData <- loadRawData(type = "kbo_wbe")
+
+
 # Load object called spatialData
-if (!doDebug | !exists("spatialData")) {
-  readS3(file = "spatialDataWBE_sf.RData")
-  spatialData <- spatialDataWBE
-  rm(spatialDataWBE)
-}
+if (!doDebug | !exists("spatialData"))
+  spatialData <- loadShapeData(WBE_NR = matchingWbeData$PartijNummer[match(currentKbo, matchingWbeData$KboNummer_Partij)])
 
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData"))
@@ -93,12 +97,6 @@ if (!doDebug | !exists("biotoopData"))
   biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 if (!doDebug | !exists("toekenningsData"))
   toekenningsData <- loadToekenningen()
-
-# Manipulate kbo: admin, multiple kbo
-matchingWbeData <- loadRawData(type = "kbo_wbe")
-if (currentKbo == "admin")
-  currentKbo <- unique(c(geoData$KboNummer_Toek, schadeData$KboNummer, matchingWbeData$KboNummer_Partij)) else
-  currentKbo <- as.integer(gsub('\\"', "", strsplit(gsub("\\[|\\]", "", currentKbo), split = ",")[[1]]))
 
 # Naming currentKbo
 matchingKbo <- match(currentKbo, geoData$KboNummer_Toek)

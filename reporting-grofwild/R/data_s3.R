@@ -117,11 +117,12 @@ testS3 <- function() {
 #' @importFrom aws.s3 s3load s3read_using
 #' @export
 readS3 <- function(FUN = read.csv, ..., file, 
-  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  envir = .GlobalEnv) {
   
   if (tolower(tools::file_ext(file)) == "rdata") {
     
-    s3load(bucket = bucket, object = basename(file), envir = .GlobalEnv)
+    s3load(bucket = bucket, object = file, envir = envir)
     
   } else {
     

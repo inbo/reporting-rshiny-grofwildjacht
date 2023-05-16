@@ -7,27 +7,33 @@
 
 context("Test WBE")
 
+
 # Load all data
-readS3(file = "spatialDataWBE_sf.RData")
-spatialData <- spatialDataWBE
-rm(spatialDataWBE)
-
-years <- suppressWarnings(as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE))))
-years <- years[!is.na(years)]
-
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
 schadeData <- suppressWarnings(loadRawData(type = "wildschade"))
 toekenningsData <- loadToekenningen()
-biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
+
+# Define KBO
 
 # currentKbo <- 445465768
 # currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
 currentKbo <- unique(geoData$KboNummer_Toek[geoData$WBE_Naam_Toek %in% "De Zwarte Beek"])
 # Find KBO with many species
 # which.max(sapply(allWbe, function(wbe) length(unique(geoData$wildsoort[geoData$KboNummer_Toek == wbe]))))
+matchingWbeData <- loadRawData(type = "kbo_wbe")
+
+
+# Load spatial data
+
+spatialData <- loadShapeData(WBE_NR = matchingWbeData$PartijNummer[match(currentKbo, matchingWbeData$KboNummer_Partij)])
+
+years <- suppressWarnings(as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE))))
+years <- years[!is.na(years)]
+
+biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 defaultYear <- config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))
 

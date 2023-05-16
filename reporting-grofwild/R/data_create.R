@@ -62,6 +62,8 @@ createShapeData <- function(
       
       areaVariables <- c("OPPERVL", "SHAPE_Area", "Shape_Area")
       if (any(areaVariables %in% colnames(shapeData))) {
+        if ("AREA" %in% colnames(shapeData))
+          shapeData$AREA <- NULL
         colnames(shapeData)[colnames(shapeData) %in% areaVariables] <- "AREA" 
       } else {
         # needed for preventing errors in area calculation
@@ -94,7 +96,8 @@ createShapeData <- function(
         
       } else if (grepl("Jachtter_", iLevel)) {
         
-        shapeData$NAAM <- factor(shapeData$WBE_NR_wbe)
+        names(shapeData)[names(shapeData) == "WBE_NR_wbe"] <- "WBE_NR"
+        shapeData$NAAM <- factor(shapeData$WBE_NR)
         
       }
       
@@ -182,8 +185,16 @@ createShapeData <- function(
   
   
   # Save WBE data separately
-  spatialDataWBE <- spatialData[grep("WBE", names(spatialData))]
-  s3save(spatialDataWBE, bucket = bucket, object = "spatialDataWBE_sf.RData", opts = list(multipart = TRUE))
+  spatialDataWBEAll <- spatialData[grep("WBE", names(spatialData))]
+  choicesWBE <- sort(unique(unlist(sapply(spatialDataWBEAll, function(x) as.numeric(x$WBE_NR)))))
+  choicesWBE <- choicesWBE[!choicesWBE %in% c(0, 999, 601)]  #see #357
+  for (iChoice in choicesWBE) {
+    spatialDataWBE <- sapply(spatialDataWBEAll, function(iData) iData[iData$WBE_NR == iChoice, ])
+    s3save(spatialDataWBE, 
+      bucket = bucket, 
+      object = paste0("spatialDataWBE/", iChoice,".RData"), 
+      opts = list(multipart = TRUE))
+  }
   
   spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
   s3save(spatialData, bucket = bucket, object = "spatialData_sf.RData", opts = list(multipart = TRUE))

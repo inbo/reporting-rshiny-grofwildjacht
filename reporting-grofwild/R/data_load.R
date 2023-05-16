@@ -1,3 +1,33 @@
+
+
+#' Load spatial data
+#' @param WBE_NR integer, if not NULL select only relevant data for given WBE;
+#' default value is NULL 
+#' @inheritParams readS3
+#' @return list of sf objects
+#' 
+#' @author mvarewyck
+#' @importFrom sf st_read st_layers
+#' @export
+loadShapeData <- function(WBE_NR = NULL,
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  
+  # 1st layer (WBE)
+  readS3(file = paste0("spatialDataWBE/", WBE_NR[1], ".RData"), bucket = bucket)
+  
+  if (length(WBE_NR) > 1)
+    for (wbe in WBE_NR[-1]) {
+      envTmp <- new.env()
+      readS3(file = paste0("spatialDataWBE/", wbe, ".RData"), bucket = bucket,
+        envir = envTmp)
+      spatialDataWBE <- sapply(names(spatialDataWBE), function(iLayer)
+          rbind(spatialDataWBE[[iLayer]], envTmp$spatialDataWBE[[iLayer]]))
+    }
+  
+  spatialDataWBE
+
+}
+
 #' Read ecology, geography, wildschade, kbo_wbe or waarnemingen data
 #' 
 #' Data is preprocessed by createRawData() at INBO
@@ -8,6 +38,7 @@
 #' @return data.frame, loaded data
 #' @author mvarewyck
 #' @importFrom utils read.csv
+#' @importFrom sf st_as_sf st_transform
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
@@ -35,8 +66,8 @@ loadRawData <- function(
   if (type == "wildschade") {
     
     # create shape data
-    rawData <- st_as_sf(rawData, coords = c("x", "y"), crs = "+init=epsg:31370")
-    rawData <- st_transform(rawData, crs = "+proj=longlat +datum=WGS84")
+    rawData <- sf::st_as_sf(rawData, coords = c("x", "y"), crs = "+init=epsg:31370")
+    rawData <- sf::st_transform(rawData, crs = "+proj=longlat +datum=WGS84")
     
   }
   

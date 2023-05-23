@@ -25,7 +25,7 @@ RUN R -q -e "remotes::install_version('rmarkdown', version = '2.18', repos = 'ht
 RUN R -q -e "remotes::install_version('magick', version = '2.7.3', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
 # NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work
 
-RUN R -q -e "remotes::install_github('inbo/INBOtheme')"
+RUN R -q -e "remotes::install_github('inbo/INBOtheme@v0.5.10')"
 RUN R -q -e "install.packages('oaStyle', repos = c(rdepot = 'https://repos.openanalytics.eu/repo/public', getOption('repos')))"
 
 # to prevent bobbing with shinycssloaders

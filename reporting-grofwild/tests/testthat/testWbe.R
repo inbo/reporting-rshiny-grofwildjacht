@@ -33,7 +33,7 @@ spatialData <- loadShapeData(WBE_NR = matchingWbeData$PartijNummer[match(current
 years <- suppressWarnings(as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE))))
 years <- years[!is.na(years)]
 
-biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
+biotoopData <- loadHabitats(regionLevels = "wbe")[["wbe"]]
 
 defaultYear <- config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))
 

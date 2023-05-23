@@ -11,7 +11,7 @@ readS3(file = "spatialData_sf.RData")
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
-biotoopData <- loadHabitats(spatialData = spatialData)
+biotoopData <- loadHabitats()
 
 
 test_that("Module mapFlanders", {

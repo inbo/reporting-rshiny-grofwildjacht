@@ -68,7 +68,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
 #' @inheritParams createSchadeSummaryData
 #' 
 #' @author mvarewyck
-#' @importFrom sf st_as_sf st_transform
+#' @importFrom sf st_as_sf
 #' @export
 createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
   
@@ -92,8 +92,7 @@ createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
   
   # Create spatial object
   # create shape data
-  mapData <- st_as_sf(mapData, coords = c("verbatimLongitude", "verbatimLatitude"), crs = "+init=epsg:31370")
-  mapData <- st_transform(mapData, crs = "+proj=longlat +datum=WGS84")
+  mapData <- sf::st_as_sf(mapData, coords = c("verbatimLongitude", "verbatimLatitude"), crs = "+proj=longlat +datum=WGS84")
   
   # Annotation on percentage collected
   attr(mapData, "annotation") <- percentCollected(nAvailable = nAvailable,

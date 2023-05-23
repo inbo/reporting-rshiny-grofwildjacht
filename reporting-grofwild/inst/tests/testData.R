@@ -31,7 +31,7 @@ test_that("Connection to S3", {
     
     # List all available files on the S3 bucket
     tmpTable <- aws.s3::get_bucket_df(
-        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
+      bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
     # unique(tmpTable$Key)
     
     # Bucket is not empty
@@ -86,28 +86,35 @@ test_that("Read Shape Data", {
       expect_true(exists(iShape), info = paste0(iShape, ".RData"))
     }
     
+    tmpTable <- aws.s3::get_bucket_df(
+      bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
+    wbeFiles <- grep("spatialDataWBE/", tmpTable$Key, value = TRUE)
+
+    for (WBE_NR in gsub("\\D", "", sample(wbeFiles, 20))) {
+      tmpData <- loadShapeData(WBE_NR = WBE_NR)
+      expect_true(exists("tmpData"), info = paste0("spatialDataWBE/", WBE_NR, ".RData"))
+      rm(tmpData)
+    }
+    
   })
+
+readS3(file = "spatialData_sf.RData")
 
 
 ## 2. Raw Data
 ## ------------
 
-test_that("Eco, geo, schade data", {
+test_that("Eco, geo, kbo_wbe data", {
     
     # gemeentecodes.csv (within loadRawData())
-    # rshiny_reporting_data_ecology.csv
-    # rshiny_reporting_data_geography.csv
-    # WildSchade_georef.csv
+    # rshiny_reporting_data_ecology_processed.RData
+    # rshiny_reporting_data_geography_processed.RData
     
-    time1 <- Sys.time()
     ecoData <- loadRawData(type = "eco")
-    Sys.time() - time1
-    expect_is(ecoData, "data.frame", info = "rshiny_reporting_data_ecology.csv")
-
-    time1 <- Sys.time()
+    expect_is(ecoData, "data.frame", info = "rshiny_reporting_data_ecology.RData")
+    
     geoData <- loadRawData(type = "geo")
-    Sys.time() - time1
-    expect_is(geoData, "data.frame", info = "rshiny_reporting_data_geography.csv")
+    expect_is(geoData, "data.frame", info = "rshiny_reporting_data_geography.RData")
     
     # Can we combine data sources? 
     tmp <- merge(geoData, ecoData)
@@ -117,14 +124,7 @@ test_that("Eco, geo, schade data", {
     expect_equal(0, length(notMatching[!is.na(geoData$gemeente_afschot_locatie[notMatching])]))
     
     
-    schadeData <- loadRawData(type = "wildschade")
-    expect_is(schadeData, "sf", info = "WildSchade_georef.csv")
-    
-    # Correct names for commune shape data?
-    notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes$NAAM)
-    expect_equal(0, length(notMatching[!is.na(schadeData$gemeente_afschot_locatie[notMatching])]))
-    
-    
+    # KBO-WBE matching
     kboData <- loadRawData(type = "kbo_wbe")
     expect_is(kboData, "data.frame", info = "Data_Partij_Cleaned.csv")
     
@@ -139,39 +139,55 @@ test_that("Eco, geo, schade data", {
   })
 
 
-## 3. Habitat Data
-## ----------------
+## 3. Schade Data
+## --------------
 
-test_that("Habitat data", {
+test_that("Schade data & metadata", {
     
-    # flanders_habitats.csv
-    # Provincies_habitats.csv
-    # Gemeentes_habitats.csv
-    # Faunabeheerzones_habitats.csv
-    # utm5_vlgrens_habitats.csv
-    # WBE_habitats_<year>.csv
+    # WildSchade_georef.csv
     
-    # wegdensiteit.csv (within loadHabitats())
+    # TODO Data Checks
+    schadeData <- loadRawData(type = "wildschade")
+    expect_is(schadeData, "sf", info = "WildSchade_georef.csv")
     
-    regionLevels <- list(
-      "flanders" = "flanders_habitats", 
-      "provinces" = "Provincies_habitats", 
-      "communes" = "Gemeentes_habitats", 
-      "faunabeheerzones" = "Faunabeheerzones_habitats", 
-      # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
-      "utm5" = "utm5_vlgrens_habitats", 
-      "wbe" = "WBE_habitats"
-    ) 
+    # Correct names for commune shape data?
+    notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes$NAAM)
+    expect_equal(0, length(notMatching[!is.na(schadeData$gemeente_afschot_locatie[notMatching])]))
     
-    # Tests both public & private (wbe)
-    for (i in seq_along(regionLevels)) {
-      
-      biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = names(regionLevels)[i])
-      infoFiles <- grep(pattern = regionLevels[[i]],
-        x = sapply(aws.s3::get_bucket(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))), function(x) as.list(x)$Key),
-        value = TRUE)
-      expect_is(biotoopData, "list", info = toString(infoFiles))
-      
+    # check for wildsoorten to add to schadeWildsoorten
+    metaSchade <- loadMetaSchade()
+    schadeWildsoorten <- metaSchade$wildsoorten
+    if (any(!unique(schadeData$wildsoort) %in% unlist(schadeWildsoorten))) {
+      warning("Nieuwe wildsoorten gedetecteerd in schade data: ", 
+        paste0(setdiff(unique(schadeData$wildsoort), unlist(schadeWildsoorten)), collapse = ", "),
+        "\nUpdate schadeWildsoorten in loadMetaSchade() functie.")
+    }
+    
+    # check for schadeTypes (basiscode) to add to schadeTypes
+    schadeTypes <- metaSchade$types
+    if (any(!unique(schadeData$schadeBasisCode) %in% schadeTypes)) {
+      warning("Nieuwe schade basiscode gedetecteerd in schade data: ", 
+        paste0(setdiff(unique(schadeData$schadeBasisCode), schadeTypes), collapse = ", "),
+        "\nUpdate schadeTypes in loadMetaSchade() functie.")
+    }
+    
+    # check for schadeCodes (schadeCode) to add to schadeCodes
+    schadeCodes <- metaSchade$codes
+    names(schadeCodes) <- NULL
+    schadeCodes <- unlist(schadeCodes)
+    if (any(!unique(schadeData$schadeCode) %in% schadeCodes)) {
+      warning("Nieuwe schadeCode gedetecteerd in schade data: ", 
+        paste0(setdiff(unique(schadeData$schadeCode), schadeCodes), collapse = ", "),
+        "\nUpdate schadeCodes in loadMetaSchade() functie.")
+    }
+    
+    # check for schadeSources (indieningType) to add to schadeSources
+    indieningTypes <- unique(schadeData$indieningType)
+    isPresent <- grepl(paste(metaSchade$sourcesSchade, collapse = "|"), indieningTypes)
+    if (!all(isPresent)) {
+      warning("Nieuw indieningType gedetecteerd in schade data: ", 
+        paste0(indieningTypes[!isPresent], collapse = ", "),
+        "\nUpdate loadMetaSchade() functie.")
     }
     
   })
@@ -183,15 +199,19 @@ test_that("Habitat data", {
 
 test_that("Extra data", {
     
+    # habitatData.RData
     # Openingstijden_grofwild.csv
     # Verwezenlijkt_categorie_per_afschotplan.csv
+    
+    habitatData <- loadHabitats()
+    expect_is(habitatData, "list", info = "habitatData.RData")
     
     openingstijdenData <- loadOpeningstijdenData()
     expect_is(openingstijdenData, "data.frame", info = "Openingstijden_grofwild.csv")
     
     toekenningsData <- loadToekenningen()
     expect_is(toekenningsData, "data.frame", info = "Verwezenlijkt_categorie_per_afschotplan.csv")
-        
+    
   })
 
 
@@ -200,8 +220,9 @@ test_that("Extra data", {
 
 test_that("Dashboard data", {
     
+    waarnemingenData <- loadRawData(type = "waarnemingen")
+    
     dashboardFiles <- c(
-      "waarnemingen_wild_zwijn_processed.csv",
       "Data_inschatting.csv",
       "F12_1_data.csv",
       "F14_1_data.csv",

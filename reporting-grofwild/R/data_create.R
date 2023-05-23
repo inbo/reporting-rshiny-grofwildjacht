@@ -96,7 +96,6 @@ createShapeData <- function(
         
       } else if (grepl("Jachtter_", iLevel)) {
         
-        names(shapeData)[names(shapeData) == "WBE_NR_wbe"] <- "WBE_NR"
         shapeData$NAAM <- factor(shapeData$WBE_NR)
         
       }
@@ -196,6 +195,11 @@ createShapeData <- function(
       opts = list(multipart = TRUE))
   }
   
+  # Save WBE for admin
+  spatialDataWBE <- spatialDataWBEAll
+  s3save(spatialDataWBE, bucket = bucket, object = "spatialDataWBE_sf.RData", opts = list(multipart = TRUE))
+
+  # Save non-WBE
   spatialData <- spatialData[grep("WBE", names(spatialData), invert = TRUE)]
   s3save(spatialData, bucket = bucket, object = "spatialData_sf.RData", opts = list(multipart = TRUE))
   
@@ -216,7 +220,7 @@ createShapeData <- function(
 #' 
 #' @author mvarewyck
 #' @importFrom sf st_as_sf st_transform
-#' @importFrom data.table fread
+#' @importFrom data.table as.data.table
 #' @importFrom aws.s3 s3write_using
 #' 
 #' @examples 
@@ -381,6 +385,9 @@ createRawData <- function(
       warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
     rawData <- rawData[!toExclude, ]
     
+    # create shape data
+    rawData <- sf::st_as_sf(rawData, coords = c("x", "y"), crs = "+init=epsg:31370")
+    rawData <- sf::st_transform(rawData, crs = "+proj=longlat +datum=WGS84")        
     
   } else if (type == "kbo_wbe") {
     
@@ -392,7 +399,7 @@ createRawData <- function(
     rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
     colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
     
-    rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
+    rawData <- data.table::as.data.table(cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be")))
     
   }
   
@@ -412,12 +419,18 @@ createRawData <- function(
       NA, paste0(rawData$FaunabeheerZone, "_", rawData$gemeente_afschot_locatie))
     
   }
+  
+  # Convert to factors
+  newLevels <- loadMetaEco()
+  toFactors <- names(newLevels)[names(newLevels) %in% colnames(rawData)]
+  rawData[toFactors] <- lapply(toFactors, function(x) 
+      droplevels(factor(rawData[[x]], levels = c(newLevels[[x]], "Onbekend"))))
+  
 
-
-  s3write_using(rawData, FUN = write.csv, row.names = FALSE, bucket = bucket,
-    object = paste0(tools::file_path_sans_ext(dataFile), "_processed.", tools::file_ext(dataFile)),
+  s3save(rawData, bucket = bucket, 
+    object = paste0(tools::file_path_sans_ext(dataFile), "_processed.RData"), 
     opts = list(multipart = TRUE))
-
+  
   
   return(TRUE)   
   
@@ -565,4 +578,118 @@ createSpreadData <- function(
     return(TRUE)
 
 } 
+
+
+
+
+#' Create Habitats (Background) data
+#' 
+#' named list with data.frame for each region level
+#' @inheritParams createRawData
+#' @return boolean, whether file is successfully saved
+#' 
+#' @author mvarewyck
+#' @export
+createHabitatData <- function(
+  dataDir = "~/git/reporting-rshiny-grofwildjacht/dataS3",
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+
+  # spatialData - non WBE
+  spatialData <- NULL
+  readS3(file = "spatialData_sf.RData")
+  
+  allLevels <- list(
+    "flanders" = "flanders_habitats", 
+    "provinces" = "Provincies_habitats", 
+    "communes" = "Gemeentes_habitats", 
+    "faunabeheerzones" = "Faunabeheerzones_habitats", 
+    # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
+    "utm5" = "utm5_vlgrens_habitats", 
+    "wbe" = "WBE_habitats"
+  ) 
+  
+  habitatData <- sapply(names(allLevels), function(iRegion) {
+      
+      iLevel <- allLevels[[match(iRegion, names(allLevels))]]
+      
+      allFiles <- grep(pattern = iLevel, x = list.files(dataDir), value = TRUE)
+      
+      if (iRegion == "wbe") {
+        
+        tmpData <- do.call(rbind, lapply(allFiles, function(iFile) {
+              
+              iData <- read.csv(file.path(dataDir, iFile)) 
+              iData$year <- as.numeric(gsub("WBE_|habitats_|\\.csv", "", basename(iFile)))
+              
+              iData
+              
+            }))
+        
+        colnames(tmpData)[1] <- "regio"
+        
+      } else { 
+        
+        # Special case
+        if (iRegion == "provinces")
+          iRegion <- "provincesVoeren"
+        
+        tmpData <- read.csv(file.path(dataDir, allFiles)) 
+        
+        if ("NISCODE" %in% colnames(tmpData)) {
+          colnames(tmpData)[colnames(tmpData) == "NISCODE"] <- "regio"
+        } else {
+          colnames(tmpData)[1] <- "regio"
+        }
+        
+        # Match region names
+        if ("NISCODE" %in% colnames(spatialData[[iRegion]]))
+          tmpData$regio <- spatialData[[iRegion]]$NAAM[
+            match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
+        
+        # Check matching
+        if (!all(spatialData[[iRegion]]$NAAM %in% tmpData$regio))
+          stop("Matching for habitat data names failed ", iRegion)
+        
+      }
+      
+      return(tmpData)
+      
+    }, simplify = FALSE)
+  
+  # Bind wegdensiteit
+  densiteitData <- data.table::fread(file = file.path(dataDir, "wegdensiteit.csv"), 
+    dec = ",")
+  habitatData <- sapply(names(habitatData), function(iLevel) {
+      
+      iData <- switch(iLevel, 
+        flanders = densiteitData[densiteitData$Niveau == "Vlaanderen", ],
+        provinces = densiteitData[densiteitData$Niveau == "Provincie", ],
+        communes = densiteitData[densiteitData$Niveau == "Gemeente", ],
+        faunabeheerzones = densiteitData[densiteitData$Niveau == "Faunabeheerzone", ],
+        NULL
+      )
+      if (is.null(iData))
+        return(habitatData[[iLevel]])
+      # Special case
+      if (iLevel == "provinces")
+        iData <- rbind(iData, 
+          densiteitData[densiteitData$Niveau == "Gemeente" & densiteitData$NAAM == "Voeren", ])
+      
+      iData$Niveau <- NULL
+      colnames(iData) <- paste0("weg_", colnames(iData))
+      
+      merge(habitatData[[iLevel]], iData, by.x = "regio", by.y = "weg_NAAM", all.x = TRUE)
+      
+    }, simplify = FALSE)
+  
+  
+  s3save(habitatData, bucket = bucket, object = "habitatData.RData", 
+    opts = list(multipart = TRUE))
+  
+  
+  return(TRUE)   
+  
+}
+
+
 

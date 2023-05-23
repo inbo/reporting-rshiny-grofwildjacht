@@ -18,7 +18,7 @@ schadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 readS3(file = "spatialData_sf.RData")
 
-biotoopData <- loadHabitats(spatialData = spatialData)
+biotoopData <- loadHabitats()
 
 
 # F05_1: Absoluut afschot

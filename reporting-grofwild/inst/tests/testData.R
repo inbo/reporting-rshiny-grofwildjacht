@@ -24,14 +24,21 @@ test_that("Preprocess data", {
   })
 
 
-
 test_that("Connection to S3", {
     
     checkS3()
     
+  })
+
+
+test_that("List available files", {
+    
+    skip("Blows up memory")
+    
     # List all available files on the S3 bucket
     tmpTable <- aws.s3::get_bucket_df(
       bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
+#    write.csv(tmpTable, file = file.path(system.file("extdata", package = "reportingGrofwild"), "tmpTable.csv"))
     # unique(tmpTable$Key)
     
     # Bucket is not empty
@@ -86,10 +93,10 @@ test_that("Read Shape Data", {
       expect_true(exists(iShape), info = paste0(iShape, ".RData"))
     }
     
-    tmpTable <- aws.s3::get_bucket_df(
-      bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
-    wbeFiles <- grep("spatialDataWBE/", tmpTable$Key, value = TRUE)
-
+    wbeFiles <- aws.s3::get_bucket_df(
+      bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+      prefix = "spatialDataWBE/")$Key
+    
     for (WBE_NR in gsub("\\D", "", sample(wbeFiles, 20))) {
       tmpData <- loadShapeData(WBE_NR = WBE_NR)
       expect_true(exists("tmpData"), info = paste0("spatialDataWBE/", WBE_NR, ".RData"))
@@ -146,7 +153,7 @@ test_that("Schade data & metadata", {
     
     # WildSchade_georef.csv
     
-    # TODO Data Checks
+    # Data Checks
     schadeData <- loadRawData(type = "wildschade")
     expect_is(schadeData, "sf", info = "WildSchade_georef.csv")
     

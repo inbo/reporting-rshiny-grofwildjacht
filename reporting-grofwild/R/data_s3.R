@@ -80,6 +80,11 @@ testS3 <- function() {
   cat("Test Data in S3 bucket\n")
   testResult <- test_file(system.file("tests/testData.R", package = "reportingGrofwild"), reporter = "minimal")
   
+  # Remove objects loaded globally during tests
+  allResults <- ls(envir = .GlobalEnv)
+  rm(list = allResults, envir = .GlobalEnv)
+  gc()
+  
   warningMessage <- NULL
   isWarning <- as.data.frame(testResult)$warning > 0
   for (i in which(isWarning)) {

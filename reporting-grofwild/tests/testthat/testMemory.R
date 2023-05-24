@@ -10,7 +10,7 @@ library(profvis)
 setupS3()
 
 
-test_that("Loading DaTa", {
+test_that("Loading Data", {
     
     skip("Explorative use only")
     
@@ -158,7 +158,7 @@ test_that("Starting the app", {
 # Start private app - memory usage
     profvis({
         setupS3()
-        setwd("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/reporting-grofwild/inst/ui/app_private")
+        setwd("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/reporting-grofwild/inst/ui/app_public")
         runApp()
         ## Single WBE
         # Time difference of 6.683212 secs
@@ -167,6 +167,11 @@ test_that("Starting the app", {
         ## Admin
         # Time difference of 37.17669 secs
         # Memory: 300 Mb
+        
+        ## Public
+        # Memory: 630 Mb 
+        ## 330 Mb for output$wild-spacePlot toJSON(): all data is sent to UI
+        
       })
     
     # Data checks & start app - memory usage + time
@@ -175,5 +180,28 @@ test_that("Starting the app", {
         # Memory: 450 Mb
       })
     
+    
+  })
+
+
+test_that("Leaflet map", {
+    
+    source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp/mapFlanders.R", echo=TRUE, encoding="UTF-8")
+    
+    profvis({
+        runApp(appDir = "/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp")
+      })
+    
+    # Original map
+    # Memory usage: 500 Mb - (of which 330 Mb for the map) 
+    
+    # Simple map - no polygons
+    # Memory usage: 145 Mb
+    
+    # Simplified polygons sf::st_simplify(..., dTolerance = 1000)
+    # 167 Mb for the app
+    # Simplified polygons rmapshaper::ms_simplify()
+    # https://www.r-bloggers.com/2021/03/simplifying-geospatial-features-in-r-with-sf-and-rmapshaper/
+    # 145 Mb for the app - map 40 Mb
     
   })

@@ -41,9 +41,15 @@ vignettes/*.pdf
 # Architect project file
 .project
 
+# Rendered reports
+*.pdf
+
 # Large files - can be built again from code
 reporting-grofwild/inst/extdata/spatialData*.RData
 
 # Docs - built from code
 /reporting-grofwild/man/
+
+# Local copy of S3 files
+/dataS3
 

@@ -1,0 +1,76 @@
+"","Sector","Antwoord_reclass","Question_label","Aantal_tot","totaal","percentage"
+"1","Jagers","Groot","Gezondheidsrisico mensen",14,301,4.65116279069767
+"2","Jagers","Groot","Gezondheidsrisico vee",81,293,27.6450511945392
+"3","Jagers","Groot","Kans veilige ontmoeting",166,314,52.8662420382166
+"4","Jagers","Groot","Landbouwschade",142,303,46.8646864686469
+"5","Jagers","Groot","Mogelijkheid tot waarneming",96,314,30.5732484076433
+"6","Jagers","Groot","Risico verkeersongelukken",165,313,52.7156549520767
+"7","Jagers","Groot","Schade aan private gebieden",101,308,32.7922077922078
+"8","Jagers","Groot","Schade aan publieke gebieden",90,304,29.6052631578947
+"9","Landbouwers","Groot","Gezondheidsrisico mensen",32,167,19.1616766467066
+"10","Landbouwers","Groot","Gezondheidsrisico vee",143,181,79.0055248618785
+"11","Landbouwers","Groot","Kans veilige ontmoeting",30,184,16.304347826087
+"12","Landbouwers","Groot","Landbouwschade",143,180,79.4444444444444
+"13","Landbouwers","Groot","Mogelijkheid tot waarneming",82,187,43.8502673796791
+"14","Landbouwers","Groot","Risico verkeersongelukken",127,185,68.6486486486486
+"15","Landbouwers","Groot","Schade aan private gebieden",100,184,54.3478260869565
+"16","Landbouwers","Groot","Schade aan publieke gebieden",95,180,52.7777777777778
+"17","Natuurvereniging","Groot","Gezondheidsrisico vee",3,116,2.58620689655172
+"18","Natuurvereniging","Groot","Kans veilige ontmoeting",87,129,67.4418604651163
+"19","Natuurvereniging","Groot","Landbouwschade",15,121,12.396694214876
+"20","Natuurvereniging","Groot","Mogelijkheid tot waarneming",20,129,15.5038759689922
+"21","Natuurvereniging","Groot","Risico verkeersongelukken",23,129,17.8294573643411
+"22","Natuurvereniging","Groot","Schade aan private gebieden",12,124,9.67741935483871
+"23","Natuurvereniging","Groot","Schade aan publieke gebieden",9,123,7.31707317073171
+"24","Publiek buiten everzwijngebied","Groot","Gezondheidsrisico mensen",72,830,8.67469879518072
+"25","Publiek buiten everzwijngebied","Groot","Gezondheidsrisico vee",202,795,25.4088050314465
+"26","Publiek buiten everzwijngebied","Groot","Kans veilige ontmoeting",549,890,61.685393258427
+"27","Publiek buiten everzwijngebied","Groot","Landbouwschade",401,888,45.1576576576577
+"28","Publiek buiten everzwijngebied","Groot","Mogelijkheid tot waarneming",76,976,7.78688524590164
+"29","Publiek buiten everzwijngebied","Groot","Risico verkeersongelukken",179,938,19.0831556503198
+"30","Publiek buiten everzwijngebied","Groot","Schade aan private en publieke gebieden",264,904,29.2035398230088
+"31","Publiek in everzwijngebied","Groot","Gezondheidsrisico mensen",90,825,10.9090909090909
+"32","Publiek in everzwijngebied","Groot","Gezondheidsrisico vee",189,808,23.3910891089109
+"33","Publiek in everzwijngebied","Groot","Kans veilige ontmoeting",470,874,53.7757437070938
+"34","Publiek in everzwijngebied","Groot","Landbouwschade",519,908,57.15859030837
+"35","Publiek in everzwijngebied","Groot","Mogelijkheid tot waarneming",214,962,22.2453222453222
+"36","Publiek in everzwijngebied","Groot","Risico verkeersongelukken",428,963,44.4444444444444
+"37","Publiek in everzwijngebied","Groot","Schade aan private en publieke gebieden",449,931,48.2277121374866
+"38","Jagers","Klein","Gezondheidsrisico mensen",287,301,-95.3488372093023
+"39","Jagers","Klein","Gezondheidsrisico vee",212,293,-72.3549488054608
+"40","Jagers","Klein","Kans veilige ontmoeting",148,314,-47.1337579617834
+"41","Jagers","Klein","Landbouwschade",161,303,-53.1353135313531
+"42","Jagers","Klein","Mogelijkheid tot waarneming",218,314,-69.4267515923567
+"43","Jagers","Klein","Risico verkeersongelukken",148,313,-47.2843450479233
+"44","Jagers","Klein","Schade aan private gebieden",207,308,-67.2077922077922
+"45","Jagers","Klein","Schade aan publieke gebieden",214,304,-70.3947368421053
+"46","Landbouwers","Klein","Gezondheidsrisico mensen",135,167,-80.8383233532934
+"47","Landbouwers","Klein","Gezondheidsrisico vee",38,181,-20.9944751381215
+"48","Landbouwers","Klein","Kans veilige ontmoeting",154,184,-83.695652173913
+"49","Landbouwers","Klein","Landbouwschade",37,180,-20.5555555555556
+"50","Landbouwers","Klein","Mogelijkheid tot waarneming",105,187,-56.1497326203209
+"51","Landbouwers","Klein","Risico verkeersongelukken",58,185,-31.3513513513514
+"52","Landbouwers","Klein","Schade aan private gebieden",84,184,-45.6521739130435
+"53","Landbouwers","Klein","Schade aan publieke gebieden",85,180,-47.2222222222222
+"54","Natuurvereniging","Klein","Gezondheidsrisico mensen",120,120,-100
+"55","Natuurvereniging","Klein","Gezondheidsrisico vee",113,116,-97.4137931034483
+"56","Natuurvereniging","Klein","Kans veilige ontmoeting",42,129,-32.5581395348837
+"57","Natuurvereniging","Klein","Landbouwschade",106,121,-87.603305785124
+"58","Natuurvereniging","Klein","Mogelijkheid tot waarneming",109,129,-84.4961240310078
+"59","Natuurvereniging","Klein","Risico verkeersongelukken",106,129,-82.1705426356589
+"60","Natuurvereniging","Klein","Schade aan private gebieden",112,124,-90.3225806451613
+"61","Natuurvereniging","Klein","Schade aan publieke gebieden",114,123,-92.6829268292683
+"62","Publiek buiten everzwijngebied","Klein","Gezondheidsrisico mensen",758,830,-91.3253012048193
+"63","Publiek buiten everzwijngebied","Klein","Gezondheidsrisico vee",593,795,-74.5911949685535
+"64","Publiek buiten everzwijngebied","Klein","Kans veilige ontmoeting",341,890,-38.314606741573
+"65","Publiek buiten everzwijngebied","Klein","Landbouwschade",487,888,-54.8423423423423
+"66","Publiek buiten everzwijngebied","Klein","Mogelijkheid tot waarneming",900,976,-92.2131147540984
+"67","Publiek buiten everzwijngebied","Klein","Risico verkeersongelukken",759,938,-80.9168443496802
+"68","Publiek buiten everzwijngebied","Klein","Schade aan private en publieke gebieden",640,904,-70.7964601769911
+"69","Publiek in everzwijngebied","Klein","Gezondheidsrisico mensen",735,825,-89.0909090909091
+"70","Publiek in everzwijngebied","Klein","Gezondheidsrisico vee",619,808,-76.6089108910891
+"71","Publiek in everzwijngebied","Klein","Kans veilige ontmoeting",404,874,-46.2242562929062
+"72","Publiek in everzwijngebied","Klein","Landbouwschade",389,908,-42.84140969163
+"73","Publiek in everzwijngebied","Klein","Mogelijkheid tot waarneming",748,962,-77.7546777546778
+"74","Publiek in everzwijngebied","Klein","Risico verkeersongelukken",535,963,-55.5555555555556
+"75","Publiek in everzwijngebied","Klein","Schade aan private en publieke gebieden",482,931,-51.7722878625134

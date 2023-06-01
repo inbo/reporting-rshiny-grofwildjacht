@@ -1,0 +1,17 @@
+"","Vraag","Antwoord_reclass","Aantal_tot","totaal","percentage"
+"1","populatie_evolutie","Toegenomen",68,135,50.3703703703704
+"2","schade_landbouw_evolutie","Toegenomen",63,132,47.7272727272727
+"3","schade_privpub_evolutie","Toegenomen",63,130,48.4615384615385
+"4","schade_verkeer_evolutie","Toegenomen",42,123,34.1463414634146
+"5","populatie_evolutie","Afgenomen",8,135,-5.92592592592593
+"6","schade_landbouw_evolutie","Afgenomen",12,132,-9.09090909090909
+"7","schade_privpub_evolutie","Afgenomen",9,130,-6.92307692307692
+"8","schade_verkeer_evolutie","Afgenomen",12,123,-9.75609756097561
+"9","populatie_evolutie","Hetzelfde",59,135,21.8518518518519
+"10","schade_landbouw_evolutie","Hetzelfde",57,132,21.5909090909091
+"11","schade_privpub_evolutie","Hetzelfde",58,130,22.3076923076923
+"12","schade_verkeer_evolutie","Hetzelfde",69,123,28.0487804878049
+"13","populatie_evolutie","Hetzelfde ",59,135,-21.8518518518519
+"14","schade_landbouw_evolutie","Hetzelfde ",57,132,-21.5909090909091
+"15","schade_privpub_evolutie","Hetzelfde ",58,130,-22.3076923076923
+"16","schade_verkeer_evolutie","Hetzelfde ",69,123,-28.0487804878049

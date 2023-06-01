@@ -4,7 +4,10 @@
 \alias{loadOpeningstijdenData}
 \title{read openingstijden data}
 \usage{
-loadOpeningstijdenData(bucket = config::get("bucket"))
+loadOpeningstijdenData(
+  bucket = config::get("bucket", file = system.file("config.yml", package =
+    "reportingGrofwild"))
+)
 }
 \arguments{
 \item{bucket}{character, name of the S3 bucket as specified in the config.yml file;

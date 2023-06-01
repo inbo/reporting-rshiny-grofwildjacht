@@ -15,6 +15,8 @@ plotModuleServer(
   categorie = NULL,
   bioindicator = NULL,
   groupVariable = NULL,
+  xVar = NULL,
+  yVar = NULL,
   locaties = NULL,
   timeRange = NULL,
   unit = NULL,
@@ -25,7 +27,8 @@ plotModuleServer(
   schadeChoicesGewas = NULL,
   variable = NULL,
   combinatie = NULL,
-  schadeTitles = FALSE,
+  title = NULL,
+  verticalGroups = NULL,
   fullNames = NULL
 )
 }
@@ -52,6 +55,11 @@ with bioindicator, either 'onderkaaklengte' or 'ontweid_gewicht'}
 \item{groupVariable}{character, variable name in \code{data} for 
 which colored bars should be plot}
 
+\item{xVar}{character, column in \code{plotData} for x-axis;
+default value is 'percentage'}
+
+\item{yVar}{character, column in \code{plotData} for y-axis}
+
 \item{locaties}{character, defines on which locations to filter on;
 defined externally for large map}
 
@@ -75,7 +83,10 @@ defined externally for large map}
 
 \item{combinatie}{logical, summarised view of selected regions}
 
-\item{schadeTitles}{boolean, whether title should include 'schade' instead of 'afschot'}
+\item{title}{reactive, plot title to be displayed}
+
+\item{verticalGroups}{reactive boolean; see also \link{barDraagkracht};
+default is NULL}
 
 \item{fullNames}{named character vector, values for the \code{variable} to be 
 displayed instead of original data values}

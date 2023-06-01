@@ -48,6 +48,7 @@ shinyUI(
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild"),
                                 tabPanel(title = "Wildschade", id = "tab-wildschade"),
+                                tabPanel(title = "Dashboard", id = "tab-dashboard"),
                                 tabPanel(title = "WBE", id = "tab-wbe",
                                         uiOutput("wbe_content")),
                                 

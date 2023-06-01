@@ -42,12 +42,15 @@ shinyUI(
                                 fluid = FALSE, 
                                 id = "tabs",
                                 position = "fixed-top",
+                                selected = if (doDebug) "Dashboard",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",
                                         uiOutput("grof_content")),
                                 tabPanel(title = "Wildschade", id = "tab-wildschade",
                                         uiOutput("schade_content")),
+                                tabPanel(title = "Dashboard", id = "tab-dashboard",
+                                        uiOutput("dash_content")),
                                 tabPanel(title = "WBE", id = "tab-wbe"),
                                 
                                 # Shape data source + contact e-mail

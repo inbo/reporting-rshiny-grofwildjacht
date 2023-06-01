@@ -23,22 +23,33 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   returnStop <- match.arg(returnStop)
   
   if (!is.null(sourceIndicator)) {
-    
-    sourcesSchade <- loadMetaSchade()$sources  
-    
-    sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
-    plotData <- plotData[grepl(sources, plotData$indieningType), ]
-    
-    if (nrow(plotData) == 0) {
-      if (returnStop == "message")
-        stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
+    if ("indieningType" %in% names(plotData)) {
+      
+      sourcesSchade <- loadMetaSchade()$sources  
+      
+      sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
+      plotData <- plotData[grepl(sources, plotData$indieningType), ]
+      
+    } else {
+      
+      sourcesSchade <- unique(plotData$dataSource)
+      names(sourcesSchade) <- sourcesSchade
+      
+      plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
+      
     }
+    
+    if (nrow(plotData) == 0)
+      if (returnStop == "message")
+        if (all(names(sourcesSchade) %in% sourceIndicator))
+          stop("Geen data beschikbaar") else
+          stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
+    
   }
   
   return(plotData)
   
-}
-
+}  
 
 
 
@@ -162,8 +173,8 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @author mvarewyck
 #' @export
 filterSpatial <- function(allSpatialData, species, 
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", 
-    "WBE", "WBE_buitengrenzen"), 
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
+    "fbz_gemeentes", "utm5", "utm1", "WBE", "WBE_buitengrenzen"), 
   year, locaties = NULL) {
   
   
@@ -178,14 +189,15 @@ filterSpatial <- function(allSpatialData, species,
   } else if (grepl("WBE", regionLevel)) {
     
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
-    if (!is.null(locaties))
-      spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
     
   } else {
     
     spatialData <- allSpatialData[[regionLevel]]
     
   }
+  
+  if (!is.null(locaties))
+    spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
   
   return(spatialData)
   

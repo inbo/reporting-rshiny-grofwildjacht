@@ -1,0 +1,2352 @@
+﻿<gmd:MD_Metadata xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:gco="http://www.isotc211.org/2005/gco" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:gml="http://www.opengis.net/gml" xmlns:geonet="http://www.fao.org/geonetwork" xmlns:gmx="http://www.isotc211.org/2005/gmx" xsi:schemaLocation="http://www.isotc211.org/2005/gmx http://www.isotc211.org/2005/gmx/gmx.xsd http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
+  <gmd:fileIdentifier>
+    <gco:CharacterString>4a68a3db-a327-4a88-8912-0a88037ba7c7</gco:CharacterString>
+  </gmd:fileIdentifier>
+  <gmd:language>
+    <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut" />
+  </gmd:language>
+  <gmd:characterSet>
+    <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8" />
+  </gmd:characterSet>
+  <gmd:parentIdentifier gco:nilReason="missing">
+    <gco:CharacterString />
+  </gmd:parentIdentifier>
+  <gmd:hierarchyLevel>
+    <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" />
+  </gmd:hierarchyLevel>
+  <gmd:contact>
+    <gmd:CI_ResponsibleParty>
+      <gmd:individualName>
+        <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+      </gmd:individualName>
+      <gmd:organisationName>
+        <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+      </gmd:organisationName>
+      <gmd:contactInfo>
+        <gmd:CI_Contact>
+          <gmd:phone>
+            <gmd:CI_Telephone>
+              <gmd:voice>
+                <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+              </gmd:voice>
+              <gmd:facsimile gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:facsimile>
+            </gmd:CI_Telephone>
+          </gmd:phone>
+          <gmd:address>
+            <gmd:CI_Address>
+              <gmd:deliveryPoint>
+                <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+              </gmd:deliveryPoint>
+              <gmd:city>
+                <gco:CharacterString>Brussel</gco:CharacterString>
+              </gmd:city>
+              <gmd:postalCode>
+                <gco:CharacterString>1000</gco:CharacterString>
+              </gmd:postalCode>
+              <gmd:country>
+                <gco:CharacterString>België</gco:CharacterString>
+              </gmd:country>
+              <gmd:electronicMailAddress>
+                <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+              </gmd:electronicMailAddress>
+            </gmd:CI_Address>
+          </gmd:address>
+          <gmd:onlineResource>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+              </gmd:linkage>
+            </gmd:CI_OnlineResource>
+          </gmd:onlineResource>
+        </gmd:CI_Contact>
+      </gmd:contactInfo>
+      <gmd:role>
+        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="pointOfContact" />
+      </gmd:role>
+    </gmd:CI_ResponsibleParty>
+  </gmd:contact>
+  <gmd:dateStamp>
+    <gco:DateTime>2019-01-30T13:43:34</gco:DateTime>
+  </gmd:dateStamp>
+  <gmd:metadataStandardName>
+    <gco:CharacterString>ISO 19115/2003/Cor.1:2006</gco:CharacterString>
+  </gmd:metadataStandardName>
+  <gmd:metadataStandardVersion>
+    <gco:CharacterString>GDI-Vlaanderen Best Practices - versie 1.0</gco:CharacterString>
+  </gmd:metadataStandardVersion>
+  <gmd:referenceSystemInfo>
+    <gmd:MD_ReferenceSystem>
+      <gmd:referenceSystemIdentifier>
+        <gmd:RS_Identifier>
+          <gmd:code>
+            <gco:CharacterString>31370</gco:CharacterString>
+          </gmd:code>
+          <gmd:codeSpace>
+            <gco:CharacterString>EPSG</gco:CharacterString>
+          </gmd:codeSpace>
+        </gmd:RS_Identifier>
+      </gmd:referenceSystemIdentifier>
+    </gmd:MD_ReferenceSystem>
+  </gmd:referenceSystemInfo>
+  <gmd:identificationInfo>
+    <gmd:MD_DataIdentification>
+      <gmd:citation>
+        <gmd:CI_Citation>
+          <gmd:title>
+            <gco:CharacterString>Wegenregister, 31/01/2019</gco:CharacterString>
+          </gmd:title>
+          <gmd:alternateTitle>
+            <gco:CharacterString>MRB-wegen</gco:CharacterString>
+          </gmd:alternateTitle>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2019-01-31</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision" />
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:date>
+            <gmd:CI_Date>
+              <gmd:date>
+                <gco:Date>2014-04-27</gco:Date>
+              </gmd:date>
+              <gmd:dateType>
+                <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" />
+              </gmd:dateType>
+            </gmd:CI_Date>
+          </gmd:date>
+          <gmd:edition>
+            <gco:CharacterString>Toestand 31/01/2019</gco:CharacterString>
+          </gmd:edition>
+          <gmd:identifier>
+            <gmd:RS_Identifier>
+              <gmd:code>
+                <gco:CharacterString>7d972dfd-4b9b-4a49-889b-7950e3f17bae</gco:CharacterString>
+              </gmd:code>
+              <gmd:codeSpace gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:codeSpace>
+            </gmd:RS_Identifier>
+          </gmd:identifier>
+          <gmd:series>
+            <gmd:CI_Series>
+              <gmd:name gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:name>
+            </gmd:CI_Series>
+          </gmd:series>
+        </gmd:CI_Citation>
+      </gmd:citation>
+      <gmd:abstract>
+        <gco:CharacterString>Het wegenregister is een middenschalig referentiebestand van de wegen in Vlaanderen. Het bevat alle wegen van Vlaanderen, met bijbehorende attribuutgegevens. Het bestand heeft een middenschalige precisie hebben. Het zal uitgroeien tot een nieuwe authentieke geografische gegevensbron.</gco:CharacterString>
+      </gmd:abstract>
+      <gmd:purpose gco:nilReason="missing">
+        <gco:CharacterString />
+      </gmd:purpose>
+      <gmd:status>
+        <gmd:MD_ProgressCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ProgressCode" codeListValue="completed" />
+      </gmd:status>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:individualName>
+            <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <gmd:CI_Telephone>
+                  <gmd:voice>
+                    <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:facsimile>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint>
+                    <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city>
+                    <gco:CharacterString>Brussel</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:postalCode>
+                    <gco:CharacterString>1000</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>België</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage>
+                    <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+                  </gmd:linkage>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="owner" />
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:individualName gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>Nationaal Geografisch Instituut</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:positionName gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:positionName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <gmd:CI_Telephone>
+                  <gmd:voice>
+                    <gco:CharacterString>+32 2 629 82 82</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile>
+                    <gco:CharacterString>+32 2 629 82 83</gco:CharacterString>
+                  </gmd:facsimile>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint>
+                    <gco:CharacterString>Abdij ter Kameren</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city>
+                    <gco:CharacterString>Brussel</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:administrativeArea gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:administrativeArea>
+                  <gmd:postalCode>
+                    <gco:CharacterString>1000</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>België</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>sales@ngi.be</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage>
+                    <gmd:URL>http://www.ngi.be</gmd:URL>
+                  </gmd:linkage>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="owner" />
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:individualName>
+            <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <gmd:CI_Telephone>
+                  <gmd:voice>
+                    <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:facsimile>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint>
+                    <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city>
+                    <gco:CharacterString>Brussel</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:postalCode>
+                    <gco:CharacterString>1000</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>België</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage>
+                    <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+                  </gmd:linkage>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="custodian" />
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:pointOfContact>
+        <gmd:CI_ResponsibleParty>
+          <gmd:individualName>
+            <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+          </gmd:individualName>
+          <gmd:organisationName>
+            <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+          </gmd:organisationName>
+          <gmd:contactInfo>
+            <gmd:CI_Contact>
+              <gmd:phone>
+                <gmd:CI_Telephone>
+                  <gmd:voice>
+                    <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                  </gmd:voice>
+                  <gmd:facsimile gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:facsimile>
+                </gmd:CI_Telephone>
+              </gmd:phone>
+              <gmd:address>
+                <gmd:CI_Address>
+                  <gmd:deliveryPoint>
+                    <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+                  </gmd:deliveryPoint>
+                  <gmd:city>
+                    <gco:CharacterString>Brussel</gco:CharacterString>
+                  </gmd:city>
+                  <gmd:postalCode>
+                    <gco:CharacterString>1000</gco:CharacterString>
+                  </gmd:postalCode>
+                  <gmd:country>
+                    <gco:CharacterString>België</gco:CharacterString>
+                  </gmd:country>
+                  <gmd:electronicMailAddress>
+                    <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                  </gmd:electronicMailAddress>
+                </gmd:CI_Address>
+              </gmd:address>
+              <gmd:onlineResource>
+                <gmd:CI_OnlineResource>
+                  <gmd:linkage>
+                    <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+                  </gmd:linkage>
+                </gmd:CI_OnlineResource>
+              </gmd:onlineResource>
+            </gmd:CI_Contact>
+          </gmd:contactInfo>
+          <gmd:role>
+            <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="originator" />
+          </gmd:role>
+        </gmd:CI_ResponsibleParty>
+      </gmd:pointOfContact>
+      <gmd:resourceMaintenance>
+        <gmd:MD_MaintenanceInformation>
+          <gmd:maintenanceAndUpdateFrequency>
+            <gmd:MD_MaintenanceFrequencyCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_MaintenanceFrequencyCode" codeListValue="quarterly" />
+          </gmd:maintenanceAndUpdateFrequency>
+          <gmd:dateOfNextUpdate>
+            <gco:Date xsi:nil="true" />
+          </gmd:dateOfNextUpdate>
+        </gmd:MD_MaintenanceInformation>
+      </gmd:resourceMaintenance>
+      <gmd:graphicOverview>
+        <gmd:MD_BrowseGraphic>
+          <gmd:fileName gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:fileName>
+        </gmd:MD_BrowseGraphic>
+      </gmd:graphicOverview>
+      <gmd:graphicOverview xmlns:srv="http://www.isotc211.org/2005/srv">
+        <gmd:MD_BrowseGraphic>
+          <gmd:fileName>
+            <gco:CharacterString>http://metadata.agiv.be:80/zoekdienst/srv/eng/resources.get?uuid=f8d75ada-7a7a-4ded-bdde-e8fe27be7f3f&amp;fname=Wegenregister_snelle_en_trage_wegen_1409143986031.PNG</gco:CharacterString>
+          </gmd:fileName>
+          <gmd:fileDescription>
+            <gco:CharacterString>thumbnail</gco:CharacterString>
+          </gmd:fileDescription>
+          <gmd:fileType>
+            <gco:CharacterString>PNG</gco:CharacterString>
+          </gmd:fileType>
+        </gmd:MD_BrowseGraphic>
+      </gmd:graphicOverview>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:srv="http://www.isotc211.org/2005/srv">
+          <gmd:keyword>
+            <gco:CharacterString>Vervoersnetwerken</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type gco:nilReason="missing">
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GEMET - INSPIRE thema's, versie 1.0</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2008-06-01</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:srv="http://www.isotc211.org/2005/srv">
+          <gmd:keyword>
+            <gco:CharacterString>autoweg</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>snelweg</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>te volgen (of gevolgde) weg</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>weg</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>weg</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>wegennet</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>wegenonderhoud</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>wegenbouw</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>weginrichting</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>weguitstippeling</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>wegverkeer</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>wegverkeerstechnologie</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>wegvervoer</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>weg- en waterbouwkunde</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>vervoer</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>vervoersbeleid</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>vrachtvervoer</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type gco:nilReason="missing">
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GEMET - Concepten, versie 2.4</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2010-01-13</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:srv="http://www.isotc211.org/2005/srv">
+          <gmd:keyword>
+            <gco:CharacterString>Vlaams Gewest</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword>
+            <gco:CharacterString>Brussels Hoofdstedelijk Gewest</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:type gco:nilReason="missing">
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>Vlaamse regio's</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2013-04-18</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords xmlns:srv="http://www.isotc211.org/2005/srv">
+        <gmd:MD_Keywords>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Toegevoegd GDI-Vl</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Metadata INSPIRE-conform</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Vlaamse Open data</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Kosteloos</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Herbruikbaar</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Metadata GDI-Vl-conform</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:keyword xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gco:CharacterString>Lijst M&amp;R INSPIRE</gco:CharacterString>
+          </gmd:keyword>
+          <gmd:thesaurusName xmlns:xlink="http://www.w3.org/1999/xlink">
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GDI-Vlaanderen Trefwoorden</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2014-02-26</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords>
+          <gmd:keyword gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:keyword>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:descriptiveKeywords>
+        <gmd:MD_Keywords xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:srv="http://www.isotc211.org/2005/srv">
+          <gmd:keyword gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:keyword>
+          <gmd:type gco:nilReason="missing">
+            <gmd:MD_KeywordTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="" />
+          </gmd:type>
+          <gmd:thesaurusName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GEMET - INSPIRE thema's, versie 1.0</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2008-06-01</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+            </gmd:CI_Citation>
+          </gmd:thesaurusName>
+        </gmd:MD_Keywords>
+      </gmd:descriptiveKeywords>
+      <gmd:resourceConstraints>
+        <gmd:MD_LegalConstraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>Beperking(en) op de publieke toegang</gco:CharacterString>
+          </gmd:useLimitation>
+          <gmd:accessConstraints>
+            <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions" />
+          </gmd:accessConstraints>
+          <gmd:otherConstraints>
+            <gmx:Anchor xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://inspire.ec.europa.eu/metadata-codelist/LimitationsOnPublicAccess/noLimitations">Geen beperkingen op de publieke toegang.</gmx:Anchor>
+          </gmd:otherConstraints>
+        </gmd:MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <gmd:resourceConstraints>
+        <gmd:MD_LegalConstraints>
+          <gmd:useLimitation>
+            <gco:CharacterString>Toegangs- en (her)gebruiksvoorwaarden</gco:CharacterString>
+          </gmd:useLimitation>
+          <gmd:useConstraints>
+            <gmd:MD_RestrictionCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_RestrictionCode" codeListValue="otherRestrictions" />
+          </gmd:useConstraints>
+          <gmd:otherConstraints>
+            <gco:CharacterString>De gegevens zijn beschermd door het auteursrecht. Indien u een ander type van gebruik wil maken van de gegevens, dan de hier vermelde, dient u zich te wenden tot de eigenaar van de gegevens.</gco:CharacterString>
+          </gmd:otherConstraints>
+          <gmd:otherConstraints>
+            <gmx:Anchor xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://overheid.vlaanderen.be/sites/default/files/documenten/ict-egov/licenties/hergebruik/modellicentie_gratis_hergebruik_v1_0.html">In uitvoering van het Vlaamse decreet voor hergebruik van overheidsinformatie, is het hergebruik geregeld d.m.v. de Modellicentie voor gratis hergebruik. Dit betekent dat elk commercieel of niet-commercieel hergebruik voor onbepaalde duur is toegelaten, zonder dat daar kosten aan verbonden zijn. Als enige gebruiksvoorwaarde geldt een bronvermeldingsplicht.</gmx:Anchor>
+          </gmd:otherConstraints>
+          <gmd:otherConstraints>
+            <gmx:Anchor xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="https://codex.vlaanderen.be/PrintDocument.ashx?id=1019561">Toegang en gebruik voor het uitvoeren van taken van algemeen belang, op niveau van Vlaamse overheidsinstanties is geregeld door het Besluit van de Vlaamse Regering met de regels voor toegang en gebruik van geografische gegevensbronnen toegevoegd aan de GDI, door deelnemers GDI-Vlaanderen. Dit gebruik is kosteloos.</gmx:Anchor>
+          </gmd:otherConstraints>
+          <gmd:otherConstraints>
+            <gco:CharacterString>Bronvermeldingsvoorschrift: “©-NGI-&lt;datum van uitgave&gt; ©-AGIV-&lt;datum van uitgave&gt;”</gco:CharacterString>
+          </gmd:otherConstraints>
+        </gmd:MD_LegalConstraints>
+      </gmd:resourceConstraints>
+      <gmd:aggregationInfo>
+        <gmd:MD_AggregateInformation>
+          <gmd:aggregateDataSetName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>CRAB</gco:CharacterString>
+              </gmd:title>
+              <gmd:alternateTitle>
+                <gco:CharacterString>CRAB databank</gco:CharacterString>
+              </gmd:alternateTitle>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2002-08-13</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="creation" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:edition>
+                <gco:CharacterString>1</gco:CharacterString>
+              </gmd:edition>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gco:CharacterString>91D2F21C-A269-447A-BFC1-262F9AAE801A</gco:CharacterString>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:aggregateDataSetName>
+          <gmd:aggregateDataSetIdentifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>0894E08F-A78F-4360-BB00-BEE3DCE1E94E</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:aggregateDataSetIdentifier>
+          <gmd:associationType>
+            <gmd:DS_AssociationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="crossReference" />
+          </gmd:associationType>
+        </gmd:MD_AggregateInformation>
+      </gmd:aggregationInfo>
+      <gmd:aggregationInfo>
+        <gmd:MD_AggregateInformation>
+          <gmd:aggregateDataSetName>
+            <gmd:CI_Citation>
+              <gmd:title>
+                <gco:CharacterString>GRBgis</gco:CharacterString>
+              </gmd:title>
+              <gmd:date>
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2014-04-26</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:date xmlns:xlink="http://www.w3.org/1999/xlink">
+                <gmd:CI_Date>
+                  <gmd:date>
+                    <gco:Date>2014-04-26</gco:Date>
+                  </gmd:date>
+                  <gmd:dateType>
+                    <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="revision" />
+                  </gmd:dateType>
+                </gmd:CI_Date>
+              </gmd:date>
+              <gmd:edition gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:edition>
+              <gmd:identifier>
+                <gmd:MD_Identifier>
+                  <gmd:code>
+                    <gco:CharacterString>E2707D13-B366-4D25-A286-E1B1330CADF7</gco:CharacterString>
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:identifier>
+            </gmd:CI_Citation>
+          </gmd:aggregateDataSetName>
+          <gmd:aggregateDataSetIdentifier>
+            <gmd:MD_Identifier>
+              <gmd:code>
+                <gco:CharacterString>7C823055-7BBF-4D62-B55E-F85C30D53162</gco:CharacterString>
+              </gmd:code>
+            </gmd:MD_Identifier>
+          </gmd:aggregateDataSetIdentifier>
+          <gmd:associationType>
+            <gmd:DS_AssociationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#DS_AssociationTypeCode" codeListValue="crossReference" />
+          </gmd:associationType>
+        </gmd:MD_AggregateInformation>
+      </gmd:aggregationInfo>
+      <gmd:spatialRepresentationType>
+        <gmd:MD_SpatialRepresentationTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_SpatialRepresentationTypeCode" codeListValue="vector" />
+      </gmd:spatialRepresentationType>
+      <gmd:spatialResolution>
+        <gmd:MD_Resolution>
+          <gmd:equivalentScale>
+            <gmd:MD_RepresentativeFraction>
+              <gmd:denominator>
+                <gco:Integer>250</gco:Integer>
+              </gmd:denominator>
+            </gmd:MD_RepresentativeFraction>
+          </gmd:equivalentScale>
+        </gmd:MD_Resolution>
+      </gmd:spatialResolution>
+      <gmd:language>
+        <gmd:LanguageCode codeList="http://www.loc.gov/standards/iso639-2/" codeListValue="dut" />
+      </gmd:language>
+      <gmd:characterSet>
+        <gmd:MD_CharacterSetCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_CharacterSetCode" codeListValue="8859part1" />
+      </gmd:characterSet>
+      <gmd:topicCategory>
+        <gmd:MD_TopicCategoryCode>transportation</gmd:MD_TopicCategoryCode>
+      </gmd:topicCategory>
+      <gmd:extent>
+        <gmd:EX_Extent>
+          <gmd:description>
+            <gco:CharacterString>Vlaams Gewest en Brussels Hoofdstedelijk Gewest</gco:CharacterString>
+          </gmd:description>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicDescription>
+              <gmd:geographicIdentifier>
+                <gmd:MD_Identifier>
+                  <gmd:code gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:code>
+                </gmd:MD_Identifier>
+              </gmd:geographicIdentifier>
+            </gmd:EX_GeographicDescription>
+          </gmd:geographicElement>
+          <gmd:geographicElement>
+            <gmd:EX_GeographicBoundingBox>
+              <gmd:westBoundLongitude>
+                <gco:Decimal>2.53000</gco:Decimal>
+              </gmd:westBoundLongitude>
+              <gmd:eastBoundLongitude>
+                <gco:Decimal>5.92000</gco:Decimal>
+              </gmd:eastBoundLongitude>
+              <gmd:southBoundLatitude>
+                <gco:Decimal>50.67000</gco:Decimal>
+              </gmd:southBoundLatitude>
+              <gmd:northBoundLatitude>
+                <gco:Decimal>51.51000</gco:Decimal>
+              </gmd:northBoundLatitude>
+            </gmd:EX_GeographicBoundingBox>
+          </gmd:geographicElement>
+          <gmd:temporalElement>
+            <gmd:EX_TemporalExtent>
+              <gmd:extent>
+                <gml:TimePeriod gml:id="ID_1">
+                  <gml:beginPosition>2018-12-20</gml:beginPosition>
+                  <gml:endPosition>2019-01-31</gml:endPosition>
+                </gml:TimePeriod>
+              </gmd:extent>
+            </gmd:EX_TemporalExtent>
+          </gmd:temporalElement>
+        </gmd:EX_Extent>
+      </gmd:extent>
+    </gmd:MD_DataIdentification>
+  </gmd:identificationInfo>
+  <gmd:contentInfo>
+    <gmd:MD_FeatureCatalogueDescription>
+      <gmd:includedWithDataset>
+        <gco:Boolean>true</gco:Boolean>
+      </gmd:includedWithDataset>
+      <gmd:featureCatalogueCitation uuidref="aff2c639-28cf-4bee-8fa8-9213663a5ef4" />
+    </gmd:MD_FeatureCatalogueDescription>
+  </gmd:contentInfo>
+  <gmd:distributionInfo>
+    <gmd:MD_Distribution>
+      <gmd:distributionFormat>
+        <gmd:MD_Format>
+          <gmd:name>
+            <gco:CharacterString>Shapefile</gco:CharacterString>
+          </gmd:name>
+          <gmd:version gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:version>
+        </gmd:MD_Format>
+      </gmd:distributionFormat>
+      <gmd:distributor>
+        <gmd:MD_Distributor>
+          <gmd:distributorContact>
+            <gmd:CI_ResponsibleParty>
+              <gmd:individualName>
+                <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+              </gmd:individualName>
+              <gmd:organisationName>
+                <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+              </gmd:organisationName>
+              <gmd:contactInfo>
+                <gmd:CI_Contact>
+                  <gmd:phone>
+                    <gmd:CI_Telephone>
+                      <gmd:voice>
+                        <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                      </gmd:voice>
+                      <gmd:facsimile gco:nilReason="missing">
+                        <gco:CharacterString />
+                      </gmd:facsimile>
+                    </gmd:CI_Telephone>
+                  </gmd:phone>
+                  <gmd:address>
+                    <gmd:CI_Address>
+                      <gmd:deliveryPoint>
+                        <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+                      </gmd:deliveryPoint>
+                      <gmd:city>
+                        <gco:CharacterString>Brussel</gco:CharacterString>
+                      </gmd:city>
+                      <gmd:postalCode>
+                        <gco:CharacterString>1000</gco:CharacterString>
+                      </gmd:postalCode>
+                      <gmd:country>
+                        <gco:CharacterString>België</gco:CharacterString>
+                      </gmd:country>
+                      <gmd:electronicMailAddress>
+                        <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                      </gmd:electronicMailAddress>
+                    </gmd:CI_Address>
+                  </gmd:address>
+                  <gmd:onlineResource>
+                    <gmd:CI_OnlineResource>
+                      <gmd:linkage>
+                        <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+                      </gmd:linkage>
+                    </gmd:CI_OnlineResource>
+                  </gmd:onlineResource>
+                </gmd:CI_Contact>
+              </gmd:contactInfo>
+              <gmd:role>
+                <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="distributor" />
+              </gmd:role>
+            </gmd:CI_ResponsibleParty>
+          </gmd:distributorContact>
+          <gmd:distributionOrderProcess>
+            <gmd:MD_StandardOrderProcess>
+              <gmd:fees>
+                <gco:CharacterString>Gratis</gco:CharacterString>
+              </gmd:fees>
+              <gmd:orderingInstructions>
+                <gco:CharacterString>Downloaden via Geopunt (http://www.geopunt.be/catalogus) of via de downloadtoepassing (http://download.vlaanderen.be)</gco:CharacterString>
+              </gmd:orderingInstructions>
+              <gmd:turnaround gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:turnaround>
+            </gmd:MD_StandardOrderProcess>
+          </gmd:distributionOrderProcess>
+        </gmd:MD_Distributor>
+      </gmd:distributor>
+      <gmd:transferOptions>
+        <gmd:MD_DigitalTransferOptions>
+          <gmd:unitsOfDistribution>
+            <gco:CharacterString>Vlaams en Brussel Hoofdstedelijk Gewest</gco:CharacterString>
+          </gmd:unitsOfDistribution>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>http://www.geopunt.be/download?container=wegenregister&amp;title=Wegenregister</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>WWW:DOWNLOAD-1.0-http--download</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>Wegenregister</gco:CharacterString>
+              </gmd:name>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>Wegenregister</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>Wegenregister</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetCapabilities</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-capabilities</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>Wegenregister</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>AUTOSWEG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>Autosnelweg</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>WEGGESCH</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>weg met gescheiden rijbanen</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>WEGEEN</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>weg met één rijbaan</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>ROT</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>rotonde</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>SPECSIT</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>speciale verkeerssituatie</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>VERKPLEIN</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>verkeersplein</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>OPAFOGKR</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>op- of afrit, behorende tot een nietgelijkgrondse verbinding</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>OPAFGGKR</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>op- of afrit, behorende tot een gelijkgrondse verbinding</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>PLLWEG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>parallelweg</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>VENTWEG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>ventweg</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>INUITP</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>in- of uitrit van een parking</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>INUITD</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>in- of uitrit van een dienst</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>VOETGANGERSZONE</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>voetgangerszone</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>WANDFIETS</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>wandel- of fietsweg, niet toegankelijk voor andere voertuigen</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>TRAMWEG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>tramweg, niet toegankelijk voor andere voertuigen</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>DIENSTWEG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>dienstweg</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>AARDEWEG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>aardeweg</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>VEER</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>veer</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>TYPENTG</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>type weg niet gekend</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:onLine>
+            <gmd:CI_OnlineResource>
+              <gmd:linkage>
+                <gmd:URL>https://geoservices.informatievlaanderen.be/raadpleegdiensten/Wegenregister/wms?service=WMS&amp;version=1.3.0&amp;request=GetMap</gmd:URL>
+              </gmd:linkage>
+              <gmd:protocol>
+                <gco:CharacterString>OGC:WMS-1.3.0-http-get-map</gco:CharacterString>
+              </gmd:protocol>
+              <gmd:name>
+                <gco:CharacterString>LABELS</gco:CharacterString>
+              </gmd:name>
+              <gmd:description>
+                <gco:CharacterString>straatnaamlabels</gco:CharacterString>
+              </gmd:description>
+            </gmd:CI_OnlineResource>
+          </gmd:onLine>
+          <gmd:offLine>
+            <gmd:MD_Medium>
+              <gmd:name>
+                <gmd:MD_MediumNameCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_MediumNameCode" codeListValue="onLine" />
+              </gmd:name>
+            </gmd:MD_Medium>
+          </gmd:offLine>
+        </gmd:MD_DigitalTransferOptions>
+      </gmd:transferOptions>
+    </gmd:MD_Distribution>
+  </gmd:distributionInfo>
+  <gmd:dataQualityInfo>
+    <gmd:DQ_DataQuality>
+      <gmd:scope>
+        <gmd:DQ_Scope>
+          <gmd:level>
+            <gmd:MD_ScopeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset" />
+          </gmd:level>
+        </gmd:DQ_Scope>
+      </gmd:scope>
+      <gmd:report>
+        <gmd:DQ_DomainConsistency>
+          <gmd:measureDescription gco:nilReason="missing">
+            <gco:CharacterString />
+          </gmd:measureDescription>
+          <gmd:dateTime gco:nilReason="missing" />
+          <gmd:result>
+            <gmd:DQ_ConformanceResult>
+              <gmd:specification>
+                <gmd:CI_Citation>
+                  <gmd:title>
+                    <gco:CharacterString>VERORDENING (EU) Nr. 1089/2010 VAN DE COMMISSIE van 23 november 2010 ter uitvoering van Richtlijn 2007/2/EG van het Europees Parlement en de Raad betreffende de interoperabiliteit van verzamelingen ruimtelijke gegevens en van diensten met betrekking tot ruimtelijke gegevens</gco:CharacterString>
+                  </gmd:title>
+                  <gmd:alternateTitle gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:alternateTitle>
+                  <gmd:date>
+                    <gmd:CI_Date>
+                      <gmd:date>
+                        <gco:Date>2010-12-08</gco:Date>
+                      </gmd:date>
+                      <gmd:dateType>
+                        <gmd:CI_DateTypeCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication" />
+                      </gmd:dateType>
+                    </gmd:CI_Date>
+                  </gmd:date>
+                </gmd:CI_Citation>
+              </gmd:specification>
+              <gmd:explanation gco:nilReason="missing">
+                <gco:CharacterString />
+              </gmd:explanation>
+              <gmd:pass>
+                <gco:Boolean>false</gco:Boolean>
+              </gmd:pass>
+            </gmd:DQ_ConformanceResult>
+          </gmd:result>
+        </gmd:DQ_DomainConsistency>
+      </gmd:report>
+      <gmd:lineage>
+        <gmd:LI_Lineage>
+          <gmd:statement>
+            <gco:CharacterString>Aanmaak Wegenregister</gco:CharacterString>
+          </gmd:statement>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd samengesteld uit datasets van verschillende instanties: geometrie (GRB en ITGI), straatnamen (CRAB), wegnummers (Wegendatabank AWV),...</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime gco:nilReason="missing" />
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName>
+                    <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile gco:nilReason="missing">
+                            <gco:CharacterString />
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Brussel</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>1000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="owner" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2015-06-30T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2015-12-02T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2016-05-31T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied. Via de download-toepassing kan een kaartje bekomen worden met een overzicht van de bijgewerkte gemeenten (Overzicht_gemeenten_160915.JPEG)</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2016-09-15T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied. Via de download-toepassing kan een kaartje bekomen worden met een overzicht van de bijgewerkte gemeenten (Overzicht_gemeenten_161215.JPEG)</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2016-12-15T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie afkomstig van AWV.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2017-03-23T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied. Via de download-toepassing kan een kaartje bekomen worden met een overzicht van de bijgewerkte gemeenten (Overzicht_gemeenten_200617.JPEG)</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2017-06-22T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Agentschap voor Geografische Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>contactpunt@agiv.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.agiv.be</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB, alsook de informatie afkomstig van AWV, en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied. Via de download-toepassing kan een kaartje bekomen worden met een overzicht van de bijgewerkte gemeenten (Overzicht_gemeenten_210917.JPEG)</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2017-09-21T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB, alsook de informatie afkomstig van AWV, en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied. Via de download-toepassing kan een kaartje bekomen worden met een overzicht van de bijgewerkte gemeenten (Overzicht_gemeenten_211217.JPEG)</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2017-12-21T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>De data in het Wegenregister werd geüpdatet aan de hand van de informatie die beschikbaar is in het CRAB en GRB, en dit voor gans Vlaanderen. Een aantal steden en gemeenten voerden ook al een validatie en aanvulling uit op de wegen binnen hun grondgebied. Door heel Vlaanderen werden tevens het niet gekende aantal rijstroken en de niet gekende wegbreedtes waar mogelijk geactualiseerd.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2018-03-15T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>Informatie Vlaanderen heeft voor een deel van de Vlaamse gemeenten de meest recente weg-gerelateerde informatie uit het GRB (GRB-bijhouding) en het CRAB (decentraal beheer via transactionele webservices) in de periode maart 2018 – juni 2018 overgezet naar het Wegenregister. Tevens werd de meest recente weg-gerelateerde informatie van Agentschap Wegen en Verkeer (AWV) verwerkt.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2018-06-21T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>Informatie Vlaanderen heeft voor een deel van de Vlaamse gemeenten de meest recente weg-gerelateerde informatie uit het GRB (GRB-bijhouding) en het CRAB (decentraal beheer via transactionele webservices) in de periode juni 2018 – september 2018 overgezet naar het Wegenregister. In deze periode werd ook voor een aantal gemeenten een gemeentelijke validatie uitgevoerd. Tevens werd de meest recente weg-gerelateerde informatie van Agentschap Wegen en Verkeer (AWV) verwerkt.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2018-09-27T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>Informatie Vlaanderen heeft voor een deel van de Vlaamse gemeenten de meest recente weg-gerelateerde informatie uit het GRB (GRB-bijhouding) en het CRAB (decentraal beheer via transactionele webservices) in de periode juni 2018 – september 2018 overgezet naar het Wegenregister. In deze periode werd ook voor een aantal gemeenten een gemeentelijke validatie uitgevoerd. Tevens werd de meest recente weg-gerelateerde informatie van Agentschap Wegen en Verkeer (AWV) verwerkt.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2018-12-20T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:processStep>
+            <gmd:LI_ProcessStep>
+              <gmd:description>
+                <gco:CharacterString>Informatie Vlaanderen heeft voor een deel van de Vlaamse gemeenten de meest recente weg-gerelateerde informatie uit het GRB (GRB-bijhouding) en het CRAB (decentraal beheer via transactionele webservices) in de periode juni 2018 – september 2018 overgezet naar het Wegenregister. In deze periode werd ook voor een aantal gemeenten een gemeentelijke validatie uitgevoerd. Tevens werd de meest recente weg-gerelateerde informatie van Agentschap Wegen en Verkeer (AWV) verwerkt. Ook de gemeentefusies werden in deze versie verwerkt.</gco:CharacterString>
+              </gmd:description>
+              <gmd:dateTime>
+                <gco:DateTime>2019-01-31T12:00:00</gco:DateTime>
+              </gmd:dateTime>
+              <gmd:processor>
+                <gmd:CI_ResponsibleParty>
+                  <gmd:individualName gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:individualName>
+                  <gmd:organisationName>
+                    <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+                  </gmd:organisationName>
+                  <gmd:contactInfo>
+                    <gmd:CI_Contact>
+                      <gmd:phone>
+                        <gmd:CI_Telephone>
+                          <gmd:voice>
+                            <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                          </gmd:voice>
+                          <gmd:facsimile>
+                            <gco:CharacterString>+32 9 276 15 05</gco:CharacterString>
+                          </gmd:facsimile>
+                        </gmd:CI_Telephone>
+                      </gmd:phone>
+                      <gmd:address>
+                        <gmd:CI_Address>
+                          <gmd:deliveryPoint>
+                            <gco:CharacterString>Koningin Maria Hendrikaplein 70</gco:CharacterString>
+                          </gmd:deliveryPoint>
+                          <gmd:city>
+                            <gco:CharacterString>Gent</gco:CharacterString>
+                          </gmd:city>
+                          <gmd:postalCode>
+                            <gco:CharacterString>9000</gco:CharacterString>
+                          </gmd:postalCode>
+                          <gmd:country>
+                            <gco:CharacterString>België</gco:CharacterString>
+                          </gmd:country>
+                          <gmd:electronicMailAddress>
+                            <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                          </gmd:electronicMailAddress>
+                        </gmd:CI_Address>
+                      </gmd:address>
+                      <gmd:onlineResource>
+                        <gmd:CI_OnlineResource>
+                          <gmd:linkage>
+                            <gmd:URL>http://www.vlaanderen.be/informatievlaanderen</gmd:URL>
+                          </gmd:linkage>
+                        </gmd:CI_OnlineResource>
+                      </gmd:onlineResource>
+                    </gmd:CI_Contact>
+                  </gmd:contactInfo>
+                  <gmd:role>
+                    <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="processor" />
+                  </gmd:role>
+                </gmd:CI_ResponsibleParty>
+              </gmd:processor>
+            </gmd:LI_ProcessStep>
+          </gmd:processStep>
+          <gmd:source>
+            <gmd:LI_Source>
+              <gmd:description>
+                <gco:CharacterString>GRB: Het Grootschalig Referentie Bestand (GRB) is een geografisch informatiesysteem dat dient als topografische referentie voor Vlaanderen. Het is een gemeenschappelijke geografische basis waarop alle gebruikers eigen gegevens kunnen enten. Het GRB bevat enkel geografische en kenmerkende informatie van goed definieerbare, conventioneel aanvaarde referentiegegevens: gebouwen, percelen, wegen en hun inrichting, waterlopen, spoorbanen en het wegennetwerk. Deze objecten worden gedetailleerd en nauwkeurig opgemeten zodat de gegevens bruikbaar zijn in een grootschalige voorstelling met een schaalbereik tussen 1/250 en 1/5000. 
+
+
+ITGI: inventaire topogéographique - topogeografische inventaris 
+
+CRAB: Het acroniem ‘CRAB’ staat voor ‘Centraal Referentieadressenbestand’. Het CRAB is de authentieke bron voor adressen in Vlaanderen. Het bevat alle officiële adressen, en hun geografische locatie. Het wordt beheerd door de Vlaamse steden en gemeenten, gebruik van het CRAB is gratis en open voor iedereen.</gco:CharacterString>
+              </gmd:description>
+              <gmd:sourceStep>
+                <gmd:LI_ProcessStep>
+                  <gmd:description gco:nilReason="missing">
+                    <gco:CharacterString />
+                  </gmd:description>
+                  <gmd:dateTime gco:nilReason="missing" />
+                  <gmd:processor>
+                    <gmd:CI_ResponsibleParty>
+                      <gmd:individualName>
+                        <gco:CharacterString>Helpdesk Informatie Vlaanderen</gco:CharacterString>
+                      </gmd:individualName>
+                      <gmd:organisationName>
+                        <gco:CharacterString>agentschap Informatie Vlaanderen</gco:CharacterString>
+                      </gmd:organisationName>
+                      <gmd:contactInfo>
+                        <gmd:CI_Contact>
+                          <gmd:phone>
+                            <gmd:CI_Telephone>
+                              <gmd:voice>
+                                <gco:CharacterString>+32 9 276 15 00</gco:CharacterString>
+                              </gmd:voice>
+                              <gmd:facsimile gco:nilReason="missing">
+                                <gco:CharacterString />
+                              </gmd:facsimile>
+                            </gmd:CI_Telephone>
+                          </gmd:phone>
+                          <gmd:address>
+                            <gmd:CI_Address>
+                              <gmd:deliveryPoint>
+                                <gco:CharacterString>Havenlaan 88</gco:CharacterString>
+                              </gmd:deliveryPoint>
+                              <gmd:city>
+                                <gco:CharacterString>Brussel</gco:CharacterString>
+                              </gmd:city>
+                              <gmd:postalCode>
+                                <gco:CharacterString>1000</gco:CharacterString>
+                              </gmd:postalCode>
+                              <gmd:country>
+                                <gco:CharacterString>België</gco:CharacterString>
+                              </gmd:country>
+                              <gmd:electronicMailAddress>
+                                <gco:CharacterString>informatie.vlaanderen@vlaanderen.be</gco:CharacterString>
+                              </gmd:electronicMailAddress>
+                            </gmd:CI_Address>
+                          </gmd:address>
+                          <gmd:onlineResource>
+                            <gmd:CI_OnlineResource>
+                              <gmd:linkage>
+                                <gmd:URL>https://overheid.vlaanderen.be/informatie-vlaanderen</gmd:URL>
+                              </gmd:linkage>
+                            </gmd:CI_OnlineResource>
+                          </gmd:onlineResource>
+                        </gmd:CI_Contact>
+                      </gmd:contactInfo>
+                      <gmd:role>
+                        <gmd:CI_RoleCode codeList="http://standards.iso.org/ittf/PubliclyAvailableStandards/ISO_19139_Schemas/resources/Codelist/ML_gmxCodelists.xml#CI_RoleCode" codeListValue="owner" />
+                      </gmd:role>
+                    </gmd:CI_ResponsibleParty>
+                  </gmd:processor>
+                </gmd:LI_ProcessStep>
+              </gmd:sourceStep>
+            </gmd:LI_Source>
+          </gmd:source>
+        </gmd:LI_Lineage>
+      </gmd:lineage>
+    </gmd:DQ_DataQuality>
+  </gmd:dataQualityInfo>
+</gmd:MD_Metadata>

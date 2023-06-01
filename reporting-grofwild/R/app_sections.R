@@ -5,19 +5,28 @@
 
 
 
-#' Section for welcoming (top of the page)
-#' @param id character, from which page this function is called
-#' e.g. 'wbe'
-#' @template moduleUI 
+#' Section for welcoming (top of the page) - UI side (no server side)
+#' 
+#' @param maxDate date, the last observation date to be replaced in the text
+#' @param id character, unique identifier for the module
+#' @param uiText data.frame, HTML formatted text to be displayed in the UI
+#' @return HTML object
 #' 
 #' @author mvarewyck
+#' @import shiny
 #' @export
-welcomeSection <- function(id, uiText) {
+welcomeSectionUI <- function(id, uiText, maxDate = NA) {
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
   
-  tags$p(class = "lead", HTML(uiText[, id]))
+  # Replace last date
+  if (!is.na(maxDate))
+    description <- gsub("\\{\\{maxDate\\}\\}", format(maxDate, "%d/%m/%Y"), description)
   
+  tags$div(style = "margin-bottom:20px;",
+    HTML(description)
+  )
+
 }
 
 
@@ -28,10 +37,16 @@ welcomeSection <- function(id, uiText) {
 #' 
 #' @author mvarewyck
 #' @export
-decodeText <- function(text, species) {
+decodeText <- function(text, species, statsMap = NULL) {
   
-  newText <- strsplit(text, split = "\\{")[[1]]
-  toRetain <- sapply(newText, function(x)
+  if (grepl("\\{\\{statsMap\\}\\}", text))
+    newText <- gsub("\\{\\{statsMap\\}\\}", 
+      if (!is.null(statsMap)) paste0(statsMap, ".") else "", text) else
+    newText <- text
+  
+  
+  splitText <- strsplit(newText, split = "\\{")[[1]]
+  toRetain <- sapply(splitText, function(x)
       if (grepl("\\}", x)) {
         doInvert <- grepl("\\!", strsplit(x, "\\}")[[1]][1])
         doSpecies <- grepl(species, strsplit(x, "\\}")[[1]][1])
@@ -43,7 +58,8 @@ decodeText <- function(text, species) {
         x
       } 
   )
-  trimws(paste(toRetain, collapse = ""))
+  
+  paste(toRetain, collapse = "")
   
 }
 
@@ -76,9 +92,7 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
 
 #' Section title and text for bio-indicator
 #' 
-#' @template moduleUI 
-#' 
-#' @author mvarewyck
+#' @inherit welcomeSectionUI 
 #' @export
 bioindicatorSection <- function(id, uiText) {
   

@@ -1,0 +1,27 @@
+---
+title: "F05-1 Absoluut afschot"
+author: "Lynn Pallemaerts"
+date: '2022-06-20'
+output: html_document
+---
+
+```{r}
+library(INBOtheme)
+library(tidyverse)
+```
+
+```{r}
+app <- read.csv("./dashboard/input/animal/rshiny_reporting_data_ecology.csv",
+                sep = ";")
+```
+
+```{r}
+app %>%
+  filter(wildsoort == "Wild zwijn") %>%
+  ggplot(aes(x = afschotjaar)) +
+  geom_bar() +
+  xlab("Jaar") +
+  ylab("Aantal geschoten everzwijnen") +
+  theme_inbo()
+```
+

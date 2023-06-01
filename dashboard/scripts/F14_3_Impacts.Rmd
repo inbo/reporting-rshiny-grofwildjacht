@@ -1,0 +1,58 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+#Data
+```{r}
+Impacts_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_3_data.csv",
+                         sep = ",",
+                         header = TRUE)
+
+```
+
+#Plot Stakeholders
+```{r}
+stakeholders <- c('Jagers', 'Landbouwers', 'Natuurvereniging')
+
+Impacts_stakeholders <- Impacts_data %>%
+  filter(Sector %in% stakeholders)
+
+Impacts_stakeholders$Antwoord_reclass <- factor(Impacts_stakeholders$Antwoord_reclass , 
+                                    levels = c('Groot', 'Klein'))
+
+plot_Impacts_stakeholders <- ggplot(data = Impacts_stakeholders,
+                                        aes(x = Sector,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Question_label)+
+  theme(axis.text.x = element_text(angle = 90)) 
+
+plot_Impacts_stakeholders
+```
+#Plot Breed publiek
+```{r}
+breed_publiek <- c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied')
+
+Impacts_breed_publiek <- Impacts_data %>%
+  filter(Sector %in% breed_publiek)
+
+Impacts_breed_publiek$Antwoord_reclass <- factor(Impacts_breed_publiek$Antwoord_reclass , 
+                                    levels = c('Groot', 'Klein'))
+
+plot_Impacts_breed_publiek <- ggplot(data = Impacts_breed_publiek,
+                                        aes(x = Sector,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Question_label)+
+  theme(axis.text.x = element_text(angle = 90)) 
+
+plot_Impacts_breed_publiek
+```

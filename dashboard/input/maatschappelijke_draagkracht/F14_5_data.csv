@@ -1,0 +1,203 @@
+"","Sector","Antwoord_reclass","Question_label","Aantal_tot","totaal","percentage"
+"1","Jagers","Belangrijk","Beschikbaarheid wildbraad",224,314,71.3375796178344
+"2","Jagers","Belangrijk","Gezondheidsrisico mensen",233,314,74.203821656051
+"3","Jagers","Belangrijk","Gezondheidsrisico vee",268,314,85.3503184713376
+"4","Jagers","Belangrijk","Inkomsten toerisme",127,314,40.4458598726115
+"5","Jagers","Belangrijk","Landbouwschade",298,314,94.9044585987261
+"6","Jagers","Belangrijk","Mogelijkheid tot waarnemingen",128,314,40.7643312101911
+"7","Jagers","Belangrijk","Negatieve impact andere soorten",235,314,74.8407643312102
+"8","Jagers","Belangrijk","Negatieve impact ecosysteem",228,314,72.6114649681529
+"9","Jagers","Belangrijk","Negatieve impact jacht",140,314,44.5859872611465
+"10","Jagers","Belangrijk","Positieve impact andere soorten",167,314,53.1847133757962
+"11","Jagers","Belangrijk","Positieve impact ecosysteem",192,314,61.1464968152866
+"12","Jagers","Belangrijk","Positieve impact jacht",244,314,77.7070063694268
+"13","Jagers","Belangrijk","Risico onveilige ontmoeting",168,314,53.5031847133758
+"14","Jagers","Belangrijk","Schade private eigendommen",230,314,73.2484076433121
+"15","Jagers","Belangrijk","Schade publieke eigendommen",209,314,66.5605095541401
+"16","Jagers","Belangrijk","Verkeersveiligheid",272,314,86.6242038216561
+"17","Jagers","Belangrijk","Verlies toerisme",131,314,41.7197452229299
+"18","Landbouwers","Belangrijk","Beschikbaarheid wildbraad",43,194,22.1649484536082
+"19","Landbouwers","Belangrijk","Gezondheidsrisico mensen",174,194,89.6907216494845
+"20","Landbouwers","Belangrijk","Gezondheidsrisico vee",188,194,96.9072164948454
+"21","Landbouwers","Belangrijk","Inkomsten toerisme",71,194,36.5979381443299
+"22","Landbouwers","Belangrijk","Landbouwschade",189,194,97.4226804123711
+"23","Landbouwers","Belangrijk","Mogelijkheid tot waarnemingen",76,194,39.1752577319588
+"24","Landbouwers","Belangrijk","Negatieve impact andere soorten",117,194,60.3092783505155
+"25","Landbouwers","Belangrijk","Negatieve impact ecosysteem",112,194,57.7319587628866
+"26","Landbouwers","Belangrijk","Negatieve impact jacht",67,194,34.5360824742268
+"27","Landbouwers","Belangrijk","Positieve impact andere soorten",61,194,31.4432989690722
+"28","Landbouwers","Belangrijk","Positieve impact ecosysteem",62,194,31.9587628865979
+"29","Landbouwers","Belangrijk","Positieve impact jacht",85,194,43.8144329896907
+"30","Landbouwers","Belangrijk","Risico onveilige ontmoeting",153,194,78.8659793814433
+"31","Landbouwers","Belangrijk","Schade private eigendommen",161,194,82.9896907216495
+"32","Landbouwers","Belangrijk","Schade publieke eigendommen",152,194,78.3505154639175
+"33","Landbouwers","Belangrijk","Verkeersveiligheid",178,194,91.7525773195876
+"34","Landbouwers","Belangrijk","Verlies toerisme",100,194,51.5463917525773
+"35","Natuurvereniging","Belangrijk","Beschikbaarheid wildbraad",30,130,23.0769230769231
+"36","Natuurvereniging","Belangrijk","Gezondheidsrisico mensen",62,130,47.6923076923077
+"37","Natuurvereniging","Belangrijk","Gezondheidsrisico vee",62,130,47.6923076923077
+"38","Natuurvereniging","Belangrijk","Inkomsten toerisme",29,130,22.3076923076923
+"39","Natuurvereniging","Belangrijk","Landbouwschade",81,130,62.3076923076923
+"40","Natuurvereniging","Belangrijk","Mogelijkheid tot waarnemingen",48,130,36.9230769230769
+"41","Natuurvereniging","Belangrijk","Negatieve impact andere soorten",75,130,57.6923076923077
+"42","Natuurvereniging","Belangrijk","Negatieve impact ecosysteem",80,130,61.5384615384615
+"43","Natuurvereniging","Belangrijk","Negatieve impact jacht",26,130,20
+"44","Natuurvereniging","Belangrijk","Positieve impact andere soorten",82,130,63.0769230769231
+"45","Natuurvereniging","Belangrijk","Positieve impact ecosysteem",89,130,68.4615384615385
+"46","Natuurvereniging","Belangrijk","Positieve impact jacht",26,130,20
+"47","Natuurvereniging","Belangrijk","Risico onveilige ontmoeting",56,130,43.0769230769231
+"48","Natuurvereniging","Belangrijk","Schade private eigendommen",60,130,46.1538461538462
+"49","Natuurvereniging","Belangrijk","Schade publieke eigendommen",55,130,42.3076923076923
+"50","Natuurvereniging","Belangrijk","Verkeersveiligheid",89,130,68.4615384615385
+"51","Natuurvereniging","Belangrijk","Verlies toerisme",33,130,25.3846153846154
+"52","Jagers","Onbelangrijk","Beschikbaarheid wildbraad",29,314,-9.23566878980892
+"53","Jagers","Onbelangrijk","Gezondheidsrisico mensen",28,314,-8.9171974522293
+"54","Jagers","Onbelangrijk","Gezondheidsrisico vee",17,314,-5.4140127388535
+"55","Jagers","Onbelangrijk","Inkomsten toerisme",60,314,-19.1082802547771
+"56","Jagers","Onbelangrijk","Landbouwschade",7,314,-2.22929936305732
+"57","Jagers","Onbelangrijk","Mogelijkheid tot waarnemingen",75,314,-23.8853503184713
+"58","Jagers","Onbelangrijk","Negatieve impact andere soorten",22,314,-7.00636942675159
+"59","Jagers","Onbelangrijk","Negatieve impact ecosysteem",29,314,-9.23566878980892
+"60","Jagers","Onbelangrijk","Negatieve impact jacht",64,314,-20.3821656050955
+"61","Jagers","Onbelangrijk","Positieve impact andere soorten",48,314,-15.2866242038217
+"62","Jagers","Onbelangrijk","Positieve impact ecosysteem",42,314,-13.3757961783439
+"63","Jagers","Onbelangrijk","Positieve impact jacht",17,314,-5.4140127388535
+"64","Jagers","Onbelangrijk","Risico onveilige ontmoeting",51,314,-16.2420382165605
+"65","Jagers","Onbelangrijk","Schade private eigendommen",32,314,-10.1910828025478
+"66","Jagers","Onbelangrijk","Schade publieke eigendommen",41,314,-13.0573248407643
+"67","Jagers","Onbelangrijk","Verkeersveiligheid",14,314,-4.45859872611465
+"68","Jagers","Onbelangrijk","Verlies toerisme",63,314,-20.0636942675159
+"69","Landbouwers","Onbelangrijk","Beschikbaarheid wildbraad",82,194,-42.2680412371134
+"70","Landbouwers","Onbelangrijk","Gezondheidsrisico mensen",5,194,-2.57731958762887
+"71","Landbouwers","Onbelangrijk","Gezondheidsrisico vee",3,194,-1.54639175257732
+"72","Landbouwers","Onbelangrijk","Inkomsten toerisme",55,194,-28.3505154639175
+"73","Landbouwers","Onbelangrijk","Landbouwschade",3,194,-1.54639175257732
+"74","Landbouwers","Onbelangrijk","Mogelijkheid tot waarnemingen",68,194,-35.0515463917526
+"75","Landbouwers","Onbelangrijk","Negatieve impact andere soorten",29,194,-14.9484536082474
+"76","Landbouwers","Onbelangrijk","Negatieve impact ecosysteem",31,194,-15.979381443299
+"77","Landbouwers","Onbelangrijk","Negatieve impact jacht",52,194,-26.8041237113402
+"78","Landbouwers","Onbelangrijk","Positieve impact andere soorten",70,194,-36.0824742268041
+"79","Landbouwers","Onbelangrijk","Positieve impact ecosysteem",62,194,-31.9587628865979
+"80","Landbouwers","Onbelangrijk","Positieve impact jacht",49,194,-25.2577319587629
+"81","Landbouwers","Onbelangrijk","Risico onveilige ontmoeting",16,194,-8.24742268041237
+"82","Landbouwers","Onbelangrijk","Schade private eigendommen",15,194,-7.7319587628866
+"83","Landbouwers","Onbelangrijk","Schade publieke eigendommen",18,194,-9.27835051546392
+"84","Landbouwers","Onbelangrijk","Verkeersveiligheid",4,194,-2.06185567010309
+"85","Landbouwers","Onbelangrijk","Verlies toerisme",38,194,-19.5876288659794
+"86","Natuurvereniging","Onbelangrijk","Beschikbaarheid wildbraad",59,130,-45.3846153846154
+"87","Natuurvereniging","Onbelangrijk","Gezondheidsrisico mensen",27,130,-20.7692307692308
+"88","Natuurvereniging","Onbelangrijk","Gezondheidsrisico vee",24,130,-18.4615384615385
+"89","Natuurvereniging","Onbelangrijk","Inkomsten toerisme",49,130,-37.6923076923077
+"90","Natuurvereniging","Onbelangrijk","Landbouwschade",9,130,-6.92307692307692
+"91","Natuurvereniging","Onbelangrijk","Mogelijkheid tot waarnemingen",31,130,-23.8461538461538
+"92","Natuurvereniging","Onbelangrijk","Negatieve impact andere soorten",20,130,-15.3846153846154
+"93","Natuurvereniging","Onbelangrijk","Negatieve impact ecosysteem",23,130,-17.6923076923077
+"94","Natuurvereniging","Onbelangrijk","Negatieve impact jacht",57,130,-43.8461538461538
+"95","Natuurvereniging","Onbelangrijk","Positieve impact andere soorten",19,130,-14.6153846153846
+"96","Natuurvereniging","Onbelangrijk","Positieve impact ecosysteem",14,130,-10.7692307692308
+"97","Natuurvereniging","Onbelangrijk","Positieve impact jacht",67,130,-51.5384615384615
+"98","Natuurvereniging","Onbelangrijk","Risico onveilige ontmoeting",38,130,-29.2307692307692
+"99","Natuurvereniging","Onbelangrijk","Schade private eigendommen",34,130,-26.1538461538462
+"100","Natuurvereniging","Onbelangrijk","Schade publieke eigendommen",34,130,-26.1538461538462
+"101","Natuurvereniging","Onbelangrijk","Verkeersveiligheid",13,130,-10
+"102","Natuurvereniging","Onbelangrijk","Verlies toerisme",50,130,-38.4615384615385
+"103","Jagers","Neutraal","Beschikbaarheid wildbraad",57,314,9.07643312101911
+"104","Jagers","Neutraal","Gezondheidsrisico mensen",48,314,7.64331210191083
+"105","Jagers","Neutraal","Gezondheidsrisico vee",27,314,4.29936305732484
+"106","Jagers","Neutraal","Inkomsten toerisme",110,314,17.515923566879
+"107","Jagers","Neutraal","Landbouwschade",8,314,1.27388535031847
+"108","Jagers","Neutraal","Mogelijkheid tot waarnemingen",101,314,16.0828025477707
+"109","Jagers","Neutraal","Negatieve impact andere soorten",47,314,7.48407643312102
+"110","Jagers","Neutraal","Negatieve impact ecosysteem",48,314,7.64331210191083
+"111","Jagers","Neutraal","Negatieve impact jacht",91,314,14.4904458598726
+"112","Jagers","Neutraal","Positieve impact andere soorten",85,314,13.5350318471338
+"113","Jagers","Neutraal","Positieve impact ecosysteem",68,314,10.828025477707
+"114","Jagers","Neutraal","Positieve impact jacht",42,314,6.68789808917197
+"115","Jagers","Neutraal","Risico onveilige ontmoeting",88,314,14.0127388535032
+"116","Jagers","Neutraal","Schade private eigendommen",45,314,7.1656050955414
+"117","Jagers","Neutraal","Schade publieke eigendommen",55,314,8.75796178343949
+"118","Jagers","Neutraal","Verkeersveiligheid",22,314,3.5031847133758
+"119","Jagers","Neutraal","Verlies toerisme",103,314,16.4012738853503
+"120","Landbouwers","Neutraal","Beschikbaarheid wildbraad",61,194,15.7216494845361
+"121","Landbouwers","Neutraal","Gezondheidsrisico mensen",12,194,3.09278350515464
+"122","Landbouwers","Neutraal","Gezondheidsrisico vee",1,194,0.257731958762887
+"123","Landbouwers","Neutraal","Inkomsten toerisme",59,194,15.2061855670103
+"124","Landbouwers","Neutraal","Mogelijkheid tot waarnemingen",44,194,11.340206185567
+"125","Landbouwers","Neutraal","Negatieve impact andere soorten",39,194,10.0515463917526
+"126","Landbouwers","Neutraal","Negatieve impact ecosysteem",44,194,11.340206185567
+"127","Landbouwers","Neutraal","Negatieve impact jacht",57,194,14.6907216494845
+"128","Landbouwers","Neutraal","Positieve impact andere soorten",53,194,13.659793814433
+"129","Landbouwers","Neutraal","Positieve impact ecosysteem",61,194,15.7216494845361
+"130","Landbouwers","Neutraal","Positieve impact jacht",44,194,11.340206185567
+"131","Landbouwers","Neutraal","Risico onveilige ontmoeting",22,194,5.67010309278351
+"132","Landbouwers","Neutraal","Schade private eigendommen",15,194,3.8659793814433
+"133","Landbouwers","Neutraal","Schade publieke eigendommen",21,194,5.41237113402062
+"134","Landbouwers","Neutraal","Verkeersveiligheid",10,194,2.57731958762887
+"135","Landbouwers","Neutraal","Verlies toerisme",49,194,12.6288659793814
+"136","Natuurvereniging","Neutraal","Beschikbaarheid wildbraad",38,130,14.6153846153846
+"137","Natuurvereniging","Neutraal","Gezondheidsrisico mensen",38,130,14.6153846153846
+"138","Natuurvereniging","Neutraal","Gezondheidsrisico vee",41,130,15.7692307692308
+"139","Natuurvereniging","Neutraal","Inkomsten toerisme",51,130,19.6153846153846
+"140","Natuurvereniging","Neutraal","Landbouwschade",38,130,14.6153846153846
+"141","Natuurvereniging","Neutraal","Mogelijkheid tot waarnemingen",50,130,19.2307692307692
+"142","Natuurvereniging","Neutraal","Negatieve impact andere soorten",34,130,13.0769230769231
+"143","Natuurvereniging","Neutraal","Negatieve impact ecosysteem",26,130,10
+"144","Natuurvereniging","Neutraal","Negatieve impact jacht",40,130,15.3846153846154
+"145","Natuurvereniging","Neutraal","Positieve impact andere soorten",28,130,10.7692307692308
+"146","Natuurvereniging","Neutraal","Positieve impact ecosysteem",26,130,10
+"147","Natuurvereniging","Neutraal","Positieve impact jacht",32,130,12.3076923076923
+"148","Natuurvereniging","Neutraal","Risico onveilige ontmoeting",36,130,13.8461538461538
+"149","Natuurvereniging","Neutraal","Schade private eigendommen",35,130,13.4615384615385
+"150","Natuurvereniging","Neutraal","Schade publieke eigendommen",40,130,15.3846153846154
+"151","Natuurvereniging","Neutraal","Verkeersveiligheid",27,130,10.3846153846154
+"152","Natuurvereniging","Neutraal","Verlies toerisme",46,130,17.6923076923077
+"153","Jagers","Neutraal ","Beschikbaarheid wildbraad",57,314,-9.07643312101911
+"154","Jagers","Neutraal ","Gezondheidsrisico mensen",48,314,-7.64331210191083
+"155","Jagers","Neutraal ","Gezondheidsrisico vee",27,314,-4.29936305732484
+"156","Jagers","Neutraal ","Inkomsten toerisme",110,314,-17.515923566879
+"157","Jagers","Neutraal ","Landbouwschade",8,314,-1.27388535031847
+"158","Jagers","Neutraal ","Mogelijkheid tot waarnemingen",101,314,-16.0828025477707
+"159","Jagers","Neutraal ","Negatieve impact andere soorten",47,314,-7.48407643312102
+"160","Jagers","Neutraal ","Negatieve impact ecosysteem",48,314,-7.64331210191083
+"161","Jagers","Neutraal ","Negatieve impact jacht",91,314,-14.4904458598726
+"162","Jagers","Neutraal ","Positieve impact andere soorten",85,314,-13.5350318471338
+"163","Jagers","Neutraal ","Positieve impact ecosysteem",68,314,-10.828025477707
+"164","Jagers","Neutraal ","Positieve impact jacht",42,314,-6.68789808917197
+"165","Jagers","Neutraal ","Risico onveilige ontmoeting",88,314,-14.0127388535032
+"166","Jagers","Neutraal ","Schade private eigendommen",45,314,-7.1656050955414
+"167","Jagers","Neutraal ","Schade publieke eigendommen",55,314,-8.75796178343949
+"168","Jagers","Neutraal ","Verkeersveiligheid",22,314,-3.5031847133758
+"169","Jagers","Neutraal ","Verlies toerisme",103,314,-16.4012738853503
+"170","Landbouwers","Neutraal ","Beschikbaarheid wildbraad",61,194,-15.7216494845361
+"171","Landbouwers","Neutraal ","Gezondheidsrisico mensen",12,194,-3.09278350515464
+"172","Landbouwers","Neutraal ","Gezondheidsrisico vee",1,194,-0.257731958762887
+"173","Landbouwers","Neutraal ","Inkomsten toerisme",59,194,-15.2061855670103
+"174","Landbouwers","Neutraal ","Mogelijkheid tot waarnemingen",44,194,-11.340206185567
+"175","Landbouwers","Neutraal ","Negatieve impact andere soorten",39,194,-10.0515463917526
+"176","Landbouwers","Neutraal ","Negatieve impact ecosysteem",44,194,-11.340206185567
+"177","Landbouwers","Neutraal ","Negatieve impact jacht",57,194,-14.6907216494845
+"178","Landbouwers","Neutraal ","Positieve impact andere soorten",53,194,-13.659793814433
+"179","Landbouwers","Neutraal ","Positieve impact ecosysteem",61,194,-15.7216494845361
+"180","Landbouwers","Neutraal ","Positieve impact jacht",44,194,-11.340206185567
+"181","Landbouwers","Neutraal ","Risico onveilige ontmoeting",22,194,-5.67010309278351
+"182","Landbouwers","Neutraal ","Schade private eigendommen",15,194,-3.8659793814433
+"183","Landbouwers","Neutraal ","Schade publieke eigendommen",21,194,-5.41237113402062
+"184","Landbouwers","Neutraal ","Verkeersveiligheid",10,194,-2.57731958762887
+"185","Landbouwers","Neutraal ","Verlies toerisme",49,194,-12.6288659793814
+"186","Natuurvereniging","Neutraal ","Beschikbaarheid wildbraad",38,130,-14.6153846153846
+"187","Natuurvereniging","Neutraal ","Gezondheidsrisico mensen",38,130,-14.6153846153846
+"188","Natuurvereniging","Neutraal ","Gezondheidsrisico vee",41,130,-15.7692307692308
+"189","Natuurvereniging","Neutraal ","Inkomsten toerisme",51,130,-19.6153846153846
+"190","Natuurvereniging","Neutraal ","Landbouwschade",38,130,-14.6153846153846
+"191","Natuurvereniging","Neutraal ","Mogelijkheid tot waarnemingen",50,130,-19.2307692307692
+"192","Natuurvereniging","Neutraal ","Negatieve impact andere soorten",34,130,-13.0769230769231
+"193","Natuurvereniging","Neutraal ","Negatieve impact ecosysteem",26,130,-10
+"194","Natuurvereniging","Neutraal ","Negatieve impact jacht",40,130,-15.3846153846154
+"195","Natuurvereniging","Neutraal ","Positieve impact andere soorten",28,130,-10.7692307692308
+"196","Natuurvereniging","Neutraal ","Positieve impact ecosysteem",26,130,-10
+"197","Natuurvereniging","Neutraal ","Positieve impact jacht",32,130,-12.3076923076923
+"198","Natuurvereniging","Neutraal ","Risico onveilige ontmoeting",36,130,-13.8461538461538
+"199","Natuurvereniging","Neutraal ","Schade private eigendommen",35,130,-13.4615384615385
+"200","Natuurvereniging","Neutraal ","Schade publieke eigendommen",40,130,-15.3846153846154
+"201","Natuurvereniging","Neutraal ","Verkeersveiligheid",27,130,-10.3846153846154
+"202","Natuurvereniging","Neutraal ","Verlies toerisme",46,130,-17.6923076923077

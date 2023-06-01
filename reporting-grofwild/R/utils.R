@@ -144,12 +144,12 @@ setMonthsInDutch <- function(x) {
 #' \code{year}, \code{content}, \code{fileExt}
 #' @author mvarewyck
 #' @export
-nameFile <- function(species, year, extraInfo = NULL, content, fileExt) {
+nameFile <- function(species, year = NULL, extraInfo = NULL, content, fileExt) {
   
   paste0(
     if (length(species) > 0)
-      paste0(paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"), "_"),
-    if (length(year) > 1) paste(year, collapse = "-") else year,
+      paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"),
+    if (!is.null(year)) paste0("_", if (length(year) > 1) paste(year, collapse = "-") else year),
     if (!is.null(extraInfo)) {paste0("_", paste(extraInfo, collapse = "-"))}, 
     "_", content, 
     ".", fileExt
@@ -162,10 +162,12 @@ nameFile <- function(species, year, extraInfo = NULL, content, fileExt) {
 
 #' Capitalize first letter
 #' @param names character vector, names to be capitalized (e.g. countries)
+#' @param keepNames boolean, whether to keep the names for the returned vector;
+#' default is TRUE
 #' @return character vector, capitalized version of \code{names}
 #' @author mvarewyck
 #' @export
-simpleCap <- function(names) {
+simpleCap <- function(names, keepNames = TRUE) {
   
   sapply(names, function(x) {
       
@@ -175,7 +177,7 @@ simpleCap <- function(names) {
       s <- tolower(as.character(x))
       paste0 (toupper(substring(s, 1, 1)), substring(s, 2))
       
-    })
+    }, USE.NAMES = keepNames)
   
 }
 
@@ -275,6 +277,9 @@ percentCollected <- function(nAvailable, nTotal, text) {
   
 }
 
+
+
+
 #' get path of report available in the package
 #' @return string with path of report
 #' @author Laure Cougnaud and Kirsten Van Hoorde
@@ -301,17 +306,61 @@ getPathCss <- function(){
   
 }
 
-#' get path of file contained in the 'figure' folder of the report
-#' @param figureName string name of the figure file
-#' ('graph[1-3].png')
-#' @return string with path of figure
-#' @author Laure Cougnaud
+#' get path of INBO logo file
+#' 
+#' @return character, path of logo file
+#' @author mvarewyck
 #' @export
-getPathFigure <- function(figureName){
+getPathLogo <- function() {
   
-  basePath <- system.file("report/figure", package = "reportingGrofwild")
-  pathFile <- dir(basePath, pattern = figureName, full.names = TRUE)
+  system.file("ui/www", "logo.png", package = "reportingGrofwild")
   
-  return(pathFile)
+}
+
+
+
+#' Disclaimer text when limited information is available
+#' 
+#' @param doHTML boolean, whether to format the text with html tags
+#' @return character
+#' 
+#' @author mvarewyck
+#' @importFrom htmltools tags
+#' @export
+getDisclaimerLimited <- function(doHTML = TRUE) {
+  
+  myText <- "\U002A Van deze indicator zijn slechts gedeeltelijke gegevens beschikbaar voor de gekozen schaal"
+
+  if (doHTML)
+    tags$p(tags$em(myText)) else
+    myText
+
+}
+
+
+#' Style plotly object for Rmd report
+#' 
+#' @param myPlot plotly object
+#' @return plotly object
+#' 
+#' @author mvarewyck
+#' @import plotly
+#' @export
+plotlyReport <- function(myPlot) {
+  
+  myPlot <- myPlot %>% config(displayModeBar = FALSE)
+  
+  # remove gridlines
+  if (is.null(myPlot$x$layoutAttrs[[1]]$xaxis))
+    myPlot$x$layoutAttrs[[1]]$xaxis <- list(showgrid = FALSE) else
+    myPlot$x$layoutAttrs[[1]]$xaxis$showgrid <- FALSE
+#  myPlot$x$layoutAttrs[[1]]$xaxis$ticks <- "outside"
+  
+  if (is.null(myPlot$x$layoutAttrs[[1]]$yaxis))
+    myPlot$x$layoutAttrs[[1]]$yaxis <- list(showgrid = FALSE) else
+    myPlot$x$layoutAttrs[[1]]$yaxis$showgrid <- FALSE
+#  myPlot$x$layoutAttrs[[1]]$yaxis$ticks <- "outside"
+  
+  myPlot
   
 }

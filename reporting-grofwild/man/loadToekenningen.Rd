@@ -4,7 +4,10 @@
 \alias{loadToekenningen}
 \title{Read toekenningen (Ree) data}
 \usage{
-loadToekenningen(bucket = config::get("bucket"))
+loadToekenningen(
+  bucket = config::get("bucket", file = system.file("config.yml", package =
+    "reportingGrofwild"))
+)
 }
 \arguments{
 \item{bucket}{character, name of the S3 bucket as specified in the config.yml file;

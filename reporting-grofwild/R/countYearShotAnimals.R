@@ -78,12 +78,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   colnames(totalCount) <- c("year", "value")
   
   # Extract month/day
-  plotData$maand <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
-        strsplit(datum, split = "-")[[1]][2]
-      }))
-  plotData$dag <- as.numeric(sapply(plotData$afschot_datum, function(datum) {
-        strsplit(datum, split = "-")[[1]][3]
-      }))
+  plotData$maand <- as.numeric(format(plotData$afschot_datum, "%m"))
+  plotData$dag <- as.numeric(format(plotData$afschot_datum, "%d"))
    
   
   if (interval == "Per jaar") {
@@ -258,9 +254,8 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
 #' @param regionLevels numeric vector, region level choices
 #' @inheritParams countYearShotAnimals
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
   

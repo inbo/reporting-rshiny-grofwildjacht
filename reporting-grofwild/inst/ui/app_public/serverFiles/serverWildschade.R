@@ -31,7 +31,20 @@ output$schade_subcode <- renderUI({
       )
       
     })
+  
+  output$schade_warning <- renderUI({
+      
+      validate(need(input$schade_species, "Gelieve wildsoort(en) te selecteren"),
+          need(input$schade_code, "Gelieve type(s) schade te selecteren"))
+      
+    })
 
+  observe({
+      
+      shinyjs::toggle(id = "schade_results", 
+        condition = !is.null(input$schade_species) && !is.null(input$schade_code)) 
+      
+    })
 
 
 
@@ -161,7 +174,12 @@ countYearProvinceServer(id = "schade",
     labelTypes = "Regio", 
     typesDefault = reactive("provinces"), 
     timeRange = results$schade_timeRange,
-    uiText = uiText)
+    title = reactive({
+        input$tabs   # ensure title is updated
+        title <- uiText$title[uiText$plotFunction == "countYearProvinceUI"]
+        gsub("Gerapporteerd aantal", "Aantal schademeldingen", title)
+      })
+  )
 
 
 # Plot 2: Gerapporteerd aantal schadegevallen per jaar en variabele

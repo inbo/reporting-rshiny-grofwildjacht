@@ -1,7 +1,7 @@
 #' Create data for plotting trend over years in \code{\link{trendYearFlanders}}
 #' @inheritParams createSpaceData
 #' @inheritParams trendYearRegion
-#' @inheritParams readShapeData
+#' @inheritParams createShapeData
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
@@ -17,7 +17,6 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   wildsoort <- NULL
   
   unit <- match.arg(unit)
-  
   
   # Select correct spatial data
   chosenTimes <- timeRange[1]:timeRange[2]
@@ -54,15 +53,14 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     matchLocaties <- plotData[, c("PartijNummer", "WBE_Naam_Toek")]
     matchLocaties <- matchLocaties[!duplicated(matchLocaties), ]
   } else matchLocaties <- NULL
+
   
-  
- 
   # Select subset for time & species
   plotData <- subset(plotData, 
     subset = afschotjaar %in% chosenTimes & wildsoort %in% species,
     select = c("afschotjaar", "locatie"))
   
-
+  
   # Exclude data with missing time or space
   plotData <- plotData[!is.na(plotData$afschotjaar) & 
       !is.na(plotData$locatie) & plotData$locatie != "",]
@@ -77,14 +75,17 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
           matchLocaties$PartijNummer else unique(spatialData$NAAM)))
   
   if (unit == "relativeDekking") {
+    if ("year" %in% colnames(biotoopData))
     # add dekkingsgraad 100ha bos&natuur      
     fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos", "year")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year"))
+      by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year")) else
+    fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos")],
+      by.x = "locatie", by.y = "regio")
     names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
   } else {
     # add Area
     fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))   
+      by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
   }
   
   allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
@@ -115,11 +116,12 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
     allData <- allData[c("afschotjaar", "locatie", "niscode", "postcode", 
         setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
     
+    
   } else if (regionLevel == "WBE_buitengrenzen") {
     
     allData$locatie <- matchLocaties$WBE_Naam_Toek[
       match(allData$locatie, matchLocaties$PartijNummer)]
-    
+
   }
   
   
@@ -225,7 +227,6 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
     layout(title = title,
       xaxis = list(title = "Jaar"), 
       yaxis = list(title = paste0("Aantal", unitName),
-        tickformat = if (unit == "absolute") ",d" else NULL,
         range = c(0, ~max(freq)*1.05),
         rangemode = "nonnegative"),
       showlegend = TRUE,
@@ -238,28 +239,30 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
   names(plotData)[names(plotData) == "freq"] <- paste0("aantal", unitName)
   
   
-  return(list(plot = pl, data = plotData, warning = if (!is.null(colorList$warning))
-        "Door het grote aantal gekozen regio's werden de kleuren van deze grafiek hergebruikt. 
-          Hierdoor is verwarring mogelijk. Selecteer minder regio's om dit te voorkomen."))
+  return(list(plot = pl, data = plotData, warning = colorList$warning))
   
 }
 
 
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - server side
 #' 
-#' NOTE: Currently only used for type = "wbe"
+#' @inheritParams countAgeGenderServer 
+#' @inheritParams trendYearRegion 
 #' @inheritParams createTrendData
 #' @param id character, unique identifier for the module
 #' @param geoData reactive data.frame, geographical data for the selected species
+#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @param type character, type of module e.g. "wbe"
-#' @param regionLevelName character, region name to be shown in the plot title
+#' @param locaties reactive character vector, region name to be shown in the plot title
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoData,
-  type = "wbe", regionLevelName) {
+trendYearRegionServer <- function(id, data, timeRange = reactive(NULL), 
+  species, regionLevel = reactive("WBE_buitengrenzen"), locaties,
+  geoData, allSpatialData, biotoopData = reactive(NULL), title = reactive(NULL),
+  type = "wbe") {
   
   type <- match.arg(type)
   
@@ -267,94 +270,147 @@ trendYearRegionServer <- function(id, species, allSpatialData, biotoopData, geoD
   moduleServer(id,
     function(input, output, session) {
       
-      
       ns <- session$ns
-      
       
       output$trendRegionTitle <- renderUI({
           
           h3("Evolutie", 
             if (type == "wildschade") "schademeldingen" else "gerapporteerd afschot", 
             if (type != "wbe") tags$br(),
-            regionLevelName())
+            locaties())
+          
+        })
+      
+      trendRange <- reactive({
+          
+          if (is.null(timeRange()))
+              range(req(geoData()$afschotjaar), na.rm = TRUE) else
+              timeRange()
           
         })
       
       output$period <- renderUI({
-          
-          req(nrow(geoData()) > 0)
-          
+       
           sliderInput(inputId = ns("trendPeriod"), 
             label = if (type == "wbe") "Periode" else "Periode (grafiek)", 
-            value = c(min(geoData()$afschotjaar), defaultYear),
-            min = min(geoData()$afschotjaar),
-            max = max(geoData()$afschotjaar),
+            value = c(trendRange()[1], config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))),
+            min = trendRange()[1],
+            max = trendRange()[2],
             step = 1,
             sep = "")
           
         })
       
+      # Create data for map, time plot
       trendRegionData <- reactive({
           
           createTrendData(
             data = geoData(),
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData,
+            biotoopData = biotoopData(),
             timeRange = req(input$trendPeriod),
             species = req(species()),
-            regionLevel = "WBE_buitengrenzen",
+            regionLevel = regionLevel(),
             unit = req(input$trendUnit)
           )
           
         })
       
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkYearRegion",
+            label = paste("FIGUUR:", title()))
+          
+        })
+      
+      output$disclaimerTrendRegion <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })      
+      
       
       callModule(module = optionsModuleServer, id = "trendRegion", 
-        data = trendRegionData)
-      callModule(module = plotModuleServer, id = "trendRegion",
+        data = trendRegionData,
+        timeRange = trendRange)
+      toReturn <- callModule(module = plotModuleServer, id = "trendRegion",
         plotFunction = "trendYearRegion", 
         data = trendRegionData,
-        locaties = regionLevelName,
-        combinatie = reactive(FALSE),
+        locaties = locaties,
+        combinatie = reactive(if (is.null(input$combinatie)) FALSE else input$combinatie),
         timeRange = reactive(input$trendPeriod),
         unit = reactive(input$trendUnit),
         isSchade = (type == "wildschade")
       )
       
+      return(reactive(c(
+            toReturn(),
+            isolate(reactiveValuesToList(input))
+          )))
+            
     })
   
 }
 
 
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
-#' @param unitChoices, character vector with choices for the units
-#' @param id unique identifier
 #' 
-#' @author mvarewyck
+#' @inherit welcomeSectionUI
+#' @param plotFunction character, for matching uiText
+#' @param showCombinatie boolean, whether to show the option to combine lines
+#' @param doHide boolean, whether to initially hide the plot; default TRUE
+#' @param unitChoices, character vector with choices for the units
+#' 
 #' @export
-trendYearRegionUI <- function(id, unitChoices) {
+trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI", 
+  showCombinatie = FALSE, doHide = TRUE,
+  unitChoices = c("Aantal" = "absolute", 
+    "Aantal/100ha" = "relative", 
+    "Aantal/100ha bos & natuur" = "relativeDekking")) {
   
   ns <- NS(id)
   
-  tagList(
+  uiText <- uiText[uiText$plotFunction == plotFunction, ]
+  
+  toShow <- tagList(
     
-    uiOutput(ns("trendRegionTitle")),
     fixedRow(
+      
+      uiOutput(ns("disclaimerTrendRegion")),
       
       column(4,
         wellPanel(
           uiOutput(ns("period")),
           selectInput(inputId = ns("trendUnit"), label = "Eenheid",
             choices = unitChoices),
+          if (showCombinatie)
+            checkboxInput(inputId = ns("combinatie"), 
+              label = "Combineer alle geselecteerde regio's"),
           optionsModuleUI(id = ns("trendRegion"), exportData = TRUE,
             doWellPanel = FALSE)
-        )
+        ),
+        tags$p(HTML(uiText[, id]))
       ),
       column(8, plotModuleUI(id = ns("trendRegion")))
     ),
     tags$hr(),
   )
   
-  
+  if (plotFunction == "trendYearRegionUI")
+    tagList(
+      uiOutput(ns("trendRegionTitle")),
+      toShow
+    ) else
+    tagList(
+      actionLink(inputId = ns("linkYearRegion"), label = uiText$title, class = "action-h3"),
+      conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
+        toShow
+      )
+    ) 
+    
 }
 

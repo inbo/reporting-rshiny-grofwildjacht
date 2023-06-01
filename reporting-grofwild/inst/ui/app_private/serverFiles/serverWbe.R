@@ -204,7 +204,8 @@ mapFlandersServer(id = "wbe",
   hideGlobeDefault = FALSE,
   geoData = results$wbe_geoDataKbo,  # independent of species
   biotoopData = biotoopData,
-  allSpatialData = spatialData)
+  allSpatialData = spatialData
+)
 
 
 
@@ -218,10 +219,10 @@ mapFlandersServer(id = "wbe",
 trendYearRegionServer(id = "wbe",
   species = reactive(input$wbe_species),
   allSpatialData = spatialData,
-  biotoopData = biotoopData,
+  biotoopData = reactive(biotoopData),
   geoData = results$wbe_geoData, 
-  type = "wbe", 
-  regionLevelName = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek))
+  locaties = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
+        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))
 )
 
 ## User input for controlling the plots and create plotly
@@ -316,11 +317,12 @@ results$typesFemale <- reactive({
     
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))
     
-    if (input$wbe_species == "Ree") {
+    types <- if (input$wbe_species == "Ree") {
       types[types %in% c("Reegeit", "Smalree")] 
     } else {
       types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
     }
+    c(types, "Onbekend")
     
   })
 

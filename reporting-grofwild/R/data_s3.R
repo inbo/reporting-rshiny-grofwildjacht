@@ -21,6 +21,30 @@ setupS3 <- function(awsFile = "~/.aws/credentials") {
   )
   
 }
+
+
+#' Download all files from the S3 bucket for local use
+#' @param dataDir path to folder where to save all the files from S3
+#' @inheritParams readS3
+#' 
+#' @return TRUE, if all downloads succeeded
+#' 
+#' @author mvarewyck
+#' @importFrom aws.s3 get_bucket_df save_object
+#' @export
+downloadS3 <- function(
+  dataDir = file.path("~/git/reporting-rshiny-grofwildjacht/dataS3"),
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  
+  # List all available files on the S3 bucket
+  allFiles <- aws.s3::get_bucket_df(bucket = bucket)
+  
+  for (iFile in allFiles$Key)
+    aws.s3::save_object(object = iFile, bucket = bucket, file = file.path(dataDir, iFile))
+  
+  return(TRUE)
+  
+}
   
   
 #' Quick check for valid user credentials to make connection with S3 bucket
@@ -111,18 +135,19 @@ readS3 <- function(FUN = read.csv, ..., file,
 
 #' Write files to the S3 bucket
 #' @param dataFiles character vector, path to files to be uploaded
+#' @inheritParams readS3
 #' @return boolean vector, TRUE for each dataFile that was uploaded correctly
 #' 
 #' @author mvarewyck
 #' @importFrom aws.s3 put_object
 #' @importFrom config get
 #' @export
-writeS3 <- function(dataFiles) {
+writeS3 <- function(dataFiles,
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
       
       response <- sapply(dataFiles, function(iFile) {
           put_object(file = iFile, object = basename(iFile), 
-            bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-            multipart = TRUE)
+            bucket = bucket, multipart = TRUE)
         })
       
       response

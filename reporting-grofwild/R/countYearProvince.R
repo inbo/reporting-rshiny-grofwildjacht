@@ -13,6 +13,7 @@
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
 #' @inheritParams filterSchade
+#' @param title character, title prefix; default is NULL
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
@@ -33,11 +34,11 @@
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
-        sourceIndicator = NULL, width = NULL, height = NULL) {
+        sourceIndicator = NULL, title = NULL, width = NULL, height = NULL) {
   
   
   type <- match.arg(type)
-	 wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
+	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
@@ -62,25 +63,13 @@ countYearProvince <- function(data, jaartallen = NULL,
     stop(paste0("Geen data beschikbaar voor de geselecteerde afschotjaren: ", jaartallen, "."))
   }
   
-  # Rename provincie NA to "Onbekend" -  provincie is already factor
-  if (type == "provinces") {
-  	  plotData$locatie <- factor(plotData$locatie, levels = levels(addNA(plotData$locatie)), 
-        labels = c(levels(plotData$locatie), "Onbekend"), exclude = NULL)
   
-  } else {
-  	
-    plotData$locatie[is.na(plotData$locatie)] <- "Onbekend"
-  }
-
 	# Exclude unused provinces/fbz's
-  plotData$locatie <- as.factor(plotData$locatie)    
-	plotData$locatie <- droplevels(plotData$locatie)
+  plotData$locatie <- droplevels(as.factor(plotData$locatie))
   
   # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
-  if (type == "faunabeheerzones") {
+  if (type == "faunabeheerzones")
     plotData$locatie <- factor(plotData$locatie, levels = stringr::str_sort(levels(plotData$locatie), numeric = TRUE))
-#    levels(plotData$locatie) <- stringr::str_sort(levels(plotData$locatie), numeric = TRUE)
-  }
 	
 	# Summarize data per province and year
 	plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
@@ -89,33 +78,36 @@ countYearProvince <- function(data, jaartallen = NULL,
 	summaryData <- melt(table(plotData), id.vars = "afschotjaar")
 	
 	# Summarize data per year
-	totalCount <- table(plotData$afschotjaar)
-	
+	totalCount <- as.data.frame(table(plotData$afschotjaar))
 	
 	# For optimal displaying in the plot
   summaryData$locatie <- as.factor(summaryData$locatie)
-	summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
-	summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+  summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	
  
  colorList <- replicateColors(nColors = nlevels(summaryData$locatie))
-	title <- paste0(wildNaam, " ",
+	title <- paste0(if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
 			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
 					jaartallen)
 	)
+  
+  singleYear <- length(unique(summaryData$afschotjaar)) == 1
 	
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, color = ~locatie,
 					colors = colorList$colors, type = "bar",  width = width, height = height) %>%
 			layout(title = title,
-					xaxis = list(title = "Jaar"), 
+					xaxis = list(title = "Jaar",
+            tickvals = unique(summaryData$afschotjaar), 
+            ticktext = unique(summaryData$afschotjaar)
+          ), 
 					yaxis = list(title = "Aantal"),
 					margin = list(b = 80, t = 100), 
-					barmode = ifelse(nlevels(summaryData$afschotjaar) == 1, "group", "stack"),
-					annotations = list(x = levels(summaryData$afschotjaar), 
-							y = totalCount, 
-							text = paste(ifelse(nlevels(summaryData$afschotjaar) == 1, "totaal:", ""), totalCount),
+					barmode = if (singleYear) "group" else "stack",
+					annotations = list(x = totalCount$Var1, 
+							y = if (singleYear) max(summaryData$value) else totalCount$Freq, 
+							text = paste(if (singleYear) "totaal:", totalCount$Freq),
 							xanchor = 'center', yanchor = 'bottom',
 							showarrow = FALSE),
           showlegend = TRUE)  
@@ -135,7 +127,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - server side
-#' @inheritParams countAgeGenderServer 
+#' @inheritParams trendYearRegionServer
 #' @inheritParams countYearProvince
 #' @inheritParams optionsModuleServer
 #' @return no return value
@@ -144,23 +136,30 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
-  typesDefault = types, timeRange, uiText) {
+  typesDefault = types, timeRange, title) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
       
-      output$titleYearProvince <- renderUI({
+      observe({
           
-          title <- uiText$title[uiText$plotFunction == "countYearProvinceUI"]
-          
-          if (id == "schade")
-            title <- gsub("Gerapporteerd aantal", "Aantal schademeldingen", title)
-          
-          h3(HTML(title))
+          req(title())
+          updateActionLink(session = session, inputId = "linkYearProvince",
+            label = paste("FIGUUR:", title()))
           
         })
+      
+      output$disclaimerYearProvince <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
+
       
       # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearProvince", 
@@ -172,6 +171,7 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
       )
       callModule(module = plotModuleServer, id = "yearProvince",
         plotFunction = "countYearProvince", 
+        title = if (id == "dash") "Aantal drukjachten" else NULL,
         data = data)
       
     })
@@ -181,22 +181,26 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 
 
 #' Shiny module for creating the plot \code{\link{countYearProvince}} - UI side
-#' @template moduleUI
-#' @inheritParams optionsModuleUI
+#' @inherit welcomeSectionUI
+#' @inheritParams trendYearRegionUI
+#' @inheritParams optionsModuleUI 
 #' 
-#' @author mvarewyck
 #' @export
-countYearProvinceUI <- function(id, uiText, showType = FALSE, showDataSource = NULL) {
+countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI",
+  showType = FALSE, showDataSource = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == plotFunction, ]
   
   tagList(
     
-    actionLink(inputId = ns("linkYearProvince"), 
-      label = uiOutput(ns("titleYearProvince"))),
-    conditionalPanel("input.linkYearProvince % 2 == 1", ns = ns,
+    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(uiText$title)), 
+      class = "action-h3"),
+    conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
+      
+      uiOutput(ns("disclaimerYearProvince")),
+
       
       fixedRow(
         
@@ -209,9 +213,9 @@ countYearProvinceUI <- function(id, uiText, showType = FALSE, showDataSource = N
         ),
         column(8, 
           plotModuleUI(id = ns("yearProvince"))
-        ),
-        tags$hr()
-      )
+        )
+      ),
+      tags$hr()
     )
   )
   

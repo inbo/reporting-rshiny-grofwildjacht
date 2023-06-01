@@ -4,14 +4,31 @@
 \alias{countYearProvinceServer}
 \title{Shiny module for creating the plot \code{\link{countYearProvince}} - server side}
 \usage{
-countYearProvinceServer(id, data, timeRange)
+countYearProvinceServer(
+  id,
+  data,
+  types = NULL,
+  labelTypes = "Type",
+  typesDefault = types,
+  timeRange,
+  title
+)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
 
 \item{data}{data.frame for the plot function}
 
+\item{types}{defines the species types that can be selected}
+
+\item{labelTypes}{character, the displayed label for selecting options field}
+
+\item{typesDefault}{defines the default values for \code{types},
+same as \code{types} by defualt}
+
 \item{timeRange}{numeric vector of length 2, min and max year to subset data}
+
+\item{title}{reactive character, title with asterisk to show in the \code{actionLink}}
 }
 \value{
 no return value

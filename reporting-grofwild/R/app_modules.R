@@ -43,14 +43,6 @@ optionsModuleUI <- function(id,
       if (!is.null(summarizeBy))
         radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer",
             choices = summarizeBy),
-#          if (showLegend)
-#            selectInput(inputId = ns("legend"), "Legende",
-#                choices = c("<none>" = "none", 
-#                    "Bovenaan rechts" = "topright", 
-#                    "Onderaan rechts" = "bottomright", 
-#                    "Bovenaan links" = "topleft",
-#                    "Onderaan links" = "bottomleft")
-#            ),
       if(showYear)
         uiOutput(ns("year")),
       if (showTime)
@@ -60,8 +52,11 @@ optionsModuleUI <- function(id,
       if (!is.null(regionLevels))
         fluidRow(
             column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                    choices = c("Vlaanderen" = "flanders", "Provincie" = "provinces", 
-                        "Fusiegemeenten" = "communes", "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
+                    choices = c(
+                      "Vlaanderen" = "flanders", 
+                      "Provincie" = "provinces", 
+                      "Fusiegemeenten" = "communes", 
+                      "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
             column(8, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
@@ -119,7 +114,8 @@ optionsModuleUI <- function(id,
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE, definedYear = defaultYear,
+    multipleTypes = FALSE, 
+    definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
     categories = NULL, intervals = NULL) {
   
   ns <- session$ns
@@ -336,7 +332,7 @@ optionsModuleServer <- function(input, output, session,
         selectInput(inputId = ns("interval"), label = "Interval", choices = intervals)
         
       })
-  
+ 
 }
 
 
@@ -357,7 +353,7 @@ plotModuleUI <- function(id, height = "600px", filter = FALSE) {
   
   tagList(
       tags$div(align = "center",
-          withSpinner(plotlyOutput(ns("plot"), height = height))
+          withSpinner(plotlyOutput(ns("plot"), height = height), hide.ui = FALSE)
       ),
       uiOutput(outputId = ns("warning"))
   )
@@ -397,7 +393,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   
   ns <- NS(id)
   
-  tagList(
+  tags$div(style = "margin-bottom: 10px",
       withSpinner(DT::dataTableOutput(ns("table"))),
       if (includeTotal)
         uiOutput(ns("total"))
@@ -405,21 +401,6 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   
 }
 
-#' Interactive table generated with datatable (ui-side)
-#' @inheritParams tableModuleUI
-#' @return ui object 
-#' @author Eva Adriaensen
-#' @importFrom shinycssloaders withSpinner
-#' @importFrom shiny NS
-#' @importFrom DT dataTableOutput
-#' @export
-datatableModuleUI <- function(id) {
-  
-  ns <- NS(id)
-  
-  tagList(withSpinner(DT::dataTableOutput(ns("table"))))
-  
-}
 
 
 #' Interactive plot or table (server-side)
@@ -444,11 +425,13 @@ datatableModuleUI <- function(id) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
-#' @param schadeTitles boolean, whether title should include 'schade' instead of 'afschot'
+#' @param verticalGroups reactive boolean; see also \link{barDraagkracht};
+#' default is NULL
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
+#' @inheritParams barDraagkrachtServer
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' 
@@ -461,10 +444,12 @@ datatableModuleUI <- function(id) {
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL, groupVariable = NULL,
+    xVar = NULL, yVar = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
-    variable = NULL, combinatie = NULL, schadeTitles = FALSE,
+    variable = NULL, combinatie = NULL, title = NULL,
+    verticalGroups = NULL,
     fullNames = NULL) {
   
   subData <- reactive({
@@ -489,7 +474,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
   
-  wildNaam <- reactive(unique(data()$wildsoort))
+  wildNaam <- reactive({
+      
+      toReturn <- unique(data()$wildsoort)
+      if (is.null(toReturn))
+        toReturn <- "Wild zwijn"
+      
+      toReturn
+      
+    })
   
   
   subToekenningsData <- reactive({
@@ -547,6 +540,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
+            if(!is.null(xVar))
+              list(xVar = xVar),
+            if(!is.null(yVar))
+              list(yVar = yVar),
+            if(!is.null(verticalGroups))
+              list(verticalGroups = verticalGroups()),
             if(!is.null(fullNames))
               list(fullNames = fullNames),
             
@@ -571,8 +570,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(timeRange = timeRange()),
             if (!is.null(unit))
               list(unit = unit()),
-            if (isTRUE(schadeTitles))
-              list(schadeTitles = schadeTitles),
             if (!is.null(schadeChoices))
               list(schadeChoices = schadeChoices()),
             if (!is.null(schadeChoicesVrtg))
@@ -585,6 +582,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               if (!is.null(combinatie()))
                 list(combinatie = combinatie())
             },
+            if (!is.null(title))
+              list(title = title),
             if (!is.null(input$interval))
               list(interval = input$interval)
         
@@ -598,7 +597,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         tryCatch({
             tmpResult <- do.call(plotFunction, args = argList())
             validate(need(!is.null(tmpResult), "Niet beschikbaar"))
-            tmpResult
+            c(tmpResult, isolate(reactiveValuesToList(input)))
           },
             error = function(err) {
               validate(need(FALSE, err$message))
@@ -613,6 +612,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
         resultFct()$plot
         
       })
+    
+  # Prevent that plotly images are squeezed
+  outputOptions(output, "plot", suspendWhenHidden = FALSE)
     
   output$accuracy <- flexdashboard::renderGauge({
       
@@ -695,17 +697,19 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       } else {
         
-        DT::datatable(resultFct(), rownames = FALSE,
+        tmpTable <- resultFct()$data
+        
+        DT::datatable(tmpTable, rownames = FALSE,
             options = list(dom = 't', pageLength = -1,
-              columnDefs = list(list(targets = grep("Warning", colnames(resultFct())) - 1, visible = FALSE)))) %>%
+              columnDefs = list(list(targets = grep("Warning", colnames(tmpTable)) - 1, visible = FALSE)))) %>%
           formatStyle(
-            colnames(resultFct())[1],
+            colnames(tmpTable)[1],
             target = "row",
-            fontWeight = styleEqual(tail(resultFct()[, 1], n = 1), "bold")
+            fontWeight = styleEqual(tail(tmpTable[, 1], n = 1), "bold")
           ) %>%
           formatStyle(
-            grep("Verandering", colnames(resultFct()), value = TRUE),
-            grep("Warning", colnames(resultFct()), value = TRUE),
+            grep("Verandering", colnames(tmpTable), value = TRUE),
+            grep("Warning", colnames(tmpTable), value = TRUE),
             color = styleEqual(c("oranje", "rood"), c("orange", "red"))
           )
         
@@ -713,7 +717,9 @@ plotModuleServer <- function(input, output, session, plotFunction,
 
     })
   
-  }
+  return(reactive(resultFct()))
+  
+}
 
 
 #' Display formatted frequency table of data (ui-side)

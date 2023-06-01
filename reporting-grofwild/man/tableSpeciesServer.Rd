@@ -4,7 +4,7 @@
 \alias{tableSpeciesServer}
 \title{Shiny module for creating the plot \code{\link{countAgeGender}} - server side}
 \usage{
-tableSpeciesServer(id, data, timeRange, species)
+tableSpeciesServer(id, data, timeRange, species, uiText)
 }
 \arguments{
 \item{id}{character, unique identifier for the module}
@@ -14,6 +14,8 @@ tableSpeciesServer(id, data, timeRange, species)
 \item{timeRange}{numeric vector of length 2, min and max year to subset data}
 
 \item{species}{character, species for which to show the graphs}
+
+\item{uiText}{data.frame for description}
 }
 \value{
 no return value

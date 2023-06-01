@@ -118,7 +118,7 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
   # Rename columns
   colnames(toReturn)[1:3] <- c("Categorie", "Afschot", "Afschot relatief")
   
-  return(toReturn)
+  return(list(data = toReturn))
   
 }
 
@@ -142,7 +142,7 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
       
       ns <- session$ns
       
-      output$tableText <- renderUI({
+      output$tableSpeciesText <- renderUI({
           
           tags$p(HTML(decodeText(uiText[uiText$plotFunction == "tableSpeciesUI", id], species = species())))
         
@@ -170,9 +170,8 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 tableSpeciesUI <- function(id, uiText) {
   
@@ -189,7 +188,7 @@ tableSpeciesUI <- function(id, uiText) {
       column(4,
         optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, 
           showCategorie = TRUE, exportData = TRUE),
-        uiOutput(ns("tableText"))
+        uiOutput(ns("tableSpeciesText"))
       ),
       column(8, tableModuleUI(id = ns("tableSpecies")))
     

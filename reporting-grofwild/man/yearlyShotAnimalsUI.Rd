@@ -6,6 +6,14 @@
 \usage{
 yearlyShotAnimalsUI(id, uiText)
 }
+\arguments{
+\item{id}{character, unique identifier for the module}
+
+\item{uiText}{data.frame, HTML formatted text to be displayed in the UI}
+}
+\value{
+HTML object
+}
 \description{
 Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - UI side
 }

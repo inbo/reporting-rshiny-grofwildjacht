@@ -6,15 +6,32 @@
 
 context(paste("Test Data Loading", config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
 
+
 # setupS3()
+
+test_that("Preprocess data", {
+
+    skip("For local use only - will overwrite files")
+    
+    downloadS3()
+    
+    aws.s3::delete_object(object = "Toekenningen_ree.csv", bucket = "inbo-wbe-uat-data")
+    
+#    for (iType in c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen"))
+    for (iType in c("eco", "geo", "wildschade", "kbo_wbe"))
+      createRawData(dataDir = "~/git/reporting-rshiny-grofwildjacht/dataS3", type = iType)    
+    
+  })
+
+
 
 test_that("Connection to S3", {
     
     checkS3()
     
     # List all available files on the S3 bucket
-    tmpTable <- data.table::rbindlist(aws.s3::get_bucket(
-        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))))
+    tmpTable <- aws.s3::get_bucket_df(
+        bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
     # unique(tmpTable$Key)
     
     # Bucket is not empty
@@ -42,8 +59,8 @@ test_that("Upload data", {
     expect_true(all(response))
     
     if (FALSE) {
-      iFile <- basename(grep("meta_schade", dataFiles, value = TRUE))
-      aws.s3::delete_object(iFile, 
+      iShape <- basename(grep("meta_schade", dataFiles, value = TRUE))
+      aws.s3::delete_object(iShape, 
         bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
     }
         
@@ -55,34 +72,19 @@ test_that("Upload data", {
 ## 1. Shape Data
 ## --------------
 
-# This will update 
-# (1) spatialData.RData, spatialDataWBE.RData shape data and
-# (2) gemeentecodes.csv, file for matching NIS to NAAM
-# Next, install the package for the latest files to be available from the extdata folder
-
-test_that("Create Shape Data", {
-    
-    skip("WARNING: This will update and upload spatial data to the S3 bucket")
-    # spatialData.RData, shape data public app
-    # spatialDataWBE.RData, shape data private app
-    # gemeentecodes.csv, file for matching NIS to NAAM
-    
-    readShapeData()   # created shape data
-    
-  })
-
 
 test_that("Read Shape Data", {
     
-    # All
-    suppressWarnings(rm(spatialData))
-    readS3(file = "spatialData.RData")
-    expect_true(exists("spatialData"), info = "spatialData.RData")
+    # spatialData.RData
+    # spatialDataWBE.RData
+    # spreadData.RData
     
-    # WBE
-    suppressWarnings(rm(spatialDataWBE))
-    readS3(file = "spatialDataWBE.RData")
-    expect_true(exists("spatialDataWBE"), info = "spatialDataWBE.RData")
+    shapeFiles <- c("spatialData", "spatialDataWBE", "spreadData")
+    
+    for (iShape in shapeFiles) {
+      readS3(file = paste0(iShape, ".RData"))
+      expect_true(exists(iShape), info = paste0(iShape, ".RData"))
+    }
     
   })
 
@@ -92,10 +94,19 @@ test_that("Read Shape Data", {
 
 test_that("Eco, geo, schade data", {
     
-    ecoData <- loadRawData(type = "eco")
-    expect_is(ecoData, "data.frame", info = "rshiny_reporting_data_ecology.csv")
+    # gemeentecodes.csv (within loadRawData())
+    # rshiny_reporting_data_ecology.csv
+    # rshiny_reporting_data_geography.csv
+    # WildSchade_georef.csv
     
+    time1 <- Sys.time()
+    ecoData <- loadRawData(type = "eco")
+    Sys.time() - time1
+    expect_is(ecoData, "data.frame", info = "rshiny_reporting_data_ecology.csv")
+
+    time1 <- Sys.time()
     geoData <- loadRawData(type = "geo")
+    Sys.time() - time1
     expect_is(geoData, "data.frame", info = "rshiny_reporting_data_geography.csv")
     
     # Can we combine data sources? 
@@ -113,6 +124,18 @@ test_that("Eco, geo, schade data", {
     notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes@data$NAAM)
     expect_equal(0, length(notMatching[!is.na(schadeData$gemeente_afschot_locatie[notMatching])]))
     
+    
+    kboData <- loadRawData(type = "kbo_wbe")
+    expect_is(kboData, "data.frame", info = "Data_Partij_Cleaned.csv")
+    
+    # Combine kboData and geoData
+    matchData <- geoData[, c("KboNummer_Toek", "WBE_Naam_Toek")]
+    matchData <- matchData[!is.na(matchData$KboNummer_Toek), ]
+    kboData$check <- matchData$WBE_Naam_Toek[match(kboData$KboNummer_Partij, matchData$KboNummer_Toek)]
+    kboData <- kboData[!is.na(kboData$check), ]
+    expect_true(all(kboData$check == kboData$WBE.officieel), 
+      info = "Mismatch between KBO's from 'Data_Partij_Cleaned.csv' and 'rshiny_reporting_data_geography.csv'")
+    
   })
 
 
@@ -120,6 +143,15 @@ test_that("Eco, geo, schade data", {
 ## ----------------
 
 test_that("Habitat data", {
+    
+    # flanders_habitats.csv
+    # Provincies_habitats.csv
+    # Gemeentes_habitats.csv
+    # Faunabeheerzones_habitats.csv
+    # utm5_vlgrens_habitats.csv
+    # WBE_habitats_<year>.csv
+    
+    # wegdensiteit.csv (within loadHabitats())
     
     regionLevels <- list(
       "flanders" = "flanders_habitats", 
@@ -151,8 +183,8 @@ test_that("Habitat data", {
 
 test_that("Extra data", {
     
-    gemeenteData <- loadGemeentes()
-    expect_is(gemeenteData, "data.frame", info = "gemeentecodes.csv")
+    # Openingstijden_grofwild.csv
+    # Verwezenlijkt_categorie_per_afschotplan.csv
     
     openingstijdenData <- loadOpeningstijdenData()
     expect_is(openingstijdenData, "data.frame", info = "Openingstijden_grofwild.csv")
@@ -163,8 +195,30 @@ test_that("Extra data", {
   })
 
 
+## 5. Dashboard
+## -------------
 
-## 5. Debugging
+test_that("Dashboard data", {
+    
+    dashboardFiles <- c(
+      "waarnemingen_wild_zwijn_processed.csv",
+      "Data_inschatting.csv",
+      "F12_1_data.csv",
+      "F14_1_data.csv",
+      "F14_2_data.csv",
+      "F14_3_data.csv",
+      "F14_4_data.csv",
+      "F14_5_data.csv")
+    
+    for (iFile in dashboardFiles) {
+      tmpData <- readS3(FUN = data.table::fread, file = iFile)
+      expect_is(tmpData, "data.table", info = iFile)
+    }
+    
+  })
+
+
+## 6. Debugging
 ## -------------
 
 

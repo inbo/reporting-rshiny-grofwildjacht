@@ -15,7 +15,8 @@ optionsModuleServer(
   timeRange = NULL,
   timeLabel = "Periode",
   multipleTypes = FALSE,
-  definedYear = defaultYear,
+  definedYear = config::get("defaultYear", file = system.file("config.yml", package =
+    "reportingGrofwild")),
   categories = NULL,
   intervals = NULL
 )

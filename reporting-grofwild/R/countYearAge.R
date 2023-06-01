@@ -96,7 +96,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	
 	# For optimal displaying in the plot
 	summaryData$kaak <- factor(summaryData$kaak, levels = newLevelsKaak)
-	summaryData$jaar <- as.factor(summaryData$jaar)
+#	summaryData$jaar <- as.factor(summaryData$jaar)
 	
 	if (summarizeBy == "count") {
 		
@@ -124,31 +124,39 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 				  paste0("\n(in ", paste(regio, collapse = " en "), ")")
 	  )
 	
+  singleYear <- length(unique(summaryData$jaar)) == 1
 	
 	
 	# Create plot
 	toPlot <- switch(summarizeBy,
 			count = plot_ly(data = summaryData, x = ~jaar, 
-							y = ~freq, color = ~kaak, text = ~text, hoverinfo = "text+name",
+							y = ~freq, color = ~kaak, text = ~text,
+              textposition = "none", hoverinfo = "text+name",
 							colors = colors, type = "bar",
 							width = width, height = height) %>%
 					layout(title = title,
-							xaxis = list(title = "Jaar"), 
+							xaxis = list(
+                title = "Jaar", 
+                tickvals = unique(summaryData$jaar), 
+                ticktext = unique(summaryData$jaar)), 
 							yaxis = list(title = "Aantal"),
-							barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
+							barmode = if (singleYear) "group" else "stack",
 							margin = list(b = 120, t = 100),
 							annotations = list(x = totalCount$jaar, 
-									y = totalCount$totaal, 
-									text = paste(if (length(unique(totalCount$jaar)) == 1) "totaal:" else "", 
+									y = if (singleYear) max(summaryData$freq) else totalCount$totaal, 
+									text = paste(if (singleYear) "totaal:" else "", 
 											totalCount$totaal),
 									xanchor = 'center', yanchor = 'bottom',
 									showarrow = FALSE)),
 			percent = plot_ly(data = summaryData, x = ~jaar, 
-							y = ~percent, color = ~kaak, text = ~text, hoverinfo = "text+name",
+							y = ~percent, color = ~kaak, text = ~text,
+              textposition = "none", hoverinfo = "text+name",
 							colors = colors, type = "scatter", mode = "lines+markers",
 							width = width, height = height) %>%
 					layout(title = title,
-							xaxis = list(title = "Jaar"), 
+							xaxis = list(title = "Jaar", 
+                tickvals = unique(summaryData$jaar), 
+                ticktext = unique(summaryData$jaar)), 
 							yaxis = list(title = "Percentage", range = c(0, 100)),
 							margin = list(b = 120, t = 100)) %>% 
 					add_annotations(text = percentCollected(nAvailable = nCollected, nTotal = nRecords,
@@ -177,26 +185,47 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 
 #' Shiny module for creating the plot \code{\link{countYearAge}} - server side
 #' @inheritParams countAgeGenderServer 
+#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearAgeServer <- function(id, data, timeRange) {
+countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
       
+      observe({
+          
+          req(title())
+          updateActionLink(session = session, inputId = "linkYearAge",
+            label = paste("FIGUUR:", title()))
+          
+        })
+      
+      output$disclaimerYearAge <- renderUI({
+          
+          req(title())
+          
+          if (grepl("\\*", title()))
+            getDisclaimerLimited()
+          
+        })
+      
+      
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "yearAge", 
         data = data,
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "yearAge",
+      toReturn <- callModule(module = plotModuleServer, id = "yearAge",
         plotFunction = "countYearAge", 
         data = data)
+      
+      return(reactive(toReturn()))
       
     })
   
@@ -205,21 +234,26 @@ countYearAgeServer <- function(id, data, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{countYearAge}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
+#' @param showRegion boolean, whether to show the region filter; default is TRUE
+#' @param plotFunction character, for matching file with plot titles
+#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
-#' @author mvarewyck
 #' @export
-countYearAgeUI <- function(id, uiText) {
+countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
+  showRegion = TRUE, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  uiText <- uiText[uiText$plotFunction == plotFunction, ]
   
   tagList(
     
-    actionLink(inputId = ns("linkYearAge"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearAge % 2 == 1", ns = ns,
+    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(uiText$title)),
+      class = "action-h3"),
+    conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
+      
+      uiOutput(ns("disclaimerYearAge")),
       
       fixedRow(
         
@@ -227,14 +261,14 @@ countYearAgeUI <- function(id, uiText) {
           optionsModuleUI(id = ns("yearAge"), 
             summarizeBy = c("Aantal (alle data)" = "count",
               "Percentage (enkel ingezamelde onderkaken)" = "percent"),
-            showTime = TRUE, regionLevels = 1:2, exportData = TRUE),
+            showTime = TRUE, regionLevels = if (showRegion) 1:2, exportData = TRUE),
           tags$p(HTML(uiText[, id]))
         ),
         column(8, 
           plotModuleUI(id = ns("yearAge"))
-        ),
-        tags$hr()
-      )
+        )
+      ),
+      tags$hr()
     )
   )
   

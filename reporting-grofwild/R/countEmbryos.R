@@ -48,7 +48,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
  
  # Select data of specified years and type
  plotData <- subset(data, data$afschotjaar %in% jaartallen & 
-     data$type_comp %in% c(type, "Onbekend"),
+     data$type_comp %in% type,
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
      "leeftijd_comp_bron", "geslacht_comp_bron"))
  nRecords <- nrow(plotData)
@@ -127,7 +127,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     'Wild zwijn' = "wilde zwijnen"))
 	
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
-					text = ~text, hoverinfo = "x+text+name",
+					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
 			layout(title = title,

@@ -7,18 +7,27 @@
 mapFlanders(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones",
     "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),
+  borderRegion = NULL,
+  borderLocaties = NULL,
   species,
   year = NA,
   allSpatialData,
   summaryData,
-  colorScheme,
+  colorScheme = NULL,
   legend = "none",
+  legendText = "Legende",
   addGlobe = FALSE
 )
 }
 \arguments{
 \item{regionLevel}{character, regional level of interest should be one of 
 \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}}
+
+\item{borderRegion}{character, region level for which to draw black borders;
+if NULL no borders are plotted}
+
+\item{borderLocaties}{character, locations for which to draw black borders;
+if NULL default regions are selected}
 
 \item{species}{character, species of interest}
 
@@ -29,9 +38,11 @@ mapFlanders(
 \item{summaryData}{data.frame, as returned by \code{\link{createSpaceData}}}
 
 \item{colorScheme}{character vector, specifies the color palette for the different groups
-in the summary data}
+in the summary data; if NULL map is not colored}
 
 \item{legend}{character, legend placement; default is "none", no legend}
+
+\item{legendText}{character, legend title; default is 'Legende'}
 
 \item{addGlobe}{boolean, whether to add world map to background; default is FALSE}
 }

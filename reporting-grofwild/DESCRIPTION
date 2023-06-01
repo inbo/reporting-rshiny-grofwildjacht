@@ -15,6 +15,7 @@ Imports:
     DT, 
     flexdashboard,
     ggplot2,
+    htmltools,
     htmlwidgets,
     INBOtheme, 
     leaflet, 
@@ -30,6 +31,7 @@ Imports:
     reshape2, 
     rgdal, 
     rgeos, 
+    sf,
     shiny, 
     shinycssloaders, 
     sp, 
@@ -39,6 +41,11 @@ Imports:
 Depends: 
     maptools    
 Suggests:
+    rmarkdown,
+    magick,
+    oaStyle,
     shinyjs
+Remotes: 
+    inbo/INBOtheme
 Encoding: UTF-8
 RoxygenNote: 7.2.2

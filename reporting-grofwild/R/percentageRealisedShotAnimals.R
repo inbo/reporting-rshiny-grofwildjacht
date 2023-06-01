@@ -100,7 +100,8 @@ percentageRealisedShot <- function(data, regio, type = NULL,
     names(colors) <- unique(summaryData$variable)
     
     pl <- plot_ly(data = summaryData, x = ~jaar, y = ~value, color = ~variable,
-      text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+name+text",
+      text = ~paste("Toegekend:", toegekend), textposition = "none", 
+      hoverinfo = "x+y+name+text",
       colors = colors, type = "bar", width = width, height = height)
     
   } else {
@@ -108,7 +109,8 @@ percentageRealisedShot <- function(data, regio, type = NULL,
     colors <- replicateColors(nColors = 3)$colors
     
     pl <- plot_ly(data = plotData, x = ~jaar, y = ~round(percent, 2),
-      text = ~paste("Toegekend:", toegekend), hoverinfo = "x+y+text", 
+      text = ~paste("Toegekend:", toegekend),
+      textposition = "none", hoverinfo = "x+y+text", 
       marker = list(color = colors[1]),
       type = "bar", width = width, height = height)
     
@@ -175,9 +177,8 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
 #' @param regionLevels numeric vector, region level choices
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiText) {
   

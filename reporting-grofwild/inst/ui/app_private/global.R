@@ -40,6 +40,13 @@ defaultYear <- as.numeric(format(Sys.Date(), "%Y")) - 1
 outTempFileName <- tempfile(fileext = ".html")
 
 
+### Debugging
+### -----------
+
+if (!exists("doDebug"))
+  doDebug <- FALSE
+
+
 
 ### WBE configuration
 ### -----------
@@ -79,20 +86,26 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 ### -------------
 
 # Load object called spatialData
-readS3(file = "spatialDataWBE.RData")
-spatialData <- spatialDataWBE
-rm(spatialDataWBE)
-gc()
+if (!doDebug | !exists("spatialData")) {
+  readS3(file = "spatialDataWBE.RData")
+  spatialData <- spatialDataWBE
+  rm(spatialDataWBE)
+}
 
 # Data with observations and geographical information
-ecoData <- loadRawData(type = "eco")
-ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
+if (!doDebug | !exists("ecoData"))
+  ecoData <- loadRawData(type = "eco")
 
-geoData <- loadRawData(type = "geo")
-schadeData <- loadRawData(type = "wildschade")
-schadeData <- schadeData[schadeData@data$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
-biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
-toekenningsData <- loadToekenningen()
+if (!doDebug | !exists("geoData"))
+  geoData <- loadRawData(type = "geo")
+if (!doDebug | !exists("schadeData")) {
+  schadeData <- loadRawData(type = "wildschade")
+  schadeData <- schadeData[schadeData@data$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
+}
+if (!doDebug | !exists("biotoopData"))
+  biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
+if (!doDebug | !exists("toekenningsData"))
+  toekenningsData <- loadToekenningen()
 
 # Manipulate kbo: admin, multiple kbo
 matchingWbeData <- loadRawData(type = "kbo_wbe")
@@ -107,26 +120,20 @@ names(currentKbo) <- ifelse(is.na(matchingKbo),
   geoData$WBE_Naam_Toek[matchingKbo])
 currentKbo <- currentKbo[order(names(currentKbo))]
 
+toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
+
 gc()
 
-uiText <- read.csv(file = file.path(dataDir, "uiText.csv"))[, c("plotFunction", "title", "wbe")]
-uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
-if (!all(uiFunctions %in% ls("package:reportingGrofwild")))
-  warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
-    paste(uiFunctions[!uiFunctions %in% ls("package:reportingGrofwild")], collapse = ","))
+
+uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")[, c("plotFunction", "title", "wbe")]
+if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
+  uiFunctions <- uiFunctions[!is.na(uiFunctions)] 
+  uiCheck <- uiFunctions[!startsWith(uiFunctions, "F")]
+  if (!all(uiCheck %in% ls("package:reportingGrofwild")))
+    warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
+      paste(uiCheck[!uiCheck %in% ls("package:reportingGrofwild")], collapse = ","))
+  rm(uiFunctions, uiCheck)
+}
 
 
-
-### Debugging
-### -----------
-
-onStop(function() {
-			if (file.exists(".RDuetConsole"))
-				file.remove(".RDuetConsole")
-		})
-
-if (!exists("doDebug"))
-	doDebug <- FALSE
-
-if (doDebug)
-  checkS3()

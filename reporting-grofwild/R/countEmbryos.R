@@ -94,7 +94,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	tmpPercent <- ddply(tmpSummary, "afschotjaar", transform, 
 			percent = Freq / sum(Freq) * 100)
 	summaryData <- merge(tmpPercent, tmpSummary, all.y = TRUE)
-	
+	summaryData$afschotjaar <- as.numeric(as.character(summaryData$afschotjaar))
+  
 	# Hover text
 	summaryData$text <- ifelse(is.na(summaryData$percent), "",
 			paste0(round(summaryData$percent), "%"))
@@ -131,7 +132,9 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
 			layout(title = title,
-					xaxis = list(title = "afschotjaar"), 
+					xaxis = list(title = "afschotjaar",
+            tickvals = unique(summaryData$afschotjaar),
+            ticktext = unique(summaryData$afschotjaar)), 
 					yaxis = list(title = yTitle),
 					margin = list(b = 120, t = 100, r = 200),
 					legend = list(y = 0.8, yanchor = "top"),

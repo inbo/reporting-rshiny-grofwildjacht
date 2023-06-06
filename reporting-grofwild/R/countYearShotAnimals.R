@@ -154,6 +154,9 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   # For optimal displaying in the plot
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
+  if (interval == "Per jaar")
+    summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
+    
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   # Create plot per year
@@ -164,7 +167,9 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             legendgroup = ~base::get(groupVariable), 
             width = width, height = height) %>%
           layout(
-            xaxis = list(title = ''),            
+            xaxis = list(title = '',
+              tickvals = unique(summaryData$timeChar),
+              ticktext = unique(summaryData$timeChar)),            
             annotations = list(x = totalCount$year,
               y = totalCount$value,
               text = totalCount$value,

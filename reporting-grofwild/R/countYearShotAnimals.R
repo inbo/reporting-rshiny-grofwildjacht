@@ -181,6 +181,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
             x = ~timeChar, y = ~value, 
             text = paste0("Totaal in ", iYear, ": ", totalCount$value[totalCount$year == iYear]),
+            textposition = "none",
             type = "bar", hoverinfo = 'x+y+text+name', 
             color = ~base::get(groupVariable), colors = colors,
             legendgroup = ~base::get(groupVariable), showlegend = i == 1,

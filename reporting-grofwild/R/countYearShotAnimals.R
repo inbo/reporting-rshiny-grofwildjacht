@@ -195,7 +195,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   }
   
   # Combine all plots
-  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE) %>%
+  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE, 
+      margin = c(0.01, 0, 0, 0)) %>%
     layout(barmode = 'stack', showlegend = TRUE,
       title = title,
       yaxis = list(title = "Aantal"),

@@ -364,11 +364,13 @@ mapFlanders <- function(
     if (!is.null(jachtData)) {
       # Retain only 'aangesloten' #327
       jachtData <- jachtData[jachtData$WBELID == "aangesloten", ]
-      jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
-      jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
-      jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
-      
-      spatialData <- rbind(spatialData, jachtData)
+      if (nrow(jachtData) != 0) {
+        jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
+        jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
+        jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
+        
+        spatialData <- rbind(spatialData, jachtData)
+      }
     }
     
     valuesPalette <- unique(spatialData@data$NAAM)
@@ -1068,6 +1070,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           newMap <- mapFlanders(
               regionLevel = results$regionLevel(), 
               species = species(),
+              year = req(input$year),
               allSpatialData = allSpatialData,
               summaryData = results$summarySpaceData()$data,
               colorScheme = results$colorScheme(),
@@ -1089,8 +1092,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               lat = input$spacePlot_center$lat,
               zoom = input$spacePlot_zoom
             )
-            
-          if (!type %in% c("empty", "dash"))
+          
+          if (!type %in% c("empty", "dash", "wbe"))
             # Selected regions
             newMap <- newMap %>%
               addPolylines(data = selectedPolygons(), color = "gray", weight = 5,
@@ -1106,6 +1109,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         filename = function()
           nameFile(species = species(),
             year = input$year, 
+            extraInfo =  if (results$regionLevel() == "WBE_buitengrenzen") results$regionLevelName(),
             content = "kaart", fileExt = "png"),
         content = function(file) {
           
@@ -1123,8 +1127,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       output$downloadData <- downloadHandler(
         filename = function()
-          nameFile(species = paste(species(), collapse = "-"),
+          nameFile(species = species(),
             year = input$year, 
+            extraInfo =  if (results$regionLevel() == "WBE_buitengrenzen") results$regionLevelName(),
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           

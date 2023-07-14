@@ -154,6 +154,9 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   # For optimal displaying in the plot
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
+  if (interval == "Per jaar")
+    summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
+    
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   # Create plot per year
@@ -164,7 +167,9 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             legendgroup = ~base::get(groupVariable), 
             width = width, height = height) %>%
           layout(
-            xaxis = list(title = ''),            
+            xaxis = list(title = '',
+              tickvals = unique(summaryData$timeChar),
+              ticktext = unique(summaryData$timeChar)),            
             annotations = list(x = totalCount$year,
               y = totalCount$value,
               text = totalCount$value,
@@ -176,6 +181,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
         plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
             x = ~timeChar, y = ~value, 
             text = paste0("Totaal in ", iYear, ": ", totalCount$value[totalCount$year == iYear]),
+            textposition = "none",
             type = "bar", hoverinfo = 'x+y+text+name', 
             color = ~base::get(groupVariable), colors = colors,
             legendgroup = ~base::get(groupVariable), showlegend = i == 1,
@@ -189,7 +195,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   }
   
   # Combine all plots
-  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE) %>%
+  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE, 
+      margin = c(0.01, 0, 0, 0)) %>%
     layout(barmode = 'stack', showlegend = TRUE,
       title = title,
       yaxis = list(title = "Aantal"),

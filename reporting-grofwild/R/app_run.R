@@ -64,8 +64,15 @@ runWildApp <- function(installDependencies = FALSE,
             HTML(err$message)
         ), server = function(input, output, session){})
       )
+  
     
-  # (5) Run the application
+  # (5) Retrieve GIT Hash
+  if (Sys.getenv("GIT_SHA") == "")
+    # For local use only
+    Sys.setenv("GIT_SHA" = tryCatch(system("git rev-parse HEAD", intern = TRUE), error = function(err) ""))
+    
+  
+  # (6) Run the application
   if (exists("errorApp") && is(errorApp, "shiny.appobj"))
     errorApp else 
     runApp(appDir = appDir, ...)

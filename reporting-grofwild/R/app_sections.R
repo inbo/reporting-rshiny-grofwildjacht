@@ -106,3 +106,49 @@ bioindicatorSection <- function(id, uiText) {
   )
 
 }
+
+
+
+#' Link with version info - UI side
+#' 
+#' @inherit welcomeSectionUI
+#' @export
+versionUI <- function(id) {
+  
+  actionLink(inputId = NS(id, "version"), 
+    label = paste0("v", packageVersion("reportingGrofwild")),
+    class = "version")
+  
+}
+
+
+#' Link with version info - server side
+#' @inherit bioindicatorSectionServer
+#' @export
+versionServer <- function(id) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      observeEvent(input$version, {
+          
+          hashCode <- Sys.getenv("GIT_SHA")
+          
+          showModal(
+            modalDialog(
+              fluidPage(
+                paste("R package:", packageVersion("reportingGrofwild")),
+                tags$br(),
+                "GIT:", if (hashCode == "") 
+                  "Niet beschikbaar" else 
+                  tags$a(id = "gitVersion", 
+                  href = paste0("https://github.com/inbo/reporting-rshiny-grofwildjacht/commit/",hashCode), 
+                  target = "_blank", hashCode)
+              ), 
+              title = "Versie",
+              easyClose = TRUE
+            ))
+          
+        })
+    })
+}

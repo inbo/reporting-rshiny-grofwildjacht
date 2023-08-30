@@ -21,7 +21,7 @@ tableBackground <- function(data, regionLevel, locaties){
   
   # Convert from percentages
   data$perimeter_bos_m <- round(data$perimeter_bos_m/1000/data$Area_km2, 2) 
-  data$gem_opp_bos_km2 <- round(data$gem_opp_bos_km2)
+  data$gem_opp_bos_km2 <- round(data$gem_opp_bos_km2, 3)
   data$densiteit_bos <- round(data$densiteit_bos/data$Area_km2, 3)
   data$weg_dens_km <- round(data$weg_dens_km, 3)
   data$Area_km2 <- round(data$Area_km2)

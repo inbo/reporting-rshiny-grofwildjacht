@@ -5,16 +5,18 @@
 \title{Load Habitats (Background) data}
 \usage{
 loadHabitats(
-  dataDir = system.file("extdata", package = "reportingGrofwild"),
+  bucket = config::get("bucket", file = system.file("config.yml", package =
+    "reportingGrofwild")),
   spatialData,
   regionLevels = NULL
 )
 }
 \arguments{
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
 
 \item{spatialData}{list with each element a SpatialPolygonsDataFrame as created 
-by \code{\link{readShapeData}}}
+by \code{\link{createShapeData}}}
 
 \item{regionLevels}{character vector, for which regions load the habitat data;
 if NULL loaded for all levels; default value is NULL}

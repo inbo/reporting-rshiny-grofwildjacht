@@ -1,0 +1,32 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+#Data
+```{r}
+Aantrekking_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F14_2_data.csv",
+                         sep = ",",
+                         header = TRUE)
+
+```
+
+#Grafiek
+```{r}
+Impacts_stakeholders$Antwoord_reclass <- factor(Impacts_stakeholders$Antwoord_reclass , 
+                                    levels = c('Groot', 'Klein'))
+
+plot_aantrekking <- ggplot(data = Aantrekking_data,
+                                        aes(x = Sector,
+                                            y = percentage,
+                                            fill = Antwoord_reclass)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  facet_grid( ~ Year)+
+  theme(axis.text.x = element_text(angle = 90)) 
+
+plot_aantrekking
+```
+
+

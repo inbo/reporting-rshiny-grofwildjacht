@@ -89,8 +89,9 @@ countYearProvinceServer(id = "wild",
   data = results$wild_ecoData,
   timeRange = reactive(if (input$wild_species == "Edelhert")
         c(2008, max(results$wild_timeRange())) else 
-        results$wild_timeRange())
-  )
+        results$wild_timeRange()),
+  title = reactive(uiText$title[uiText$plotFunction == "countYearProvinceUI"])
+)
 
 
 # Plot 2: Leeftijdscategorie op basis van onderkaak & meldingsformulier
@@ -138,11 +139,7 @@ countAgeGenderServer(id = "wild",
 
 # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 results$leeftijdtypes <- reactive({
-    toReturn <- switch(input$wild_species,
-      "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
-      Ree = c("Kits", "Jongvolwassen", "Volwassen")									
-    )
-    c(toReturn, "Onbekend")
+    c(loadMetaEco(species = input$wild_species)$leeftijd_comp_inbo, "Onbekend")
   })
 
 boxAgeWeightServer(id = "wild",
@@ -184,7 +181,7 @@ results$typesDefaultGender <- reactive({
 plotBioindicatorServer(id = "wild_onderkaak",
   data = results$wild_ecoData,
   timeRange = results$wild_timeRange,
-  types = results$typesDefaultGender,
+  types = results$typesGender,
   typesDefault = results$typesDefaultGender,
   bioindicator = "onderkaaklengte")
 
@@ -204,11 +201,13 @@ results$typesFemale <- reactive({
     
     types <- levels(droplevels(results$wild_ecoData()$type_comp))
     
-    if (input$wild_species == "Ree") {
+    types <- if (input$wild_species == "Ree") {
       types[types %in% c("Reegeit", "Smalree")] 
     } else {
       types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
     }
+  
+    c(types, "Onbekend")
     
   })
 
@@ -256,7 +255,12 @@ countYearShotServer(id = "wild_leeftijd",
 
 # Plot: Gerealiseerd afschot
 percentageRealisedShotServer(id = "wild",
-  data = reactive(toekenningsData),
+  data = reactive({
+      plotData <- toekenningsData
+      plotData$WBE_Naam_Toek <- NULL
+      plotData$KboNummer_Toek <- NULL
+      plotData
+    }),
   types = reactive(unique(toekenningsData$labeltype)),
   timeRange = reactive(range(toekenningsData$labeljaar))
 )
@@ -272,6 +276,7 @@ boxRealisedShotServer(id = "wild",
 ### -------------
 
 mapFlandersServer(id = "wild",
+  uiText = uiText,
   defaultYear = defaultYear,
   species = reactive(input$wild_species),
   type = "grofwild",

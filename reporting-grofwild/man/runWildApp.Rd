@@ -4,7 +4,7 @@
 \alias{runWildApp}
 \title{Run the reporting-grofwild application}
 \usage{
-runWildApp(installDependencies = FALSE, public = TRUE, kbo = NULL, ...)
+runWildApp(installDependencies = FALSE, public = TRUE, kbo = "", ...)
 }
 \arguments{
 \item{installDependencies}{boolean, whether to first install packages listed
@@ -12,8 +12,10 @@ in the Suggests field of DESCRIPTION; default value is FALSE}
 
 \item{public}{boolean, whether to start the public or private version of the app}
 
-\item{kbo}{numeric, specific KBO number for which to show the WBE (private) app;
-only relevant if \code{public} is FALSE}
+\item{kbo}{character, specific KBO number(s) or 'admin' login to start the WBE (private) app;
+only relevant if \code{public} is FALSE;
+examples are "admin", '["454472813"]' or '["445465768","450506996","454472813"]'
+Note: brackets can be left out, but are there if sent from shinyproxy}
 
 \item{...}{further arguments that can be passed to \code{\link[shiny]{runApp}}}
 }

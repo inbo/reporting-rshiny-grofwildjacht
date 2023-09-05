@@ -2,6 +2,9 @@ shinyUI(
         
         bootstrapPage(
                 
+                shinyjs::useShinyjs(),
+                extendShinyjs(text = js_code, functions = 'browseURL'),
+                
                 ## For debugging
                 uiOutput("debug"),
                 
@@ -45,6 +48,7 @@ shinyUI(
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild"),
                                 tabPanel(title = "Wildschade", id = "tab-wildschade"),
+                                tabPanel(title = "Dashboard", id = "tab-dashboard"),
                                 tabPanel(title = "WBE", id = "tab-wbe",
                                         uiOutput("wbe_content")),
                                 
@@ -53,7 +57,7 @@ shinyUI(
                                                 tags$p(
                                                         tags$a(id = "geodataBron", href="http://www.geopunt.be/download?container=referentiebestand-gemeenten&title=Voorlopig%20referentiebestand%20gemeentegrenzen#", target="_blank", "Geodata bron"),
                                                         "-", 
-                                                        tags$a(id = "contact", href="mailto:faunabeheer@inbo.be?SUBJECT=Grofwildjacht web applicatie", target="_blank", "Contact")
+                                                        tags$a(id = "contact", href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "Contact")
                                                 ), style = "margin-top: 55px")
                                 )
                         )

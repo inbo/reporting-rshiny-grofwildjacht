@@ -167,7 +167,85 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 
   return(list(data = summaryTable, header = tableHeader))
   
-
-
 	
 }
+
+
+
+
+#' Shiny module for creating the plot \code{\link{tableSchadeCode}} - server side
+#' @inheritParams optionsModuleServer 
+#' @inheritParams plotModuleServer
+#' @inheritParams tableSchadeCode
+#' @inheritParams welcomeSectionUI
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
+  schadeChoices, schadeChoicesVrtg, schadeChoicesGewas, datatable, fullNames) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      callModule(module = optionsModuleServer, id = "tableSchade", 
+        data = data,
+        types = types,
+        labelTypes = labelTypes,
+        typesDefault = typesDefault, 
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "tableSchade",
+        plotFunction = "tableSchadeCode", 
+        data = data,
+        schadeChoices = schadeChoices,
+        schadeChoicesVrtg = schadeChoicesVrtg,
+        schadeChoicesGewas = schadeChoicesGewas,
+        datatable = datatable,
+        fullNames = fullNames
+        )
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{tableSchadeCode}} - UI side
+#' @inherit welcomeSectionUI
+#' 
+#' @export
+tableSchadeUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkTableSchade"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkTableSchade % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("tableSchade"), 
+            showTime = TRUE, 
+            showType = TRUE,
+            showDataSource = "schade",
+            exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, tableModuleUI(id = ns("tableSchade")))  
+      ),
+      tags$hr()
+    )
+  )
+  
+  
+}
+

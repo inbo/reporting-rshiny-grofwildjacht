@@ -23,22 +23,33 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
   returnStop <- match.arg(returnStop)
   
   if (!is.null(sourceIndicator)) {
-    
-    sourcesSchade <- loadMetaSchade()$sources  
-    
-    sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
-    plotData <- plotData[grepl(sources, plotData$indieningType), ]
-    
-    if (nrow(plotData) == 0) {
-      if (returnStop == "message")
-        stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
+    if ("indieningType" %in% names(plotData)) {
+      
+      sourcesSchade <- loadMetaSchade()$sources  
+      
+      sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
+      plotData <- plotData[grepl(sources, plotData$indieningType), ]
+      
+    } else {
+      
+      sourcesSchade <- unique(plotData$dataSource)
+      names(sourcesSchade) <- sourcesSchade
+      
+      plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
+      
     }
+    
+    if (nrow(plotData) == 0)
+      if (returnStop == "message")
+        if (all(names(sourcesSchade) %in% sourceIndicator))
+          stop("Geen data beschikbaar") else
+          stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
+    
   }
   
   return(plotData)
   
-}
-
+}  
 
 
 
@@ -84,7 +95,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
     
   }
   
-  if (!is.null(sourceIndicator_geslacht)){
+  if (!is.null(sourceIndicator_geslacht)) {
     if (sourceIndicator_geslacht == "inbo") {
       
       # filters out NA and 'meldingsformulier' en 'onbekend'
@@ -102,7 +113,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
     
     # Bioindicator 'onderkaaklengte' depends on data source
     # bron == "both" -> onderkaaklengte_comp
-    # bron == "inbo" -> lengte_mm
+    # bron == "inbo" -> onderkaaklengte_mm
     # bron == "meldingsformulier" -> mean(onderkaaklengte_links, onderkaaklengte_rechts)
      if (sourceIndicator_onderkaak == "both") {
         
@@ -117,7 +128,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
         plotData$onderkaaklengte_comp_bron <- sourceIndicator_onderkaak
         
         if (sourceIndicator_onderkaak == "inbo") 
-          plotData$onderkaaklengte <- plotData$lengte_mm else
+          plotData$onderkaaklengte <- plotData$onderkaaklengte_mm else
           plotData$onderkaaklengte <- rowMeans(plotData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
       }
       
@@ -149,7 +160,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 
 #' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
 #' @param allSpatialData list with SpatialPolygonsDataFrame as loaded by 
-#' \code{load(file = file.path(system.file("extdata", package = "reportingGrofwild"), "spatialData.RData"))}
+#' \code{readS3(file = "spatialData.RData")}
 #' @param species character, animal species
 #' @param regionLevel character, region level. Should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}
@@ -162,8 +173,8 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @author mvarewyck
 #' @export
 filterSpatial <- function(allSpatialData, species, 
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", 
-    "WBE", "WBE_buitengrenzen"), 
+  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
+    "fbz_gemeentes", "utm5", "utm1", "WBE", "WBE_buitengrenzen"), 
   year, locaties = NULL) {
   
   
@@ -178,8 +189,6 @@ filterSpatial <- function(allSpatialData, species,
   } else if (grepl("WBE", regionLevel)) {
     
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
-    if (!is.null(locaties))
-      spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
     
   } else {
     
@@ -187,6 +196,56 @@ filterSpatial <- function(allSpatialData, species,
     
   }
   
+  if (!is.null(locaties))
+    spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
+  
   return(spatialData)
+  
+}
+
+
+#' Filter loaded \code{allSpatialData} for selected partijNummer
+#' @inheritParams filterSpatial 
+#' @param partijNummer numeric, partijnummer of the WBE to filter
+#' @return list with SpatialPolygonsDataFrame, each of them filtered on selected WBE
+#' 
+#' @author mvarewyck
+#' @export
+filterSpatialWbe <- function(allSpatialData, partijNummer) {
+  
+  lapply(allSpatialData, function(iData) {
+      
+      iData[iData$NAAM %in% partijNummer, ]
+      
+    })
+  
+}
+
+
+
+#' Create empty geographical dataset
+#' @param data data.frame, example data of type 'geographical'
+#' @param years numeric vector, years for which to create empty data (nrow)
+#' @param kbo integer, kbo number of relevant WBE to create empty data for
+#' @return data.frame empty data.frame with for each year the matching WBE and name
+#' 
+#' @author mvarewyck
+#' @export
+createEmptyGeo <- function(data, years, kbo) {
+  
+  matchingData <- loadRawData(type = "kbo_wbe")
+  
+  data[!is.na(data)] <- NA
+  data$KboNummer_Toek <- kbo
+  data$WBE_Naam_Toek <- matchingData$WBE.officieel[match(kbo, matchingData$KboNummer_Partij)]
+  data$PartijNummer <- matchingData$PartijNummer[match(kbo, matchingData$KboNummer_Partij)]
+  
+  do.call(rbind, lapply(years, function(iYear) {
+      
+      toReturn <- data
+      toReturn$afschotjaar <- iYear
+      toReturn
+      
+    }))
   
 }

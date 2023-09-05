@@ -27,8 +27,7 @@ trendYearRegion(
 
 \item{unit}{character, whether absolute frequencies, relative frequencies (aantal/100ha),
 absolute cases, or relative bos freq (aantal/100ha bos & natuur); if 'region'
-the legend shows different types of regions for WBE
-should be reported,}
+the legend shows different types of regions for WBE}
 
 \item{isFlanders}{boolean, whether the trend plot is made for Flanders (whole region)}
 

@@ -1,0 +1,25 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+#Data
+```{r}
+communicatie_data <- read.csv("./dashboard/input/maatschappelijke_draagkracht/F12_1_data.csv",
+                         sep = ",",
+                         header = TRUE)
+
+```
+
+#Plot 
+```{r}
+plot_communicatie <- ggplot(data = communicatie_data,
+                           aes(x = Jaar,
+                               y = Aantal,
+                               fill = Type)) +
+  geom_bar(stat = "identity", 
+           position = "stack") 
+
+plot_communicatie
+```

@@ -1,30 +1,77 @@
-variable,group,group_display,name,name_display
-wildsoort,Grof wild,,Wild zwijn,
-wildsoort,Grof wild,,Edelhert,
-wildsoort,Grof wild,,Ree,
-wildsoort,Grof wild,,Damhert,
-wildsoort,Klein wild,,Haas,
-wildsoort,Klein wild,,Fazant,
-wildsoort,Klein wild,,Konijn,
-wildsoort,Klein wild,,Patrijs,
-wildsoort,Waterwild,,Wilde eend,
-wildsoort,Waterwild,,Smient,
-wildsoort,Waterwild,,Grauwe gans,
-wildsoort,Waterwild,,Canadese gans,
-wildsoort,Waterwild,,Kievit,
-wildsoort,Overig,,Houtduif,
-wildsoort,Overig,,Vos,
-wildsoort,Overig,,Verwilderde kat,
-type,GEWAS,Gewas,WLSCHD,Woelschade
-type,GEWAS,Gewas,VRTSCHD,Vraatschade
-type,GEWAS,Gewas,GEWASANDR,Gewas – andere
-type,GEWAS,Gewas,VGSCHD,Veegschade
-type,GEWAS,Gewas,GRFSCHD,Graafschade
-type,VRTG,Voertuig,GNPERSLTSL,Verkeersongeluk zonder letsel
-type,VRTG,Voertuig,PERSLTSL,Verkeersongeluk met letsel
-type,VRTG,Voertuig,ONBEKEND,Verkeersongeluk onbekend
-type,ANDERE,Andere,VALWILD,Valwild
-type,ANDERE,Andere,ANDERE,Andere
-source,,,Natuurpunt,Dieren onder de wielen (NP)
-source,,,HVV_Wilder,Wilder (LJV)
-source,,,E_Loket,E-loket (ANB)
+variable;group;group_display;name;name_display
+wildsoort;Grof wild;;Wild zwijn;
+wildsoort;Grof wild;;Edelhert;
+wildsoort;Grof wild;;Ree;
+wildsoort;Grof wild;;Damhert;
+wildsoort;Klein wild;;Haas;
+wildsoort;Klein wild;;Fazant;
+wildsoort;Klein wild;;Konijn;
+wildsoort;Klein wild;;Patrijs;
+wildsoort;Waterwild;;Wilde eend;
+wildsoort;Waterwild;;Smient;
+wildsoort;Waterwild;;Grauwe gans;
+wildsoort;Waterwild;;Canadese gans;
+wildsoort;Waterwild;;Kievit;
+wildsoort;Overig;;Houtduif;
+wildsoort;Overig;;Vos;
+wildsoort;Overig;;Verwilderde kat;
+type;GEWAS;Gewas;WLSCHD;Woelschade
+type;GEWAS;Gewas;VRTSCHD;Vraatschade
+type;GEWAS;Gewas;GEWASANDR;Gewas - andere
+type;GEWAS;Gewas;VGSCHD;Veegschade
+type;GEWAS;Gewas;GRFSCHD;Graafschade
+type;VRTG;Voertuig;GNPERSLTSL;Verkeersongeluk zonder letsel
+type;VRTG;Voertuig;PERSLTSL;Verkeersongeluk met letsel
+type;VRTG;Voertuig;ONBEKEND;Verkeersongeluk onbekend
+type;ANDERE;Andere;VALWILD;Valwild
+type;ANDERE;Andere;ANDERE;Andere
+source;;;Natuurpunt;Dieren onder de wielen (NP)
+source;;;HVV_Wilder;Wilder (LJV)
+source;;;E_Loket;E-loket (ANB)
+SoortNaam;Ander;;Andere bebossing;
+SoortNaam;Ander;;Andere bedekking;
+SoortNaam;Ander;;Heide in natuurbeheer;
+SoortNaam;Fruitbomen;;Meerjarige fruitteelten (appel);
+SoortNaam;Ander;;Niet nader omschreven gewas - kleine landbouwer;
+SoortNaam;Ander;;Aardappelen (consumptie);
+SoortNaam;Graangewassen;;Gierst, sorghum, kanariezaad of harde tarwe;
+SoortNaam;Graangewassen;;Granen;
+SoortNaam;Graangewassen;;Wintertarwe;
+SoortNaam;Graangewassen;;Andere granen (bv. Mengkoren);
+SoortNaam;Grasland;;Blijvend grasland;
+SoortNaam;Grasland;;Engels raaigras;
+SoortNaam;Grasland;;Grasland;
+SoortNaam;Grasland;;Grassen in natuurbeheer;
+SoortNaam;Grasland;;Graszoden;
+SoortNaam;Grasland;;Italiaans raaigras;
+SoortNaam;Grasland;;Meerjarige grasklaver;
+SoortNaam;Grasland;;Tijdelijk grasland;
+SoortNaam;Grasland;;Weiland met bomen (> 50 bomen per ha);
+SoortNaam;Grasland;;Eenjarige grasklaver;
+SoortNaam;Grasland;;Gele mosterd;
+SoortNaam;Grasland;;Tuin ;
+SoortNaam;Groenten;;Groenten;
+SoortNaam;Mais;;Silomais;
+SoortNaam;Mais;;Maïs;
+SoortNaam;Voedergewas;;Andere voedergewassen;
+SoortNaam;Voedergewas;;Voedergewas;
+SoortNaam;Groenten;;Brocolli;
+SoortNaam;Fruitbomen;;Meerjarige fruitteelten (peer);
+SoortNaam;Groenten;;Spruitkolen;
+SoortNaam;Graangewassen;;Wintergerst;
+SoortNaam;Groenten;;Kropsla - vers;
+SoortNaam;Groenten;;Bloemkool;
+SoortNaam;Ander;;Vezelvlas (bestemd voor vezelproductie);
+SoortNaam;Graangewassen;;Zomertarwe;
+SoortNaam;Fruitbomen;;Boomkweek;
+SoortNaam;Graangewassen;;Spelt;
+SoortNaam;Groenten;;Tuin- en veldbonen (andere dan droog geoogst);
+SoortNaam;Groenten;;Erwten (andere dan droog geoogst);
+SoortNaam;Groenten;;Witloof;
+SoortNaam;Groenten;;Witte kool;
+SoortNaam;Groenten;;Stamslabonen;
+SoortNaam;Groenten;;Sojabonen;
+SoortNaam;Groenten;;Stambonen (bvb. bruine bonen);
+SoortNaam;Fruitbomen;;Fruit;
+SoortNaam;Groenten;;Koolgewas;
+SoortNaam;Groenten;;Bonen;

@@ -18,11 +18,11 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
-#' @importFrom RColorBrewer brewer.pal
+#' @importFrom INBOtheme inbo_lichtgrijs
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
-    sourceIndicator = NULL, width = NULL, height = NULL) {
+    sourceIndicator = NULL, width = 800, height = 600) {
   
   # For R CMD check
   freq <- NULL
@@ -46,6 +46,13 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
       c("afschotjaar", type)]
   names(plotData) <- c("jaar", "variabele")
+  
+  # Replace by group names
+  if (type == "SoortNaam") {
+    fullNames <- loadMetaSchade()$gewassen
+    newNames <- unlist(sapply(names(fullNames), function(x) rep(x, length(fullNames[[x]]))))
+    plotData$variabele <- newNames[match(plotData$variabele, unlist(fullNames))]
+  }
   
   # Percentage collected
   nRecords <- nrow(plotData)
@@ -79,12 +86,12 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   
   
   # Make full schade names
-  if (type == "schadeCode") {
+  if (type == "schadeCode" & !is.null(fullNames)) {
     summaryData$variabele <- names(fullNames)[match(summaryData$variabele, fullNames)]
   }
   
   # For optimal displaying in the plot
-  summaryData$jaar <- as.factor(summaryData$jaar)
+#  summaryData$jaar <- as.factor(summaryData$jaar)
   
   if (summarizeBy == "count") {
     
@@ -100,40 +107,45 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   }
   
   # Max. 40 colors
-  paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
-  colors <- unlist(sapply(paletteNames, function(x)
-            suppressWarnings(brewer.pal(n = 12, name = x))))[1:length(unique(summaryData$variabele))]
-  names(colors) <- unique(summaryData$variabele)
-  if ("onbekend" %in% tolower(unique(summaryData$variabele)))
-    colors[tolower(names(colors)) == "onbekend"] <- "gray"
+  colorNames <- unique(summaryData$variabele)
+  colorList <- replicateColors(nColors = length(colorNames))
+  colors <- colorList$colors
+  names(colors) <- colorNames
+  if ("onbekend" %in% tolower(colorNames))
+    colors[tolower(names(colors)) == "onbekend"] <- inbo_lichtgrijs
   
   title <- paste0(typeNaam, " ",
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
           paste("in", jaartallen))
   )
   
-  
+  singleYear <- length(unique(totalCount$jaar)) == 1
   
   # Create plot
   toPlot <- plot_ly(data = summaryData, x = ~jaar,
           y = if (summarizeBy == "count") ~freq else ~percent, 
-          color = ~variabele, text = ~text, hoverinfo = "text+name",
+          color = ~variabele, text = ~text,
+          textposition = "none", hoverinfo = "text+name",
           colors = colors, type = "bar",
           width = width, height = height) %>%
       layout(title = title,
-          xaxis = list(title = "Jaar"), 
+          xaxis = list(title = "Jaar", 
+            tickvals = unique(summaryData$jaar), 
+            ticktext = unique(summaryData$jaar)), 
           yaxis = list(title = if (summarizeBy == "count") "Aantal" else "Percentage"),
-          barmode = if (nlevels(summaryData$jaar) == 1) "group" else "stack",
+          barmode = if (singleYear) "group" else "stack",
           # hardcode graph size to prevent legend overlapping plot
           autosize = FALSE,
-          width = 800, 
-          height = 600,
           margin = list(b = 120, t = 100),
           legend = list(y = 0.1),
           annotations = list(
               x = totalCount$jaar, 
-              y = if (summarizeBy == "count") totalCount$totaal else 100, 
-              text = paste(if (length(unique(totalCount$jaar)) == 1) "totaal:" else "", 
+              y = if (summarizeBy == "count") {
+                    if (singleYear) 
+                      max(summaryData$freq) else 
+                      totalCount$totaal 
+                  } else 100, 
+              text = paste(if (singleYear) "totaal:" else "", 
                   totalCount$totaal),
               xanchor = 'center', yanchor = 'bottom',
               showarrow = FALSE),
@@ -160,6 +172,81 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   # To prevent warnings in UI
   toPlot$elementId <- NULL
   
+  return(list(plot = toPlot, data = summaryDataFinal, warning = colorList$warning))
   
-  return(list(plot = toPlot, data = summaryDataFinal))
+}
+
+
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearSchade}} - server side
+#' @inheritParams countYearSchade
+#' @inheritParams countAgeGenderServer
+#' @inheritParams optionsModuleServer
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+countYearSchadeServer <- function(id, data, types, labelTypes, typesDefault, 
+  timeRange, fullNames) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      callModule(module = optionsModuleServer, id = "yearSchade", 
+        data = data,
+        types = types,
+        labelTypes = labelTypes,
+        typesDefault = typesDefault,
+        timeRange = timeRange
+      )
+      callModule(module = plotModuleServer, id = "yearSchade",
+        plotFunction = "countYearSchade", 
+        data = data,
+        fullNames = fullNames)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{countYearSchade}} - UI side
+#' @inherit welcomeSectionUI
+#' 
+#' @export
+countYearSchadeUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkYearSchade"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkYearSchade % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("yearSchade"), 
+            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
+            showTime = TRUE, 
+            showType = TRUE, 
+            showDataSource = "schade",
+            exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, 
+          plotModuleUI(id = ns("yearSchade"))
+        ),
+        tags$hr()
+      )
+    )
+  )
 }

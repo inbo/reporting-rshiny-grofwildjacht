@@ -118,7 +118,7 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
   # Rename columns
   colnames(toReturn)[1:3] <- c("Categorie", "Afschot", "Afschot relatief")
   
-  return(toReturn)
+  return(list(data = toReturn))
   
 }
 
@@ -129,17 +129,24 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
 #' @inheritParams mapFlandersServer
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @param uiText data.frame for description
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableSpeciesServer <- function(id, data, timeRange, species) {
+tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
+      
+      output$tableSpeciesText <- renderUI({
+          
+          tags$p(HTML(decodeText(uiText[uiText$plotFunction == "tableSpeciesUI", id], species = species())))
+        
+        })
       
       # Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "tableSpecies", 
@@ -163,9 +170,8 @@ tableSpeciesServer <- function(id, data, timeRange, species) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 tableSpeciesUI <- function(id, uiText) {
   
@@ -182,7 +188,7 @@ tableSpeciesUI <- function(id, uiText) {
       column(4,
         optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, 
           showCategorie = TRUE, exportData = TRUE),
-        tags$p(HTML(uiText[, id]))
+        uiOutput(ns("tableSpeciesText"))
       ),
       column(8, tableModuleUI(id = ns("tableSpecies")))
     

@@ -7,11 +7,10 @@
 context("Test Grofwildjacht")
 
 # Load all data
-load(file = file.path(dataDir, "spatialData.RData"))
+readS3(file = "spatialData.RData")
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
-geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
 biotoopData <- loadHabitats(spatialData = spatialData)
 
 
@@ -22,14 +21,6 @@ test_that("Load grofwild data", {
   })
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
-
-getCategories <- function(wildSoort) {
-  
-  switch(wildSoort,
-    "Wild zwijn" = c("Frisling", "Overloper", "Volwassen"),
-    "Ree" = c("Kits", "Jongvolwassen", "Volwassen")
-  )
-}
 
 wildEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 reeEcoData <- ecoData[ecoData$wildsoort == "Ree", ]
@@ -44,14 +35,14 @@ test_that("Summary table for age", {
 # For age
     allTables <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
         
-        plotData <- subset(ecoData, wildsoort == iSoort & doodsoorzaak == "afschot")
+        plotData <- subset(ecoData, wildsoort == iSoort)
         
-        expectedNames <- c("Provincie", getCategories(iSoort), "Onbekend")
+        expectedNames <- c("Provincie", loadMetaEco(species = iSoort)$leeftijd_comp, "Onbekend")
         timeRange <- range(plotData$afschotjaar)
         
         wildTables <- lapply(timeRange[1]:timeRange[2], function(jaar) {
             
-            myTable <- tableProvince(data = plotData, jaar = jaar, categorie = "leeftijd")
+            myTable <- tableProvince(data = plotData, jaar = jaar, categorie = "leeftijd")$data
             
             expect_true(all(expectedNames %in% colnames(myTable)))
             
@@ -87,7 +78,7 @@ test_that("Counts per year and province", {
       })
     
     
-# Some special cases
+    # Some special cases
     countYearProvince(data = wildEcoData, jaartallen = 2016)
     countYearProvince(data = wildEcoData, jaartallen = 2016:2017)
     
@@ -100,7 +91,7 @@ test_that("Map with counts and corresponding line plot", {
     
     wildGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
     
-# Check province names
+    # Check province names
     provinceNames <- levels(spatialData$provinces@data$NAAM)
     levels(wildGeoData$provincie)[which(!levels(wildGeoData$provincie) %in% provinceNames)]
     
@@ -108,15 +99,12 @@ test_that("Map with counts and corresponding line plot", {
     levels(wildGeoData$provincie)[which(!levels(wildGeoData$provincie) %in% provinceNames)]
     
     
-# Check commune names
+    # Check commune names
     communeNames <- levels(spatialData$communes@data$NAAM)
     levels(wildGeoData$gemeente_afschot_locatie)[
       which(!levels(wildGeoData$gemeente_afschot_locatie) %in% communeNames)]
-    
-# Check differences with reported map by INBO
-    geoData[which(as.character(geoData$gemeente_afschot_locatie) == "Dessel" & geoData$wildsoort == "Wild zwijn"), ]
-    
-# Interactive map
+
+    # Interactive map
     myMap <- leaflet(spatialData$provinces) %>% 
       addProviderTiles("Hydda.Full") %>%
       addPolygons(
@@ -138,7 +126,7 @@ test_that("Counts age based on cheek", {
     
     allPlots <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
         
-        categories <- getCategories(iSoort)
+        categories <- loadMetaEco(species = iSoort)$leeftijd_comp
         plotData <- ecoData[ecoData$wildsoort == iSoort, ]
         
         if (iSoort == "Ree")
@@ -155,7 +143,7 @@ test_that("Counts age based on cheek", {
       })
     
     
-# Some special cases
+    # Some special cases
     countAgeCheek(data = wildEcoData, jaartallen = 2016)
     countAgeCheek(data = wildEcoData, jaartallen = 2016:2017)
     
@@ -168,7 +156,7 @@ test_that("Counts per year and age", {
     
     allPlots <- lapply(c("Wild zwijn", "Ree"), function(iSoort) {
         
-        categories <- getCategories(iSoort)
+        categories <- loadMetaEco(species = iSoort)$leeftijd_comp
         
         plotData <- ecoData[ecoData$wildsoort == iSoort, ]
         
@@ -184,9 +172,8 @@ test_that("Counts per year and age", {
           })
         
       })
-    allPlots
     
-# Some special cases
+    # Some special cases
     countYearAge(data = wildEcoData, jaartallen = 2016)
     countYearAge(data = wildEcoData, jaartallen = 2016, summarizeBy = "percent")
     
@@ -228,13 +215,17 @@ test_that("yearly percentage of shot animals", {
             
             lapply(openingstijd, function(jaar){
                 
-                percentageYearlyShotAnimals(
+                myResult <- percentageYearlyShotAnimals(
                   data = plotData, 
                   openingstijdenData = openingSeasonData,
                   type = type,
                   jaar = jaar,
                   jaartallen = openingstijd
                 )
+                
+                expect_type(myResult, "list")
+                expect_s3_class(myResult$plot, "plotly")
+                expect_s3_class(myResult$data, "data.frame")
                 
               })
             
@@ -254,12 +245,11 @@ test_that("Percentages per age and gender", {
         plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
         res <- countAgeGender(data = plotData)
         
-        expect_equal(levels(res$data$leeftijd), getCategories(wildsoort))
+        expect_equal(levels(res$data$leeftijd),loadMetaEco(species = wildsoort)$leeftijd_comp)
         
         res
         
       })
-    allPlots
     
     countAgeGender(data = wildEcoData, jaartallen = 2016)
     countAgeGender(data = wildEcoData, jaartallen = 2016:2017)
@@ -271,33 +261,23 @@ test_that("Percentages per age and gender", {
 
 test_that("Distribution of weight ifo age", {
     
-# Inspect age
-    toInspect <- with(ecoData, which(leeftijd_comp == "Onbekend" & !is.na(leeftijd_maanden)))
-    xtabs(~ afschotjaar + wildsoort, ecoData[toInspect, ])
-    xtabs(~ afschotjaar + leeftijd_comp_bron, ecoData[toInspect, ], addNA = TRUE)
-    
-# How many Frislings removed?
-    xtabs(~ leeftijd_maanden + leeftijd_comp, ecoData[ecoData$wildsoort == "Wild zwijn", ], addNA = TRUE)
-    areRemoved <- with(ecoData, which(leeftijd_comp == "Frisling" & is.na(leeftijd_maanden))) 
-    length(areRemoved)
-    
     allPlots <- lapply(c("Wild zwijn", "Ree"), function(wildsoort) {
         
         plotData <- ecoData[ecoData$wildsoort == wildsoort, ]
-        boxAgeWeight(data = plotData, type = unique(plotData$Leeftijdscategorie_onderkaak), 
-          sourceIndicator_leeftijd = "both")$plot
-        boxAgeWeight(data = plotData, type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"), 
-          sourceIndicator_leeftijd = "inbo")$plot
+        myResult <- boxAgeWeight(data = plotData, type = levels(plotData$Leeftijdscategorie_onderkaak), 
+          sourceIndicator_leeftijd = "both")
         
+        expect_type(myResult, "list")
+        expect_s3_class(myResult$plot, "plotly")
+        expect_s3_class(myResult$data, "data.frame")
         
       })
-    allPlots
     
-# Some special cases
-    boxAgeWeight(data = wildEcoData, jaartallen = 2016, 
-      type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
-    boxAgeWeight(data = wildEcoData, jaartallen = 2016:2017,
-      type = unique(wildEcoData$Leeftijdscategorie_onderkaak))
+    # Some special cases
+    tmp <- boxAgeWeight(data = wildEcoData, jaartallen = 2016, 
+      type = levels(wildEcoData$Leeftijdscategorie_onderkaak))
+    tmp <- boxAgeWeight(data = wildEcoData, jaartallen = 2016:2017,
+      type = levels(wildEcoData$Leeftijdscategorie_onderkaak))
     tmp <- boxAgeWeight(data = wildEcoData, jaartallen = 2006:2020,
       type = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
       sourceIndicator_leeftijd = "both",
@@ -307,11 +287,15 @@ test_that("Distribution of weight ifo age", {
 
 test_that("Afschot per jachtmethode", {
     
-    countYearShotAnimals(data = wildEcoData,
+    myResult <- countYearShotAnimals(data = wildEcoData,
 #      jaartallen = 2014:2020,
-      groupVariable = "labeltype",
+      groupVariable = "jachtmethode_comp",
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[1]
-    )$plot
+    )
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
     countYearShotAnimals(data = reeEcoData,
       jaartallen = 2019:2020,
@@ -332,9 +316,13 @@ test_that("Verwezenlijkt afschot", {
     
     toekenningsData <- loadToekenningen()
     
-    percentageRealisedShot(data = toekenningsData,
+    myResult <- percentageRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
       jaartallen = 2009:2020)
+
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
     boxRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
@@ -348,11 +336,15 @@ test_that("Verwezenlijkt afschot", {
 
 test_that("Distribution of cheek length vs class", {
     
-    boxAgeGenderLowerJaw(
+    myResult <- boxAgeGenderLowerJaw(
       data = reeEcoData, 
-      jaartallen = unique(reeEcoData$afschotjaar),
-      type = unique(reeEcoData$leeftijd_comp)
+#      jaartallen = unique(reeEcoData$afschotjaar)
+      type = levels(reeEcoData$leeftijd_comp)
     )
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })
 
@@ -360,27 +352,15 @@ test_that("Distribution of cheek length vs class", {
 
 test_that("Number of embryos (bio-indicator)", {
     
-    xtabs(~ aantal_embryos_onbekend + aantal_embryos_bron, 
-      data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
-      addNA = TRUE)
-    xtabs(~ aantal_embryos + aantal_embryos_bron, 
-      data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
-      addNA = TRUE)
-    xtabs(~ aantal_embryos_MF + aantal_embryos_bron, 
-      data = reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree"), ], 
-      addNA = TRUE)
-    head(reeEcoData[reeEcoData$type_comp %in% c("Reegeit", "Smalree") & 
-          is.na(reeEcoData$aantal_embryos_bron), 
-        c("type_comp", "aantal_embryos", "aantal_embryos_onbekend", 
-          "aantal_embryos_MF", "aantal_embryos_bron")])
-    
-    pl <- countEmbryos(
+    myResult <- countEmbryos(
       data = reeEcoData,
 #    jaartallen = unique(reeEcoData$afschotjaar)
       jaartallen = 2002:2010
     )
-    pl$plot
-    head(pl$data)
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
     for (sourceIndicator in c("inbo", "meldingsformulier", "both"))
       pl <- countEmbryos(
@@ -431,8 +411,10 @@ test_that("The interactive map", {
           unit = c("absolute", "relative")[2]
         )
         
-        cat("*", regionLevel, "\n")
-        print(summary(spaceData$data$freq))
+        if (doPrint) {
+          cat("*", regionLevel, "\n")
+          print(summary(spaceData$data$freq))
+        }
         
         myPlot <- mapFlanders(
           allSpatialData = spatialData, 
@@ -444,7 +426,7 @@ test_that("The interactive map", {
           species = iSpecies
         )
         
-        print(myPlot)
+        expect_is(myPlot, "leaflet")
         
       }
       
@@ -471,11 +453,16 @@ test_that("Trend plots according with the interactive map", {
         unit = unitChoice
       )
       
-      trendYearFlanders(
+      myResult <- trendYearFlanders(
         data = trendData,
         timeRange = c(2014, 2019),
         unit = unitChoice
-      )$plot
+      )
+      
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
+      
       
       for (regionLevel in names(spatialData)[1:6]) {
         
@@ -508,10 +495,16 @@ test_that("Trend plots according with the interactive map", {
       
       for (iName in names(spatialData)[1:6]) {
         if (iName != "fbz_gemeentes")
-        print(barBiotoop(data = biotoopData[[ iName ]])$plot)
+        barBiotoop(data = biotoopData[[ iName ]])$plot
       }
       
-      barBiotoop(data = subset(biotoopData[[ "provinces" ]], regio %in% c("West-Vlaanderen", "Oost-Vlaanderen")))$plot
+      myResult <- barBiotoop(
+        data = subset(biotoopData[[ "provinces" ]], regio %in% c("West-Vlaanderen", "Oost-Vlaanderen")))
+      
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "plotly")
+      expect_s3_class(myResult$data, "data.frame")
+      
       
       expect_error(barBiotoop(data = 
             subset(biotoopData[[ names(spatialData)[2] ]], regio %in% "Vlaanderen")))

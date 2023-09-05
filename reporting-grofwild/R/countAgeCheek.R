@@ -71,7 +71,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
   # disable graph only when not all age-groups are present 
   if (!all(sapply(newLevels, function(x) x %in% unique(plotData$kaak)))) {
     if (length(jaartallen) >= 2) 
-      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ", min(jaartallen)," en ", max(jaartallen[2]),"!"))
+      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ", min(jaartallen)," en ", max(jaartallen),"!"))
     else 
     stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen in het jaar ", jaartallen,"!"))
 	}
@@ -102,7 +102,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~kaak, y = ~percent, color = ~jager,
-					text = ~text,  hoverinfo = "x+text+name",
+					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar",  width = width, height = height) %>%
 			layout(title = title,
 					xaxis = list(title = "Categorie op basis van onderkaak"), 
@@ -164,9 +164,8 @@ countAgeCheekServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 countAgeCheekUI <- function(id, showAccuracy = FALSE, uiText) {
   

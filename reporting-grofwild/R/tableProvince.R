@@ -262,7 +262,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	names(toReturn)[names(toReturn) == "provincie"] <- "Provincie"
 	
 	
-	return(toReturn)
+	return(list(data = toReturn))
 	
 }
 
@@ -300,9 +300,8 @@ tableProvinceServer <- function(id, data, categorie, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{tableProvince}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 tableProvinceUI <- function(id, uiText) {
   

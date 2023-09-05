@@ -10,21 +10,31 @@ mapSchadeServer(
   allSpatialData,
   timeRange,
   defaultYear,
-  species
+  species,
+  borderRegion = NULL,
+  type = c("schade", "afschot")
 )
 }
 \arguments{
 \item{id}{character, unique identifier for module}
 
-\item{schadeData}{object as returned by \code{loadRawData(type = "wildschade")}}
+\item{schadeData}{reacive object as returned by \code{loadRawData(type = "wildschade")}}
 
-\item{allSpatialData}{list of sp, spatial data for all spatial levels}
+\item{allSpatialData}{reactive object spatialPolygonsDataFrame with
+spatial data for selected region (and year for WBE)}
 
 \item{timeRange}{integer vector, relevant period that can be selected for the map}
 
 \item{defaultYear}{integer, current (default) end year of the selected period}
 
 \item{species}{character vector, selected species for the plot}
+
+\item{borderRegion}{character, for which \code{regionLevel} to show black border;
+see also \code{\link{mapSchade}}; default is NULL}
+
+\item{type}{character, type of plot this module is used for. Historically
+only \code{"schade"}. Later extended to also cover \code{"afschot"}, i.e. 
+"gerapporteerde afschot locaties", see also \code{mapAfschotUI}}
 }
 \value{
 no return value

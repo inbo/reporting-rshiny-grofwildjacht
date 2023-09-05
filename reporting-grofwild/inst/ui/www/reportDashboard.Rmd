@@ -1,0 +1,123 @@
+---
+title: "Rapport Dashboard Wilde Zwijnen"
+subtitle: "`r paste0(getRegionLevel(input$dash_regionLevel), ': ', toString(input$dash_locaties))`"
+author: "`r paste0('Dashboard v', packageVersion('reportingGrofwild'))`"
+date: "`r format(Sys.Date(), '%d-%m-%Y')`"
+toc-title: "Inhoudsopgave"
+output: 
+   oaStyle::pdf_report:
+      logo: NULL
+      bigLogoSize: 15cm
+      always_allow_html: yes
+      latex_engine: pdflatex 
+---
+
+```{r knitr, echo = FALSE, results = 'hide', warning = FALSE}
+library(knitr)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  warning = FALSE, 
+  message = FALSE,
+  fig.align = 'center',
+  fig.width = 10, 
+  fig.height = 8
+)
+```
+
+
+# ACHTERGRONDINFORMATIE
+
+* Regio-schaal: `r getRegionLevel(input$dash_regionLevel)`
+* Regio('s): `r toString(input$dash_locaties)`
+
+
+```{r 'mapFlanders'}
+incProgress(amount = 0.1, detail = "Achtergrondinformatie")
+
+tmpFile <- tempfile(fileext = ".html")
+htmlwidgets::saveWidget(results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
+webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+```
+
+## Biotoop beschrijving
+
+```{r 'biotoopPlotText', results = 'asis'}
+print(HTML(uiText[uiText$plotFunction == "barBiotoop", "dash"]))
+```
+
+```{r 'biotoopPlot'}
+plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot)
+```
+
+```{r 'biotoopTableText', results = 'asis'}
+print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
+```
+
+```{r 'biotoopTable'}
+myTable <- tableBackground(data = rbind(
+    subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
+    biotoopData$flanders))$data
+DT::datatable(myTable, rownames = FALSE,
+    options = list(dom = 't', pageLength = -1)) %>%
+  DT::formatStyle(
+    colnames(myTable)[1],
+    target = "row",
+    fontWeight = DT::styleEqual(tail(myTable[, 1], n = 1), "bold")
+  )
+```
+
+
+```{r popSection, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
+cat("\\newpage")
+cat("#", toupper("Populatie"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Populatie")
+
+section <- "Populatie"
+childOutput <- lapply(results$dash_showPopulatie(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
+```
+
+
+```{r jachtSection, eval = !is.null(results$dash_showJacht()), results = "asis"}
+cat("\\newpage")
+cat("#", toupper("Jacht"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Jacht")
+
+section <- "Jacht"
+childOutput <- lapply(results$dash_showJacht(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
+```
+
+
+```{r schadeSection, eval = !is.null(results$dash_showSchade()), results = "asis"}
+cat("\\newpage")
+cat("#", toupper("Schade"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Schade")
+
+section <- "Schade"
+childOutput <- lapply(results$dash_showSchade(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
+```
+
+
+```{r maatschappijSection, eval = !is.null(results$dash_showMaatschappij()), results = "asis"}
+cat("\\newpage")
+cat("#", toupper("Maatschappelijk draagvlak"), "\n\n")
+
+incProgress(amount = 0.2, detail = "Maatschappelijk draagvlak")
+
+section <- "Maatschappij"
+childOutput <- lapply(results$dash_showMaatschappij(), function(id) 
+    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+)
+cat(unlist(childOutput), sep = '\n')
+```

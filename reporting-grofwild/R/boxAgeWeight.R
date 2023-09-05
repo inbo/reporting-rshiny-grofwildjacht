@@ -37,7 +37,7 @@
 boxAgeWeight <- function(data,
 		type, jaartallen = NULL, regio = "", 
   sourceIndicator_leeftijd = c("both", "inbo"),
-		sourceIndicator_geslacht = c("both","inbo"), 
+	sourceIndicator_geslacht = c("both", "inbo"), 
   width = NULL, height = NULL) {
   
   # For R CMD check
@@ -72,8 +72,7 @@ boxAgeWeight <- function(data,
   plotData$leeftijd <- plotData$leeftijd_comp
   
 	# Remove some categories
-	plotData <- plotData[plotData$leeftijd != "Onbekend" &
-					!is.na(plotData$gewicht) & plotData$geslacht != "Onbekend", ]
+	plotData <- plotData[!is.na(plotData$gewicht) & plotData$geslacht != "Onbekend", ]
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
@@ -172,9 +171,8 @@ boxAgeWeightServer <- function(id, data, type, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{boxAgeWeight}} - UI side
-#' @template moduleUI
+#' @inherit welcomeSectionUI
 #' 
-#' @author mvarewyck
 #' @export
 boxAgeWeightUI <- function(id, uiText) {
   

@@ -1,0 +1,121 @@
+"","Groep","Antwoord_reclass","Question_label","Aantal_tot","totaal","percentage"
+"1","Jagers","Belangrijk"," Kooien",774,3328,23.2572115384615
+"2","Jagers","Belangrijk","Aankorrelplaatsen",2652,3391,78.2070185785904
+"3","Jagers","Belangrijk","Drijfjacht",2475,3390,73.0088495575221
+"4","Jagers","Belangrijk","Hoogzitjacht",3076,3397,90.5504857226965
+"5","Jagers","Belangrijk","Nachtjacht",2610,3380,77.2189349112426
+"6","Jagers","Belangrijk","Preventieve maatregelen",1205,3309,36.4158355998791
+"7","Landbouwers","Belangrijk"," Kooien",1415,1989,71.14127702363
+"8","Landbouwers","Belangrijk","Aankorrelplaatsen",1662,2022,82.1958456973294
+"9","Landbouwers","Belangrijk","Drijfjacht",1693,2031,83.3579517479074
+"10","Landbouwers","Belangrijk","Hoogzitjacht",1785,2031,87.8877400295421
+"11","Landbouwers","Belangrijk","Nachtjacht",1649,2032,81.1515748031496
+"12","Landbouwers","Belangrijk","Preventieve maatregelen",565,1983,28.4921835602622
+"13","Natuurvereniging","Belangrijk"," Kooien",305,1372,22.2303206997085
+"14","Natuurvereniging","Belangrijk","Aankorrelplaatsen",192,1377,13.9433551198257
+"15","Natuurvereniging","Belangrijk","Drijfjacht",189,1383,13.6659436008677
+"16","Natuurvereniging","Belangrijk","Hoogzitjacht",337,1377,24.4734931009441
+"17","Natuurvereniging","Belangrijk","Nachtjacht",132,1381,9.55829109341057
+"18","Natuurvereniging","Belangrijk","Preventieve maatregelen",882,1348,65.4302670623145
+"19","Publiek buiten everzwijngebied","Belangrijk","Anticonceptie",394,1031,38.2153249272551
+"20","Publiek buiten everzwijngebied","Belangrijk","Elektrische omheining",673,1031,65.2764306498545
+"21","Publiek buiten everzwijngebied","Belangrijk","Jacht",569,1031,55.1891367604268
+"22","Publiek buiten everzwijngebied","Belangrijk","Kooien",178,1031,17.2647914645975
+"23","Publiek buiten everzwijngebied","Belangrijk","Niet-elektrische omheining",1309,1031,126.964112512124
+"24","Publiek buiten everzwijngebied","Belangrijk","Translocatie",504,1031,48.8845780795344
+"25","Publiek in everzwijngebied","Belangrijk","Anticonceptie",532,1023,52.0039100684262
+"26","Publiek in everzwijngebied","Belangrijk","Elektrische omheining",627,1023,61.2903225806452
+"27","Publiek in everzwijngebied","Belangrijk","Jacht",556,1023,54.3499511241447
+"28","Publiek in everzwijngebied","Belangrijk","Kooien",222,1023,21.7008797653959
+"29","Publiek in everzwijngebied","Belangrijk","Niet-elektrische omheining",982,1023,95.9921798631476
+"30","Publiek in everzwijngebied","Belangrijk","Translocatie",464,1023,45.3567937438905
+"31","Jagers","Onbelangrijk"," Kooien",1954,3328,-58.7139423076923
+"32","Jagers","Onbelangrijk","Aankorrelplaatsen",431,3391,-12.7101150103214
+"33","Jagers","Onbelangrijk","Drijfjacht",577,3390,-17.0206489675516
+"34","Jagers","Onbelangrijk","Hoogzitjacht",166,3397,-4.88666470415072
+"35","Jagers","Onbelangrijk","Nachtjacht",509,3380,-15.0591715976331
+"36","Jagers","Onbelangrijk","Preventieve maatregelen",1489,3309,-44.9984889694772
+"37","Landbouwers","Onbelangrijk"," Kooien",281,1989,-14.1277023629965
+"38","Landbouwers","Onbelangrijk","Aankorrelplaatsen",188,2022,-9.29772502472799
+"39","Landbouwers","Onbelangrijk","Drijfjacht",145,2031,-7.13934022648941
+"40","Landbouwers","Onbelangrijk","Hoogzitjacht",94,2031,-4.62826193993107
+"41","Landbouwers","Onbelangrijk","Nachtjacht",196,2032,-9.64566929133858
+"42","Landbouwers","Onbelangrijk","Preventieve maatregelen",1157,1983,-58.3459404942007
+"43","Natuurvereniging","Onbelangrijk"," Kooien",851,1372,-62.0262390670554
+"44","Natuurvereniging","Onbelangrijk","Aankorrelplaatsen",947,1377,-68.7726942628903
+"45","Natuurvereniging","Onbelangrijk","Drijfjacht",971,1383,-70.2096890817064
+"46","Natuurvereniging","Onbelangrijk","Hoogzitjacht",673,1377,-48.8743645606391
+"47","Natuurvereniging","Onbelangrijk","Nachtjacht",1074,1381,-77.7697320782042
+"48","Natuurvereniging","Onbelangrijk","Preventieve maatregelen",255,1348,-18.9169139465875
+"49","Publiek buiten everzwijngebied","Onbelangrijk","Anticonceptie",247,1031,-23.9573229873909
+"50","Publiek buiten everzwijngebied","Onbelangrijk","Elektrische omheining",785,1031,-76.1396702230844
+"51","Publiek buiten everzwijngebied","Onbelangrijk","Jacht",863,1031,-83.7051406401552
+"52","Publiek buiten everzwijngebied","Onbelangrijk","Kooien",1414,1031,-137.148399612027
+"53","Publiek buiten everzwijngebied","Onbelangrijk","Niet-elektrische omheining",241,1031,-23.3753637245393
+"54","Publiek buiten everzwijngebied","Onbelangrijk","Translocatie",206,1031,-19.9806013579049
+"55","Publiek in everzwijngebied","Onbelangrijk","Anticonceptie",182,1023,-17.7908113391984
+"56","Publiek in everzwijngebied","Onbelangrijk","Elektrische omheining",419,1023,-40.9579667644184
+"57","Publiek in everzwijngebied","Onbelangrijk","Jacht",512,1023,-50.0488758553275
+"58","Publiek in everzwijngebied","Onbelangrijk","Kooien",867,1023,-84.7507331378299
+"59","Publiek in everzwijngebied","Onbelangrijk","Niet-elektrische omheining",168,1023,-16.4222873900293
+"60","Publiek in everzwijngebied","Onbelangrijk","Translocatie",249,1023,-24.3401759530792
+"61","Jagers","Neutraal"," Kooien",600,3328,9.01442307692308
+"62","Jagers","Neutraal","Aankorrelplaatsen",308,3391,4.54143320554409
+"63","Jagers","Neutraal","Drijfjacht",338,3390,4.98525073746313
+"64","Jagers","Neutraal","Hoogzitjacht",155,3397,2.28142478657639
+"65","Jagers","Neutraal","Nachtjacht",261,3380,3.86094674556213
+"66","Jagers","Neutraal","Preventieve maatregelen",615,3309,9.29283771532185
+"67","Landbouwers","Neutraal"," Kooien",293,1989,7.36551030668678
+"68","Landbouwers","Neutraal","Aankorrelplaatsen",172,2022,4.25321463897132
+"69","Landbouwers","Neutraal","Drijfjacht",193,2031,4.75135401280158
+"70","Landbouwers","Neutraal","Hoogzitjacht",152,2031,3.74199901526342
+"71","Landbouwers","Neutraal","Nachtjacht",187,2032,4.60137795275591
+"72","Landbouwers","Neutraal","Preventieve maatregelen",261,1983,6.58093797276853
+"73","Natuurvereniging","Neutraal"," Kooien",216,1372,7.87172011661808
+"74","Natuurvereniging","Neutraal","Aankorrelplaatsen",238,1377,8.64197530864197
+"75","Natuurvereniging","Neutraal","Drijfjacht",223,1383,8.06218365871294
+"76","Natuurvereniging","Neutraal","Hoogzitjacht",367,1377,13.3260711692084
+"77","Natuurvereniging","Neutraal","Nachtjacht",175,1381,6.33598841419261
+"78","Natuurvereniging","Neutraal","Preventieve maatregelen",211,1348,7.82640949554896
+"79","Publiek buiten everzwijngebied","Neutraal","Anticonceptie",390,1031,18.913676042677
+"80","Publiek buiten everzwijngebied","Neutraal","Elektrische omheining",591,1031,28.6614936954413
+"81","Publiek buiten everzwijngebied","Neutraal","Jacht",617,1031,29.9224054316198
+"82","Publiek buiten everzwijngebied","Neutraal","Kooien",457,1031,22.1629485935984
+"83","Publiek buiten everzwijngebied","Neutraal","Niet-elektrische omheining",499,1031,24.199806013579
+"84","Publiek buiten everzwijngebied","Neutraal","Translocatie",321,1031,15.5674102812803
+"85","Publiek in everzwijngebied","Neutraal","Anticonceptie",309,1023,15.1026392961877
+"86","Publiek in everzwijngebied","Neutraal","Elektrische omheining",388,1023,18.9638318670577
+"87","Publiek in everzwijngebied","Neutraal","Jacht",366,1023,17.8885630498534
+"88","Publiek in everzwijngebied","Neutraal","Kooien",345,1023,16.8621700879765
+"89","Publiek in everzwijngebied","Neutraal","Niet-elektrische omheining",284,1023,13.880742913001
+"90","Publiek in everzwijngebied","Neutraal","Translocatie",310,1023,15.1515151515152
+"91","Jagers","Neutraal "," Kooien",600,3328,-9.01442307692308
+"92","Jagers","Neutraal ","Aankorrelplaatsen",308,3391,-4.54143320554409
+"93","Jagers","Neutraal ","Drijfjacht",338,3390,-4.98525073746313
+"94","Jagers","Neutraal ","Hoogzitjacht",155,3397,-2.28142478657639
+"95","Jagers","Neutraal ","Nachtjacht",261,3380,-3.86094674556213
+"96","Jagers","Neutraal ","Preventieve maatregelen",615,3309,-9.29283771532185
+"97","Landbouwers","Neutraal "," Kooien",293,1989,-7.36551030668678
+"98","Landbouwers","Neutraal ","Aankorrelplaatsen",172,2022,-4.25321463897132
+"99","Landbouwers","Neutraal ","Drijfjacht",193,2031,-4.75135401280158
+"100","Landbouwers","Neutraal ","Hoogzitjacht",152,2031,-3.74199901526342
+"101","Landbouwers","Neutraal ","Nachtjacht",187,2032,-4.60137795275591
+"102","Landbouwers","Neutraal ","Preventieve maatregelen",261,1983,-6.58093797276853
+"103","Natuurvereniging","Neutraal "," Kooien",216,1372,-7.87172011661808
+"104","Natuurvereniging","Neutraal ","Aankorrelplaatsen",238,1377,-8.64197530864197
+"105","Natuurvereniging","Neutraal ","Drijfjacht",223,1383,-8.06218365871294
+"106","Natuurvereniging","Neutraal ","Hoogzitjacht",367,1377,-13.3260711692084
+"107","Natuurvereniging","Neutraal ","Nachtjacht",175,1381,-6.33598841419261
+"108","Natuurvereniging","Neutraal ","Preventieve maatregelen",211,1348,-7.82640949554896
+"109","Publiek buiten everzwijngebied","Neutraal ","Anticonceptie",390,1031,-18.913676042677
+"110","Publiek buiten everzwijngebied","Neutraal ","Elektrische omheining",591,1031,-28.6614936954413
+"111","Publiek buiten everzwijngebied","Neutraal ","Jacht",617,1031,-29.9224054316198
+"112","Publiek buiten everzwijngebied","Neutraal ","Kooien",457,1031,-22.1629485935984
+"113","Publiek buiten everzwijngebied","Neutraal ","Niet-elektrische omheining",499,1031,-24.199806013579
+"114","Publiek buiten everzwijngebied","Neutraal ","Translocatie",321,1031,-15.5674102812803
+"115","Publiek in everzwijngebied","Neutraal ","Anticonceptie",309,1023,-15.1026392961877
+"116","Publiek in everzwijngebied","Neutraal ","Elektrische omheining",388,1023,-18.9638318670577
+"117","Publiek in everzwijngebied","Neutraal ","Jacht",366,1023,-17.8885630498534
+"118","Publiek in everzwijngebied","Neutraal ","Kooien",345,1023,-16.8621700879765
+"119","Publiek in everzwijngebied","Neutraal ","Niet-elektrische omheining",284,1023,-13.880742913001
+"120","Publiek in everzwijngebied","Neutraal ","Translocatie",310,1023,-15.1515151515152

@@ -9,9 +9,9 @@ src: url("FlandersArtSans-Regular.ttf");
   font-size: 16px;
 }
 
-.sliderBlank .irs-bar-edge, .sliderBlank .irs-bar {
-background: none;
-border: none;
+.sliderBlank .form-group .irs .irs-bar {
+  background: none;
+  border: none;
 }
 
 
@@ -62,16 +62,6 @@ footer {
       
 h1, h2, h3, h4 {
   color: #356196;
-}
-
-      
-a, a:visited, a:hover, a:active, a:focus {
-  color: #c1c443;
-}
-
-#wild_linkTable1, #wild_linkPlot1, #wild_linkPlot2, #wild_linkPlot3, #wild_linkPlot4, #wild_linkPlot5, #wild_linkPlot6, #wild_linkPlot7, #wild_linkPlot8, #wild_linkPlot9, #wild_linkPlot10, #wild_linkPlot11, #wild_linkPlot12, #schade_linkPlot1, #schade_linkTable2, #schade_linkPlot2, #schade_linkTable1 {
- font-size: 22px;
- color: #356196;
 }
 
 #geodataBron, #contact {
@@ -144,5 +134,16 @@ a, a:visited, a:hover, a:active, a:focus {
 
 p, li, label {
  font-size: 16px
+}
+
+.action-h3 {
+  color: #356196 !important;
+  font-size: 24px;
+}
+
+.columns-3 {
+  -webkit-column-count: 3; /* Chrome, Safari, Opera */
+  -moz-column-count: 3; /* Firefox */
+  column-count: 3;
 }
 

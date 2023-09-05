@@ -5,18 +5,61 @@
 
 
 
-#' Section for welcoming (top of the page)
-#' @param id character, from which page this function is called
-#' e.g. 'wbe'
-#' @template moduleUI 
+#' Section for welcoming (top of the page) - UI side (no server side)
+#' 
+#' @param maxDate date, the last observation date to be replaced in the text
+#' @param id character, unique identifier for the module
+#' @param uiText data.frame, HTML formatted text to be displayed in the UI
+#' @return HTML object
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+welcomeSectionUI <- function(id, uiText, maxDate = NA) {
+  
+  description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
+  
+  # Replace last date
+  if (!is.na(maxDate))
+    description <- gsub("\\{\\{maxDate\\}\\}", format(maxDate, "%d/%m/%Y"), description)
+  
+  tags$div(style = "margin-bottom:20px;",
+    HTML(description)
+  )
+
+}
+
+
+#' Decode species indicator in description
+#' @param text character, input from uiText
+#' @param species character, currently selected species
+#' @return character, modified for the conditional species mentioned in the text  
 #' 
 #' @author mvarewyck
 #' @export
-welcomeSection <- function(id, uiText) {
+decodeText <- function(text, species, statsMap = NULL) {
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  if (grepl("\\{\\{statsMap\\}\\}", text))
+    newText <- gsub("\\{\\{statsMap\\}\\}", 
+      if (!is.null(statsMap)) paste0(statsMap, ".") else "", text) else
+    newText <- text
   
-  tags$p(class = "lead", HTML(uiText[, id]))
+  
+  splitText <- strsplit(newText, split = "\\{")[[1]]
+  toRetain <- sapply(splitText, function(x)
+      if (grepl("\\}", x)) {
+        doInvert <- grepl("\\!", strsplit(x, "\\}")[[1]][1])
+        doSpecies <- grepl(species, strsplit(x, "\\}")[[1]][1])
+        if (!doInvert & doSpecies)
+          strsplit(x, "\\}")[[1]][2] else if (doInvert & !doSpecies)
+          strsplit(x, "\\}")[[1]][2] else 
+          ""
+      } else {
+        x
+      } 
+  )
+  
+  paste(toRetain, collapse = "")
   
 }
 
@@ -39,19 +82,7 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
       
       output$textBioindicator <- renderUI({
           
-          newText <- strsplit(oldText, split = "\\{")[[1]]
-          toRetain <- sapply(newText, function(x)
-              if (grepl("\\}", x)) {
-                if (grepl(wildsoort(), strsplit(x, "\\}")[[1]][1]))
-                  strsplit(x, "\\}")[[1]][2] else
-                  ""
-              } else {
-                x
-              } 
-            )
-            print(toRetain)
-          
-          HTML(trimws(paste(toRetain, collapse = "")))
+          HTML(decodeText(text = oldText, species = wildsoort()))
           
         })
       
@@ -61,9 +92,7 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
 
 #' Section title and text for bio-indicator
 #' 
-#' @template moduleUI 
-#' 
-#' @author mvarewyck
+#' @inherit welcomeSectionUI 
 #' @export
 bioindicatorSection <- function(id, uiText) {
   

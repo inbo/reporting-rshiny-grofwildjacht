@@ -83,6 +83,83 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   
   colnames(summaryTable)[colnames(summaryTable) == "varOfInterest"] <- variableLabel
   
-  return(summaryTable)
+  return(list(data = summaryTable))
     
 }
+
+
+
+
+#' Shiny module for creating the plot \code{\link{tableGewas}} - server side
+#' @inheritParams optionsModuleServer 
+#' @inheritParams plotModuleServer
+#' @inheritParams tableSchadeCode
+#' @inheritParams welcomeSectionUI 
+#' @return no return value
+#' 
+#' @author mvarewyck
+#' @import shiny
+#' @export
+tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
+  variable) {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      ns <- session$ns
+      
+      callModule(module = optionsModuleServer, id = "tableGewas",
+        data = data,
+        types = types, 
+        labelTypes = labelTypes, 
+        typesDefault = typesDefault,
+        timeRange = timeRange
+      )
+      
+      callModule(plotModuleServer, id = "tableGewas",
+        plotFunction = "tableGewas",
+        data = data,
+        variable = variable)
+      
+    })
+  
+} 
+
+
+
+#' Shiny module for creating the plot \code{\link{tableGewas}} - UI side
+#' @inherit welcomeSectionUI
+#' 
+#' @export
+tableGewasUI <- function(id, uiText) {
+  
+  ns <- NS(id)
+  
+  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  
+  tagList(
+    
+    actionLink(inputId = ns("linkTableGewas"), 
+      label = h3(HTML(uiText$title))),
+    conditionalPanel("input.linkTableGewas % 2 == 1", ns = ns,
+      
+      fixedRow(
+        
+        column(4,
+          optionsModuleUI(id = ns("tableGewas"), 
+            showTime = TRUE, 
+            showType = TRUE,
+            showDataSource = "schade",
+            exportData = TRUE),
+          tags$p(HTML(uiText[, id]))
+        ),
+        column(8, tableModuleUI(id = ns("tableGewas")))  
+      ),
+      tags$hr()
+    )
+  )
+  
+  
+}
+
+

@@ -1,0 +1,34 @@
+#Libraries
+```{r}
+library(tidyverse)
+library(ggplot2)
+```
+
+```{r}
+Data_inschatting <- read.csv("./dashboard/input/maatschappelijke_draagkracht/Data_inschatting.csv")
+```
+
+#Grafiek
+```{r}
+verkeer_inschatting <- Data_inschatting %>%
+  filter(Vraag != "populatie_evolutie")
+
+
+verkeer_inschatting$Antwoord_reclass <- factor(verkeer_inschatting$Antwoord_reclass , 
+                                    levels = c('Toegenomen', 'Hetzelfde', 'Afgenomen', 'Hetzelfde '))
+
+cols <- c("Toegenomen" = "darkgreen", "Hetzelfde" = "gray53", "Afgenomen" = "darkred", "Hetzelfde" = "gray53")
+#Kleuren mogen worden aangepast, het is gewoon belangrijk dat beide neutraal factors dezelfde kleur hebben
+
+plot_inschatting <- ggplot(data = verkeer_inschatting,
+                                        aes(x = Vraag,
+                                            y = percentage,
+                                            fill = Antwoord_reclass),
+                                        order = as.numeric(volgorde)) +
+                                  geom_bar(stat = "identity", 
+                                           position = "stack") +
+  theme(axis.text.x = element_text(angle = 90)) +
+  scale_fill_manual(values = cols)
+
+plot_inschatting
+```

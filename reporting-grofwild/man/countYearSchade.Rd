@@ -11,8 +11,8 @@ countYearSchade(
   summarizeBy = c("count", "percent"),
   fullNames = NULL,
   sourceIndicator = NULL,
-  width = NULL,
-  height = NULL
+  width = 800,
+  height = 600
 )
 }
 \arguments{

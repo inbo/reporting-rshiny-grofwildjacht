@@ -7,7 +7,7 @@
 mapSchade(
   schadeData,
   regionLevel,
-  variable = c("season", "schadeCode", "afschotjaar"),
+  variable = c("season", "schadeCode", "afschotjaar", "jachtmethode_comp"),
   allSpatialData,
   addGlobe = FALSE,
   legend = "topright"

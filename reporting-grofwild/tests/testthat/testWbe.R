@@ -8,35 +8,39 @@
 context("Test WBE")
 
 # Load all data
-load(file = file.path(dataDir, "spatialDataWBE.RData"))
+readS3(file = "spatialDataWBE.RData")
 spatialData <- spatialDataWBE
 rm(spatialDataWBE)
 
-years <- as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE)))
+years <- suppressWarnings(as.numeric(gsub("WBE_", "", grep("WBE_", names(spatialData), value = TRUE))))
 years <- years[!is.na(years)]
 
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
-schadeData <- loadRawData(type = "wildschade")
-toekenningsData <- loadToekenningen(dataDir = dataDir)
+schadeData <- suppressWarnings(loadRawData(type = "wildschade"))
+toekenningsData <- loadToekenningen()
 biotoopData <- loadHabitats(spatialData = spatialData, regionLevels = "wbe")[["wbe"]]
 
 
-currentKbo <- 445465768
-#currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
+# currentKbo <- 445465768
+# currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
+currentKbo <- unique(geoData$KboNummer_Toek[geoData$WBE_Naam_Toek %in% "De Zwarte Beek"])
+# Find KBO with many species
+# which.max(sapply(allWbe, function(wbe) length(unique(geoData$wildsoort[geoData$KboNummer_Toek == wbe]))))
 
-currentYear <- 2020
+defaultYear <- config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))
 
 species <- c("Ree", "Wild zwijn", "Damhert", "Edelhert")
 
 # Filter data
 
-ecoData <- ecoData[ecoData$doodsoorzaak == "afschot", ]
 geoData <- geoData[geoData$KboNummer_Toek %in% currentKbo, ]
 schadeData <- schadeData[schadeData$KboNummer %in% currentKbo, ]
 toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
 biotoopData <- biotoopData[biotoopData$regio == unique(geoData$PartijNummer), ]
+
+species <- species[species %in% unique(geoData$wildsoort)]
 
 # Combine data
 commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
@@ -76,14 +80,14 @@ test_that("The map", {
             allSpatialData = spatialData, 
             regionLevel = "WBE_buitengrenzen", 
             year = iYear,
-            colorScheme = RColorBrewer::brewer.pal(
-                n = nlevels(spaceData$data$group), name = "YlOrBr"),
+            colorScheme = suppressWarnings(RColorBrewer::brewer.pal(
+                n = nlevels(spaceData$data$group), name = "YlOrBr")),
             summaryData = spaceData$data,
             legend = "topright",
             species = iSpecies
           )
           
-          expect_is(myPlot, "plotly")
+          expect_is(myPlot, "leaflet")
           
         }
       }
@@ -110,14 +114,14 @@ test_that("Trend plot", {
         unit = unit
       )
       
-      myPlot <- trendYearRegion(
+      myResult <- trendYearRegion(
         data = trendRegionData,
         locaties = unique(trendRegionData$locatie),
         timeRange = range(years),
         unit = unit
-      )$plot
+      )
       
-      expect_is(myPlot, "plotly")
+      expect_s3_class(myResult$plot, "plotly")
       
     }  
     
@@ -129,8 +133,22 @@ test_that("Biotoop", {
     
     result <- barBiotoop(data = biotoopData, jaar = 2020)
     
-    expect_equal(sum(result$data$Waarde[-(1:2)]), 100)
+    expect_equal(round(sum(result$data$Waarde[-(1:2)])), 100)
+        
+  })
+
+
+test_that("Afschot locaties", {
     
+    mapData <- createAfschotLocationsData(data = combinedRee, accuracy = 1, 
+      timeRange = range(combinedRee$afschotjaar))
+    myResult <- mapSchade(schadeData = mapData, 
+      regionLevel = "WBE_buitengrenzen_2018", 
+      variable = c("season", "schadeCode", "afschotjaar")[3],
+      allSpatialData = spatialData,
+      addGlobe = TRUE)
+    
+    expect_s3_class(myResult, "leaflet")
     
   })
 
@@ -145,15 +163,15 @@ test_that("Summary Table", {
       
       if (nrow(combinedData) > 0) {
         
-      myTable <- tableSpecies(
-        data = combinedData, 
-        jaar = 2020
-      ) 
+        myTable <- tableSpecies(
+          data = combinedData, 
+          jaar = defaultYear
+        ) 
+        
+        expect_is(myTable$data, "data.frame")
+        
+      }
       
-      expect_is(myTable, "data.frame")
-      
-    }
-    
     }  
     
     tableSpecies(
@@ -167,7 +185,7 @@ test_that("Summary Table", {
 
 test_that("Map schade", {
     
-    schadeDataSub <- subset(schadeData, wildsoort == "ree")  
+    schadeDataSub <- subset(schadeData, wildsoort == "Ree")  
     schadeDataSub <- createSchadeSummaryData(
       schadeData = schadeDataSub,
       timeRange = range(schadeDataSub$afschotjaar))
@@ -176,10 +194,12 @@ test_that("Map schade", {
       
       myPlot <- mapSchade(
         schadeData = schadeDataSub,
-        regionLevel = "provinces",
+        regionLevel = "WBE_buitengrenzen_2020",
         variable = var,
-        allSpatialData = spatialData,
+        allSpatialData = filterSpatialWbe(allSpatialData = spatialData, partijNummer = unique(geoData$PartijNummer)),
         addGlobe = TRUE)
+      
+      expect_s3_class(myPlot, "leaflet")
       
     }
     
@@ -187,57 +207,76 @@ test_that("Map schade", {
 
 test_that("Trend schade", {
     
-    iSpecies <- species[1]
-    schadeDataSub <- subset(schadeData, wildsoort = iSpecies)
-    
+    schadeDataSub <- subset(schadeData, wildsoort = species[1])
     
     trendRegionData <- createTrendData(
       data = schadeDataSub@data,
       allSpatialData = spatialData,
       timeRange = range(years),
-      species = iSpecies,
+      species = species[1],
       regionLevel = "WBE_buitengrenzen"
     )
     
-    trendYearRegion(
+    myResult <- trendYearRegion(
       data = trendRegionData,
       locaties = unique(trendRegionData$locatie),
       timeRange = range(years)
-    )$plot
+    )
+    
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })
 
 
 test_that("Additional plots", {
     
-    countYearShotAnimals(data = combinedRee,
+    myResult <- countYearShotAnimals(data = combinedRee,
       jaartallen = 2019:2020,
-      groupVariable = "labeltype",
+      groupVariable = c("labeltype", "jachtmethode_comp")[1],
       interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
-    )$plot
+    )
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    countYearShotAnimals(data = combinedRee,
-      jaartallen = 2019:2020,
-      groupVariable = "jachtmethode_comp",
-      interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
-    )$plot
+    myResult <- countAgeGender(data = combinedRee)
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    countAgeGender(data = combinedRee)
+    myResult <- countAgeCheek(data = combinedRee, jaartallen = 2009:2020)
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    countAgeCheek(data = combinedRee, 
-      jaartallen = 2009:2020)
+    myResult <- boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))
-    
-    percentageRealisedShot(data = toekenningsData,
+    myResult <- percentageRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
       jaartallen = 2009:2020)
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")
+    myResult <- plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte")
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
+    myResult <- plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
-    countEmbryos(data = combinedRee, jaartallen = 2009:2020,
+    myResult <- countEmbryos(data = combinedRee, jaartallen = 2009:2020,
       sourceIndicator = "both", sourceIndicator_leeftijd = "both", sourceIndicator_geslacht = "both")
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })

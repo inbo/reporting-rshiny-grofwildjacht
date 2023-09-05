@@ -11,17 +11,32 @@ tagList(
     
     tags$br(),
     
+    if (length(currentKbo) > 1)
+      selectInput(inputId = "wbe_kboChoice", label = "WBE Naam", 
+        choices = currentKbo, width = "100%"),
+    
     tags$div(align = "center",
       uiOutput("wbe_title")
     ),
     
-    welcomeSection(id = "wbe", uiText = uiText)
-  
+    welcomeSectionUI(id = "wbe", uiText = uiText, 
+      maxDate = max(ecoData$afschot_datum, na.rm = TRUE))
+          
   ),
   
   # Select species
   
   tags$div(class = "container",
+    
+    # Map
+    
+    mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
+      type = "wbe", plotDetails = "biotoop"),
+    
+
+    # Choose species
+    
+    uiOutput("wbe_empty"),
     
     h2("Grofwildsoort")),
   
@@ -40,58 +55,74 @@ tagList(
     )
   ),
   
+  conditionalPanel("output.wbe_emptyAfschot == false",
+    
+    trendYearRegionUI(id = "wbe", uiText = uiText),
+    
+    tableSpeciesUI(id = "wbe", uiText = uiText)
   
-  # Map
-  
-  mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
-    type = "wbe",
-    unitChoices = c("Aantal" = "absolute", 
-      "Aantal/100ha" = "relative", 
-      "Aantal/100ha bos & natuur" = "relativeDekking"),
-    plotDetails = c("region", "biotoop")),
-  
-  
-  tableSpeciesUI(id = "wbe", uiText = uiText),
+  ),
   
   tags$div(class = "container",
     
     h2("Extra Figuren en Tabellen"),
     
-    ## tableSpecies: wild zwijn and ree
-    conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
+    conditionalPanel("output.wbe_emptyAfschot == false",
+      
+      mapAfschotUI(id = "wbe_afschot",
+        uiText = uiText,
+        filterSource = FALSE, filterAccuracy = TRUE,
+        variableChoices = c(
+          "Seizoen" = "season",
+          "Jaar" = "afschotjaar",
+          "Jachtmethode" = "jachtmethode_comp")
+      ),
+      
+      ## tableSpecies: wild zwijn and ree
+      conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
+          
+          countYearShotUI(id = "wbe_labeltype", groupVariable = "labeltype", uiText = uiText)
+          
+        }),
+      
+      
+      countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText)
+    ),
+    
+    conditionalPanel("output.wbe_emptySchade == false",
+      # When no afschot, might still be schadeData
+      
+      actionLink(inputId = "wbe_linkMapSchade", label =
+          h3(HTML(uiText$title[uiText$plotFunction == "mapSchadeUI"]))),
+      conditionalPanel("input.wbe_linkMapSchade % 2 == 1",
         
-        countYearShotUI(id = "wbe_labeltype", groupVariable = "labeltype", uiText = uiText)
-        
-      }),
-    
-    
-    countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText),
-    
-    mapSchadeUI(id = "wbe", filterCode = TRUE, filterSubcode = TRUE, uiText = uiText,
-      plotDetails = "region"),
-    
-    countAgeGenderUI(id = "wbe", uiText = uiText),
-    countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
-    
-    conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
-        tagList(
-          
-          conditionalPanel("input.wbe_species == 'Ree'",
-            ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
-            percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText)
-          ),    
-          
-          bioindicatorSection(id = "wbe", uiText = uiText),
-          
-          conditionalPanel("input.wbe_species == 'Ree'",
-            plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
-            plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText)
-          ),
-          countEmbryosUI("wbe", regionLevels = NULL)
-        )
-      })
+        mapSchadeUI(id = "wbe",
+          uiText = uiText[uiText$plotFunction == "mapSchadeUI", ], 
+          filterCode = TRUE, filterSubcode = TRUE,
+          plotDetails = "region")
   
-  
+      )
+    ),
+    
+    conditionalPanel("output.wbe_emptyAfschot == false",
+      countAgeGenderUI(id = "wbe", uiText = uiText),
+      countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
+      
+      conditionalPanel("input.wbe_species == 'Ree'",
+        ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
+        percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText)
+      ),
+
+      
+      conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
+        bioindicatorSection(id = "wbe", uiText = uiText),
+        conditionalPanel("input.wbe_species == 'Ree'",
+          plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
+          plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText)
+        ),
+        countEmbryosUI("wbe", regionLevels = NULL)
+      )
+    )
   )
 
 

@@ -4,13 +4,28 @@
 \alias{countAgeGender}
 \title{Create interactive plot for comparing age per gender}
 \usage{
-countAgeGender(data, jaartallen = NULL, width = NULL, height = NULL)
+countAgeGender(
+  data,
+  jaartallen = NULL,
+  sourceIndicator_leeftijd = c("both", "inbo"),
+  sourceIndicator_geslacht = c("both", "inbo"),
+  width = NULL,
+  height = NULL
+)
 }
 \arguments{
 \item{data}{data.frame with raw data for plotting}
 
 \item{jaartallen}{integer vector, defines the year(s) that should be considered
 in the plot; if NULL no selection on year(s) is made}
+
+\item{sourceIndicator_leeftijd}{character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+i.e. no filtering. Defaults to \code{"both"}}
+
+\item{sourceIndicator_geslacht}{character, source used to filter \code{data} ('geslacht_comp_bron' column)
+should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+i.e. no filtering. Defaults to \code{"both"}}
 
 \item{width}{plot width (optional)}
 

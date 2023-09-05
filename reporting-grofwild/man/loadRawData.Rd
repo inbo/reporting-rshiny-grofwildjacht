@@ -2,24 +2,25 @@
 % Please edit documentation in R/data_load.R
 \name{loadRawData}
 \alias{loadRawData}
-\title{Read ecology or geography data}
+\title{Read ecology, geography, wildschade, kbo_wbe or waarnemingen data}
 \usage{
 loadRawData(
-  dataDir = system.file("extdata", package = "reportingGrofwild"),
-  type = c("eco", "geo", "wildschade")
+  bucket = config::get("bucket", file = system.file("config.yml", package =
+    "reportingGrofwild")),
+  type = c("eco", "geo", "wildschade", "kbo_wbe")
 )
 }
 \arguments{
-\item{dataDir}{character, path to data files}
+\item{bucket}{character, name of the S3 bucket as specified in the config.yml file;
+default value is "inbo-wbe-uat-data"}
 
 \item{type}{data type, "eco" for ecology data and "geo" for geography data}
 }
 \value{
-data.frame, loaded ecology or geography data; 
-and attribute 'Date', the date that this data file was created
+data.frame, loaded data
 }
 \description{
-Read ecology or geography data
+Data is preprocessed by createRawData() at INBO
 }
 \author{
 mvarewyck

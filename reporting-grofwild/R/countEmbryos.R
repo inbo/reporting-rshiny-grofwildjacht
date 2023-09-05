@@ -93,7 +93,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	tmpPercent <- ddply(tmpSummary, "afschotjaar", transform, 
 			percent = Freq / sum(Freq) * 100)
 	summaryData <- merge(tmpPercent, tmpSummary, all.y = TRUE)
-	
+	summaryData$afschotjaar <- as.numeric(as.character(summaryData$afschotjaar))
+  
 	# Hover text
 	summaryData$text <- ifelse(is.na(summaryData$percent), "",
 			paste0(round(summaryData$percent), "%"))
@@ -127,17 +128,19 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
-        plotly::layout(title = title,
-          xaxis = list(title = "afschotjaar"), 
-          yaxis = list(title = yTitle),
-          margin = list(b = 120, t = 100, r = 200),
-          legend = list(y = 0.8, yanchor = "top"),
-          barmode = if(nrow(totalCounts) == 1) "group" else "stack",
+			plotly::layout(title = title,
+					xaxis = list(title = "afschotjaar",
+            tickvals = unique(summaryData$afschotjaar),
+            ticktext = unique(summaryData$afschotjaar)), 
+					yaxis = list(title = yTitle),
+					margin = list(b = 120, t = 100, r = 200),
+					legend = list(y = 0.8, yanchor = "top"),
+					barmode = if(nrow(totalCounts) == 1) "group" else "stack",
           annotations = list(x = as.numeric(totalCounts$afschotjaar) - 1, 
             y = totalCounts$value, 
             text = paste(if(nrow(totalCounts) == 1) "totaal:" else "", totalCounts$value),
             xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) %>%
-        
+			
 			add_annotations(text = "Aantal embryo's", 
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
 					y = 0.8, yanchor = "bottom",    # Same y as legend below

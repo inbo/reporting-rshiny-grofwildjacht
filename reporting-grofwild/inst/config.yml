@@ -4,11 +4,12 @@ default:
     region: Sys.getenv('AWS_DEFAULT_REGION', unset = 'eu-west-1')
     id: Sys.getenv('AWS_ACCESS_KEY_ID')
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
-  datacheck: true
+  datacheck: false
   defaultYear: 2022
 
 uat:
-  datacheck: true
+  datacheck: false
     
 production:
   bucket: inbo-wbe-prd-data
+  datacheck: false

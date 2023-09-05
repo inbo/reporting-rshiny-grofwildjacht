@@ -52,6 +52,8 @@ loadRawData <- function(
   
   type <- match.arg(type)
   
+  # For R CMD check
+  rawData <- NULL  
   
   dataFile <- switch(type,
           "eco" = "rshiny_reporting_data_ecology_processed.RData",
@@ -177,6 +179,9 @@ loadToekenningen <- function(
 loadHabitats <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
   regionLevels = NULL) {
+  
+  # For R CMD check
+  habitatData <- NULL
   
   readS3(file = "habitatData.RData", bucket = bucket, envir = environment())
   

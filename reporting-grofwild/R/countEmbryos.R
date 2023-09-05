@@ -95,17 +95,22 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	summaryData <- merge(tmpPercent, tmpSummary, all.y = TRUE)
 	summaryData$afschotjaar <- as.numeric(as.character(summaryData$afschotjaar))
   
+  # Summarize data per year
+  totalCounts <- as.data.frame(table(plotData$afschotjaar))
+  colnames(totalCounts) <- c("afschotjaar", "value")
+  
 	# Hover text
-	summaryData$text <- ifelse(is.na(summaryData$percent), "",
-			paste0(round(summaryData$percent), "%"))
+	summaryData$text <- paste0(
+    "n = ", summaryData$Freq,
+    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
+    "<br><em>Totaal</em> ", merge(totalCounts, summaryData)$value
+  )
 	
 	
 	if (sum(summaryData$Freq) == 0)
 		stop("Geen data beschikbaar")
 	
-	# Summarize data per year
-	totalCounts <- as.data.frame(table(plotData$afschotjaar))
-	colnames(totalCounts) <- c("afschotjaar", "value")
+	
 	
   title <- paste0(wildNaam, " ", bioindicatorName, " ",
     paste0("(", 
@@ -135,11 +140,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 					yaxis = list(title = yTitle),
 					margin = list(b = 120, t = 100, r = 200),
 					legend = list(y = 0.8, yanchor = "top"),
-					barmode = if(nrow(totalCounts) == 1) "group" else "stack",
-          annotations = list(x = as.numeric(totalCounts$afschotjaar) - 1, 
-            y = totalCounts$value, 
-            text = paste(if(nrow(totalCounts) == 1) "totaal:" else "", totalCounts$value),
-            xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) %>%
+					barmode = if(nrow(totalCounts) == 1) "group" else "stack") %>%
 			
 			add_annotations(text = "Aantal embryo's", 
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",

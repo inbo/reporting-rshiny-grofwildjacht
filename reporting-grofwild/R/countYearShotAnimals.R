@@ -165,7 +165,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             xaxis = list(title = '',
               tickvals = unique(summaryData$timeChar),
               ticktext = unique(summaryData$timeChar)),            
-            annotations = list(x = as.numeric(totalCount$year) - 1,
+            annotations = list(x = totalCount$year,
               y = totalCount$value,
               text = totalCount$value,
               xanchor = 'center', yanchor = 'bottom',

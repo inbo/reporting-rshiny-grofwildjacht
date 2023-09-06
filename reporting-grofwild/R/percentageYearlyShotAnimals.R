@@ -275,7 +275,7 @@ percentageYearlyShotAnimals <- function(
         ) %>%
         
         # layout
-        layout(
+        plotly::layout(
             title = paste0(wildNaam, 
                 if (specifiedType)	paste0(" (", paste(type, collapse = ", "), ")"),
                 " percentage jaarlijks afschot in ", jaar),

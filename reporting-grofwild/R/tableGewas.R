@@ -12,6 +12,7 @@
 #' @author Eva Adriaensen
 #' @importFrom plyr count
 #' @importFrom reshape2 dcast
+#' @importFrom sf st_drop_geometry
 #' @export
 tableGewas <- function(data, jaartallen = NULL, variable, 
   sourceIndicator = NULL, 
@@ -27,6 +28,9 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   # filter for source
   allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
+  
+  if (inherits(allData, "sf"))
+    allData <- sf::st_drop_geometry(allData)  
   
   allData$locatie <- switch(type,
       flanders = as.factor("Vlaams Gewest"),

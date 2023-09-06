@@ -80,7 +80,22 @@ testS3 <- function() {
   cat("Test Data in S3 bucket\n")
   testResult <- test_file(system.file("tests/testData.R", package = "reportingGrofwild"), reporter = "minimal")
   
-  isFailed <- !as.data.frame(testResult)$skipped & !as.data.frame(testResult)$passed > 0
+  # Remove objects loaded globally during tests
+  allResults <- ls(envir = .GlobalEnv)
+  rm(list = allResults, envir = .GlobalEnv)
+  gc()
+  
+  warningMessage <- NULL
+  isWarning <- as.data.frame(testResult)$warning > 0
+  for (i in which(isWarning)) {
+    toPrint <- as.data.frame(testResult)$test[i]
+    tmp <- testResult[[i]]$results
+    warningMessage <- paste("<h4>Test:", toPrint, "</h4>Warning message:</br>", 
+      gsub("\n", "</br>", tmp[sapply(tmp, function(x)
+              is(x, "expectation_warning"))][[1]]$message), "</br>")
+  }
+  
+  isFailed <- as.data.frame(testResult)$failed > 0 | (!as.data.frame(testResult)$skipped & !as.data.frame(testResult)$passed > 0)
   if (any(isFailed)) {
     # Message will be in HTML
     errorMessage <- paste("</br>Please check data in S3 bucket:",
@@ -93,8 +108,12 @@ testS3 <- function() {
         gsub("\n", "</br>", tmp[sapply(tmp, function(x)
                 is(x, "expectation_failure") | is(x, "expectation_error"))][[1]]$message), "</br>")
     }
-    stop(errorMessage)
-  } else cat("Finished successfully\n")
+    stop(paste(errorMessage, warningMessage))
+    
+    
+  } else if (!is.null(warningMessage))
+    cat(gsub("</br>", "\n", warningMessage)) else 
+    cat("Finished successfully\n")
   
 }
 
@@ -106,6 +125,7 @@ testS3 <- function() {
 #' @param file character, name of the file to be downloaded
 #' @param bucket character, name of the S3 bucket as specified in the config.yml file;
 #' default value is "inbo-wbe-uat-data"
+#' @param envir environment, where to load the data; default is \code{.GlobalEnv}
 #' @return depending on the input file
 #' \itemize{
 #' \item{rdata}{no return value,
@@ -117,11 +137,12 @@ testS3 <- function() {
 #' @importFrom aws.s3 s3load s3read_using
 #' @export
 readS3 <- function(FUN = read.csv, ..., file, 
-  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  envir = .GlobalEnv) {
   
   if (tolower(tools::file_ext(file)) == "rdata") {
     
-    s3load(bucket = bucket, object = basename(file), envir = .GlobalEnv)
+    s3load(bucket = bucket, object = file, envir = envir)
     
   } else {
     

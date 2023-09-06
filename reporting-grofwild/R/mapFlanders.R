@@ -16,7 +16,7 @@ getProvince <- function(NISCODE, allSpatialData) {
   
   communeCode <- substr(NISCODE, start = 1, stop = 1)
   
-  provinceData <- allSpatialData$provinces@data[, c("NISCODE", "NAAM")]
+  provinceData <- allSpatialData$provinces[, c("NISCODE", "NAAM")]
   provinceData$NISCODE <- substr(provinceData$NISCODE, start = 1, stop = 1)
   
   sapply(communeCode, function(iCode) {
@@ -50,6 +50,23 @@ getRegionLevel <- function(level) {
   
 }
 
+#' Calculate window range for centering a map 
+#' 
+#' @param sf_object object of class sf
+#' @return vector with x_min, x_max, y_min and y_max
+#' 
+#' @author mvarewyck
+#' @export
+getCenterView <- function(sf_object) {
+  
+  coordData <- sf::st_bbox(sf_object)
+  toReturn <- coordData[c(1, 3, 2, 4)]
+  names(toReturn) <- NULL
+  
+  toReturn
+  
+}
+
 
 
 #' Create summary data of geographical data for selected year, species and region level
@@ -70,6 +87,7 @@ getRegionLevel <- function(level) {
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
 #' @importFrom reshape2 dcast
+#' @importFrom sf st_drop_geometry
 #' @export
 createSpaceData <- function(data, allSpatialData, biotoopData, 
   year, species, regionLevel,
@@ -84,22 +102,22 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   unit <- match.arg(unit)
   
   # Select correct spatial data
-  spatialData <- filterSpatial(allSpatialData = allSpatialData, 
-    species = species, regionLevel = regionLevel, year = year)
+  spatialData <- sf::st_drop_geometry(filterSpatial(allSpatialData = allSpatialData, 
+    species = species, regionLevel = regionLevel, year = year))
   
   # Framework for summary data
   fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes")) {
       
-      spatialData@data[, c("NAAM", "AREA", "NISCODE")]
+      spatialData[, c("NAAM", "AREA", "NISCODE")]
       
     } else if (regionLevel == "WBE_buitengrenzen") {
       
-      tmpData <- spatialData@data[, c("NAAM", "AREA")]        
+      tmpData <- spatialData[, c("NAAM", "AREA")]        
       tmpData[tmpData$NAAM %in% unique(data$PartijNummer), , drop = FALSE]
       
     } else {
       
-      spatialData@data[, c("NAAM", "AREA")]
+      spatialData[, c("NAAM", "AREA")]
       
     }
   
@@ -359,21 +377,19 @@ mapFlanders <- function(
     jachtData <- filterSpatial(allSpatialData = allSpatialData, species = species,
       regionLevel = "WBE", year = year, locaties = summaryData$locatie)
     
-    spatialData@data$NAAM <- NA
+    spatialData$NAAM <- NA
     
     if (!is.null(jachtData)) {
       # Retain only 'aangesloten' #327
       jachtData <- jachtData[jachtData$WBELID == "aangesloten", ]
-      if (nrow(jachtData) != 0) {
-        jachtData@data$NAAM <- paste0("Jachtterrein (", jachtData@data$WBELID, ")")
-        jachtData@data$WBE_NR <- jachtData@data$WBE_NR_wbe
-        jachtData@data <- jachtData@data[, c("WBE_NR", "NAAM", "AREA")]
-        
-        spatialData <- rbind(spatialData, jachtData)
-      }
+      jachtData$NAAM <- paste0("Jachtterrein (", jachtData$WBELID, ")")
+      jachtData$WBE_NR <- jachtData$WBE_NR_wbe
+      jachtData <- jachtData[, c("WBE_NR", "NAAM", "AREA")]
+      
+      spatialData <- rbind(spatialData, jachtData)
     }
     
-    valuesPalette <- unique(spatialData@data$NAAM)
+    valuesPalette <- unique(spatialData$NAAM)
     
   } else {
     
@@ -450,10 +466,10 @@ mapFlanders <- function(
 #' when the map is first created; default value is TRUE
 #' @param type character, defines the layout depending on which page it is shown;
 #' should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}
-#' @param geoData SpatialPolygonsDataFrame with geographical data
+#' @param geoData data.frame with geographical data
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
-#' @param allSpatialData list with SpatialPolygonsDataFrame 
+#' @param allSpatialData list with sf objects 
 #' @param regionLevel reactive, pre-selected value of regionLevel chosen outside module;
 #' to draw black borders and zoom
 #' @param locaties reactive, pre-selected value of region chosen outside module;
@@ -466,7 +482,7 @@ mapFlanders <- function(
 #' @author mvarewyck
 #' @import shiny
 #' @import leaflet
-#' @importFrom ggplot2 fortify
+#' @importFrom sf st_coordinates
 #' @importFrom webshot webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
@@ -903,13 +919,12 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           selectedPolygons <- subset(tmpSpatial, tmpSpatial$NAAM %in% results$region_value)
           
-          coordData <- suppressMessages(ggplot2::fortify(selectedPolygons))
-          centerView <- c(range(coordData$long), range(coordData$lat))
+          centerValues <- getCenterView(sf_object = selectedPolygons)
           
           leafletProxy("spacePlot", data = spatialData()) %>%
             
-            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-              lat1 = centerView[3], lat2 = centerView[4])
+            fitBounds(lng1 = centerValues[1], lng2 = centerValues[2],
+              lat1 = centerValues[3], lat2 = centerValues[4])
           
         })
       

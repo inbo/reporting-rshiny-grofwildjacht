@@ -16,9 +16,9 @@ geoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 schadeData <- suppressWarnings(loadRawData(type = "wildschade"))
 schadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
-readS3(file = "spatialData.RData")
+readS3(file = "spatialData_sf.RData")
 
-biotoopData <- loadHabitats(spatialData = spatialData)
+biotoopData <- loadHabitats()
 
 
 # F05_1: Absoluut afschot
@@ -180,7 +180,7 @@ test_that("F02_1", {
 test_that("F09_2", {
     
     myResult <- barCost(
-      data = schadeData@data, 
+      data = sf::st_drop_geometry(schadeData), 
       unit = c("SoortNaam", "season")[2]
     )
     
@@ -236,9 +236,9 @@ test_that("F06", {
 
 test_that("F07_1, F09_1, F11_1", {
     
-    sources <- unique(schadeData@data$typeMelding)
+    sources <- unique(schadeData$typeMelding)
     
-    subData <- schadeData@data[schadeData@data$gemeente_afschot_locatie == "Aartselaar", ]
+    subData <- sf::st_drop_geometry(schadeData[schadeData$gemeente_afschot_locatie == "Aartselaar", ])
     
     myResult <- barCost(
       data = subset(subData, typeMelding %in% sources[4]), 
@@ -394,14 +394,13 @@ test_that("F17_4", {
     selectedPolygons <- subset(tmpSpatial, 
       tmpSpatial$NAAM %in% locaties)
     
-    coordData <- suppressMessages(ggplot2::fortify(selectedPolygons))
-    centerView <- c(range(coordData$long), range(coordData$lat))
+    centerView <- getCenterView(selectedPolygons)
     
     myMap <- myMap %>%
       leaflet::fitBounds(lng1 = centerView[1], lng2 = centerView[2],
         lat1 = centerView[3], lat2 = centerView[4]) %>%
       leaflet::clearGroup(group = "regionLines") %>%
-      leaflet::addPolylines(data = selectedPolygons, color = "gray", weight = 5,
+      leaflet::addPolylines(data = selectedPolygons, color = "black", weight = 5,
         group = "regionLines")
     
     expect_s3_class(myMap, "leaflet")

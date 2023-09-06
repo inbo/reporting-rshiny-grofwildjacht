@@ -18,7 +18,7 @@
 #' } 
 #' @author mvarewyck
 #' @import plotly
-#' @importFrom INBOtheme inbo_lichtgrijs
+#' @importFrom sf st_drop_geometry
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
@@ -39,8 +39,11 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  plotData <- filterSchade(plotData= data, sourceIndicator = sourceIndicator,
+  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
+  
+  if (inherits(plotData, "sf"))
+    plotData <- sf::st_drop_geometry(plotData)
   
   # Select data
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
@@ -106,13 +109,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     
   }
   
-  # Max. 40 colors
-  colorNames <- unique(summaryData$variabele)
-  colorList <- replicateColors(nColors = length(colorNames))
+  colorList <- replicateColors(values = unique(summaryData$variabele))
   colors <- colorList$colors
-  names(colors) <- colorNames
-  if ("onbekend" %in% tolower(colorNames))
-    colors[tolower(names(colors)) == "onbekend"] <- inbo_lichtgrijs
   
   title <- paste0(typeNaam, " ",
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
@@ -128,7 +126,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
           textposition = "none", hoverinfo = "text+name",
           colors = colors, type = "bar",
           width = width, height = height) %>%
-      layout(title = title,
+        plotly::layout(title = title,
           xaxis = list(title = "Jaar", 
             tickvals = unique(summaryData$jaar), 
             ticktext = unique(summaryData$jaar)), 

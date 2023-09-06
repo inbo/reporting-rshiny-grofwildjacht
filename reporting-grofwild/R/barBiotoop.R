@@ -63,7 +63,7 @@ barBiotoop <- function(data, jaar = NULL,
   
   # More than 9 regions -> total
   selectedRegions <- unique(plotData$regio)
-  colorList <- replicateColors(nColors = length(selectedRegions))
+  colorList <- replicateColors(values = selectedRegions)
   warningText <- colorList$warning
   colors <- colorList$colors
   if (length(selectedRegions) > 9) {
@@ -80,7 +80,7 @@ barBiotoop <- function(data, jaar = NULL,
       hovertemplate = paste('%{y} <br>%{x:/100}%'),
       type = "bar", orientation = 'h', width = width, height = height) %>%
     
-    layout(title = paste0("Totale oppervlakte: ", 
+    plotly::layout(title = paste0("Totale oppervlakte: ", 
         sum(totalCounts$value[totalCounts$name == "Area_km2"]), " km\U00B2"),
       xaxis = list(title = "", zeroline = FALSE, showline = FALSE, ticksuffix = "%"), 
       yaxis = list(title = "", zeroline = FALSE, showline = FALSE),    
@@ -90,7 +90,7 @@ barBiotoop <- function(data, jaar = NULL,
   
   # Percentage printed at top of bar
   if (length(unique(plotData$regio)) == 1) {
-      pl <- pl %>% layout(
+      pl <- pl %>% plotly::layout(
         annotations = list(x = totalRegions$value,  
         y = totalRegions$variable,
         text = paste(totalRegions$value, "%"),

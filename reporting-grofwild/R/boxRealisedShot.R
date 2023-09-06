@@ -57,7 +57,7 @@ boxRealisedShot <- function(data, regio, type = NULL,
   
   pl <- plot_ly(data = summaryData, x = ~jaar, y = ~percent,
       type = "box", width = width, height = height) %>%
-    layout(title = title,
+    plotly::layout(title = title,
       xaxis = list(title = "Labeljaar"), 
       yaxis = list(title = "Percentage"),
       legend = list(y = 0.8, yanchor = "top")

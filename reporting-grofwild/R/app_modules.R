@@ -729,13 +729,17 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' @return ui object (tagList)
+#' @importFrom sf st_drop_geometry
 #' @export
 dataModuleServer <- function(input, output, session, data, variable, fullNames = NULL) {
   
   
   freqTable <- reactive({
         
-        myTable <- as.data.frame(table(data()@data[, variable]), stringsAsFactors = FALSE)
+      req(data())
+      validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
+      
+        myTable <- as.data.frame(table(sf::st_drop_geometry(data())[, variable]), stringsAsFactors = FALSE)
         if (nrow(myTable) == 0)
           return(NULL)
         myTable <- myTable[rev(order(myTable$Freq)), ]

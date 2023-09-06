@@ -22,8 +22,9 @@
 #' @author Eva Adriaensen
 #' @importFrom reshape2 dcast
 #' @importFrom plyr count
-#' @importFrom magrittr "%>%"
+#' @importFrom plotly "%>%"
 #' @importFrom utils tail
+#' @importFrom sf st_drop_geometry
 #' @export
 tableSchadeCode <- function(data, jaartallen = NULL,
         type = c("provinces", "flanders", "faunabeheerzones"), 
@@ -50,6 +51,9 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   # filter for source
   allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
+  
+  if (inherits(allData, "sf"))
+    allData <- sf::st_drop_geometry(allData)  
   
   allData$locatie <- switch(type,
           flanders = "Vlaams Gewest",

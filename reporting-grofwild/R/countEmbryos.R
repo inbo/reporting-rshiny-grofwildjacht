@@ -6,8 +6,6 @@
 #' @param sourceIndicator character, which source to be used; default value is "inbo"
 #' @inheritParams countYearAge
 #' @inheritParams filterGrofwild
-#' @import plotly
-#' @importFrom INBOtheme inbo_lichtgrijs
 #' @return list with:
 #' \itemize{
 #' \item{'plot': }{plotly object, for the specified specie and years}
@@ -20,6 +18,7 @@
 #' }}
 #' }
 #' @author mvarewyck
+#' @import plotly
 #' @export
 countEmbryos <- function(data, type = c("Smalree", "Reegeit"), 
   jaartallen = NULL, regio = "", 
@@ -74,14 +73,14 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     
   # convert to a factor
   if (wildNaam == "Ree") {
-    newLevels <- c("onbekend", 3:0)
-    plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
+    newLevels <- c("Onbekend", 3:0)
+    plotData$embryos[is.na(plotData$embryos)] <- "Onbekend"
     plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
   } else {
-    newLevels <- c("onbekend", ">9", "7-9", "4-6", "1-3", "0")
+    newLevels <- c("Onbekend", ">9", "7-9", "4-6", "1-3", "0")
     plotData$embryos <- as.character(cut(plotData$embryos, breaks = c(0, 1, 4, 7, 9, 20),
       include.lowest = TRUE, right = FALSE, labels = rev(newLevels[-1])))
-    plotData$embryos[is.na(plotData$embryos)] <- "onbekend"
+    plotData$embryos[is.na(plotData$embryos)] <- "Onbekend"
     plotData$embryos <- factor(plotData$embryos, levels = rev(newLevels))
   }
   
@@ -96,16 +95,21 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	summaryData <- merge(tmpPercent, tmpSummary, all.y = TRUE)
 	summaryData$afschotjaar <- as.numeric(as.character(summaryData$afschotjaar))
   
+  # Summarize data per year
+  totalCounts <- as.data.frame(table(plotData$afschotjaar))
+  colnames(totalCounts) <- c("afschotjaar", "value")
+  
 	# Hover text
-	summaryData$text <- ifelse(is.na(summaryData$percent), "",
-			paste0(round(summaryData$percent), "%"))
+	summaryData$text <- paste0(
+    "n = ", summaryData$Freq,
+    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
+    "<br><em>Totaal</em> ", merge(totalCounts, summaryData)$value
+  )
 	
 	
 	if (sum(summaryData$Freq) == 0)
 		stop("Geen data beschikbaar")
 	
-	# Summarize data per year
-	totalCounts <- table(plotData$afschotjaar)
 	
 	
   title <- paste0(wildNaam, " ", bioindicatorName, " ",
@@ -119,10 +123,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
   
   
-  colorList <- replicateColors(nColors = nlevels(summaryData$embryos))$colors
-  colors <- c(inbo_lichtgrijs, colorList)[1:nlevels(summaryData$embryos)]
-  names(colors) <- newLevels
-	
+  colors <- replicateColors(values = newLevels)$colors
+  
   yTitle <- paste("Aantal vrouwelijke", switch(wildNaam,
     Ree = "ree\u00EBn",
     'Wild zwijn' = "wilde zwijnen"))
@@ -131,17 +133,14 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 					text = ~text, textposition = "none", hoverinfo = "x+text+name",
 					colors = colors, type = "bar", width = width, height = height) %>%
 			
-			layout(title = title,
+			plotly::layout(title = title,
 					xaxis = list(title = "afschotjaar",
             tickvals = unique(summaryData$afschotjaar),
             ticktext = unique(summaryData$afschotjaar)), 
 					yaxis = list(title = yTitle),
 					margin = list(b = 120, t = 100, r = 200),
 					legend = list(y = 0.8, yanchor = "top"),
-					barmode = if(length(totalCounts) == 1) "group" else "stack",
-					annotations = list(x = as.numeric(names(totalCounts)), y = totalCounts, 
-							text = paste(if(length(totalCounts) == 1) "totaal:" else "", totalCounts),
-							xanchor = 'center', yanchor = 'bottom', showarrow = FALSE)) %>%
+					barmode = if(nrow(totalCounts) == 1) "group" else "stack") %>%
 			
 			add_annotations(text = "Aantal embryo's", 
 					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",

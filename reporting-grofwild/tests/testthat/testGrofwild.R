@@ -7,11 +7,11 @@
 context("Test Grofwildjacht")
 
 # Load all data
-readS3(file = "spatialData.RData")
+readS3(file = "spatialData_sf.RData")
 
 ecoData <- loadRawData(type = "eco")
 geoData <- loadRawData(type = "geo")
-biotoopData <- loadHabitats(spatialData = spatialData)
+biotoopData <- loadHabitats()
 
 
 test_that("Load grofwild data", {
@@ -92,15 +92,15 @@ test_that("Map with counts and corresponding line plot", {
     wildGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
     
     # Check province names
-    provinceNames <- levels(spatialData$provinces@data$NAAM)
+    provinceNames <- levels(spatialData$provinces$NAAM)
     levels(wildGeoData$provincie)[which(!levels(wildGeoData$provincie) %in% provinceNames)]
     
-    provinceNames <- levels(spatialData$provincesVoeren@data$NAAM)
+    provinceNames <- levels(spatialData$provincesVoeren$NAAM)
     levels(wildGeoData$provincie)[which(!levels(wildGeoData$provincie) %in% provinceNames)]
     
     
     # Check commune names
-    communeNames <- levels(spatialData$communes@data$NAAM)
+    communeNames <- levels(spatialData$communes$NAAM)
     levels(wildGeoData$gemeente_afschot_locatie)[
       which(!levels(wildGeoData$gemeente_afschot_locatie) %in% communeNames)]
 
@@ -324,9 +324,13 @@ test_that("Verwezenlijkt afschot", {
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
     
-    boxRealisedShot(data = toekenningsData,
+    myResult <- boxRealisedShot(data = toekenningsData,
       type = unique(toekenningsData$labeltype),
       jaartallen = 2009:2020)
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
     
   })
 
@@ -419,8 +423,8 @@ test_that("The interactive map", {
         myPlot <- mapFlanders(
           allSpatialData = spatialData, 
           regionLevel = regionLevel, 
-          colorScheme = c("white", RColorBrewer::brewer.pal(
-              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr")),
+          colorScheme = suppressWarnings(c("white", RColorBrewer::brewer.pal(
+              n = nlevels(spaceData$data$group) - 1, name = "YlOrBr"))),
           summaryData = spaceData$data,
           legend = "topright",
           species = iSpecies

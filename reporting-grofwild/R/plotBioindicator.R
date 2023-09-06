@@ -116,7 +116,7 @@ plotBioindicator <- function(data,
   # create plot
   pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
       colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
-    layout(title = title,
+    plotly::layout(title = title,
       xaxis = list(title = "afschotjaar"), 
       yaxis = list(title = paste(bioindicatorName, bioindicatorUnit)),
       margin = list(b = 120, t = 100),

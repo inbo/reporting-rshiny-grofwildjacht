@@ -1,3 +1,41 @@
+
+
+#' Load spatial data
+#' @param WBE_NR integer, if not NULL select only relevant data for given WBE;
+#' default value is NULL 
+#' @inheritParams readS3
+#' @return list of sf objects
+#' 
+#' @author mvarewyck
+#' @importFrom sf st_read st_layers
+#' @export
+loadShapeData <- function(WBE_NR = NULL,
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  
+  
+  if (is.null(WBE_NR) | length(WBE_NR) > 100) {
+    # From 100 it is faster to load single object, but requires more memory (+-80 MB)
+    readS3(file = "spatialDataWBE_sf.RData", envir = environment())
+    return(spatialDataWBE)
+}
+  
+  # 1st layer (WBE)
+  readS3(file = paste0("spatialDataWBE/", WBE_NR[1], ".RData"), bucket = bucket, 
+    envir = environment())
+  
+  if (length(WBE_NR) > 1)
+    for (wbe in WBE_NR[-1]) {
+      envTmp <- new.env()
+      readS3(file = paste0("spatialDataWBE/", wbe, ".RData"), bucket = bucket,
+        envir = envTmp)
+      spatialDataWBE <- sapply(names(spatialDataWBE), function(iLayer)
+          rbind(spatialDataWBE[[iLayer]], envTmp$spatialDataWBE[[iLayer]]))
+    }
+  
+  spatialDataWBE
+
+}
+
 #' Read ecology, geography, wildschade, kbo_wbe or waarnemingen data
 #' 
 #' Data is preprocessed by createRawData() at INBO
@@ -7,42 +45,25 @@
 #' 
 #' @return data.frame, loaded data
 #' @author mvarewyck
-#' @importFrom utils read.csv
-#' @importFrom sp CRS proj4string
-#' @importFrom raster coordinates
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  type = c("eco", "geo", "wildschade", "kbo_wbe")) {
+  type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")) {
   
   type <- match.arg(type)
   
+  # For R CMD check
+  rawData <- NULL  
   
   dataFile <- switch(type,
-          "eco" = "rshiny_reporting_data_ecology_processed.csv",
-          "geo" = "rshiny_reporting_data_geography_processed.csv",
-          "wildschade" = "WildSchade_georef_processed.csv",
-          "kbo_wbe" = "Data_Partij_Cleaned_processed.csv",
-          "waarnemingen" = "waarnemingen_wild_zwijn_processed.csv"
+          "eco" = "rshiny_reporting_data_ecology_processed.RData",
+          "geo" = "rshiny_reporting_data_geography_processed.RData",
+          "wildschade" = "WildSchade_georef_processed.RData",
+          "kbo_wbe" = "Data_Partij_Cleaned_processed.RData",
+          "waarnemingen" = "waarnemingen_wild_zwijn_processed.RData"
         )
   
-  rawData <- as.data.frame(readS3(FUN = data.table::fread, file = dataFile, bucket = bucket))
-  
-  # Convert to factors
-  newLevels <- loadMetaEco()
-  toFactors <- names(newLevels)[names(newLevels) %in% colnames(rawData)]
-  rawData[toFactors] <- lapply(toFactors, function(x) 
-      droplevels(factor(rawData[[x]], levels = c(newLevels[[x]], "Onbekend"))))
-  
-  if (type == "wildschade") {
-    
-    # create shape data
-    coordinates(rawData) <- ~x + y
-    proj4string(rawData) <- CRS("+init=epsg:31370")
-    
-    rawData <- spTransform(rawData, CRS("+proj=longlat +datum=WGS84"))
-    
-  }
+  readS3(file = dataFile, bucket = bucket, envir = environment())
   
   return(rawData)
   
@@ -149,8 +170,6 @@ loadToekenningen <- function(
 #' Load Habitats (Background) data
 #' 
 #' @inheritParams loadRawData
-#' @param spatialData list with each element a SpatialPolygonsDataFrame as created 
-#' by \code{\link{createShapeData}}
 #' @param regionLevels character vector, for which regions load the habitat data;
 #' if NULL loaded for all levels; default value is NULL
 #' @return named list with data.frame for each region level
@@ -159,101 +178,19 @@ loadToekenningen <- function(
 #' @export
 loadHabitats <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  spatialData, 
   regionLevels = NULL) {
   
-  allLevels <- list(
-    "flanders" = "flanders_habitats", 
-    "provinces" = "Provincies_habitats", 
-    "communes" = "Gemeentes_habitats", 
-    "faunabeheerzones" = "Faunabeheerzones_habitats", 
-    # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
-    "utm5" = "utm5_vlgrens_habitats", 
-    "wbe" = "WBE_habitats"
-  ) 
+  # For R CMD check
+  habitatData <- NULL
+  
+  readS3(file = "habitatData.RData", bucket = bucket, envir = environment())
+  
+  allLevels <- names(habitatData)
   
   if (!is.null(regionLevels))
-    allLevels <- allLevels[names(allLevels) %in% regionLevels]
+    allLevels <- allLevels[allLevels %in% regionLevels]
   
-  
-  habitatData <- sapply(names(allLevels), function(iRegion) {
-      
-      iLevel <- allLevels[[match(iRegion, names(allLevels))]]
-      
-      allFiles <- grep(pattern = iLevel,
-        x = sapply(aws.s3::get_bucket(bucket = bucket), function(x) as.list(x)$Key),
-        value = TRUE)
-      
-      if (iRegion == "wbe") {
-          
-          tmpData <- do.call(rbind, lapply(allFiles, function(iFile) {
-                
-                iData <- readS3(FUN = read.csv, file = iFile)
-                iData$year <- as.numeric(gsub("WBE_|habitats_|\\.csv", "", basename(iFile)))
-             
-                iData
-                
-              }))
-          
-          colnames(tmpData)[1] <- "regio"
-          
-        } else { 
-          
-          # Special case
-          if (iRegion == "provinces")
-            iRegion <- "provincesVoeren"
-          
-          tmpData <- readS3(FUN = read.csv, file = allFiles)
-
-          if ("NISCODE" %in% colnames(tmpData)) {
-            colnames(tmpData)[colnames(tmpData) == "NISCODE"] <- "regio"
-          } else {
-            colnames(tmpData)[1] <- "regio"
-          }
-          
-          # Match region names
-          if ("NISCODE" %in% colnames(spatialData[[iRegion]]@data))
-            tmpData$regio <- spatialData[[iRegion]]$NAAM[
-              match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
-          
-          # Check matching
-          if (!all(spatialData[[iRegion]]$NAAM %in% tmpData$regio))
-            stop("Matching for habitat data names failed ", iRegion)
-          
-        }
-        
-      return(tmpData)
-    
-    }, simplify = FALSE)
-  
-  # Bind wegdensiteit
-  densiteitData <- readS3(FUN = data.table::fread, dec = ",", file = "wegdensiteit.csv", bucket = bucket)
-  habitatData <- sapply(names(habitatData), function(iLevel) {
-      
-      iData <- switch(iLevel, 
-        flanders = densiteitData[densiteitData$Niveau == "Vlaanderen", ],
-        provinces = densiteitData[densiteitData$Niveau == "Provincie", ],
-        communes = densiteitData[densiteitData$Niveau == "Gemeente", ],
-        faunabeheerzones = densiteitData[densiteitData$Niveau == "Faunabeheerzone", ],
-        NULL
-      )
-      if (is.null(iData))
-        return(habitatData[[iLevel]])
-      # Special case
-      if (iLevel == "provinces")
-        iData <- rbind(iData, 
-          densiteitData[densiteitData$Niveau == "Gemeente" & densiteitData$NAAM == "Voeren", ])
-      
-      iData$Niveau <- NULL
-      colnames(iData) <- paste0("weg_", colnames(iData))
-      
-      merge(habitatData[[iLevel]], iData, by.x = "regio", by.y = "weg_NAAM", all.x = TRUE)
-    
-    }, simplify = FALSE)
-  
-  
-  
-  return(habitatData)
+  return(habitatData[allLevels])
   
 }
 

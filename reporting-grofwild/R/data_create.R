@@ -423,8 +423,9 @@ createRawData <- function(
   # Convert to factors
   newLevels <- loadMetaEco()
   toFactors <- names(newLevels)[names(newLevels) %in% colnames(rawData)]
-  rawData[toFactors] <- lapply(toFactors, function(x) 
-      droplevels(factor(rawData[[x]], levels = c(newLevels[[x]], "Onbekend"))))
+  if (length(toFactors) > 0)
+    rawData[toFactors] <- lapply(toFactors, function(x) 
+        droplevels(factor(rawData[[x]], levels = c(newLevels[[x]], "Onbekend"))))
   
 
   s3save(rawData, bucket = bucket, 
@@ -493,8 +494,12 @@ createSpreadData <- function(
   tmpFiles <- list(
     # pixels
     pixels = "Pixels_ModelOutput_toekomst_verspr",
+    # New names?
+#    pixels = "Model_output_Pixels",
     # gemeente
     municipalities = "Municipalities_ModelOutput_toekomst_verspr"
+  # New names?
+#    municipalities = "Model_output_Municipalities"
   )
   
   # Specify relevant (2 recent) files

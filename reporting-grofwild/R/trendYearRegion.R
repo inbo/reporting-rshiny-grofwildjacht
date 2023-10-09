@@ -177,7 +177,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
   
   wildNaam <- unique(data$wildsoort)
   title_wildnaam <- unlist(strsplit(wildNaam, split = ", "))
-  titlePrefix <- if (!isSchade) "Gerapporteerd afschot" else "Evolutie schademeldingen"
+  titlePrefix <- if (!isSchade) "Gerapporteerd afschot" else "Evolutie schadegevallen"
   
   
   # Select data
@@ -279,7 +279,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
       output$trendRegionTitle <- renderUI({
           
           h3("Evolutie", 
-            if (type == "wildschade") "schademeldingen" else "gerapporteerd afschot", 
+            if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
             if (type != "wbe") tags$br(),
             locaties())
           

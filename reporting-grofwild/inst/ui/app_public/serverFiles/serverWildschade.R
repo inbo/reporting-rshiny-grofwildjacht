@@ -177,7 +177,7 @@ countYearProvinceServer(id = "schade",
     title = reactive({
         input$tabs   # ensure title is updated
         title <- uiText$title[uiText$plotFunction == "countYearProvinceUI"]
-        gsub("Gerapporteerd aantal", "Aantal schademeldingen", title)
+        gsub("Gerapporteerd aantal", "Aantal schadegevallen", title)
       })
   )
 

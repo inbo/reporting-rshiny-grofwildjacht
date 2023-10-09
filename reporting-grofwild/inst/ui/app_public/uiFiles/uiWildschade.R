@@ -51,7 +51,7 @@ tagList(
         ),
         
         
-        h2("Schademeldingen"),
+        h2("Schadegevallen"),
         
         uiOutput("schade_summary"),
         

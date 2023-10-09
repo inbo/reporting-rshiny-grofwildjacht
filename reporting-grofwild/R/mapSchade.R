@@ -355,7 +355,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           
           h3(paste(
               if (type == "schade")
-                "Schademeldingen" else
+                "Schadegevallen" else
                 "Gerapporteerde afschotlocaties", 
               "voor", if (nSpecies > 1) 
                   paste(paste(tolower(species())[1:nSpecies-1], collapse = ", "), "en", tolower(species()[nSpecies])) else
@@ -725,7 +725,7 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
         
         if ("region" %in% plotDetails)
           column(6, 
-            h3("Evolutie schademeldingen WBE"),
+            h3("Evolutie schadegevallen WBE"),
             plotModuleUI(id = ns("timePlotSchade"), height = "400px"),
             optionsModuleUI(id = ns("timePlotSchade"), exportData = TRUE,
               doWellPanel = FALSE)

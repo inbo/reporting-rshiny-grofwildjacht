@@ -98,7 +98,7 @@ output$wbe_empty <- renderUI({
     if (!results$wbe_currentKbo() %in% schadeData$KboNummer)
       errorMessage <- tags$p(errorMessage, 
         "Momenteel zijn er voor deze WBE geen schadegegevens van de grofwildsoorten beschikbaar.", 
-        "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. schademeldingen.",
+        "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. schadegevallen.",
         "Indien u denkt dat dit niet klopt, raden wij u aan gebruik te maken van het", 
         tags$a(href = "https://natuurenbos.vlaanderen.be/e-loketten", target = "_blank", "e-loket"), 
         "van ANB, de Wilderapp (", 

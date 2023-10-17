@@ -102,8 +102,12 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   unit <- match.arg(unit)
   
   # Select correct spatial data
-  spatialData <- sf::st_drop_geometry(filterSpatial(allSpatialData = allSpatialData, 
-    species = species, regionLevel = regionLevel, year = year))
+  spatialData <- filterSpatial(allSpatialData = allSpatialData, 
+    species = species, regionLevel = regionLevel, year = year)
+  
+  if (is.null(spatialData))
+    return(NULL) else
+    spatialData <- sf::st_drop_geometry(spatialData)
   
   # Framework for summary data
   fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes")) {

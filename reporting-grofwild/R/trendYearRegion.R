@@ -22,13 +22,13 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   # Select correct spatial data
   chosenTimes <- timeRange[1]:timeRange[2]
   spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
-        tmp <- sf::st_drop_geometry(filterSpatial(
+        tmp <- filterSpatial(
           allSpatialData = allSpatialData,
           species = species,
           regionLevel = regionLevel,
-          year = iYear))
+          year = iYear)
         if (!is.null(tmp) && nrow(tmp) > 0)
-          tmpData <- tmp else
+          tmpData <- sf::st_drop_geometry(tmp) else
           return(NULL)
         tmpData$YEAR <- iYear
         tmpData

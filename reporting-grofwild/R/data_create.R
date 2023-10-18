@@ -467,7 +467,8 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 #' Create shape data for dashboard wild zwijn - future spread F17_4
 #' 
 #' @inheritParams createShapeData
-#' @param spatialData list, with object of class 'sf' for each spatial level 
+#' @param spatialData list, with object of class 'sf' for each spatial level;
+#' as can be loaded using \code{readS3(file = "spatialData_sf.RData")}
 #' @return boolean, whether file is successfully saved
 #' save list of sf objects for each spatial level (pixels and municipalities)
 #' as used in \code{\link{mapSpread}}
@@ -481,10 +482,8 @@ createTrafficData <- function(jsonDir = "~/git/reporting-rshiny-grofwildjacht/da
 createSpreadData <- function(
   jsonDir = "~/git/reporting-rshiny-grofwildjacht/data",
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  spatialData = NULL) {
+  spatialData) {
   
-  if (is.null(spatialData))
-    readS3(file = "spatialData_sf.RData")
   
   # currently only unit of interest
   unit <- "model_EP"
@@ -492,9 +491,11 @@ createSpreadData <- function(
   # File pattern per resolution
   tmpFiles <- list(
     # pixels
-    pixels = "Pixels_ModelOutput_toekomst_verspr",
+#    pixels = "Pixels_ModelOutput_toekomst_verspr",
+    pixels = "Model_output_Pixels",
     # gemeente
-    municipalities = "Municipalities_ModelOutput_toekomst_verspr"
+#    municipalities = "Municipalities_ModelOutput_toekomst_verspr"
+    municipalities = "Model_output_Municipalities"
   )
   
   # Specify relevant (2 recent) files

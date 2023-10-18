@@ -222,15 +222,18 @@ getSeason <- function(dates) {
 
 
 #' Replicate inbo colors if more than 9 needed
-#' @param nColors integer, number of colors needed
+#' @param values character, string for which each value should be matched to a specific color;
+#' gray is used if value equals 'Onbekend'
 #' @return list with
 #' colors = character vector with (repeated) inbo colors
 #' warning = character, not NULL if colors are repeated
 #' 
 #' @author mvarewyck
-#' @importFrom INBOtheme inbo_palette
+#' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @export
-replicateColors <- function(nColors) {
+replicateColors <- function(values) {
+  
+  nColors <- length(values)
   
   rest <- nColors%%9
   times <- floor(nColors/9)
@@ -239,10 +242,19 @@ replicateColors <- function(nColors) {
   
   if (times > 0)
     colors <- rep(inbo_palette(n = 9), times)
-  if(rest > 0)
+  if (rest > 0)
     colors <- c(colors, inbo_palette(n = rest))
   
-  # warning if noLocaties exceeds 9 colours
+  names(colors) <- values
+  
+  # onbekend = gray as last color
+  grayValues <- c("Onbekend", "Niet ingezameld")
+  if (any(grayValues %in% values)) {
+    colors[names(colors) %in% grayValues] <- inbo_lichtgrijs
+    colors <- c(colors[!names(colors) %in% grayValues], colors[names(colors) %in% grayValues])
+  }
+    
+  # warning if nColors exceeds 9 colours
   warningText <- NULL
   if(nColors > 9) {
     warningText <- "Door de ruime selectie werden de kleuren van deze grafiek hergebruikt. 
@@ -364,3 +376,4 @@ plotlyReport <- function(myPlot) {
   myPlot
   
 }
+

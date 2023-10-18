@@ -159,7 +159,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 
 
 #' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
-#' @param allSpatialData list with SpatialPolygonsDataFrame as loaded by 
+#' @param allSpatialData list with sf objects as loaded by 
 #' \code{readS3(file = "spatialData.RData")}
 #' @param species character, animal species
 #' @param regionLevel character, region level. Should be one of 
@@ -168,7 +168,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
 #' @param locaties character vector, only relevant when \code{regionLevel} is 
 #' "WBE_binnengrenzen"; it selects the relevant WBE only; default is NULL
-#' @return single SpatialPolygonsDataFrame
+#' @return single sf object
 #' 
 #' @author mvarewyck
 #' @export
@@ -207,7 +207,7 @@ filterSpatial <- function(allSpatialData, species,
 #' Filter loaded \code{allSpatialData} for selected partijNummer
 #' @inheritParams filterSpatial 
 #' @param partijNummer numeric, partijnummer of the WBE to filter
-#' @return list with SpatialPolygonsDataFrame, each of them filtered on selected WBE
+#' @return list with sf objects, each of them filtered on selected WBE
 #' 
 #' @author mvarewyck
 #' @export

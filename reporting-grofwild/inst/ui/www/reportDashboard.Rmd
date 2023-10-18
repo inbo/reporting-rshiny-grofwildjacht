@@ -57,13 +57,13 @@ print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
 myTable <- tableBackground(data = rbind(
     subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
     biotoopData$flanders))$data
-DT::datatable(myTable, rownames = FALSE,
-    options = list(dom = 't', pageLength = -1)) %>%
-  DT::formatStyle(
-    colnames(myTable)[1],
-    target = "row",
-    fontWeight = DT::styleEqual(tail(myTable[, 1], n = 1), "bold")
-  )
+tmpTable <- DT::datatable(myTable, rownames = FALSE,
+  options = list(dom = 't', pageLength = -1))
+DT::formatStyle(tmpTable,
+  colnames(myTable)[1],
+  target = "row",
+  fontWeight = DT::styleEqual(tail(myTable[, 1], n = 1), "bold")
+)
 ```
 
 

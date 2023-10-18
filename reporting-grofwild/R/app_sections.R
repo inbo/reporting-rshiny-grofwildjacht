@@ -33,6 +33,7 @@ welcomeSectionUI <- function(id, uiText, maxDate = NA) {
 #' Decode species indicator in description
 #' @param text character, input from uiText
 #' @param species character, currently selected species
+#' @param statsMap character, statistics to be printed instead of \code{'{{statsMap}}'}
 #' @return character, modified for the conditional species mentioned in the text  
 #' 
 #' @author mvarewyck

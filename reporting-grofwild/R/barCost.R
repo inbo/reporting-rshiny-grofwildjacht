@@ -62,8 +62,7 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   plotData <- plotData[plotData$x != 0, ]
   
   selectedGroups <- if (is.null(unit)) "group" else unique(summaryData[[unit]])
-  colors <- replicateColors(nColors = length(selectedGroups))$colors
-  names(colors) <- selectedGroups
+  colors <- replicateColors(values = selectedGroups)$colors
   
   totalCount <- table(subData$afschotjaar)
   
@@ -77,7 +76,7 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
         if (!is.null(groupLabel)) paste0('<b>', groupLabel, '</b>: %{text}'), '<extra></extra>'), 
       text = if (!is.null(unit)) ~base::get(unit),
       textposition = "none") %>%
-    layout(
+    plotly::layout(
       legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
       yaxis = if (max(totalCount) < 5)
         list(title = yLabel, dtick = 1) else

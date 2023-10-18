@@ -21,11 +21,19 @@
 #' @author wverlinden
 #' @import plotly
 #' @importFrom RColorBrewer brewer.pal
+#' @importFrom INBOtheme inbo_lichtgrijs inbo_palette
 #' @export 
 barDraagkracht <- function(data, groupVariable = NULL, 
   xVar = "percentage", yVar = NULL, verticalGroups = FALSE, 
   width = 1000, height = NULL) {
   
+  # For R CMD check
+  percentage <- NULL
+  
+  # Remove duplicated rows
+  if ("percentage" %in% colnames(data))
+    data <- data[, percentage := NULL]
+  data <- data[!duplicated(data), ]
   
   if (xVar == "percentage") {
     
@@ -55,7 +63,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     } else data$percentage[data$Antwoord %in% negativeLevel] <- -1*data$percentage[data$Antwoord %in% negativeLevel]
     
     myColors <- c(
-      if (length(neutralLevel) > 0) "lightgrey", 
+      if (length(neutralLevel) > 0) inbo_lichtgrijs, 
       inbo_palette(n = 4)[c(4, 2)])
     
   }
@@ -87,11 +95,11 @@ barDraagkracht <- function(data, groupVariable = NULL,
             text = ~paste("<b>", base::get(groupVariable), "</b><br>", base::get(yVar), "<br>", percentageLabel), 
             textposition = "none",
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
-            legendgroup = ~Antwoord, 
             showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]),
             hoverinfo = "text"
           ) %>%
-          layout(
+          plotly::layout(
+            legend = list(traceorder = 'normal'),
             annotations = list(
               # groupVariable text
               list(x = 0, y = 1, 
@@ -157,7 +165,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #            hovertemplate = paste('<b>Percentage</b>: %{x:.2f}', '<br>',
 #                '<b>Antwoord</b>: %{text}')
       ) %>%
-      layout(
+      plotly::layout(
         legend = list(title = list(text = "<b> Antwoord </b>"), traceorder = 'normal'),
         barmode = "relative",
         yaxis = list(
@@ -175,12 +183,11 @@ barDraagkracht <- function(data, groupVariable = NULL,
     
   } else {
     
-    colors <- replicateColors(nColors = length(unique(data$Type)))$colors
-    names(colors) <- unique(data$Type)
+    colors <- replicateColors(values = unique(data$Type))$colors
     
     myPlot <- plot_ly(data, x = as.character(data[[xVar]]), y = data[[yVar]], type = 'bar',
         color = ~as.factor(Type), colors = colors) %>%
-      layout(
+      plotly::layout(
         legend = list(title = list(text = "<b> Type </b>")),
         yaxis = list(title = "Aantal"),
         xaxis = list(title = "Jaar"),

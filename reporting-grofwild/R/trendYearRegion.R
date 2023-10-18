@@ -5,6 +5,7 @@
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
+#' @importFrom sf st_drop_geometry
 #' @export
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   timeRange, species, regionLevel, 
@@ -21,22 +22,25 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   # Select correct spatial data
   chosenTimes <- timeRange[1]:timeRange[2]
   spatialData <- do.call(rbind, lapply(chosenTimes, function(iYear) {
-        tmp <- filterSpatial(
+        tmp <- sf::st_drop_geometry(filterSpatial(
           allSpatialData = allSpatialData,
           species = species,
           regionLevel = regionLevel,
-          year = iYear)
-        if (!is.null(tmp) && nrow(tmp@data) > 0)
-          tmpData <- tmp@data else
+          year = iYear))
+        if (!is.null(tmp) && nrow(tmp) > 0)
+          tmpData <- tmp else
           return(NULL)
         tmpData$YEAR <- iYear
         tmpData
       }))
   
   # filter for source
-  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+  plotData <- filterSchade(plotData = data, 
+    sourceIndicator = sourceIndicator,
     returnStop = "message")
   
+  if (inherits(plotData, "sf"))
+    plotData <- sf::st_drop_geometry(plotData)
   
   # Generic location name
   plotData$locatie <- as.character(switch(regionLevel,
@@ -181,10 +185,10 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
     if (is.null(locaties))
       stop("Gelieve regio('s) te selecteren")
     plotData <- subset(data, locatie %in% locaties)
-    colorList <- replicateColors(nColors = length(locaties))
+    colorList <- replicateColors(values = locaties)
   } else {
     plotData <- data
-    colorList <- replicateColors(nColors = 1)
+    colorList <- replicateColors(values = "Vlaams Gewest")
   }
   
   
@@ -224,7 +228,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
       hoverinfo = "x+y+name",
       type = "scatter", mode = "lines+markers",
       width = width, height = height) %>%
-    layout(title = title,
+    plotly::layout(title = title,
       xaxis = list(title = "Jaar"), 
       yaxis = list(title = paste0("Aantal", unitName),
         range = c(0, ~max(freq)*1.05),

@@ -29,7 +29,7 @@ barInschatting <- function(data) {
         '<b>Antwoord</b>: %{text}<extra></extra>'),
       text = ~Antwoord,
       textposition = "none") %>%
-    layout(
+    plotly::layout(
       legend = list(title = list(text = "<b> Antwoord </b>")),
       barmode = "stack",
       yaxis = list(title = "Vraag",

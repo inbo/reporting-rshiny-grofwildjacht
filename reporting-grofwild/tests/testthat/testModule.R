@@ -6,6 +6,13 @@
 
 context("Test Shiny Modules")
 
+# Load all data
+readS3(file = "spatialData_sf.RData")
+
+ecoData <- loadRawData(type = "eco")
+geoData <- loadRawData(type = "geo")
+biotoopData <- loadHabitats()
+
 
 test_that("Module mapFlanders", {
     shiny::testServer(mapFlandersServer, 

@@ -57,11 +57,7 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
   
   totalCount <- count(df = summaryData, vars = "leeftijd", wt_var = "freq")$freq
   
-  groupLevels <- levels(as.factor(summaryData[[groupVariable]]))
-  colors <- inbo_palette(n = length(groupLevels))
-  names(colors) <- groupLevels
-  if ("Onbekend" %in% groupLevels)
-    colors[groupLevels == "Onbekend"] <- "gray"
+  colors <- replicateColors(values = levels(as.factor(summaryData[[groupVariable]])))$colors
   
   title <- paste(wildNaam, paste0("(", 
       ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
@@ -74,7 +70,7 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
       text = ~text, textposition = "none", hoverinfo = "x+text+name",
       colors = colors, type = "bar") %>%
     
-    layout(title = title,
+    plotly::layout(title = title,
       xaxis = list(title = "Leeftijdscategorie (INBO of Meldingsformulier)"), 
       yaxis = list(title = "Aantal geschoten dieren"),
       legend = list(y = 0.8, yanchor = "top"),

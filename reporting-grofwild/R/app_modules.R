@@ -125,30 +125,27 @@ optionsModuleServer <- function(input, output, session,
   sourcesSchade <- loadMetaSchade()$sources
   
   output$time <- renderUI({
-        
-        sliderInput(inputId = ns("time"), label = timeLabel, 
-            value = c(min(timeRange()), definedYear),
-            min = min(timeRange()),
-            max = max(timeRange()),
-            step = 1,
-            sep = "")
-        
-      })
-  
-  
-  
-  observe({
       
-      req(input$dataSource_leeftijd)
+      results$minTime <- min(timeRange())
+      
+      sliderInput(inputId = ns("time"), label = timeLabel, 
+        value = c(min(timeRange()), definedYear),
+        min = min(timeRange()),
+        max = max(timeRange()),
+        step = 1,
+        sep = "")
+      
+    })
+  
+  
+  
+    observe({
         
-        results$time <- input$time
-       
-        updateSliderInput(session, inputId = "time", 
-          value = results$time,
-          min = {
-            # TODO for indieningType??
-            subData <- tryCatch({
-              tmpData <- filterGrofwild(
+        req(input$dataSource_leeftijd)
+        
+        # TODO for indieningType??
+        subData <- tryCatch({
+          tmpData <- filterGrofwild(
                 plotData = data(), 
                 sourceIndicator_leeftijd = input$dataSource_leeftijd,
                 sourceIndicator_geslacht = input$dataSource_geslacht,
@@ -157,17 +154,26 @@ optionsModuleServer <- function(input, output, session,
               )
               if (!is.null(input$dataSource_embryos))
                 tmpData <- tmpData[tmpData$geslacht_comp == "Vrouwelijk", ]
-              
+                            
               tmpData
             }, error = function(err) validate(need(FALSE, err$message)))
-            min = min(subData$afschotjaar)
-          }
         
-        )
+        newMin <- min(subData$afschotjaar)
         
+        if (results$minTime != newMin) {
+          
+          results$minTime <- newMin
+          currentTime <- input$time
+          
+          if (currentTime[2] < newMin) 
+            currentTime[2] <- newMin
+          updateSliderInput(session, inputId = "time", 
+            value = c(max(newMin, currentTime[1]), currentTime[2]),
+            min = newMin)      
+        }
         
       })
-  
+    
   
   output$year <- renderUI({
         
@@ -609,7 +615,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$plot <- renderPlotly({  
         
-        resultFct()$plot
+        resultFct()$plot %>%
+          config(toImageButtonOptions = list(width = 1300, height = 800))
         
       })
     
@@ -729,13 +736,17 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' @return ui object (tagList)
+#' @importFrom sf st_drop_geometry
 #' @export
 dataModuleServer <- function(input, output, session, data, variable, fullNames = NULL) {
   
   
   freqTable <- reactive({
         
-        myTable <- as.data.frame(table(data()@data[, variable]), stringsAsFactors = FALSE)
+      req(data())
+      validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
+      
+        myTable <- as.data.frame(table(sf::st_drop_geometry(data())[, variable]), stringsAsFactors = FALSE)
         if (nrow(myTable) == 0)
           return(NULL)
         myTable <- myTable[rev(order(myTable$Freq)), ]

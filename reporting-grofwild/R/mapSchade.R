@@ -32,7 +32,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
                         "schadeCode", "provincie")
-  plotData <- plotData[, colnames(plotData@data) %in% colnamesToRetain]
+  plotData <- plotData[, colnames(plotData) %in% colnamesToRetain]
   
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
@@ -68,7 +68,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
 #' @inheritParams createSchadeSummaryData
 #' 
 #' @author mvarewyck
-#' @importFrom sp CRS
+#' @importFrom sf st_as_sf
 #' @export
 createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
   
@@ -91,8 +91,8 @@ createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
     return(NULL)
   
   # Create spatial object
-  coordinates(mapData) <- ~verbatimLongitude + verbatimLatitude
-  proj4string(mapData) <- CRS("+proj=longlat +datum=WGS84")
+  # create shape data
+  mapData <- sf::st_as_sf(mapData, coords = c("verbatimLongitude", "verbatimLatitude"), crs = "+proj=longlat +datum=WGS84")
   
   # Annotation on percentage collected
   attr(mapData, "annotation") <- percentCollected(nAvailable = nAvailable,
@@ -108,10 +108,11 @@ createAfschotLocationsData <- function(data, accuracy = NULL, timeRange) {
 #' @return data.frame, dataframe with nicely formatted columnnames and specific column order  
 #' 
 #' @author Eva Adriaensen
+#' @importFrom sf st_drop_geometry
 #' @export
 formatSchadeSummaryData <- function(summarySchadeData) {
 	
-  formatData <- summarySchadeData@data
+  formatData <- sf::st_drop_geometry(summarySchadeData)
   
   # Change values
   if ("PuntLocatieTypeID" %in% colnames(formatData))
@@ -154,7 +155,6 @@ formatSchadeSummaryData <- function(summarySchadeData) {
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_palette
-#' @importFrom ggplot2 fortify
 #' @export
 mapSchade <- function(
         schadeData, 
@@ -184,10 +184,9 @@ mapSchade <- function(
          
     
     if (is.null(regionLevel)) {
-      centerView <- as.numeric(apply(coordinates(schadeData), 2, range))
+      centerView <- getCenterView(schadeData)
     } else {
-      coordData <- suppressMessages(ggplot2::fortify(allSpatialData[[regionLevel]]))
-      centerView <- c(range(coordData$long), range(coordData$lat))
+      centerView <- getCenterView(allSpatialData[[regionLevel]])
     }
     
     
@@ -200,13 +199,13 @@ mapSchade <- function(
                     popup = paste0("<h4>Info</h4>",  
                             "<ul>", 
                             "<li><strong> Jaar </strong>: ", schadeData$afschotjaar,
-                            if ("wildsoort" %in% colnames(schadeData@data)) 
+                            if ("wildsoort" %in% colnames(schadeData)) 
                               paste0("<li><strong> Wildsoort </strong>: ", schadeData$wildsoort),
-                            if ("gemeente_afschot_locatie" %in% colnames(schadeData@data))
+                            if ("gemeente_afschot_locatie" %in% colnames(schadeData))
                               paste0("<li><strong> Gemeente </strong>: ", schadeData$gemeente_afschot_locatie),
-                            if ("schadeBasisCode" %in% colnames(schadeData@data))
+                            if ("schadeBasisCode" %in% colnames(schadeData))
                               paste0("<li><strong> Schade type </strong>: ", schadeData$schadeBasisCode),
-                            if ("season" %in% colnames(schadeData@data))
+                            if ("season" %in% colnames(schadeData))
                               paste0("<li><strong> Seizoen </strong>: ", schadeData$season),
                             "</ul>"
                     )
@@ -265,8 +264,8 @@ mapSchade <- function(
 #' Shiny module for creating map on schade data - server side
 #' @param id character, unique identifier for module
 #' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
-#' @param allSpatialData reactive object spatialPolygonsDataFrame with
-#' spatial data for selected region (and year for WBE)
+#' @param allSpatialData reactive with sf objects with spatial data 
+#' for selected region (and year for WBE)
 #' @param timeRange integer vector, relevant period that can be selected for the map
 #' @param defaultYear integer, current (default) end year of the selected period
 #' @param species character vector, selected species for the plot
@@ -279,7 +278,7 @@ mapSchade <- function(
 #' 
 #' @author mvarewyck
 #' @import shiny
-#' @importFrom mapview mapshot
+#' @importFrom webshot webshot
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
 #' @export
 mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, 
@@ -308,7 +307,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
       ## Region level
       results$regionLevelName <- reactive({
 
-          unique(results$schadeData()@data$WBE_Naam_Toek)
+          unique(results$schadeData()$WBE_Naam_Toek)
           
         })
       
@@ -387,26 +386,26 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           if (is.null(input$code))
             return(schadeData())
           
-          # Select species & code & exclude data before 2018
-          toRetain <- schadeData()@data$wildsoort %in% req(species()) &
-            schadeData()@data$schadeBasisCode %in% req(input$code) &
-            schadeData()@data$afschotjaar >= 2018
+          # Select species & code & exclude data before 2014
+          toRetain <- schadeData()$wildsoort %in% req(species()) &
+            schadeData()$schadeBasisCode %in% req(input$code) &
+            schadeData()$afschotjaar >= 2014
           
           
           # Filter gewas
           if ("GEWAS" %in% input$code) {
             otherCodes <- input$code[input$code != "GEWAS"]
             toRetain <- toRetain &
-              (schadeData()@data$schadeBasisCode %in% otherCodes |
-                schadeData()@data$schadeCode %in% input$gewas)
+              (schadeData()$schadeBasisCode %in% otherCodes |
+                schadeData()$schadeCode %in% input$gewas)
           }
           
           # Filter voertuig
           if ("VRTG" %in% input$code) {
             otherCodes <- input$code[input$code != "VRTG"]
             toRetain <- toRetain &
-              (schadeData()@data$schadeBasisCode %in% otherCodes |
-                schadeData()@data$schadeCode %in% input$voertuig)
+              (schadeData()$schadeBasisCode %in% otherCodes |
+                schadeData()$schadeCode %in% input$voertuig)
           }
           
           schadeData()[toRetain, ]
@@ -461,7 +460,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           
           validate(need(allSpatialData(), "Geen data beschikbaar"),
             # Also show map if 0 observations
-            need(ncol(results$summaryPerceelData()@data) > 0, "Geen data beschikbaar"),
+            need(ncol(results$summaryPerceelData()) > 0, "Geen data beschikbaar"),
             need(input$time_schade, "Gelieve periode te selecteren"))
           
           mapSchade(
@@ -481,7 +480,6 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           
           validate(need(results$summaryPerceelData(), "Geen data beschikbaar"))
           
-          
           newPerceelMap <- mapSchade(
             schadeData = results$summaryPerceelData(),
             regionLevel = if (grepl("WBE", borderRegion)) 
@@ -494,15 +492,12 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           )
           
           # save the zoom level and centering
-          newPerceelMap %>%  setView(
+          newPerceelMap %>% setView(
             lng = input$perceelPlot_center$lng,
             lat = input$perceelPlot_center$lat,
             zoom = input$perceelPlot_zoom
           )
-          
-         
-          
-          
+                    
         })
       
       # Add world map
@@ -537,11 +532,18 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           map(NULL)
           idNote <- showNotification("Aanvraag wordt verwerkt... Even geduld.", type = "message", duration = NULL)
           
-          file <- tempfile(fileext = ".png")
-          map(file)
+          htmlFile <- tempfile(fileext = ".html")
+          pngFile <- gsub(".html", ".png", htmlFile)
           
-          mapview::mapshot(x = results$perceelMap(), file = file,
+          # write map to temp .html file
+          htmlwidgets::saveWidget(results$perceelMap(), file = htmlFile, selfcontained = FALSE)
+          
+          # convert temp .html file into .png for download
+          webshot::webshot(url = htmlFile, file = pngFile,
             vwidth = 1000, vheight = 500, cliprect = "viewport")
+          
+          # save in reactive value
+          map(pngFile)
           
           removeNotification(id = idNote)
           
@@ -591,10 +593,10 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
     results$timeData <- reactive({
         
         validate(need(input$time_schade, "Gelieve periode te selecteren"),
-          need(nrow(results$schadeData()@data) > 0, "Geen data beschikbaar"))
+          need(nrow(results$schadeData()) > 0, "Geen data beschikbaar"))
         
         createTrendData(
-          data = results$schadeData()@data,
+          data = results$schadeData(),
           allSpatialData = allSpatialData(),
           timeRange = input$time_schade,
           species = species(),

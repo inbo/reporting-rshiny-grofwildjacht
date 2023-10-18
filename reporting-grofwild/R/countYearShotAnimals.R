@@ -15,7 +15,6 @@
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @param type character, used to filter the data
 #' 
-#' @importFrom INBOtheme inbo_lichtgrijs
 #' @author dbemelmans
 #' @export 
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
@@ -63,10 +62,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
         min(jaartallen):max(jaartallen)))
   
-  colorNames <- c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend")
-  colors <- replicateColors(nColors = length(colorNames))$colors
-  colors[length(colors)] <- inbo_lichtgrijs
-  names(colors) <- colorNames
+  colors <- replicateColors(values = c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend"))$colors
   
   title <- paste0("Afschot van ",
     ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
@@ -164,9 +160,8 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
     allPlots <- plot_ly(data = summaryData,
             x = ~timeChar, y = ~value, type = "bar", 
             color = ~base::get(groupVariable), colors = colors,
-            legendgroup = ~base::get(groupVariable), 
             width = width, height = height) %>%
-          layout(
+          plotly::layout(
             xaxis = list(title = '',
               tickvals = unique(summaryData$timeChar),
               ticktext = unique(summaryData$timeChar)),            
@@ -184,9 +179,9 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
             textposition = "none",
             type = "bar", hoverinfo = 'x+y+text+name', 
             color = ~base::get(groupVariable), colors = colors,
-            legendgroup = ~base::get(groupVariable), showlegend = i == 1,
+            showlegend = i == 1,
             width = width, height = height) %>%
-          layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
+          plotly::layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
           add_annotations(
             text = iYear,
             x = newLevels[round(length(newLevels)/2)], y = 0, xref = paste0("x", if (i != 1) i), yref = "paper", 
@@ -197,7 +192,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   # Combine all plots
   pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE, 
       margin = c(0.01, 0, 0, 0)) %>%
-    layout(barmode = 'stack', showlegend = TRUE,
+    plotly::layout(barmode = 'stack', showlegend = TRUE,
       title = title,
       yaxis = list(title = "Aantal"),
       margin = list(b = if (interval == "Per jaar") 120 else 150, t = 100)) %>% 

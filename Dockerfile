@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sp', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'rgdal', 'rgeos', 'raster', 'stringr', 'maptools', 'leaflet', 'mapview', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'geojsonsf'))"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
 RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', repos = 'http://cran.us.r-project.org', upgrade = 'never')" 
 RUN R -q -e "remotes::install_version('rmarkdown', version = '2.18', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
@@ -38,6 +38,7 @@ RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grf
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!
+RUN R -q -e "remotes::install_cran('webshot')"
 RUN R -e "webshot::install_phantomjs()"
 
 # Git sha

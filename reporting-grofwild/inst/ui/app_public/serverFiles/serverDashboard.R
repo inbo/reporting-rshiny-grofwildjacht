@@ -8,10 +8,15 @@ everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
+waarnemingenData <- loadRawData(type = "waarnemingen")
+# Restrict all to same date
+waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
+    format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
+
 # Combine waarnemingen.be & afschot
 everGeoAll <- rbind(
   # waarnemingen
-  readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv"),
+  data.table::as.data.table(waarnemingenData),
   # afschot
   everGeoData,
   fill = TRUE)
@@ -327,7 +332,7 @@ results$dash_drukjachtData <- reactive({
 results$dash_F04_3 <- countYearProvinceServer(id = "dash", 
   data = results$dash_drukjachtData,
   timeRange = reactive(range(results$dash_drukjachtData()$afschotjaar)),
-  title = reactive(names(results$dash_titlesJacht()[results$dash_titlesJacht() == "F04_3"]))
+  title = reactive(paste("FIGUUR:", names(results$dash_titlesJacht()[results$dash_titlesJacht() == "F04_3"])))
   )
 
 results$dash_F05_1 <- trendYearRegionServer(id = "dash",
@@ -370,13 +375,13 @@ results$dash_titlesSchade <- reactive({
 #) 
 
 results$dash_F07_1 <- barCostServer(id = "dash_F07_1",
-  data = reactive(results$dash_schadeData()@data),
+  data = reactive(sf::st_drop_geometry(results$dash_schadeData())),
   yVar = "count",
   title = reactive(names(results$dash_titlesSchade()[results$dash_titlesSchade() == "F07_1"])) 
 )
 
 results$dash_F09_2 <- barCostServer(id = "dash_F09_2",
-  data = reactive(results$dash_schadeData()@data),
+  data = reactive(sf::st_drop_geometry(results$dash_schadeData())),
   yVar = "schadeBedrag",
   title = reactive(names(results$dash_titlesSchade()[results$dash_titlesSchade() == "F09_2"]))
 )

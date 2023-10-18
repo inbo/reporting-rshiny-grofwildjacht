@@ -54,24 +54,24 @@ results$schade_data <- reactive({
       
       # Select species & code & exclude data before 2018
       # TODO: keep 2018 hardcoded?
-      toRetain <- schadeData@data$wildsoort %in% req(input$schade_species) &
-          schadeData@data$schadeBasisCode %in% req(input$schade_code) &
-          schadeData@data$afschotjaar >= 2018
+      toRetain <- schadeData$wildsoort %in% req(input$schade_species) &
+          schadeData$schadeBasisCode %in% req(input$schade_code) &
+          schadeData$afschotjaar >= 2018
       
       # Filter gewas
       if ("GEWAS" %in% input$schade_code) {
         otherCodes <- input$schade_code[input$schade_code != "GEWAS"]
         toRetain <- toRetain &
-            (schadeData@data$schadeBasisCode %in% otherCodes |
-              schadeData@data$schadeCode %in% input$schade_gewas)
+            (schadeData$schadeBasisCode %in% otherCodes |
+              schadeData$schadeCode %in% input$schade_gewas)
       }
       
       # Filter voertuig
       if ("VRTG" %in% input$schade_code) {
         otherCodes <- input$schade_code[input$schade_code != "VRTG"]
         toRetain <- toRetain &
-            (schadeData@data$schadeBasisCode %in% otherCodes |
-              schadeData@data$schadeCode %in% input$schade_voertuig)
+            (schadeData$schadeBasisCode %in% otherCodes |
+              schadeData$schadeCode %in% input$schade_voertuig)
       }
       
       schadeData[toRetain, ]
@@ -123,7 +123,7 @@ observe({
     if (is.null(input$schade_species) || is.null(input$schade_code))
       shinyjs::hide(id = "schade_results") else
       shinyjs::toggle(id = "schade_results", 
-        condition = nrow(results$schade_data()@data) > 0) 
+        condition = nrow(results$schade_data()) > 0) 
       
   })  
 
@@ -139,7 +139,7 @@ mapFlandersServer(id = "schade",
   defaultYear = defaultYear,
   type = "wildschade",
   species = reactive(input$schade_species),
-  geoData = reactive(results$schade_data()@data),
+  geoData = reactive(sf::st_drop_geometry(results$schade_data())),
   allSpatialData = spatialData)
 
 
@@ -165,7 +165,7 @@ mapSchadeServer(id = "schade",
 
 # Plot 1: Gerapporteerd aantal schadegevallen per jaar en per regio
 countYearProvinceServer(id = "schade",
-    data = reactive(results$schade_data()@data),
+    data = reactive(sf::st_drop_geometry(results$schade_data())),
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 
@@ -185,7 +185,7 @@ countYearProvinceServer(id = "schade",
 # Plot 2: Gerapporteerd aantal schadegevallen per jaar en variabele
 countYearSchadeServer(
     id = "schade",
-    data = reactive(results$schade_data()@data),
+    data = reactive(sf::st_drop_geometry(results$schade_data())),
     types = reactive(c(
             "Wildsoort" = "wildsoort",
             "Gewas" = "SoortNaam", 
@@ -200,7 +200,7 @@ countYearSchadeServer(
 # Table Frequency table schadeCode
 tableSchadeServer(
     id = "schade",  
-    data = reactive(results$schade_data()@data),
+    data = reactive(sf::st_drop_geometry(results$schade_data())),
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 
@@ -218,7 +218,7 @@ tableSchadeServer(
 # Table Frequency table gewas
 tableGewasServer(
     id = "schade",
-    data = reactive(results$schade_data()@data),
+    data = reactive(sf::st_drop_geometry(results$schade_data())),
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 

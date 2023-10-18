@@ -32,7 +32,6 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
-#' @importFrom INBOtheme inbo_palette inbo_lichtgrijs
 #' @export
 boxAgeWeight <- function(data,
 		type, jaartallen = NULL, regio = "", 
@@ -87,8 +86,7 @@ boxAgeWeight <- function(data,
 	plotData <- subset(plotData, leeftijd %in% type)
   
 	# For optimal displaying in the plot
-	colors <- inbo_palette(n = 2)
-	names(colors) <- unique(plotData$geslacht)
+	colors <- replicateColors(values = unique(plotData$geslacht))$colors
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))
 	nIndices <- nrow(totalCounts)/2
@@ -109,7 +107,7 @@ boxAgeWeight <- function(data,
 	pl <- plot_ly(data = plotData, x = ~leeftijd, y = ~gewicht, 
 					color = ~geslacht, colors = colors, type = "box", 
 					width = width, height = height) %>%
-			layout(title = title,
+        plotly::layout(title = title,
 					xaxis = list(title = "Categorie"), 
 					yaxis = list(title = "Leeggewicht (kg)"),
 					margin = list(b = 120, t = 100),

@@ -2,6 +2,7 @@
     o move data from inst/extdata to S3 buckets
     o spatial WBE data in single file per WBE
 0.2.9
+    o fix #407
     o upgrade to INBOtheme 0.6.0
 0.2.8
     o update mei 2022

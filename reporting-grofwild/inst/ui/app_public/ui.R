@@ -35,8 +35,8 @@ shinyUI(
                                                 img(src = "www/logo.png", float = "top", height = "45px"),
                                                 style = "margin-top: -13px; margin-bottom: -13px",
                                                 tags$script(HTML(paste("var header = $('.navbar > .container');",
-                                                                        "header.append('<div style=\"float:right;\"><span class = \"version\">", 
-                                                                        paste0("v", packageVersion("reportingGrofwild")),"</span></div>')"))
+                                                                        "header.append('<div style=\"float:right;\">", 
+                                                                        versionUI(id = "public"),"</div>')"))
                                                 )),
                                 windowTitle = "Wildbeheer statistiek",
                                 fluid = FALSE, 

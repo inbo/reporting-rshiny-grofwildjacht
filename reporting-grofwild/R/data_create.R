@@ -491,11 +491,11 @@ createSpreadData <- function(
   # File pattern per resolution
   tmpFiles <- list(
     # pixels
-#    pixels = "Pixels_ModelOutput_toekomst_verspr",
-    pixels = "Model_output_Pixels",
+    pixels = "Pixels_ModelOutput_toekomst_verspr",
+#    pixels = "Model_output_Pixels",
     # gemeente
-#    municipalities = "Municipalities_ModelOutput_toekomst_verspr"
-    municipalities = "Model_output_Municipalities"
+    municipalities = "Municipalities_ModelOutput_toekomst_verspr"
+#    municipalities = "Model_output_Municipalities"
   )
   
   # Specify relevant (2 recent) files

@@ -102,8 +102,12 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   unit <- match.arg(unit)
   
   # Select correct spatial data
-  spatialData <- sf::st_drop_geometry(filterSpatial(allSpatialData = allSpatialData, 
-    species = species, regionLevel = regionLevel, year = year))
+  spatialData <- filterSpatial(allSpatialData = allSpatialData, 
+    species = species, regionLevel = regionLevel, year = year)
+  
+  if (is.null(spatialData))
+    return(NULL) else
+    spatialData <- sf::st_drop_geometry(spatialData)
   
   # Framework for summary data
   fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes")) {
@@ -681,7 +685,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           paste0(
             if (type == "wildschade") 
-                "aantal schademeldingen" else if (!is.null(countVariable)) 
+                "aantal schadegevallen" else if (!is.null(countVariable)) 
                 countVariable else 
                 "afschot",
             if (!is.null(input$unit) && !type %in% c("wbe", "empty")) 
@@ -1219,7 +1223,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       output$timeTitle <- renderUI({
           
           h3("Evolutie", 
-            if (type == "wildschade") "schademeldingen" else "gerapporteerd afschot", 
+            if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
             if (type != "wbe") tags$br(),
             results$regionLevelName())
           
@@ -1498,7 +1502,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
           if ("flanders" %in% plotDetails) 
             column(6,
               h3("Evolutie", 
-                if (type == "wildschade") "schademeldingen" else "gerapporteerd afschot", 
+                if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
                 tags$br(), "Vlaanderen"),
               plotModuleUI(id = ns("timePlotFlanders"), height = "400px"),
               optionsModuleUI(id = ns("timePlotFlanders"), exportData = TRUE,

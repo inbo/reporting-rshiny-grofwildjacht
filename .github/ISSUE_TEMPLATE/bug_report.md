@@ -25,3 +25,6 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+**Git SHA (after 0.3.1)**
+The sha of the version where you detected the bug. Can be by clicking on the app version (top right corner)

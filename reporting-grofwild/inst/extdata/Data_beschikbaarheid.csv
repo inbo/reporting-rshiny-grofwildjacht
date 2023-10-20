@@ -21,13 +21,13 @@ Schade,maatregelen_privpub,0,0,0,0,0,0,0,F10_1
 Schade,meldingen_privpub,1,1,1,1,1,1,1,F11_1
 Schade,kost_privpub,0,0,0,0,0,0,0,F11_2
 Schade,inschatting_privpub,1,1,1,1,1,1,0,F11_3
-Maatschappelijk draagvlak,communicatie,1,1,1,1,1,1,1,F12_1
+Maatschappelijk draagvlak,communicatie,1,0,0,0,0,0,0,F12_1
 Maatschappelijk draagvlak,kost_stakeholders,0,0,0,0,0,0,0,F13_1
-Maatschappelijk draagvlak,houding,2,1,1,1,1,0,0,F14_1
-Maatschappelijk draagvlak,aantrekkingskracht,2,1,1,1,1,0,0,F14_2
-Maatschappelijk draagvlak,grootte_impacts,2,1,1,1,1,0,0,F14_3
-Maatschappelijk draagvlak,draagkracht_maatregelen,2,1,1,1,1,0,0,F14_4
-Maatschappelijk draagvlak,belang_impacts,2,1,1,1,1,0,0,F14_5
+Maatschappelijk draagvlak,houding,2,0,0,0,0,0,0,F14_1
+Maatschappelijk draagvlak,aantrekkingskracht,2,0,0,0,0,0,0,F14_2
+Maatschappelijk draagvlak,grootte_impacts,2,0,0,0,0,0,0,F14_3
+Maatschappelijk draagvlak,draagkracht_maatregelen,2,0,0,0,0,0,0,F14_4
+Maatschappelijk draagvlak,belang_impacts,2,0,0,0,0,0,0,F14_5
 Populatie,percentage_jongen,0,0,0,0,0,0,1,F15_1
 Populatie,reproductie,1,1,1,1,1,1,1,F16_1
 Populatie,verspreiding_afschot,2,2,2,2,2,2,1,F17_1

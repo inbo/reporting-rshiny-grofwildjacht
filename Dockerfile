@@ -41,6 +41,10 @@ RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grf
 RUN R -q -e "remotes::install_cran('webshot')"
 RUN R -e "webshot::install_phantomjs()"
 
+# Git sha
+ARG GIT_SHA
+ENV GIT_SHA=$GIT_SHA
+
 # For access to S3 on UAT
 RUN R -q -e "remotes::install_cran(c('config', 'aws.s3', 'aws.ec2metadata'))"
 

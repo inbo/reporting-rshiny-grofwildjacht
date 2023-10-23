@@ -19,16 +19,34 @@ For a detailed description of the [shinyproxy application](http://www.shinyproxy
 
 ## Troubleshooting
 
-If you want to check on the EC2 or locally how the Rshiny App inside the Docker is running (without the shinyproxy wrap):
+If you want to check on the EC2 or locally how the Rshiny App inside the Docker is running (without the shinyproxy wrap).
+
+Build docker image.
 
 ```
-sudo docker run -p 3838:3838 openanalytics/wildapp R -e 'reportingGrofwild::runWildApp()'
+sudo docker build --build-arg GIT_SHA=$(git rev-parse HEAD) -t inbo/wildapp .
+```
+
+Configure connection to [S3 data buckets](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
+
+Run docker image, public app. 
+
+```
+sudo docker run -p 3001:3838 inbo/wildapp R -e "Sys.setenv('AWS_DEFAULT_REGION'='eu-west-1','AWS_ACCESS_KEY_ID'='xxx','AWS_SECRET_ACCESS_KEY'='xxx'); reportingGrofwild::runWildApp(public=TRUE)" 
+```
+
+Browse to `localhost:3001`.
+
+Run docker image, private app for specific KBO.
+
+```
+sudo docker run -p 3001:3838 inbo/wildapp R -e "Sys.setenv('AWS_DEFAULT_REGION'='eu-west-1','AWS_ACCESS_KEY_ID'='xxx','AWS_SECRET_ACCESS_KEY'='xxx'); reportingGrofwild::runWildApp(public=FALSE, kbo = xxx)" 
 ```
 
 In a similar way, an R session can be started to run specific functions of the reportingGrofwild R package.
 
 ```
-sudo docker run -p 3838:3838 openanalytics/wildapp R
+sudo docker run -p 3001:3838 inbo/wildapp R
 ```
 
 

@@ -24,7 +24,7 @@
 #' @importFrom utils write.csv read.csv
 #' @importFrom aws.s3 s3save
 #' @importFrom geojsonsf geojson_sf
-#' @importFrom sf st_transform st_crs st_area
+#' @importFrom sf st_transform st_crs st_area sf_use_s2
 #' @importFrom units set_units
 #' @importFrom config get
 #' 
@@ -47,6 +47,8 @@ createShapeData <- function(
   jachtLevels <- gsub(".geojson", "", list.files(path = jsonDir, pattern = "Jachtter_"))
   
   allLevels <- c(allLevels, wbeLevels, jachtLevels)
+  
+  sf::sf_use_s2(FALSE)
   
   ## New code for geojson files
   spatialData <- lapply(allLevels, function(iLevel) {

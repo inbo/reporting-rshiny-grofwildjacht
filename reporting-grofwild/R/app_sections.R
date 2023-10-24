@@ -125,6 +125,7 @@ versionUI <- function(id) {
 
 #' Link with version info - server side
 #' @inherit bioindicatorSectionServer
+#' @importFrom utils packageVersion
 #' @export
 versionServer <- function(id) {
   

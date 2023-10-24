@@ -386,11 +386,13 @@ mapFlanders <- function(
     if (!is.null(jachtData)) {
       # Retain only 'aangesloten' #327
       jachtData <- jachtData[jachtData$WBELID == "aangesloten", ]
-      jachtData$NAAM <- paste0("Jachtterrein (", jachtData$WBELID, ")")
-      jachtData$WBE_NR <- jachtData$WBE_NR_wbe
-      jachtData <- jachtData[, c("WBE_NR", "NAAM", "AREA")]
-      
-      spatialData <- rbind(spatialData, jachtData)
+
+      if (nrow(jachtData) > 0) {
+        jachtData$NAAM <- paste0("Jachtterrein (", jachtData$WBELID, ")")
+        jachtData$WBE_NR <- jachtData$WBE_NR_wbe
+        jachtData <- jachtData[, c("WBE_NR", "NAAM", "AREA")]
+        spatialData <- rbind(spatialData, jachtData)
+      }
     }
     
     valuesPalette <- unique(spatialData$NAAM)

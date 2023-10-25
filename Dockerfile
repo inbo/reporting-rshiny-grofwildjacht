@@ -48,6 +48,9 @@ ENV GIT_SHA=$GIT_SHA
 # For access to S3 on UAT
 RUN R -q -e "remotes::install_cran(c('config', 'aws.s3', 'aws.ec2metadata'))"
 
+# For calculating areas - fix #435
+RUN R -q -e "remotes::install_cran('lwgeom')"
+
 # Install the package without the source files ending up in the Docker image
 COPY reporting-grofwild /tmp/package
 RUN R -q -e "remotes::install_local('/tmp/package', dependencies=FALSE)"

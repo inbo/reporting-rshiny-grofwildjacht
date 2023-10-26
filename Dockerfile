@@ -18,7 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'geojsonsf'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'geojsonsf', 'tidyr'))"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'http://cran.us.r-project.org', upgrade = 'never')"
 RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', repos = 'http://cran.us.r-project.org', upgrade = 'never')" 
 RUN R -q -e "remotes::install_version('rmarkdown', version = '2.18', repos = 'http://cran.us.r-project.org', upgrade = 'never')"

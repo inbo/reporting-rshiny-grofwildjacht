@@ -17,7 +17,12 @@ loadShapeData <- function(WBE_NR = NULL,
     # From 100 it is faster to load single object, but requires more memory (+-80 MB)
     readS3(file = "spatialDataWBE_sf.RData", envir = environment())
     return(spatialDataWBE)
-}
+  }
+  
+  if (length(WBE_NR) == 0) {
+    # No valid WBE
+    return(NULL)    
+  }
   
   # 1st layer (WBE)
   readS3(file = paste0("spatialDataWBE/", WBE_NR[1], ".RData"), bucket = bucket, 

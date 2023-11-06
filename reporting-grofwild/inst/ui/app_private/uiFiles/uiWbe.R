@@ -3,7 +3,7 @@
 # Author: mvarewyck
 ###############################################################################
 
-
+kboChoices <- currentKbo[!is.na(names(currentKbo))]
 
 tagList(
   
@@ -11,10 +11,13 @@ tagList(
     
     tags$br(),
     
-    if (length(currentKbo) > 1)
-      selectInput(inputId = "wbe_kboChoice", label = "WBE Naam", 
-        choices = currentKbo, width = "100%"),
-    
+    if (any(is.na(names(currentKbo))))
+        tags$div(style = "color:red;",
+          "Ongeldige KBO:", paste(currentKbo[is.na(names(currentKbo))], collapse = ", ")),
+    if (length(kboChoices) > 1)
+        selectInput(inputId = "wbe_kboChoice", label = "WBE Naam", 
+          choices = kboChoices, width = "100%"),
+
     tags$div(align = "center",
       uiOutput("wbe_title")
     ),

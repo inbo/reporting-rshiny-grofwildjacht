@@ -25,7 +25,7 @@ results$wbe_geoDataKbo <- reactive({
       # when no afschot data, still show map & biotoop
       createEmptyGeo(geoData[1, ], years = 2014:max(geoData$afschotjaar),
         kbo = results$wbe_currentKbo())
-  
+    
   })
 
 results$wbe_currentPartij <- reactive({
@@ -77,8 +77,9 @@ observe({
 
 output$wbe_title <- renderUI({
     
-    h1("Welkom op de wildbeheereenheid pagina voor",
-      paste(unique(results$wbe_geoDataKbo()$WBE_Naam_Toek), collapse = ","))
+    h1("Welkom op de wildbeheereenheid pagina",
+      if (!is.na(unique(results$wbe_geoDataKbo()$WBE_Naam_Toek)))
+        paste("voor", paste(unique(results$wbe_geoDataKbo()$WBE_Naam_Toek), collapse = ",")))
     
   })
 
@@ -318,10 +319,10 @@ results$typesFemale <- reactive({
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))
     
     types <- if (input$wbe_species == "Ree") {
-      types[types %in% c("Reegeit", "Smalree")] 
-    } else {
-      types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
-    }
+        types[types %in% c("Reegeit", "Smalree")] 
+      } else {
+        types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+      }
     c(types, "Onbekend")
     
   })

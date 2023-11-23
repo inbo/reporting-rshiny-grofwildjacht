@@ -409,6 +409,7 @@ test_that("The interactive map", {
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
+          biotoopData = biotoopData[[regionLevel]],
           year = 2016,
           species = iSpecies,
           regionLevel = regionLevel,
@@ -437,6 +438,39 @@ test_that("The interactive map", {
     }
     
   })
+
+test_that("The interactive map - afschot/100ha", {
+    
+    regionLevel <- "provinces"
+    speciesChoice <- "Wild zwijn"
+        
+        spaceData <- createSpaceData(
+          data = geoData, 
+          allSpatialData = spatialData,
+          biotoopData = biotoopData[[regionLevel]],
+          year = 2021,
+          species = speciesChoice,
+          regionLevel = regionLevel,
+          unit = c("absolute", "relative")[2]
+        )
+       
+        
+        myPlot <- mapFlanders(
+          allSpatialData = spatialData, 
+          regionLevel = regionLevel, 
+          colorScheme = suppressWarnings(c("white", RColorBrewer::brewer.pal(
+                n = nlevels(spaceData$data$group) - 1, name = "YlOrBr"))),
+          summaryData = spaceData$data,
+          legend = "topright",
+          species = speciesChoice
+        )
+        
+        expect_is(myPlot, "leaflet")
+    
+    
+  })
+
+
 
 
 # TREND plots

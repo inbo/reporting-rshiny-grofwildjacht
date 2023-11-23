@@ -60,6 +60,10 @@ createShapeData <- function(
         shapeData <- sf::st_transform(shapeData, crs = "+proj=longlat +datum=WGS84")
       }
       
+      
+      #####
+      # We retrieve 'AREA' from habitatData see #439
+      # This piece of code might be redundant
       areaVariables <- c("OPPERVL", "SHAPE_Area", "Shape_Area")
       if (any(areaVariables %in% colnames(shapeData))) {
         if ("AREA" %in% colnames(shapeData))
@@ -70,6 +74,7 @@ createShapeData <- function(
         shapeData <- sf::st_make_valid(shapeData) 
         shapeData$AREA <- units::set_units(sf::st_area(shapeData), "km^2", mode = "standard")
       }
+      #####
       
       # Create factor for region names
       if (iLevel == "provinces") {

@@ -42,12 +42,18 @@ test_that("Number of cases per region level", {
       for (iSpecies in species) {
         
         spaceData <- createSpaceData(
-          data = sf::st_drop_geometry(schadeData), 
+          data = {
+            tmpData <- sf::st_drop_geometry(schadeData)
+            tmpData$dataSource <- tmpData$indieningType
+            tmpData$indieningType <- NULL
+            tmpData
+          }, 
           allSpatialData = spatialData,
           year = 2020,
           species = iSpecies,
           regionLevel = regionLevel,
-          unit = "absolute"
+          unit = "absolute",
+          sourceIndicator = "HVV_Wilder"
         )
         
         if (doPrint) {

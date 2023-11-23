@@ -609,7 +609,7 @@ createHabitatData <- function(
     "provinces" = "Provincies_habitats", 
     "communes" = "Gemeentes_habitats", 
     "faunabeheerzones" = "Faunabeheerzones_habitats", 
-    # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
+    "fbz_gemeentes" = "fbz_gemeentes_habitats",
     "utm5" = "utm5_vlgrens_habitats", 
     "wbe" = "WBE_habitats"
   ) 

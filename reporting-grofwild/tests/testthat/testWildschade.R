@@ -34,10 +34,7 @@ test_that("Number of cases per region level", {
     
     xtabs(~ wildsoort + afschotjaar, data = schadeData)
     
-    regionLevels <- setdiff(names(spatialData), "provincesVoeren")
-    regionLevels <- regionLevels[!grepl("WBE", regionLevels)]
-    
-    for (regionLevel in regionLevels) {
+    for (regionLevel in names(spatialData)[1:5]) {
       
       for (iSpecies in species) {
         

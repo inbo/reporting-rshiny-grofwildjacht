@@ -759,7 +759,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData,
+            biotoopData = biotoopData[[results$regionLevel()]],
             year = input$year,
             species = species(),
             regionLevel = results$regionLevel(),
@@ -1184,6 +1184,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           createTrendData(
             data = geoData(),
             allSpatialData = allSpatialData,
+            biotoopData = biotoopData$flanders,
             timeRange = input$period,
             species = species(),
             regionLevel = "flanders",
@@ -1216,7 +1217,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           createTrendData(
             data = geoData(),
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData,
+            biotoopData = biotoopData[[results$regionLevel()]],
             timeRange = input$period,
             species = species(),
             regionLevel = results$regionLevel(),

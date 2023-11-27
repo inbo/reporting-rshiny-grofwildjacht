@@ -402,7 +402,7 @@ test_that("Number of embryos (bio-indicator)", {
 
 test_that("The interactive map", {
     
-    regionLevels <- names(spatialData)[1:4]
+    regionLevels <- names(spatialData)[1:5]
     
     for (regionLevel in regionLevels) {
       

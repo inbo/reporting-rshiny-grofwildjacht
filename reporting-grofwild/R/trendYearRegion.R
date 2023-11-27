@@ -84,11 +84,11 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
         "Area_km2" else
         "Area_hab_km2_bos"
     if ("year" %in% colnames(biotoopData))
-    # add dekkingsgraad 100ha bos&natuur      
-    fullData <- merge(fullData, biotoopData[, c("regio", areaVariable, "year")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year")) else
-    fullData <- merge(fullData, biotoopData[, c("regio", areaVariable)],
-      by.x = "locatie", by.y = "regio")
+      # add dekkingsgraad 100ha bos&natuur      
+      fullData <- merge(fullData, biotoopData[, c("regio", areaVariable, "year")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year")) else
+      fullData <- merge(fullData, biotoopData[, c("regio", areaVariable)],
+        by.x = "locatie", by.y = "regio")
     names(fullData)[names(fullData) == areaVariable] <- "AREA"
   
   }

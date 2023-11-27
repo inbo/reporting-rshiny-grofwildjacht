@@ -648,7 +648,7 @@ createHabitatData <- function(
         }
         
         # Match region names
-        if ("NISCODE" %in% colnames(spatialData[[iRegion]]))
+        if (iRegion != "fbz_gemeentes" & "NISCODE" %in% colnames(spatialData[[iRegion]]))
           tmpData$regio <- spatialData[[iRegion]]$NAAM[
             match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
         

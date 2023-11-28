@@ -103,6 +103,10 @@ tagList(
       barDraagkrachtUI(id = "dash_F18_1", uiText = uiText)
     ),
     
+    ## kencijfers
+    # conditionalPanel("output.dash_populatieIndicatoren.indexOf('F18_8') > -1",
+    #                  barDraagkrachtUI(id = "dash_F18_1", uiText = uiText)
+    # ),
     
     # Jacht
     conditionalPanel("output.dash_jachtIndicatoren.length > 0",

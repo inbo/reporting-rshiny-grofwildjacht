@@ -8,11 +8,16 @@ everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
+geoDictionary <- unique(everGeoData[,c("provincie","gemeente_afschot_locatie")])
+
+
 waarnemingenData <- loadRawData(type = "waarnemingen")
 # Restrict all to same date
 waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
     format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
 
+# add province info to the data
+waarnemingenData <- merge(waarnemingenData,geoDictionary, all.x = TRUE, by = "gemeente_afschot_locatie")
 # Combine waarnemingen.be & afschot
 everGeoAll <- rbind(
   # waarnemingen
@@ -30,6 +35,7 @@ results$dash_species <- reactive("Wild zwijn")
 
 ## INDICATOR SELECTION ##
 
+
 results$dash_showPopulatie <- dashboardChoicesServer(
   id = "dash_populatie", 
   choices = populatieChoices,
@@ -41,6 +47,7 @@ output$dash_populatieIndicatoren <- reactive({
       "" else
       results$dash_showPopulatie()
   })
+
 outputOptions(output, "dash_populatieIndicatoren", suspendWhenHidden = FALSE)
 
 

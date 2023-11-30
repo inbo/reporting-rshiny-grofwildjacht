@@ -69,6 +69,7 @@ dashboardChoices <- function(id, choices, selected = NULL, uiText) {
 #' @author mvarewyck
 #' @import shiny
 #' @export
+
 dashboardChoicesServer <- function(id, choices, uiText, regionLevel) {
   moduleServer(
     id,

@@ -74,12 +74,52 @@ cat("#", toupper("Populatie"), "\n\n")
 incProgress(amount = 0.2, detail = "Populatie")
 
 section <- "Populatie"
-childOutput <- lapply(results$dash_showPopulatie(), function(id) 
+childOutput <- lapply(setdiff(results$dash_showPopulatie(), "F18_8"), function(id) 
     knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
 )
 cat(unlist(childOutput), sep = '\n')
 ```
 
+
+```{r popKencijfer, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
+cat("\\newpage")
+cat("## Tabel kencijfer\n")
+
+ resTable <- results[["dash_F18_8"]]()[["table"]]
+ resTable[,1] <- paste( resTable[,1], resTable[,2], sep = ": ")
+ resTable[1,3] <- NA
+          
+  cityList <-  resTable[,3] |> na.omit()
+  colorList <- ifelse(cityList %in%  results[["dash_F18_8"]]()$observed, "grey", "transparent")
+  names(colorList) <- cityList
+                   
+                   tb <- DT::datatable(
+                  resTable[,c(1,3), drop = FALSE],
+                     colnames = c("", ""),
+                     extensions = 'RowGroup',
+                     options = list(
+                       rowGroup = list(dataSrc = 0),
+                       pageLength = nrow( resTable),
+                       columnDefs = list(list(visible=FALSE, targets=0)),
+                       dom = 't',
+                       striped = FALSE
+                     ),
+                     selection = 'none')
+                   
+                   if(length(cityList) > 0) {
+                   tb |>
+                       DT::formatStyle(
+                         columns = 2,
+                         valueColumns = 2,
+                         backgroundColor = DT::styleEqual(unique(cityList), colorList)
+                       )
+                   }else{
+                     
+                     tb
+                   }
+                   
+
+```
 
 ```{r jachtSection, eval = !is.null(results$dash_showJacht()), results = "asis"}
 cat("\\newpage")

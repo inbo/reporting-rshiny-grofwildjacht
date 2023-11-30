@@ -1,52 +1,52 @@
-Criterium;Indicator;Vlaanderen;Provincie;Gemeente;FBZ;FBDZ;WBE;jachtterrein;Code
-Jacht;uren_jachtinspanning;0;0;0;0;0;0;1;F04_1
-Jacht;aantal_aanzitten;0;0;0;0;0;0;1;F04_2
-Jacht;aantal_drukjachten;1;1;1;1;1;1;1;F04_3
-Jacht;drukjachtinspanning;1;1;1;1;1;1;1;F04_4
-Jacht;afschot;2;2;2;2;2;2;1;F05_1
-Jacht;samenstelling_afschot;2;2;2;2;2;2;1;F05_2
-Schade;rasters_verkeer;1;1;1;1;1;1;1;F06_1
-Schade;signalisatie_verkeer;1;1;1;1;1;1;1;F06_2
-Schade;snelheid_verkeer;1;1;1;1;1;1;1;F06_3
-Schade;meldingen_verkeer;1;1;1;1;1;1;1;F07_1
-Schade;kost_verkeer;0;0;0;0;0;0;0;F07_2
-Schade;inschatting_verkeer;1;1;1;1;1;1;1;F07_3
-Schade;aantal_rasters_landbouw;0;0;0;0;0;0;0;F08_1
-Schade;maatregelen_landbouw;0;0;0;0;0;0;0;F08_2
-Schade;lengte_rasters_landbouw;0;0;0;0;0;0;0;F08_3
-Schade;meldingen_landbouw;1;1;1;1;1;1;1;F09_1
-Schade;kost_landbouw;1;1;1;1;1;1;1;F09_2
-Schade;inschatting_landbouw;1;1;1;1;1;1;1;F09_3
-Schade;maatregelen_privpub;0;0;0;0;0;0;0;F10_1
-Schade;meldingen_privpub;1;1;1;1;1;1;1;F11_1
-Schade;kost_privpub;0;0;0;0;0;0;0;F11_2
-Schade;inschatting_privpub;1;1;1;1;1;1;0;F11_3
-Maatschappelijk draagvlak;communicatie;1;0;0;0;0;0;0;F12_1
-Maatschappelijk draagvlak;kost_stakeholders;0;0;0;0;0;0;0;F13_1
-Maatschappelijk draagvlak;houding;2;0;0;0;0;0;0;F14_1
-Maatschappelijk draagvlak;aantrekkingskracht;2;0;0;0;0;0;0;F14_2
-Maatschappelijk draagvlak;grootte_impacts;2;0;0;0;0;0;0;F14_3
-Maatschappelijk draagvlak;draagkracht_maatregelen;2;0;0;0;0;0;0;F14_4
-Maatschappelijk draagvlak;belang_impacts;2;0;0;0;0;0;0;F14_5
-Populatie;percentage_jongen;0;0;0;0;0;0;1;F15_1
-Populatie;reproductie;1;1;1;1;1;1;1;F16_1
-Populatie;verspreiding_afschot;2;2;2;2;2;2;1;F17_1
-Populatie;verspreiding_waarnemingen;2;2;2;2;2;2;1;F17_2
-Populatie;verspreiding_NO;0;0;0;0;0;0;1;F17_3
-Populatie;verspreiding_toekomst;2;2;2;2;2;2;1;F17_4
-Populatie;inschatting_popgroei;0;0;0;0;1;0;1;F18_1
-Populatie;aanzitten_waarnemingen;0;0;0;0;0;0;1;F18_2
-Populatie;waarnemingen_uur;0;0;0;0;0;0;1;F18_3
-Populatie;tijd_waarneming;0;0;0;0;0;0;1;F18_4
-Populatie;RAI;0;0;0;0;0;0;1;F18_5
-Populatie;REM;0;0;0;0;0;0;1;F18_6
-Populatie;NO;0;0;0;0;0;0;1;F18_7
-Populatie;Tabel_kencijfers;2;2;0;0;0;0;0;F18_8
-Ecol_impact;impact_fauna_flora;0;0;0;0;0;0;0;F19_1
-gezondheid;wildziektes;0;0;0;0;0;0;0;F20_1
-Achtergronddata;Grootte studiegebied;2;2;2;2;2;2;2;F01_1
-Achtergronddata;Samenstelling studiegebied;2;2;2;2;2;2;2;F02_1
-Achtergronddata;Wegdensiteit;2;2;2;2;2;2;2;F03_1
-Achtergronddata;Bosperimeter;2;2;2;2;2;2;2;F03_2
-Achtergronddata;Habitatdensiteit;2;2;2;2;2;2;2;F03_3
-Achtergronddata;Gemiddelde habitatsoppervlakte;2;2;2;2;2;2;2;F03_4
+"X","Criterium","Indicator","Vlaanderen","Provincie","Gemeente","FBZ","FBDZ","WBE","jachtterrein","Code"
+"1",1,"Jacht","uren_jachtinspanning",0,0,0,0,0,0,1,"F04_1"
+"2",2,"Jacht","aantal_aanzitten",0,0,0,0,0,0,1,"F04_2"
+"3",3,"Jacht","aantal_drukjachten",1,1,1,1,1,1,1,"F04_3"
+"4",4,"Jacht","drukjachtinspanning",1,1,1,1,1,1,1,"F04_4"
+"5",5,"Jacht","afschot",2,2,2,2,2,2,1,"F05_1"
+"6",6,"Jacht","samenstelling_afschot",2,2,2,2,2,2,1,"F05_2"
+"7",7,"Schade","rasters_verkeer",1,1,1,1,1,1,1,"F06_1"
+"8",8,"Schade","signalisatie_verkeer",1,1,1,1,1,1,1,"F06_2"
+"9",9,"Schade","snelheid_verkeer",1,1,1,1,1,1,1,"F06_3"
+"10",10,"Schade","meldingen_verkeer",1,1,1,1,1,1,1,"F07_1"
+"11",11,"Schade","kost_verkeer",0,0,0,0,0,0,0,"F07_2"
+"12",12,"Schade","inschatting_verkeer",1,1,1,1,1,1,1,"F07_3"
+"13",13,"Schade","aantal_rasters_landbouw",0,0,0,0,0,0,0,"F08_1"
+"14",14,"Schade","maatregelen_landbouw",0,0,0,0,0,0,0,"F08_2"
+"15",15,"Schade","lengte_rasters_landbouw",0,0,0,0,0,0,0,"F08_3"
+"16",16,"Schade","meldingen_landbouw",1,1,1,1,1,1,1,"F09_1"
+"17",17,"Schade","kost_landbouw",1,1,1,1,1,1,1,"F09_2"
+"18",18,"Schade","inschatting_landbouw",1,1,1,1,1,1,1,"F09_3"
+"19",19,"Schade","maatregelen_privpub",0,0,0,0,0,0,0,"F10_1"
+"20",20,"Schade","meldingen_privpub",1,1,1,1,1,1,1,"F11_1"
+"21",21,"Schade","kost_privpub",0,0,0,0,0,0,0,"F11_2"
+"22",22,"Schade","inschatting_privpub",1,1,1,1,1,1,0,"F11_3"
+"23",23,"Maatschappelijk draagvlak","communicatie",1,0,0,0,0,0,0,"F12_1"
+"24",24,"Maatschappelijk draagvlak","kost_stakeholders",0,0,0,0,0,0,0,"F13_1"
+"25",25,"Maatschappelijk draagvlak","houding",2,0,0,0,0,0,0,"F14_1"
+"26",26,"Maatschappelijk draagvlak","aantrekkingskracht",2,0,0,0,0,0,0,"F14_2"
+"27",27,"Maatschappelijk draagvlak","grootte_impacts",2,0,0,0,0,0,0,"F14_3"
+"28",28,"Maatschappelijk draagvlak","draagkracht_maatregelen",2,0,0,0,0,0,0,"F14_4"
+"29",29,"Maatschappelijk draagvlak","belang_impacts",2,0,0,0,0,0,0,"F14_5"
+"30",30,"Populatie","percentage_jongen",0,0,0,0,0,0,1,"F15_1"
+"31",31,"Populatie","reproductie",1,1,1,1,1,1,1,"F16_1"
+"32",32,"Populatie","verspreiding_afschot",2,2,2,2,2,2,1,"F17_1"
+"33",33,"Populatie","verspreiding_waarnemingen",2,2,2,2,2,2,1,"F17_2"
+"34",34,"Populatie","verspreiding_NO",0,0,0,0,0,0,1,"F17_3"
+"35",35,"Populatie","verspreiding_toekomst",2,2,2,2,2,2,1,"F17_4"
+"36",36,"Populatie","inschatting_popgroei",0,0,0,0,1,0,1,"F18_1"
+"37",37,"Populatie","aanzitten_waarnemingen",0,0,0,0,0,0,1,"F18_2"
+"38",38,"Populatie","waarnemingen_uur",0,0,0,0,0,0,1,"F18_3"
+"39",39,"Populatie","tijd_waarneming",0,0,0,0,0,0,1,"F18_4"
+"40",40,"Populatie","RAI",0,0,0,0,0,0,1,"F18_5"
+"41",41,"Populatie","REM",0,0,0,0,0,0,1,"F18_6"
+"42",42,"Populatie","NO",0,0,0,0,0,0,1,"F18_7"
+"43",43,"Populatie","Tabel_kencijfers",2,2,0,0,0,0,0,"F18_8"
+"44",44,"Ecol_impact","impact_fauna_flora",0,0,0,0,0,0,0,"F19_1"
+"45",45,"gezondheid","wildziektes",0,0,0,0,0,0,0,"F20_1"
+"46",46,"Achtergronddata","Grootte studiegebied",2,2,2,2,2,2,2,"F01_1"
+"47",47,"Achtergronddata","Samenstelling studiegebied",2,2,2,2,2,2,2,"F02_1"
+"48",48,"Achtergronddata","Wegdensiteit",2,2,2,2,2,2,2,"F03_1"
+"49",49,"Achtergronddata","Bosperimeter",2,2,2,2,2,2,2,"F03_2"
+"50",50,"Achtergronddata","Habitatdensiteit",2,2,2,2,2,2,2,"F03_3"
+"51",51,"Achtergronddata","Gemiddelde habitatsoppervlakte",2,2,2,2,2,2,2,"F03_4"

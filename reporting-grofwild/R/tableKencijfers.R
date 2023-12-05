@@ -97,7 +97,7 @@ kencijferModuleUI <- function(id) {
     conditionalPanel(
       condition = "input.linkKencijferTabel % 2 == 0",
       fixedRow(
-        uiOutput(ns("description ")),
+        uiOutput(ns("description")),
         column(
           4,
           wellPanel(

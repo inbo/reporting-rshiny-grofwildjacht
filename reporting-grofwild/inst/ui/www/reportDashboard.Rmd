@@ -89,7 +89,7 @@ cat("## Tabel kencijfer\n")
 
  resTable <- results[["dash_F18_8"]]()[["table"]]
 
- resTable[resTable$category == "Totaal aantal gemeenten","municipality"] <- NA
+ resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
  resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
  rownames(resTable) <- NULL
           
@@ -111,7 +111,7 @@ names(colorList) <- cityList
                      ),
                      selection = 'none')
                    
-                   if(length(cityList) > 0) {
+                   if(length(cityList) > 0 & length(input[["dash_F18_8-dataSource_kencijfer"]]) == 2) {
                    tb |>
                        DT::formatStyle(
                          columns = 2,

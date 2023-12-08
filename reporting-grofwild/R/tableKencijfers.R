@@ -1,5 +1,5 @@
 
-# data <- everGeoAll
+# data <- everGeoAll[provincie == "Antwerpen"]
 #' kencijfers summary table. The summary table of number of municipalities for two consecutive years. Filter is applied to the observation and shot
 #' data. Municipality is retained in the summary if there is any animal shot.
 #' @param data The geo data contains aschot and waarnemingendata
@@ -24,6 +24,7 @@ tabelKencijfers <- function(data,
   releventColumns <- c("afschotjaar", "provincie", "gemeente_afschot_locatie", "dataSource", "aantal")
   stopifnot(releventColumns %in% colnames(data))
   bron <- match.arg(bron)
+  
   data <- data[!is.na(gemeente_afschot_locatie)]
   # 
   # if(bron == "waarnemingen.be")  thresholdAfschot <- 0
@@ -54,7 +55,7 @@ tabelKencijfers <- function(data,
   observedCities <- dataCurrentYear[dataSource != "afschot"][["gemeente_afschot_locatie"]]
   afschotCities <-  dataCurrentYear[dataSource == "afschot"][["gemeente_afschot_locatie"]]
   
-  resultTable <- cbind("Totaal aantal gemeenten", length( unique( dataCurrentYear[["gemeente_afschot_locatie"]])),length( unique( dataCurrentYear[["gemeente_afschot_locatie"]])) )
+  resultTable <- cbind("Totaal aantal gemeentes", length( unique( dataCurrentYear[["gemeente_afschot_locatie"]])),length( unique( dataCurrentYear[["gemeente_afschot_locatie"]])) )
   # create current year summary table
   
   if(jaar > yearRange[1]){
@@ -217,7 +218,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                        label = "Afschot drempel",
                        value = 1,
                        min = 1,
-                       max = max(10,max(kencijfersData()[dataSource == "afschot", "aantal"], na.rm = TRUE)),
+                       max = max(10,max(kencijfersData()[(dataSource == "afschot") &(afschotjaar == input$jaar_kencijfer), "aantal"], na.rm = TRUE)),
                        step = 1,
                        sep = ""
                      )
@@ -249,13 +250,14 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                    #in order to collapse by grouping
                    resTableReactive <- reactive({
                      resTable <- results$res()$table[,c("category", "count", "municipality")]
-                     resTable[resTable$category == "Totaal aantal gemeenten","municipality"] <- NA
+                     resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
                      resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
                      rownames(resTable) <- NULL
                      resTable
                    })
 
                    cityList <- resTableReactive()[,"municipality"] |> na.omit()
+                   
                    colorList <- ifelse( (cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot), "#969B48", "transparent")
                    names(colorList) <- cityList
 
@@ -282,7 +284,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                      )
                    )
 
-                   if(length(cityList) > 0) {
+                   if(length(cityList) > 0 & length(input[["dataSource_kencijfer"]]) == 2 ) {
                      tb <- tb |>
                        formatStyle(
                          columns = 2,

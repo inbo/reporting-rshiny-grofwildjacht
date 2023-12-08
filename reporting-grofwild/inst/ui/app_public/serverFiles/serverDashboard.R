@@ -156,13 +156,18 @@ results$dash_ecoData <- reactive({
 
 results$dash_kencijftersData <- reactive({
   
+  
   if (input$dash_regionLevel != "flanders") {
     
     validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
   
-     filterGeo(data = everGeoAll, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties, choseByID = FALSE)
+    dataSingleEntry <- filterGeo(data = everGeoAll, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties, choseByID = FALSE)
   
-     } else everGeoAll
+     } else     dataSingleEntry <- everGeoAll
+     
+  
+     dataSingleEntry[ ,.(aantal= sum(aantal)), by = .(gemeente_afschot_locatie,provincie, dataSource,afschotjaar)]
+
 })
 
 

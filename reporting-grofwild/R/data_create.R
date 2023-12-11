@@ -23,8 +23,7 @@
 #' @importFrom shiny incProgress
 #' @importFrom utils write.csv read.csv
 #' @importFrom aws.s3 s3save
-#' @importFrom geojsonsf geojson_sf
-#' @importFrom sf st_transform st_crs st_area sf_use_s2
+#' @importFrom sf st_read st_transform st_crs st_area sf_use_s2
 #' @importFrom units set_units
 #' @importFrom config get
 #' 
@@ -54,12 +53,11 @@ createShapeData <- function(
   spatialData <- lapply(allLevels, function(iLevel) {
       
       file <- file.path(jsonDir, paste0(iLevel, ".geojson"))
-      shapeData <- geojsonsf::geojson_sf(file)
-      if (!iLevel %in% c(wbeLevels, jachtLevels)) {
-        # Overwrite default CRS
-        suppressWarnings(sf::st_crs(shapeData) <- 31370)
+      shapeData <- sf::st_read(file)
+      if (sf::st_crs(shapeData)$input != "WGS 84") {
         # Transform CRS
-        shapeData <- sf::st_transform(shapeData, crs = "+proj=longlat +datum=WGS84")
+        warning("Coordinate system is not WGS 84, shape data will be transformed for ", iLevel)
+        shapeData <- sf::st_transform(shapeData, crs = 4326)
       }
       
       areaVariables <- c("OPPERVL", "SHAPE_Area", "Shape_Area")

@@ -78,6 +78,7 @@ if (!is.null(attr(ecoData, "excluded")))
 
 # UI text for each plot/table
 uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")
+
 if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild"))) {
   uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
   uiFunctions <- uiFunctions[!is.na(uiFunctions)] 

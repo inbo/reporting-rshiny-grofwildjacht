@@ -49,6 +49,7 @@ reporting-grofwild/inst/extdata/spatialData*.RData
 
 # Docs - built from code
 /reporting-grofwild/man/
+/reporting-grofwild/NAMESPACE/
 
 # Local copy of S3 files
 /dataS3

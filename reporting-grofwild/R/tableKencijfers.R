@@ -26,9 +26,6 @@ tabelKencijfers <- function(data,
   bron <- match.arg(bron)
   
   data <- data[!is.na(gemeente_afschot_locatie)]
-  # 
-  # if(bron == "waarnemingen.be")  thresholdAfschot <- 0
-  # if(bron == "afschot")   thresholdWaarnemingen <- 0
   
   yearRange <- range(data$afschotjaar)
   
@@ -258,7 +255,14 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
 
                    cityList <- resTableReactive()[,"municipality"] |> na.omit()
                    
-                   colorList <- ifelse( (cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot), "#969B48", "transparent")
+                   
+                   colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),
+                                       "#ef8a62",
+                                       ifelse(
+                                         (cityList %in% results$res()$observed) & ( cityList %in% results$res()$shot), 
+                                         "transparent", "#67a9cf") )
+                   
+                    
                    names(colorList) <- cityList
 
                    tb <- DT::datatable(
@@ -324,9 +328,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                    
                  })
                  
-                 
-                 
-                 
+  
                  return(reactive(results$res()))
                })
 }

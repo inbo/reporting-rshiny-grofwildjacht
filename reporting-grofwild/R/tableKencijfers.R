@@ -125,15 +125,7 @@ kencijferModuleUI <- function(id) {
             uiOutput(ns("kencijferFilter")),
             conditionalPanel(
               condition = "input.dataSource_kencijfer.indexOf('waarnemingen.be') > -1", ns = ns,
-              sliderInput(
-                inputId = ns("thresholdWaarnemingen"),
-                label = "Waarnemingen drempel",
-                value = 1,
-                min = 1,
-                max = 10,
-                step = 1,
-                sep = ""
-              ),
+            uiOutput(ns("sliderObserve"))
               
             ),
             conditionalPanel(
@@ -170,7 +162,7 @@ kencijferModuleUI <- function(id) {
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, species, uiText){
  
-   results <- reactiveValues()
+   results <- reactiveValues(observeThreshold = 1, shotThreshold = 1)
  
   moduleServer(id,
                function(input, output, session) {
@@ -208,14 +200,31 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                                     label = uiText[uiText$plotFunction == "F18_8",  "title"])
                    
                    
+                   output$sliderObserve <- renderUI({
+                     
+                     sliderInput(
+                       inputId = ns("thresholdWaarnemingen"),
+                       label = "Waarnemingen drempel",
+                       value = results$observeThreshold,
+                       min = 1,
+                       max = 10,
+                       step = 1,
+                       sep = ""
+                     )
+                   })
+                   
+                   
+                    
+                  
                    output$sliderAfschot <- renderUI({
+                     results$maxSchot <- max(10,  max(kencijfersData()[(dataSource == "afschot") &(afschotjaar ==  input$jaar_kencijfer), "aantal"], na.rm = TRUE))
                      
                      sliderInput(
                        inputId = ns("thresholdAfschot"),
                        label = "Afschot drempel",
-                       value = 1,
+                       value = min(results$shotThreshold, results$maxSchot),
                        min = 1,
-                       max = max(10,max(kencijfersData()[(dataSource == "afschot") &(afschotjaar == input$jaar_kencijfer), "aantal"], na.rm = TRUE)),
+                       max =  results$maxSchot,
                        step = 1,
                        sep = ""
                      )
@@ -224,7 +233,13 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                  })
                  
                  
-              
+              observeEvent(input[["jaar_kencijfer"]], {
+                req(input[["thresholdAfschot"]])
+                
+                if(results$shotThreshold != input[["thresholdAfschot"]]) results$shotThreshold <- input[["thresholdAfschot"]]
+                if(results$observeThreshold != input[["thresholdWaarnemingen"]]) results$observeThreshold <- input[["thresholdWaarnemingen"]]
+                
+              })
                  
                  observe({
 

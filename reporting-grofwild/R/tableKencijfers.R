@@ -59,9 +59,9 @@ tabelKencijfers <- function(data,
     
     dataPreYear <-   dataSubset[afschotjaar == jaar-1]
     
-    common <- intersect(dataCurrentYear[[ "gemeente_afschot_locatie"]],dataPreYear[["gemeente_afschot_locatie"]]) |> unique()
-    new <- setdiff(dataCurrentYear[[ "gemeente_afschot_locatie"]],dataPreYear[["gemeente_afschot_locatie"]]) |> na.exclude() |> unique()
-    old <-  setdiff(dataPreYear[["gemeente_afschot_locatie"]], dataCurrentYear[[ "gemeente_afschot_locatie"]]) |> na.exclude()|> unique()
+    common <- unique(intersect(dataCurrentYear[[ "gemeente_afschot_locatie"]],dataPreYear[["gemeente_afschot_locatie"]]))
+    new <- unique(na.exclude(setdiff(dataCurrentYear[[ "gemeente_afschot_locatie"]],dataPreYear[["gemeente_afschot_locatie"]]) ))
+    old <-  unique(na.exclude(setdiff(dataPreYear[["gemeente_afschot_locatie"]], dataCurrentYear[[ "gemeente_afschot_locatie"]]) ))
     
     resultTable <- rbind(  resultTable,  if(length(common) != 0) cbind("Dezelfde gemeentes",length(common), sort(common)) else cbind("Dezelfde gemeentes", 0, NA),
                            if(length(new) != 0) cbind("Nieuwe gemeentes", length( new ), sort(new)) else cbind("Nieuwe gemeentes", 0, NA),
@@ -253,7 +253,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                      resTable
                    })
 
-                   cityList <- resTableReactive()[,"municipality"] |> na.omit()
+                   cityList <-  na.omit(resTableReactive()[,"municipality"])
                    
                    
                    colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),
@@ -289,8 +289,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                    )
 
                    if(length(cityList) > 0 & length(input[["dataSource_kencijfer"]]) == 2 ) {
-                     tb <- tb |>
-                       formatStyle(
+                       formatStyle(tb,
                          columns = 2,
                          valueColumns = 2,
                          backgroundColor = styleEqual(unique(cityList), colorList)

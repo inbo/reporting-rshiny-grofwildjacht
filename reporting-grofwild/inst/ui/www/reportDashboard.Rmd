@@ -93,7 +93,7 @@ resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
 resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
 rownames(resTable) <- NULL
 
-cityList <-  resTable[,"municipality"] |> na.omit()
+cityList <-   na.omit(resTable[,"municipality"])
 
 
 colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),
@@ -119,8 +119,8 @@ tb <- DT::datatable(
   selection = 'none')
 
 if(length(cityList) > 0 & length(input[["dash_F18_8-dataSource_kencijfer"]]) == 2) {
-  tb |>
-    DT::formatStyle(
+  
+    DT::formatStyle(tb,
       columns = 2,
       valueColumns = 2,
       backgroundColor = DT::styleEqual(unique(cityList), colorList)

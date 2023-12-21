@@ -289,7 +289,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                    )
 
                    if(length(cityList) > 0 & length(input[["dataSource_kencijfer"]]) == 2 ) {
-                       formatStyle(tb,
+                       tb <- formatStyle(tb,
                          columns = 2,
                          valueColumns = 2,
                          backgroundColor = styleEqual(unique(cityList), colorList)

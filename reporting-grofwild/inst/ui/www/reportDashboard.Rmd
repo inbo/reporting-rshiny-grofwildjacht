@@ -120,7 +120,7 @@ tb <- DT::datatable(
 
 if(length(cityList) > 0 & length(input[["dash_F18_8-dataSource_kencijfer"]]) == 2) {
   
-    DT::formatStyle(tb,
+    tb <- DT::formatStyle(tb,
       columns = 2,
       valueColumns = 2,
       backgroundColor = DT::styleEqual(unique(cityList), colorList)

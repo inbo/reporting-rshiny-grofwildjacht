@@ -83,10 +83,11 @@ dashboardChoicesServer <- function(id, choices, uiText, regionLevel) {
           
           previousSelected <- input$indicators
           
-          choicesUpdate <- if(regionLevel() %in% c("flanders", "provinces")) choices else setdiff(choices, "F18_8")
+          ## this is done in "availableData"
+          #choicesUpdate <- if(isolate(regionLevel()) %in% c("flanders", "provinces")) choices else setdiff(choices, "F18_8")
           
           updateCheckboxGroupInput(session = session, inputId = "indicators",
-            choices = namedChoices(choicesUpdate, uiText = uiText, regionLevel = regionLevel()),
+            choices = namedChoices( choices , uiText = uiText, regionLevel = regionLevel()),
             selected = previousSelected)
         
         })

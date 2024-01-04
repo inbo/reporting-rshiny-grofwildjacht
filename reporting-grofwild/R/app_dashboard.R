@@ -69,6 +69,7 @@ dashboardChoices <- function(id, choices, selected = NULL, uiText) {
 #' @author mvarewyck
 #' @import shiny
 #' @export
+
 dashboardChoicesServer <- function(id, choices, uiText, regionLevel) {
   moduleServer(
     id,
@@ -82,8 +83,11 @@ dashboardChoicesServer <- function(id, choices, uiText, regionLevel) {
           
           previousSelected <- input$indicators
           
+          ## this is done in "availableData"
+          #choicesUpdate <- if(isolate(regionLevel()) %in% c("flanders", "provinces")) choices else setdiff(choices, "F18_8")
+          
           updateCheckboxGroupInput(session = session, inputId = "indicators",
-            choices = namedChoices(choices, uiText = uiText, regionLevel = regionLevel()),
+            choices = namedChoices( choices , uiText = uiText, regionLevel = regionLevel()),
             selected = previousSelected)
         
         })

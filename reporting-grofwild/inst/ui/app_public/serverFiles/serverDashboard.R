@@ -8,11 +8,16 @@ everEcoData <- ecoData[ecoData$wildsoort == "Wild zwijn", ]
 everGeoData <- geoData[geoData$wildsoort == "Wild zwijn", ]
 everSchadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
+geoDictionary <- unique(everGeoData[,c("provincie","gemeente_afschot_locatie")])
+
+
 waarnemingenData <- loadRawData(type = "waarnemingen")
 # Restrict all to same date
 waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
     format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
 
+# add province info to the data
+waarnemingenData <- merge(waarnemingenData,geoDictionary, all.x = TRUE, by = "gemeente_afschot_locatie")
 # Combine waarnemingen.be & afschot
 everGeoAll <- rbind(
   # waarnemingen
@@ -30,17 +35,20 @@ results$dash_species <- reactive("Wild zwijn")
 
 ## INDICATOR SELECTION ##
 
+
 results$dash_showPopulatie <- dashboardChoicesServer(
   id = "dash_populatie", 
   choices = populatieChoices,
   uiText = uiText, 
   regionLevel = reactive(req(input$dash_regionLevel))
 )
+
 output$dash_populatieIndicatoren <- reactive({
     if (is.null(results$dash_showPopulatie()))
       "" else
       results$dash_showPopulatie()
   })
+
 outputOptions(output, "dash_populatieIndicatoren", suspendWhenHidden = FALSE)
 
 
@@ -139,30 +147,37 @@ results$dash_ecoData <- reactive({
       
       validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
       
-      filterVariable <- switch(input$dash_regionLevel,
-        "provinces" = "provincie", 
-        "faunabeheerzones" = "FaunabeheerZone",
-        "communes" = "gemeente_afschot_locatie")
-      
-      keepIds <- everGeoData$ID[everGeoData[[filterVariable]] %in% input$dash_locaties]
-      everEcoData[everEcoData$ID %in% keepIds, ]
+      filterGeo(data = everEcoData, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties)
       
     } else everEcoData
     
   })
+
+
+results$dash_kencijftersData <- reactive({
+  
+  
+  if (input$dash_regionLevel != "flanders") {
+    
+    validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
+  
+    dataSingleEntry <- filterGeo(data = everGeoAll, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties, choseByID = FALSE)
+  
+     } else     dataSingleEntry <- everGeoAll
+     
+  
+     dataSingleEntry[ ,.(aantal= sum(aantal)), by = .(gemeente_afschot_locatie,provincie, dataSource,afschotjaar)]
+
+})
+
 
 results$dash_schadeData <- reactive({
     
     if (input$dash_regionLevel != "flanders") {
       
       validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
-      
-      filterVariable <- switch(input$dash_regionLevel,
-        "provinces" = "provincie", 
-        "faunabeheerzones" = "FaunabeheerZone",
-        "communes" = "gemeente_afschot_locatie")
-      
-      everSchadeData[everSchadeData[[filterVariable]] %in% input$dash_locaties, ]
+    
+      filterGeo(data =  everSchadeData, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties)
       
     } else everSchadeData
     
@@ -303,6 +318,14 @@ results$dash_F18_1 <- barDraagkrachtServer(id = "dash_F18_1",
   yVar = "Vraag",
   title = reactive(names(results$dash_titlesPopulatie()[results$dash_titlesPopulatie() == "F18_1"]))
 )
+
+results$dash_F18_8 <- kencijferModuleServer(
+  id = "dash_F18_8",
+  kencijfersData = results$dash_kencijftersData,
+  species = results$dash_species,
+  uiText = uiText
+)
+
 
 
 # Jacht

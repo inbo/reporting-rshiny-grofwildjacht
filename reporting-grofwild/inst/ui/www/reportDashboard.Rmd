@@ -89,11 +89,11 @@ cat("## Tabel kencijfer\n")
 
 resTable <- results[["dash_F18_8"]]()[["table"]]
 
-resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
-resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
+resTable[resTable$categorie == "Totaal aantal gemeentes","gemeente"] <- NA
+resTable[,1] <- paste(  resTable[,"categorie"], resTable[,"aantal"], sep = ": ")
 rownames(resTable) <- NULL
 
-cityList <-   na.omit(resTable[,"municipality"])
+cityList <-   na.omit(resTable[,"gemeente"])
 
 
 colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),

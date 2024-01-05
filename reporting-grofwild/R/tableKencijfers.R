@@ -47,6 +47,10 @@ tabelKencijfers <- function(data,
     
   }
   
+  
+  dataSubset$dataSource <- factor(sub("\\.be$", "",      dataSubset$dataSource), levels = c("afschot","waarnemingen"))
+  
+  
   dataCurrentYear <-   dataSubset[afschotjaar == jaar]
   
   observedCities <- dataCurrentYear[dataSource != "afschot"][["gemeente_afschot_locatie"]]
@@ -77,21 +81,20 @@ tabelKencijfers <- function(data,
     
   }
   
-  colnames(resultTable) <- c("category", "count", "municipality")
+  colnames(resultTable) <- c("categorie", "aantal", "gemeente")
   resultTable <- as.data.frame(resultTable)
   
   ## current year provincie table 
  if( nrow(dataCurrentYear) > 0 ){
-  tableCount <- data.table::dcast(dataCurrentYear, gemeente_afschot_locatie ~dataSource, value.var = "aantal", fill = 0)
+  tableCount <- data.table::dcast(dataCurrentYear, gemeente_afschot_locatie ~dataSource, value.var = "aantal", fill = NA, drop = FALSE)
  
-  
   finalTable <-  merge(resultTable, tableCount, 
-                       by.x = "municipality", by.y = "gemeente_afschot_locatie", all.x = TRUE, sort = FALSE)
+                       by.x = "gemeente", by.y = "gemeente_afschot_locatie", all.x = TRUE, sort = FALSE)
   
   # sort back to original order
-  finalTable <- finalTable[match( resultTable$municipality,   finalTable$municipality),]
+  finalTable <- finalTable[match( resultTable$gemeente,   finalTable$gemeente),]
  
-  avaliableCols <- intersect(c("category", "count","municipality", "afschot", "waarnemingen.be"), grep(paste(c("category", "count","municipality", "afschot", "waarnemingen.be"), collapse = "|"),colnames( finalTable), value = TRUE)
+  avaliableCols <- intersect(c("categorie", "aantal", "gemeente", "afschot", "waarnemingen"), grep(paste(c("categorie", "aantal", "gemeente", "afschot", "waarnemingen"), collapse = "|"),colnames( finalTable), value = TRUE)
   )
   finalTable <-  finalTable[, avaliableCols ]
  
@@ -171,7 +174,6 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
                  
                  observe({
                    
-                
                    req(kencijfersData)
                    
                    output$kencijferFilter <- renderUI({
@@ -261,14 +263,14 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData, sp
 
                    #in order to collapse by grouping
                    resTableReactive <- reactive({
-                     resTable <- results$res()$table[,c("category", "count", "municipality")]
-                     resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
-                     resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
+                     resTable <- results$res()$table[,c("categorie", "aantal", "gemeente")]
+                     resTable[resTable$categorie == "Totaal aantal gemeentes","gemeente"] <- NA
+                     resTable[,1] <- paste(  resTable[,"categorie"], resTable[,"aantal"], sep = ": ")
                      rownames(resTable) <- NULL
                      resTable
                    })
 
-                   cityList <-  na.omit(resTableReactive()[,"municipality"])
+                   cityList <-  na.omit(resTableReactive()[,"gemeente"])
                    
                    
                    colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),

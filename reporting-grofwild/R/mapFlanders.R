@@ -202,7 +202,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       c("afschotjaar", "locatie", countVariable, if (!is.null(sourceIndicator)) "dataSource")
     )
     
-    # Summarize data over afschotjaar/locaties
+    # Summarize data over afschotjaar/locaties/dataSource
     if (is.null(countVariable)) {
       summaryData <- plyr::count(df = plotData, vars = names(plotData)) 
     } else {
@@ -211,10 +211,10 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       summaryData$freq <- summaryData$x
       summaryData$x <- NULL
       
-      if (!is.null(sourceIndicator)) {
-        summaryData <- dcast(summaryData, afschotjaar + locatie ~ dataSource, value.var = "freq", fun.aggregate = sum)
-        summaryData$freq <- apply(summaryData[, -(1:2), drop = FALSE], 1, sum, na.rm = TRUE)      
-      }
+    }
+    if (!is.null(sourceIndicator)) {
+      summaryData <- dcast(summaryData, afschotjaar + locatie ~ dataSource, value.var = "freq", fun.aggregate = sum)
+      summaryData$freq <- apply(summaryData[, -(1:2), drop = FALSE], 1, sum, na.rm = TRUE)      
     }
     
     # Add names & times with 0 observations
@@ -786,10 +786,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           contentText <- if (!is.null(input$bronMap)) {
               availableBron <- input$bronMap[input$bronMap %in% colnames(results$summarySpaceData()$data)]
               names(availableBron) <- sapply(availableBron, function(x) strsplit(x, split = "\\.")[[1]][1])
+              
               if (length(availableBron) > 1)
-              apply(do.call(cbind, Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron], sep = ": ")), 1, function(x)
+              apply(do.call(cbind, Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron, drop = FALSE], sep = ": ")), 1, function(x)
                   paste("</br>", paste(x, collapse = "</br>"))) else
-              paste("</br>", Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron], sep = ": "))
+              paste("</br>", Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron, drop = FALSE], sep = ": "))
             } else
               round(results$summarySpaceData()$data$freq, 2)
         

@@ -223,7 +223,11 @@ results$dash_finalMap <- mapFlandersServer(id = "dash_background",
   species = results$dash_species,
   type = "empty",
   regionLevel = reactive(req(input$dash_regionLevel)),
-  locaties = reactive(if(req(input$dash_regionLevel) == "flanders") "flanders" else input$dash_locaties),
+  locaties = reactive({
+      if (req(input$dash_regionLevel) == "flanders") 
+        "flanders" else 
+        input$dash_locaties
+    }),
   geoData = reactive(everGeoData),
   biotoopData = biotoopData,
   allSpatialData = spatialData,
@@ -282,7 +286,11 @@ results$dash_F17_1 <- mapFlandersServer(id = "dash_F17_1",
   species = results$dash_species,
   type = "dash",
   regionLevel = reactive(req(input$dash_regionLevel)),
-  locaties = reactive(req(input$dash_locaties)),
+  locaties = reactive({
+      if (req(input$dash_regionLevel) == "flanders") 
+        "flanders" else 
+        input$dash_locaties
+    }),
   geoData = reactive(everGeoAll),
   allSpatialData = spatialData,
   hideGlobeDefault = FALSE,
@@ -292,7 +300,11 @@ results$dash_F17_1 <- mapFlandersServer(id = "dash_F17_1",
 
 results$dash_F17_4 <- mapSpreadServer(id = "dash_F17_4",
   regionLevel = reactive(req(input$dash_regionLevel)),
-  locaties = reactive(req(input$dash_locaties)),
+  locaties = reactive({
+      if (req(input$dash_regionLevel) == "flanders") 
+        "flanders" else 
+        input$dash_locaties
+    }),
   allSpatialData = spatialData,
   type = "F17_4",
   title = reactive(names(results$dash_titlesPopulatie()[results$dash_titlesPopulatie() == "F17_4"]))

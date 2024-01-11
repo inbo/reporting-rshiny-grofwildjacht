@@ -24,6 +24,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r locaties}
+biotoopLocaties <- if (req(input$dash_regionLevel) == "flanders") 
+  biotoopData[[input$dash_regionLevel]]$regio[1] else 
+  input$dash_locaties
+``` 
+
 
 # ACHTERGRONDINFORMATIE
 
@@ -46,7 +52,7 @@ print(HTML(uiText[uiText$plotFunction == "barBiotoop", "dash"]))
 ```
 
 ```{r 'biotoopPlot'}
-plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot)
+plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% biotoopLocaties))$plot)
 ```
 
 ```{r 'biotoopTableText', results = 'asis'}
@@ -55,7 +61,7 @@ print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
 
 ```{r 'biotoopTable'}
 myTable <- tableBackground(data = rbind(
-    subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
+    subset(biotoopData[[input$dash_regionLevel]], regio %in% biotoopLocaties), 
     biotoopData$flanders))$data
 tmpTable <- DT::datatable(myTable, rownames = FALSE,
   options = list(dom = 't', pageLength = -1))

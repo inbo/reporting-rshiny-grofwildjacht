@@ -76,6 +76,7 @@ if (!is.null(attr(ecoData, "excluded")))
 
 # UI text for each plot/table
 uiText <- read.csv(file = file.path(dataDir, "uiText.csv"), sep = ";")
+
 if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild"))) {
   uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
   uiFunctions <- uiFunctions[!is.na(uiFunctions)] 
@@ -88,6 +89,7 @@ if (config::get("datacheck", file = system.file("config.yml", package = "reporti
 
 # Availability (Dashboard page)
 availableData <- read.csv(file.path(dataDir, "Data_beschikbaarheid.csv"))
+
 names(availableData)[3:6] <- c("flanders", "provinces", "communes", "faunabeheerzones")
 
 uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
@@ -97,7 +99,7 @@ uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
 
 # Choices for Dashboard
 ## Ideally these are read from availableData
-populatieChoices <- c("F16_1", "F17_1", "F17_4", "F18_1")
+populatieChoices <- c("F16_1", "F17_1", "F17_4", "F18_1", "F18_8")
 jachtChoices <- c("F04_3", "F05_1", "F05_2")
 schadeChoices <- c("F07_1", "F09_2", "F07_3")
 maatschappijChoices <- c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")

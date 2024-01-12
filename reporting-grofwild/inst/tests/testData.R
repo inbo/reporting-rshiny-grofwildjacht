@@ -304,3 +304,5 @@ test_that("Speed up reading data", {
 #    close(con)
     
   })
+
+

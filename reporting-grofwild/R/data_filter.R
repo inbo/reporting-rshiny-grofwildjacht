@@ -249,3 +249,32 @@ createEmptyGeo <- function(data, years, kbo) {
     }))
   
 }
+
+
+#' File geographical data by province 
+#' @param data data.frame, example data of type 'geographical'
+#' @param regionLevel  should be one of \code{c("provinces", "communes", "faunabeheerzones")}
+#' @param  choseByID  boolean indicate whether to retain the data by using \code{ID} variable, true by default. If false, data is retained
+#' row number, this should be used when \code{ID}  contains NA values.
+#' @inheritParams filterSpatial
+#' @return data frame containing subset of the geographical data subject to the given province(s)
+#' @author mvarewyck
+#' @export
+#' 
+filterGeo <- function(data, regionLevel = c("provinces", "faunabeheerzones",  "communes"), locaties, choseByID = TRUE){
+  
+  regionLevel <- match.arg(regionLevel)
+  
+  filterVariable <- switch(regionLevel,
+                           "provinces" = "provincie", 
+                           "faunabeheerzones" = "FaunabeheerZone",
+                           "communes" = "gemeente_afschot_locatie")
+  
+  if( choseByID ){
+    keepIds <- data$ID[data[[filterVariable]] %in% locaties] 
+  data[data$ID %in% keepIds, ]
+  }else{
+   keepIds <- data[[filterVariable]] %in% locaties
+   data[keepIds]
+  }
+}

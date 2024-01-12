@@ -10,6 +10,8 @@ output:
       bigLogoSize: 15cm
       always_allow_html: yes
       latex_engine: pdflatex 
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r knitr, echo = FALSE, results = 'hide', warning = FALSE}
@@ -64,11 +66,11 @@ myTable <- tableBackground(data = rbind(
     subset(biotoopData[[input$dash_regionLevel]], regio %in% biotoopLocaties), 
     biotoopData$flanders))$data
 tmpTable <- DT::datatable(myTable, rownames = FALSE,
-  options = list(dom = 't', pageLength = -1))
+                          options = list(dom = 't', pageLength = -1))
 DT::formatStyle(tmpTable,
-  colnames(myTable)[1],
-  target = "row",
-  fontWeight = DT::styleEqual(tail(myTable[, 1], n = 1), "bold")
+                colnames(myTable)[1],
+                target = "row",
+                fontWeight = DT::styleEqual(tail(myTable[, 1], n = 1), "bold")
 )
 ```
 
@@ -80,12 +82,62 @@ cat("#", toupper("Populatie"), "\n\n")
 incProgress(amount = 0.2, detail = "Populatie")
 
 section <- "Populatie"
-childOutput <- lapply(results$dash_showPopulatie(), function(id) 
-    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+childOutput <- lapply(setdiff(results$dash_showPopulatie(), "F18_8"), function(id) 
+  knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
 )
 cat(unlist(childOutput), sep = '\n')
 ```
 
+
+```{r popKencijfer, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
+cat("\\newpage")
+cat("## Tabel kencijfer\n")
+
+resTable <- results[["dash_F18_8"]]()[["table"]]
+
+resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
+resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
+rownames(resTable) <- NULL
+
+cityList <-   na.omit(resTable[,"municipality"])
+
+
+colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),
+                    "#ef8a62",
+                    ifelse(
+                      (cityList %in% results$res()$observed) & ( cityList %in% results$res()$shot), 
+                      "transparent", "#67a9cf") )
+
+names(colorList) <- cityList
+
+tb <- DT::datatable(
+  resTable[,c(1,3), drop = FALSE],
+  colnames = c("", ""),
+  rownames = FALSE,
+  extensions = 'RowGroup',
+  options = list(
+    rowGroup = list(dataSrc = 0),
+    pageLength = nrow( resTable),
+    columnDefs = list(list(visible=FALSE, targets=0)),
+    dom = 't',
+    striped = FALSE
+  ),
+  selection = 'none')
+
+if(length(cityList) > 0 & length(input[["dash_F18_8-dataSource_kencijfer"]]) == 2) {
+  
+    tb <- DT::formatStyle(tb,
+      columns = 2,
+      valueColumns = 2,
+      backgroundColor = DT::styleEqual(unique(cityList), colorList)
+    )
+}else{
+  
+  tb
+}
+
+
+```
 
 ```{r jachtSection, eval = !is.null(results$dash_showJacht()), results = "asis"}
 cat("\\newpage")
@@ -95,7 +147,7 @@ incProgress(amount = 0.2, detail = "Jacht")
 
 section <- "Jacht"
 childOutput <- lapply(results$dash_showJacht(), function(id) 
-    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+  knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
 )
 cat(unlist(childOutput), sep = '\n')
 ```
@@ -109,7 +161,7 @@ incProgress(amount = 0.2, detail = "Schade")
 
 section <- "Schade"
 childOutput <- lapply(results$dash_showSchade(), function(id) 
-    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+  knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
 )
 cat(unlist(childOutput), sep = '\n')
 ```
@@ -123,7 +175,7 @@ incProgress(amount = 0.2, detail = "Maatschappelijk draagvlak")
 
 section <- "Maatschappij"
 childOutput <- lapply(results$dash_showMaatschappij(), function(id) 
-    knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
+  knitr::knit_child("plotDashboard.Rmd", quiet = TRUE, envir = environment())
 )
 cat(unlist(childOutput), sep = '\n')
 ```

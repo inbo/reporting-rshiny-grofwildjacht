@@ -22,6 +22,7 @@
 #' @import plotly
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_lichtgrijs inbo_palette
+#' @importFrom utils head
 #' @export 
 barDraagkracht <- function(data, groupVariable = NULL, 
   xVar = "percentage", yVar = NULL, verticalGroups = FALSE, 

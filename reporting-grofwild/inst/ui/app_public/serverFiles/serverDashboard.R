@@ -42,14 +42,14 @@ results$dash_showPopulatie <- dashboardChoicesServer(
   uiText = uiText, 
   regionLevel = reactive(req(input$dash_regionLevel))
 )
-
-output$dash_populatieIndicatoren <- reactive({
-    if (is.null(results$dash_showPopulatie()))
-      "" else
-      results$dash_showPopulatie()
+observe({
+    toggle("dash_populatieTitle", condition = !is.null(results$dash_showPopulatie()))
+    toggle("dash_populatieF16_1", condition = "F16_1" %in% results$dash_showPopulatie())
+    toggle("dash_populatieF17_1", condition = "F17_1" %in% results$dash_showPopulatie())
+    toggle("dash_populatieF17_4", condition = "F17_4" %in% results$dash_showPopulatie())
+    toggle("dash_populatieF18_1", condition = "F18_1" %in% results$dash_showPopulatie())
+    toggle("dash_populatieF18_8", condition = "F18_8" %in% results$dash_showPopulatie())
   })
-
-outputOptions(output, "dash_populatieIndicatoren", suspendWhenHidden = FALSE)
 
 
 results$dash_showJacht <- dashboardChoicesServer(
@@ -58,12 +58,12 @@ results$dash_showJacht <- dashboardChoicesServer(
   uiText = uiText,
   regionLevel = reactive(req(input$dash_regionLevel))
 )
-output$dash_jachtIndicatoren <- reactive({
-    if (is.null(results$dash_showJacht()))
-      "" else 
-      results$dash_showJacht()
+observe({
+    toggle("dash_jachtTitle", condition = !is.null(results$dash_showJacht()))
+    toggle("dash_jachtF04_3", condition = "F04_3" %in% results$dash_showJacht())
+    toggle("dash_jachtF05_1", condition = "F05_1" %in% results$dash_showJacht())
+    toggle("dash_jachtF05_2", condition = "F05_2" %in% results$dash_showJacht())
   })
-outputOptions(output, "dash_jachtIndicatoren", suspendWhenHidden = FALSE)
 
 
 results$dash_showSchade <- dashboardChoicesServer(
@@ -72,12 +72,12 @@ results$dash_showSchade <- dashboardChoicesServer(
   uiText = uiText,
   regionLevel = reactive(req(input$dash_regionLevel))
 )
-output$dash_schadeIndicatoren <- reactive({
-    if (is.null(results$dash_showSchade()))
-      "" else 
-      results$dash_showSchade()
+observe({
+    toggle("dash_schadeTitle", condition = !is.null(results$dash_showSchade()))
+    toggle("dash_schadeF07_1", condition = "F07_1" %in% results$dash_showSchade())
+    toggle("dash_schadeF09_2", condition = "F09_2" %in% results$dash_showSchade())
+    toggle("dash_schadeF07_3", condition = "F07_3" %in% results$dash_showSchade())
   })   
-outputOptions(output, "dash_schadeIndicatoren", suspendWhenHidden = FALSE)
 
 
 results$dash_showMaatschappij <- dashboardChoicesServer(
@@ -86,12 +86,15 @@ results$dash_showMaatschappij <- dashboardChoicesServer(
   uiText = uiText,
   regionLevel = reactive(req(input$dash_regionLevel))
 )
-output$dash_maatschappijIndicatoren <- reactive({
-    if (is.null(results$dash_showMaatschappij()))
-      "" else 
-      results$dash_showMaatschappij()
+observe({
+    toggle("dash_maatschappijTitle", condition = !is.null(results$dash_showMaatschappij()))
+    toggle("dash_maatschappijF12_1", condition = "F12_1" %in% results$dash_showMaatschappij())
+    toggle("dash_maatschappijF14_1", condition = "F14_1" %in% results$dash_showMaatschappij())
+    toggle("dash_maatschappijF14_2", condition = "F14_2" %in% results$dash_showMaatschappij())
+    toggle("dash_maatschappijF14_3", condition = "F14_3" %in% results$dash_showMaatschappij())
+    toggle("dash_maatschappijF14_4", condition = "F14_4" %in% results$dash_showMaatschappij())
+    toggle("dash_maatschappijF14_5", condition = "F14_5" %in% results$dash_showMaatschappij())
   })
-outputOptions(output, "dash_maatschappijIndicatoren", suspendWhenHidden = FALSE)
 
 
 ## FILTER ##

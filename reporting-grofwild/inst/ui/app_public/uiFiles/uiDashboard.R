@@ -71,14 +71,14 @@ tagList(
     
     
     # Populatie
-    conditionalPanel("output.dash_populatieIndicatoren.length > 0",
+    tags$div(id = "dash_populatieTitle",
       h2(toupper("Populatie"))),
     
-    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F16_1') > -1", 
+    tags$div(id = "dash_populatieF16_1", 
       countAgeGroupUI(id = "dash_F16_1", uiText = uiText, doHide = FALSE)
     ),
     
-    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_1') > -1", 
+    tags$div(id = "dash_populatieF17_1", 
       actionLink(inputId = "dash_showF17_1", 
         label = paste("FIGUUR:", uiText$title[uiText$plotFunction == "F17_1"]),
         class = "action-h3"
@@ -95,42 +95,41 @@ tagList(
     ),
     
     
-    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F17_4') > -1",
+    tags$div(id = "dash_populatieF17_4",
       mapSpreadUI(id = "dash_F17_4", uiText = uiText)
     ),
     
-    conditionalPanel("output.dash_populatieIndicatoren.indexOf('F18_1') > -1",
+    tags$div(id = "dash_populatieF18_1",
       barDraagkrachtUI(id = "dash_F18_1", uiText = uiText)
     ),
     
-    # kencijfers
-      conditionalPanel("output.dash_populatieIndicatoren.indexOf('F18_8') > -1",
-                       kencijferModuleUI(id = "dash_F18_8")
-      ),
+    tags$div(id = "dash_populatieF18_8",
+      kencijferModuleUI(id = "dash_F18_8")
+    ),
     
     # Jacht
-    conditionalPanel("output.dash_jachtIndicatoren.length > 0",
+    tags$div(id = "dash_jachtTitle", 
       h2(toupper("Jacht"))),
     
-    conditionalPanel("output.dash_jachtIndicatoren.indexOf('F04_3') > -1", 
+    tags$div(id = "dash_jachtF04_3", 
       countYearProvinceUI(id = "dash", uiText = uiText,
         plotFunction = "F04_3", doHide = FALSE)
     ),
     
-    conditionalPanel("output.dash_jachtIndicatoren.indexOf('F05_1') > -1", 
+    tags$div(id = "dash_jachtF05_1",  
       trendYearRegionUI(id = "dash", uiText = uiText, 
         showCombinatie = TRUE,
         plotFunction = "F05_1", doHide = FALSE
       )
     ),
     
-    conditionalPanel("output.dash_jachtIndicatoren.indexOf('F05_2') > -1", 
+    tags$div(id = "dash_jachtF05_2", 
       countYearAgeUI(id = "dash", uiText = uiText, 
         plotFunction = "F05_2", showRegion = FALSE, doHide = FALSE)
     ),
     
     # Schade
-    conditionalPanel("output.dash_schadeIndicatoren.length > 0",
+    tags$div(id = "dash_schadeTitle",
       h2(toupper("Schade"))),
     
 #    # Note: F06_1, F06_2 and F06_3 combined
@@ -138,53 +137,53 @@ tagList(
 #      mapSpreadUI(id = "dash_F06_1", uiText = uiText, showLayer = TRUE)
 #    ),
     
-    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_1') > -1", 
+    tags$div(id = "dash_schadeF07_1", 
       barCostUI(id = "dash_F07_1", uiText = uiText, 
         typeMelding = c("Verkeer" = "verkeersongeluk", "Landbouw" = "landbouw", 
           "Private en publieke gebieden" = "private en publieke gebieden",
           "Andere" = "andere", "Alle" = "all"))
     ),
     
-    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F09_2') > -1", 
+    tags$div(id = "dash_schadeF09_2", 
       barCostUI(id = "dash_F09_2", uiText = uiText,
         typeMelding = c("Landbouw" = "landbouw"))
     ),
     
-    conditionalPanel("output.dash_schadeIndicatoren.indexOf('F07_3') > -1", 
+    tags$div(id = "dash_schadeF07_3", 
       barDraagkrachtUI(id = "dash_F07_3", uiText = uiText)
     ),
     
     
     # Maatschappelijk draagvlak
-    conditionalPanel("output.dash_maatschappijIndicatoren.length > 0",
+    tags$div(id = "dash_maatschappijTitle",
       h2(toupper("Maatschappelijk draagvlak"))
     ),
     
-    conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F12_1') > -1",
+    tags$div(id = "dash_maatschappijF12_1",
       barDraagkrachtUI(id = "dash_F12_1", uiText = uiText)
     ),
     
-    conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_1') > -1",
+    tags$div(id = "dash_maatschappijF14_1",
       barDraagkrachtUI(id = "dash_F14_1", uiText = uiText)
     ),
     
-    conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_2') > -1",
+    tags$div(id = "dash_maatschappijF14_2",
       barDraagkrachtUI(id = "dash_F14_2", uiText = uiText)
     ),
     
-    conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_3') > -1",
+    tags$div(id = "dash_maatschappijF14_3",
       barDraagkrachtUI(id = "dash_F14_3", uiText = uiText,
         sectorChoices = c("Stakeholders" = "stakeholders", "Publiek" = "public"),
         selectGroups = TRUE, height = "1000px")
     ),
     
-    conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_4') > -1",
+    tags$div(id = "dash_maatschappijF14_4",
       barDraagkrachtUI(id = "dash_F14_4", uiText = uiText,
         sectorChoices = c("Stakeholders" = "stakeholders", "Publiek" = "public"), 
         selectGroups = TRUE, height = "800px")
     ),
     
-    conditionalPanel("output.dash_maatschappijIndicatoren.indexOf('F14_5') > -1",
+    tags$div(id = "dash_maatschappijF14_5",
       barDraagkrachtUI(id = "dash_F14_5", uiText = uiText, 
         selectGroups = TRUE, height = "1500px")
     )

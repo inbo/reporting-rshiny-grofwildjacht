@@ -71,6 +71,10 @@ if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {
   tmpFile <- tempfile(fileext = ".html")
   htmlwidgets::saveWidget(results[[paste0("dash_", id)]]()$plot, file = tmpFile, selfcontained = FALSE)
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+} else if (is(results[[paste0("dash_", id)]]()$table, "datatables")){
+  # DT
+  cat("\\newpage")
+  results[[paste0("dash_", id)]]()$table
 } else {
   # plotly
   tmp <- plotlyReport(results[[paste0("dash_", id)]]()$plot)

@@ -64,7 +64,8 @@ if (any(allParams %in% currentParams)) {
 
 # Description
 print(HTML(decodeText(text = uiText[uiText$plotFunction == id, "dash"], statsMap = params$statsMap)))
-  
+```
+```{r, echo = FALSE, dev = if (is(results[[paste0("dash_", id)]]()$table, "datatables")) "png", results = "asis"}  
 # Plot
 if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {
   # leaflet
@@ -73,7 +74,6 @@ if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 } else if (is(results[[paste0("dash_", id)]]()$table, "datatables")){
   # DT
-  cat("\\newpage")
   results[[paste0("dash_", id)]]()$table
 } else {
   # plotly

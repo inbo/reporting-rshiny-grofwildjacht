@@ -43,19 +43,19 @@ webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewpo
 
 ## Biotoop beschrijving
 
-```{r 'biotoopPlotText', results = 'asis'}
+```{r biotoopPlotText, results = 'asis'}
 print(HTML(uiText[uiText$plotFunction == "barBiotoop", "dash"]))
 ```
 
-```{r 'biotoopPlot'}
+```{r biotoopPlot}
 plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot)
 ```
 
-```{r 'biotoopTableText', results = 'asis'}
+```{r biotoopTableText, results = 'asis'}
 print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
 ```
 
-```{r 'biotoopTable'}
+```{r biotoopTable}
 myTable <- tableBackground(data = rbind(
   subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
   biotoopData$flanders))$data

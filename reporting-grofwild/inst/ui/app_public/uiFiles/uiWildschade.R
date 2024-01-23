@@ -50,9 +50,6 @@ tagList(
             uiOutput("schade_warning")
         ),
         
-        
-        h2("Schadegevallen"),
-        
         uiOutput("schade_summary"),
         
         tags$hr()

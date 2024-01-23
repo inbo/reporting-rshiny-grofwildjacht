@@ -98,17 +98,22 @@ callModule(dataModuleServer, id = "subschade",
 
 # Show frequency tables for filtered data
 output$schade_summary <- renderUI({
-      
+    
+    req(input$schade_species)
+    
+    tagList(
+      h2("Schadegevallen"),
       fixedRow(
-          column(4, tableModuleUI(id = "wildsoort", includeTotal = TRUE)),
-          column(4, tableModuleUI(id = "schade", includeTotal = TRUE)),
-          if (any(c("GEWAS", "VRTG") %in% input$schade_code)) 
-            column(4, tableModuleUI(id = "subschade",
-                    includeTotal = TRUE))
+        column(4, tableModuleUI(id = "wildsoort", includeTotal = TRUE)),
+        column(4, tableModuleUI(id = "schade", includeTotal = TRUE)),
+        if (any(c("GEWAS", "VRTG") %in% input$schade_code)) 
+          column(4, tableModuleUI(id = "subschade",
+              includeTotal = TRUE))
       
       )
-      
-    })
+    )
+    
+  })
 
 
 results$schade_timeRange <- reactive({
@@ -138,7 +143,7 @@ mapFlandersServer(id = "schade",
   uiText = uiText,
   defaultYear = defaultYear,
   type = "wildschade",
-  species = reactive(input$schade_species),
+  species = reactive(req(input$schade_species)),
   geoData = reactive({
       tmpData <- sf::st_drop_geometry(results$schade_data())
       tmpData$dataSource <- tmpData$indieningType

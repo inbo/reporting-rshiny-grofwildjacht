@@ -35,7 +35,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
       }))
   
   # filter for source
-  plotData <- filterSchade(plotData = data, 
+  plotData <- filterDataSource(plotData = data, 
     sourceIndicator = sourceIndicator,
     returnStop = "message")
   

@@ -88,7 +88,6 @@ tagList(
         mapFlandersUI(id = "dash_F17_1", showCombine = FALSE, type = "dash",  
           regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
-          sourceChoices = c("waarnemingen.be", "afschot"),
           plotDetails = "", showTitle = FALSE
         )
       )

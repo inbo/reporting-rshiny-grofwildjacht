@@ -303,7 +303,7 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   # Keep after schadeCodes to give them raw list names
   names(schadeTypes) <- rawData$group_display[match(schadeTypes, rawData$group)]
   
-  # List with all patterns to search for in indieningType per schadeChoice
+  # List with all data sources
   sources <- rawData[rawData$variable == "source", c("name", "name_display")]
   sourcesSchade <- sapply(unique(sources$name_display), function(x)
     sources$name[sources$name_display == x], simplify = FALSE)

@@ -188,8 +188,8 @@ test_that("Schade data & metadata", {
         "\nUpdate schadeCodes in loadMetaSchade() functie.")
     }
     
-    # check for schadeSources (indieningType) to add to schadeSources
-    indieningTypes <- unique(schadeData$indieningType)
+    # check for dataSources to add to schadeSources
+    indieningTypes <- unique(schadeData$dataSource)
     isPresent <- grepl(paste(metaSchade$sourcesSchade, collapse = "|"), indieningTypes)
     if (!all(isPresent)) {
       warning("Nieuw indieningType gedetecteerd in schade data: ", 

@@ -144,13 +144,10 @@ mapFlandersServer(id = "schade",
   defaultYear = defaultYear,
   type = "wildschade",
   species = reactive(req(input$schade_species)),
-  geoData = reactive({
-      tmpData <- sf::st_drop_geometry(results$schade_data())
-      tmpData$dataSource <- tmpData$indieningType
-      tmpData$indieningType <- NULL
-      tmpData
-    }),
-  allSpatialData = spatialData)
+  geoData = reactive(sf::st_drop_geometry(results$schade_data())),
+  allSpatialData = spatialData,
+  sourceChoices = loadMetaSchade()$sources 
+  )
 
 
 

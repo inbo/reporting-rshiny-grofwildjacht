@@ -359,7 +359,7 @@ createRawData <- function(
     rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")
     
     # new column names
-    colnames(rawData) <- c("ID", "caseID", "indieningType", "afschotjaar", 
+    colnames(rawData) <- c("ID", "caseID", "dataSource", "afschotjaar", 
       "schadeBasisCode", "schadeCode",
       "SoortNaam", "wildsoort", "afschot_datum",
       "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
@@ -372,6 +372,17 @@ createRawData <- function(
     
     # Remove Voeren as province
     rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
+    
+    # Redefine dataSource
+    sourcesSchade <- loadMetaSchade()$sources  
+    isPresent <- grepl(paste(sourcesSchade, collapse = "|"), rawData$dataSource)
+    if (!all(isPresent)) {
+      warning("Nieuw indieningType gedetecteerd in schade data: ", 
+        paste0(unique(rawData$dataSource[!isPresent]), collapse = ", "),
+        "\nUpdate loadMetaSchade() functie.")
+    }
+    for (iVar in sourcesSchade)
+      rawData$dataSource[grepl(iVar, rawData$dataSource)] <- iVar
     
     # Define season
     rawData$season <- getSeason(rawData$afschot_datum)

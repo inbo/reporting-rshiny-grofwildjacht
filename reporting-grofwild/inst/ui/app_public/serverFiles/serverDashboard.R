@@ -313,6 +313,7 @@ results$dash_F17_1 <- mapFlandersServer(id = "dash_F17_1",
   allSpatialData = spatialData,
   hideGlobeDefault = FALSE,
   countVariable = "aantal",
+  sourceChoices = c("waarnemingen.be", "afschot"),
   uiText = uiText)
 
 

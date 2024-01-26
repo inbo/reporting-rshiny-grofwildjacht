@@ -67,7 +67,6 @@ tagList(
       
       ## mapFlanders
       mapFlandersUI(id = "schade", 
-        sourceChoices = names(loadMetaSchade()$sources), 
         type = "wildschade", 
         showCombine = FALSE,
         plotDetails = c("flanders", "region")),

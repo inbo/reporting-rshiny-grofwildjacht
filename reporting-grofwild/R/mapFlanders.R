@@ -82,7 +82,7 @@ getCenterView <- function(sf_object) {
 #' the legend shows different types of regions for WBE
 #' @param countVariable character, column name in \code{data} that contains counts;
 #' if NULL then each row in the data contains 1 count
-#' @inheritParams filterSchade
+#' @inheritParams filterDataSource
 #' @inheritParams createShapeData
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
@@ -169,7 +169,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     plotData <- data
   
   
-  plotData <- filterSchade(plotData = plotData, sourceIndicator = sourceIndicator,
+  plotData <- filterDataSource(plotData = plotData, sourceIndicator = sourceIndicator,
     returnStop = "data")
   
   #compute total number of cases to output in stats
@@ -207,11 +207,11 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       summaryData <- plyr::count(df = plotData, vars = names(plotData)) 
     } else {
       summaryData <- aggregate(plotData[[countVariable]], 
-        by = list(afschotjaar = plotData$afschotjaar, locatie = plotData$locatie, dataSource = plotData$dataSource), sum)
+        by = sapply(names(plotData)[!names(plotData) %in% countVariable], function(x) c(x = plotData[[x]]), simplify = FALSE), sum)
       summaryData$freq <- summaryData$x
       summaryData$x <- NULL
-      
     }
+    
     if (!is.null(sourceIndicator)) {
       summaryData <- dcast(summaryData, afschotjaar + locatie ~ dataSource, value.var = "freq", fun.aggregate = sum)
       summaryData$freq <- apply(summaryData[, -(1:2), drop = FALSE], 1, sum, na.rm = TRUE)      
@@ -485,6 +485,7 @@ mapFlanders <- function(
 #' @param locaties reactive, pre-selected value of region chosen outside module;
 #' to draw black borders and zoom
 #' @inheritParams createSpaceData
+#' @param sourceChoices named character vector, choices for the source
 #' @param uiText data.frame
 #' 
 #' @return no return value
@@ -500,6 +501,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
   hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   geoData, biotoopData = NULL, allSpatialData,
   regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL,
+  sourceChoices = NULL,
   uiText = NULL) {
   moduleServer(id,
     function(input, output, session) {
@@ -543,6 +545,17 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             min(geoData()$afschotjaar)
         })
       
+      # Bron map
+      output$bronMap <- renderUI({
+          
+        req(sourceChoices)
+          
+        selectInput(inputId = ns("bronMap"),
+          label = "Data Bron",
+          choices = sourceChoices, selected = sourceChoices,
+          multiple = TRUE)
+        
+      })
       
       # Data dependent input #
       # -------------------- #
@@ -713,7 +726,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             
             previousChoice <- isolate(input$bronMap)
             newChoices <- unique(geoData()$dataSource[geoData()$afschotjaar == input$year])
-            updateSelectInput(inputId = "bronMap", choices = newChoices,
+            updateSelectInput(inputId = "bronMap", 
+              choices = sourceChoices[newChoices %in% sourceChoices],
               selected = previousChoice[previousChoice %in% newChoices])
             
           }
@@ -753,6 +767,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           if (type != "empty")
             validate(need(input$year, "Gelieve jaar te selecteren"))
+          if (!is.null(sourceChoices))
+            validate(need(input$bronMap, "Gelieve bron te selecteren"))
           
           req(!is.null(results$regionLevel()))
           
@@ -782,7 +798,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           regionNames <- results$summarySpaceData()$data$locatie
           titleText <- paste(if (type != "dash") "Gerapporteerd", 
             results$unitText(), "in", input$year[1])
-          
+
           contentText <- if (!is.null(input$bronMap)) {
               availableBron <- input$bronMap[input$bronMap %in% colnames(results$summarySpaceData()$data)]
               names(availableBron) <- sapply(availableBron, function(x) strsplit(x, split = "\\.")[[1]][1])
@@ -790,7 +806,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               if (length(availableBron) > 1)
               apply(do.call(cbind, Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron, drop = FALSE], sep = ": ")), 1, function(x)
                   paste("</br>", paste(x, collapse = "</br>"))) else
-              paste("</br>", Map(paste, names(availableBron), results$summarySpaceData()$data[, availableBron, drop = FALSE], sep = ": "))
+              sapply(results$summarySpaceData()$data[, availableBron], function(x) paste0("</br>", names(availableBron), ": ", x))
             } else
               round(results$summarySpaceData()$data$freq, 2)
         
@@ -851,6 +867,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                   "utm5" = "provinces"
                 ),
             borderLocaties = locaties(),
+            legend = input$legend,
             legendText = simpleCap(results$unitText(), keepNames = FALSE)
           )  
         })
@@ -1360,7 +1377,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @param regionChoices named character vector, choices for the region levels
 #' @param unitChoices named character vector, choices for unit option;
 #' default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}
-#' @param sourceChoices named character vector, choices for the source
 #' @param plotDetails character vector, detail plots to be shown below the map;
 #' should be subset of \code{c("flanders", "region", "biotoop")}
 #' @param showTitle boolean, whether to show title above the map
@@ -1380,7 +1396,6 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     "5x5 UTM" = "utm5"
   ),
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
-  sourceChoices = NULL,
   plotDetails = c("flanders", "region"),
   showTitle = TRUE) {
   
@@ -1415,10 +1430,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
                 choices = legendChoices)
             ),
             column(6, uiOutput(ns("year"))),
-            column(6, selectInput(inputId = ns("bronMap"),
-              label = "Data Bron",
-              choices = sourceChoices, selected = sourceChoices,
-              multiple = TRUE))
+            column(6, uiOutput(ns("bronMap")))
           )
           
         } else if (type != "empty") {
@@ -1442,21 +1454,17 @@ mapFlandersUI <- function(id, showRegion = TRUE,
             
             if (!type %in% c("wbe"))
               fixedRow(
-                column(12/(2+!is.null(sourceChoices)),
+                column(12/(2+(type=="wildschade")),
                   selectInput(inputId = ns("legend"), label = "Legende (kaart)",
                     choices = legendChoices)
                 ),
-                column(12/(2+!is.null(sourceChoices)),
+                column(12/(2+(type=="wildschade")),
                   selectInput(inputId = ns("unit"), label = "Eenheid",
                     choices = unitChoices)
                 ),
-                if (!is.null(sourceChoices))
+                if (type=="wildschade")
                   column(4, 
-                    selectInput(inputId = ns("bronMap"),
-                      label = "Data Bron",
-                      choices = sourceChoices,
-                      multiple = TRUE)
-                  )
+                    uiOutput(ns("bronMap")))
               )
           )
           

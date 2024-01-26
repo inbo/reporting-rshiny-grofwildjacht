@@ -14,7 +14,7 @@
 #' 
 #' @inheritParams mapSchade
 #' @inheritParams createShapeData
-#' @inheritParams filterSchade
+#' @inheritParams filterDataSource
 #' @param timeRange numeric vector, year span of interest
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
@@ -26,7 +26,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     sourceIndicator = NULL, fullNames = NULL) {
 	
   
-  plotData <- filterSchade(plotData = schadeData,
+  plotData <- filterDataSource(plotData = schadeData,
     sourceIndicator = sourceIndicator, returnStop = "message")
     
   # filter columns
@@ -683,8 +683,8 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
             if (filterSource)
               selectInput(inputId = ns("bron"),
                 label = "Data bron",
-                choices = names(metaSchade$sources),
-                selected = names(metaSchade$sources),
+                choices = metaSchade$sources,
+                selected = metaSchade$sources,
                 multiple = TRUE),
             if (filterAccuracy)
               selectInput(inputId = ns("accuracy"),

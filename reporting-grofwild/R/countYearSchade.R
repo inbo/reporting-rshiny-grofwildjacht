@@ -8,7 +8,7 @@
 #' Create interactive barplot for wildschade data variable of interest ifo year
 #' @inheritParams countYearAge
 #' @param type character, variable name in \code{data} of interest
-#' @inheritParams filterSchade 
+#' @inheritParams filterDataSource
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' @return list with
@@ -39,7 +39,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
-  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+  plotData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   if (inherits(plotData, "sf"))

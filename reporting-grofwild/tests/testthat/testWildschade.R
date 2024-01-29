@@ -169,7 +169,7 @@ test_that("Counts per year and province", {
     countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders")
     
     myResult <- countYearProvince(data = wildSchadeData, jaartallen = 2018:2020, type = "provinces",
-      sourceIndicator = "E-loket")
+      sourceIndicator = "E_Loket")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

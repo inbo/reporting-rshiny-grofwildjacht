@@ -13,13 +13,16 @@
 #' @import data.table
 #' @author yzhang
 #' @export
-#' 
+#' @importFrom stats na.exclude
 
 tabelKencijfers <- function(data, 
                             jaar = 2023, 
                             bron = c("both", "waarnemingen.be","afschot"),
                             thresholdWaarnemingen = 0,
                             thresholdAfschot = 0){
+                            
+  # For R CMD check
+  gemeente_afschot_locatie <- afschotjaar <- dataSource <- aantal <- NULL
   
   releventColumns <- c("afschotjaar", "provincie", "gemeente_afschot_locatie", "dataSource", "aantal")
   stopifnot(releventColumns %in% colnames(data))
@@ -162,10 +165,13 @@ kencijferModuleUI <- function(id) {
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, species, uiText){
  
-   results <- reactiveValues(observeThreshold = 1, shotThreshold = 1)
- 
+  # For R CMD check
+  afschotjaar <- NULL
+  
   moduleServer(id,
                function(input, output, session) {
+                 
+                 results <- reactiveValues(observeThreshold = 1, shotThreshold = 1)
                  
                  ns <- session$ns
                  

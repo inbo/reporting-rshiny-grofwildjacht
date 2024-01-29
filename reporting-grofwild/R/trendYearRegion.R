@@ -186,7 +186,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
     if (is.null(locaties))
       stop("Gelieve regio('s) te selecteren")
     plotData <- subset(data, locatie %in% locaties)
-    colorList <- replicateColors(values = locaties)
+    colorList <- replicateColors(values = if (combinatie) "Totaal" else locaties)
   } else {
     plotData <- data
     colorList <- replicateColors(values = "Vlaams Gewest")

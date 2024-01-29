@@ -1,63 +1,14 @@
 #Libraries
 ```{r}
 library(tidyverse)
+library(ggplot2)
 ```
 
-
-#Data 
-```{r}
-aanzit_totaal <- read.csv('./dashboard/input/jachtdagboekjes_aanzit_totaal.csv', 
-                          header = TRUE, 
-                          sep = ",")
-
-aanzit_totaal <- aanzit_totaal %>%
-  select("AanzitId","Datum","Pachttype", "waarnemings_id" , "Aanzit_Startuur_dat",
-                "Aanzit_Einduur_dat_cor", "Waarneming_Startuur_dat_cor",
-                "Waarneming_Einduur_dat_cor", "Tijd_eerste_waarneming",
-                "Aanzitduur","waarneming_aantal", "Beschrijving_soort", "Code_soort",
-                "Klasse","waarnemingsoortklasse_Aantal", "Labelnummer", "Beschrijving_gebied",
-                "jachtmethode_beschrijving", "Naam_tot_correct", "Week", "Maand", "Dag", "Jaar", 
-                "GeschotenNum", "GemistNum", "HoogzitNummer",
-                "Lambert72X", "Lambert72Y", "WGS84Longitude", "WGS84Latitude",
-                "Aankorrelen", "Bijlichten", "Nachtkijker",
-                "WaarnemingNum", "GeschotenDierenNum",
-                "schotsucces", "Tijdstip", "Seizoen","record_type_ln",
-                "soortklassetype_prioriteit", "waarnemingtype_prioriteit",
-                "aanzittype_prioriteit", "Ree", "Everzwijn", "Ree_aanzit", "Ever_aanzit",
-                "Ree_en_Ever", "aanzit_soort", "geschoten_ree", "geschoten_ever",
-                "Ree_aanzit_geschoten", "Ever_aanzit_geschoten", "Ree_en_Ever_geschoten")
-
-#Gebieds-specifieke selectie voor grafieken
-Gebied_selectie <- c("Meerdaal")
-
-aanzit_totaal <- aanzit_totaal %>%
-  filter(Beschrijving_gebied %in% Gebied_selectie)
-
-#Drukjachten uit dataset gooien
-Jachtmethode_selectie <- c ("gemeenschappelijke aanzit", "individuele aanzit")
-
-aanzit_totaal <- aanzit_totaal %>%
-  filter(jachtmethode_beschrijving %in% Jachtmethode_selectie)
-
-#Vanaf 2018 selecteren
-aanzit_totaal <- aanzit_totaal %>%
-  filter(Jaar >= 2018)
-
-#Aanzit uniek
-aanzit_uniek <- aanzit_totaal[!duplicated(aanzit_totaal$AanzitId), ]
-
-
-```
 
 
 #F04_1: Aantal uren aanzit
 ```{r}
-#Aanzitduur per seizoen, per zone
-Tot_aanzitduur <- aanzit_uniek %>%
-  group_by(Jaar, Beschrijving_gebied) %>%
-  dplyr::summarise(Totale_aanzitduur = sum(Aanzitduur, na.rm = TRUE))
-
-
+Tot_aanzitduur <- read.csv("./dashboard/input/F04_1.csv")
 ```
 
 ```{r}
@@ -72,9 +23,7 @@ ggplot(Tot_aanzitduur,
 
 #F04_2: aantal aanzitten
 ```{r}
-aanzitten_zones <- aanzit_uniek %>%
-  group_by(Jaar, Beschrijving_gebied) %>%
-  dplyr::summarise(Aantal_Aanzit=length(AanzitId))
+aanzitten_zones <- read.csv("./dashboard/input/F04_2.csv")
 ```
 
 ```{r}
@@ -88,34 +37,7 @@ ggplot(aanzitten_zones,aes(x = Jaar,
 
 #F18_2: aantal aanzitten met waarnemingen
 ```{r}
-aanzit_totaal_ever <- aanzit_totaal %>%
-  group_by(AanzitId, Jaar, Beschrijving_gebied,
-           aanzit_soort, Ree, Everzwijn, Ree_en_Ever) %>%
-  dplyr::summarise(beide = sum(Ree_en_Ever))
-
-aanzit_totaal_ever <- aanzit_totaal_ever %>%
-  mutate(waarneming_ever = case_when(aanzit_soort == "Ree" ~ "Geen waarneming everzwijn",
-                                    aanzit_soort == "Ree_Everzwijn" ~ "Waarneming everzwijn",
-                                    aanzit_soort == "Everzwijn"  ~ "Waarneming everzwijn",
-                                    aanzit_soort == "Geen waarneming" ~ "Geen waarneming everzwijn",
-                                    TRUE ~ as.character(NA)))
-
-#Summary
-aanzit_totaal_ever_summary <- aanzit_totaal_ever %>%
-  group_by(Jaar, waarneming_ever, Beschrijving_gebied) %>%
-  dplyr::summarise(aantal = length(waarneming_ever))
-
-#Percentage
- aanzit_totaal_ever_summary <- aanzit_totaal_ever_summary %>% 
-   group_by( Jaar, Beschrijving_gebied) %>% 
-   dplyr::mutate (totaal = sum(aantal)) %>% 
-   ungroup() %>% 
-   mutate (percentage = 100 * aantal/totaal)
- 
- aanzit_totaal_ever_summary$percentage <- format(round(aanzit_totaal_ever_summary$percentage, 1), nsmall = 1)
-
- aanzit_totaal_ever_percentage <- aanzit_totaal_ever_summary %>%
-   filter(waarneming_ever == "Waarneming everzwijn")
+aanzit_totaal_ever_summary <- read.csv("./dashboard/input/F18_2.csv")
 ```
 
 ```{r}
@@ -142,40 +64,7 @@ ggplot(aanzit_totaal_ever_percentage,
 
 #F18_3: aantal waargenomen everzwijnen per aanzituur
 ```{r}
-waarnemingskans <- aanzit_totaal %>%
-  group_by(AanzitId,Jaar, waarnemings_id) %>%
-  summarize(aantal=length(waarnemings_id))
-
-waarnemingskans <- na.omit(waarnemingskans)
-
-waarnemingsaantal_duur <- aanzit_totaal %>%
-  select("AanzitId","waarnemings_id", "Ever_aanzit","Aanzitduur", "waarneming_aantal")
-
-waarnemingsaantal_duur <- na.omit(waarnemingsaantal_duur)
-waarnemingsaantal_duur <- unique(waarnemingsaantal_duur)
-waarnemingsaantal_duur <- waarnemingsaantal_duur %>%
-  filter(Ever_aanzit ==1)
-
-waarnemingskans <- merge(waarnemingskans,
-                         waarnemingsaantal_duur, 
-                         by = "waarnemings_id")
-
-waarnemingskans$AanzitduurNum <- as.numeric(waarnemingskans$Aanzitduur)
-
-waarnemingskans_summary <- waarnemingskans %>%
-  group_by(AanzitId.x, AanzitduurNum, Jaar) %>%
-  summarize(waarneming_aantal_tot = sum (waarneming_aantal))
-
-
-waarnemingskans_summary$Waarnemingskans <- waarnemingskans_summary$waarneming_aantal_tot/waarnemingskans_summary$AanzitduurNum
-
-Waarnemingskans_summary <- waarnemingskans_summary %>%
-  group_by(Jaar) %>%
-  summarize(Aantal = length(Waarnemingskans),
-            Gemiddelde = mean(Waarnemingskans, na.rm=TRUE),
-            sd = sd(Waarnemingskans, na.rm=TRUE),
-            CI = qnorm(0.975)*sd/sqrt(Aantal))
-
+Waarnemingskans_summary <- read.csv("./dashboard/input/F18_3.csv")
 ```
 
 ```{r}
@@ -195,21 +84,7 @@ ggplot(Waarnemingskans_summary,
 
 #F18_4: gemiddelde Waarnemingstijd
 ```{r}
-aanzit_totaal_individueel_waarneming <- aanzit_totaal %>%
-  filter(!is.na(Waarneming_Startuur_dat_cor)) %>%
-  filter(Ree == 0)
-
-aanzit_totaal_individueel_waarneming <- aanzit_totaal_individueel_waarneming %>%
-  group_by(AanzitId, Jaar) %>%
-  summarize(Tijd_eerste_waarneming_aanzit = min (Tijd_eerste_waarneming))
-
-Gem_tijd_waarneming <- aanzit_totaal_individueel_waarneming %>%
-  group_by(Jaar) %>%
-  summarise(Aantal = length(Tijd_eerste_waarneming_aanzit),
-            Gemiddelde = mean(Tijd_eerste_waarneming_aanzit, na.rm=TRUE),
-            sd = sd(Tijd_eerste_waarneming_aanzit, na.rm=TRUE),
-            CI = qnorm(0.975)*sd/sqrt(Aantal))
-
+Gem_tijd_waarneming <- read.csv("./dashboard/input/F18_4.csv")
 ```
 ```{r}
 ggplot(Gem_tijd_waarneming, 

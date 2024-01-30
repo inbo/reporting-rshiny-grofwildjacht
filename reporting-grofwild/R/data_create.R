@@ -318,7 +318,7 @@ createRawData <- function(
     
     if (any(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)])) {
       warning(sum(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)], na.rm = TRUE), 
-        " observaties met gekend aantal embryos wordt op onbekend gezet")
+        " observaties met 'aantal_embryos_onbekend' TRUE terwijl gekend 'aantal_embryos'. Voor deze observaties wordt 'aantal_embryos' op NA (onbekend) gezet.")
       rawData$aantal_embryos[rawData$aantal_embryos_onbekend] <- NA
     }
     

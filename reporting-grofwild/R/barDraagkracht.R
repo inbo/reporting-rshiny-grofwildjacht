@@ -22,6 +22,7 @@
 #' @import plotly
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_lichtgrijs inbo_palette
+#' @importFrom utils head
 #' @export 
 barDraagkracht <- function(data, groupVariable = NULL, 
   xVar = "percentage", yVar = NULL, verticalGroups = FALSE, 
@@ -95,7 +96,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
             text = ~paste("<b>", base::get(groupVariable), "</b><br>", base::get(yVar), "<br>", percentageLabel), 
             textposition = "none",
             type = 'bar', name = ~Antwoord, color = ~Antwoord, colors = myColors, 
-            showlegend = (iVar == groupLevels[[1]] && jVar == secondGroup[1]),
+            showlegend = (iVar == head(groupLevels[[1]], n = 1) && jVar == secondGroup[1]),
             hoverinfo = "text"
           ) %>%
           plotly::layout(

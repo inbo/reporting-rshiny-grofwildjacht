@@ -13,7 +13,7 @@
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
 #' @inheritParams countYearProvince
-#' @inheritParams filterSchade
+#' @inheritParams filterDataSource
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' 
@@ -49,7 +49,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     jaartallen <- unique(data$afschotjaar)
   
   # filter for source
-  allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+  allData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   if (inherits(allData, "sf"))

@@ -50,9 +50,6 @@ tagList(
             uiOutput("schade_warning")
         ),
         
-        
-        h2("Schadegevallen"),
-        
         uiOutput("schade_summary"),
         
         tags$hr()
@@ -70,7 +67,6 @@ tagList(
       
       ## mapFlanders
       mapFlandersUI(id = "schade", 
-        sourceChoices = names(loadMetaSchade()$sources), 
         type = "wildschade", 
         showCombine = FALSE,
         plotDetails = c("flanders", "region")),

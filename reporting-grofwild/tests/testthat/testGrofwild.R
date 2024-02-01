@@ -402,13 +402,22 @@ test_that("Number of embryos (bio-indicator)", {
 
 test_that("The interactive map", {
     
-    for (regionLevel in names(spatialData)[1:5]) {
+    regionLevels <- names(spatialData)[1:5]
+    
+    for (regionLevel in regionLevels) {
+      
+      if (doPrint)
+        print(regionLevel)
       
       for (iSpecies in species) {
+        
+        if (doPrint)
+          print(iSpecies)
         
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
+          biotoopData = biotoopData[[regionLevel]],
           year = 2016,
           species = iSpecies,
           regionLevel = regionLevel,
@@ -439,6 +448,7 @@ test_that("The interactive map", {
   })
 
 
+
 # TREND plots
 
 test_that("Trend plots according with the interactive map", {
@@ -446,10 +456,11 @@ test_that("Trend plots according with the interactive map", {
     for (iSpecies in species) {
       
 #    print(iSpecies)
-      unitChoice <- c("absolute", "relative")[1]
+      unitChoice <- c("absolute", "relative")[2]
       
       trendData <-  createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
+        biotoopData = biotoopData[[regionLevel]],
         allSpatialData = spatialData,
         timeRange = c(2014, 2019),
         species = iSpecies,
@@ -474,6 +485,7 @@ test_that("Trend plots according with the interactive map", {
         
         trendRegionData <- createTrendData(
           data = geoData[geoData$wildsoort == iSpecies, ],
+          biotoopData = biotoopData[[regionLevel]],
           allSpatialData = spatialData,
           timeRange = c(2014, 2019),
           species = iSpecies,

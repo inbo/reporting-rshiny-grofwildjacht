@@ -136,7 +136,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
             data()
           
           # Bron
-          filterSchade(plotData = plotData,
+          filterDataSource(plotData = plotData,
             sourceIndicator = input$bron, returnStop = "message")
           
         })

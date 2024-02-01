@@ -12,7 +12,7 @@
 #' in the plot; if NULL no selection on year(s) is made
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
-#' @inheritParams filterSchade
+#' @inheritParams filterDataSource
 #' @param title character, title prefix; default is NULL
 #' @param width plot width (optional)
 #' @param height plot height (optional)
@@ -44,7 +44,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 		jaartallen <- unique(data$afschotjaar)
 	
   # filter for source
-  plotData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+  plotData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   plotData$locatie <- switch(type,

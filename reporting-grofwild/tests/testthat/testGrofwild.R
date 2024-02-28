@@ -392,6 +392,8 @@ test_that("Number of embryos (bio-indicator)", {
           bioindicator = bioindicator,
           sourceIndicator = c("inbo", "meldingsformulier", "both")[3]
         )
+        expect_s3_class(pl$plot, "plotly")
+        expect_s3_class(pl$data, "data.frame")
 #	print(pl)
       })
     

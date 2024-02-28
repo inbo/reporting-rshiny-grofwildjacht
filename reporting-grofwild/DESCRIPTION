@@ -8,6 +8,7 @@ Description: Data visualization of grof wild in Vlaanderen.
 Version: 0.3.2
 Date: 2024-01-12
 Imports:
+    arrow,
     aws.ec2metadata,
     aws.s3,
     config,
@@ -41,4 +42,4 @@ Suggests:
 Remotes: 
     inbo/INBOtheme
 Encoding: UTF-8
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1

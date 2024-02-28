@@ -5,29 +5,6 @@
 
 
 
-#' Define province based on commune NIS code
-#' @param NISCODE character vector, NIS codes from communes, for which to define province
-#' @inheritParams createSpaceData
-#' @return character vector, same length and order as \code{NISCODE}
-#' with corresponding province for each communeS
-#' @author mvarewyck
-#' @export
-getProvince <- function(NISCODE, allSpatialData) {
-  
-  communeCode <- substr(NISCODE, start = 1, stop = 1)
-  
-  provinceData <- allSpatialData$provinces[, c("NISCODE", "NAAM")]
-  provinceData$NISCODE <- substr(provinceData$NISCODE, start = 1, stop = 1)
-  
-  sapply(communeCode, function(iCode) {
-      
-      if (is.na(iCode))
-        NA else
-        as.character(provinceData[provinceData$NISCODE == iCode, ]$NAAM)
-      
-    })
-  
-}
 
 #' Get display name for region level
 #' @param level character, regionLevel
@@ -110,9 +87,13 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     spatialData <- sf::st_drop_geometry(spatialData)
   
   # Framework for summary data
-  fullData <- if (regionLevel %in% c("communes", "fbz_gemeentes")) {
+  fullData <- if (regionLevel %in% "communes") {
       
-      spatialData[, c("NAAM", "AREA", "NISCODE")]
+      spatialData[, c("NAAM", "AREA", "NISCODE", "provincie")]
+      
+    } else if (regionLevel %in% "fbz_gemeentes") {
+      
+      spatialData[, c("NAAM", "AREA", "provincie")]
       
     } else if (regionLevel == "WBE_buitengrenzen") {
       
@@ -145,21 +126,6 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     return(NULL)
   
   colnames(fullData)[1] <- "locatie"
-  
-  # For communes -> provide corresponding province in downloaded data
-  if (regionLevel %in% c("communes", "fbz_gemeentes")) {
-    
-    fullData$provincie <- getProvince(
-      NISCODE = fullData$NISCODE, 
-      allSpatialData = allSpatialData)
-    
-    # keep NIS for communes data
-    if (regionLevel == "fbz_gemeentes") {
-      fullData$NISCODE <- NULL
-      
-    }
-    
-  }
   
   
   # Select subset for time & species
@@ -897,6 +863,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Which region(s) are selected?
       observe({
           
+          req(spacePlot())
+          
           event <- input$spacePlot_shape_click
           
           if (!is.null(event)) {
@@ -978,6 +946,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       # Plot thick border for selected regions
       observe({
+          
+          req(spacePlot())
           
           if (length(selectedPolygons()) > 0) {
             

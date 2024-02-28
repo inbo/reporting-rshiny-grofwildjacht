@@ -109,7 +109,7 @@ test_that("Loading Data", {
 # Load all data before starting the app - memory usage
     rm(list = ls())
     profvis({
-        source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/reporting-grofwild/inst/ui/app_public/global.R")
+        source(system.file("ui/app_public/global.R", package = "reportingGrofwild"))
       })
     
 # Object sizes

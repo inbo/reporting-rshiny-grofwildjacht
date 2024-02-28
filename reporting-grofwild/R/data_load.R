@@ -44,6 +44,8 @@ loadShapeData <- function(WBE_NR = NULL,
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' 
 #' @return data.frame, loaded data
+#' @importFrom arrow read_parquet
+#' @importFrom sf st_as_sf st_transform
 #' @author mvarewyck
 #' @export
 loadRawData <- function(
@@ -52,19 +54,22 @@ loadRawData <- function(
   
   type <- match.arg(type)
   
-  # For R CMD check
-  rawData <- NULL  
-  
   dataFile <- switch(type,
-          "eco" = "rshiny_reporting_data_ecology_processed.RData",
-          "geo" = "rshiny_reporting_data_geography_processed.RData",
-          "wildschade" = "WildSchade_georef_processed.RData",
-          "kbo_wbe" = "Data_Partij_Cleaned_processed.RData",
-          "waarnemingen" = "waarnemingen_wild_zwijn_processed.RData"
-        )
+      "eco" = "rshiny_reporting_data_ecology_processed.parquet",
+      "geo" = "rshiny_reporting_data_geography_processed.parquet",
+      "wildschade" = "WildSchade_georef_processed.parquet",
+      "kbo_wbe" = "Data_Partij_Cleaned_processed.parquet",
+      "waarnemingen" = "waarnemingen_wild_zwijn_processed.parquet"
+    )
   
-  readS3(file = dataFile, bucket = bucket, envir = environment())
+  rawData <- read_parquet(file = file.path("s3:/", bucket, dataFile))
   
+  if (type %in% c("wildschade")) {
+    # create shape data
+    rawData <- sf::st_as_sf(rawData, coords = c("x", "y"), crs = 31370)
+    rawData <- sf::st_transform(rawData, crs = "+proj=longlat +datum=WGS84")        
+  }
+
   return(rawData)
   
 }

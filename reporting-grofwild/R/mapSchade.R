@@ -31,20 +31,11 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
-                        "schadeCode", "provincie")
+                        "schadeCode", "provincie", "NISCODE", "postcode")
   plotData <- plotData[, colnames(plotData) %in% colnamesToRetain]
   
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
-  
-  # add nis and postcode
-  gemeenteData <- loadGemeentes()
-  
-  plotData$niscode <- gemeenteData$NIS.code[match(plotData$gemeente_afschot_locatie, 
-      gemeenteData$Gemeente)]
-  plotData$postcode <- gemeenteData$Postcode[match(plotData$gemeente_afschot_locatie, 
-      gemeenteData$Gemeente)]
-  
   
   # decrypte schade names
   if (!is.null(fullNames)) {
@@ -134,7 +125,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
     
   
   # re-arrange columns
-  firstColumns <- c("jaar", "locatie", "niscode", "postcode")
+  firstColumns <- c("jaar", "locatie", "NISCODE", "postcode")
   formattedData <- cbind(
                         formatData[na.omit(match(firstColumns, names(formatData)))],
                         formatData[setdiff(names(formatData), firstColumns)]

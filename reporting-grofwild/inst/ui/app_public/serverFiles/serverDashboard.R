@@ -16,8 +16,7 @@ waarnemingenData <- loadRawData(type = "waarnemingen")
 waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
     format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
 
-# add province info to the data
-waarnemingenData <- merge(waarnemingenData,geoDictionary, all.x = TRUE, by = "gemeente_afschot_locatie")
+
 # Combine waarnemingen.be & afschot
 everGeoAll <- rbind(
   # waarnemingen

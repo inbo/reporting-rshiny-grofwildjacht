@@ -58,7 +58,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   
   # include all provinces/fbz
   fullData <- expand.grid(
-      unique(tableData[, variable]),
+      unique(tableData[[variable]]),
       locatie = levelsLocatie
           )
   names(fullData)[1] <- variable

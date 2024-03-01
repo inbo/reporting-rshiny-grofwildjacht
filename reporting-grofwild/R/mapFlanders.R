@@ -89,7 +89,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # Framework for summary data
   fullData <- if (regionLevel %in% "communes") {
       
-      spatialData[, c("NAAM", "AREA", "NISCODE", "provincie")]
+      spatialData[, c("NAAM", "AREA", "NISCODE", "provincie", "postcode")]
       
     } else if (regionLevel %in% "fbz_gemeentes") {
       
@@ -282,18 +282,11 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   summaryData2$AREA <- NULL
   summaryData2$wildsoort <- paste(species, collapse = ", ")
   
-  # Add (hoofd)postcode
+  # Re-arrange colums
   if (regionLevel == "communes") {
     
-    gemeenteData <- loadGemeentes()
-    
-    summaryData2$postcode <- gemeenteData$Postcode[match(summaryData2$NISCODE, gemeenteData$NIS.code)]
-    names(summaryData2)[names(summaryData2) == "NISCODE"] <- "niscode"
-    
-    # re-arrange columns 
-    summaryData2 <- summaryData2[c(c("locatie", "niscode", "postcode"), 
-        setdiff(names(summaryData2), c("locatie", "niscode", "postcode")))]
-    
+    summaryData2 <- summaryData2[c(c("locatie", "NISCODE", "postcode"), 
+        setdiff(names(summaryData2), c("locatie", "NISCODE", "postcode")))]
     
   }
   

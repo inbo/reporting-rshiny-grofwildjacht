@@ -14,6 +14,26 @@ geoData <- loadRawData(type = "geo")
 biotoopData <- loadHabitats()
 
 
+
+
+
+test_that("Single province per municipality", {
+    
+    skip("GIT issue #456")
+
+    tmp <- sapply(split(geoData, geoData$gemeente_afschot_locatie), function(iData) {
+        if (length(unique(iData$provincie)) > 1) {
+          cat("\n\n", unique(iData$gemeente_afschot_locatie), "\n")
+          print(xtabs(~ iData$provincie + iData$afschotjaar, drop.unused.levels = TRUE))
+        }
+      })
+    
+    expect_true(all(sapply(tmp, is.null)))
+
+})
+
+
+
 test_that("Load grofwild data", {
     
     expect_equal(nrow(ecoData), nrow(geoData))

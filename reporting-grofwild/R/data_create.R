@@ -213,10 +213,12 @@ createShapeData <- function(
     stop("Sommige NIS codes in shape data zijn niet gekend voor matching\n",
       "Gelieve het referentiebestand gemeentecodes.csv aan te vullen")
   
-  # Add provincie for communes and fbz_gemeentes
+  # Add provincie/postcode for communes and fbz_gemeentes
   spatialData$communes$provincie <- getProvince(
     NISCODE = spatialData$communes$NISCODE,
     allSpatialData = spatialData)
+  spatialData$communes$postcode <- gemeenteData$Postcode[
+    match(spatialData$communes$NISCODE, gemeenteData$NIS.code)]
   spatialData$fbz_gemeentes$provincie <- getProvince(
     NISCODE = spatialData$fbz_gemeentes$NISCODE,
     allSpatialData = spatialData)
@@ -401,6 +403,7 @@ createRawData <- function(
     # Match on NISCODE: otherwise mismatch with spatialData locatie
     rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
       match(rawData$NISCODE, gemeenteData$NIS.code)] 
+    rawData$postcode <- gemeenteData$Postcode[match(rawData$NISCODE, gemeenteData$NIS.code)]
     
     # Remove Voeren as province
     rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
@@ -440,8 +443,8 @@ createRawData <- function(
     
   } else if (type == "waarnemingen") {
     
-    rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
-    colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
+    rawData <- rawData[, c("jaar", "NAAM", "provincie", "TAG", "aantal")]
+    colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "provincie", "UTM5", "aantal") 
     
     rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
     

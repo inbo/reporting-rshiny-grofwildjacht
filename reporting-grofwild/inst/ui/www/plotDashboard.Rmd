@@ -4,90 +4,101 @@ allParams <- c("time", "period", "trendPeriod", "year",
   "regionLevel", "bronMap", "trendUnit", 
   "summarizeBy", "typeMelding", "unit", "bron", "sectorUsers")
 
-params <- dash_results[[paste0("dash_", id)]]()
-currentParams <- names(params)
 
-# Title
-myTitle <- names(base::get(paste0("dash_titles", section))())[
-  base::get(paste0("dash_titles", section))() == id]
-cat("##", myTitle, "\n\n")
+tryCatch({
+    
+    # Title
+    myTitle <- names(base::get(paste0("dash_titles", section))())[
+      base::get(paste0("dash_titles", section))() == id]
+    cat("##", myTitle, "\n\n")
+    
+    # Disclaimer
+    if (grepl("\\*", myTitle))
+      cat("\\textit{", getDisclaimerLimited(doHTML = FALSE), "}\n\n")
+    
+    # Parameters
+    params <- dash_results[[paste0("dash_", id)]]()
+    currentParams <- names(params)
+    
+    if (any(allParams %in% currentParams)) {
+      
+      cat("**Parameters**\n\n")
+      if ("summarizeBy" %in% currentParams)
+        cat("- Rapporteer:", switch(params$summarizeBy,
+            count = "Aantal (alle data)",
+            percent = "Percentage (enkel ingezamelde onderkaken)"), "\n\n")
+      if (any(c("time", "period", "trendPeriod") %in% currentParams))
+        cat("- Periode:", paste(params[[
+              c("time", "period", "trendPeriod")[which(c("time", "period", "trendPeriod") %in% currentParams)]]],
+            collapse = " tot "), "\n\n")
+      if ("regionLevel" %in% currentParams)
+        cat("- Regio-schaal:", getRegionLevel(params$regionLevel), "\n\n")
+      if ("year" %in% currentParams)
+        cat("- Geselecteerd Jaar:", params$year, "\n\n")
+      if ("bronMap" %in% currentParams)
+        cat("- Data Bron:", paste(params$bronMap, collapse = ", "), "\n\n")
+      if ("trendUnit" %in% currentParams)
+        cat("- Eenheid:", switch(params$trendUnit,
+            "absolute" = "Aantal", 
+            "relative" = "Aantal/100ha", 
+            "relativeDekking" = "Aantal/100ha bos & natuur",
+            params$trendUnit), "\n\n")
+      if ("typeMelding" %in% currentParams)
+        cat("- Type schade:", switch(params$typeMelding,
+            "verkeersongeluk" = "Verkeer",
+            "landbouw" = "Landbouw", 
+            "private en publieke gebieden" = "Private en publieke gebieden",
+            "all" = "Alle"), "\n\n")
+      if ("unit" %in% currentParams)
+        cat("- Groep per:", switch(params$unit,
+            "season" = "Seizoen",
+            params$unit), "\n\n")
+      if ("bron" %in% currentParams)
+        cat("- Data bron:", paste(params$bron, collapse = ", "), "\n\n")
+      if ("sectorUsers" %in% currentParams)
+        cat(if ("sectorMain" %in% currentParams) paste0("- ", switch(params$sectorMain,
+                  stakeholders = "Stakeholders",
+                  public = "Publiek"), ":") else "- Stakeholders:", 
+          paste(params$sectorUsers, collapse = ", "), "\n\n")
+      if ("combinatie" %in% currentParams)
+        cat("- Combineer alle geselecteerde regio's:", c("nee", "ja")[as.numeric(params$combinatie) + 1], "\n\n")
+      
+    }
+    
+    
+    # Description
+    print(HTML(decodeText(text = uiText[uiText$plotFunction == id, "dash"], statsMap = params$statsMap)))
+    
+    
+    if (is(params$plot, "leaflet")) {
+      
+      # leaflet
+      tmpFile <- tempfile(fileext = ".html")
+      htmlwidgets::saveWidget(params$plot, file = tmpFile, selfcontained = FALSE)
+      webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+      
+    } else if (is(params$plot, "plotly")) {
+      
+      # plotly
+      tmp <- plotlyReport(params$plot)
+      
+      # plot size
+      if (id %in% c("F14_3", "F14_5")) {
+        tmp$height <- "1200px"
+        tmp$width <- "900px"
+      } else if (id == "F14_4") {
+        tmp$height <- "800px"
+        tmp$width <- "900px"
+      } else if (id %in% c("F14_1", "F14_2")) {
+        tmp$height <- "450px"
+        tmp$width <- "900px"        
+      }
+      tmp
+      
+    }
+    
+  }, error = function(err) cat(err$message, "\n\n"))
 
-# Disclaimer
-if (grepl("\\*", myTitle))
-  cat("\\textit{", getDisclaimerLimited(doHTML = FALSE), "}\n\n")
-
-# Parameters
-if (any(allParams %in% currentParams)) {
-  
-  cat("**Parameters**\n\n")
-  if ("summarizeBy" %in% currentParams)
-    cat("- Rapporteer:", switch(params$summarizeBy,
-        count = "Aantal (alle data)",
-        percent = "Percentage (enkel ingezamelde onderkaken)"), "\n\n")
-  if (any(c("time", "period", "trendPeriod") %in% currentParams))
-    cat("- Periode:", paste(params[[
-          c("time", "period", "trendPeriod")[which(c("time", "period", "trendPeriod") %in% currentParams)]]],
-        collapse = " tot "), "\n\n")
-  if ("regionLevel" %in% currentParams)
-    cat("- Regio-schaal:", getRegionLevel(params$regionLevel), "\n\n")
-  if ("year" %in% currentParams)
-    cat("- Geselecteerd Jaar:", params$year, "\n\n")
-  if ("bronMap" %in% currentParams)
-    cat("- Data Bron:", paste(params$bronMap, collapse = ", "), "\n\n")
-  if ("trendUnit" %in% currentParams)
-    cat("- Eenheid:", switch(params$trendUnit,
-        "absolute" = "Aantal", 
-        "relative" = "Aantal/100ha", 
-        "relativeDekking" = "Aantal/100ha bos & natuur",
-        params$trendUnit), "\n\n")
-  if ("typeMelding" %in% currentParams)
-    cat("- Type schade:", switch(params$typeMelding,
-        "verkeersongeluk" = "Verkeer",
-        "landbouw" = "Landbouw", 
-        "private en publieke gebieden" = "Private en publieke gebieden",
-        "all" = "Alle"), "\n\n")
-  if ("unit" %in% currentParams)
-    cat("- Groep per:", switch(params$unit,
-        "season" = "Seizoen",
-        params$unit), "\n\n")
-  if ("bron" %in% currentParams)
-    cat("- Data bron:", paste(params$bron, collapse = ", "), "\n\n")
-  if ("sectorUsers" %in% currentParams)
-    cat(if ("sectorMain" %in% currentParams) paste0("- ", switch(params$sectorMain,
-            stakeholders = "Stakeholders",
-            public = "Publiek"), ":") else "- Stakeholders:", 
-      paste(params$sectorUsers, collapse = ", "), "\n\n")
-  if ("combinatie" %in% currentParams)
-    cat("- Combineer alle geselecteerde regio's:", c("nee", "ja")[as.numeric(params$combinatie) + 1], "\n\n")
-  
-}
-
-# Description
-print(HTML(decodeText(text = uiText[uiText$plotFunction == id, "dash"], statsMap = params$statsMap)))
-  
-# Plot
-if (is(dash_results[[paste0("dash_", id)]]()$plot, "leaflet")) {
-  # leaflet
-  tmpFile <- tempfile(fileext = ".html")
-  htmlwidgets::saveWidget(dash_results[[paste0("dash_", id)]]()$plot, file = tmpFile, selfcontained = FALSE)
-  webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
-} else {
-  # plotly
-  tmp <- plotlyReport(dash_results[[paste0("dash_", id)]]()$plot)
-  
-  # plot size
-  if (id %in% c("F14_3", "F14_5")) {
-    tmp$height <- "1200px"
-    tmp$width <- "900px"
-  } else if (id == "F14_4") {
-    tmp$height <- "800px"
-    tmp$width <- "900px"
-  } else if (id %in% c("F14_1", "F14_2")) {
-    tmp$height <- "450px"
-    tmp$width <- "900px"        
-  }
-  tmp
-}
 
 cat("\\newpage")
 ```

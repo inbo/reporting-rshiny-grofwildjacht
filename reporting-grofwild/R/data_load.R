@@ -64,15 +64,11 @@ loadRawData <- function(
   
   rawData <- read_parquet(file = file.path("s3:/", bucket, dataFile))
   
-  if (type %in% c("wildschade")) {
-    # create shape data
-    rawData <- sf::st_as_sf(rawData, coords = c("x", "y"), crs = 31370)
-    rawData <- sf::st_transform(rawData, crs = "+proj=longlat +datum=WGS84")        
-  }
-
   return(rawData)
   
 }
+
+
 
 
 #' Read gemeentes data

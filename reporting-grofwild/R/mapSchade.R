@@ -31,7 +31,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
-                        "schadeCode", "provincie", "NISCODE", "postcode")
+                        "schadeCode", "provincie", "NISCODE", "postcode", "x", "y")
   plotData <- plotData[, colnames(plotData) %in% colnamesToRetain]
   
   # filter cases by timeRange
@@ -44,6 +44,11 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     plotData$schadeCode <- names(fullNames)[match(plotData$schadeCode, fullNames)]
     
   }
+  
+  # Create spatial object
+  plotData <- sf::st_as_sf(plotData, coords = c("x", "y"), crs = 31370)
+  plotData <- sf::st_transform(plotData, crs = "+proj=longlat +datum=WGS84")        
+    
   
   plotData
 }

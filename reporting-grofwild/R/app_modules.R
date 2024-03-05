@@ -738,50 +738,55 @@ plotModuleServer <- function(input, output, session, plotFunction,
 #' @return ui object (tagList)
 #' @importFrom sf st_drop_geometry
 #' @export
-dataModuleServer <- function(input, output, session, data, variable, fullNames = NULL) {
+dataModuleServer <- function(id, data, variable, fullNames = NULL) {
   
-  
-  freqTable <- reactive({
-        
-      req(data())
-      validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
+  moduleServer(id,
+    function(input, output, session) {
       
-        myTable <- as.data.frame(table(sf::st_drop_geometry(data())[, variable]), stringsAsFactors = FALSE)
-        if (nrow(myTable) == 0)
-          return(NULL)
-        myTable <- myTable[rev(order(myTable$Freq)), ]
-        
-        if (nrow(myTable) == 0)
-          return(NULL)
-        
-        variableLabel <- switch(variable,
+      
+      freqTable <- reactive({
+          
+          req(data())
+          validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
+          
+          myTable <- as.data.frame(table(sf::st_drop_geometry(data())[, variable]), stringsAsFactors = FALSE)
+          if (nrow(myTable) == 0)
+            return(NULL)
+          myTable <- myTable[rev(order(myTable$Freq)), ]
+          
+          if (nrow(myTable) == 0)
+            return(NULL)
+          
+          variableLabel <- switch(variable,
             wildsoort = "Wildsoort",
             schadeBasisCode = "Type Schade",
             schadeCode = "Type Subschade",
             SoortNaam = "Gewas")
-        
-        colnames(myTable) <- c(variableLabel, "Aantal")
-        if (!is.null(fullNames))
-          myTable[, variableLabel] <- names(fullNames)[match(myTable[, variableLabel], fullNames)]
-        
-        myTable
-        
-      })
-  
-  # Frequency table
-  output$table <- DT::renderDataTable({
-        
-        validate(need(freqTable(), "Geen data beschikbaar"))
-        DT::datatable(freqTable(), rownames = FALSE,
+          
+          colnames(myTable) <- c(variableLabel, "Aantal")
+          if (!is.null(fullNames))
+            myTable[, variableLabel] <- names(fullNames)[match(myTable[, variableLabel], fullNames)]
+          
+          myTable
+          
+        })
+      
+      # Frequency table
+      output$table <- DT::renderDT({
+          
+          validate(need(freqTable(), "Geen data beschikbaar"))
+          DT::datatable(freqTable(), rownames = FALSE,
             options = list(dom = 't', pageLength = -1))
-        
-      })
-  
-  # Total number of records
-  output$total <- renderUI({
-        
-        req(freqTable())
-        helpText("Totaal:", sum(freqTable()$Aantal))
-      })    
+          
+        })
+      
+      # Total number of records
+      output$total <- renderUI({
+          
+          req(freqTable())
+          helpText("Totaal:", sum(freqTable()$Aantal))
+        })
+      
+    })
   
 }

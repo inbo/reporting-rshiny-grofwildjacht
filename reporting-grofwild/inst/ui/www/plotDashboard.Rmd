@@ -4,12 +4,12 @@ allParams <- c("time", "period", "trendPeriod", "year",
   "regionLevel", "bronMap", "trendUnit", 
   "summarizeBy", "typeMelding", "unit", "bron", "sectorUsers")
 
-params <- results[[paste0("dash_", id)]]()
+params <- dash_results[[paste0("dash_", id)]]()
 currentParams <- names(params)
 
 # Title
-myTitle <- names(results[[paste0("dash_titles", section)]]())[
-  results[[paste0("dash_titles", section)]]() == id]
+myTitle <- names(base::get(paste0("dash_titles", section))())[
+  base::get(paste0("dash_titles", section))() == id]
 cat("##", myTitle, "\n\n")
 
 # Disclaimer
@@ -66,14 +66,14 @@ if (any(allParams %in% currentParams)) {
 print(HTML(decodeText(text = uiText[uiText$plotFunction == id, "dash"], statsMap = params$statsMap)))
   
 # Plot
-if (is(results[[paste0("dash_", id)]]()$plot, "leaflet")) {
+if (is(dash_results[[paste0("dash_", id)]]()$plot, "leaflet")) {
   # leaflet
   tmpFile <- tempfile(fileext = ".html")
-  htmlwidgets::saveWidget(results[[paste0("dash_", id)]]()$plot, file = tmpFile, selfcontained = FALSE)
+  htmlwidgets::saveWidget(dash_results[[paste0("dash_", id)]]()$plot, file = tmpFile, selfcontained = FALSE)
   webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 } else {
   # plotly
-  tmp <- plotlyReport(results[[paste0("dash_", id)]]()$plot)
+  tmp <- plotlyReport(dash_results[[paste0("dash_", id)]]()$plot)
   
   # plot size
   if (id %in% c("F14_3", "F14_5")) {

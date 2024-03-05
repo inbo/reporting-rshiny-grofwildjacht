@@ -23,7 +23,9 @@
 #' \code{shiny::wellPanel()}
 #' @param showCategorie boolean, if TRUE gives user option to select categorie
 #' @param showInterval boolean, if TRUE gives user option to select interval
+#' 
 #' @return ui object (tagList)
+#' @importFrom shinyjs hidden
 #' @export
 optionsModuleUI <- function(id, 
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
@@ -37,6 +39,7 @@ optionsModuleUI <- function(id,
   
   ns <- NS(id)
   
+  sourcesSchade <- loadMetaSchade()$sources
   
   toReturn <- tagList(
       
@@ -60,19 +63,43 @@ optionsModuleUI <- function(id,
             column(8, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
-        uiOutput(ns("dataSourceSchade")),
+        selectInput(inputId = ns("dataSource_schade"), 
+          label = "Data bron",
+          choices = names(sourcesSchade),
+          multiple = TRUE),
       if ("onderkaak" %in% showDataSource)
-        uiOutput(ns("dataSourceOnderkaak")),
+        selectInput(inputId = ns("dataSource_onderkaak"), 
+          label = "Data bron voor onderkaaklengte",
+          choices = c("INBO" = "inbo", 
+            "Meldingsformulier" = "meldingsformulier",  
+            "INBO en meldingsformulier" = "both"),
+          selected = "both"
+        ),
       if ("embryos" %in% showDataSource)
         list(
-          uiOutput(ns("dataSourceEmbryos")),
-          uiOutput(ns("dataSourceWarning"))
+          selectInput(inputId = ns("dataSource_embryos"), 
+            label = "Data bron voor aantal embryo's", 
+            choices = c("INBO" = "inbo", 
+              "Meldingsformulier" = "meldingsformulier",  
+              "INBO en meldingsformulier" = "both"),
+            selected = "both"
+          ),
+          shinyjs::hidden(tags$div(id = "dataSource_warning", style = "margin-bottom:10px;",
+              helpText("Observaties", HTML("v&#x00F3;&#x00F3;r"), "2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
+            ))
         ),
       if ("leeftijd" %in% showDataSource)
-        uiOutput(ns("dataSourceLeeftijd")),
+        selectInput(inputId = ns("dataSource_leeftijd"), 
+          label = "Data bron leeftijd", 
+          choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
+          selected = "both"
+        ),
       if ("geslacht" %in% showDataSource)
-        uiOutput(ns("dataSourceGeslacht")),
-      
+        selectInput(inputId = ns("dataSource_geslacht"), 
+          label = "Data bron geslacht", 
+          choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
+          selected = "both"
+        ),      
       if(showInterval)
         uiOutput(ns("interval")),
       if(showCategorie)
@@ -109,7 +136,9 @@ optionsModuleUI <- function(id,
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
 #' @param intervals character vector, defines the choices for interval
 #' @param categories character vector, defines the choices for categorie 
+#' 
 #' @return no return value; some output objects are created
+#' @importFrom shinyjs toggle
 #' @export
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
@@ -122,7 +151,6 @@ optionsModuleServer <- function(input, output, session,
   
   results <- reactiveValues()
   
-  sourcesSchade <- loadMetaSchade()$sources
   
   output$time <- renderUI({
       
@@ -160,7 +188,7 @@ optionsModuleServer <- function(input, output, session,
         
         newMin <- min(subData$afschotjaar)
         
-        if (results$minTime != newMin) {
+        if (req(results$minTime) != newMin) {
           
           results$minTime <- newMin
           currentTime <- input$time
@@ -268,68 +296,11 @@ optionsModuleServer <- function(input, output, session,
       
     })  
   
-  output$dataSourceSchade <- renderUI({
+   
+  observe({
         
-        selectInput(inputId = ns("dataSource_schade"), 
-            label = "Data bron",
-            choices = names(sourcesSchade),
-            multiple = TRUE)
-        
-      })
-    
-    output$dataSourceLeeftijd <- renderUI({
-        
-        selectInput(inputId = ns("dataSource_leeftijd"), 
-          label = "Data bron leeftijd", 
-          choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
-          selected = "both"
-        )
-        
-      })
-    
-    output$dataSourceGeslacht <- renderUI({
-        
-        selectInput(inputId = ns("dataSource_geslacht"), 
-          label = "Data bron geslacht", 
-          choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
-          selected = "both"
-        )
-        
-      })
-    
-    output$dataSourceOnderkaak <- renderUI({
-        
-        selectInput(inputId = ns("dataSource_onderkaak"), 
-          label = "Data bron voor onderkaaklengte",
-          choices = c("INBO" = "inbo", 
-            "Meldingsformulier" = "meldingsformulier",  
-            "INBO en meldingsformulier" = "both"),
-          selected = "both"
-        )
-        
-      })
-    
-    output$dataSourceEmbryos <- renderUI({
-        
-        selectInput(inputId = ns("dataSource_embryos"), 
-          label = "Data bron voor aantal embryo's", 
-          choices = c("INBO" = "inbo", 
-            "Meldingsformulier" = "meldingsformulier",  
-            "INBO en meldingsformulier" = "both"),
-          selected = "both"
-        )
-        
-      })
-  
-  output$dataSourceWarning <- renderUI({
-        
-        req(input$dataSourceEmbryos)
-        
-        if (input$dataSourceEmbryos %in% c("both", "meldingsformulier"))
-          tags$div(style = "margin-bottom:10px;",
-              helpText("Observaties", HTML("v&#x00F3;&#x00F3;r"), "2014 afkomstig van het meldingsformulier met nul embryo's zijn niet opgenomen in de figuur.")
-          )
-        
+        shinyjs::toggle(id = "dataSource_warning", 
+          condition = input$dataSourceEmbryos %in% c("both", "meldingsformulier"))
         
       })
   

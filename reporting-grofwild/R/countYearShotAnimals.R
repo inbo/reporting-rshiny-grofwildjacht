@@ -42,7 +42,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   # Select on years & type
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
       c("afschotjaar", "afschot_datum", groupVariable, "leeftijd_comp_bron")]
-  if (!is.null(type) && type != "all")
+  if (!is.null(type) && !all(type == "all"))
     plotData <- plotData[plotData[, groupVariable] %in% c(type, "Onbekend"), ] #include onbekend for nRecords
   nRecords <- nrow(plotData)
     
@@ -52,7 +52,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   if (groupVariable == "leeftijd_comp_inbo")
     plotData <- filterGrofwild(plotData = plotData, 
       sourceIndicator_leeftijd = sourceIndicator_leeftijd)
-  if (!is.null(type) && type != "all") ## only retains animals of specified type
+  if (!is.null(type) && !all(type == "all")) ## only retains animals of specified type
     plotData <- plotData[plotData[, groupVariable] %in% type, ]
   plotData$leeftijd_comp_bron <- NULL
   

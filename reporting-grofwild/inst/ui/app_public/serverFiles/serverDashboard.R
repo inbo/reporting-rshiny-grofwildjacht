@@ -381,7 +381,7 @@ dash_drukjachtData <- reactive({
   })
 
 dash_results$dash_F04_3 <- countYearProvinceServer(id = "dash", 
-  data = results$dash_drukjachtData,
+  data = dash_drukjachtData,
   timeRange = reactive(range(dash_drukjachtData()$afschotjaar)),
   title = reactive(paste("FIGUUR:", names(dash_titlesJacht()[dash_titlesJacht() == "F04_3"])))
 )

@@ -65,7 +65,7 @@ optionsModuleUI <- function(id,
       if ("schade" %in% showDataSource)
         selectInput(inputId = ns("dataSource_schade"), 
           label = "Data bron",
-          choices = names(sourcesSchade),
+          choices = sourcesSchade,
           multiple = TRUE),
       if ("onderkaak" %in% showDataSource)
         selectInput(inputId = ns("dataSource_onderkaak"), 
@@ -191,7 +191,7 @@ optionsModuleServer <- function(input, output, session,
         if (req(results$minTime) != newMin) {
           
           results$minTime <- newMin
-          currentTime <- input$time
+          currentTime <- req(input$time)
           
           if (currentTime[2] < newMin) 
             currentTime[2] <- newMin

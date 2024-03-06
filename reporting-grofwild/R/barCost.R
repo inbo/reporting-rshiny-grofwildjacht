@@ -206,8 +206,8 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
                 choices = typeMelding),
             uiOutput(ns("unitChoices")),
             selectInput(inputId = ns("bron"), label = "Data bron",
-              choices = names(metaSchade$sources),
-              selected = names(metaSchade$sources),
+              choices = metaSchade$sources,
+              selected = metaSchade$sources,
               multiple = TRUE),
             optionsModuleUI(id = ns("barCost"), exportData = TRUE, doWellPanel = FALSE)
           ),

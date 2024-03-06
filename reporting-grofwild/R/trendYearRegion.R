@@ -72,11 +72,19 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   # Summarize data over years
   summaryData <- plyr::count(df = plotData, vars = names(plotData))
   
-  # Add names & times with 0 observations
-  fullData <- cbind(expand.grid(
-      afschotjaar = chosenTimes,
-      locatie = if (!is.null(matchLocaties)) 
-          matchLocaties$PartijNummer else unique(spatialData$NAAM)))
+   # Add names & times with 0 observations
+  if (!is.null(matchLocaties)) {
+    fullData <- cbind(expand.grid(
+        afschotjaar = chosenTimes,
+        locatie = matchLocaties$PartijNummer)) 
+  } else {
+    selectCols <- if (regionLevel == "communes")
+      c("YEAR", "NAAM", "NISCODE", "postcode") else
+      c("YEAR", "NAAM")
+    fullData <- spatialData[, selectCols]
+    colnames(fullData)[1:2] <- c("afschotjaar", "locatie")
+  }
+ 
   
   if (unit %in% c("relative", "relativeDekking")) {
     
@@ -104,23 +112,13 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   
   allData$afschotjaar <- as.factor(allData$afschotjaar)
   allData$wildsoort <- paste(species, collapse = ", ")
-  
-  
+  allData <- allData[order(allData$afschotjaar), ]
+
+  # order columns and rows
   if (regionLevel == "communes") {
     
-    # NOTE: match returns FIRST match, so gemeentecodes.csv should be correctly sorted
-    # in orde to obtain HOOFDpostcode. 
-    gemeenteData <- loadGemeentes()
-    
-    # Match gemeente NAAM to niscode and (hoofd)postcode
-    allData$niscode <- gemeenteData$NIS.code[match(allData$locatie, gemeenteData$Gemeente)]
-    allData$postcode <- gemeenteData$Postcode[match(allData$locatie, gemeenteData$Gemeente)]
-    
-    # order columns and rows
-    allData <- allData[order(allData$afschotjaar),]
-    allData <- allData[c("afschotjaar", "locatie", "niscode", "postcode", 
-        setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
-    
+    allData <- allData[c("afschotjaar", "locatie", "NISCODE", "postcode", 
+        setdiff(names(allData), c("afschotjaar", "locatie", "NISCODE", "postcode")))]
     
   } else if (regionLevel == "WBE_buitengrenzen") {
     

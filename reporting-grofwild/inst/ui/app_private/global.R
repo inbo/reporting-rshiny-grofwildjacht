@@ -21,9 +21,6 @@ addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 #defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 defaultYear <- as.numeric(format(Sys.Date(), "%Y")) - 1
 
-# create temp html file to store grofwild landkaart
-outTempFileName <- tempfile(fileext = ".html")
-
 
 ### Debugging
 ### -----------

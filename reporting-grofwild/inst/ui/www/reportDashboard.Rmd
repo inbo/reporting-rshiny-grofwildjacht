@@ -43,7 +43,7 @@ biotoopLocaties <- if (req(input$dash_regionLevel) == "flanders")
 incProgress(amount = 0.1, detail = "Achtergrondinformatie")
 
 tmpFile <- tempfile(fileext = ".html")
-htmlwidgets::saveWidget(results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
+htmlwidgets::saveWidget(dash_results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
 webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 ```
 
@@ -89,11 +89,12 @@ cat(unlist(childOutput), sep = '\n')
 ```
 
 
-```{r popKencijfer, eval = !is.null(results$dash_showPopulatie()), results = "asis"}
+```{r popKencijfer, eval = ("F18_8" %in% results$dash_showPopulatie()), results = "asis"}
 cat("\\newpage")
 cat("## Tabel kencijfer\n")
 
-resTable <- results[["dash_F18_8"]]()[["table"]]
+kencijferResult <- dash_results[["dash_F18_8"]]()
+resTable <- kencijferResult$table
 
 resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
 resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
@@ -102,10 +103,10 @@ rownames(resTable) <- NULL
 cityList <-   na.omit(resTable[,"municipality"])
 
 
-colorList <- ifelse((cityList %in% results$res()$observed) & (! cityList %in% results$res()$shot),
+colorList <- ifelse((cityList %in% kencijferResult$observed) & (! cityList %in% kencijferResult$shot),
                     "#ef8a62",
                     ifelse(
-                      (cityList %in% results$res()$observed) & ( cityList %in% results$res()$shot), 
+                      (cityList %in% kencijferResult$observed) & ( cityList %in% kencijferResult$shot), 
                       "transparent", "#67a9cf") )
 
 names(colorList) <- cityList

@@ -3,7 +3,8 @@
 # Author: mvarewyck
 ###############################################################################
 
-
+gewasChoices <- metaSchade$codes[["GEWAS"]]
+voertuigChoices <- metaSchade$codes[["VRTG"]]
 
 tagList(
     
@@ -45,12 +46,37 @@ tagList(
                     )),
                 
                 # Select gewas & voertuig
-                column(4, uiOutput("schade_subcode"))
+                column(4, 
+                  shinyjs::hidden(
+                    selectInput(inputId = "schade_gewas", label = "Filter Gewas Schade",
+                      choices = gewasChoices,
+                      selected = gewasChoices,
+                      multiple = TRUE,
+                      width = "100%"
+                    )),
+                  shinyjs::hidden(
+                    selectInput(inputId = "schade_voertuig", label = "Filter Voertuig Schade",
+                      choices = voertuigChoices,
+                      selected = voertuigChoices,
+                      multiple = TRUE,
+                      width = "100%"
+                    ))
+                )
             ),
             uiOutput("schade_warning")
         ),
         
-        uiOutput("schade_summary"),
+        shinyjs::hidden(tags$div(id = "schade_summary",
+          h2("Schadegevallen"),
+          fixedRow(
+            column(4, tableModuleUI(id = "wildsoort", includeTotal = TRUE)),
+            column(4, tableModuleUI(id = "schade", includeTotal = TRUE)),
+            conditionalPanel("input.schade_code.includes('GEWAS') || input.schade_code.includes('VRTG')", 
+              column(4, tableModuleUI(id = "subschade",
+                  includeTotal = TRUE))
+            )
+          )
+        )),
         
         tags$hr()
         

@@ -38,6 +38,7 @@ test_that("List available files", {
     # List all available files on the S3 bucket
     tmpTable <- aws.s3::get_bucket_df(
       bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
+    tmpTable <- tmpTable[order(as.numeric(tmpTable$Size), decreasing = TRUE), ]
 #    write.csv(tmpTable, file = file.path(system.file("extdata", package = "reportingGrofwild"), "tmpTable.csv"))
     # unique(tmpTable$Key)
     

@@ -60,7 +60,7 @@ boxAgeWeight <- function(data,
     "leeftijd_comp_bron", "geslacht_comp_bron")
   
   leeftijdVar <- if (sourceIndicator_leeftijd == "inbo") "leeftijd_comp_inbo" else "leeftijd_comp" 
-  plotData <- plotData[plotData[, leeftijdVar] %in% c(type, "Onbekend"), ]  # to calculate nRecords
+  plotData <- plotData[plotData[[leeftijdVar]] %in% c(type, "Onbekend"), ]  # to calculate nRecords
   
   # Percentage collected
 	nRecords <- nrow(plotData)

@@ -14,6 +14,26 @@ geoData <- loadRawData(type = "geo")
 biotoopData <- loadHabitats()
 
 
+
+
+
+test_that("Single province per municipality", {
+    
+    skip("GIT issue #456")
+
+    tmp <- sapply(split(geoData, geoData$gemeente_afschot_locatie), function(iData) {
+        if (length(unique(iData$provincie)) > 1) {
+          cat("\n\n", unique(iData$gemeente_afschot_locatie), "\n")
+          print(xtabs(~ iData$provincie + iData$afschotjaar, drop.unused.levels = TRUE))
+        }
+      })
+    
+    expect_true(all(sapply(tmp, is.null)))
+
+})
+
+
+
 test_that("Load grofwild data", {
     
     expect_equal(nrow(ecoData), nrow(geoData))
@@ -392,6 +412,8 @@ test_that("Number of embryos (bio-indicator)", {
           bioindicator = bioindicator,
           sourceIndicator = c("inbo", "meldingsformulier", "both")[3]
         )
+        expect_s3_class(pl$plot, "plotly")
+        expect_s3_class(pl$data, "data.frame")
 #	print(pl)
       })
     
@@ -460,7 +482,7 @@ test_that("Trend plots according with the interactive map", {
       
       trendData <-  createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
-        biotoopData = biotoopData[[regionLevel]],
+        biotoopData = biotoopData$flanders,
         allSpatialData = spatialData,
         timeRange = c(2014, 2019),
         species = iSpecies,

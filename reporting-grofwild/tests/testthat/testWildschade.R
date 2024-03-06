@@ -39,12 +39,7 @@ test_that("Number of cases per region level", {
       for (iSpecies in species) {
         
         spaceData <- createSpaceData(
-          data = {
-            tmpData <- sf::st_drop_geometry(schadeData)
-            tmpData$dataSource <- tmpData$indieningType
-            tmpData$indieningType <- NULL
-            tmpData
-          }, 
+          data = schadeData, 
           allSpatialData = spatialData,
           year = 2020,
           species = iSpecies,

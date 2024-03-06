@@ -42,7 +42,6 @@ shinyUI(
                                 fluid = FALSE, 
                                 id = "tabs",
                                 position = "fixed-top",
-                                selected = if (doDebug) "Dashboard",
                                 
                                 # Main content
                                 tabPanel(title = "Grofwild", id = "tab-grofwild",

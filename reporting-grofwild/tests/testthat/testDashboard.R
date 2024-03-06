@@ -18,6 +18,12 @@ schadeData <- schadeData[schadeData$wildsoort == "Wild zwijn", ]
 
 readS3(file = "spatialData_sf.RData")
 
+waarnemingenData <- loadRawData(type = "waarnemingen")
+# Restrict all to same date
+waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
+    format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
+
+
 biotoopData <- loadHabitats()
 
 
@@ -81,7 +87,7 @@ test_that("F17_1", {
     
     everGeoAll <- rbind(
       # waarnemingen
-      readS3(FUN = data.table::fread, file = "waarnemingen_wild_zwijn_processed.csv"), 
+      data.table::as.data.table(waarnemingenData),
       # afschot
       geoData,
       fill = TRUE)
@@ -89,6 +95,7 @@ test_that("F17_1", {
     spaceData <- createSpaceData(
       data = everGeoAll, 
       allSpatialData = spatialData,
+      biotoopData = biotoopData[[regionLevel]],
       year = 2016,
       species = "Wild zwijn",
       regionLevel = regionLevel,
@@ -238,7 +245,7 @@ test_that("F07_1, F09_1, F11_1", {
     
     sources <- unique(schadeData$typeMelding)
     
-    subData <- sf::st_drop_geometry(schadeData[schadeData$gemeente_afschot_locatie == "Aartselaar", ])
+    subData <- schadeData[schadeData$gemeente_afschot_locatie == "Bilzen", ]
     
     myResult <- barCost(
       data = subset(subData, typeMelding %in% sources[4]), 
@@ -427,45 +434,30 @@ test_that("F04_3", {
   })
 
 
-
-### test kencijfer fucniton 
-
-geoDictionary <- unique(everGeoData[,c("provincie","gemeente_afschot_locatie")])
-
-
-waarnemingenData <- loadRawData(type = "waarnemingen")
-# Restrict all to same date
-waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
-                                       format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
-
-# add province info to the data
-waarnemingenData <- merge(waarnemingenData,geoDictionary, all.x = TRUE, by = "gemeente_afschot_locatie")
-# Combine waarnemingen.be & afschot
-everGeoAll <- rbind(
-  # waarnemingen
-  data.table::as.data.table(waarnemingenData),
-  # afschot
-  everGeoData,
-  fill = TRUE)
-
-
-
-# Test Cases
 test_that("tabelKencijfers function behaves as expected", {
- 
-  # Test case 1: Check if the function runs without errors
-  expect_s3_class(everGeoAll, "data.table")
-  result <-tabelKencijfers(everGeoAll)
-  expect_is(result, "list")
-  
-  # Test case 2: Check if the result table has the correct structure
-  expect_true("table" %in% names(result))
-  expect_true("observed" %in% names(result))
-  expect_length(unique(result$table[,1]), 4)
-  
-  expect_equal(
-    as.numeric(unique(result$table[  result$table[,1] == "Dezelfde gemeentes",2])) +
-    as.numeric(unique(result$table[  result$table[,1] == "Nieuwe gemeentes",2])) ,
-    as.numeric(result$table[1,2])
+    
+    everGeoAll <- rbind(
+      # waarnemingen
+      data.table::as.data.table(waarnemingenData),
+      # afschot
+      geoData,
+      fill = TRUE)    
+    
+    # Test case 1: Check if the function runs without errors
+    expect_s3_class(everGeoAll, "data.table")
+    result <-tabelKencijfers(everGeoAll)
+    expect_is(result, "list")
+    
+    # Test case 2: Check if the result table has the correct structure
+    expect_true("table" %in% names(result))
+    expect_true("observed" %in% names(result))
+    expect_length(unique(result$table[,1]), 4)
+    
+    expect_equal(
+      as.numeric(unique(result$table[  result$table[,1] == "Dezelfde gemeentes",2])) +
+        as.numeric(unique(result$table[  result$table[,1] == "Nieuwe gemeentes",2])) ,
+      as.numeric(result$table[1,2])
     )
-})
+    
+  })
+

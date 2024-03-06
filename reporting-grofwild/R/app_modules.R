@@ -701,7 +701,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
 
 
 #' Display formatted frequency table of data (ui-side)
-#' @inheritParams plotModuleServer
+#' @param id character, unique identifier for the shiny module
 #' @param data, character vector, values for which frequency table should be generated
 #' @param variable character, name of the variable that is summarized
 #' @param fullNames named character vector, values for the \code{variable} to be 
@@ -720,7 +720,7 @@ dataModuleServer <- function(id, data, variable, fullNames = NULL) {
           req(data())
           validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
           
-          myTable <- as.data.frame(table(sf::st_drop_geometry(data())[, variable]), stringsAsFactors = FALSE)
+          myTable <- as.data.frame(table(data()[, variable]), stringsAsFactors = FALSE)
           if (nrow(myTable) == 0)
             return(NULL)
           myTable <- myTable[rev(order(myTable$Freq)), ]

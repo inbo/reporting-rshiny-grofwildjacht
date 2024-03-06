@@ -482,7 +482,7 @@ test_that("Trend plots according with the interactive map", {
       
       trendData <-  createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
-        biotoopData = biotoopData[[regionLevel]],
+        biotoopData = biotoopData$flanders,
         allSpatialData = spatialData,
         timeRange = c(2014, 2019),
         species = iSpecies,

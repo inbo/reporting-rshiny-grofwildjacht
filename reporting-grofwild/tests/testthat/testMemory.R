@@ -186,7 +186,8 @@ test_that("Starting the app", {
 
 test_that("Leaflet map", {
     
-    source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp/mapFlanders.R", echo=TRUE, encoding="UTF-8")
+    skip("Explorative use only")
+#    source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp/mapFlanders.R", echo=TRUE, encoding="UTF-8")
     
     profvis({
         runApp(appDir = "/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp")

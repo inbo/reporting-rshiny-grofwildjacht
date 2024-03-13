@@ -116,10 +116,10 @@ kencijferModuleUI <- function(id) {
   ns <- NS(id)
   tagList(
     
-    actionLink(inputId = "linkKencijferTabel", label = "Tabel kencijfers", class = "action-h3"),
+    actionLink(inputId = ns("linkKencijferTabel"), label = "Tabel kencijfers", class = "action-h3"),
   
     conditionalPanel(
-      condition = "input.linkKencijferTabel % 2 == 0",
+      condition = "input.linkKencijferTabel % 2 == 0", ns = ns,
       fixedRow(
         uiOutput(ns("description")),
         column(

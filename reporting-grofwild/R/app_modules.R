@@ -54,13 +54,13 @@ optionsModuleUI <- function(id,
         uiOutput(ns("type")),
       if (!is.null(regionLevels))
         fluidRow(
-            column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+            column(12, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                     choices = c(
                       "Vlaanderen" = "flanders", 
                       "Provincie" = "provinces", 
                       "Fusiegemeenten" = "communes", 
                       "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
-            column(8, uiOutput(ns("region")))
+            column(11, offset = 1, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
         selectInput(inputId = ns("dataSource_schade"), 

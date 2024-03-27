@@ -58,7 +58,7 @@ plotBioindicator <- function(data,
 	plotData <- data[data$afschotjaar %in% jaartallen,
 			c("afschotjaar", grep(bioindicator, colnames(data), value = TRUE), 
 					"type_comp", "provincie", "leeftijd_comp_bron", "geslacht_comp_bron")]
-  if (!is.null(type) && type != "all")
+  if (!is.null(type) && !all(type == "all"))
     plotData <- plotData[plotData$type_comp %in% c(type, "Onbekend"), ] #include onbekend for nRecords
   nRecords <- nrow(plotData)
   
@@ -79,7 +79,7 @@ plotBioindicator <- function(data,
     
   }
   plotData <- plotData[!is.na(plotData[, bioindicator]), ]
-  if (!is.null(type) && type != "all")
+  if (!is.null(type) && !all(type == "all"))
     plotData <- plotData[plotData$type_comp %in% type, ]
   
 	colnames(plotData)[colnames(plotData) == bioindicator] <- "variable"

@@ -18,6 +18,8 @@
 welcomeSectionUI <- function(id, uiText, maxDate = NA) {
   
   description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
+  # Handling embedded quoting
+  description <- gsub("\\\\", "\"", description)
   
   # Replace last date
   if (!is.na(maxDate))
@@ -113,6 +115,7 @@ bioindicatorSection <- function(id, uiText) {
 #' Link with version info - UI side
 #' 
 #' @inherit welcomeSectionUI
+#' @importFrom utils packageVersion
 #' @export
 versionUI <- function(id) {
   
@@ -125,7 +128,7 @@ versionUI <- function(id) {
 
 #' Link with version info - server side
 #' @inherit bioindicatorSectionServer
-#' @importFrom utils packageVersion
+#' @importFrom utils packageVersion 
 #' @export
 versionServer <- function(id) {
   

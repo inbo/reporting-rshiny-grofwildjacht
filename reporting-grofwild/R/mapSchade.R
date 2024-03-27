@@ -14,7 +14,7 @@
 #' 
 #' @inheritParams mapSchade
 #' @inheritParams createShapeData
-#' @inheritParams filterSchade
+#' @inheritParams filterDataSource
 #' @param timeRange numeric vector, year span of interest
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
@@ -26,25 +26,16 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     sourceIndicator = NULL, fullNames = NULL) {
 	
   
-  plotData <- filterSchade(plotData = schadeData,
+  plotData <- filterDataSource(plotData = schadeData,
     sourceIndicator = sourceIndicator, returnStop = "message")
     
   # filter columns
   colnamesToRetain <- c("season", "afschotjaar", "wildsoort", "gemeente_afschot_locatie", "schadeBasisCode",
-                        "schadeCode", "provincie")
+                        "schadeCode", "provincie", "NISCODE", "postcode", "x", "y")
   plotData <- plotData[, colnames(plotData) %in% colnamesToRetain]
   
   # filter cases by timeRange
   plotData <- plotData[plotData$afschotjaar %in% timeRange[1]:timeRange[2], ]
-  
-  # add nis and postcode
-  gemeenteData <- loadGemeentes()
-  
-  plotData$niscode <- gemeenteData$NIS.code[match(plotData$gemeente_afschot_locatie, 
-      gemeenteData$Gemeente)]
-  plotData$postcode <- gemeenteData$Postcode[match(plotData$gemeente_afschot_locatie, 
-      gemeenteData$Gemeente)]
-  
   
   # decrypte schade names
   if (!is.null(fullNames)) {
@@ -53,6 +44,11 @@ createSchadeSummaryData <- function(schadeData, timeRange,
     plotData$schadeCode <- names(fullNames)[match(plotData$schadeCode, fullNames)]
     
   }
+  
+  # Create spatial object
+  plotData <- sf::st_as_sf(plotData, coords = c("x", "y"), crs = 31370)
+  plotData <- sf::st_transform(plotData, crs = "+proj=longlat +datum=WGS84")        
+    
   
   plotData
 }
@@ -134,7 +130,7 @@ formatSchadeSummaryData <- function(summarySchadeData) {
     
   
   # re-arrange columns
-  firstColumns <- c("jaar", "locatie", "niscode", "postcode")
+  firstColumns <- c("jaar", "locatie", "NISCODE", "postcode")
   formattedData <- cbind(
                         formatData[na.omit(match(firstColumns, names(formatData)))],
                         formatData[setdiff(names(formatData), firstColumns)]
@@ -683,8 +679,8 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
             if (filterSource)
               selectInput(inputId = ns("bron"),
                 label = "Data bron",
-                choices = names(metaSchade$sources),
-                selected = names(metaSchade$sources),
+                choices = metaSchade$sources,
+                selected = metaSchade$sources,
                 multiple = TRUE),
             if (filterAccuracy)
               selectInput(inputId = ns("accuracy"),

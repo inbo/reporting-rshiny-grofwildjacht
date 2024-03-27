@@ -2,7 +2,8 @@
 # data <- everGeoAll[provincie == "Antwerpen"]
 #' kencijfers summary table. The summary table of number of municipalities for two consecutive years. Filter is applied to the observation and shot
 #' data. Municipality is retained in the summary if there is any animal shot.
-#' @param data The geo data contains aschot and waarnemingendata
+#' @param data The geo data contains afschot and waarnemingendata -> already aggregated per 
+#' region
 #' @param bron data source, it should be one of the \code{"waarnemingen.be", "afschot", "both"}
 #' @param jaar the year for which summary of municipalities' observed and shot animal stats
 #' @param  thresholdWaarnemingen threshold for number of animals observed, needs to be specified if \code{"bron"}
@@ -13,7 +14,7 @@
 #' @import data.table
 #' @author yzhang
 #' @export
-#' 
+#' @importFrom stats na.exclude
 
 tabelKencijfers <- function(data, 
   jaar = 2023, 
@@ -22,8 +23,11 @@ tabelKencijfers <- function(data,
   thresholdWaarnemingen = 0,
   thresholdAfschot = 0){
   
-  releventColumns <- c("afschotjaar", "provincie", "gemeente_afschot_locatie", "dataSource", "aantal")
-  stopifnot(releventColumns %in% colnames(data))
+  # For R CMD check
+  gemeente_afschot_locatie <- afschotjaar <- dataSource <- aantal <- NULL
+  
+  relevantColumns <- c("afschotjaar", "provincie", "gemeente_afschot_locatie", "dataSource", "aantal")
+  stopifnot(relevantColumns %in% colnames(data))
   bron <- match.arg(bron)
   
   data <- data[!is.na(gemeente_afschot_locatie)]
@@ -34,85 +38,104 @@ tabelKencijfers <- function(data,
     dataSubset <- data[afschotjaar == jaar] else 
     dataSubset <- data[afschotjaar %in% c(jaar, jaar-1)]
   
-  dataSubset <- unique(dataSubset[, releventColumns, with = FALSE])
+  dataSubset <- unique(dataSubset[, relevantColumns, with = FALSE])
   
-  if (bron == "both") {
-    
-    dataSubset <- dataSubset[ (dataSource == "afschot" & aantal >= thresholdAfschot ) | 
-        (dataSource == "waarnemingen.be" & aantal >= thresholdWaarnemingen) ]
-    
-  } else if(bron == "afschot") {
-    
-    dataSubset <- dataSubset[(dataSource == "afschot" & aantal >= thresholdAfschot)]
-    
-  } else {
-    
-    dataSubset <- dataSubset[dataSource == "waarnemingen.be" & (aantal >= thresholdWaarnemingen)]
-    
-  }
+#  # Redundant -> input data should already be aggregated
+#  # Sum per gemeente and dataSource
+#  dataSubset <- dataSubset[, .(aantal = sum(aantal)), 
+#    by = .(afschotjaar, gemeente_afschot_locatie, dataSource)]
   
+  dataSubset <- if (bron == "both")
+      dataSubset[(dataSource == "afschot" & aantal >= thresholdAfschot) | 
+          (dataSource == "waarnemingen.be" & aantal >= thresholdWaarnemingen)] else if (bron == "afschot")
+      dataSubset[(dataSource == "afschot" & aantal >= thresholdAfschot)] else
+      dataSubset[dataSource == "waarnemingen.be" & (aantal >= thresholdWaarnemingen)]
   
-  dataSubset$dataSource <- factor(sub("\\.be$", "",      dataSubset$dataSource), levels = c("afschot","waarnemingen"))
   dataCurrentYear <- dataSubset[afschotjaar == jaar]
   
   observedCities <- dataCurrentYear[dataSource != "afschot"][["gemeente_afschot_locatie"]]
   afschotCities <-  dataCurrentYear[dataSource == "afschot"][["gemeente_afschot_locatie"]]
   
-  resultTable <- cbind("Totaal aantal gemeentes", 
-    length(unique(dataCurrentYear[["gemeente_afschot_locatie"]])),
-    length(unique(dataCurrentYear[["gemeente_afschot_locatie"]])))
+  resultTable <- data.frame(
+    categorie = "Totaal aantal gemeentes", 
+    aantal_categorie = length(unique(dataCurrentYear[["gemeente_afschot_locatie"]])),
+    gemeente = NA
+  )
+  
   # create current year summary table
   
-  if(jaar > yearRange[1]){
+  if (jaar > yearRange[1]) {
     
     dataPreYear <- dataSubset[afschotjaar == jaar-1]
     
-    common <- unique(intersect(dataCurrentYear[[ "gemeente_afschot_locatie"]],dataPreYear[["gemeente_afschot_locatie"]]))
-    new <- unique(na.exclude(setdiff(dataCurrentYear[[ "gemeente_afschot_locatie"]],dataPreYear[["gemeente_afschot_locatie"]]) ))
-    old <-  unique(na.exclude(setdiff(dataPreYear[["gemeente_afschot_locatie"]], dataCurrentYear[[ "gemeente_afschot_locatie"]]) ))
+    common <- unique(intersect(dataCurrentYear[["gemeente_afschot_locatie"]],
+        dataPreYear[["gemeente_afschot_locatie"]]))
+    new <- unique(na.exclude(setdiff(dataCurrentYear[["gemeente_afschot_locatie"]],
+          dataPreYear[["gemeente_afschot_locatie"]])))
+    old <- unique(na.exclude(setdiff(dataPreYear[["gemeente_afschot_locatie"]],
+          dataCurrentYear[[ "gemeente_afschot_locatie"]])))
     
-    resultTable <- rbind(resultTable, 
-      if(length(common) != 0) cbind("Dezelfde gemeentes",length(common), sort(common)) else cbind("Dezelfde gemeentes", 0, NA),
-      if(length(new) != 0) cbind("Nieuwe gemeentes", length( new ), sort(new)) else cbind("Nieuwe gemeentes", 0, NA),
-      if(length(old) != 0) cbind("Niet meer in deze gemeentes", length(old), sort(old)) else cbind("Niet meer in deze gemeentes", 0, NA)
+    resultTable <- rbind(resultTable,  
+      data.frame(
+        categorie = "Dezelfde gemeentes", 
+        aantal_categorie = length(common), 
+        gemeente = if (length(common) == 0) NA else sort(common)
+      ),
+      data.frame(
+        categorie = "Nieuwe gemeentes", 
+        aantal_categorie = length(new), 
+        gemeente = if (length(new) == 0) NA else sort(new)
+      ),
+      data.frame(
+        categorie = "Niet meer in deze gemeentes", 
+        aantal_categorie = length(old), 
+        gemeente = if (length(old) == 0) NA else sort(old))
     )
     
   } else {
-    if(nrow(dataCurrentYear) != 0){
-      resultTable <- rbind( resultTable, cbind("Dezelfde gemeentes",
-          length(dataCurrentYear[["gemeente_afschot_locatie"]]), 
-          sort( dataCurrentYear[["gemeente_afschot_locatie"]])))
+    
+    if (nrow(dataCurrentYear) != 0){
+      
+      resultTable <- rbind(resultTable, data.frame(
+          categorie = "Dezelfde gemeentes",
+          aantal_categorie = length(unique(dataCurrentYear[["gemeente_afschot_locatie"]])), 
+          gemeente = sort(unique(dataCurrentYear[["gemeente_afschot_locatie"]])))
+      )
     }
     
   }
   
-  colnames(resultTable) <- c("categorie", "aantal", "gemeente")
   resultTable <- as.data.frame(resultTable)
+  resultTable$categorie <- factor(resultTable$categorie, 
+    levels = unique(resultTable$categorie))
   
   ## current year provincie table 
+
   if( nrow(dataCurrentYear) > 0 ){
-    tableCount <- data.table::dcast(dataCurrentYear, gemeente_afschot_locatie ~dataSource, value.var = "aantal", fill = NA, drop = FALSE)
+    tableCount <- data.table::dcast(dataCurrentYear, gemeente_afschot_locatie ~dataSource, value.var = "aantal", fill = NA, drop = FALSE, fun.agg = sum)
     
     finalTable <-  merge(resultTable, tableCount, 
       by.x = "gemeente", by.y = "gemeente_afschot_locatie", all.x = TRUE, sort = FALSE)
     
     # sort back to original order
-    finalTable <- finalTable[match( resultTable$gemeente,   finalTable$gemeente),]
+    finalTable <- finalTable[order(finalTable$categorie, finalTable$gemeente),]
     
-    avaliableCols <- intersect(c("categorie", "aantal", "gemeente", "afschot", "waarnemingen"), 
-      grep(paste(c("categorie", "aantal", "gemeente", "afschot", "waarnemingen"), collapse = "|"),colnames( finalTable), value = TRUE))
-    finalTable <-  finalTable[, avaliableCols ]
-    
+    if ("waarnemingen.be" %in% colnames(finalTable))
+      colnames(finalTable)[colnames(finalTable) == "waarnemingen.be"] <- "waarnemingen" else
+      finalTable$waarnemingen <- NA      
+      
+    finalTable <- finalTable[, c("categorie", "aantal_categorie", "gemeente", "afschot", "waarnemingen")]
+        
   }else{
     finalTable <- resultTable 
   }
+        
+  rownames(finalTable) <- NULL
   
   
   # Format table
-  resTable <- finalTable[,c("categorie", "aantal", "gemeente")]
-  resTable[resTable$categorie == "Totaal aantal gemeentes","gemeente"] <- NA
+  resTable <- finalTable[,c("categorie", "aantal_categorie", "gemeente")]
   resTable[,1] <- paste(  resTable[,"categorie"], resTable[,"aantal"], sep = ": ")
-  rownames(resTable) <- NULL
   
   cityList <-  na.omit(resTable[,"gemeente"])
   
@@ -160,6 +183,7 @@ tabelKencijfers <- function(data,
       data = finalTable
     ))
   
+
 }
 
 
@@ -175,11 +199,11 @@ kencijferModuleUI <- function(id, uiText) {
   
   tagList(
     
-    actionLink(inputId = "linkKencijferTabel", 
+    actionLink(inputId = ns("linkKencijferTabel"), 
       label = paste("TABEL:", uiText$title), class = "action-h3"),
     
     conditionalPanel(
-      condition = "input.linkKencijferTabel % 2 == 0",
+      condition = "input.linkKencijferTabel % 2 == 0", ns = ns,
       fixedRow(
         tags$p(HTML(decodeText(text = uiText$dash))),
         column(
@@ -187,7 +211,7 @@ kencijferModuleUI <- function(id, uiText) {
           wellPanel(
             uiOutput(ns("kencijferFilter")),
             conditionalPanel(
-              condition = "input.dataSource_kencijfer && input.dataSource_kencijfer.includes('waarnemingen.be')", ns = ns,
+              condition = "input.dataSource_kencijfer.indexOf('waarnemingen.be') > -1", ns = ns,
               uiOutput(ns("sliderObserve"))
             
             ),
@@ -236,12 +260,9 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       ns <- session$ns
       
-      observe({
-          
-          req(kencijfersData)
-          
           output$kencijferFilter <- renderUI({
-              
+          
+            req(kencijfersData())    
               dataSource <- unique(kencijfersData()$dataSource)
               names(dataSource) <- gsub("\\..+", "", dataSource )
               
@@ -264,6 +285,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
           output$sliderObserve <- renderUI({
               
+            req(kencijfersData())
               sliderInput(
                 inputId = ns("thresholdWaarnemingen"),
                 label = "Waarnemingen drempel",
@@ -277,48 +299,48 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
           
           output$sliderAfschot <- renderUI({
-              results$maxSchot <- max(10,  max(kencijfersData()[(dataSource == "afschot") &(afschotjaar ==  input$jaar_kencijfer), "aantal"], na.rm = TRUE))
+              maxSchot <- max(10,  max(kencijfersData()[(dataSource == "afschot") &(afschotjaar ==  input$jaar_kencijfer), "aantal"], na.rm = TRUE))
               
               sliderInput(
                 inputId = ns("thresholdAfschot"),
                 label = "Afschot drempel",
-                value = min(results$shotThreshold, results$maxSchot),
+                value = min(results$shotThreshold, maxSchot),
                 min = 1,
-                max =  results$maxSchot,
+                max =  maxSchot,
                 step = 1,
                 sep = ""
               )
             })
+  
+      
+     observeEvent(input$jaar_kencijfer, {
+          
+          req(input$thresholdAfschot)
+          
+          if (results$shotThreshold != input$thresholdAfschot)
+            results$shotThreshold <- input$thresholdAfschot
+          if (results$observeThreshold != input$thresholdWaarnemingen) 
+            results$observeThreshold <- input$thresholdWaarnemingen
           
         })
-      
-      
-      observeEvent(input[["jaar_kencijfer"]], {
-          req(input[["thresholdAfschot"]])
-          
-          if(results$shotThreshold != input[["thresholdAfschot"]]) results$shotThreshold <- input[["thresholdAfschot"]]
-          if(results$observeThreshold != input[["thresholdWaarnemingen"]]) results$observeThreshold <- input[["thresholdWaarnemingen"]]
-          
-        })
-      
       
       results$res <- reactive({
           
-          req(input[["dataSource_kencijfer"]])
-          req(input[["jaar_kencijfer"]])
+          req(input$dataSource_kencijfer)
+          req(input$jaar_kencijfer)
           
           tabelKencijfers(
-            data = kencijfersData(), 
-            jaar = as.numeric(input[["jaar_kencijfer"]]),
-            bron = ifelse(length(input[["dataSource_kencijfer"]]) == 2, "both", input[["dataSource_kencijfer"]]),
-            thresholdWaarnemingen = input[["thresholdWaarnemingen"]],
-            thresholdAfschot = input[["thresholdAfschot"]],
+            data = req(kencijfersData()), 
+            jaar = as.numeric(input$jaar_kencijfer),
+            bron = ifelse(length(input$dataSource_kencijfer) == 2, "both", input$dataSource_kencijfer),
+            thresholdWaarnemingen = input$thresholdWaarnemingen,
+            thresholdAfschot = input$thresholdAfschot,
             ns = ns
           ) 
           
         })
       
-      output[["kencijfer_table"]] <- DT::renderDataTable(
+      output$kencijfer_table <- DT::renderDataTable(
         results$res()$table
       )
      
@@ -336,5 +358,5 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       return(reactive(results$res()))
     })
-  
+
 }

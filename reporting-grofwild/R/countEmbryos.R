@@ -49,7 +49,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
  plotData <- subset(data, data$afschotjaar %in% jaartallen & 
      data$type_comp %in% type,
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
-     "leeftijd_comp_bron", "geslacht_comp_bron"))
+     "leeftijd_comp_bron", "geslacht_comp_bron", "leeftijd_comp_inbo"))
  nRecords <- nrow(plotData)
  
  # Filter on source & rename to embryos

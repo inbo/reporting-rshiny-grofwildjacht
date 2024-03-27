@@ -109,7 +109,7 @@ test_that("Loading Data", {
 # Load all data before starting the app - memory usage
     rm(list = ls())
     profvis({
-        source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/reporting-grofwild/inst/ui/app_public/global.R")
+        source(system.file("ui/app_public/global.R", package = "reportingGrofwild"))
       })
     
 # Object sizes
@@ -186,7 +186,8 @@ test_that("Starting the app", {
 
 test_that("Leaflet map", {
     
-    source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp/mapFlanders.R", echo=TRUE, encoding="UTF-8")
+    skip("Explorative use only")
+#    source("/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp/mapFlanders.R", echo=TRUE, encoding="UTF-8")
     
     profvis({
         runApp(appDir = "/home/mvarewyck/git/reporting-rshiny-grofwildjacht/tmp")

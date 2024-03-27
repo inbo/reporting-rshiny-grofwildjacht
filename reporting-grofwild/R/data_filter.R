@@ -7,43 +7,33 @@
 
 
 
-#' Filter \code{plotData} based on the \code{indieningType} if required
+#' Filter \code{plotData} based on the \code{dataSource} column if required
 #' @param plotData data.frame, to be filtered
-#' @param sourceIndicator character, source used to filter \code{data} ('indieningType' column)
-#' should be subset of \code{c("E-loket", "HVV", "Natuurpunt")}.
+#' @param sourceIndicator character vector, sources to be kept when 
+#' filtering \code{data} wrt \code{dataSource} column
 #' @param returnStop character, should be one of \code{c("message", "data")}
 #' what needs to be returned if the filtered data has no rows left
 #' @return data.frame, filtered version of \code{plotData}
 #' 
 #' @author mvarewyck
 #' @export
-filterSchade <- function(plotData, sourceIndicator = NULL,
+filterDataSource <- function(plotData, sourceIndicator = NULL,
   returnStop = c("message", "data")) {
   
   returnStop <- match.arg(returnStop)
   
   if (!is.null(sourceIndicator)) {
-    if ("indieningType" %in% names(plotData)) {
-      
-      sourcesSchade <- loadMetaSchade()$sources  
-      
-      sources <- paste(unlist(sourcesSchade[sourceIndicator]), collapse = "|")
-      plotData <- plotData[grepl(sources, plotData$indieningType), ]
-      
-    } else {
-      
-      sourcesSchade <- unique(plotData$dataSource)
-      names(sourcesSchade) <- sourcesSchade
-      
-      plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
-      
-    }
+    
+    sourcesSchade <- unique(plotData$dataSource)
+    
+    plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
+    
     
     if (nrow(plotData) == 0)
       if (returnStop == "message")
-        if (all(names(sourcesSchade) %in% sourceIndicator))
+        if (all(sourcesSchade %in% sourceIndicator))
           stop("Geen data beschikbaar") else
-          stop("Geen data beschikbaar voor de geselecteerde bron: ", paste(sourceIndicator, collapse = ", "), ". ")
+          stop("Geen data beschikbaar voor de geselecteerde bron(nen): ", paste(sourceIndicator, collapse = ", "), ". ")
     
   }
   
@@ -54,7 +44,7 @@ filterSchade <- function(plotData, sourceIndicator = NULL,
 
 
 #' Filter \code{plotData} based on leeftijd and geslacht bron
-#' @inheritParams filterSchade
+#' @inheritParams filterDataSource
 #' @param sourceIndicator_leeftijd character, levels of \code{leeftijd_comp_bron} to select on
 #' @param sourceIndicator_geslacht character, levels of \code{geslacht_comp_bron} to select on
 #' @param sourceIndicator_onderkaak character, levels of \code{onderkaaklengte_comp_bron} to select on

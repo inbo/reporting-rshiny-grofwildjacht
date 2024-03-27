@@ -35,7 +35,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
       }))
   
   # filter for source
-  plotData <- filterSchade(plotData = data, 
+  plotData <- filterDataSource(plotData = data, 
     sourceIndicator = sourceIndicator,
     returnStop = "message")
   
@@ -72,24 +72,33 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   # Summarize data over years
   summaryData <- plyr::count(df = plotData, vars = names(plotData))
   
-  # Add names & times with 0 observations
-  fullData <- cbind(expand.grid(
-      afschotjaar = chosenTimes,
-      locatie = if (!is.null(matchLocaties)) 
-          matchLocaties$PartijNummer else unique(spatialData$NAAM)))
-  
-  if (unit == "relativeDekking") {
-    if ("year" %in% colnames(biotoopData))
-    # add dekkingsgraad 100ha bos&natuur      
-    fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos", "year")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year")) else
-    fullData <- merge(fullData, biotoopData[, c("regio", "Area_hab_km2_bos")],
-      by.x = "locatie", by.y = "regio")
-    names(fullData)[names(fullData) == "Area_hab_km2_bos"] <- "AREA"
+   # Add names & times with 0 observations
+  if (!is.null(matchLocaties)) {
+    fullData <- cbind(expand.grid(
+        afschotjaar = chosenTimes,
+        locatie = matchLocaties$PartijNummer)) 
   } else {
-    # add Area
-    fullData <- merge(fullData, spatialData[, c("NAAM", "AREA", "YEAR")],
-      by.x = c("locatie", "afschotjaar"), by.y = c("NAAM", "YEAR"))
+    selectCols <- if (regionLevel == "communes")
+      c("YEAR", "NAAM", "NISCODE", "postcode") else
+      c("YEAR", "NAAM")
+    fullData <- spatialData[, selectCols]
+    colnames(fullData)[1:2] <- c("afschotjaar", "locatie")
+  }
+ 
+  
+  if (unit %in% c("relative", "relativeDekking")) {
+    
+    areaVariable <- if (unit == "relative")
+        "Area_km2" else
+        "Area_hab_km2_bos"
+    if ("year" %in% colnames(biotoopData))
+      # add dekkingsgraad 100ha bos&natuur      
+      fullData <- merge(fullData, biotoopData[, c("regio", areaVariable, "year")],
+        by.x = c("locatie", "afschotjaar"), by.y = c("regio", "year")) else
+      fullData <- merge(fullData, biotoopData[, c("regio", areaVariable)],
+        by.x = "locatie", by.y = "regio")
+    names(fullData)[names(fullData) == areaVariable] <- "AREA"
+  
   }
   
   allData <- merge(summaryData, fullData, all.x = TRUE, all.y = TRUE)
@@ -103,23 +112,13 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
   
   allData$afschotjaar <- as.factor(allData$afschotjaar)
   allData$wildsoort <- paste(species, collapse = ", ")
-  
-  
+  allData <- allData[order(allData$afschotjaar), ]
+
+  # order columns and rows
   if (regionLevel == "communes") {
     
-    # NOTE: match returns FIRST match, so gemeentecodes.csv should be correctly sorted
-    # in orde to obtain HOOFDpostcode. 
-    gemeenteData <- loadGemeentes()
-    
-    # Match gemeente NAAM to niscode and (hoofd)postcode
-    allData$niscode <- gemeenteData$NIS.code[match(allData$locatie, gemeenteData$Gemeente)]
-    allData$postcode <- gemeenteData$Postcode[match(allData$locatie, gemeenteData$Gemeente)]
-    
-    # order columns and rows
-    allData <- allData[order(allData$afschotjaar),]
-    allData <- allData[c("afschotjaar", "locatie", "niscode", "postcode", 
-        setdiff(names(allData), c("afschotjaar", "locatie", "niscode", "postcode")))]
-    
+    allData <- allData[c("afschotjaar", "locatie", "NISCODE", "postcode", 
+        setdiff(names(allData), c("afschotjaar", "locatie", "NISCODE", "postcode")))]
     
   } else if (regionLevel == "WBE_buitengrenzen") {
     
@@ -185,7 +184,7 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
     if (is.null(locaties))
       stop("Gelieve regio('s) te selecteren")
     plotData <- subset(data, locatie %in% locaties)
-    colorList <- replicateColors(values = locaties)
+    colorList <- replicateColors(values = if (combinatie) "Totaal" else locaties)
   } else {
     plotData <- data
     colorList <- replicateColors(values = "Vlaams Gewest")

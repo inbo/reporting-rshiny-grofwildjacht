@@ -14,6 +14,26 @@ geoData <- loadRawData(type = "geo")
 biotoopData <- loadHabitats()
 
 
+
+
+
+test_that("Single province per municipality", {
+    
+    skip("GIT issue #456")
+
+    tmp <- sapply(split(geoData, geoData$gemeente_afschot_locatie), function(iData) {
+        if (length(unique(iData$provincie)) > 1) {
+          cat("\n\n", unique(iData$gemeente_afschot_locatie), "\n")
+          print(xtabs(~ iData$provincie + iData$afschotjaar, drop.unused.levels = TRUE))
+        }
+      })
+    
+    expect_true(all(sapply(tmp, is.null)))
+
+})
+
+
+
 test_that("Load grofwild data", {
     
     expect_equal(nrow(ecoData), nrow(geoData))
@@ -392,6 +412,8 @@ test_that("Number of embryos (bio-indicator)", {
           bioindicator = bioindicator,
           sourceIndicator = c("inbo", "meldingsformulier", "both")[3]
         )
+        expect_s3_class(pl$plot, "plotly")
+        expect_s3_class(pl$data, "data.frame")
 #	print(pl)
       })
     
@@ -402,13 +424,22 @@ test_that("Number of embryos (bio-indicator)", {
 
 test_that("The interactive map", {
     
-    for (regionLevel in names(spatialData)[1:5]) {
+    regionLevels <- names(spatialData)[1:5]
+    
+    for (regionLevel in regionLevels) {
+      
+      if (doPrint)
+        print(regionLevel)
       
       for (iSpecies in species) {
+        
+        if (doPrint)
+          print(iSpecies)
         
         spaceData <- createSpaceData(
           data = geoData, 
           allSpatialData = spatialData,
+          biotoopData = biotoopData[[regionLevel]],
           year = 2016,
           species = iSpecies,
           regionLevel = regionLevel,
@@ -439,6 +470,7 @@ test_that("The interactive map", {
   })
 
 
+
 # TREND plots
 
 test_that("Trend plots according with the interactive map", {
@@ -446,10 +478,11 @@ test_that("Trend plots according with the interactive map", {
     for (iSpecies in species) {
       
 #    print(iSpecies)
-      unitChoice <- c("absolute", "relative")[1]
+      unitChoice <- c("absolute", "relative")[2]
       
       trendData <-  createTrendData(
         data = geoData[geoData$wildsoort == iSpecies, ],
+        biotoopData = biotoopData$flanders,
         allSpatialData = spatialData,
         timeRange = c(2014, 2019),
         species = iSpecies,
@@ -474,6 +507,7 @@ test_that("Trend plots according with the interactive map", {
         
         trendRegionData <- createTrendData(
           data = geoData[geoData$wildsoort == iSpecies, ],
+          biotoopData = biotoopData[[regionLevel]],
           allSpatialData = spatialData,
           timeRange = c(2014, 2019),
           species = iSpecies,

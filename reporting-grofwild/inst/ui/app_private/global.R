@@ -4,12 +4,10 @@ library(reportingGrofwild)
 ### General
 ### ------------
 
+# make sure js object is initiated
+library(shinyjs)
 # define js function for opening urls in new tab/window
-js_code <- "
-  shinyjs.browseURL = function(url) {
-  window.open(url, '_parent');
-  }
-  "
+js_code <- "shinyjs.browseURL = function(url) {window.open(url, '_parent');}"
 
 
 
@@ -22,9 +20,6 @@ addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 # Specify default year to show (and default max to show in time ranges)
 #defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1
 defaultYear <- as.numeric(format(Sys.Date(), "%Y")) - 1
-
-# create temp html file to store grofwild landkaart
-outTempFileName <- tempfile(fileext = ".html")
 
 
 ### Debugging

@@ -5,6 +5,32 @@
 # Author: mvarewyck
 ###############################################################################
 
+
+
+#' Helper function - Define province based on commune NIS code
+#' @param NISCODE character vector, NIS codes from communes, for which to define province
+#' @inheritParams createSpaceData
+#' @return character vector, same length and order as \code{NISCODE}
+#' with corresponding province for each communeS
+#' @author mvarewyck
+#' @export
+getProvince <- function(NISCODE, allSpatialData) {
+  
+  communeCode <- substr(NISCODE, start = 1, stop = 1)
+  
+  provinceData <- allSpatialData$provinces[, c("NISCODE", "NAAM")]
+  provinceData$NISCODE <- substr(provinceData$NISCODE, start = 1, stop = 1)
+  
+  sapply(communeCode, function(iCode) {
+      
+      if (is.na(iCode))
+        NA else
+        as.character(provinceData[provinceData$NISCODE == iCode, ]$NAAM)
+      
+    })
+  
+}
+
 #' Create all shape data from geojson files
 #' 
 #' @param jsonDir character, path to json shape files
@@ -60,6 +86,10 @@ createShapeData <- function(
         shapeData <- sf::st_transform(shapeData, crs = 4326)
       }
       
+      
+      #####
+      # We retrieve 'AREA' from habitatData see #439
+      # This piece of code might be redundant
       areaVariables <- c("OPPERVL", "SHAPE_Area", "Shape_Area")
       if (any(areaVariables %in% colnames(shapeData))) {
         if ("AREA" %in% colnames(shapeData))
@@ -70,6 +100,7 @@ createShapeData <- function(
         shapeData <- sf::st_make_valid(shapeData) 
         shapeData$AREA <- units::set_units(sf::st_area(shapeData), "km^2", mode = "standard")
       }
+      #####
       
       # Create factor for region names
       if (iLevel == "provinces") {
@@ -182,6 +213,15 @@ createShapeData <- function(
     stop("Sommige NIS codes in shape data zijn niet gekend voor matching\n",
       "Gelieve het referentiebestand gemeentecodes.csv aan te vullen")
   
+  # Add provincie/postcode for communes and fbz_gemeentes
+  spatialData$communes$provincie <- getProvince(
+    NISCODE = spatialData$communes$NISCODE,
+    allSpatialData = spatialData)
+  spatialData$communes$postcode <- gemeenteData$Postcode[
+    match(spatialData$communes$NISCODE, gemeenteData$NIS.code)]
+  spatialData$fbz_gemeentes$provincie <- getProvince(
+    NISCODE = spatialData$fbz_gemeentes$NISCODE,
+    allSpatialData = spatialData)
   
   # Save WBE data separately
   spatialDataWBEAll <- spatialData[grep("WBE", names(spatialData))]
@@ -219,9 +259,8 @@ createShapeData <- function(
 #' @return boolean, whether file is successfully saved
 #' 
 #' @author mvarewyck
-#' @importFrom sf st_as_sf st_transform
-#' @importFrom data.table as.data.table
 #' @importFrom aws.s3 s3write_using
+#' @importFrom arrow write_parquet
 #' 
 #' @examples 
 #' \dontrun{createWaarnemingenData()}
@@ -313,7 +352,7 @@ createRawData <- function(
     
     if (any(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)])) {
       warning(sum(rawData$aantal_embryos_onbekend[!is.na(rawData$aantal_embryos)], na.rm = TRUE), 
-        " observaties met gekend aantal embryos wordt op onbekend gezet")
+        " observaties met 'aantal_embryos_onbekend' TRUE terwijl gekend 'aantal_embryos'. Voor deze observaties wordt 'aantal_embryos' op NA (onbekend) gezet.")
       rawData$aantal_embryos[rawData$aantal_embryos_onbekend] <- NA
     }
     
@@ -354,7 +393,7 @@ createRawData <- function(
     rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")
     
     # new column names
-    colnames(rawData) <- c("ID", "caseID", "indieningType", "afschotjaar", 
+    colnames(rawData) <- c("ID", "caseID", "dataSource", "afschotjaar", 
       "schadeBasisCode", "schadeCode",
       "SoortNaam", "wildsoort", "afschot_datum",
       "provincie", "FaunabeheerZone", "fbdz", "NISCODE", "gemeente_afschot_locatie",
@@ -364,9 +403,21 @@ createRawData <- function(
     # Match on NISCODE: otherwise mismatch with spatialData locatie
     rawData$gemeente_afschot_locatie <- as.character(gemeenteData$Gemeente)[
       match(rawData$NISCODE, gemeenteData$NIS.code)] 
+    rawData$postcode <- gemeenteData$Postcode[match(rawData$NISCODE, gemeenteData$NIS.code)]
     
     # Remove Voeren as province
     rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
+    
+    # Redefine dataSource
+    sourcesSchade <- loadMetaSchade()$sources  
+    isPresent <- grepl(paste(sourcesSchade, collapse = "|"), rawData$dataSource)
+    if (!all(isPresent)) {
+      warning("Nieuw indieningType gedetecteerd in schade data: ", 
+        paste0(unique(rawData$dataSource[!isPresent]), collapse = ", "),
+        "\nUpdate loadMetaSchade() functie.")
+    }
+    for (iVar in sourcesSchade)
+      rawData$dataSource[grepl(iVar, rawData$dataSource)] <- iVar
     
     # Define season
     rawData$season <- getSeason(rawData$afschot_datum)
@@ -385,10 +436,6 @@ createRawData <- function(
       warning(sum(toExclude), " x/y locaties zijn onbekend en dus uitgesloten voor wildschade")
     rawData <- rawData[!toExclude, ]
     
-    # create shape data
-    rawData <- sf::st_as_sf(rawData, coords = c("x", "y"), crs = "+init=epsg:31370")
-    rawData <- sf::st_transform(rawData, crs = "+proj=longlat +datum=WGS84")        
-    
   } else if (type == "kbo_wbe") {
     
     # drop unused
@@ -396,10 +443,10 @@ createRawData <- function(
     
   } else if (type == "waarnemingen") {
     
-    rawData <- rawData[, c("jaar", "NAAM", "TAG", "aantal")]
-    colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "UTM5", "aantal") 
+    rawData <- rawData[, c("jaar", "NAAM", "provincie", "TAG", "aantal")]
+    colnames(rawData) <- c("afschotjaar", "gemeente_afschot_locatie", "provincie", "UTM5", "aantal") 
     
-    rawData <- data.table::as.data.table(cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be")))
+    rawData <- cbind(rawData, data.frame(wildsoort = "Wild zwijn", dataSource = "waarnemingen.be"))
     
   }
   
@@ -425,14 +472,60 @@ createRawData <- function(
   toFactors <- names(newLevels)[names(newLevels) %in% colnames(rawData)]
   rawData[toFactors] <- lapply(toFactors, function(x) 
       droplevels(factor(rawData[[x]], levels = c(newLevels[[x]], "Onbekend"))))
-  
 
-  s3save(rawData, bucket = bucket, 
-    object = paste0(tools::file_path_sans_ext(dataFile), "_processed.RData"), 
-    opts = list(multipart = TRUE))
+  # Parquet file
+  aws.s3::s3write_using(rawData, 
+      FUN = arrow::write_parquet, 
+      bucket = bucket, 
+      object = paste0(tools::file_path_sans_ext(dataFile), "_processed.parquet"), 
+      opts = list(multipart = TRUE))
   
   
   return(TRUE)   
+  
+}
+
+
+
+#' Helper function - Convert old format (.RData) into new (.parquet)
+#' @inheritParams createRawData
+#' @return no return value
+#' 
+#' @author mvarewyck
+convertRawData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")) {
+  
+  type <- match.arg(type)
+  
+  # For R CMD check
+  rawData <- NULL  
+  
+  dataFile <- switch(type,
+    "eco" = "rshiny_reporting_data_ecology_processed.RData",
+    "geo" = "rshiny_reporting_data_geography_processed.RData",
+    "wildschade" = "WildSchade_georef_processed.RData",
+    "kbo_wbe" = "Data_Partij_Cleaned_processed.RData",
+    "waarnemingen" = "waarnemingen_wild_zwijn_processed.RData"
+  )
+  
+  readS3(file = dataFile, bucket = bucket, envir = environment())
+  
+  if (type == "wildschade") {
+    
+    rawData <- sf::st_transform(rawData, crs = 31370)     
+    rawData$x <- sf::st_coordinates(rawData)[, 1]
+    rawData$y <- sf::st_coordinates(rawData)[, 2]
+    rawData <- sf::st_drop_geometry(rawData)
+    
+  }
+  
+  
+  aws.s3::s3write_using(rawData, 
+    FUN = arrow::write_parquet, 
+    bucket = bucket, 
+    object = paste0(tools::file_path_sans_ext(dataFile), ".parquet"), 
+    opts = list(multipart = TRUE))
   
 }
 
@@ -604,7 +697,7 @@ createHabitatData <- function(
     "provinces" = "Provincies_habitats", 
     "communes" = "Gemeentes_habitats", 
     "faunabeheerzones" = "Faunabeheerzones_habitats", 
-    # "fbz_gemeentes" = "FaunabeheerDeelzones",  # currently missing see #295 
+    "fbz_gemeentes" = "fbz_gemeentes_habitats",
     "utm5" = "utm5_vlgrens_habitats", 
     "wbe" = "WBE_habitats"
   ) 
@@ -643,7 +736,7 @@ createHabitatData <- function(
         }
         
         # Match region names
-        if ("NISCODE" %in% colnames(spatialData[[iRegion]]))
+        if (iRegion != "fbz_gemeentes" & "NISCODE" %in% colnames(spatialData[[iRegion]]))
           tmpData$regio <- spatialData[[iRegion]]$NAAM[
             match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
         

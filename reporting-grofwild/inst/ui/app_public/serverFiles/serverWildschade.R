@@ -8,43 +8,33 @@
 ### Filter Data
 ### ---------------
 
-output$schade_subcode <- renderUI({
-      
-      gewasChoices <- metaSchade$codes[["GEWAS"]]
-      voertuigChoices <- metaSchade$codes[["VRTG"]]
-      
-      tagList(
-          if ("GEWAS" %in% input$schade_code)
-            selectInput(inputId = "schade_gewas", label = "Filter Gewas Schade",
-                choices = gewasChoices,
-                selected = gewasChoices,
-                multiple = TRUE,
-                width = "100%"
-            ),
-          if ("VRTG" %in% input$schade_code)
-            selectInput(inputId = "schade_voertuig", label = "Filter Voertuig Schade",
-                choices = voertuigChoices,
-                selected = voertuigChoices,
-                multiple = TRUE,
-                width = "100%"
-            )
-      )
-      
-    })
-  
-  output$schade_warning <- renderUI({
-      
-      validate(need(input$schade_species, "Gelieve wildsoort(en) te selecteren"),
-          need(input$schade_code, "Gelieve type(s) schade te selecteren"))
-      
-    })
 
-  observe({
-      
-      shinyjs::toggle(id = "schade_results", 
-        condition = !is.null(input$schade_species) && !is.null(input$schade_code)) 
-      
-    })
+observe({
+
+    toggle("schade_gewas", condition = "GEWAS" %in% input$schade_code)
+  
+  })
+  
+observe({
+    
+    toggle("schade_voertuig", condition = "VRTG" %in% input$schade_code)
+  
+  })
+
+
+output$schade_warning <- renderUI({
+    
+    validate(need(input$schade_species, "Gelieve wildsoort(en) te selecteren"),
+      need(input$schade_code, "Gelieve type(s) schade te selecteren"))
+    
+  })
+
+observe({
+    
+    shinyjs::toggle(id = "schade_results", 
+      condition = !is.null(input$schade_species) && !is.null(input$schade_code)) 
+    
+  })
 
 
 
@@ -81,34 +71,27 @@ results$schade_data <- reactive({
 
 # Create frequency tables for filtered data
 ## wildsoort
-callModule(dataModuleServer, id = "wildsoort",
+dataModuleServer(id = "wildsoort",
     data = results$schade_data,
     variable = "wildsoort")
 ## schade
-callModule(dataModuleServer, id = "schade",
+dataModuleServer(id = "schade",
     data = results$schade_data,
     variable = "schadeBasisCode",
     fullNames = schadeTypes)
 ## subschade
-callModule(dataModuleServer, id = "subschade",
+dataModuleServer(id = "subschade",
     data = results$schade_data,
     variable = "schadeCode",
     fullNames = schadeCodes)
 
 
 # Show frequency tables for filtered data
-output$schade_summary <- renderUI({
-      
-      fixedRow(
-          column(4, tableModuleUI(id = "wildsoort", includeTotal = TRUE)),
-          column(4, tableModuleUI(id = "schade", includeTotal = TRUE)),
-          if (any(c("GEWAS", "VRTG") %in% input$schade_code)) 
-            column(4, tableModuleUI(id = "subschade",
-                    includeTotal = TRUE))
-      
-      )
-      
-    })
+observe({
+    
+    toggle("schade_summary", condition = !is.null(input$schade_species))
+    
+  })
 
 
 results$schade_timeRange <- reactive({
@@ -138,9 +121,11 @@ mapFlandersServer(id = "schade",
   uiText = uiText,
   defaultYear = defaultYear,
   type = "wildschade",
-  species = reactive(input$schade_species),
-  geoData = reactive(sf::st_drop_geometry(results$schade_data())),
-  allSpatialData = spatialData)
+  species = reactive(req(input$schade_species)),
+  geoData = results$schade_data,
+  allSpatialData = spatialData,
+  sourceChoices = loadMetaSchade()$sources 
+  )
 
 
 
@@ -165,7 +150,7 @@ mapSchadeServer(id = "schade",
 
 # Plot 1: Gerapporteerd aantal schadegevallen per jaar en per regio
 countYearProvinceServer(id = "schade",
-    data = reactive(sf::st_drop_geometry(results$schade_data())),
+    data = results$schade_data,
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 
@@ -185,7 +170,7 @@ countYearProvinceServer(id = "schade",
 # Plot 2: Gerapporteerd aantal schadegevallen per jaar en variabele
 countYearSchadeServer(
     id = "schade",
-    data = reactive(sf::st_drop_geometry(results$schade_data())),
+    data = results$schade_data,
     types = reactive(c(
             "Wildsoort" = "wildsoort",
             "Gewas" = "SoortNaam", 
@@ -200,7 +185,7 @@ countYearSchadeServer(
 # Table Frequency table schadeCode
 tableSchadeServer(
     id = "schade",  
-    data = reactive(sf::st_drop_geometry(results$schade_data())),
+    data = results$schade_data,
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 
@@ -218,7 +203,7 @@ tableSchadeServer(
 # Table Frequency table gewas
 tableGewasServer(
     id = "schade",
-    data = reactive(sf::st_drop_geometry(results$schade_data())),
+    data = results$schade_data,
     types = reactive(c(
             "Vlaanderen" = "flanders",
             "Provincie" = "provinces", 

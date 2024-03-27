@@ -10,10 +10,10 @@ context("Test Shiny Apps")
 
 test_that("Public app does not crash on startup", {   
     
-    expect_warning(shiny::testServer(
+    shiny::testServer(
       app = system.file("ui/app_public", package = "reportingGrofwild"),
       expr = testthat::expect_true(TRUE)
-    ))
+    )
     
   })
 

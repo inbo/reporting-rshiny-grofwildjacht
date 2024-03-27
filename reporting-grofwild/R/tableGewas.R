@@ -26,7 +26,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   allData <- data
   
   # filter for source
-  allData <- filterSchade(plotData = data, sourceIndicator = sourceIndicator,
+  allData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
   if (inherits(allData, "sf"))
@@ -58,7 +58,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   
   # include all provinces/fbz
   fullData <- expand.grid(
-      unique(tableData[, variable]),
+      unique(tableData[[variable]]),
       locatie = levelsLocatie
           )
   names(fullData)[1] <- variable

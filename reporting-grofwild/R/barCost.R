@@ -136,7 +136,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
             data()
           
           # Bron
-          filterSchade(plotData = plotData,
+          filterDataSource(plotData = plotData,
             sourceIndicator = input$bron, returnStop = "message")
           
         })
@@ -206,8 +206,8 @@ barCostUI <- function(id, uiText, typeMelding = NULL) {
                 choices = typeMelding),
             uiOutput(ns("unitChoices")),
             selectInput(inputId = ns("bron"), label = "Data bron",
-              choices = names(metaSchade$sources),
-              selected = names(metaSchade$sources),
+              choices = metaSchade$sources,
+              selected = metaSchade$sources,
               multiple = TRUE),
             optionsModuleUI(id = ns("barCost"), exportData = TRUE, doWellPanel = FALSE)
           ),

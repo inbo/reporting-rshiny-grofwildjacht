@@ -44,6 +44,8 @@ loadShapeData <- function(WBE_NR = NULL,
 #' @param type data type, "eco" for ecology data and "geo" for geography data
 #' 
 #' @return data.frame, loaded data
+#' @importFrom arrow read_parquet
+#' @importFrom sf st_as_sf st_transform
 #' @author mvarewyck
 #' @export
 loadRawData <- function(
@@ -52,22 +54,21 @@ loadRawData <- function(
   
   type <- match.arg(type)
   
-  # For R CMD check
-  rawData <- NULL  
-  
   dataFile <- switch(type,
-          "eco" = "rshiny_reporting_data_ecology_processed.RData",
-          "geo" = "rshiny_reporting_data_geography_processed.RData",
-          "wildschade" = "WildSchade_georef_processed.RData",
-          "kbo_wbe" = "Data_Partij_Cleaned_processed.RData",
-          "waarnemingen" = "waarnemingen_wild_zwijn_processed.RData"
-        )
+      "eco" = "rshiny_reporting_data_ecology_processed.parquet",
+      "geo" = "rshiny_reporting_data_geography_processed.parquet",
+      "wildschade" = "WildSchade_georef_processed.parquet",
+      "kbo_wbe" = "Data_Partij_Cleaned_processed.parquet",
+      "waarnemingen" = "waarnemingen_wild_zwijn_processed.parquet"
+    )
   
-  readS3(file = dataFile, bucket = bucket, envir = environment())
+  rawData <- read_parquet(file = file.path("s3:/", bucket, dataFile))
   
   return(rawData)
   
 }
+
+
 
 
 #' Read gemeentes data
@@ -303,7 +304,7 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   # Keep after schadeCodes to give them raw list names
   names(schadeTypes) <- rawData$group_display[match(schadeTypes, rawData$group)]
   
-  # List with all patterns to search for in indieningType per schadeChoice
+  # List with all data sources
   sources <- rawData[rawData$variable == "source", c("name", "name_display")]
   sourcesSchade <- sapply(unique(sources$name_display), function(x)
     sources$name[sources$name_display == x], simplify = FALSE)

@@ -38,6 +38,7 @@ test_that("List available files", {
     # List all available files on the S3 bucket
     tmpTable <- aws.s3::get_bucket_df(
       bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")))
+    tmpTable <- tmpTable[order(as.numeric(tmpTable$Size), decreasing = TRUE), ]
 #    write.csv(tmpTable, file = file.path(system.file("extdata", package = "reportingGrofwild"), "tmpTable.csv"))
     # unique(tmpTable$Key)
     
@@ -188,8 +189,8 @@ test_that("Schade data & metadata", {
         "\nUpdate schadeCodes in loadMetaSchade() functie.")
     }
     
-    # check for schadeSources (indieningType) to add to schadeSources
-    indieningTypes <- unique(schadeData$indieningType)
+    # check for dataSources to add to schadeSources
+    indieningTypes <- unique(schadeData$dataSource)
     isPresent <- grepl(paste(metaSchade$sourcesSchade, collapse = "|"), indieningTypes)
     if (!all(isPresent)) {
       warning("Nieuw indieningType gedetecteerd in schade data: ", 

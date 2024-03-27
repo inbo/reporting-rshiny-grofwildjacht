@@ -34,20 +34,18 @@ test_that("Number of cases per region level", {
     
     xtabs(~ wildsoort + afschotjaar, data = schadeData)
     
-    regionLevels <- setdiff(names(spatialData), "provincesVoeren")
-    regionLevels <- regionLevels[!grepl("WBE", regionLevels)]
-    
-    for (regionLevel in regionLevels) {
+    for (regionLevel in names(spatialData)[1:5]) {
       
       for (iSpecies in species) {
         
         spaceData <- createSpaceData(
-          data = sf::st_drop_geometry(schadeData), 
+          data = schadeData, 
           allSpatialData = spatialData,
           year = 2020,
           species = iSpecies,
           regionLevel = regionLevel,
-          unit = "absolute"
+          unit = "absolute",
+          sourceIndicator = "HVV_Wilder"
         )
         
         if (doPrint) {
@@ -166,7 +164,7 @@ test_that("Counts per year and province", {
     countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders")
     
     myResult <- countYearProvince(data = wildSchadeData, jaartallen = 2018:2020, type = "provinces",
-      sourceIndicator = "E-loket")
+      sourceIndicator = "E_Loket")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

@@ -26,6 +26,12 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r locaties}
+biotoopLocaties <- if (req(input$dash_regionLevel) == "flanders") 
+  biotoopData[[input$dash_regionLevel]]$regio[1] else 
+  input$dash_locaties
+``` 
+
 
 # ACHTERGRONDINFORMATIE
 
@@ -37,7 +43,7 @@ knitr::opts_chunk$set(
 incProgress(amount = 0.1, detail = "Achtergrondinformatie")
 
 tmpFile <- tempfile(fileext = ".html")
-htmlwidgets::saveWidget(results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
+htmlwidgets::saveWidget(dash_results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
 webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 ```
 
@@ -48,7 +54,7 @@ print(HTML(uiText[uiText$plotFunction == "barBiotoop", "dash"]))
 ```
 
 ```{r biotoopPlot}
-plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties))$plot)
+plotlyReport(barBiotoop(data = subset(biotoopData[[input$dash_regionLevel]], regio %in% biotoopLocaties))$plot)
 ```
 
 ```{r biotoopTableText, results = 'asis'}
@@ -57,8 +63,8 @@ print(HTML(uiText[uiText$plotFunction == "tableBackground", "dash"]))
 
 ```{r biotoopTable}
 myTable <- tableBackground(data = rbind(
-  subset(biotoopData[[input$dash_regionLevel]], regio %in% input$dash_locaties), 
-  biotoopData$flanders))$data
+    subset(biotoopData[[input$dash_regionLevel]], regio %in% biotoopLocaties), 
+    biotoopData$flanders))$data
 tmpTable <- DT::datatable(myTable, rownames = FALSE,
                           options = list(dom = 't', pageLength = -1))
 DT::formatStyle(tmpTable,

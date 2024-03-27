@@ -53,7 +53,6 @@ commonNames <- names(ecoData)[names(ecoData) %in% names(geoData)]
 combinedRee <- merge(geoData[geoData$wildsoort == "Ree", ], 
   ecoData, by = commonNames, all.x = TRUE)
 
-gc()
 
 
 test_that("The map", {
@@ -213,7 +212,7 @@ test_that("Map schade", {
 
 test_that("Trend schade", {
     
-    schadeDataSub <- subset(schadeData, wildsoort = species[1])
+    schadeDataSub <- schadeData[schadeData$wildsoort == species[1], ]
     
     trendRegionData <- createTrendData(
       data = sf::st_drop_geometry(schadeDataSub),

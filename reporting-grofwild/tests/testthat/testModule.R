@@ -9,7 +9,8 @@ context("Test Shiny Modules")
 # Load all data
 readS3(file = "spatialData_sf.RData")
 
-ecoData <- loadRawData(type = "eco")
+
+
 geoData <- loadRawData(type = "geo")
 biotoopData <- loadHabitats()
 
@@ -18,11 +19,11 @@ test_that("Module mapFlanders", {
     shiny::testServer(mapFlandersServer, 
       args = list(
         
-        defaultYear = 2021,
+        defaultYear = 2022,
         species = reactive("Wild zwijn"),
-        type = "empty",
-        regionLevel = reactive("provinces"),
-        locaties = reactive(c("Antwerpen", "Limburg")),
+        type = "grofwild",
+        regionLevel = reactive("communes"),
+        locaties = reactive(NULL),
         geoData = reactive(geoData[geoData$wildsoort == "Wild zwijn", ]),
         biotoopData = biotoopData,
         allSpatialData = spatialData,
@@ -33,6 +34,34 @@ test_that("Module mapFlanders", {
         expect_true(TRUE)
         
       })
+    
+  })
+
+
+test_that("Profile Shiny Module", {
+    
+    skip("Only used for debugging")
+    
+    profvis(
+      runApp(shinyApp(
+          fluidPage(
+            mapFlandersUI(id = "test",
+              plotDetails = c()
+#          plotDetails = c("flanders", "region")
+            )
+          ),
+          function(input, output, session) {
+            mapFlandersServer(id = "test", 
+              defaultYear = 2022,
+              species = reactive("Wild zwijn"),
+              type = "grofwild",
+              geoData = reactive(geoData[geoData$wildsoort == "Wild zwijn", ]),
+              biotoopData = biotoopData,
+              allSpatialData = spatialData,
+              hideGlobeDefault = FALSE)
+          }
+        ))
+    )
   })
 
 

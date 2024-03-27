@@ -167,10 +167,18 @@ results$dash_kencijfersData <- reactive({
     dataSingleEntry <- if (req(input$dash_regionLevel) != "flanders") {
         
         validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
-        filterGeo(data = everGeoAll, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties, choseByID = FALSE)
         
-      } else {     
+        filterGeo(
+          data = everGeoAll, 
+          regionLevel = input$dash_regionLevel, 
+          locaties = input$dash_locaties, 
+          choseByID = FALSE
+        )
+        
+      } else {  
+        
         everGeoAll
+        
       }
     
     dataSingleEntry[ ,.(aantal= sum(aantal)), 

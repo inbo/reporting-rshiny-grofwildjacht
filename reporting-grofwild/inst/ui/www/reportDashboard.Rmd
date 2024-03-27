@@ -96,18 +96,15 @@ cat("## Tabel kencijfer\n")
 kencijferResult <- dash_results[["dash_F18_8"]]()
 resTable <- kencijferResult$table
 
-resTable[resTable$category == "Totaal aantal gemeentes","municipality"] <- NA
-resTable[,1] <- paste(  resTable[,"category"], resTable[,"count"], sep = ": ")
-rownames(resTable) <- NULL
+resTable[,1] <- paste(resTable[,"categorie"], resTable[,"aantal_categorie"], sep = ": ")
 
-cityList <-   na.omit(resTable[,"municipality"])
-
+cityList <-   na.omit(resTable[,"gemeente"])
 
 colorList <- ifelse((cityList %in% kencijferResult$observed) & (! cityList %in% kencijferResult$shot),
-                    "#ef8a62",
-                    ifelse(
-                      (cityList %in% kencijferResult$observed) & ( cityList %in% kencijferResult$shot), 
-                      "transparent", "#67a9cf") )
+  "#ef8a62",
+  ifelse(
+    (cityList %in% kencijferResult$observed) & ( cityList %in% kencijferResult$shot), 
+    "transparent", "#67a9cf") )
 
 names(colorList) <- cityList
 
@@ -127,11 +124,11 @@ tb <- DT::datatable(
 
 if(length(cityList) > 0 & length(input[["dash_F18_8-dataSource_kencijfer"]]) == 2) {
   
-    tb <- DT::formatStyle(tb,
-      columns = 2,
-      valueColumns = 2,
-      backgroundColor = DT::styleEqual(unique(cityList), colorList)
-    )
+  tb <- DT::formatStyle(tb,
+    columns = 2,
+    valueColumns = 2,
+    backgroundColor = DT::styleEqual(unique(cityList), colorList)
+  )
 }else{
   
   tb

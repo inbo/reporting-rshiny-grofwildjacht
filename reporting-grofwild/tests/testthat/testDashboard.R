@@ -434,7 +434,7 @@ test_that("F04_3", {
   })
 
 
-test_that("tabelKencijfers function behaves as expected", {
+test_that("F18_8 Kencijfers table", {
     
     everGeoAll <- rbind(
       # waarnemingen
@@ -443,9 +443,12 @@ test_that("tabelKencijfers function behaves as expected", {
       geoData,
       fill = TRUE)    
     
+    everGeoAll <- everGeoAll[ , .(aantal = sum(aantal)), 
+      by = .(gemeente_afschot_locatie, provincie, dataSource, afschotjaar)]
+    
     # Test case 1: Check if the function runs without errors
     expect_s3_class(everGeoAll, "data.table")
-    result <-tabelKencijfers(everGeoAll)
+    result <- tabelKencijfers(everGeoAll)
     expect_is(result, "list")
     
     # Test case 2: Check if the result table has the correct structure
@@ -460,4 +463,3 @@ test_that("tabelKencijfers function behaves as expected", {
     )
     
   })
-

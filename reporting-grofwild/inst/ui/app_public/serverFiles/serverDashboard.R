@@ -357,8 +357,7 @@ dash_results$dash_F18_1 <- barDraagkrachtServer(id = "dash_F18_1",
 dash_results$dash_F18_8 <- kencijferModuleServer(
   id = "dash_F18_8",
   kencijfersData = results$dash_kencijfersData,
-  species = results$dash_species,
-  uiText = uiText
+  species = results$dash_species
 )
 
 

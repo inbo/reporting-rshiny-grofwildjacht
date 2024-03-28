@@ -110,7 +110,7 @@ tabelKencijfers <- function(data,
     levels = unique(resultTable$categorie))
   
   ## current year provincie table 
-
+  
   if( nrow(dataCurrentYear) > 0 ){
     tableCount <- data.table::dcast(dataCurrentYear, gemeente_afschot_locatie ~dataSource, value.var = "aantal", fill = NA, drop = FALSE, fun.agg = sum)
     
@@ -123,19 +123,19 @@ tabelKencijfers <- function(data,
     if ("waarnemingen.be" %in% colnames(finalTable))
       colnames(finalTable)[colnames(finalTable) == "waarnemingen.be"] <- "waarnemingen" else
       finalTable$waarnemingen <- NA      
-      
+    
     finalTable <- finalTable[, c("categorie", "aantal_categorie", "gemeente", "afschot", "waarnemingen")]
-        
+    
   }else{
     finalTable <- resultTable 
   }
-        
+  
   rownames(finalTable) <- NULL
   
   
   # Format table
   resTable <- finalTable[,c("categorie", "aantal_categorie", "gemeente")]
-  resTable[,1] <- paste(  resTable[,"categorie"], resTable[,"aantal"], sep = ": ")
+  resTable[,1] <- paste(resTable[,"categorie"], resTable[,"aantal_categorie"], sep = ": ")
   
   cityList <-  na.omit(resTable[,"gemeente"])
   
@@ -183,7 +183,7 @@ tabelKencijfers <- function(data,
       data = finalTable
     ))
   
-
+  
 }
 
 
@@ -260,60 +260,60 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       ns <- session$ns
       
-          output$kencijferFilter <- renderUI({
+      output$kencijferFilter <- renderUI({
           
-            req(kencijfersData())    
-              dataSource <- unique(kencijfersData()$dataSource)
-              names(dataSource) <- gsub("\\..+", "", dataSource )
-              
-              tagList(
-                div(class = "sliderBlank",
-                  sliderInput(inputId = ns("jaar_kencijfer"), label = "Jaar",
-                    value = max(kencijfersData()$afschotjaar, na.rm = TRUE),
-                    min = min(kencijfersData()$afschotjaar, na.rm = TRUE),
-                    max = max(kencijfersData()$afschotjaar, na.rm = TRUE),
-                    step = 1,
-                    sep = "")),
-                
-                selectInput(inputId = ns("dataSource_kencijfer"),
-                  label = "Data bron",
-                  selected = dataSource,
-                  choices =  dataSource,
-                  multiple = TRUE)
-              )
-            })
+          req(kencijfersData())    
+          dataSource <- unique(kencijfersData()$dataSource)
+          names(dataSource) <- gsub("\\..+", "", dataSource )
           
-          output$sliderObserve <- renderUI({
-              
-            req(kencijfersData())
-              sliderInput(
-                inputId = ns("thresholdWaarnemingen"),
-                label = "Waarnemingen drempel",
-                value = results$observeThreshold,
-                min = 1,
-                max = 10,
+          tagList(
+            div(class = "sliderBlank",
+              sliderInput(inputId = ns("jaar_kencijfer"), label = "Jaar",
+                value = max(kencijfersData()$afschotjaar, na.rm = TRUE),
+                min = min(kencijfersData()$afschotjaar, na.rm = TRUE),
+                max = max(kencijfersData()$afschotjaar, na.rm = TRUE),
                 step = 1,
-                sep = ""
-              )
-            })
-          
-          
-          output$sliderAfschot <- renderUI({
-              maxSchot <- max(10,  max(kencijfersData()[(dataSource == "afschot") &(afschotjaar ==  input$jaar_kencijfer), "aantal"], na.rm = TRUE))
-              
-              sliderInput(
-                inputId = ns("thresholdAfschot"),
-                label = "Afschot drempel",
-                value = min(results$shotThreshold, maxSchot),
-                min = 1,
-                max =  maxSchot,
-                step = 1,
-                sep = ""
-              )
-            })
-  
+                sep = "")),
+            
+            selectInput(inputId = ns("dataSource_kencijfer"),
+              label = "Data bron",
+              selected = dataSource,
+              choices =  dataSource,
+              multiple = TRUE)
+          )
+        })
       
-     observeEvent(input$jaar_kencijfer, {
+      output$sliderObserve <- renderUI({
+          
+          req(kencijfersData())
+          sliderInput(
+            inputId = ns("thresholdWaarnemingen"),
+            label = "Waarnemingen drempel",
+            value = results$observeThreshold,
+            min = 1,
+            max = 10,
+            step = 1,
+            sep = ""
+          )
+        })
+      
+      
+      output$sliderAfschot <- renderUI({
+          maxSchot <- max(10,  max(kencijfersData()[(dataSource == "afschot") &(afschotjaar ==  input$jaar_kencijfer), "aantal"], na.rm = TRUE))
+          
+          sliderInput(
+            inputId = ns("thresholdAfschot"),
+            label = "Afschot drempel",
+            value = min(results$shotThreshold, maxSchot),
+            min = 1,
+            max =  maxSchot,
+            step = 1,
+            sep = ""
+          )
+        })
+      
+      
+      observeEvent(input$jaar_kencijfer, {
           
           req(input$thresholdAfschot)
           
@@ -343,7 +343,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$kencijfer_table <- DT::renderDataTable(
         results$res()$table
       )
-     
+      
       
       ## download button 
       output$dataDownload <- downloadHandler(
@@ -358,5 +358,5 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       return(reactive(results$res()))
     })
-
+  
 }

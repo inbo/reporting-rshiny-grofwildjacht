@@ -13,12 +13,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libudunits2-0 \
     libmagick++-dev \
     libssl-dev \
+    lmodern \
+    fonts-cantarell \
+    texlive-plain-generic \
+    texlive-fonts-extra \
     && rm -rf /var/lib/apt/lists/*
 
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr'))"
+RUN R -q -e "remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'kableExtra'))"
 RUN R -q -e "remotes::install_cran(c('arrow'))"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', repos = 'https://cloud.r-project.org', upgrade = 'never')" 
@@ -35,7 +39,7 @@ RUN R -q -e "remotes::install_github('daattali/shinycssloaders')"
 # For the rmarkdown pdf report
 RUN R -e "tinytex::install_tinytex()" 
 ENV PATH="/root/bin:${PATH}" 
-RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grffile'))" 
+RUN R -e "tinytex::tlmgr_install(pkgs = c('fancyhdr', 'sectsty', 'titling', 'grffile', 'texlive-scripts'))" 
 
 # For downloading the maps
 # Attention: do not install phantomjs directly, will not work then!

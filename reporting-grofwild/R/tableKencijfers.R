@@ -8,10 +8,14 @@
 #' 
 #' @author mvarewyck
 #' @export
-summarizeKencijferData <- function(geoData, biotoopData, unit) {
+summarizeKencijferData <- function(geoData, biotoopData, 
+  unit = c("absolute", "relative", "relativeDekking")) {
+  
+  
+  unit <- match.arg(unit)
   
   # Calculate sum per gemeente/provincie/dataSource/afschotjaar
-  geoData[ ,.(aantal= sum(aantal)), 
+  geoData <- geoData[ ,.(aantal= sum(aantal)), 
     by = .(gemeente_afschot_locatie, provincie, dataSource, afschotjaar)]
   
   
@@ -28,7 +32,7 @@ summarizeKencijferData <- function(geoData, biotoopData, unit) {
       geoData <- merge(geoData, biotoopData[, c("regio", areaVariable)],
         by.x = "gemeente_afschot_locatie", by.y = "regio")
     
-    geoData$aantal <- geoData$aantal/geoData[[areaVariable]]
+    geoData$aantal <- round(geoData$aantal/geoData[[areaVariable]], 2)
     geoData[[areaVariable]] <- NULL
     
   }
@@ -53,20 +57,19 @@ summarizeKencijferData <- function(geoData, biotoopData, unit) {
 #' is \code{"afschot"} or \code{"both"}
 #' @return A list containing the formatted table and raw summary data (for download) 
 #' @import data.table
+#' @importFrom kableExtra kbl column_spec row_spec
 #' @author yzhang
 #' @export
 #' @importFrom stats na.exclude
 
-tabelKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
+tableKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
   bron = c("both", "waarnemingen.be", "afschot"),
-  unit = c("absolute", "relative", "relativeDekking"),
   ns = function(x) x,
   thresholdWaarnemingen = 0,
   thresholdAfschot = 0){
   
   
   bron <- match.arg(bron)
-  unit <- match.arg(unit)
   
   # For R CMD check
   gemeente_afschot_locatie <- afschotjaar <- dataSource <- aantal <- NULL
@@ -78,7 +81,7 @@ tabelKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
         afschotjaar %in% c(jaar, period[1]:period[2]), 
       relevantColumns, with = FALSE])
   
-  # Select current & reference period
+  # Select current & reference period - average over reference period
   dataSubset <- dataSubset[, period := ifelse(afschotjaar == jaar, "current", "previous")]
   dataSubset <- data.table::dcast(dataSubset, gemeente_afschot_locatie + dataSource ~ period, value.var = "aantal",
     fill = NA, fun.agg = function(x) mean(x, na.rm = TRUE))
@@ -144,12 +147,12 @@ tabelKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
     levels = unique(resultTable$categorie))
   
   ## current year provincie table 
-  
-  if (nrow(dataCurrentYear) > 0){
+  if (!all(is.na(dataSubset$current))){
     
-    tableCount <- data.table::dcast(dataSubset, gemeente_afschot_locatie ~ dataSource, value.var = "current", fill = NA, drop = FALSE)
+    tableCount <- data.table::dcast(dataSubset, gemeente_afschot_locatie ~ dataSource, 
+      value.var = "current", fill = NA, drop = FALSE)
     
-    finalTable <-  merge(resultTable, tableCount, 
+    finalTable <- merge(resultTable, tableCount, 
       by.x = "gemeente", by.y = "gemeente_afschot_locatie", all.x = TRUE, sort = FALSE)
     
     # sort back to original order
@@ -169,11 +172,14 @@ tabelKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
   
   rownames(finalTable) <- NULL
 
-  # Format table
+  # Format HTML table
   resTable <- finalTable[, c("categorie", "aantal_categorie", "gemeente")]
   resTable[,1] <- paste(resTable[, "categorie"], resTable[, "aantal_categorie"], sep = ": ")
   
   cityList <-  na.omit(resTable[,"gemeente"])
+  
+  observedCities <- dataSubset[dataSource == "waarnemingen.be" & current >= thresholdWaarnemingen, "gemeente_afschot_locatie"]
+  afschotCities <- dataSubset[dataSource == "afschot" & current >= thresholdAfschot, "gemeente_afschot_locatie"]
   
   colorList <- ifelse((cityList %in% observedCities) & (!cityList %in% afschotCities),
     "#ef8a62",
@@ -213,9 +219,23 @@ tabelKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
     )
   
   
+  # Format PDF table
+  simpleTable <- finalTable
+  simpleTable$categorie <- as.character(simpleTable$categorie)
+  simpleTable$aantal_categorie[duplicated(simpleTable$categorie)] <- ""
+  simpleTable$categorie[duplicated(simpleTable$categorie)] <- ""
+  simpleTable[simpleTable$categorie == "Totaal aantal gemeentes", c("afschot", "waarnemingen")] <- ""
+
+  pdfTable <- kbl(simpleTable, booktabs = TRUE, format = "latex", longtable = TRUE, linesep = "") %>%
+    column_spec(which(colnames(finalTable) == "gemeente"), 
+      color = ifelse(is.na(colorList[finalTable$gemeente]), "#FFFFFF", colorList[finalTable$gemeente])) %>%
+    row_spec(row = (which(simpleTable$categorie != "")-1)[-1], hline_after = TRUE)
+  
+  
   return(
     list(
-      table = formattedTable,
+      htmlTable = formattedTable,
+      pdfTable = pdfTable,
       data = finalTable
     ))
   
@@ -318,13 +338,13 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
           req(input$year)
           
-          sliderInput(inputId = ns("period"), 
+          suppressWarnings(sliderInput(inputId = ns("period"), 
             label = "Referentie periode", 
             value = c(input$year-5, input$year-1),
             min = min(kencijfersData()$afschotjaar, na.rm = TRUE),
             max = max(kencijfersData()$afschotjaar, na.rm = TRUE),
             step = 1,
-            sep = "")
+            sep = ""))
           
         })
       
@@ -405,7 +425,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           req(input$bron)
           req(input$year)
           
-          tabelKencijfers(
+          tableKencijfers(
             data = req(kencijferSummarized()), 
             jaar = as.numeric(input$year),
             period = input$period,
@@ -418,7 +438,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
         })
       
       output$kencijfer_table <- DT::renderDataTable(
-        results$res()$table
+        results$res()$htmlTable
       )
       
       

@@ -438,15 +438,16 @@ test_that("F18_8 Kencijfers table", {
     summaryData <- summarizeKencijferData(
       geoData = everGeoAll,
       biotoopData = biotoopData$communes,
-      unit = c("absolute", "relative", "relativeDekking")[2]
+      unit = c("absolute", "relative", "relativeDekking")[1]
     )
     # Test case 1: Check if the function runs without errors
     expect_s3_class(everGeoAll, "data.table")
-    result <- tabelKencijfers(data = summaryData)
+    result <- tableKencijfers(data = summaryData, jaar = 2020, thresholdAfschot = 1, thresholdWaarnemingen = 1)
     expect_is(result, "list")
     
     # Test case 2: Check if the result table has the correct structure
-    expect_true("table" %in% names(result))
+    expect_true("htmlTable" %in% names(result))
+    expect_true("pdfTable" %in% names(result))
     expect_true("data" %in% names(result))
     expect_length(unique(result$data[,1]), 4)
     

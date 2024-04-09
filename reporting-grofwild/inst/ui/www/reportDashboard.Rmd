@@ -9,7 +9,9 @@ output:
       logo: NULL
       bigLogoSize: 15cm
       always_allow_html: yes
-      latex_engine: pdflatex 
+      latex_engine: xelatex
+header-includes:
+  - \usepackage{array}   
 editor_options: 
   chunk_output_type: console
 ---

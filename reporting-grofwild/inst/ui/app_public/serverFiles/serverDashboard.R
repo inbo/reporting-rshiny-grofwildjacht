@@ -347,7 +347,7 @@ dash_results$dash_F18_1 <- barDraagkrachtServer(id = "dash_F18_1",
 dash_results$dash_F18_8 <- kencijferModuleServer(
   id = "dash_F18_8",
   kencijfersData = results$dash_geoData,
-  biotoopData = reactive(biotoopData[[req(input$dash_regionLevel)]]),
+  biotoopData = reactive(biotoopData$communes),
   species = results$dash_species
 )
 

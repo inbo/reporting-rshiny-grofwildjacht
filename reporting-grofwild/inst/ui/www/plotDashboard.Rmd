@@ -68,7 +68,7 @@ if (any(allParams %in% currentParams)) {
 print(HTML(decodeText(text = uiText[uiText$plotFunction == id, "dash"], statsMap = params$statsMap)))
 ```
     
-```{r results = if (!is.null(params$table) && is(params$table, "datatables")) "markup" else "asis"}  
+```{r results = "asis"}  
 tryCatch({
     if (is(params$plot, "leaflet")) {
       
@@ -77,11 +77,11 @@ tryCatch({
       htmlwidgets::saveWidget(params$plot, file = tmpFile, selfcontained = FALSE)
       webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
       
-    } else if (is(params$table, "datatables")){
-      # DT
-      # alternatives: https://stackoverflow.com/a/64727692
-      # kable(params$data)
-      params$table
+    } else if (is(params$pdfTable, "knitr_kable")){
+      
+      # kable
+      params$pdfTable
+      
     } else if (is(params$plot, "plotly")) {
       
       # plotly

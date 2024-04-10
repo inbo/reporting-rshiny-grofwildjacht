@@ -7,10 +7,13 @@
 #' @return data.table
 #' 
 #' @author mvarewyck
+#' @import data.table
 #' @export
 summarizeKencijferData <- function(geoData, biotoopData, 
   unit = c("absolute", "relative", "relativeDekking")) {
   
+  # For R CMD check
+  aantal <- gemeente_afschot_locatie <- provincie <- dataSource <- afschotjaar <- NULL
   
   unit <- match.arg(unit)
   
@@ -47,15 +50,17 @@ summarizeKencijferData <- function(geoData, biotoopData,
 #' 
 #' The summary table of number of municipalities for selected year compared to reference period.
 #' Benchmarking is applied to the observation and shot
-#' data. Municipality is retained in the summary if there is any animal shot.
+#' data. Municipality is retained in the summary if there is any animal shot/observed.
 #' @param data data.table, as returned by \code{\link{summarizeKencijferData}}
-#' @param bron data bron, it should be one of the \code{"waarnemingen.be", "afschot", "both"}
 #' @param jaar the year for which summary of municipalities' observed and shot animal stats
-#' @param thresholdWaarnemingen threshold for number of animals observed, needs to be specified if \code{"bron"}
-#' is \code{"waarnemingen.be"} or \code{"both"}
-#' @param thresholdAfschot threshold for number of animals shot, needs to be specified if \code{"bron"}
-#' is \code{"afschot"} or \code{"both"}
-#' @return A list containing the formatted table and raw summary data (for download) 
+#' @param period numeric vector of length 2. years for the reference period
+#' @param bron character, data source. It should be one of \code{c("waarnemingen.be", "afschot", "both")}
+#' @param ns function, for unique identifiers in the shiny module
+#' @param thresholdWaarnemingen numeric. threshold for number of animals observed.
+#' needs to be specified if \code{"bron"} is \code{"waarnemingen.be"} or \code{"both"}
+#' @param thresholdAfschot numeric. threshold for number of animals shot.
+#' needs to be specified if \code{"bron"} is \code{"afschot"} or \code{"both"}
+#' @return A list containing the formatted table (html or pdf) and raw summary data (for download) 
 #' @import data.table
 #' @importFrom kableExtra kbl column_spec row_spec
 #' @author yzhang
@@ -72,7 +77,7 @@ tableKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
   bron <- match.arg(bron)
   
   # For R CMD check
-  gemeente_afschot_locatie <- afschotjaar <- dataSource <- aantal <- NULL
+  gemeente_afschot_locatie <- afschotjaar <- dataSource <- current <- previous <- NULL
   
   relevantColumns <- c("afschotjaar", "provincie", "gemeente_afschot_locatie", "dataSource", "aantal")
   stopifnot(relevantColumns %in% colnames(data))
@@ -300,6 +305,7 @@ kencijferModuleUI <- function(id, uiText) {
 #' @inheritParams optionsModuleServer 
 #' @param kencijfersData geo data for given region
 #' @param species a reactive value of the name of the animal species
+#' @inheritParams summarizeKencijferData
 #' @inheritParams kencijferModuleUI
 #' @import shiny
 #' @importFrom DT JS formatStyle styleEqual
@@ -308,6 +314,9 @@ kencijferModuleUI <- function(id, uiText) {
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, 
   biotoopData, species){
+  
+  # For R CMD check
+  afschotjaar <- NULL
   
   results <- reactiveValues(
     observeThreshold = 1, 

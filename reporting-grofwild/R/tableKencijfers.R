@@ -348,7 +348,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           req(input$year)
           
           suppressWarnings(sliderInput(inputId = ns("period"), 
-            label = "Referentie periode", 
+            label = "Referentieperiode", 
             value = c(input$year-5, input$year-1),
             min = min(kencijfersData()$afschotjaar, na.rm = TRUE),
             max = max(kencijfersData()$afschotjaar, na.rm = TRUE),

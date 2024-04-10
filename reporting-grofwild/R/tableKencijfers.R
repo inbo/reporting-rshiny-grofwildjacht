@@ -13,7 +13,7 @@ summarizeKencijferData <- function(geoData, biotoopData,
   unit = c("absolute", "relative", "relativeDekking")) {
   
   # For R CMD check
-  aantal <- gemeente_afschot_locatie <- provincie <- dataSource <- afschotjaar <- NULL
+  aantal <- gemeente_afschot_locatie <- provincie <- dataSource <- afschotjaar <- . <- NULL
   
   unit <- match.arg(unit)
   

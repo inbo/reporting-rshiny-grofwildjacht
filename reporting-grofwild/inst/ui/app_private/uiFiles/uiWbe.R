@@ -104,6 +104,10 @@ tagList(
       countAgeGenderUI(id = "wbe", uiText = uiText),
       countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
       
+      conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
+        countYearAgeUI(id = "wbe", uiText = uiText)
+      ),
+      
       conditionalPanel("input.wbe_species == 'Ree'",
         ageGenderLowerJawUI(id = "wbe", regionLevels = NULL, uiText = uiText),    
         percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText)

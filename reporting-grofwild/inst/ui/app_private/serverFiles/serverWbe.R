@@ -275,6 +275,10 @@ countAgeCheekServer(id = "wbe",
   timeRange = results$wbe_timeRange
 )
 
+countYearAgeServer(id = "wbe",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange)
+
 
 # Plot 7: Onderkaaklengte per jaar
 results$wbe_typesGender <- reactive({

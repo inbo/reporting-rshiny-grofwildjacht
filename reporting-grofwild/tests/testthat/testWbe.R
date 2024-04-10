@@ -256,6 +256,11 @@ test_that("Additional plots", {
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
     
+    myResult <- countYearAge(data = combinedRee, jaartallen = 2009:2020)
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
     myResult <- boxAgeGenderLowerJaw(data = combinedRee, type = c("Kits", "Jongvolwassen", "Volwassen"))
     expect_is(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

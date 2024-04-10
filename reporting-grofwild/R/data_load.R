@@ -12,12 +12,14 @@
 loadShapeData <- function(WBE_NR = NULL,
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
+  if (is.na(WBE_NR))
+    return(NULL)
   
   if (is.null(WBE_NR) | length(WBE_NR) > 100) {
     # From 100 it is faster to load single object, but requires more memory (+-80 MB)
     readS3(file = "spatialDataWBE_sf.RData", envir = environment())
     return(spatialDataWBE)
-}
+  }
   
   # 1st layer (WBE)
   readS3(file = paste0("spatialDataWBE/", WBE_NR[1], ".RData"), bucket = bucket, 

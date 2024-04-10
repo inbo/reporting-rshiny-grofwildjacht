@@ -373,6 +373,10 @@ createRawData <- function(
     rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
           c("verbatimCoordinateUncertainty", "WBE_Naam_Georef", "KboNummer_Georef")]]
     
+    # Missing partijnummer for ANB regions
+    toReplace <- is.na(rawData$PartijNummer) & grepl("ANB_", rawData$WBE_Naam_Toek)
+    rawData$PartijNummer[toReplace] <- rawData$KboNummer_Toek[toReplace]
+    
     # For binding with waarnemingen data
     rawData$dataSource <- "afschot"
     rawData$aantal <- 1

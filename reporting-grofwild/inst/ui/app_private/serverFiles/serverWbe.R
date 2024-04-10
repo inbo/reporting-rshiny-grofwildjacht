@@ -253,7 +253,9 @@ countYearShotServer(id = "wbe_jachtmethode",
 # Plot4: Schademeldingen
 mapSchadeServer(id = "wbe",
   schadeData = results$wbe_schadeData, 
-  allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())), 
+  allSpatialData = reactive(
+    filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())
+  ), 
   timeRange = reactive({
       schadeRange <- range(results$wbe_schadeData()$afschotjaar)
       c(max(2014, schadeRange[1]), schadeRange[2])

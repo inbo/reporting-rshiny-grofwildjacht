@@ -220,6 +220,8 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
   # Filter NA's
   plotData <- plotData[!is.na(plotData$freq), ]
   
+  if (nrow(plotData) == 0)
+    return(NULL)
   
   # Create plot
   pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~freq,

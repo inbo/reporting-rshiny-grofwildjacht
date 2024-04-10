@@ -179,7 +179,7 @@ mapSchade <- function(
     palette <- colorFactor(colors, levels(schadeData$variable))
          
     
-    if (is.null(regionLevel)) {
+    if (is.null(regionLevel) | is.null(allSpatialData[[regionLevel]])) {
       centerView <- getCenterView(schadeData)
     } else {
       centerView <- getCenterView(allSpatialData[[regionLevel]])
@@ -211,7 +211,7 @@ mapSchade <- function(
               lat1 = centerView[3], lat2 = centerView[4])
     
     # Add black borders
-    if (!is.null(regionLevel)) {
+    if (!is.null(regionLevel) & !is.null(allSpatialData[[regionLevel]])) {
         
         myMap <- addPolylines(
                 map = myMap,

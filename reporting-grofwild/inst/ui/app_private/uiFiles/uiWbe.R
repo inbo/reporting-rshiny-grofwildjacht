@@ -78,13 +78,9 @@ tagList(
           "Jachtmethode" = "jachtmethode_comp")
       ),
       
-      ## tableSpecies: wild zwijn and ree
-      conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", {
-          
-          countYearShotUI(id = "wbe_labeltype", groupVariable = "labeltype", uiText = uiText)
-          
-        }),
-      
+      conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
+          countYearShotUI(id = "wbe_labeltype", groupVariable = "labeltype", uiText = uiText)          
+        ),
       
       countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText)
     ),
@@ -113,15 +109,16 @@ tagList(
         percentageRealisedShotUI(id = "wbe", showAccuracy = TRUE, uiText = uiText)
       ),
 
+      bioindicatorSection(id = "wbe", uiText = uiText),
       
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
-        bioindicatorSection(id = "wbe", uiText = uiText),
         conditionalPanel("input.wbe_species == 'Ree'",
           plotBioindicatorUI("wbe_onderkaak", bioindicator = "onderkaaklengte", regionLevels = NULL, uiText = uiText),
           plotBioindicatorUI("wbe_gewicht", bioindicator = "ontweid_gewicht", regionLevels = NULL, uiText = uiText)
-        ),
-        countEmbryosUI("wbe", regionLevels = NULL)
-      )
+        )
+      ),
+      countEmbryosUI("wbe", regionLevels = NULL)
+    
     )
   )
 

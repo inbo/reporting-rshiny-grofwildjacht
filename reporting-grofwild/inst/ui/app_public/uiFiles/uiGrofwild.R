@@ -50,47 +50,31 @@ tagList(
         
         h2("Extra Figuren en Tabellen"),
         
-        ## tableProvince for "leeftijd": wild zwijn and ree
-        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
-              
+        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'",
              tableProvinceUI(id = "wild", uiText = uiText)
-              
-            }),
+            ),
         
-
-        ## countYearProvince: all species
         countYearProvinceUI(id = "wild", uiText = uiText),
+        countAgeCheekUI(id = "wild", uiText = uiText),
         
-        ## countAgeCheek & countYearAge & percentageYearlyShotAnimals
-        ## countAgeGender & boxAgeWeight
-        ## - Wild zwijn and Ree
-        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
-              
-              tagList(
-                  countAgeCheekUI(id = "wild", uiText = uiText),
-                  
-                  countYearAgeUI(id = "wild", uiText = uiText),
-                  
-                  countYearShotUI(id = "wild_leeftijd", groupVariable = "leeftijd_comp",
-                    regionLevels = c(1:2,4), uiText = uiText),
-                  
-                  yearlyShotAnimalsUI(id = "wild", uiText = uiText),
-                  
-                  countAgeGenderUI(id = "wild", uiText = uiText),
-                  
-                  boxAgeWeightUI(id = "wild", uiText = uiText)
-              )
-              
-            }),
+        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'",
+          countYearAgeUI(id = "wild", uiText = uiText)
+        ),
         
+        countYearShotUI(id = "wild_leeftijd", groupVariable = "leeftijd_comp",
+          regionLevels = c(1:2,4), uiText = uiText),
         
-        ## boxAgeGenderLowerJaw
-        ## - Ree
+        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'",
+          yearlyShotAnimalsUI(id = "wild", uiText = uiText)
+        ),
+        
+        countAgeGenderUI(id = "wild", uiText = uiText),
+        boxAgeWeightUI(id = "wild", uiText = uiText),
+        
         conditionalPanel("input.wild_species == 'Ree'", 
           ageGenderLowerJawUI(id = "wild", regionLevels = 1:2, uiText = uiText)
         ),
         
-        ## plot 11: Afschot per jachtmethode
         countYearShotUI(id = "wild_jachtmethode", groupVariable = "jachtmethode_comp",
           regionLevels = c(1:2,4), uiText = uiText),
         
@@ -99,22 +83,22 @@ tagList(
           boxRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2)
         ),
         
+        bioindicatorSection(id = "wild", uiText = uiText),
+        
         conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'", {
             
             tagList(
-              
-              bioindicatorSection(id = "wild", uiText = uiText),
               
               conditionalPanel("input.wild_species == 'Ree'",
                 plotBioindicatorUI(id = "wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
                 plotBioindicatorUI(id = "wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
               ),
-              
-              countEmbryosUI(id = "wild", regionLevels = 1:2)
             
             )
-          
-            })
+            
+          }),
+        
+        countEmbryosUI(id = "wild", regionLevels = 1:2)
           
     )
 

@@ -12,7 +12,7 @@
 loadShapeData <- function(WBE_NR = NULL,
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
-  if (is.na(WBE_NR))
+  if (all(is.na(WBE_NR)))
     return(NULL)
   
   if (is.null(WBE_NR) | length(WBE_NR) > 100) {

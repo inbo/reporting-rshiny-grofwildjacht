@@ -374,7 +374,8 @@ createRawData <- function(
           c("verbatimCoordinateUncertainty", "WBE_Naam_Georef", "KboNummer_Georef")]]
     
     # Missing partijnummer for ANB regions
-    toReplace <- is.na(rawData$PartijNummer) & grepl("ANB_", rawData$WBE_Naam_Toek)
+    toReplace <- is.na(rawData$PartijNummer) & 
+      grepl("ANB_|Afwijking Jachtdecreet_|Bestrijding_|OJ_", rawData$WBE_Naam_Toek)
     rawData$PartijNummer[toReplace] <- rawData$KboNummer_Toek[toReplace]
     
     # For binding with waarnemingen data
@@ -671,7 +672,7 @@ createSpreadData <- function(
       
     })
     
-    s3save(spreadData, bucket = bucket, object = "spreadData_sf.RData")
+#    s3save(spreadData, bucket = bucket, object = "spreadData_sf.RData")
     
     return(TRUE)
 

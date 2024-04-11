@@ -18,7 +18,6 @@ Imports:
     htmltools,
     htmlwidgets,
     INBOtheme, 
-    kableExtra,
     leaflet, 
     methods, 
     mgcv, 
@@ -36,6 +35,7 @@ Imports:
     units,
     webshot
 Suggests:
+    kableExtra,
     lwgeom,
     magick,
     oaStyle,

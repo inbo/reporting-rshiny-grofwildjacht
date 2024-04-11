@@ -77,11 +77,18 @@ tryCatch({
       htmlwidgets::saveWidget(params$plot, file = tmpFile, selfcontained = FALSE)
       webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
       
-    } else if (is(params$pdfTable, "knitr_kable")){
+    } else if (!is.null(params$pdfTable)){
       
-      # kable
-      params$pdfTable
-      
+      # kableExtra formatting doesn't work if doing within function tableKencijfers()
+      # Related to? https://stackoverflow.com/a/73613023
+#      params$pdfTable
+      myKable <- kableExtra::kbl(params$pdfTable, booktabs = TRUE, format = "latex", longtable = TRUE, linesep = "")
+      myKable <- kableExtra::column_spec(myKable, column = which(colnames(params$pdfTable) == "gemeente"), 
+          background = ifelse(is.na(params$colorList[params$pdfTable$gemeente]), 
+            "#FFFFFF", 
+            params$colorList[params$pdfTable$gemeente]))
+      kableExtra::row_spec(myKable, row = (which(params$pdfTable$categorie != "")-1)[-1], hline_after = TRUE)
+
     } else if (is(params$plot, "plotly")) {
       
       # plotly

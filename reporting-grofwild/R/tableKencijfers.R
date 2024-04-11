@@ -62,7 +62,6 @@ summarizeKencijferData <- function(geoData, biotoopData,
 #' needs to be specified if \code{"bron"} is \code{"afschot"} or \code{"both"}
 #' @return A list containing the formatted table (html or pdf) and raw summary data (for download) 
 #' @import data.table
-#' @importFrom kableExtra kbl column_spec row_spec
 #' @author yzhang
 #' @export
 #' @importFrom stats na.exclude
@@ -229,18 +228,14 @@ tableKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
   simpleTable$categorie <- as.character(simpleTable$categorie)
   simpleTable$aantal_categorie[duplicated(simpleTable$categorie)] <- ""
   simpleTable$categorie[duplicated(simpleTable$categorie)] <- ""
-  simpleTable[simpleTable$categorie == "Totaal aantal gemeentes", c("afschot", "waarnemingen")] <- ""
+  simpleTable[simpleTable$categorie == "Totaal aantal gemeentes", c("gemeente", "afschot", "waarnemingen")] <- ""
 
-  pdfTable <- kbl(simpleTable, booktabs = TRUE, format = "latex", longtable = TRUE, linesep = "") %>%
-    column_spec(which(colnames(finalTable) == "gemeente"), 
-      color = ifelse(is.na(colorList[finalTable$gemeente]), "#FFFFFF", colorList[finalTable$gemeente])) %>%
-    row_spec(row = (which(simpleTable$categorie != "")-1)[-1], hline_after = TRUE)
-  
   
   return(
     list(
       htmlTable = formattedTable,
-      pdfTable = pdfTable,
+      pdfTable = simpleTable,
+      colorList = colorList,
       data = finalTable
     ))
   

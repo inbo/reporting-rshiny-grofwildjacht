@@ -26,6 +26,7 @@ knitr::opts_chunk$set(
   fig.width = 10, 
   fig.height = 8
 )
+options(tinytex.tlmgr_update = FALSE)
 ```
 
 ```{r locaties}

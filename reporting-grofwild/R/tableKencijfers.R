@@ -382,15 +382,20 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$sliderObserve <- renderUI({
           
           req(kencijferSummarized())
-          maxWaarnemingen <- max(10, max(kencijferSummarized()[(dataSource == "waarnemingen.be") & (afschotjaar == input$year), "aantal"], na.rm = TRUE))
+          req(input$year)
+          valueChoices <- kencijferSummarized()[(dataSource == "waarnemingen.be") & (afschotjaar == input$year), aantal]
+          if (Inf %in% valueChoices)
+            valueChoices <- valueChoices[valueChoices != Inf]
+          maxWaarnemingen <- max(if (input$unit == "absolute") 10 else 5, 
+            max(valueChoices, na.rm = TRUE))
           
           sliderInput(
             inputId = ns("thresholdWaarnemingen"),
             label = "Waarnemingen drempel",
             value = min(results$observeThreshold, maxWaarnemingen),
-            min = 1,
+            min = if (input$unit == "absolute") 1 else 0,
             max = maxWaarnemingen,
-            step = 1,
+            step = if (input$unit == "absolute") 1 else 0.1,
             sep = ""
           )
         })
@@ -399,15 +404,20 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$sliderAfschot <- renderUI({
           
           req(kencijferSummarized())
-          maxSchot <- max(10, max(kencijferSummarized()[(dataSource == "afschot") & (afschotjaar == input$year), "aantal"], na.rm = TRUE))
+          req(input$year)
+          valueChoices <- kencijferSummarized()[(dataSource == "afschot") & (afschotjaar == input$year), aantal]
+          if (Inf %in% valueChoices)
+            valueChoices <- valueChoices[valueChoices != Inf]
+          maxSchot <- max(if (input$unit == "absolute") 10 else 5, 
+            max(valueChoices, na.rm = TRUE))
           
           sliderInput(
             inputId = ns("thresholdAfschot"),
             label = "Afschot drempel",
             value = min(results$shotThreshold, maxSchot),
-            min = 1,
+            min = if (input$unit == "absolute") 1 else 0,
             max =  maxSchot,
-            step = 1,
+            step = if (input$unit == "absolute") 1 else 0.1,
             sep = ""
           )
         })

@@ -348,6 +348,7 @@ dash_results$dash_F18_8 <- kencijferModuleServer(
   id = "dash_F18_8",
   kencijfersData = results$dash_geoData,
   biotoopData = reactive(biotoopData$communes),
+  timeRange = results$dash_timeRange,
   species = results$dash_species
 )
 

@@ -264,13 +264,13 @@ kencijferModuleUI <- function(id, uiText) {
         tags$p(HTML(decodeText(text = uiText$dash))),
         column(4,
           wellPanel(
+            uiOutput(ns("filterYear")),
+            uiOutput(ns("filterPeriod")),
             selectInput(inputId = ns("unit"), label = "Eenheid",
               choices = c(
                 "Aantal" = "absolute", 
                 "Aantal/100ha" = "relative", 
                 "Aantal/100ha bos & natuur" = "relativeDekking")),
-            uiOutput(ns("filterYear")),
-            uiOutput(ns("filterPeriod")),
             uiOutput(ns("filterSource")),
             conditionalPanel(
               condition = "input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
@@ -299,6 +299,7 @@ kencijferModuleUI <- function(id, uiText) {
 #' kencijfer table module server
 #' @inheritParams optionsModuleServer 
 #' @param kencijfersData geo data for given region
+#' @param timeRange numeric vector of length 2 with time range (in year) for year filters
 #' @param species a reactive value of the name of the animal species
 #' @inheritParams summarizeKencijferData
 #' @inheritParams kencijferModuleUI
@@ -308,10 +309,10 @@ kencijferModuleUI <- function(id, uiText) {
 #' @export
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, 
-  biotoopData, species){
+  biotoopData, timeRange, species){
   
   # For R CMD check
-  afschotjaar <- NULL
+  afschotjaar <- aantal <- NULL
   
   results <- reactiveValues(
     observeThreshold = 1, 
@@ -326,13 +327,11 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       output$filterYear <- renderUI({
           
-          req(kencijfersData())    
-          
           div(class = "sliderBlank",
             sliderInput(inputId = ns("year"), label = "Jaar",
-              value = max(kencijfersData()$afschotjaar, na.rm = TRUE),
-              min = min(kencijfersData()$afschotjaar, na.rm = TRUE),
-              max = max(kencijfersData()$afschotjaar, na.rm = TRUE),
+              value = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
+              min = min(timeRange()),
+              max = max(timeRange()),
               step = 1,
               sep = ""))
           
@@ -345,8 +344,8 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           suppressWarnings(sliderInput(inputId = ns("period"), 
             label = "Referentieperiode", 
             value = c(input$year-5, input$year-1),
-            min = min(kencijfersData()$afschotjaar, na.rm = TRUE),
-            max = max(kencijfersData()$afschotjaar, na.rm = TRUE),
+            min = min(timeRange()),
+            max = max(timeRange()),
             step = 1,
             sep = ""))
           

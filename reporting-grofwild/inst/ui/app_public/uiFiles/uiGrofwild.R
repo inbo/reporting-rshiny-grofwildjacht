@@ -50,9 +50,7 @@ tagList(
         
         h2("Extra Figuren en Tabellen"),
         
-        conditionalPanel("input.wild_species == 'Wild zwijn' || input.wild_species == 'Ree'",
-             tableProvinceUI(id = "wild", uiText = uiText)
-            ),
+        tableProvinceUI(id = "wild", uiText = uiText),
         
         countYearProvinceUI(id = "wild", uiText = uiText),
         countAgeCheekUI(id = "wild", uiText = uiText),

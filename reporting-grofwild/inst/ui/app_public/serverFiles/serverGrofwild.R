@@ -203,8 +203,10 @@ results$typesFemale <- reactive({
     
     types <- if (input$wild_species == "Ree") {
       types[types %in% c("Reegeit", "Smalree")] 
-    } else {
+    } else if (input$wild_species == "Wild zwijn"){
       types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+    } else {
+      types[types %in% c("Kalf (v)", "Smaldier", "Hinde")]        
     }
   
     c(types, "Onbekend")

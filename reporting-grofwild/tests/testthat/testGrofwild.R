@@ -418,6 +418,25 @@ test_that("Number of embryos (bio-indicator)", {
       })
     
   })
+  
+test_that("Bug #471 to fix", {
+    
+    ecoData <- loadRawData(type = "eco")
+    
+    plotData <- countEmbryos(data = ecoData[ecoData$wildsoort == "Damhert", ], type = "Onbekend")$data
+    sum(plotData$Freq)
+    # [1] 19
+
+    filterData <- ecoData[ecoData$type_comp == "Onbekend" & ecoData$wildsoort == "Damhert", ]
+    nrow(filterData)
+    # [1] 19
+
+    table(filterData$geslacht_comp)
+    # 
+    # Vrouwelijk  Mannelijk   Onbekend 
+    #          8          1         10 
+
+  })
 
 
 ## THE MAP

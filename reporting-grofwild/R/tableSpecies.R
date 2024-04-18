@@ -49,7 +49,9 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
   summaryData$freq <- NULL
   
   # Add 'totaal'
-  levelsCategorie <- c(loadMetaEco(species = wildNaam)[[categorie]], "Totaal")
+  levelsCategorie <- c(loadMetaEco(species = wildNaam)[[categorie]], 
+    if ("Onbekend" %in% levels(droplevels(summaryData$categorie))) "Onbekend", 
+    "Totaal")
   
   # Add categorie with 0 observations
   fullData <- expand.grid(

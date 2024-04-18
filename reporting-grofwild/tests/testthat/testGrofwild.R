@@ -419,23 +419,24 @@ test_that("Number of embryos (bio-indicator)", {
     
   })
   
-test_that("Bug #471 to fix", {
-    
-    ecoData <- loadRawData(type = "eco")
-    
-    plotData <- countEmbryos(data = ecoData[ecoData$wildsoort == "Damhert", ], type = "Onbekend")$data
-    sum(plotData$Freq)
-    # [1] 19
-
-    filterData <- ecoData[ecoData$type_comp == "Onbekend" & ecoData$wildsoort == "Damhert", ]
-    nrow(filterData)
-    # [1] 19
-
-    table(filterData$geslacht_comp)
-    # 
-    # Vrouwelijk  Mannelijk   Onbekend 
-    #          8          1         10 
-
+test_that("Fixing bug #471", {
+   
+    sapply(allSpecies, function(iSpecies) {
+      
+      filterData <- ecoData[ecoData$type_comp == "Onbekend" & 
+          ecoData$wildsoort == iSpecies & 
+          ecoData$geslacht_comp != "Mannelijk" &
+          !(ecoData$geslacht_comp == "Onbekend" & ecoData$type_comp == "Onbekend"), ]
+      if (nrow(filterData) > 0)
+        plotData <- countEmbryos(data = ecoData[ecoData$wildsoort == iSpecies, ], type = "Onbekend")$data else
+        plotData <- NULL
+      
+      
+      data.frame(filter = nrow(filterData), countEmbryos = sum(plotData$Freq))
+#      table(filterData$type_comp)
+      
+    })
+   
   })
 
 

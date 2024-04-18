@@ -47,7 +47,10 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
  
  # Select data of specified years and type
  plotData <- subset(data, data$afschotjaar %in% jaartallen & 
-     data$type_comp %in% type,
+     data$type_comp %in% type & 
+     # exclude males & totally unknown
+     data$geslacht_comp != "Mannelijk" & 
+     !(data$geslacht_comp == "Onbekend" & data$type_comp == "Onbekend"),
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
      "leeftijd_comp_bron", "geslacht_comp_bron", "leeftijd_comp_inbo"))
  nRecords <- nrow(plotData)

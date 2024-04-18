@@ -95,13 +95,9 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 		tableAssignedData <- assignedData[assignedData$jaar == jaar, ]
 	
 	# Define names and ordering of factor levels
-	if (categorie == "leeftijd" & wildNaam == "Wild zwijn") {  # wild zwijn for leeftijd
+	if (categorie == "leeftijd") {  # wild zwijn for leeftijd
 		
-		levelsCategorie <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
-		
-	} else if (categorie == "leeftijd" & wildNaam == "Ree") {  # ree for leeftijd
-		
-		levelsCategorie <- c("Kits", "Jongvolwassen", "Volwassen", "Onbekend")
+		levelsCategorie <- c(loadMetaEco(species = wildNaam)$leeftijd_comp, "Onbekend")
 		
 	} else if (grepl("type", categorie) & wildNaam == "Ree") {  # ree for type
 		

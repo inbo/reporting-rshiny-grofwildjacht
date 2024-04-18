@@ -23,6 +23,12 @@ waarnemingenData <- loadRawData(type = "waarnemingen")
 waarnemingenData <- waarnemingenData[waarnemingenData$afschotjaar <= 
     format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), ]
 
+everGeoAll <- rbind(
+  # waarnemingen
+  data.table::as.data.table(waarnemingenData),
+  # afschot
+  geoData,
+  fill = TRUE)
 
 biotoopData <- loadHabitats()
 
@@ -84,13 +90,6 @@ test_that("F16_1", {
 test_that("F17_1", {
     
     regionLevel <- c("communes", "utm5")[2]
-    
-    everGeoAll <- rbind(
-      # waarnemingen
-      data.table::as.data.table(waarnemingenData),
-      # afschot
-      geoData,
-      fill = TRUE)
     
     spaceData <- createSpaceData(
       data = everGeoAll, 
@@ -434,30 +433,28 @@ test_that("F04_3", {
   })
 
 
-test_that("tabelKencijfers function behaves as expected", {
+test_that("F18_8 Kencijfers table", {
     
-    everGeoAll <- rbind(
-      # waarnemingen
-      data.table::as.data.table(waarnemingenData),
-      # afschot
-      geoData,
-      fill = TRUE)    
-    
+    summaryData <- summarizeKencijferData(
+      geoData = everGeoAll,
+      biotoopData = biotoopData$communes,
+      unit = c("absolute", "relative", "relativeDekking")[1]
+    )
     # Test case 1: Check if the function runs without errors
     expect_s3_class(everGeoAll, "data.table")
-    result <-tabelKencijfers(everGeoAll)
+    result <- tableKencijfers(data = summaryData, jaar = 2020, thresholdAfschot = 1, thresholdWaarnemingen = 1)
     expect_is(result, "list")
     
     # Test case 2: Check if the result table has the correct structure
-    expect_true("table" %in% names(result))
-    expect_true("observed" %in% names(result))
-    expect_length(unique(result$table[,1]), 4)
+    expect_true("htmlTable" %in% names(result))
+    expect_true("pdfTable" %in% names(result))
+    expect_true("data" %in% names(result))
+    expect_length(unique(result$data[,1]), 4)
     
     expect_equal(
-      as.numeric(unique(result$table[  result$table[,1] == "Dezelfde gemeentes",2])) +
-        as.numeric(unique(result$table[  result$table[,1] == "Nieuwe gemeentes",2])) ,
-      as.numeric(result$table[1,2])
+      as.numeric(unique(result$data[result$data[,1] == "Dezelfde gemeentes",2])) +
+        as.numeric(unique(result$data[result$data[,1] == "Nieuwe gemeentes",2])) ,
+      as.numeric(result$data[1,2])
     )
     
   })
-

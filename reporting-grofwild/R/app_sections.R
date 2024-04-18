@@ -18,6 +18,8 @@
 welcomeSectionUI <- function(id, uiText, maxDate = NA) {
   
   description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
+  # Handling embedded quoting
+  description <- gsub("\\\\", "\"", description)
   
   # Replace last date
   if (!is.na(maxDate))

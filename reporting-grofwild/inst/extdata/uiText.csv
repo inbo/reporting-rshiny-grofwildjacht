@@ -97,12 +97,12 @@ De vraag die werd gesteld was <b>'Hoe aanvaardbaar vind je volgende maatregelen 
 <i>Opmerking: Data voor de bron waarnemingen.be is beperkt wegens vertragingen in de dataflow.</i>";""
 "46";"F17_4";"Toekomstig verspreidingsgebied";"";"";"";"Het toekomstig verspreidingsgebied is het resultaat van een verspreidingsmodel. Het verspreidingsgebied waarin everzwijnen als 'al aanwezig' worden gerapporteerd zijn gebasseerd op afschotstatistieken van 2 jaar voor het jaar van de voorspellingen. Let op! Aangezien het hier over een model gaat, moeten de voorspellingen met de nodige achtergrond worden geinterpreteerd, voor meer informatie verwijzen we naar het <a href=\https://purews.inbo.be/ws/portalfiles/portal/57669897/Rutten_etal_2021_ModelleringVerspreidingEverzwijnVlaanderen.pdf\ target = \_blank\>rapport (Rutten et al.)</a> . Bij de 2x2 UTM schaal wordt Voeren niet meegenomen in het model wegens technische beperkingen.";""
 "47";"F18_1";"Inschatting populatiegroei";"";"";"";"";""
-"48";"F18_8";"Tabel kencijfers";"";"";"";"<ul><li><b>Totaal aantal gemeentes :</b> Totaal aantal gemeentes binnen de gekozen regio boven de drempelwaarde voor afschot en/of waarnemingen.
-<li><b>Dezelfde gemeentes :</b> Aantal gemeentes binnen de gekozen regio die 2 opeenvolgende jaren<sup>1</sup> boven de drempelwaarde van afschot en/of waarnemingen uitkomen.
-<li><b>Nieuwe gemeentes :</b> Aantal gemeentes binnen de gekozen regio die voor het gekozen jaar boven de drempelwaarde van afschot en/of waarnemingen uitkomen en het voorgaande jaar onder de drempelwaarde.
-<li><b>Niet meer in deze gemeentes :</b> Aantal gemeentes binnen de gekozen regio die voor het gekozen jaar onder de drempelwaarde van afschot en/of waarnemingen uitkomen en het voorgaande jaar boven de drempelwaarde.<br><br>
+"48";"F18_8";"Kencijfers";"";"";"";"<ul><li><b>Totaal aantal gemeentes :</b> Totaal aantal gemeentes binnen de gekozen regio boven de drempelwaarde voor afschot en/of waarnemingen.
+<li><b>Dezelfde gemeentes :</b> Aantal gemeentes binnen de gekozen regio waar de aantallen<sup>1</sup> boven de drempelwaarde van afschot en/of waarnemingen uitkomen.
+<li><b>Nieuwe gemeentes :</b> Aantal gemeentes binnen de gekozen regio die voor het gekozen jaar boven de drempelwaarde van afschot en/of waarnemingen uitkomen en waar het gemiddelde van de referentieperiode onder de drempelwaarde uitkwam.
+<li><b>Niet meer in deze gemeentes :</b> Aantal gemeentes binnen de gekozen regio die voor het gekozen jaar onder de drempelwaarde van afschot en/of waarnemingen uitkomen en het gemiddelde van de referentieperiode boven de drempelwaarde uitkwam.<br><br>
   
-  <sup>1</sup>Het gekozen jaar ten opzichte van het voorgaande. <br><br>
+  <sup>1</sup>Het gekozen jaar en gemiddelde van de referentieperiode<br><br>
   
-  Door op de rij van deze tabel te klikken krijgt u een lijst van de gemeentes die aan de voorwaarden van de rij voldoen. <br><i>Gemeentes die in het <b>oranje</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor waarnemingen. <br>Gemeentes die in het <b>wit</b> worden geaccentueerd voldoen aan beide dermpelwaardes. <br>Gemeentes die in het <b>blauw</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor afschot. </i>
+  Door op de rij van deze tabel te klikken krijgt u een lijst van de gemeentes die aan de voorwaarden van de rij voldoen. <br><i>Gemeentes die in het <b>oranje</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor waarnemingen. <br>Gemeentes die in het <b>wit</b> worden geaccentueerd voldoen aan beide drempelwaardes. <br>Gemeentes die in het <b>blauw</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor afschot. </i>
   ";""

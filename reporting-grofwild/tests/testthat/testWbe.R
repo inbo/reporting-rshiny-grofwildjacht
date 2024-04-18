@@ -21,6 +21,8 @@ toekenningsData <- loadToekenningen()
 # currentKbo <- 445465768
 # currentKbo <- unique(geoData$KboNummer_Toek) # multiple -> INBO
 currentKbo <- unique(geoData$KboNummer_Toek[geoData$WBE_Naam_Toek %in% "De Zwarte Beek"])
+## ANB region
+# currentKbo <- unique(geoData$KboNummer_Toek[geoData$WBE_Naam_Toek %in% "ANB_Meerdaal"])
 # Find KBO with many species
 # which.max(sapply(allWbe, function(wbe) length(unique(geoData$wildsoort[geoData$KboNummer_Toek == wbe]))))
 matchingWbeData <- loadRawData(type = "kbo_wbe")
@@ -252,6 +254,11 @@ test_that("Additional plots", {
     expect_s3_class(myResult$data, "data.frame")
     
     myResult <- countAgeCheek(data = combinedRee, jaartallen = 2009:2020)
+    expect_is(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+    myResult <- countYearAge(data = combinedRee, jaartallen = 2009:2020)
     expect_is(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")

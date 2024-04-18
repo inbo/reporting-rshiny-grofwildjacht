@@ -253,7 +253,9 @@ countYearShotServer(id = "wbe_jachtmethode",
 # Plot4: Schademeldingen
 mapSchadeServer(id = "wbe",
   schadeData = results$wbe_schadeData, 
-  allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())), 
+  allSpatialData = reactive(
+    filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())
+  ), 
   timeRange = reactive({
       schadeRange <- range(results$wbe_schadeData()$afschotjaar)
       c(max(2014, schadeRange[1]), schadeRange[2])
@@ -274,6 +276,10 @@ countAgeCheekServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange
 )
+
+countYearAgeServer(id = "wbe",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange)
 
 
 # Plot 7: Onderkaaklengte per jaar
@@ -319,9 +325,12 @@ results$typesFemale <- reactive({
     
     types <- if (input$wbe_species == "Ree") {
       types[types %in% c("Reegeit", "Smalree")] 
-    } else {
+    } else if (input$wbe_species == "Wild zwijn"){
       types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+    } else {
+      types[types %in% c("Kalf (v)", "Smaldier", "Hinde")]        
     }
+  
     c(types, "Onbekend")
     
   })

@@ -103,7 +103,7 @@ tagList(
     ),
     
     tags$div(id = "dash_populatieF18_8",
-      kencijferModuleUI(id = "dash_F18_8")
+      kencijferModuleUI(id = "dash_F18_8", uiText = uiText)
     ),
     
     # Jacht

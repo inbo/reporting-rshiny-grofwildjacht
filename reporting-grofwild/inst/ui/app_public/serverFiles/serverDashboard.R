@@ -155,29 +155,27 @@ results$dash_ecoData <- reactive({
       
       validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
       
-      filterGeo(data = everEcoData, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties)
+      filterGeo(data = everEcoData, regionLevel = input$dash_regionLevel, 
+        locaties = input$dash_locaties)
       
     } else everEcoData
     
   })
 
-
-results$dash_kencijfersData <- reactive({
+results$dash_geoData <- reactive({
     
-    dataSingleEntry <- if (req(input$dash_regionLevel) != "flanders") {
-        
-        validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
-        filterGeo(data = everGeoAll, regionLevel = input$dash_regionLevel, locaties = input$dash_locaties, choseByID = FALSE)
-        
-      } else {     
-        everGeoAll
-      }
-    
-    dataSingleEntry[ ,.(aantal= sum(aantal)), 
-      by = .(gemeente_afschot_locatie, provincie, dataSource, afschotjaar)]
+    if (req(input$dash_regionLevel) != "flanders") {
+      
+      validate(need(input$dash_locaties, "Gelieve regio('s) te selecteren"))
+      
+      filterGeo(data = everGeoAll,regionLevel = input$dash_regionLevel, 
+        locaties = input$dash_locaties, 
+        choseByID = FALSE
+      )
+      
+    } else everGeoAll
     
   })
-
 
 results$dash_schadeData <- reactive({
     
@@ -348,9 +346,10 @@ dash_results$dash_F18_1 <- barDraagkrachtServer(id = "dash_F18_1",
 
 dash_results$dash_F18_8 <- kencijferModuleServer(
   id = "dash_F18_8",
-  kencijfersData = results$dash_kencijfersData,
-  species = results$dash_species,
-  uiText = uiText
+  kencijfersData = results$dash_geoData,
+  biotoopData = reactive(biotoopData$communes),
+  timeRange = results$dash_timeRange,
+  species = results$dash_species
 )
 
 

@@ -5,7 +5,7 @@ default:
     id: Sys.getenv('AWS_ACCESS_KEY_ID')
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
   datacheck: false
-  defaultYear: 2022
+  defaultYear: 2023
 
 uat:
   datacheck: false

@@ -54,13 +54,13 @@ optionsModuleUI <- function(id,
         uiOutput(ns("type")),
       if (!is.null(regionLevels))
         fluidRow(
-            column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+            column(12, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                     choices = c(
                       "Vlaanderen" = "flanders", 
                       "Provincie" = "provinces", 
                       "Fusiegemeenten" = "communes", 
                       "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
-            column(8, uiOutput(ns("region")))
+            column(11, offset = 1, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
         selectInput(inputId = ns("dataSource_schade"), 
@@ -259,11 +259,15 @@ optionsModuleServer <- function(input, output, session,
   
   ## this is applicable for 
   ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+  ## FIGUUR: Verdeling afschot over de jaren
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   
   observe({
       
+      req(!is.null(input$type))
+      
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
+        
         if (input$dataSource_leeftijd == "both") {
           
           ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier

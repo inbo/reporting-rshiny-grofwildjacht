@@ -105,7 +105,7 @@ tagList(
       countAgeCheekUI(id = "wbe", showAccuracy = TRUE, uiText = uiText),
       
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
-        countYearAgeUI(id = "wbe", uiText = uiText)
+        countYearAgeUI(id = "wbe", uiText = uiText, showRegion = FALSE)
       ),
       
       conditionalPanel("input.wbe_species == 'Ree'",

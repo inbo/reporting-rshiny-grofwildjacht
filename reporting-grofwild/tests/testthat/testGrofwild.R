@@ -33,6 +33,23 @@ test_that("Single province per municipality", {
 })
 
 
+test_that("No forest in biotoopData", {
+    
+    skip("GIT issue #385")
+    
+    toInspect <- lapply(names(biotoopData), function(iLevel){
+        tmp <- biotoopData[[iLevel]][biotoopData[[iLevel]][, "Area_hab_km2_bos"] == 0, ]
+        if (nrow(tmp) != 0) {
+          tmp$level <- iLevel
+          tmp
+        } else NULL
+      })
+    toReturn <- Reduce(function(x,y) merge(x,y, all=TRUE), toInspect[!sapply(toInspect, is.null)])
+    toReturn <- toReturn[order(toReturn$level), ]
+        
+  })
+
+
 
 test_that("Load grofwild data", {
     

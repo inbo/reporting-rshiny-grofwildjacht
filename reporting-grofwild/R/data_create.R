@@ -672,7 +672,7 @@ createSpreadData <- function(
       
     })
     
-#    s3save(spreadData, bucket = bucket, object = "spreadData_sf.RData")
+    s3save(spreadData, bucket = bucket, object = "spreadData_sf.RData")
     
     return(TRUE)
 

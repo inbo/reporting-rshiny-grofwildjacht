@@ -156,7 +156,7 @@ test_that("Schade data & metadata", {
     
     # Data Checks
     schadeData <- loadRawData(type = "wildschade")
-    expect_is(schadeData, "sf", info = "WildSchade_georef.csv")
+    expect_is(schadeData, "data.frame", info = "WildSchade_georef.csv")
     
     # Correct names for commune shape data?
     notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes$NAAM)

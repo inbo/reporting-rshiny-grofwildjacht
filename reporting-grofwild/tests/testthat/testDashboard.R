@@ -379,7 +379,7 @@ test_that("F18_1", {
 # Toekomstig verspreidingsgebied
 test_that("F17_4", {
     
-    readS3(file = "spreadData.RData")
+    readS3(file = "spreadData_sf.RData")
     
     myMap <- mapSpread(
       spreadShape = spreadData[[1]], 

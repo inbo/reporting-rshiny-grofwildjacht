@@ -86,7 +86,7 @@ boxAgeWeight <- function(data,
 	plotData <- subset(plotData, leeftijd %in% type)
   
 	# For optimal displaying in the plot
-	colors <- replicateColors(values = unique(plotData$geslacht))$colors
+	colors <- replicateColors(values = levels(droplevels(plotData$geslacht)))$colors
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))
 	nIndices <- nrow(totalCounts)/2

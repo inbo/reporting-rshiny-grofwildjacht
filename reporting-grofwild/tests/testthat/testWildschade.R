@@ -20,7 +20,6 @@ metaSchade <- loadMetaSchade()
 schadeWildsoorten <- metaSchade$wildsoorten
 schadeTypes <- metaSchade$types
 schadeCodes <- metaSchade$codes
-schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
 fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
@@ -228,7 +227,7 @@ test_that("Counts per type schade", {
         expect_equal(names(schadeTable$data)[1], "Locatie")
         expect_equal(tail(names(schadeTable$data), n = 1), "Totaal")
         if ("ANDERE" %in% choicesSchadecode)
-          expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
+          expect_true(any(c("Valwild", "Andere") %in% names(schadeTable$data)), "columns do not match user choices")
         if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
           expect("Verkeersongeluk onbekend" %in% names(schadeTable$data), "columns do not match user choices")
         

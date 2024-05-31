@@ -51,6 +51,6 @@ reporting-grofwild/inst/extdata/spatialData*.RData
 /reporting-grofwild/man/
 /reporting-grofwild/NAMESPACE/
 
-# Local copy of S3 files
+# Local copy of data files
 /dataS3
-
+/data

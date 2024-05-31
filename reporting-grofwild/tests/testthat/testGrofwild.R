@@ -437,6 +437,8 @@ test_that("Number of embryos (bio-indicator)", {
   })
   
 test_that("Fixing bug #471", {
+    
+    allSpecies <- unique(ecoData$wildsoort)
    
     sapply(allSpecies, function(iSpecies) {
       

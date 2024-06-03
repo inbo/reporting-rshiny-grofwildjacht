@@ -5,8 +5,8 @@ Title: Grof Wild analysis for INBO
 Type: Package
 Author: Machteld Varewyck, Laure Cougnaud, Eva Adriaensen
 Description: Data visualization of grof wild in Vlaanderen.
-Version: 0.3.4
-Date: 2024-03-05
+Version: 0.3.5
+Date: 2024-06-03
 Imports:
     arrow,
     aws.ec2metadata,

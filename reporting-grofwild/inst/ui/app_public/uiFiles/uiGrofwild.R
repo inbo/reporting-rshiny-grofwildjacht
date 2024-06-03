@@ -89,7 +89,7 @@ tagList(
               
               conditionalPanel("input.wild_species == 'Ree'",
                 plotBioindicatorUI(id = "wild_onderkaak", bioindicator = "onderkaaklengte", 
-                  regionLevels = c(1:2, 4), uiText = uiText),
+                  regionLevels = c(1:2, 4), showAccuracy = TRUE, uiText = uiText),
                 plotBioindicatorUI(id = "wild_gewicht", bioindicator = "ontweid_gewicht", 
                   regionLevels = c(1:2, 4), uiText = uiText),
               ),

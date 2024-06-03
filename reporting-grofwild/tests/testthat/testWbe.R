@@ -280,6 +280,13 @@ test_that("Additional plots", {
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
     
+    # Compare accuracy
+    value1 <- plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte", sourceIndicator = "meldingsformulier")$accuracy$value
+    value2 <- plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte", sourceIndicator = "both")$accuracy$value
+    value3 <- plotBioindicator(data = combinedRee, bioindicator = "onderkaaklengte", sourceIndicator = "inbo")$accuracy$value
+    expect_lte(value2, value1)
+    expect_lte(value3, value2)
+    
     myResult <- plotBioindicator(data = combinedRee, bioindicator = "ontweid_gewicht")
     expect_is(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

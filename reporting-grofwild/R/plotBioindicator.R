@@ -89,8 +89,15 @@ plotBioindicator <- function(data,
 		
 		# remove weights < 5kg or > 25kg
 		plotData <- plotData[plotData$variable >= 5 & plotData$variable <= 25, ]    
-		
-	}
+		accuracy <- NULL
+    
+	} else {
+    
+    # Calculate accuracy - github #332
+    accuracy <- round(mean(plotData$onderkaaklengte_correct, na.rm = TRUE) * 100, 1)
+    
+  }
+    
 	
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
@@ -139,7 +146,8 @@ plotBioindicator <- function(data,
 	pl$elementId <- NULL
 	
 	
-	return(list(plot = pl, data = plotData, warning = colorList$warning))
+	return(list(plot = pl, data = plotData, warning = colorList$warning,
+      accuracy = list(value = accuracy, total = nrow(plotData))))
 	
 }
 
@@ -184,11 +192,12 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @inheritParams plotBioindicatorServer
 #' @inheritParams optionsModuleUI
+#' @inheritParams countAgeCheekUI
 #' @inherit welcomeSectionUI
 #' 
 #' @export
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
-  regionLevels, uiText) {
+  regionLevels, showAccuracy = FALSE, uiText) {
   
   # For R CMD check
   variable <- NULL
@@ -216,7 +225,9 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
               ontweid_gewicht = c("leeftijd", "geslacht"),
               onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
             )),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
+          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
+          if (showAccuracy)
+            accuracyModuleUI(id = ns("plotBioindicator"), title = "Accuraatheid onderkaaklengte"),
         ),
         column(8, 
           plotModuleUI(id = ns("plotBioindicator"))

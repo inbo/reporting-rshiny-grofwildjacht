@@ -122,6 +122,7 @@ mapFlandersServer(id = "schade",
   type = "wildschade",
   species = reactive(req(input$schade_species)),
   geoData = results$schade_data,
+  biotoopData = biotoopData,
   allSpatialData = spatialData,
   sourceChoices = loadMetaSchade()$sources 
   )

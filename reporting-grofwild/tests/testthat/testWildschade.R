@@ -13,6 +13,8 @@ schadeData <- loadRawData(type = "wildschade")
 wildSchadeData <- subset(sf::st_drop_geometry(schadeData), 
   wildsoort %in% c("Wild zwijn", "Edelhert", "Ree", "Smient")[1])
 
+biotoopData <- loadHabitats()
+
 species <- sort(unique(schadeData$wildsoort))
    
 
@@ -40,11 +42,12 @@ test_that("Number of cases per region level", {
         spaceData <- createSpaceData(
           data = schadeData, 
           allSpatialData = spatialData,
+          biotoopData = biotoopData[[regionLevel]],
           year = 2020,
           species = iSpecies,
           regionLevel = regionLevel,
-          unit = "absolute",
-          sourceIndicator = "HVV_Wilder"
+          unit = c("absolute", "relative", "relativeDekking")[2],
+          sourceIndicator = c("Hist_PZ_CARMA", "Natuurpunt")
         )
         
         if (doPrint) {

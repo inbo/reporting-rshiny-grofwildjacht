@@ -479,10 +479,10 @@ test_that("The interactive map", {
           data = geoData, 
           allSpatialData = spatialData,
           biotoopData = biotoopData[[regionLevel]],
-          year = 2016,
+          year = 2007,
           species = iSpecies,
           regionLevel = regionLevel,
-          unit = c("absolute", "relative")[2]
+          unit = c("absolute", "relative", "relativeDekking")[3]
         )
         
         if (doPrint) {

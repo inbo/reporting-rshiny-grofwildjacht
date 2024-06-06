@@ -77,8 +77,8 @@ tagList(
           regionLevels = c(1:2, 4), uiText = uiText),
         
         conditionalPanel("input.wild_species == 'Ree'",
-          percentageRealisedShotUI(id = "wild", uiText = uiText, regionLevels = c(1:2, 4)),
-          boxRealisedShotUI(id = "wild", uiText = uiText, regionLevels = c(1:2, 4))
+          percentageRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2),
+          boxRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2)
         ),
         
         bioindicatorSection(id = "wild", uiText = uiText),

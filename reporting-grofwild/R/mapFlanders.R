@@ -723,7 +723,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData[[regionLevelLocal()]],
+            biotoopData = if (is.list(biotoopData))
+              biotoopData[[results$regionLevelLocal()]] else
+              biotoopData,
             year = input$year,
             species = species(),
             regionLevel = regionLevelLocal(),
@@ -1320,7 +1322,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
     "5x5 UTM" = "utm5"
   ),
-  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("flanders", "region"),
   showTitle = TRUE) {
   

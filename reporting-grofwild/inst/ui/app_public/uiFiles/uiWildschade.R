@@ -116,7 +116,9 @@ tagList(
       tableSchadeUI(id = "schade", uiText = uiText),
       
       ## tableGewas
-      tableGewasUI(id = "schade", uiText = uiText)
+      conditionalPanel("input.schade_code.indexOf('GEWAS') > -1",
+          tableGewasUI(id = "schade", uiText = uiText)
+      )
     
     ))
 

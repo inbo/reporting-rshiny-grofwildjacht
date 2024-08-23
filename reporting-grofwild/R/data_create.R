@@ -695,7 +695,7 @@ createHabitatData <- function(
 
   # spatialData - non WBE
   spatialData <- NULL
-  readS3(file = "spatialData_sf.RData")
+  readS3(file = "spatialData_sf.RData", envir = environment())
   
   allLevels <- list(
     "flanders" = "flanders_habitats", 

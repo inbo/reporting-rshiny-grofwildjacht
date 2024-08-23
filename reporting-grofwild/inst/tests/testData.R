@@ -240,6 +240,10 @@ test_that("Create habitat data", {
       )
     
     createHabitatData(dataDir = tempdir(), bucket = bucket)
+    
+    # check whether data is created correctly
+    biotoopData <- loadHabitats()
+    expect_is(biotoopData$communes$regio, "character")
   
   })
 

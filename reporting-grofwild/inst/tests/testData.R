@@ -222,6 +222,27 @@ test_that("Extra data", {
     
   })
 
+test_that("Create habitat data", {
+    
+    skip("This will update habitat processing data")
+    
+    bucket <- config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))
+    
+    # List all available files on the S3 bucket
+    tmpTable <- aws.s3::get_bucket_df(bucket = bucket)
+    
+    habitatFiles <- grep("habitats|wegdensiteit", tmpTable$Key, value = TRUE)
+    for (iFile in habitatFiles)
+      save_object(
+        object = iFile, 
+        bucket = bucket, 
+        file = file.path(tempdir(), iFile)
+      )
+    
+    createHabitatData(dataDir = tempdir(), bucket = bucket)
+  
+  })
+
 
 ## 5. Dashboard
 ## -------------

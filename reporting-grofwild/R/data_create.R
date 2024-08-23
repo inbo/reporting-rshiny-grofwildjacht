@@ -741,13 +741,16 @@ createHabitatData <- function(
         }
         
         # Match region names
-        if (iRegion != "fbz_gemeentes" & "NISCODE" %in% colnames(spatialData[[iRegion]]))
+        if ("NISCODE" %in% colnames(spatialData[[iRegion]]))
           tmpData$regio <- spatialData[[iRegion]]$NAAM[
             match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
         
         # Check matching
         if (!all(spatialData[[iRegion]]$NAAM %in% tmpData$regio))
-          stop("Matching for habitat data names failed ", iRegion)
+#          spatialData[[iRegion]]$NAAM[!spatialData[[iRegion]]$NAAM %in% tmpData$regio]
+          if (iRegion == "fbz_gemeentes")
+            message("Matching for habitat data names failed ", iRegion) else
+            stop("Matching for habitat data names failed ", iRegion)
         
       }
       

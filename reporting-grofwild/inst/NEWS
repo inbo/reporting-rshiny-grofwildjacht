@@ -2,6 +2,9 @@
     o add onderkaaklengte gauge bioindicator #332
     o add faunabeheerzones as choice for multiple graphs #473
     o fixed gender colors #474
+    o include choice aantal/100ha bos&natuur for map Flanders #385
+    o fix creation biotoopData #483
+    o fix #402, #392, #472, #475, #480, #464
 0.3.4
     o improve kencijfers table: #445
 0.3.3

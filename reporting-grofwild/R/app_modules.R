@@ -421,7 +421,6 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @importFrom utils write.table
 #' @importFrom DT datatable formatRound renderDataTable formatStyle styleEqual
 #' @importFrom flexdashboard renderGauge gauge gaugeSectors
-#' @importFrom plotly partial_bundle
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
@@ -589,13 +588,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
       })
   
   
-    output$plot <- renderPlotly({  
+  output$plot <- renderPlotly({  
         
-        tryCatch(
-          resultFct()$plot %>%
-            partial_bundle() %>%
-            config(toImageButtonOptions = list(width = 1300, height = 800)),
-          error = function(e) NULL)
+        resultFct()$plot %>%
+          config(toImageButtonOptions = list(width = 1300, height = 800))
         
       })
     

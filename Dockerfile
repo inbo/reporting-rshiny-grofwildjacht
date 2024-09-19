@@ -1,6 +1,6 @@
 FROM openanalytics/r-ver:4.0.5
 
-MAINTAINER Stijn Van Hoey stijn.vanhoey@inbo.be
+LABEL maintainer="Machteld Varewyck machteld.varewyck@openanalytics.eu"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gdal-bin \

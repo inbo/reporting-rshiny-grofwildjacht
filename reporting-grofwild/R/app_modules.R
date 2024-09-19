@@ -12,7 +12,7 @@
 #' @param showYear boolean, whether to show numeric input field for year selection
 #' @param showType, boolean, whether to select a select input field with type
 #' @param regionLevels numeric vector, if not NULL, defines the choices for 
-#' region levels: 1 = flanders, 2 = provinces, 3 = communes
+#' region levels: 1 = flanders, 2 = provinces, 3 = communes, 4 = faunabeheerzones
 #' @param summarizeBy character, choices to be shown as summary statistics
 #' (expect count or percent)
 #' @param exportData boolean, whether a download button for the data is shown

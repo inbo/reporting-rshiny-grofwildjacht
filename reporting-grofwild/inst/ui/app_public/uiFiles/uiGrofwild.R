@@ -70,11 +70,11 @@ tagList(
         boxAgeWeightUI(id = "wild", uiText = uiText),
         
         conditionalPanel("input.wild_species == 'Ree'", 
-          ageGenderLowerJawUI(id = "wild", regionLevels = 1:2, uiText = uiText)
+          ageGenderLowerJawUI(id = "wild", regionLevels = c(1:2, 4), uiText = uiText)
         ),
         
         countYearShotUI(id = "wild_jachtmethode", groupVariable = "jachtmethode_comp",
-          regionLevels = c(1:2,4), uiText = uiText),
+          regionLevels = c(1:2, 4), uiText = uiText),
         
         conditionalPanel("input.wild_species == 'Ree'",
           percentageRealisedShotUI(id = "wild", uiText = uiText, regionLevels = 1:2),
@@ -88,15 +88,17 @@ tagList(
             tagList(
               
               conditionalPanel("input.wild_species == 'Ree'",
-                plotBioindicatorUI(id = "wild_onderkaak", bioindicator = "onderkaaklengte", regionLevels = 1:2, uiText = uiText),
-                plotBioindicatorUI(id = "wild_gewicht", bioindicator = "ontweid_gewicht", regionLevels = 1:2, uiText = uiText),
+                plotBioindicatorUI(id = "wild_onderkaak", bioindicator = "onderkaaklengte", 
+                  regionLevels = c(1:2, 4), showAccuracy = TRUE, uiText = uiText),
+                plotBioindicatorUI(id = "wild_gewicht", bioindicator = "ontweid_gewicht", 
+                  regionLevels = c(1:2, 4), uiText = uiText),
               ),
             
             )
             
           }),
         
-        countEmbryosUI(id = "wild", regionLevels = 1:2)
+        countEmbryosUI(id = "wild", regionLevels = c(1:2, 4))
           
     )
 

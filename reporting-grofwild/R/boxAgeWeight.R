@@ -86,7 +86,7 @@ boxAgeWeight <- function(data,
 	plotData <- subset(plotData, leeftijd %in% type)
   
 	# For optimal displaying in the plot
-	colors <- replicateColors(values = unique(plotData$geslacht))$colors
+	colors <- replicateColors(values = levels(droplevels(plotData$geslacht)))$colors
 	
 	totalCounts <- count(plotData, vars = c("leeftijd", "geslacht"))
 	nIndices <- nrow(totalCounts)/2
@@ -188,7 +188,7 @@ boxAgeWeightUI <- function(id, uiText) {
         
         column(4,
           optionsModuleUI(id = ns("boxAgeWeight"), 
-            showTime = TRUE, showType = TRUE, regionLevels = 1:2, 
+            showTime = TRUE, showType = TRUE, regionLevels = c(1:2, 4), 
             exportData = TRUE, showDataSource = c("leeftijd", "geslacht")),
           tags$p(HTML(uiText[, id]))
         ),

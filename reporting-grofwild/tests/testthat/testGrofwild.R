@@ -33,6 +33,23 @@ test_that("Single province per municipality", {
 })
 
 
+test_that("No forest in biotoopData", {
+    
+    skip("GIT issue #385")
+    
+    toInspect <- lapply(names(biotoopData), function(iLevel){
+        tmp <- biotoopData[[iLevel]][biotoopData[[iLevel]][, "Area_hab_km2_bos"] == 0, ]
+        if (nrow(tmp) != 0) {
+          tmp$level <- iLevel
+          tmp
+        } else NULL
+      })
+    toReturn <- Reduce(function(x,y) merge(x,y, all=TRUE), toInspect[!sapply(toInspect, is.null)])
+    toReturn <- toReturn[order(toReturn$level), ]
+        
+  })
+
+
 
 test_that("Load grofwild data", {
     
@@ -420,6 +437,8 @@ test_that("Number of embryos (bio-indicator)", {
   })
   
 test_that("Fixing bug #471", {
+    
+    allSpecies <- unique(ecoData$wildsoort)
    
     sapply(allSpecies, function(iSpecies) {
       
@@ -460,10 +479,10 @@ test_that("The interactive map", {
           data = geoData, 
           allSpatialData = spatialData,
           biotoopData = biotoopData[[regionLevel]],
-          year = 2016,
+          year = 2007,
           species = iSpecies,
           regionLevel = regionLevel,
-          unit = c("absolute", "relative")[2]
+          unit = c("absolute", "relative", "relativeDekking")[3]
         )
         
         if (doPrint) {

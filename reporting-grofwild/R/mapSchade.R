@@ -408,6 +408,25 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           
         })
       
+      # Restrict bron
+      # Not via updateSelectInput: this is slower, multiple rendering of the plot
+      output$bron <- renderUI({
+          
+          req(input$time_schade)
+          
+          newChoices <- unique(results$schadeData()$dataSource[results$schadeData()$afschotjaar %in% input$time_schade])
+          isolate(previousChoice <- if (is.null(input$bronMap)) newChoices else input$bronMap)
+          
+          
+          selectInput(inputId = ns("bron"),
+            label = "Data Bron",
+            choices = sourcesSchade[sourcesSchade %in% newChoices], 
+            selected = previousChoice[previousChoice %in% newChoices],
+            multiple = TRUE)
+          
+        })
+      
+      
       output$nFilter <- renderUI({
           
           helpText(paste("Filter", nrow(results$schadeData()), "observaties"))
@@ -677,11 +696,7 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
         fixedRow(
           column(6,
             if (filterSource)
-              selectInput(inputId = ns("bron"),
-                label = "Data bron",
-                choices = metaSchade$sources,
-                selected = metaSchade$sources,
-                multiple = TRUE),
+              uiOutput(ns("bron")),
             if (filterAccuracy)
               selectInput(inputId = ns("accuracy"),
                 label = "Nauwkeurigheid",

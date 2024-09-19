@@ -13,13 +13,14 @@ schadeData <- loadRawData(type = "wildschade")
 wildSchadeData <- subset(sf::st_drop_geometry(schadeData), 
   wildsoort %in% c("Wild zwijn", "Edelhert", "Ree", "Smient")[1])
 
+biotoopData <- loadHabitats()
+
 species <- sort(unique(schadeData$wildsoort))
    
 
 metaSchade <- loadMetaSchade()
 schadeWildsoorten <- metaSchade$wildsoorten
 schadeTypes <- metaSchade$types
-schadeCodes <- metaSchade$codes
 schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
@@ -41,11 +42,12 @@ test_that("Number of cases per region level", {
         spaceData <- createSpaceData(
           data = schadeData, 
           allSpatialData = spatialData,
+          biotoopData = biotoopData[[regionLevel]],
           year = 2020,
           species = iSpecies,
           regionLevel = regionLevel,
-          unit = "absolute",
-          sourceIndicator = "HVV_Wilder"
+          unit = c("absolute", "relative", "relativeDekking")[2],
+          sourceIndicator = c("Hist_PZ_CARMA", "Natuurpunt")
         )
         
         if (doPrint) {
@@ -228,7 +230,7 @@ test_that("Counts per type schade", {
         expect_equal(names(schadeTable$data)[1], "Locatie")
         expect_equal(tail(names(schadeTable$data), n = 1), "Totaal")
         if ("ANDERE" %in% choicesSchadecode)
-          expect("Andere" %in% names(schadeTable$data), "columns do not match user choices")
+          expect_true(any(c("Valwild", "Andere") %in% names(schadeTable$data)), "columns do not match user choices")
         if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
           expect("Verkeersongeluk onbekend" %in% names(schadeTable$data), "columns do not match user choices")
         

@@ -117,6 +117,11 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       tmpData <- biotoopData[, c("regio", areaVariable)]
     
     colnames(tmpData) <- c("NAAM", "AREA")
+
+    if (unit == "relativeDekking")
+      # cut-off at 100ha bos&natuur #385
+      tmpData$AREA[tmpData$AREA < 1] <- NA
+    
     fullData$AREA <- NULL
     fullData <- merge(fullData, tmpData)
   }
@@ -210,7 +215,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   # unit taken into account
   if (grepl("relative", unit))
-    summaryData2$freq <- summaryData2$freq/summaryData2$AREA 
+    summaryData2$freq <- ifelse(summaryData2$freq == 0, 0, summaryData2$freq/summaryData2$AREA)
   
   
   # Create group variable
@@ -366,9 +371,6 @@ mapFlanders <- function(
     
   }
   
-  
-  palette <- colorFactor(palette = colorScheme, levels = levels(summaryData$group))
-  
   myMap <- leaflet(spatialData) %>%
     
     addPolygons(
@@ -390,6 +392,7 @@ mapFlanders <- function(
       values = if (regionLevel == "WBE_buitengrenzen")
           valuesPalette[!is.na(valuesPalette)] else 
           valuesPalette,
+      na.label = "bos & natuur < 100ha",
       opacity = 0.8,
       title = legendText,
       layerId = "legend"
@@ -723,7 +726,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           createSpaceData(
             data = geoData(), 
             allSpatialData = allSpatialData,
-            biotoopData = biotoopData[[regionLevelLocal()]],
+            biotoopData = if (is.list(biotoopData))
+              biotoopData[[regionLevelLocal()]] else
+              biotoopData,
             year = input$year,
             species = species(),
             regionLevel = regionLevelLocal(),
@@ -992,6 +997,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                 position = input$legend,
                 pal = palette, 
                 values = valuesPalette,
+                na.label = "bos & natuur < 100ha",
                 opacity = 0.8,
                 title = simpleCap(unitText(), keepNames = FALSE),
                 layerId = "legend"
@@ -1320,7 +1326,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
     "5x5 UTM" = "utm5"
   ),
-  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("flanders", "region"),
   showTitle = TRUE) {
   

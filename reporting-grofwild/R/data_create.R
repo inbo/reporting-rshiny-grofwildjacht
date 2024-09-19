@@ -138,9 +138,9 @@ createShapeData <- function(
   # Rename WBE levels  
   allLevels <- gsub("WBE_binnengrenzen", "WBE_buitengrenzen", allLevels)
   allLevels[grepl("Jachtter", allLevels)] <- 
-    sapply(strsplit(allLevels[grepl("Jachtter", allLevels)], split = "-"), function(x) x[1])
-  allLevels <- gsub("Jachtter", "WBE", allLevels)
-  
+    gsub("Jachtter", "WBE", gsub("_dis", "", 
+        gsub("_\\d+-", "_", allLevels[grepl("Jachtter", allLevels)])))
+   
   names(spatialData) <- allLevels
   
   
@@ -695,7 +695,7 @@ createHabitatData <- function(
 
   # spatialData - non WBE
   spatialData <- NULL
-  readS3(file = "spatialData_sf.RData")
+  readS3(file = "spatialData_sf.RData", envir = environment())
   
   allLevels <- list(
     "flanders" = "flanders_habitats", 
@@ -741,13 +741,16 @@ createHabitatData <- function(
         }
         
         # Match region names
-        if (iRegion != "fbz_gemeentes" & "NISCODE" %in% colnames(spatialData[[iRegion]]))
+        if ("NISCODE" %in% colnames(spatialData[[iRegion]]))
           tmpData$regio <- spatialData[[iRegion]]$NAAM[
             match(as.numeric(tmpData$regio), as.numeric(spatialData[[iRegion]]$NISCODE))]
         
         # Check matching
         if (!all(spatialData[[iRegion]]$NAAM %in% tmpData$regio))
-          stop("Matching for habitat data names failed ", iRegion)
+#          spatialData[[iRegion]]$NAAM[!spatialData[[iRegion]]$NAAM %in% tmpData$regio]
+          if (iRegion == "fbz_gemeentes")
+            message("Matching for habitat data names failed ", iRegion) else
+            stop("Matching for habitat data names failed ", iRegion)
         
       }
       

@@ -26,6 +26,17 @@ results$wild_geoData <- reactive({
     })
 
 
+# Enrich data with FBZ
+results$wild_combinedData <- reactive({
+      
+      merge(
+        results$wild_ecoData(), 
+        results$wild_geoData()[, c("ID", "FaunabeheerZone")], 
+        by = "ID")
+      
+    }) 
+  
+  
 results$wild_openingstijdenData <- reactive({
       
       openingstijdenData[openingstijdenData$Soort == input$wild_species, ]
@@ -105,7 +116,7 @@ countAgeCheekServer(id = "wild",
 
 # Plot 3: Afschot per jaar en per leeftijdscategorie (o.b.v. onderkaak)
 countYearAgeServer(id = "wild",
-  data = results$wild_ecoData,
+  data = results$wild_combinedData,
   timeRange = results$wild_timeRange)
 
 # Plot 4: Percentage jaarlijkse afschot
@@ -143,7 +154,7 @@ results$leeftijdtypes <- reactive({
   })
 
 boxAgeWeightServer(id = "wild",
-  data = results$wild_ecoData,
+  data = results$wild_combinedData,
   type = results$leeftijdtypes,
   timeRange = reactive(if (input$wild_species == "Ree")
         c(2014, max(results$wild_timeRange())) else 
@@ -153,7 +164,7 @@ boxAgeWeightServer(id = "wild",
 
 # Plot 7: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 ageGenderLowerJawServer(id = "wild",
-  data = results$wild_ecoData,
+  data = results$wild_combinedData,
   types = results$leeftijdtypes,
   timeRange = reactive(if (input$wild_species == "Ree")
         c(2014, max(results$wild_timeRange())) else 
@@ -179,7 +190,7 @@ results$typesDefaultGender <- reactive({
   })
 
 plotBioindicatorServer(id = "wild_onderkaak",
-  data = results$wild_ecoData,
+  data = results$wild_combinedData,
   timeRange = results$wild_timeRange,
   types = results$typesGender,
   typesDefault = results$typesDefaultGender,
@@ -188,7 +199,7 @@ plotBioindicatorServer(id = "wild_onderkaak",
 
 # Plot 9: Gewicht per jaar
 plotBioindicatorServer(id = "wild_gewicht",
-  data = results$wild_ecoData,
+  data = results$wild_combinedData,
   timeRange = results$wild_timeRange,
   types = results$typesGender,
   typesDefault = results$typesDefaultGender,
@@ -214,20 +225,12 @@ results$typesFemale <- reactive({
   })
 
 countEmbryosServer(id = "wild",
-    data = results$wild_ecoData,
+    data = results$wild_combinedData,
     timeRange = results$wild_timeRange,
     types = results$typesFemale,
     uiText = uiText,
     wildsoort = reactive(input$wild_species))
 
-results$wild_combinedData <- reactive({
-    
-    merge(
-      results$wild_ecoData(), 
-      results$wild_geoData()[, c("ID", "FaunabeheerZone")], 
-      by = "ID")
-    
-  }) 
 
 results$jachttypes <- reactive({
     

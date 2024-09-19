@@ -156,7 +156,7 @@ test_that("Schade data & metadata", {
     
     # Data Checks
     schadeData <- loadRawData(type = "wildschade")
-    expect_is(schadeData, "sf", info = "WildSchade_georef.csv")
+    expect_is(schadeData, "data.frame", info = "WildSchade_georef.csv")
     
     # Correct names for commune shape data?
     notMatching <- which(!schadeData$gemeente_afschot_locatie %in% spatialData$communes$NAAM)
@@ -220,6 +220,31 @@ test_that("Extra data", {
     toekenningsData <- loadToekenningen()
     expect_is(toekenningsData, "data.frame", info = "Verwezenlijkt_categorie_per_afschotplan.csv")
     
+  })
+
+test_that("Create habitat data", {
+    
+    skip("This will update habitat processing data")
+    
+    bucket <- config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))
+    
+    # List all available files on the S3 bucket
+    tmpTable <- aws.s3::get_bucket_df(bucket = bucket)
+    
+    habitatFiles <- grep("habitats|wegdensiteit", tmpTable$Key, value = TRUE)
+    for (iFile in habitatFiles)
+      save_object(
+        object = iFile, 
+        bucket = bucket, 
+        file = file.path(tempdir(), iFile)
+      )
+    
+    createHabitatData(dataDir = tempdir(), bucket = bucket)
+    
+    # check whether data is created correctly
+    biotoopData <- loadHabitats()
+    expect_is(biotoopData$communes$regio, "character")
+  
   })
 
 

@@ -22,6 +22,9 @@ addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 defaultYear <- as.numeric(format(Sys.Date(), "%Y")) - 1
 
 
+chromote::set_chrome_args(c('--headless','--no-sandbox'))
+
+
 ### Debugging
 ### -----------
 

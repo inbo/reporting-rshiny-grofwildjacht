@@ -31,8 +31,8 @@ setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
   Sys.setenv(
     AWS_DEFAULT_REGION = eval(parse(text = config::get("credentials", file = system.file("config.yml", package = "reportingGrofwild"))$region)),
     AWS_ACCESS_KEY_ID = x$AWS_ACCESS_KEY_ID, 
-    AWS_SECRET_ACCESS_KEY = x$AWS_SECRET_ACCESS_KEY
-#    AWS_SESSION_TOKEN = x$AWS_SESSION_TOKEN 
+    AWS_SECRET_ACCESS_KEY = x$AWS_SECRET_ACCESS_KEY,
+    AWS_SESSION_TOKEN = x$AWS_SESSION_TOKEN 
   )
     
 }
@@ -74,7 +74,7 @@ checkS3 <- function() {
     # Try to retrieve metadata from the instance
     metadata$instance_id()
   } else {
-    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"))
+    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", 'AWS_SESSION_TOKEN'))
     if (any(credentials == ""))
       stop("Please specify 'Sys.setenv()' for ", 
         paste(names(credentials)[which(credentials == "")], collapse = ", "))

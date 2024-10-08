@@ -5,12 +5,13 @@ Title: Grof Wild analysis for INBO
 Type: Package
 Author: Machteld Varewyck, Laure Cougnaud, Eva Adriaensen
 Description: Data visualization of grof wild in Vlaanderen.
-Version: 0.3.5
+Version: 0.3.6
 Date: 2024-06-03
 Imports:
     arrow,
     aws.ec2metadata,
     aws.s3,
+    aws.signature,
     config,
     data.table,
     DT, 
@@ -19,7 +20,7 @@ Imports:
     htmlwidgets,
     INBOtheme, 
     leaflet, 
-    methods, 
+    methods,
     mgcv, 
     plotly,
     plyr, 
@@ -33,10 +34,9 @@ Imports:
     stringr,
     testthat,
     units,
-    webshot
+    webshot2
 Suggests:
     kableExtra,
-    lwgeom,
     magick,
     oaStyle,
     rmarkdown

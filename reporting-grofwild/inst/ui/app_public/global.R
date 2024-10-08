@@ -18,6 +18,9 @@ dataDir <- system.file("extdata", package = "reportingGrofwild")
 addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 
 
+chromote::set_chrome_args(c('--headless','--no-sandbox'))
+
+
 ### Debugging
 ### -----------
 

@@ -1,9 +1,10 @@
 default:
-  bucket: inbo-wbe-uat-data
+  bucket: inbo-faunabeheer-uat-eu-west-1-default
   credentials:
     region: Sys.getenv('AWS_DEFAULT_REGION', unset = 'eu-west-1')
     id: Sys.getenv('AWS_ACCESS_KEY_ID')
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
+    token: Sys.getenv('AWS_SESSION_TOKEN')
   datacheck: false
   defaultYear: 2023
 
@@ -11,5 +12,5 @@ uat:
   datacheck: false
     
 production:
-  bucket: inbo-wbe-prd-data
+  bucket: inbo-faunabeheer-prd-eu-west-1-default
   datacheck: false

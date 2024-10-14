@@ -147,3 +147,17 @@ p, li, label {
   column-count: 3;
 }
 
+
+/* carousel */
+
+/* dots */
+.slick-dots { 
+  margin-top:-3em
+}
+.slick-dots li button:before{
+  color: white;
+  opacity: .75;
+}
+.slick-dots li.slick-active button:before{
+  color: white
+}

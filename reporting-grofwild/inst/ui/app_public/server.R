@@ -3,24 +3,12 @@
 # Author: mvarewyck
 ###############################################################################
 
-
-
 shinyServer(function(input, output, session) {
       
       
       # For debugging
       # -------------
-      
-      
       observeEvent(input$debug_console, browser())
-      
-      
-      output$print <- renderPrint({
-            
-#                        names(session$clientData)
-            
-          })
-      
       
       output$debug <- renderUI({
             
@@ -36,56 +24,23 @@ shinyServer(function(input, output, session) {
         # Version
         # -------
         
-        versionServer(id = "public")
+#        versionServer(id = "public")
         
         
         
       # Tabpages
       # ----------
       
-      
-      
-      results <- reactiveValues(
-        renderedTabs = "Grofwild")
-      
-      
-    # Tabpanel grofwild
-    source(list.files("serverFiles", pattern = "Grofwild", full.names = TRUE), local = TRUE)
-    output$grof_content <- renderUI({
-        
-        source(file.path("uiFiles", "uiGrofwild.R"), local = TRUE)$value
-        
-      })
-    
-    # Render tabpanel upon need
-    observeEvent(input$tabs, {
-        
-        # render only once
-        req(!input$tabs %in% results$renderedTabs)
-        
-        switch(input$tabs,
-          Wildschade = {
-            
-            output$schade_content <- renderUI({
-                source(file.path("uiFiles", "uiWildschade.R"), local = TRUE)$value
-              })
-            source(list.files("serverFiles", pattern = "Wildschade", full.names = TRUE), local = TRUE)
-            results$renderedTabs <- c(results$renderedTabs, "Wildschade")
-            
-          },
-          Dashboard = {
-            
-            output$dash_content <- renderUI({
-                source(file.path("uiFiles", "uiDashboard.R"), local = TRUE)$value
-              })
-            source(list.files("serverFiles", pattern = "Dashboard", full.names = TRUE), local = TRUE)
-            results$renderedTabs <- c(results$renderedTabs, "Dashboard")
-            
-          },
-          WBE = js$browseURL("https://wbe.inbo.be") 
+      output$carouselOutput <- slickR::renderSlickR({
+        img <- system.file(
+          "ui", "www", paste0("carousel-", 1:4, ".png"), 
+          package = "reportingGrofwild"
         )
-        
+        slickR::slickR(
+          obj = img, slideId = "carousel", slideType = 'img',
+          width = "100%", padding = 1
+        ) + 
+          slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE)
       })
-    
       
-    })
+})

@@ -56,8 +56,14 @@ if (!doDebug | !exists("toekenningsData"))
   toekenningsData <- loadToekenningen()
 
 # Load object called spatialData
-if (!doDebug | !exists("spatialData"))
-  readS3(file = "spatialData_sf.RData")
+if (!doDebug | !exists("spatialData")){
+  dataPath <- Sys.getenv("reportingGrofwild-data-path")
+  if(!identical(dataPath, "")){
+    load(file = file.path(dataPath, "spatialData_sf.RData"))
+  }else{
+    readS3(file = "spatialData_sf.RData")
+  }
+}
 
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData"))

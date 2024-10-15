@@ -31,36 +31,45 @@ shinyUI(
           fluidRow(
             slickR::slickROutput("carouselOutput", 
               width = '100%', height = 'auto')
-            ),
-            div(style = "margin-top:-30em", 
-              fluidRow(
-                column(
-                  width = 6, offset = 3, align = "center",
-                  tags$span(
-                      style = "font-weight: bold;text-align: center;color: white;",
-                      "Welkom op de faunabeheer pagina van het Instituut",
-                      br(),
-                      "voor Natuur- en Bosonderzoek (INBO)"
-                  )
-                )
-            )
           ),
-          div(style = "margin-top: 15em", 
-            fluidRow(
-                column(
-                  width = 4, offset = 4, align = "center",
-                  selectInput(
-                    inputId = "wildsoort", 
-                    label = tags$span(
-                      style = "color: white;", "Selecteer een diersoort:"
-                    ),
-                    choices = schadeWildsoorten
-                  )
+          fluidRow(style = "margin-top: -35em", 
+            column(
+              width = 1, offset = 7,
+              tags$p(
+                tags$a(
+                  id = "contact", 
+                  href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", 
+                  target="_blank", "Contact",
+                  style = "color: white"
+                )
+              )
+            ),
+            column(width = 1, versionUI(id = "public"), style = "color: white")
+          ),
+          fluidRow(style = "margin-top:1em",
+            column(
+              width = 6, offset = 3, align = "center",
+                tags$span(
+                  style = "font-weight: bold;text-align: center;color: white;font-size: 1.7em",
+                  "Welkom op de faunabeheer pagina van het Instituut",
+                   br(),
+                  "voor Natuur- en Bosonderzoek (INBO)"
+                )
+            ), 
+          ),
+          fluidRow(style = "margin-top: 15em", 
+            column(
+              width = 4, offset = 4, align = "center",
+              selectInput(
+                inputId = "wildsoort", 
+                label = tags$span(
+                 style = "color: white;", "Selecteer een diersoort:"
+                ),
+               choices = schadeWildsoorten
               )
             )
           )
         )
-
       )
 
     )

@@ -24,7 +24,7 @@ shinyServer(function(input, output, session) {
         # Version
         # -------
         
-#        versionServer(id = "public")
+        #versionServer(id = "public")
         
         
         

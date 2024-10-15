@@ -1,5 +1,6 @@
 0.3.5.9000
     o support load local data (reportingGrofwild-data-path env var)
+    o setupS3: add AWS session token
 0.3.5
     o add onderkaaklengte gauge bioindicator #332
     o add faunabeheerzones as choice for multiple graphs #473

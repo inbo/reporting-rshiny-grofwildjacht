@@ -17,7 +17,8 @@ setupS3 <- function(awsFile = "~/.aws/credentials") {
   Sys.setenv(
     AWS_DEFAULT_REGION = eval(parse(text = config::get("credentials", file = system.file("config.yml", package = "reportingGrofwild"))$region)),
     AWS_ACCESS_KEY_ID = strsplit(strsplit(credentials, "aws_access_key_id = ")[[1]][2], "\n")[[1]][1], 
-    AWS_SECRET_ACCESS_KEY = strsplit(strsplit(credentials, "aws_secret_access_key = ")[[1]][2], "\n")[[1]][1]
+    AWS_SECRET_ACCESS_KEY = strsplit(strsplit(credentials, "aws_secret_access_key = ")[[1]][2], "\n")[[1]][1],
+    AWS_SESSION_TOKEN = strsplit(strsplit(credentials, "aws_session_token = ")[[1]][2], "\n")[[1]][1]
   )
   
 }

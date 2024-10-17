@@ -21,13 +21,7 @@ shinyUI(
                 
     ## Body
     ## ------
-    tags$body(
-      # frontUI(id = "front")
-      uiOutput("page")
-    )
-#    tags$body(
-#      
-#    )
+    tags$body(uiOutput("page"))
 
   )
 

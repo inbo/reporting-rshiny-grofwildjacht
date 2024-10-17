@@ -21,21 +21,23 @@ shinyServer(function(input, output, session) {
     })
         
   ## Initiate the application
-  output$page <- renderUI(frontUI())
-#  isHome <- reactive(TRUE)
-#  output$page <- eventReactive(isHome(), 
-#    renderUI(frontUI(id = "front"))
-#  )
+  isHome <- reactiveVal(TRUE)
+  observe({
+    if(isHome())
+      output$page <- renderUI(frontUI())
+  })
    
-  ## Specie page
+  ## Specie page  
+  observe({
+    if(isTruthy(input$wildsoort)){
       
-  # Create the page
-  observe(
-    if(isTruthy(input$wildsoort))
-      output$page <- renderUI(specieUI(input))      
-  )   
-  
-  # Update the page
-  # specieServer(input, output, session)
+      # Create the page
+      output$page <- renderUI(specieUI(id = input$wildsoort)) 
+      # Update the components of the page which are specie-specific
+      goHome <- specieServer(id = input$wildsoort)
+      isHome(goHome())
       
+    }
+  })
+
 })

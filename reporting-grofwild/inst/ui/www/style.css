@@ -157,7 +157,7 @@ p, li, label {
 
 /* dots */
 .slick-dots { 
-  margin-top:-3em
+  margin-top:-10em
 }
 .slick-dots li button:before{
   background-color: transparent;
@@ -168,7 +168,10 @@ p, li, label {
 }
 
 /*specie page*/
-.specie-card {
+
+.specie-card-header {
   background-color: purple;
-  color: white
+  color: white;
+  font-weight: bold;
+  text-align: center
 }

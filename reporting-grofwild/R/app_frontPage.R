@@ -20,8 +20,8 @@ frontUI <- function(){
         ) + 
         slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE)
       ),
-      headerUI(style = "margin-top: -30em"),
-      fluidRow(style = "margin-top:1em",
+      headerUI(style = "margin-top: -30em", color = "white"),
+      fluidRow(style = "margin-top: 1em",
           column(
               width = 6, offset = 3, align = "center",
               tags$span(

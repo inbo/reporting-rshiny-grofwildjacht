@@ -34,7 +34,8 @@ Imports:
     testthat,
     units,
     webshot,
-    slickR
+    slickR,
+    bslib
 Suggests:
     kableExtra,
     lwgeom,

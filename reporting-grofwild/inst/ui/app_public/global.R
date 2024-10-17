@@ -5,12 +5,6 @@ library(reportingGrofwild)
 ### General
 ### ------------
 
-# make sure js object is initiated
-library(shinyjs)
-# define js function for opening urls in new tab/window
-js_code <- "shinyjs.browseURL = function(url) {window.open(url, '_parent');}"
-
-
 # Specify directory with data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
 

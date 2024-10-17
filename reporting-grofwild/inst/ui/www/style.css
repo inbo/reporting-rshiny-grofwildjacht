@@ -150,6 +150,11 @@ p, li, label {
 
 /* carousel */
 
+/* slide */
+.slick-slide {
+  width: 100%
+}
+
 /* dots */
 .slick-dots { 
   margin-top:-3em
@@ -159,5 +164,11 @@ p, li, label {
   color: white
 }
 .slick-dots li.slick-active button:before{
+  color: white
+}
+
+/*specie page*/
+.specie-card {
+  background-color: purple;
   color: white
 }

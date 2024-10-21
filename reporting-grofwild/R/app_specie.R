@@ -75,85 +75,121 @@ specieUI <- function(id){
 #' is requested.
 #' @author lcougnaud
 #' @import shiny
-#' @importFrom bslib layout_column_wrap
 #' @export
 specieServer <- function(id){
   
-  moduleServer(id, function(input, output, session){
-       
+  moduleServer(id, function(input, output, session){   
+        
+    # initialization
+    specie <- reactiveVal(value = id)
+    
+    # update value
+    observeEvent(input$wildsoort, 
+      if(!is.null(input$wildsoort))  specie(input$wildsoort)
+    )
+        
     ## Header
     
     # Update specie in path
-    output$pathSpecie <- renderText(input$wildsoort)
+    output$pathSpecie <- renderText(specie())
     
     ## Sidebar panel
  
     # Specie image	
-    output$image <- renderImage({
-      imgFile <- system.file("ui", "www", paste0("specie-", 
-        gsub("[[:blank:]]", "-", tolower(input$wildsoort)), 
-        ".png"), package = "reportingGrofwild")
-      validate(
-        need(
-          expr = file.exists(imgFile), 
-          message = paste("No image available for:", input$wildsoort)
-        )
-      )
-      list(src = imgFile, width = "100%")
-    }, deleteFile = FALSE)
+    output$image <- renderImage(
+      list(src = getSpecieImage(specie = specie()), width = "100%")
+    , deleteFile = FALSE)
 
-    # Specie name
-    output$name <- renderText({
-      specieInfo <- read.csv(
-        file = system.file("extdata", "specie-info.csv", 
-          package = "reportingGrofwild"),
-        check.names = FALSE
-      )
-      latinName <- specieInfo[
-        which(specieInfo$`specie name` == input$wildsoort),
-        "latin name"
-      ]
-      
-      validate(
-        need(
-          expr = (length(latinName) == 1 && nchar(latinName) > 0), 
-          message = paste("No latin name available for:", input$wildsoort)
-        )
-      )
-      paste("Latijn:", latinName)
-    })
+    # Specie latin name
+    output$name <- renderText(
+      paste("Latijn:", getLatinName(specie = specie()))
+    )
 
     ## Main panel
 
     # Specie - available items/pages
-    output$items <- renderUI({
-      baseApp <- (input$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
-      cards <- tagList(
-        if(baseApp)
-          specieCardUI(type = "afschot"),
-        if(input$wildsoort %in% unlist(schadeWildsoorten))
-          specieCardUI(type = "schade"),
-        if(input$wildsoort %in% c("Wild zwijn", "Ree"))
-          specieCardUI(type = "populatie indicatoren"),
-        if(baseApp)
-          specieCardUI(type = "verspreiding"),
-        if(baseApp)
-          specieCardUI(type = "maatschappelijk draagvlak"),
-         specieCardUI(type = "woordenlijst")
-       )
-       cards <- cards[!sapply(cards, is.null)]
-       args <- c(cards, list(width = 1/3, fixed_width = TRUE))
-       do.call(bslib::layout_column_wrap, args)
-     })
+    output$items <- renderUI(getSpecieCards(specie = specie()))
  
-     goHome <- reactiveVal(isTruthy(input$pathHome))
-     return(goHome)
+    goHome <- reactiveVal(isTruthy(input$pathHome))
+    return(goHome)
  
-    })
+  })
 
 }
 
-#' UI element for a card for a specific specie
+#' Get specie latin name
+#' @inheritParams getSpecieImage
+#' @return Character of length 1, latin name.
+#' @author lcougnaud
+getLatinName <- function(specie){
+  
+  specieInfo <- read.csv(
+    file = system.file("extdata", "specie-info.csv", 
+    package = "reportingGrofwild"),
+    check.names = FALSE
+  )	
+  latinName <- subset(specieInfo, `specie name` == specie)[, "latin name"]
+  
+  validate(
+    need(
+      expr = (length(latinName) == 1 && nchar(latinName) > 0), 
+      message = paste("No latin name available for:", specie)
+    )
+  )
+  
+  return(latinName)
+  
+}
+
+#' Get specie image
+#' @param specie Character of length 1, specie.
+#' @return Character of length 1, path to image.
+#' @author lcougnaud
+getSpecieImage <- function(specie){
+  
+  imgFile <- system.file("ui", "www", paste0("specie-", 
+    gsub("[[:blank:]]", "-", tolower(specie)), 
+    ".png"), package = "reportingGrofwild")
+
+  validate(
+    need(
+      expr = file.exists(imgFile), 
+      message = paste("No image available for:", specie)
+    )
+  )
+
+  return(imgFile)
+  
+}
+
+#' Get all cards UI element for a specific specie
+#' @inherit bslib::layout_column_wrap return
+#' @author lcougnaud
+#' @importFrom bslib layout_column_wrap
+#' @inheritParams getSpecieImage
+getSpecieCards <- function(specie){
+  
+  baseApp <- (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
+  cards <- tagList(
+      if(baseApp)
+        specieCardUI(type = "afschot"),
+      if(specie %in% unlist(schadeWildsoorten))
+        specieCardUI(type = "schade"),
+      if(specie %in% c("Wild zwijn", "Ree"))
+        specieCardUI(type = "populatie indicatoren"),
+      if(baseApp)
+        specieCardUI(type = "verspreiding"),
+      if(baseApp)
+        specieCardUI(type = "maatschappelijk draagvlak"),
+      specieCardUI(type = "woordenlijst")
+  )
+  cards <- cards[!sapply(cards, is.null)]
+  args <- c(cards, list(width = 1/3, fixed_width = TRUE))
+  do.call(bslib::layout_column_wrap, args)
+  
+}
+
+#' Get a UI card element
 #' @param type type (title) of the card
 #' @inherit bslib::card return
 #' @author lcougnaud

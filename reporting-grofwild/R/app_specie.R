@@ -71,8 +71,8 @@ specieUI <- function(id){
 
 #' Server function for the 'specie' page
 #' @inheritParams specieUI
-#' @return Logical, if TRUE (FALSE by default), the 'Home' page
-#' is requested.
+#' @return \link[shiny]{reactiveVal} with text of 
+#' redirected page: 'home' or one of the 'category' pages
 #' @author lcougnaud
 #' @import shiny
 #' @export
@@ -106,12 +106,20 @@ specieServer <- function(id){
     )
 
     ## Main panel
-
+    
     # Specie - available items/pages
     output$items <- renderUI(getSpecieCards(specie = specie()))
- 
-    goHome <- reactiveVal(isTruthy(input$pathHome))
-    return(goHome)
+    
+    ## Output
+    
+    nextPage <- reactive(
+      if(isTruthy(input$pathHome))
+        "home"
+      else if(isTruthy(input$cards))
+        input$cards
+    )
+
+    return(nextPage)
  
   })
 
@@ -163,51 +171,40 @@ getSpecieImage <- function(specie){
 }
 
 #' Get all cards UI element for a specific specie
-#' @inherit bslib::layout_column_wrap return
+#' @inherit shiny::radioButtons return
 #' @author lcougnaud
-#' @importFrom bslib layout_column_wrap
 #' @inheritParams getSpecieImage
 getSpecieCards <- function(specie){
   
   baseApp <- (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
-  cards <- tagList(
-      if(baseApp)
-        specieCardUI(type = "afschot"),
-      if(specie %in% unlist(schadeWildsoorten))
-        specieCardUI(type = "schade"),
-      if(specie %in% c("Wild zwijn", "Ree"))
-        specieCardUI(type = "populatie indicatoren"),
-      if(baseApp)
-        specieCardUI(type = "verspreiding"),
-      if(baseApp)
-        specieCardUI(type = "maatschappelijk draagvlak"),
-      specieCardUI(type = "woordenlijst")
-  )
-  cards <- cards[!sapply(cards, is.null)]
-  args <- c(cards, list(width = 1/3, fixed_width = TRUE))
-  do.call(bslib::layout_column_wrap, args)
   
-}
-
-#' Get a UI card element
-#' @param type type (title) of the card
-#' @inherit bslib::card return
-#' @author lcougnaud
-#' @importFrom bslib card card_header card_body
-#' @export
-specieCardUI <- function(type){
-  file <- system.file("ui", "www", 
-    paste0("specie-", gsub("[[:blank:]]", "-", type), ".png"),
-    package = "reportingGrofwild"
+  values <- c(
+      if(baseApp)  "afschot",
+      if(specie %in% unlist(schadeWildsoorten))
+        "schade",
+      if(specie %in% c("Wild zwijn", "Ree"))
+        "populatie indicatoren",
+      if(baseApp)
+        c("verspreiding", "maatschappelijk draagvlak"),
+      "woordenlijst"
   )
-  validate(
-    need(
-      expr = file.exists(file),
-      message = paste("The image for", type, "is not available.")
-    )
-  )
-  bslib::card(
-    bslib::card_header(class = "specie-card-header", toupper(type)),
-    bslib::card_image(file = file, fill = TRUE)
+  
+  names <- lapply(values, function(type){
+    foto <- paste0("specie-", gsub("[[:blank:]]", "-", type), ".png")
+    HTML(paste0(
+      "<div class='fotoTitel'>", toupper(type), "</div>",
+      "<div>", img(src = paste0("www/", foto), width = "100%;", height = "100%"), "</div>"
+    ))
+  })
+  
+  div(
+      
+    radioButtons(
+      inputId = NS(specie, "cards"), label = "", inline = TRUE,
+      choiceValues = values, choiceNames = names,
+      selected = character(0)
+     ),
+    tags$script("$('.radio-inline').addClass('col-md-3');$('.shiny-options-group').addClass('row');")#,
+#    tags$head(tags$style(".radio-inline{margin-left:1px;"))
   )
 }

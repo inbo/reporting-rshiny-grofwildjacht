@@ -169,9 +169,37 @@ p, li, label {
 
 /*specie page*/
 
-.specie-card-header {
-  background-color: purple;
-  color: white;
-  font-weight: bold;
-  text-align: center
+/*.specie-card-header {*/
+/*  background-color: purple;*/
+/*  color: white;*/
+/*  font-weight: bold;*/
+/*  text-align: center*/
+/*}*/
+
+#wildZwijnFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("wildZwijn.jpeg");
+  background-size: 260px 186px;
+}
+
+#reeFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("ree.jpeg");
+  background-size: 260px 186px;
+}
+
+#edelhertFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("edelhert.jpeg");
+  background-size: 260px 186px;
+}
+
+#damhertFoto {
+  width: 260px; 
+  height: 186px;
+  background-image: url("damhert.jpeg");
+  background-size: 260px 186px;
 }

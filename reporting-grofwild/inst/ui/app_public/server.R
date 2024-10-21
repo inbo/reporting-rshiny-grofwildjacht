@@ -21,21 +21,26 @@ shinyServer(function(input, output, session) {
     })
         
   ## Initiate the application
-  isHome <- reactiveVal(TRUE)
+  page <- reactiveVal("home")
   observe({
-    if(isHome())
+    if(identical(page(), "home")){
+      print("Go to home page")
       output$page <- renderUI(frontUI())
+    }
   })
    
-  ## Specie page  
+  ## Specie page
   observe({
     if(isTruthy(input$wildsoort)){
       
       # Create the page
       output$page <- renderUI(specieUI(id = input$wildsoort)) 
       # Update the components of the page which are specie-specific
-      goHome <- specieServer(id = input$wildsoort)
-      isHome(goHome())
+      currentPage <- specieServer(id = input$wildsoort)
+      if(!is.null(currentPage())){
+        print(paste("Page changed to:", currentPage()))
+        page(currentPage())
+      }
       
     }
   })

@@ -1,16 +1,45 @@
 #' UI header element
-#' @param offset Integer with column offset for the first 
+#' @param offset integer with column offset for the first 
 #' header element
-#' @param color Character, text color, 'black' by default
-#' @param ... 
+#' @param color character, text color, 'black' by default
+#' @param path character vector with elements to include in the
+#' path, among: 'home', 'specie', 'category', 'plot' 
+#' (NULL by default).
+#' @param id character, module id/specie
+#' @param ... extra parameters for \code{\link[shiny]{fluidRow}}
 #' @author lcougnaud
 #' @import shiny
 #' @inherit shiny::fluidRow return
-#' @export
-headerUI <- function(..., offset = 6, color = "black"){
+headerUI <- function( 
+  offset = ifelse(is.null(path), 6, 0), color = "black",
+  path = NULL, id, ...){
+
+  if(!is.null(path)){
     
+    path <- match.arg(
+      arg = path, 
+      choices = c("home", "specie", "category", "plot"),
+      several.ok = TRUE
+    )
+    
+    pathElements <- c(
+      if("home" %in% path)
+        list(column(width = 1, actionLink(inputId = NS(id, "pathHome"), label = "Home"))),
+      if("specie" %in% path)
+        list(column(width = 1, "/"), column(width = 2, textOutput(outputId = NS(id, "pathSpecie")))),
+      if("category" %in% path)
+        list(column(width = 1, "/"), column(width = 2, textOutput(outputId = NS(id, "pathCategory")))),
+      if("plot" %in% path)
+        list(column(width = 1, "/"), column(width = 2, textOutput(outputId = NS(id, "pathPlot"))))
+    )
+    extra <- column(width = 9, do.call(fluidRow, pathElements))
+    
+  }else extra <- NULL
+
     cssColor <- paste0("color:", color)
-    fluidRow(...,
+    fluidRow(
+      ..., 
+      extra,
       column(
         width = 1, offset = offset,
           tags$p(

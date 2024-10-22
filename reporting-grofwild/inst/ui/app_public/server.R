@@ -25,8 +25,15 @@ shinyServer(function(input, output, session) {
         
   ## Home page
   observeEvent(page(), {
-    if(identical(page(), "home"))
+    print(paste("Update page to:", page()))
+    if(identical(page(), "home")){
+      print("Open home page")
       output$page <- renderUI(frontUI())
+    }
+    if(identical(page(), "afshot")){
+      print("Open afshot page")
+      output$page <- renderUI(afshotUI(id = "test"))
+    }
   })
    
   ## Specie page
@@ -34,6 +41,7 @@ shinyServer(function(input, output, session) {
   # Create the page
   observeEvent(input$wildsoort, {
     if(isTruthy(input$wildsoort)){
+      print("Create specie page")
       output$page <- renderUI(specieUI(id = input$wildsoort)) 
       page("specie")
     }
@@ -42,10 +50,11 @@ shinyServer(function(input, output, session) {
   # Update the components of the page which are specie-specific
   observe({
     if(isTruthy(input$wildsoort)){
-      currentPage <- specieServer(id = input$wildsoort)
-      if(!is.null(currentPage())){
-        print(paste("Page changed to:", currentPage()))
-        page(currentPage())
+      print("Update specie page")
+      nextPage <- specieServer(id = input$wildsoort)
+      if(!is.null(nextPage())){
+        print(paste("Page will be changed to:", nextPage()))
+        page(nextPage())
        }
      }
   })

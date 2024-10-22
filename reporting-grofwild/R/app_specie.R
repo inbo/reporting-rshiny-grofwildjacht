@@ -1,7 +1,7 @@
 
 #' UI for the 'specie' page
 #' @param id character, module id/specie
-#' @inherit shiny::fluidPage return
+#' @inherit shiny::verticalLayout return
 #' @author lcougnaud
 #' @import shiny
 #' @export
@@ -14,16 +14,7 @@ specieUI <- function(id){
     verticalLayout(
       
       # header
-      headerUI(
-        column(width = 9, 
-          fluidRow(
-            column(width = 1, actionLink(inputId = NS(id, "pathHome"), label = "Home")),
-            column(width = 1, "/"),
-            column(width = 2, textOutput(outputId = NS(id, "pathSpecie")))        
-          )
-        ),
-        offset = 0
-      ),
+      headerUI(path = c("home", "specie"), id = id),
       
       # image
       fluidRow(

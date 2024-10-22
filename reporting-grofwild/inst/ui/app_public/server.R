@@ -19,30 +19,35 @@ shinyServer(function(input, output, session) {
         verbatimTextOutput("print")
       )
     })
-        
-  ## Initiate the application
+
+  # Current page (home at initialization)
   page <- reactiveVal("home")
-  observe({
-    if(identical(page(), "home")){
-      print("Go to home page")
+        
+  ## Home page
+  observeEvent(page(), {
+    if(identical(page(), "home"))
       output$page <- renderUI(frontUI())
-    }
   })
    
   ## Specie page
+  
+  # Create the page
+  observeEvent(input$wildsoort, {
+    if(isTruthy(input$wildsoort)){
+      output$page <- renderUI(specieUI(id = input$wildsoort)) 
+      page("specie")
+    }
+  })
+
+  # Update the components of the page which are specie-specific
   observe({
     if(isTruthy(input$wildsoort)){
-      
-      # Create the page
-      output$page <- renderUI(specieUI(id = input$wildsoort)) 
-      # Update the components of the page which are specie-specific
       currentPage <- specieServer(id = input$wildsoort)
       if(!is.null(currentPage())){
         print(paste("Page changed to:", currentPage()))
         page(currentPage())
-      }
-      
-    }
+       }
+     }
   })
 
 })

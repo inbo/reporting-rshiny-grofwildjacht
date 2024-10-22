@@ -192,8 +192,8 @@ getSpecieCards <- function(specie){
   names <- lapply(values, function(type){
     foto <- paste0("specie-", gsub("[[:blank:]]", "-", type), ".png")
     HTML(paste0(
-      "<div class='fotoTitel'>", toupper(type), "</div>",
-      "<div>", img(src = paste0("www/", foto), width = "100%;", height = "100%"), "</div>"
+      "<div class='specie-card-title'>", toupper(type), "</div>",
+      "<div>", img(src = paste0("www/", foto), width = "100%"), "</div>"
     ))
   })
   
@@ -204,7 +204,7 @@ getSpecieCards <- function(specie){
       choiceValues = values, choiceNames = names,
       selected = character(0)
      ),
-    tags$script("$('.radio-inline').addClass('col-md-3');$('.shiny-options-group').addClass('row');")#,
-#    tags$head(tags$style(".radio-inline{margin-left:1px;"))
+    tags$script("$('.radio-inline').addClass('col-3');"),
+    tags$head(tags$style(HTML(".col-3 {width: 32%;} .radio-inline{margin-left:10px;}")) )
   )
 }

@@ -107,6 +107,19 @@ h1, h2, h3, h4 {
   padding-top: 25px;
 }
 
+.specie-card-title {
+  font-size: 20px;
+  font-weight: bold;
+  height: 60px;
+  color: #ffffff;
+  background-color: #c04384;
+  text-align: center; /*  horizontal centering*/
+/*  vertical centering*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .downloadButton {
   display: inline-block;
   background-color: #356196;

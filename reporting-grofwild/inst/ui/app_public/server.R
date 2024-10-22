@@ -22,6 +22,9 @@ shinyServer(function(input, output, session) {
 
   # Current page (home at initialization)
   page <- reactiveVal("home")
+  
+  # Current specie
+  specie <- reactiveVal()
         
   ## Home page
   observeEvent(page(), {
@@ -32,7 +35,7 @@ shinyServer(function(input, output, session) {
     }
     if(identical(page(), "afschot")){
       print("Open afschot page")
-      output$page <- renderUI(afschotUI(id = "test"))
+      output$page <- renderUI(afschotUI(id = specie()))
     }
   })
    
@@ -51,12 +54,19 @@ shinyServer(function(input, output, session) {
   observe({
     if(isTruthy(input$wildsoort)){
       print("Update specie page")
-      nextPage <- specieServer(id = input$wildsoort)
-      if(!is.null(nextPage())){
-        print(paste("Page will be changed to:", nextPage()))
-        page(nextPage())
+      result <- specieServer(id = input$wildsoort)      
+      
+      # re-direct to 'Home' or 'Category' page
+      nextPage <- result$nextPage()
+      if(!is.null(nextPage)){
+        print(paste("Page will be changed to:", nextPage))
+          page(nextPage)
+          specie(result$specie)# save specie selected in the app
        }
+
      }
   })
+
+  observe(print(paste("Specie currently selected is:", specie())))
 
 })

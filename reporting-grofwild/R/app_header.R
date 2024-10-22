@@ -6,6 +6,7 @@
 #' path, among: 'home', 'specie', 'category', 'plot' 
 #' (NULL by default).
 #' @param id character, module id/specie
+#' @param specie (optional) hard-coded specie in the path (NULL by default)
 #' @param ... extra parameters for \code{\link[shiny]{fluidRow}}
 #' @author lcougnaud
 #' @import shiny
@@ -13,7 +14,7 @@
 #' @export
 headerUI <- function( 
   offset = ifelse(is.null(path), 6, 0), color = "black",
-  path = NULL, id, ...){
+  path = NULL, category, specie = NULL, id, ...){
 
   if(!is.null(path)){
     
@@ -25,13 +26,31 @@ headerUI <- function(
     
     pathElements <- c(
       if("home" %in% path)
-        list(column(width = 1, actionLink(inputId = NS(id, "pathHome"), label = "Home"))),
-      if("specie" %in% path)
-        list(column(width = 1, "/"), column(width = 2, textOutput(outputId = NS(id, "pathSpecie")))),
+        list(column(
+          width = 1, 
+          actionLink(inputId = NS(id, "pathHome"), label = "Home")
+        )),
+      if("specie" %in% path){
+        pathSpecie <- if(!is.null(specie)){
+          specie
+        }else{
+          textOutput(outputId = NS(id, "pathSpecie"))
+        }
+        list(
+          column(width = 1, "/"), 
+          column(width = 2, pathSpecie)
+        )
+      },
       if("category" %in% path)
-        list(column(width = 1, "/"), column(width = 2, textOutput(outputId = NS(id, "pathCategory")))),
+        list(
+          column(width = 1, "/"), 
+          column(width = 2, category)
+        ),
       if("plot" %in% path)
-        list(column(width = 1, "/"), column(width = 2, textOutput(outputId = NS(id, "pathPlot"))))
+        list(
+          column(width = 1, "/"), 
+          column(width = 2, textOutput(outputId = NS(id, "pathPlot")))
+         )
     )
     extra <- column(width = 9, do.call(fluidRow, pathElements))
     

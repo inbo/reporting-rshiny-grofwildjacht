@@ -108,8 +108,10 @@ specieServer <- function(id){
       else if(isTruthy(input$cards))
         input$cards
     )
+    
+    result <- list(nextPage = nextPage, specie = specie())
 
-    return(nextPage)
+    return(result)
  
   })
 
@@ -141,9 +143,11 @@ getLatinName <- function(specie){
 
 #' Get specie image
 #' @param specie Character of length 1, specie.
+#' @param relative Logical, if TRUE (FALSE by default) a path
+#' relative to the app is returned.
 #' @return Character of length 1, path to image.
 #' @author lcougnaud
-getSpecieImage <- function(specie){
+getSpecieImage <- function(specie, relative = FALSE){
   
   imgFile <- system.file("ui", "www", paste0("specie-", 
     gsub("[[:blank:]]", "-", tolower(specie)), 
@@ -156,6 +160,9 @@ getSpecieImage <- function(specie){
     )
   )
 
+  if(relative)
+    imgFile <- file.path(basename(dirname(imgFile)), basename(imgFile))
+ 
   return(imgFile)
   
 }

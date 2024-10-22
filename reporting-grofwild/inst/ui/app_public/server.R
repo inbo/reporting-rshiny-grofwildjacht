@@ -30,9 +30,9 @@ shinyServer(function(input, output, session) {
       print("Open home page")
       output$page <- renderUI(frontUI())
     }
-    if(identical(page(), "afshot")){
-      print("Open afshot page")
-      output$page <- renderUI(afshotUI(id = "test"))
+    if(identical(page(), "afschot")){
+      print("Open afschot page")
+      output$page <- renderUI(afschotUI(id = "test"))
     }
   })
    

@@ -1,4 +1,3 @@
-
 #' UI for the 'specie' page
 #' @param id character, module id/specie
 #' @inherit shiny::verticalLayout return

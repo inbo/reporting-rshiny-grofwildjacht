@@ -10,6 +10,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @inherit shiny::fluidRow return
+#' @export
 headerUI <- function( 
   offset = ifelse(is.null(path), 6, 0), color = "black",
   path = NULL, id, ...){

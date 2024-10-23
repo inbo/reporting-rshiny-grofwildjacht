@@ -3,7 +3,6 @@
 #' @inherit shiny::verticalLayout return
 #' @import shiny
 #' @author lcougnaud
-#' @importFrom bslib card card_header card_image card_body card_footer
 #' @export
 afschotUI <- function(id){
   
@@ -31,24 +30,12 @@ afschotUI <- function(id){
       title = "",
       
       id = ns("afschot-plots"),
-      
+            
       tabPanel(
         title = "Afschot in Vlaanderen", value = "vlaanderen",
         afschotPanel(
-            id = id,
-            bslib::layout_column_wrap(
-                width = 1/3,
-                bslib::card(
-                    bslib::card_header("Jaarlijks gerapporteerd afschot van wild zwijn in Vlaanderen"), 
-#                    bslib::card_image(),
-                    bslib::card_body("Een lijngrafiek van het jaarlijks afschot van wild zwijn  in Vlaanderen."),
-                    bslib::card_footer(
-                        shiny::actionButton(inputId = ns("afschot-plot-vlaanderen"), label = "Bekijk grafiek")
-                    )
-                ),
-                bslib::card(bslib::card_header("Jaarlijks gerapporteerd afschot van wild zwijn per provincie")), 
-                bslib::card(bslib::card_header("Percentage afschot van wild zwijn in Vlaanderen t.o.v. een referentieperiode"))
-            )
+          id = id,
+          uiOutput(outputId = ns("afschot-plots-vlaanderen"))
         )
       ),
       tabPanel(title = "Afschot per regio", value = "regio"),
@@ -57,6 +44,40 @@ afschotUI <- function(id){
     )
 
   )
+  
+}
+
+#' Get category card for a specific plot
+#' @param id id character, module id/specie
+#' @param plot character, plot name, e.g. 'afschot-vlaanderen'
+#' @param title character, plot title
+#' @param description character, plot description
+#' @inherit bslib::card return
+#' @author lcougnaud
+#' @importFrom bslib card card_header card_image card_body card_footer
+#' @importFrom shiny actionButton
+categoryCard <- function(id, plot, title, description){
+  
+  ns <- NS(id)
+  
+  file <- file.path("www", paste0("category-", plot, ".png"))
+  output <- bslib::card(
+    class = "category-card",
+    bslib::card_header(title, class = "category-card-header"), 
+    br(),
+    bslib::card_image(src = file, class = "category-card-image"),
+    br(),
+    bslib::card_body(description),
+    br(), br(),
+    bslib::card_footer(
+      align = "center",
+      shiny::actionButton(
+        inputId = ns(paste0(plot, "-button")), 
+        label = "Bekijk grafiek", class = "category-card-action-button")
+    )
+  )
+  
+  return(output)
   
 }
 
@@ -71,6 +92,21 @@ afschotServer <- function(id){
   moduleServer(id, function(input, output, session){  
         
     ns <- NS(namespace = id)
+    
+    ## input
+    results <- reactiveValues(renderedTabs = "Grofwild")
+    
+    specieEcoData <- ecoData[ecoData$wildsoort == id, ] # specieEcoData
+    specieGeoData <- geoData[geoData$wildsoort == id, ] # specieGeoData
+    results$dash_ecoData <- reactive(specieEcoData)
+    results$dash_species <- reactive(id)
+    results$dash_timeRange <- reactive(range(specieEcoData$afschotjaar))
+    
+    jachtChoices <- c("F04_3", "F05_1", "F05_2")
+    dash_titlesJacht <- reactive(
+      namedChoices(jachtChoices, uiText = uiText, regionLevel = "flanders")
+    )
+    
         
     ## Header
         
@@ -78,7 +114,64 @@ afschotServer <- function(id){
     output$pathSpecie <- renderText(id)
     
     # Update plot in path
-    output$pathPlot <- renderText(input$afschot)
+    output$pathPlot <- renderText(input$`afschot-plots`)
+    
+    # Initiate tabs
+    output$`afschot-plots-vlaanderen` <- renderUI(          
+      bslib::layout_column_wrap(
+        width = 1/3, gap = "2em",
+        categoryCard(
+          id = id,
+          plot = "afschot-vlaanderen",
+          title = sprintf("Jaarlijks gerapporteerd afschot van %s in Vlaanderen", tolower(id)),
+          description = sprintf("Een lijngrafiek van het jaarlijks afschot van %s in Vlaanderen.", tolower(id))
+        ),
+        categoryCard(
+          id = id,
+          plot = "afschot-vlaanderen-provincie",
+          title = sprintf("Jaarlijks gerapporteerd afschot van %s per provincie", tolower(id)),
+          description = "Een barplot van het aantal geschoten dieren per jaar in de verschillende provincies."
+        ),
+        categoryCard(
+          id = id,
+          plot = "afschot-vlaanderen-percentage",
+          title = sprintf("Percentage afschot van %s in Vlaanderen t.o.v. een referentieperiode", tolower(id)),
+          description = sprintf("De procentuele verdeling van het afschot van %s gedurende het geselecteerde jaar t.o.v de verdeling tijdens een referentieperiode.", tolower(id))
+       )
+    ))
+    
+    # Render the plots
+    plotCreated <- reactiveVal("")
+
+    # UI
+    observeEvent(input$`afschot-vlaanderen-button`, {
+      output$`afschot-plots-vlaanderen` <- renderUI(
+        trendYearRegionUI(
+          id = "dash", uiText = uiText, 
+          showCombinatie = TRUE,
+          plotFunction = "F05_1", doHide = FALSE
+        )
+       );
+       plotCreated("trendYearRegion")
+    })
+
+    # Server
+    observe(
+      switch(plotCreated(),
+        trendYearRegion = trendYearRegionServer(
+            id = "dash",
+            data = results$dash_ecoData, 
+            species = results$dash_species,
+            timeRange = results$dash_timeRange,
+            regionLevel = reactive("flanders"),
+            locaties = reactive("Vlaams Gewest"),
+            geoData = reactive(specieGeoData),
+            allSpatialData = spatialData,
+            biotoopData = reactive(biotoopData[["flanders"]]),
+            title = reactive(names(dash_titlesJacht()[dash_titlesJacht() == "F05_1"]))
+          )
+      )
+    )
 
   })
   
@@ -97,9 +190,12 @@ afschotPanel <- function(id, ...){
     position = "left", 
       
     sidebarPanel = sidebarPanel(
-      width = 3,
+      width = 3, 
+      id = "category-sidebar", 
+      h4(id, align = "center"),
       img(src = getSpecieImage(specie = id, relative = TRUE), width = "100%", height = "auto"),
-      paste("Latijn:", getLatinName(specie = id))
+      br(),
+      div(strong(paste("Latijn:", getLatinName(specie = id))), align = "center")
     ),
       
     mainPanel = mainPanel(width = 9, ...)

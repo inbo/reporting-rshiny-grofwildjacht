@@ -216,3 +216,62 @@ p, li, label {
   background-image: url("damhert.jpeg");
   background-size: 260px 186px;
 }
+
+/*category navigation bar*/
+
+.navbar {
+  background-color: #456394; 
+}
+
+.navbar-default .navbar-nav > li > a {
+  color:#ffffff;
+}
+
+.navbar-default .navbar-nav > .active > a:focus {
+  background-color: #b24c82;
+  color:#ffffff;
+}
+.navbar-default .navbar-nav > .active > a:hover {
+  background-color: #b24c82;
+  color:#ffffff;
+}
+
+/*category cards*/
+
+# category-sidebar{
+  background-color: #ffffff
+}
+
+.category-card {
+  border: solid 1px;
+  border-color: #b7b7b7;
+}
+
+.category-card-header {
+  background-color: #eeeeee;
+  color: #3465a4;
+  font-weight: bold;
+  text-align: center;
+}
+
+.category-card-action-button {
+  background-color: #c1c443;
+  color: #ffffff;
+  border: solid;
+  border-width: 1px;
+  border-color: black;
+  font-weight: bold;
+  font: 2em;
+  text-align: center;
+}
+
+.category-card-action-button:active {
+  background-color: #c1c443;
+  color: #ffffff;
+}
+
+.category-card-image{
+  border: solid;
+  border-width: 1px;
+  border-color: #999999;
+}

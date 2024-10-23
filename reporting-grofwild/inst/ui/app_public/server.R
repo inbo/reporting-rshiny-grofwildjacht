@@ -65,5 +65,8 @@ shinyServer(function(input, output, session) {
 
   observe(print(paste("Page currently selected is:", page())))
   observe(print(paste("Specie currently selected is:", specie())))
+  
+  ## Category page
+  observe(if(page() == "afschot") afschotServer(id = specie()))
 
 })

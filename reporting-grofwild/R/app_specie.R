@@ -72,6 +72,7 @@ specieServer <- function(id){
         
     # initialization
     specie <- reactiveVal(value = id)
+    nextPage <- reactiveVal(value = NULL)
     
     # update value
     observeEvent(input$wildsoort, 
@@ -102,16 +103,11 @@ specieServer <- function(id){
     
     ## Output
     
-    nextPage <- reactive(
-      if(isTruthy(input$pathHome))
-        "home"
-      else if(isTruthy(input$cards))
-        input$cards
-    )
-    
-    result <- list(nextPage = nextPage, specie = specie())
+    # Redirection:
+    observeEvent(input$pathHome, nextPage("home"))
+    nextPage <- eventReactive(input$cards, structure(input$cards, specie = specie()))
 
-    return(result)
+    return(nextPage)
  
   })
 

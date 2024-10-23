@@ -18,6 +18,8 @@ headerUI <- function(
 
   if(!is.null(path)){
     
+    ns <- NS(namespace = id)
+    
     path <- match.arg(
       arg = path, 
       choices = c("home", "specie", "category", "plot"),
@@ -28,13 +30,13 @@ headerUI <- function(
       if("home" %in% path)
         list(column(
           width = 1, 
-          actionLink(inputId = NS(id, "pathHome"), label = "Home")
+          actionLink(inputId = ns("pathHome"), label = "Home")
         )),
       if("specie" %in% path){
         pathSpecie <- if(!is.null(specie)){
           specie
         }else{
-          textOutput(outputId = NS(id, "pathSpecie"))
+          textOutput(outputId = ns("pathSpecie"))
         }
         list(
           column(width = 1, "/"), 
@@ -49,7 +51,7 @@ headerUI <- function(
       if("plot" %in% path)
         list(
           column(width = 1, "/"), 
-          column(width = 2, textOutput(outputId = NS(id, "pathPlot")))
+          column(width = 2, textOutput(outputId = ns("pathPlot")))
          )
     )
     extra <- column(width = 9, do.call(fluidRow, pathElements))

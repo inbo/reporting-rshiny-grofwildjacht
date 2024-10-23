@@ -19,7 +19,6 @@ shinyServer(function(input, output, session) {
         verbatimTextOutput("print")
       )
     })
-
   # Current page (home at initialization)
   page <- reactiveVal("home")
   
@@ -28,15 +27,15 @@ shinyServer(function(input, output, session) {
         
   ## Home page
   observeEvent(page(), {
-    print(paste("Update page to:", page()))
-    if(identical(page(), "home")){
-      print("Open home page")
-      output$page <- renderUI(frontUI())
-    }
-    if(identical(page(), "afschot")){
-      print("Open afschot page")
-      output$page <- renderUI(afschotUI(id = specie()))
-    }
+    switch(page(),
+      home = {
+        print("Open home page")
+        output$page <- renderUI(frontUI())
+      },
+      afschot = {
+        print("Open afschot page")
+        output$page <- renderUI(afschotUI(id = specie()))
+    })
   })
    
   ## Specie page
@@ -45,28 +44,26 @@ shinyServer(function(input, output, session) {
   observeEvent(input$wildsoort, {
     if(isTruthy(input$wildsoort)){
       print("Create specie page")
-      output$page <- renderUI(specieUI(id = input$wildsoort)) 
-      page("specie")
+      output$page <- renderUI(specieUI(id = input$wildsoort))
     }
   })
 
   # Update the components of the page which are specie-specific
   observe({
-    if(isTruthy(input$wildsoort)){
-      print("Update specie page")
-      result <- specieServer(id = input$wildsoort)      
+    nextPage <- specieServer(id = input$wildsoort)
+
+    if(!is.null(nextPage())){
       
       # re-direct to 'Home' or 'Category' page
-      nextPage <- result$nextPage()
-      if(!is.null(nextPage)){
-        print(paste("Page will be changed to:", nextPage))
-          page(nextPage)
-          specie(result$specie)# save specie selected in the app
-       }
-
-     }
+      page(nextPage())
+      
+      # save specie selected in the app
+      if(!is.null(attr(nextPage(), "specie")))
+        specie(attr(nextPage(), "specie"))
+    }
   })
 
+  observe(print(paste("Page currently selected is:", page())))
   observe(print(paste("Specie currently selected is:", specie())))
 
 })

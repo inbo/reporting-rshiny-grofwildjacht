@@ -60,12 +60,13 @@ categoryCard <- function(id, plot, title, description){
   
   ns <- NS(id)
   
-  file <- file.path("www", paste0("category-", plot, ".png"))
+  file <- system.file("ui", "www", paste0("category-", plot, ".png"), package = "reportingGrofwild")
+  
   output <- bslib::card(
     class = "category-card",
     bslib::card_header(title, class = "category-card-header"), 
     br(),
-    bslib::card_image(src = file, class = "category-card-image"),
+    bslib::card_image(file = file, class = "category-card-image"),
     br(),
     bslib::card_body(description),
     br(), br(),
@@ -147,10 +148,11 @@ afschotServer <- function(id){
     observeEvent(input$`afschot-vlaanderen-button`, {
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
-          id = "dash", 
-          ns = ns, uiText = uiText, 
+          id = ns("dash"),
+          uiText = uiText, 
+          context = "wild",
           showCombinatie = TRUE,
-          plotFunction = "F05_1", doHide = FALSE
+          doHide = FALSE
         )
        );
        plotCreated("trendYearRegion")

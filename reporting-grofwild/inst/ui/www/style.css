@@ -64,12 +64,6 @@ h1, h2, h3, h4 {
   color: #356196;
 }
 
-#geodataBron, #contact, .version {
-  font-size: 14px;
-  line-height: 20px;
-  color: #595959
-}
-
 #wildZwijnFoto {
   width: 260px; 
   height: 186px;

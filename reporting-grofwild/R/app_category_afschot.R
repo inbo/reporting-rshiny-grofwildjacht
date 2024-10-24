@@ -91,7 +91,7 @@ afschotServer <- function(id){
   
   moduleServer(id, function(input, output, session){  
         
-    ns <- NS(namespace = id)
+    ns <- session$ns
     
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
@@ -147,7 +147,8 @@ afschotServer <- function(id){
     observeEvent(input$`afschot-vlaanderen-button`, {
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
-          id = "dash", uiText = uiText, 
+          id = "dash", 
+          ns = ns, uiText = uiText, 
           showCombinatie = TRUE,
           plotFunction = "F05_1", doHide = FALSE
         )
@@ -159,7 +160,7 @@ afschotServer <- function(id){
     observe(
       switch(plotCreated(),
         trendYearRegion = trendYearRegionServer(
-            id = "dash",
+            id = "dash", 
             data = results$dash_ecoData, 
             species = results$dash_species,
             timeRange = results$dash_timeRange,

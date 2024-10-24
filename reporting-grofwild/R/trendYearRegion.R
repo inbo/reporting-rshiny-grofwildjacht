@@ -264,7 +264,9 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-trendYearRegionServer <- function(id, data, timeRange = reactive(NULL), 
+trendYearRegionServer <- function(
+  id, ns = NULL,
+  data, timeRange = reactive(NULL), 
   species, regionLevel = reactive("WBE_buitengrenzen"), locaties,
   geoData, allSpatialData, biotoopData = reactive(NULL), title = reactive(NULL),
   type = "wbe") {
@@ -275,7 +277,9 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
   moduleServer(id,
     function(input, output, session) {
       
-      ns <- session$ns
+      if(is.null(ns))  ns <- session$ns
+      
+#      browser()
       
       output$trendRegionTitle <- renderUI({
           
@@ -313,7 +317,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
             data = geoData(),
             allSpatialData = allSpatialData,
             biotoopData = biotoopData(),
-            timeRange = req(input$trendPeriod),
+            timeRange = req(input$trendPeriod), # TODO: issue
             species = req(species()),
             regionLevel = regionLevel(),
             unit = req(input$trendUnit)
@@ -337,7 +341,6 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
             getDisclaimerLimited()
           
         })      
-      
       
       callModule(module = optionsModuleServer, id = "trendRegion", 
         data = trendRegionData,
@@ -365,19 +368,22 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' 
 #' @inherit welcomeSectionUI
+#' @param ns (optional) Shiny namespace function, by default
+#' defined from \code{id}
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @param unitChoices, character vector with choices for the units
 #' 
 #' @export
-trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI", 
+trendYearRegionUI <- function(
+  id, ns = NS(id), uiText, plotFunction = "trendYearRegionUI", 
   showCombinatie = FALSE, doHide = TRUE,
   unitChoices = c("Aantal" = "absolute", 
     "Aantal/100ha" = "relative", 
     "Aantal/100ha bos & natuur" = "relativeDekking")) {
   
-  ns <- NS(id)
+#  ns <- NS(id)
   
   uiText <- uiText[uiText$plotFunction == plotFunction, ]
   

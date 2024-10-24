@@ -98,9 +98,9 @@ afschotServer <- function(id){
     
     specieEcoData <- ecoData[ecoData$wildsoort == id, ] # specieEcoData
     specieGeoData <- geoData[geoData$wildsoort == id, ] # specieGeoData
-    results$dash_ecoData <- reactive(specieEcoData)
-    results$dash_species <- reactive(id)
-    results$dash_timeRange <- reactive(range(specieEcoData$afschotjaar))
+    results$ecoData <- reactive(specieEcoData)
+    results$specie <- reactive(id)
+    results$timeRange <- reactive(range(specieEcoData$afschotjaar))
     
     jachtChoices <- c("F04_3", "F05_1", "F05_2")
     dash_titlesJacht <- reactive(
@@ -128,7 +128,7 @@ afschotServer <- function(id){
         ),
         categoryCard(
           id = id,
-          plot = "afschot-vlaanderen-provincie",
+          plot = "afschot-provincie",
           title = sprintf("Jaarlijks gerapporteerd afschot van %s per provincie", tolower(id)),
           description = "Een barplot van het aantal geschoten dieren per jaar in de verschillende provincies."
         ),
@@ -153,26 +153,46 @@ afschotServer <- function(id){
           plotFunction = "F05_1", doHide = FALSE
         )
        );
-       plotCreated("trendYearRegion")
+       plotCreated("afschot-vlaanderen")
     })
+
+    observeEvent(input$`afschot-provincie-button`, {
+      output$`afschot-plots-vlaanderen` <- renderUI(
+        countYearProvinceUI(id = ns("dash"), uiText = uiText, doHide = FALSE)
+      );
+      plotCreated("afschot-provincie")
+    })
+
+    observe(print(plotCreated()))
 
     # Server
     observe(
       switch(plotCreated(),
-        trendYearRegion = trendYearRegionServer(
+        `afschot-vlaanderen` = trendYearRegionServer(
             id = "dash", 
-            data = results$dash_ecoData, 
-            species = results$dash_species,
-            timeRange = results$dash_timeRange,
+            data = results$ecoData, 
+            species = results$specie,
+            timeRange = results$timeRange,
             regionLevel = reactive("flanders"),
             locaties = reactive("Vlaams Gewest"),
             geoData = reactive(specieGeoData),
             allSpatialData = spatialData,
             biotoopData = reactive(biotoopData[["flanders"]]),
             title = reactive(names(dash_titlesJacht()[dash_titlesJacht() == "F05_1"]))
-          )
+          ),
+          `afschot-provincie` = {
+            countYearProvinceServer(
+              id = "dash",
+              data = results$ecoData,
+              timeRange = reactive(
+                if (id == "Edelhert")
+                  c(2008, max(specieEcoData$afschotjaar)) else 
+                  range(specieEcoData$afschotjaar)),
+              title = reactive(uiText$title[uiText$plotFunction == "countYearProvinceUI"])
+            ) 
+          }
+        )
       )
-    )
 
   })
   

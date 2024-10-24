@@ -47,41 +47,6 @@ afschotUI <- function(id){
   
 }
 
-#' Get category card for a specific plot
-#' @param id id character, module id/specie
-#' @param plot character, plot name, e.g. 'afschot-vlaanderen'
-#' @param title character, plot title
-#' @param description character, plot description
-#' @inherit bslib::card return
-#' @author lcougnaud
-#' @importFrom bslib card card_header card_image card_body card_footer
-#' @importFrom shiny actionButton
-categoryCard <- function(id, plot, title, description){
-  
-  ns <- NS(id)
-  
-  file <- system.file("ui", "www", paste0("category-", plot, ".png"), package = "reportingGrofwild")
-  
-  output <- bslib::card(
-    class = "category-card",
-    bslib::card_header(title, class = "category-card-header"), 
-    br(),
-    bslib::card_image(file = file, class = "category-card-image"),
-    br(),
-    bslib::card_body(description),
-    br(), br(),
-    bslib::card_footer(
-      align = "center",
-      shiny::actionButton(
-        inputId = ns(paste0(plot, "-button")), 
-        label = "Bekijk grafiek", class = "category-card-action-button")
-    )
-  )
-  
-  return(output)
-  
-}
-
 #' Server function for the 'afschot' Category page
 #' @param id id character, module id/specie
 #' @return Shiny module function
@@ -121,48 +86,37 @@ afschotServer <- function(id){
     output$`afschot-plots-vlaanderen` <- renderUI(          
       bslib::layout_column_wrap(
         width = 1/3, gap = "2em",
-        categoryCard(
-          id = id,
-          plot = "afschot-vlaanderen",
-          title = sprintf("Jaarlijks gerapporteerd afschot van %s in Vlaanderen", tolower(id)),
-          description = sprintf("Een lijngrafiek van het jaarlijks afschot van %s in Vlaanderen.", tolower(id))
-        ),
-        categoryCard(
-          id = id,
-          plot = "afschot-provincie",
-          title = sprintf("Jaarlijks gerapporteerd afschot van %s per provincie", tolower(id)),
-          description = "Een barplot van het aantal geschoten dieren per jaar in de verschillende provincies."
-        ),
-        categoryCard(
-          id = id,
-          plot = "afschot-vlaanderen-percentage",
-          title = sprintf("Percentage afschot van %s in Vlaanderen t.o.v. een referentieperiode", tolower(id)),
-          description = sprintf("De procentuele verdeling van het afschot van %s gedurende het geselecteerde jaar t.o.v de verdeling tijdens een referentieperiode.", tolower(id))
-       )
-    ))
+        categoryCard(id = id, plot = "trendYearRegionUI", uiText = uiText),
+        categoryCard(id = id, plot = "countYearProvinceUI", uiText = uiText),
+        categoryCard(id = id, plot = "yearlyShotAnimalsUI", uiText = uiText)
+      )
+    )
     
     # Render the plots
     plotCreated <- reactiveVal("")
 
     # UI
-    observeEvent(input$`afschot-vlaanderen-button`, {
+    observeEvent(input$`trendYearRegionUI-button`, {
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
           id = ns("dash"),
-          uiText = uiText, 
-          context = "wild",
+          uiText = uiText, context = "fauna",
           showCombinatie = TRUE,
           doHide = FALSE
         )
        );
-       plotCreated("afschot-vlaanderen")
+       plotCreated("trendYearRegionUI")
     })
 
-    observeEvent(input$`afschot-provincie-button`, {
+    observeEvent(input$`countYearProvinceUI-button`, {
       output$`afschot-plots-vlaanderen` <- renderUI(
-        countYearProvinceUI(id = ns("dash"), uiText = uiText, doHide = FALSE)
+        countYearProvinceUI(
+          id = ns("dash"), 
+          uiText = uiText, context = "fauna",
+          doHide = FALSE
+        )
       );
-      plotCreated("afschot-provincie")
+      plotCreated("countYearProvinceUI")
     })
 
     observe(print(plotCreated()))
@@ -170,7 +124,7 @@ afschotServer <- function(id){
     # Server
     observe(
       switch(plotCreated(),
-        `afschot-vlaanderen` = trendYearRegionServer(
+        `trendYearRegionUI` = trendYearRegionServer(
             id = "dash", 
             data = results$ecoData, 
             species = results$specie,
@@ -179,18 +133,15 @@ afschotServer <- function(id){
             locaties = reactive("Vlaams Gewest"),
             geoData = reactive(specieGeoData),
             allSpatialData = spatialData,
-            biotoopData = reactive(biotoopData[["flanders"]]),
-            title = reactive(names(dash_titlesJacht()[dash_titlesJacht() == "F05_1"]))
+            biotoopData = reactive(biotoopData[["flanders"]])
           ),
-          `afschot-provincie` = {
+          `countYearProvinceUI` = {
             countYearProvinceServer(
               id = "dash",
               data = results$ecoData,
-              timeRange = reactive(
-                if (id == "Edelhert")
-                  c(2008, max(specieEcoData$afschotjaar)) else 
-                  range(specieEcoData$afschotjaar)),
-              title = reactive(uiText$title[uiText$plotFunction == "countYearProvinceUI"])
+              timeRange = if (id == "Edelhert")
+                  reactive(c(2008, max(specieEcoData$afschotjaar))) else 
+                  results$timeRange
             ) 
           }
         )
@@ -224,5 +175,42 @@ afschotPanel <- function(id, ...){
     mainPanel = mainPanel(width = 9, ...)
 
   )
+  
+}
+
+#' Get category card for a specific plot
+#' @param id id character, module id/specie
+#' @param plot character, plot name, e.g. 'trendYearRegionUI'
+#' @inherit bslib::card return
+#' @author lcougnaud
+#' @importFrom bslib card card_header card_image card_body card_footer
+#' @importFrom shiny actionButton
+categoryCard <- function(id, plot, uiText){
+  
+  ns <- NS(id)
+  
+  title <- uiText[match(plot, uiText$plotFunction), "title"]
+  description <- uiText[match(plot, uiText$plotFunction), "fauna"]
+  
+  file <- system.file("ui", "www", paste0("category-", plot, ".png"), package = "reportingGrofwild")
+  
+  output <- bslib::card(
+    class = "category-card",
+    bslib::card_header(title, class = "category-card-header"), 
+    br(),
+    bslib::card_image(file = file, class = "category-card-image"),
+    br(),
+    bslib::card_body(description),
+    br(), br(),
+    bslib::card_footer(
+      align = "center",
+      shiny::actionButton(
+        inputId = ns(paste0(plot, "-button")), 
+        label = "Bekijk grafiek", class = "category-card-action-button"
+      )
+    )
+  )
+  
+  return(output)
   
 }

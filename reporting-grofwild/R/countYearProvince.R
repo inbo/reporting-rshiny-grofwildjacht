@@ -139,7 +139,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
-  typesDefault = types, timeRange, title) {
+  typesDefault = types, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -186,9 +186,9 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @inherit welcomeSectionUI
 #' @inheritParams trendYearRegionUI
 #' @inheritParams optionsModuleUI 
-#' 
 #' @export
-countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI",
+countYearProvinceUI <- function(
+  id, uiText, context = id, plotFunction = "countYearProvinceUI",
   showType = FALSE, showDataSource = NULL, doHide = TRUE) {
   
   ns <- NS(id)
@@ -211,7 +211,7 @@ countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI"
             showTime = TRUE, exportData = TRUE,
             showType = showType,
             showDataSource = showDataSource),
-          tags$p(HTML(uiText[, id]))
+          tags$p(HTML(uiText[, context]))
         ),
         column(8, 
           plotModuleUI(id = ns("yearProvince"))

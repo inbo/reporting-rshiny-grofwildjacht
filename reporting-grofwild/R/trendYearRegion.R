@@ -368,8 +368,7 @@ trendYearRegionServer <- function(
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' 
 #' @inherit welcomeSectionUI
-#' @param ns (optional) Shiny namespace function, by default
-#' defined from \code{id}
+#' @param context character, where the plot is shown; to define text/titles to be shown
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
@@ -377,13 +376,13 @@ trendYearRegionServer <- function(
 #' 
 #' @export
 trendYearRegionUI <- function(
-  id, ns = NS(id), uiText, plotFunction = "trendYearRegionUI", 
+  id, context = NULL, uiText, plotFunction = "trendYearRegionUI", 
   showCombinatie = FALSE, doHide = TRUE,
   unitChoices = c("Aantal" = "absolute", 
     "Aantal/100ha" = "relative", 
     "Aantal/100ha bos & natuur" = "relativeDekking")) {
   
-#  ns <- NS(id)
+  ns <- NS(id)
   
   uiText <- uiText[uiText$plotFunction == plotFunction, ]
   
@@ -404,7 +403,7 @@ trendYearRegionUI <- function(
           optionsModuleUI(id = ns("trendRegion"), exportData = TRUE,
             doWellPanel = FALSE)
         ),
-        tags$p(HTML(uiText[, id]))
+        tags$p(HTML(uiText[, if (is.null(context)) id else context]))
       ),
       column(8, plotModuleUI(id = ns("trendRegion")))
     ),

@@ -16,7 +16,8 @@ frontUI <- function(){
         slickR::slickR(
           obj = img, slideId = "carousel", 
           slideType = 'img',
-          width = "100%", padding = 0
+          width = "100%", padding = 0,
+          height = "100vh;"
         ) + 
         slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE)
       ),

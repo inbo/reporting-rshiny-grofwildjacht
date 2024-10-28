@@ -7,6 +7,8 @@
 #' (NULL by default).
 #' @param id character, module id/specie
 #' @param specie (optional) hard-coded specie in the path (NULL by default)
+#' @param category (optional) initial category in the path
+#' @param subcategory (optional) initial subcategory in the path
 #' @param ... extra parameters for \code{\link[shiny]{fluidRow}}
 #' @author lcougnaud
 #' @import shiny
@@ -28,7 +30,7 @@ headerUI <- function(
     )
     
     path <- c(
-      list(column(width = 0.05, "")),
+      list(column(width = 0.02, "")),
       if("home" %in% path)
         list(
           column(
@@ -43,35 +45,35 @@ headerUI <- function(
           textOutput(outputId = ns("pathSpecie"))
         }
         list(
-          column(width = 0.25, "/"), 
+          column(width = 0.1, "/"), 
           column(width = 2, pathSpecie)
         )
       },
       if("category" %in% path)
         list(
-          column(width = 0.25, "/"), 
+          column(width = 0.1, "/"), 
           column(width = 1, category)
         ),
       if("subcategory" %in% path)
         list(
-          column(width = 0.25, "/"), 
+          column(width = 0.1, "/"), 
           column(width = 2.5, 
           actionLink(inputId = ns("pathSubcategory"), label = subcategory))
         ),
       if("plot" %in% path)
         list(
-          column(width = 0.25, "/"), 
-          column(width = 2.5, textOutput(outputId = ns("pathPlot")))
+          column(width = 0.1, "/"), 
+          column(width = 4, textOutput(outputId = ns("pathPlot")))
          )
     )
-    headerLeft <- column(width = 9, do.call(fluidRow, path))
+    headerLeft <- column(width = 10, do.call(fluidRow, path))
     
   }else headerLeft <- NULL
   
   cssColor <- paste0("color:", color)
   headerRight <- list(
     column(
-      width = 1, offset = offset,
+      width = 0.5, offset = offset,
       tags$p(
         tags$a(
           id = "contact", 

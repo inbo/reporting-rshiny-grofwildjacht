@@ -368,14 +368,14 @@ trendYearRegionServer <- function(
 #' @inherit welcomeSectionUI
 #' @param context character, where the plot is shown; 
 #' to define text/titles to be shown (\code{id} by default)
+#' @param specie character of length 1, specie
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @param unitChoices, character vector with choices for the units
-#' 
 #' @export
 trendYearRegionUI <- function(
-  id, uiText, context = id, plotFunction = "trendYearRegionUI", 
+  id, uiText, context = id, specie = NULL, plotFunction = "trendYearRegionUI", 
   showCombinatie = FALSE, doHide = TRUE,
   unitChoices = c("Aantal" = "absolute", 
     "Aantal/100ha" = "relative", 
@@ -383,7 +383,10 @@ trendYearRegionUI <- function(
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == plotFunction, ]
+  title <- getPlotTitle(plot = plotFunction, specie = specie, 
+    uiText = uiText)
+  description <- getPlotDescription(plot = plotFunction, 
+    specie = specie, uiText = uiText)
   
   toShow <- tagList(
     
@@ -402,7 +405,7 @@ trendYearRegionUI <- function(
           optionsModuleUI(id = ns("trendRegion"), exportData = TRUE,
             doWellPanel = FALSE)
         ),
-        tags$p(HTML(uiText[, context]))
+        tags$p(HTML(description))
       ),
       column(8, plotModuleUI(id = ns("trendRegion")))
     ),
@@ -415,7 +418,7 @@ trendYearRegionUI <- function(
       toShow
     ) else
     tagList(
-      actionLink(inputId = ns("linkYearRegion"), label = uiText$title, class = "action-h3"),
+      actionLink(inputId = ns("linkYearRegion"), label = title, class = "action-h3"),
       conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
         toShow
       )

@@ -139,7 +139,8 @@ afschotServer <- function(id){
           id = ns("dash"),
           uiText = uiText, context = "fauna",
           showCombinatie = TRUE,
-          doHide = FALSE
+          doHide = FALSE,
+          specie = id
         )
        );
        plotCreated("trendYearRegionUI")
@@ -150,7 +151,8 @@ afschotServer <- function(id){
         countYearProvinceUI(
           id = ns("dash"), 
           uiText = uiText, context = "fauna",
-          doHide = FALSE
+          doHide = FALSE,
+          specie = id
         )
       );
       plotCreated("countYearProvinceUI")
@@ -160,14 +162,9 @@ afschotServer <- function(id){
     
     # Update plot in path
     output$pathPlot <- renderText({
-      req(plotCreated())
-      paste0(
-        substr(
-          x = uiText[uiText$plotFunction == plotCreated(), "title"],
-          1, 30
-        ), 
-        "..."
-      )
+      if(isTruthy(plotCreated()))
+        getPlotTitle(plot = plotCreated(), specie = id, uiText = uiText, n = 55)
+      else ""
     })
 
     # Server
@@ -238,8 +235,9 @@ categoryCard <- function(id, plot, uiText){
   
   ns <- NS(id)
   
-  title <- uiText[match(plot, uiText$plotFunction), "title"]
-  description <- uiText[match(plot, uiText$plotFunction), "fauna"]
+  title <- getPlotTitle(plot = plot, specie = id, uiText = uiText)
+
+  description <- getPlotDescription(plot = plot, specie = id, uiText = uiText)
   
   file <- system.file("ui", "www", paste0("category-", plot, ".png"), package = "reportingGrofwild")
   

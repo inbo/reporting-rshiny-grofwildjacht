@@ -188,16 +188,17 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @inheritParams optionsModuleUI 
 #' @export
 countYearProvinceUI <- function(
-  id, uiText, context = id, plotFunction = "countYearProvinceUI",
+  id, specie = NULL, uiText, context = id, plotFunction = "countYearProvinceUI",
   showType = FALSE, showDataSource = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == plotFunction, ]
+  title <- getPlotTitle(plot = plotFunction, specie = specie, uiText = uiText)
+  description <- getPlotDescription(plot = plotFunction, specie = specie, uiText = uiText)
   
   tagList(
     
-    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(uiText$title)), 
+    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(title)), 
       class = "action-h3"),
     conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
       
@@ -211,7 +212,7 @@ countYearProvinceUI <- function(
             showTime = TRUE, exportData = TRUE,
             showType = showType,
             showDataSource = showDataSource),
-          tags$p(HTML(uiText[, context]))
+          tags$p(HTML(description))
         ),
         column(8, 
           plotModuleUI(id = ns("yearProvince"))

@@ -13,7 +13,9 @@ afschotUI <- function(id){
     # header
     headerUI(
       path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, specie = id, category = "Afschot"
+      id = id, specie = id, 
+      category = "Afschot",
+      subcategory = getTabTitle(value = "vlaanderen", category = "afschot")
     ),
             
     # image
@@ -90,21 +92,44 @@ afschotServer <- function(id){
     output$pathSpecie <- renderText(id)
     
     # Update subcategory in path
-    output$pathSubcategory <- renderText(
-      getTabTitle(value = input$`afschot-subcategory`, category = "afschot")
-    )
-    
-    # Initiate tabs
-    output$`afschot-plots-vlaanderen` <- renderUI(          
-      bslib::layout_column_wrap(
-        width = 1/3, gap = "2em",
-        categoryCard(id = id, plot = "trendYearRegionUI", uiText = uiText),
-        categoryCard(id = id, plot = "countYearProvinceUI", uiText = uiText),
-        categoryCard(id = id, plot = "yearlyShotAnimalsUI", uiText = uiText)
+    observeEvent(input$`afschot-subcategory`, {
+      print("Update action link")
+      updateActionLink(
+        session = session, 
+        inputId = ns("pathSubcategory"), 
+        label = getTabTitle(
+          value = input$`afschot-subcategory`, 
+          category = "afschot"
+        )
       )
-    )
+    })
     
-    # Render the plots
+    ## Tab with available plots
+    
+    initTab <- reactiveVal(TRUE)
+    # Go back to page if subcategory is clicked on in the path
+    observeEvent(input$pathSubcategory, initTab(TRUE))
+    observeEvent(input$`afschot-subcategory`, initTab(TRUE))
+
+    # Create tab
+    observe(if(initTab()){
+      print("update tab")
+      if(isTruthy(input$`afschot-subcategory`))
+        switch(input$`afschot-subcategory`, 
+          vlaanderen = 
+            output$`afschot-plots-vlaanderen` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCard(id = id, plot = "trendYearRegionUI", uiText = uiText),
+                categoryCard(id = id, plot = "countYearProvinceUI", uiText = uiText),
+                categoryCard(id = id, plot = "yearlyShotAnimalsUI", uiText = uiText)
+              )
+            )
+        )
+      initTab(FALSE)
+    })
+    
+    ## Tab content with selected plot
     plotCreated <- reactiveVal("")
 
     # UI

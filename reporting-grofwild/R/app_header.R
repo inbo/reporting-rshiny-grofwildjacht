@@ -14,7 +14,8 @@
 #' @export
 headerUI <- function( 
   offset = ifelse(is.null(path), 8, 0), color = "black",
-  path = NULL, category, specie = NULL, id, ...){
+  path = NULL, category, subcategory, specie = NULL, 
+  id, ...){
 
   if(!is.null(path)){
     
@@ -54,7 +55,8 @@ headerUI <- function(
       if("subcategory" %in% path)
         list(
           column(width = 0.25, "/"), 
-          column(width = 2.5, textOutput(outputId = ns("pathSubcategory")))
+          column(width = 2.5, 
+          actionLink(inputId = ns("pathSubcategory"), label = subcategory))
         ),
       if("plot" %in% path)
         list(

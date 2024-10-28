@@ -12,7 +12,7 @@ afschotUI <- function(id){
           
     # header
     headerUI(
-      path = c("home", "specie", "category", "plot"), 
+      path = c("home", "specie", "category", "subcategory", "plot"), 
       id = id, specie = id, category = "Afschot"
     ),
             
@@ -29,18 +29,28 @@ afschotUI <- function(id){
         
       title = "",
       
-      id = ns("afschot-plots"),
+      id = ns("afschot-subcategory"),
             
       tabPanel(
-        title = "Afschot in Vlaanderen", value = "vlaanderen",
+        title = getTabTitle(value = "vlaanderen", category = "afschot"), 
+        value = "vlaanderen",
         afschotPanel(
           id = id,
           uiOutput(outputId = ns("afschot-plots-vlaanderen"))
         )
       ),
-      tabPanel(title = "Afschot per regio", value = "regio"),
-      tabPanel(title = "Afschot per leeftijdscategorie", value = "leeftijdcategorie"),
-      tabPanel(title = "Afschot per jachtmethode", value = "jachtmethode")
+      tabPanel(
+        title = getTabTitle(value = "regio", category = "afschot"), 
+        value = "regio"
+      ),
+      tabPanel(
+        title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
+        value = "leeftijdcategorie"
+      ),
+      tabPanel(
+        title = getTabTitle(value = "jachtmethode", category = "afschot"),
+        value = "jachtmethode"
+      )
     )
 
   )
@@ -79,8 +89,10 @@ afschotServer <- function(id){
     # Update specie in path
     output$pathSpecie <- renderText(id)
     
-    # Update plot in path
-    output$pathPlot <- renderText(input$`afschot-plots`)
+    # Update subcategory in path
+    output$pathSubcategory <- renderText(
+      getTabTitle(value = input$`afschot-subcategory`, category = "afschot")
+    )
     
     # Initiate tabs
     output$`afschot-plots-vlaanderen` <- renderUI(          
@@ -120,6 +132,18 @@ afschotServer <- function(id){
     })
 
     observe(print(plotCreated()))
+    
+    # Update plot in path
+    output$pathPlot <- renderText({
+      req(plotCreated())
+      paste0(
+        substr(
+          x = uiText[uiText$plotFunction == plotCreated(), "title"],
+          1, 30
+        ), 
+        "..."
+      )
+    })
 
     # Server
     observe(

@@ -51,7 +51,11 @@ afschotUI <- function(id){
       ),
       tabPanel(
         title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
-        value = "leeftijdcategorie"
+        value = "leeftijdcategorie",
+        afschotPanel(
+          id = id,
+           uiOutput(outputId = ns("afschot-plots-leeftijdcategorie"))
+        )
       ),
       tabPanel(
         title = getTabTitle(value = "jachtmethode", category = "afschot"),
@@ -171,6 +175,15 @@ afschotServer <- function(id){
                   categoryCard(id = id, plot = "mapFlandersUI", uiText = uiText)
               )
             )
+          },
+          leeftijdcategorie = {
+            output$`afschot-plots-leeftijdcategorie` <- renderUI(          
+              bslib::layout_column_wrap(
+                 width = 1/3, gap = "2em",
+                 categoryCard(id = id, plot = "tableProvinceUI", uiText = uiText)#,
+#                 categoryCard(id = id, plot = "countYearProvinceUI", uiText = uiText),
+              )
+            )
           }
         )
       initTab(FALSE)
@@ -227,6 +240,16 @@ afschotServer <- function(id){
       plotCreated("mapFlandersUI")
     })
 
+    observeEvent(input$`tableProvinceUI-button`, {
+      output$`afschot-plots-leeftijdcategorie` <- renderUI(
+        tableProvinceUI(
+          id = ns("wild"), doHide = FALSE,
+          uiText = uiText, context = "wild", specie = id
+        )
+      );
+      plotCreated("tableProvinceUI")
+    })
+
     observe(print(plotCreated()))
     
     # Update plot in path
@@ -277,6 +300,12 @@ afschotServer <- function(id){
             geoData = results$geoData,
             biotoopData = biotoopData,
             allSpatialData = spatialData
+          ),
+          tableProvinceUI = tableProvinceServer(
+            id = "wild",
+            data = results$ecoData,
+            categorie = "leeftijd",
+            timeRange = results$timeRange
           )
              
         )

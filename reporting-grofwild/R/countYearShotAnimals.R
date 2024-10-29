@@ -259,17 +259,26 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
+countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
+  uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", groupVariable), ]
+  plotFunction <- paste0("countYearShotUI-", groupVariable)
+  title <- getPlotTitle(
+    plot = plotFunction, specie = specie, uiText = uiText
+  )
+  description <- getPlotDescription(
+    plot = plotFunction, 
+    specie = specie, uiText = uiText, context = context
+  )
   
   tagList(
     
     actionLink(inputId = ns("linkYearShot"),
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearShot % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkYearShot % 2  ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         
@@ -278,7 +287,7 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
             regionLevels = regionLevels, exportData = TRUE,
             showType = TRUE, showInterval = TRUE,
             showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd"),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
+          tags$p(HTML(description)),
         ),
         column(8, plotModuleUI(id = ns("countYearShot")))
       ),

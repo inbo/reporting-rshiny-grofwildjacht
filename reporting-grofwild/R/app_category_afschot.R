@@ -90,7 +90,7 @@ afschotServer <- function(id){
       specieGeoData
     })
     results$specie <- reactive(id)
-    results$timeRange <- reactive(range(specieEcoData$afschotjaar))
+    results$timeRange <- reactive(range(results$ecoData()$afschotjaar))
     results$openingstijdenData <- reactive(
       openingstijdenData[openingstijdenData$Soort == id, ]
     )
@@ -115,6 +115,15 @@ afschotServer <- function(id){
       }
     })
 
+    # Enrich data with FBZ
+    results$combinedData <- reactive(
+      merge(
+        x = results$ecoData(), 
+        y = results$geoData()[, c("ID", "FaunabeheerZone")], 
+        by = "ID"
+      )
+    ) 
+
     # Plot: Percentage jaarlijkse afschot
     results$labeltypes <- reactive({
       req(results$openingstijdenData())
@@ -129,7 +138,10 @@ afschotServer <- function(id){
       namedChoices(jachtChoices, uiText = uiText, regionLevel = "flanders")
     )
     
-        
+    results$leeftijdtypes <- reactive(
+      c(loadMetaEco(species = id)$leeftijd_comp_inbo, "Onbekend")
+    )
+    
     ## Header
         
     # Update specie in path
@@ -180,8 +192,8 @@ afschotServer <- function(id){
             output$`afschot-plots-leeftijdcategorie` <- renderUI(          
               bslib::layout_column_wrap(
                  width = 1/3, gap = "2em",
-                 categoryCard(id = id, plot = "tableProvinceUI", uiText = uiText)#,
-#                 categoryCard(id = id, plot = "countYearProvinceUI", uiText = uiText),
+                 categoryCard(id = id, plot = "tableProvinceUI", uiText = uiText),
+                 categoryCard(id = id, plot = "countYearShotUI-leeftijd_comp", uiText = uiText),
               )
             )
           }
@@ -250,6 +262,18 @@ afschotServer <- function(id){
       plotCreated("tableProvinceUI")
     })
 
+    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, {
+      output$`afschot-plots-leeftijdcategorie` <- renderUI(
+        countYearShotUI(
+          id = ns("wild_leeftijd"), groupVariable = "leeftijd_comp",
+          regionLevels = c(1:2, 4), 
+          uiText = uiText, context = "wild", specie = id,
+          doHide = FALSE
+        )
+      );
+      plotCreated("countYearShotUI-leeftijd_comp")
+    })
+
     observe(print(plotCreated()))
     
     # Update plot in path
@@ -306,6 +330,13 @@ afschotServer <- function(id){
             data = results$ecoData,
             categorie = "leeftijd",
             timeRange = results$timeRange
+          ),
+          `countYearShotUI-leeftijd_comp` = countYearShotServer(
+            id = "wild_leeftijd",
+            data = results$combinedData,
+            timeRange = results$timeRange,
+            groupVariable = "leeftijd_comp",
+            types = results$leeftijdtypes
           )
              
         )

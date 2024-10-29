@@ -50,9 +50,9 @@ getPlotTitle <- function(plot, specie = NULL, n = integer(), uiText){
 #' @inheritParams getPlotTitle
 #' @return character vector of length 1 with plot description
 #' @author lcougnaud
-getPlotDescription <- function(plot, specie = NULL, uiText){
+getPlotDescription <- function(plot, specie = NULL, uiText, context = "fauna"){
   
-  title <- uiText[uiText$plotFunction == plot, "fauna"]
+  title <- uiText[uiText$plotFunction == plot, context]
   
   if(!is.null(specie))
     title <- gsub("{wildsoort}", specie, title, fixed = TRUE)

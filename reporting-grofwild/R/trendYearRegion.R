@@ -386,7 +386,7 @@ trendYearRegionUI <- function(
   title <- getPlotTitle(plot = plotFunction, specie = specie, 
     uiText = uiText)
   description <- getPlotDescription(plot = plotFunction, 
-    specie = specie, uiText = uiText)
+    specie = specie, uiText = uiText, context = context)
   
   toShow <- tagList(
     

@@ -194,7 +194,8 @@ countYearProvinceUI <- function(
   ns <- NS(id)
   
   title <- getPlotTitle(plot = plotFunction, specie = specie, uiText = uiText)
-  description <- getPlotDescription(plot = plotFunction, specie = specie, uiText = uiText)
+  description <- getPlotDescription(plot = plotFunction, 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     

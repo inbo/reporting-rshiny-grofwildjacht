@@ -352,24 +352,29 @@ yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenDat
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-yearlyShotAnimalsUI <- function(id, uiText) {
+yearlyShotAnimalsUI <- function(id, uiText, specie = NULL, 
+  context = id, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  plotFunction <- "yearlyShotAnimalsUI"
+    
+  title <- getPlotTitle(plot = plotFunction, specie = specie, uiText = uiText)
+  description <- getPlotDescription(plot = plotFunction, 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkYearlyShotAnimals"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearlyShotAnimals % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkYearlyShotAnimals % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         
         column(4,
           optionsModuleUI(id = ns("yearlyShotAnimals"), 
             showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
+          tags$p(HTML(description))
         ),
         column(8, 
           plotModuleUI(id = ns("yearlyShotAnimals"))

@@ -79,6 +79,38 @@ afschotServer <- function(id){
     results$ecoData <- reactive(specieEcoData)
     results$specie <- reactive(id)
     results$timeRange <- reactive(range(specieEcoData$afschotjaar))
+    results$openingstijdenData <- reactive(
+      openingstijdenData[openingstijdenData$Soort == id, ]
+    )
+    results$openingstijd <- reactive({
+      # for Ree: openingseason contains more year than in the data
+      # for Wildboar: openingseason contains less year than in the data
+          
+      # so retains the years when data and opening season specified
+      # and doesn't retain the last year (because not full)
+              
+      if (id %in% c("Ree", "Wild zwijn")) {
+        openingstijd <- c(
+          max(
+            min(results$ecoData()$afschotjaar), 
+            min(results$openingstijdenData()$Jaar)
+          ),
+          min(
+            max(results$ecoData()$afschotjaar), 
+            max(results$openingstijdenData()$Jaar)
+          )
+        )
+      }
+    })
+
+    # Plot: Percentage jaarlijkse afschot
+    results$labeltypes <- reactive({
+      req(results$openingstijdenData())
+      types <- loadMetaEco(species = id)$labeltype
+      if (length(types) == 1 && id == types)
+        return(c("alle" = "all")) else 
+        return(types)
+    })
     
     jachtChoices <- c("F04_3", "F05_1", "F05_2")
     dash_titlesJacht <- reactive(
@@ -137,10 +169,9 @@ afschotServer <- function(id){
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
           id = ns("dash"),
-          uiText = uiText, context = "fauna",
+          uiText = uiText, context = "fauna", specie = id,
           showCombinatie = TRUE,
-          doHide = FALSE,
-          specie = id
+          doHide = FALSE
         )
        );
        plotCreated("trendYearRegionUI")
@@ -150,12 +181,24 @@ afschotServer <- function(id){
       output$`afschot-plots-vlaanderen` <- renderUI(
         countYearProvinceUI(
           id = ns("dash"), 
-          uiText = uiText, context = "fauna",
-          doHide = FALSE,
-          specie = id
+          uiText = uiText, context = "wild",
+          specie = id,
+          doHide = FALSE
         )
       );
       plotCreated("countYearProvinceUI")
+    })
+
+    observeEvent(input$`yearlyShotAnimalsUI-button`, {
+      output$`afschot-plots-vlaanderen` <- renderUI(
+        yearlyShotAnimalsUI(
+          id = ns("dash"), 
+          uiText = uiText, context = "wild",
+          specie = id,
+          doHide = FALSE
+        )
+       );
+      plotCreated("yearlyShotAnimalsUI")
     })
 
     observe(print(plotCreated()))
@@ -170,7 +213,7 @@ afschotServer <- function(id){
     # Server
     observe(
       switch(plotCreated(),
-        `trendYearRegionUI` = trendYearRegionServer(
+        trendYearRegionUI = trendYearRegionServer(
             id = "dash", 
             data = results$ecoData, 
             species = results$specie,
@@ -181,15 +224,21 @@ afschotServer <- function(id){
             allSpatialData = spatialData,
             biotoopData = reactive(biotoopData[["flanders"]])
           ),
-          `countYearProvinceUI` = {
-            countYearProvinceServer(
-              id = "dash",
-              data = results$ecoData,
-              timeRange = if (id == "Edelhert")
-                  reactive(c(2008, max(specieEcoData$afschotjaar))) else 
-                  results$timeRange
-            ) 
-          }
+          countYearProvinceUI = countYearProvinceServer(
+            id = "dash",
+            data = results$ecoData,
+            timeRange = if (id == "Edelhert")
+              reactive(c(2008, max(specieEcoData$afschotjaar))) else 
+              results$timeRange
+           ),
+           yearlyShotAnimalsUI = yearlyShotAnimalsServer(
+             id = "dash", 
+             data = results$ecoData, 
+             timeRange = results$openingstijd, 
+             type = results$labeltypes, 
+             openingstijdenData = results$openingstijdenData
+           )
+             
         )
       )
 

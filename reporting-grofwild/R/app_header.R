@@ -58,7 +58,8 @@ headerUI <- function(
         list(
           column(width = 0.1, "/"), 
           column(width = 2.5, 
-          actionLink(inputId = ns("pathSubcategory"), label = subcategory))
+            uiOutput(outputId = ns("pathSubcategory"))
+          )
         ),
       if("plot" %in% path)
         list(

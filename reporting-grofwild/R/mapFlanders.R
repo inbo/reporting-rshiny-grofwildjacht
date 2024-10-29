@@ -1178,10 +1178,12 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Title for selected region level
       output$timeTitle <- renderUI({
           
-          h3("Evolutie", 
+          h3(
+            "Jaarlijks",
             if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
-            if (type != "wbe") tags$br(),
-            regionLevelName())
+            "van", species(), "per geselecteerde",
+            tolower(regionLevelName())
+          )
           
         })
       
@@ -1328,7 +1330,8 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   ),
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("flanders", "region"),
-  showTitle = TRUE) {
+  showTitle = TRUE, 
+  uiText = NULL, specie = NULL, typeTitle = type) {
   
   ns <- NS(id)
   type <- match.arg(type)
@@ -1346,10 +1349,19 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   
   # Map with according line plot
   
+  title <- ifelse(
+    !is.null(uiText),
+    getPlotTitle(
+      plot = "mapFlandersUI", 
+      uiText = uiText, specie = specie, type = typeTitle
+    ),
+    "Landkaart"
+  )
+  
   tagList(
     
     if (showTitle)
-      h2("Landkaart"),
+      h2(title),
     
     uiOutput(ns("descriptionMapFlanders")),
     

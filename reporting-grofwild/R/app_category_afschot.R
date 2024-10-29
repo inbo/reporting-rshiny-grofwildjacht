@@ -43,7 +43,11 @@ afschotUI <- function(id){
       ),
       tabPanel(
         title = getTabTitle(value = "regio", category = "afschot"), 
-        value = "regio"
+        value = "regio",
+        afschotPanel(
+          id = id,
+          uiOutput(outputId = ns("afschot-plots-regio"))
+        )
       ),
       tabPanel(
         title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
@@ -77,6 +81,10 @@ afschotServer <- function(id){
     specieEcoData <- ecoData[ecoData$wildsoort == id, ] # specieEcoData
     specieGeoData <- geoData[geoData$wildsoort == id, ] # specieGeoData
     results$ecoData <- reactive(specieEcoData)
+    results$geoData <- reactive({
+      req(geoData)
+      specieGeoData
+    })
     results$specie <- reactive(id)
     results$timeRange <- reactive(range(specieEcoData$afschotjaar))
     results$openingstijdenData <- reactive(
@@ -124,23 +132,21 @@ afschotServer <- function(id){
     output$pathSpecie <- renderText(id)
     
     # Update subcategory in path
-    observeEvent(input$`afschot-subcategory`, {
-      print("Update action link")
-      updateActionLink(
-        session = session, 
-        inputId = ns("pathSubcategory"), 
+    output$pathSubcategory <- renderUI(
+      actionLink(
+        inputId = ns("pathSubcategory-button"), 
         label = getTabTitle(
           value = input$`afschot-subcategory`, 
           category = "afschot"
         )
       )
-    })
+    )
     
     ## Tab with available plots
     
     initTab <- reactiveVal(TRUE)
     # Go back to page if subcategory is clicked on in the path
-    observeEvent(input$pathSubcategory, initTab(TRUE))
+    observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$`afschot-subcategory`, initTab(TRUE))
 
     # Create tab
@@ -148,7 +154,7 @@ afschotServer <- function(id){
       print("update tab")
       if(isTruthy(input$`afschot-subcategory`))
         switch(input$`afschot-subcategory`, 
-          vlaanderen = 
+          vlaanderen = {
             output$`afschot-plots-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
@@ -157,6 +163,15 @@ afschotServer <- function(id){
                 categoryCard(id = id, plot = "yearlyShotAnimalsUI", uiText = uiText)
               )
             )
+          },
+          regio = {
+            output$`afschot-plots-regio` <- renderUI(          
+              bslib::layout_column_wrap(
+                  width = 1/3, gap = "2em",
+                  categoryCard(id = id, plot = "mapFlandersUI", uiText = uiText)
+              )
+            )
+          }
         )
       initTab(FALSE)
     })
@@ -201,12 +216,27 @@ afschotServer <- function(id){
       plotCreated("yearlyShotAnimalsUI")
     })
 
+    observeEvent(input$`mapFlandersUI-button`, {
+      output$`afschot-plots-regio` <- renderUI(
+        mapFlandersUI(
+          id = ns("wild"), 
+          type = "grofwild", plotDetails = "region",
+          uiText = uiText, specie = id, typeTitle = "afschot"
+        )
+      );
+      plotCreated("mapFlandersUI")
+    })
+
     observe(print(plotCreated()))
     
     # Update plot in path
     output$pathPlot <- renderText({
       if(isTruthy(plotCreated()))
-        getPlotTitle(plot = plotCreated(), specie = id, uiText = uiText, n = 55)
+        getPlotTitle(
+          plot = plotCreated(), 
+          uiText = uiText, specie = id, type = "afschot",
+          n = 55
+        )
       else ""
     })
 
@@ -220,7 +250,7 @@ afschotServer <- function(id){
             timeRange = results$timeRange,
             regionLevel = reactive("flanders"),
             locaties = reactive("Vlaams Gewest"),
-            geoData = reactive(specieGeoData),
+            geoData = results$geoData,
             allSpatialData = spatialData,
             biotoopData = reactive(biotoopData[["flanders"]])
           ),
@@ -237,7 +267,17 @@ afschotServer <- function(id){
              timeRange = results$openingstijd, 
              type = results$labeltypes, 
              openingstijdenData = results$openingstijdenData
-           )
+           ),
+           mapFlandersUI = mapFlandersServer(
+            id = "wild",
+            uiText = uiText,
+            defaultYear = defaultYear,
+            species = reactive(id),
+            type = "grofwild",
+            geoData = results$geoData,
+            biotoopData = biotoopData,
+            allSpatialData = spatialData
+          )
              
         )
       )

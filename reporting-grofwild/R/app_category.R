@@ -32,12 +32,16 @@ getTabTitle <- function(value, category){
 #' @param uiText data.frame with plot titles
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
-getPlotTitle <- function(plot, specie = NULL, n = integer(), uiText){
+getPlotTitle <- function(plot, 
+  uiText, specie = NULL, type = NULL, n = integer()){
   
   title <- uiText[uiText$plotFunction == plot, "title"]
   
   if(!is.null(specie))
-    title <- gsub("{wildsoort}", specie, title, fixed = TRUE)
+    title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
+  
+  if(!is.null(type))
+    title <- gsub("{type}", type, title, fixed = TRUE)
   
   if(length(n) > 0)
     title <- paste0(substr(x = title, start = 1, stop = n), "...")

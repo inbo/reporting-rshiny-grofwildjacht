@@ -59,7 +59,11 @@ afschotUI <- function(id){
       ),
       tabPanel(
         title = getTabTitle(value = "jachtmethode", category = "afschot"),
-        value = "jachtmethode"
+        value = "jachtmethode",
+        afschotPanel(
+          id = id,
+          uiOutput(outputId = ns("afschot-plots-jachtmethode"))
+        )
       )
     )
 
@@ -133,14 +137,37 @@ afschotServer <- function(id){
         return(types)
     })
     
-    jachtChoices <- c("F04_3", "F05_1", "F05_2")
-    dash_titlesJacht <- reactive(
-      namedChoices(jachtChoices, uiText = uiText, regionLevel = "flanders")
-    )
-    
     results$leeftijdtypes <- reactive(
       c(loadMetaEco(species = id)$leeftijd_comp_inbo, "Onbekend")
     )
+    
+    results$jachttypes <- reactive({
+      choices <- unique(results$combinedData()$jachtmethode_comp)
+      if (any(is.na(choices)))
+        choices[is.na(choices)] <- "onbekend"
+      sort(choices)
+    })
+
+    results$drukjachtData <- reactive({
+      colsGeo <- c("WBE_Naam_Toek", "postcode_afschot_locatie", 
+        "FaunabeheerZone", "gemeente_afschot_locatie"
+      )
+      drukjachtData <- merge(
+        x = results$ecoData()[
+          results$ecoData()$jachtmethode_comp == "Drukjacht", 
+          c("ID", "afschot_datum", "afschotjaar", "provincie", "wildsoort")
+        ], 
+        y = results$geoData()[, c("ID", colsGeo)], 
+        by = "ID", all.x = TRUE
+      )
+      cols <- c("afschot_datum", "afschotjaar", colsGeo, 
+        "provincie", "wildsoort")
+      drukjachtData <- drukjachtData[, cols]
+      # Keep unique records per WBE & date
+      drukjachtData <- drukjachtData[!duplicated(drukjachtData), ]
+      validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
+      return(drukjachtData)
+    })
     
     ## Header
         
@@ -194,6 +221,15 @@ afschotServer <- function(id){
                  width = 1/3, gap = "2em",
                  categoryCard(id = id, plot = "tableProvinceUI", uiText = uiText),
                  categoryCard(id = id, plot = "countYearShotUI-leeftijd_comp", uiText = uiText),
+              )
+            )
+          },
+          jachtmethode = {
+            output$`afschot-plots-jachtmethode` = renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCard(id = id, plot = "countYearShotUI-jachtmethode_comp", uiText = uiText),
+                categoryCard(id = id, plot = "F04_3", uiText = uiText),
               )
             )
           }
@@ -274,6 +310,31 @@ afschotServer <- function(id){
       plotCreated("countYearShotUI-leeftijd_comp")
     })
 
+    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, {
+      output$`afschot-plots-jachtmethode` <- renderUI(
+        countYearShotUI(
+          id = ns("wild_jachtmethode"), groupVariable = "jachtmethode_comp",
+          regionLevels = c(1:2, 4), 
+          uiText = uiText, context = "wild", specie = id,
+          doHide = FALSE
+        )
+      );
+      plotCreated("countYearShotUI-jachtmethode_comp")
+    })
+
+    observeEvent(input$`F04_3-button`, {
+      output$`afschot-plots-jachtmethode` <- renderUI(
+        countYearProvinceUI(
+          id = ns("dash"), 
+          uiText = uiText, context = "dash", specie = id,
+          plotFunction = "F04_3", 
+          doHide = FALSE,
+          regionLevels = 1:4
+        )    
+      );
+      plotCreated("F04_3")
+    })
+
     observe(print(plotCreated()))
     
     # Update plot in path
@@ -337,6 +398,18 @@ afschotServer <- function(id){
             timeRange = results$timeRange,
             groupVariable = "leeftijd_comp",
             types = results$leeftijdtypes
+          ),
+          `countYearShotUI-jachtmethode_comp` = countYearShotServer(
+            id = "wild_jachtmethode",
+            data = results$combinedData,
+            timeRange = reactive(c(2014, results$timeRange()[2])),
+            groupVariable = "jachtmethode_comp",
+            types = results$jachttypes
+          ),
+          `F04_3` = countYearProvinceServer(
+            id = "dash", 
+            data = results$drukjachtData,
+            timeRange = reactive(range(results$drukjachtData()$afschotjaar))
           )
              
         )

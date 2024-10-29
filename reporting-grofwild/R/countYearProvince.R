@@ -34,7 +34,8 @@
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
-        sourceIndicator = NULL, title = NULL, width = NULL, height = NULL) {
+        sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
+        regio = "") {
   
   
   type <- match.arg(type)
@@ -88,9 +89,13 @@ countYearProvince <- function(data, jaartallen = NULL,
   # summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	
   colorList <- replicateColors(values = levels(summaryData$locatie))
-  title <- paste0(if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
-			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-					jaartallen)
+  title <- paste0(
+    if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
+			 ifelse(length(jaartallen) > 1, 
+      paste(min(jaartallen), "tot", max(jaartallen)),
+					 jaartallen
+    ),
+    if (!all(regio == "")) paste0("\n(", toString(regio), ")")
 	)
   
   singleYear <- length(unique(summaryData$afschotjaar)) == 1
@@ -188,8 +193,10 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @inheritParams optionsModuleUI 
 #' @export
 countYearProvinceUI <- function(
-  id, specie = NULL, uiText, context = id, plotFunction = "countYearProvinceUI",
-  showType = FALSE, showDataSource = NULL, doHide = TRUE) {
+  id, 
+  uiText, context = id, plotFunction = "countYearProvinceUI", specie = NULL, 
+  showType = FALSE, showDataSource = NULL, regionLevels = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -208,15 +215,18 @@ countYearProvinceUI <- function(
       
       fixedRow(
         
-        column(4,
-          optionsModuleUI(id = ns("yearProvince"), 
-            showTime = TRUE, exportData = TRUE,
-            showType = showType,
-            showDataSource = showDataSource),
-          tags$p(HTML(description))
-        ),
         column(8, 
           plotModuleUI(id = ns("yearProvince"))
+        ),
+        column(4,
+          optionsModuleUI(
+            id = ns("yearProvince"), 
+            showTime = TRUE, exportData = TRUE,
+            showType = showType,
+            showDataSource = showDataSource,
+            regionLevels = regionLevels
+          ),
+          tags$p(HTML(description))
         )
       ),
       tags$hr()

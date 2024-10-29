@@ -448,6 +448,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
             subData <- subset(subData, provincie %in% input$region)
           } else if (input$regionLevel == "faunabeheerzones") {   
             subData <- subData[subData$FaunabeheerZone %in% as.numeric(input$region), ]
+          }else if(input$regionLevel == "communes") {   
+            subData <- subData[subData$gemeente_afschot_locatie %in% input$region, ]
           }
         }
         

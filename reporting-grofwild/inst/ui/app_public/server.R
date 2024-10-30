@@ -19,8 +19,10 @@ shinyServer(function(input, output, session) {
         verbatimTextOutput("print")
       )
     })
+
   # Current page (home at initialization)
   page <- reactiveVal("home")
+  # Next page to be navigate to
   nextPage <- reactiveVal(NULL)
   
   # Current specie
@@ -40,7 +42,11 @@ shinyServer(function(input, output, session) {
       afschot = {
         print(paste("Open afschot page with specie:", specie()))
         output$page <- renderUI(afschotUI(id = "afschot", specie = specie()))
-    })
+      },
+      schade = {
+        print(paste("Open schade page with specie:", specie()))
+        output$page <- renderUI(schadeUI(id = "schade", specie = specie()))
+      })
   })
 
   observeEvent(input$wildsoort, 
@@ -62,11 +68,14 @@ shinyServer(function(input, output, session) {
       specie(attr(nextPageSpecie(), "specie"))
   })
 
-  # Category
-  nextPageCategory <- afschotServer(id = "afschot", specie = specie)
-  observeEvent(nextPageCategory(), ignoreNULL = TRUE, {
-    # re-direct to 'Home' or 'Specie' page
-    page(nextPageCategory())
-   })
+  # Category: afschot
+  nextPageAfschot <- afschotServer(id = "afschot", specie = specie)
+  # re-direct to 'Home' or 'Specie' page
+  observeEvent(nextPageAfschot(), ignoreNULL = TRUE, page(nextPageAfschot()))
+
+  # Category: schade
+  nextPageSchade <- schadeServer(id = "schade", specie = specie)
+  # re-direct to 'Home' or 'Specie' page
+  observeEvent(nextPageSchade(), ignoreNULL = TRUE, page(nextPageSchade()))
 
 })

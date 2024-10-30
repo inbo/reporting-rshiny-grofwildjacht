@@ -40,7 +40,7 @@ headerUI <- function(
         ),
       if("specie" %in% path){
         pathSpecie <- if(!is.null(specie)){
-          specie
+          actionLink(inputId = ns("pathSpecie-button"), label = specie)
         }else{
           uiOutput(outputId = ns("pathSpecie"))
         }

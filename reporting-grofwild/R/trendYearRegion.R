@@ -383,9 +383,9 @@ trendYearRegionUI <- function(
   
   ns <- NS(id)
   
-  title <- getPlotTitle(plot = plotFunction, specie = specie, 
+  title <- getOutputTitle(output = plotFunction, specie = specie, 
     uiText = uiText)
-  description <- getPlotDescription(plot = plotFunction, 
+  description <- getOutputDescription(output = plotFunction, 
     specie = specie, uiText = uiText, context = context)
   
   toShow <- tagList(

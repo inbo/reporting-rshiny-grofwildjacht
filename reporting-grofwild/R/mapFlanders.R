@@ -1351,8 +1351,8 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   
   title <- ifelse(
     !is.null(uiText),
-    getPlotTitle(
-      plot = "mapFlandersUI", 
+    getOutputTitle(
+      output = "mapFlandersUI", 
       uiText = uiText, specie = specie, type = typeTitle
     ),
     "Landkaart"

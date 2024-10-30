@@ -34,6 +34,8 @@ schadeCodes <- unlist(schadeCodes)
 sourcesSchade <- metaSchade$sources
 fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
 
+gewasChoices <- metaSchade$codes[["GEWAS"]]
+voertuigChoices <- metaSchade$codes[["VRTG"]]
 
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <-  as.integer(format(Sys.Date(), "%Y")) - 1

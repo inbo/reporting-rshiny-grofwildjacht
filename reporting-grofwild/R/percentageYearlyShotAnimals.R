@@ -359,8 +359,8 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
   
   plotFunction <- "yearlyShotAnimalsUI"
     
-  title <- getPlotTitle(plot = plotFunction, specie = specie, uiText = uiText)
-  description <- getPlotDescription(plot = plotFunction, 
+  title <- getOutputTitle(output = plotFunction, specie = specie, uiText = uiText)
+  description <- getOutputDescription(output = plotFunction, 
     specie = specie, uiText = uiText, context = context)
   
   tagList(

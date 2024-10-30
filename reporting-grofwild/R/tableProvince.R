@@ -304,9 +304,9 @@ tableProvinceUI <- function(id, doHide = TRUE,
   
   ns <- NS(id)
   
-  title <- getPlotTitle(plot = "tableProvinceUI", 
+  title <- getOutputTitle(output = "tableProvinceUI", 
     specie = specie, uiText = uiText)
-  description <- getPlotDescription(plot = "tableProvinceUI", 
+  description <- getOutputDescription(output = "tableProvinceUI", 
     specie = specie, uiText = uiText, context = context)
   
   tagList(

@@ -1,5 +1,5 @@
 #' UI for the 'afschot' Category page
-#' @param id id character, module id/specie
+#' @param id id character, module id
 #' @inherit shiny::verticalLayout return
 #' @import shiny
 #' @author lcougnaud
@@ -72,7 +72,7 @@ afschotUI <- function(id, specie){
 }
 
 #' Server function for the 'afschot' Category page
-#' @param id id character, module id/specie
+#' @param id id character, module id
 #' @return Shiny module function
 #' @import shiny
 #' @author lcougnaud
@@ -208,9 +208,12 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(id = id, specie = results$specie(), plot = "trendYearRegionUI", uiText = uiText),
-                categoryCard(id = id, specie = results$specie(), plot = "countYearProvinceUI", uiText = uiText),
-                categoryCard(id = id, specie = results$specie(), plot = "yearlyShotAnimalsUI", uiText = uiText)
+                categoryCard(id = id, specie = results$specie(), 
+                  output = "trendYearRegionUI", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), 
+                  output = "countYearProvinceUI", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), 
+                  output = "yearlyShotAnimalsUI", uiText = uiText)
               )
             )
           },
@@ -218,7 +221,8 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-regio` <- renderUI(          
               bslib::layout_column_wrap(
                   width = 1/3, gap = "2em",
-                  categoryCard(id = id, specie = results$specie(), plot = "mapFlandersUI", uiText = uiText)
+                  categoryCard(id = id, specie = results$specie(), 
+                    output = "mapFlandersUI", uiText = uiText)
               )
             )
           },
@@ -226,8 +230,10 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-leeftijdcategorie` <- renderUI(          
               bslib::layout_column_wrap(
                  width = 1/3, gap = "2em",
-                 categoryCard(id = id, specie = results$specie(), plot = "tableProvinceUI", uiText = uiText),
-                 categoryCard(id = id, specie = results$specie(), plot = "countYearShotUI-leeftijd_comp", uiText = uiText),
+                 categoryCard(id = id, specie = results$specie(),
+                  output = "tableProvinceUI", uiText = uiText),
+                 categoryCard(id = id, specie = results$specie(), 
+                  output = "countYearShotUI-leeftijd_comp", uiText = uiText),
               )
             )
           },
@@ -235,8 +241,10 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-jachtmethode` = renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(id = id, specie = results$specie(), plot = "countYearShotUI-jachtmethode_comp", uiText = uiText),
-                categoryCard(id = id, specie = results$specie(), plot = "F04_3", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), 
+                  output = "countYearShotUI-jachtmethode_comp", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), 
+                  output = "F04_3", uiText = uiText),
               )
             )
           }
@@ -347,8 +355,8 @@ afschotServer <- function(id, specie){
     # Update plot in path
     output$pathPlot <- renderText({
       if(isTruthy(plotCreated()))
-        getPlotTitle(
-          plot = plotCreated(), 
+        getOutputTitle(
+          output = plotCreated(), 
           uiText = uiText, specie = results$specie(), type = "afschot",
           n = 55
         )
@@ -456,7 +464,7 @@ afschotPanel <- function(id, specie, ...){
       
     sidebarPanel = sidebarPanel(
       width = 3, 
-      id = "category-sidebar", 
+      id = ns("category-sidebar"), 
       h4(specie, align = "center"),
       img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
       br(),
@@ -466,43 +474,5 @@ afschotPanel <- function(id, specie, ...){
     mainPanel = mainPanel(width = 9, ...)
 
   )
-  
-}
-
-#' Get category card for a specific plot
-#' @param id id character, module id/specie
-#' @param plot character, plot name, e.g. 'trendYearRegionUI'
-#' @inherit bslib::card return
-#' @author lcougnaud
-#' @importFrom bslib card card_header card_image card_body card_footer
-#' @importFrom shiny actionButton
-categoryCard <- function(id, specie, plot, uiText){
-  
-  ns <- NS(id)
-  
-  title <- getPlotTitle(plot = plot, specie = specie, uiText = uiText)
-
-  description <- getPlotDescription(plot = plot, specie = specie, uiText = uiText)
-  
-  file <- system.file("ui", "www", paste0("category-", plot, ".png"), package = "reportingGrofwild")
-  
-  output <- bslib::card(
-    class = "category-card",
-    bslib::card_header(title, class = "category-card-header"), 
-    br(),
-    bslib::card_image(file = file, class = "category-card-image"),
-    br(),
-    bslib::card_body(description),
-    br(), br(),
-    bslib::card_footer(
-      align = "center",
-      shiny::actionButton(
-        inputId = ns(paste0(plot, "-button")), 
-        label = "Bekijk grafiek", class = "category-card-action-button"
-      )
-    )
-  )
-  
-  return(output)
   
 }

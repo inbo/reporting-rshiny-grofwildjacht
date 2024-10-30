@@ -15,9 +15,12 @@
 #' @author mvarewyck
 #' @import shiny
 #' @export
-welcomeSectionUI <- function(id, uiText, maxDate = NA) {
+welcomeSectionUI <- function(id, context = id, uiText, maxDate = NA) {
   
-  description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
+  description <- uiText[
+    uiText$plotFunction == as.character(match.call())[1], 
+    context
+  ]
   # Handling embedded quoting
   description <- gsub("\\\\", "\"", description)
   

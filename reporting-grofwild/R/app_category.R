@@ -11,31 +11,40 @@
 getTabTitle <- function(value, category){
   
   title <- switch(category,
-     afschot = 
-      switch(value,
-        vlaanderen = "Afschot in Vlaanderen",
-        regio =  "Afschot per regio",
-        leeftijdcategorie = "Afschot per leeftijdscategorie",
-        jachtmethode = "Afschot per jachtmethode"
-      )
+   afschot = 
+     switch(value,
+       vlaanderen = "Afschot in Vlaanderen",
+         regio =  "Afschot per regio",
+         leeftijdcategorie = "Afschot per leeftijdscategorie",
+         jachtmethode = "Afschot per jachtmethode"
+       ),
+  schade = 
+    switch(value,
+      informatie = "Informatie over schadegevallen",
+      vlaanderen = "Schadegevallen in Vlaanderen",
+      regio =  "Schadegevallen per regio",
+      type = "Schadegevallen per type schade",
+      seizoen = "Schadegevallen per seizoen",
+      kosten = "Inschatting kosten"
+    )
   )
   
   return(title)
   
 }
 
-#' Get plot title
-#' @param plot character vector of length 1 with plot title
+#' Get output title
+#' @param output character vector of length 1 with output name
 #' @param specie character vector of length 1 with specie
 #' @param n (optional) integer vector of length 1 with maximum 
 #' number of characters to include
 #' @param uiText data.frame with plot titles
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
-getPlotTitle <- function(plot, 
+getOutputTitle <- function(output, 
   uiText, specie = NULL, type = NULL, n = integer()){
   
-  title <- uiText[uiText$plotFunction == plot, "title"]
+  title <- uiText[uiText$plotFunction == output, "title"]
   
   if(!is.null(specie))
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
@@ -50,17 +59,55 @@ getPlotTitle <- function(plot,
   
 }
 
-#' Get plot description
-#' @inheritParams getPlotTitle
-#' @return character vector of length 1 with plot description
+#' Get output description
+#' @inheritParams getOutputTitle
+#' @return character vector of length 1 with output description
 #' @author lcougnaud
-getPlotDescription <- function(plot, specie = NULL, uiText, context = "fauna"){
+getOutputDescription <- function(output, specie = NULL, uiText, context = "fauna"){
   
-  title <- uiText[uiText$plotFunction == plot, context]
+  title <- uiText[uiText$plotFunction == output, context]
   
   if(!is.null(specie))
     title <- gsub("{wildsoort}", specie, title, fixed = TRUE)
   
   return(title)
+  
+}
+
+#' Get category card for a specific output
+#' @param id id character, module id/specie
+#' @param output character, output name, e.g. 'trendYearRegionUI'
+#' @inherit bslib::card return
+#' @author lcougnaud
+#' @importFrom bslib card card_header card_image card_body card_footer
+#' @importFrom shiny actionButton
+categoryCard <- function(id, specie, output, uiText){
+  
+  ns <- NS(id)
+  
+  title <- getOutputTitle(output = output, specie = specie, uiText = uiText)
+  
+  description <- getOutputDescription(output = output, specie = specie, uiText = uiText)
+  
+  file <- system.file("ui", "www", paste0("category-", output, ".png"), package = "reportingGrofwild")
+  
+  outputCard <- bslib::card(
+      class = "category-card",
+      bslib::card_header(title, class = "category-card-header"), 
+      br(),
+      bslib::card_image(file = file, class = "category-card-image"),
+      br(),
+      bslib::card_body(description),
+      br(), br(),
+      bslib::card_footer(
+          align = "center",
+          shiny::actionButton(
+              inputId = ns(paste0(output, "-button")), 
+              label = "Bekijk grafiek", class = "category-card-action-button"
+          )
+      )
+  )
+  
+  return(outputCard)
   
 }

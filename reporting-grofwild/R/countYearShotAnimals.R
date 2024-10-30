@@ -266,11 +266,11 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
   ns <- NS(id)
   
   plotFunction <- paste0("countYearShotUI-", groupVariable)
-  title <- getPlotTitle(
-    plot = plotFunction, specie = specie, uiText = uiText
+  title <- getOutputTitle(
+    output = plotFunction, specie = specie, uiText = uiText
   )
-  description <- getPlotDescription(
-    plot = plotFunction, 
+  description <- getOutputDescription(
+    output = plotFunction, 
     specie = specie, uiText = uiText, context = context
   )
   

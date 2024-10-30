@@ -1125,35 +1125,12 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       ## Time plot for Flanders (reference) ##
       ## ---------------------------------- ##
       
-      timeDataFlanders <- reactive({
-          
-          validate(need(input$period, "Gelieve periode te selecteren"))
-          
-          ## Get data for Flanders
-          createTrendData(
-            data = geoData(),
-            allSpatialData = allSpatialData,
-            biotoopData = biotoopData$flanders,
-            timeRange = input$period,
-            species = species(),
-            regionLevel = "flanders",
-            unit = input$unit
-          )
-          
-        })
-      
-      callModule(module = optionsModuleServer, id = "timePlotFlanders", 
-        data = timeDataFlanders)
-      callModule(module = plotModuleServer, id = "timePlotFlanders",
-        plotFunction = "trendYearFlanders", 
-        data = timeDataFlanders,
-        timeRange = reactive(input$period),
-        unit = reactive(input$unit),
-        isSchade = (type == "wildschade")
+      timePlotFlandersServer(
+        id = id, 
+        geoData = geoData, allSpatialData = allSpatialData, 
+        biotoopData = biotoopData, species = species,
+        type = type
       )
-      
-      
-      
       
       ## Time plot for selected region ##
       ## ----------------------------- ##
@@ -1300,6 +1277,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
     })  
 }
+
+ime
 
 
 
@@ -1462,13 +1441,11 @@ mapFlandersUI <- function(id, showRegion = TRUE,
       
       fixedRow(
         if ("flanders" %in% plotDetails) 
-          column(6,
-            h3("Evolutie", 
-              if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
-              tags$br(), "Vlaanderen"),
-            plotModuleUI(id = ns("timePlotFlanders"), height = "400px"),
-            optionsModuleUI(id = ns("timePlotFlanders"), exportData = TRUE,
-              doWellPanel = FALSE)
+          column(6, 
+            timePlotFlandersUI(
+              id = ns("timePlotFlanders"), 
+              type = type
+            )
           ),
         if ("region" %in% plotDetails)
           column(6,
@@ -1484,6 +1461,88 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     
     , tags$hr()
   
+  )
+  
+}
+
+
+
+#' Shiny module for creating the time plot Flanders - server side
+#' @inheritParams mapFlandersServer
+#' @return no returned value
+#' @export
+timePlotFlandersServer <- function(id, 
+  geoData, allSpatialData, biotoopData, species,
+  type = c("grofwild", "wildschade", "wbe", "empty", "dash")){
+  
+  moduleServer(id, function(input, output, session) {
+        
+    type <- match.arg(type)
+        
+    timeDataFlanders <- reactive({
+    
+      validate(need(input$period, "Gelieve periode te selecteren"))
+          
+      ## Get data for Flanders
+      createTrendData(
+          data = geoData(),
+          allSpatialData = allSpatialData,
+          biotoopData = biotoopData$flanders,
+          timeRange = input$period,
+          species = species(),
+          regionLevel = "flanders",
+          unit = input$unit
+      )
+          
+    })
+      
+    callModule(module = optionsModuleServer, id = "timePlotFlanders", 
+        data = timeDataFlanders)
+    callModule(module = plotModuleServer, id = "timePlotFlanders",
+        plotFunction = "trendYearFlanders", 
+        data = timeDataFlanders,
+        timeRange = reactive(input$period),
+        unit = reactive(input$unit),
+        isSchade = (type == "wildschade")
+    )
+        
+  })
+  
+  
+}
+
+#' Shiny module for creating the time plot Flanders - UI side
+#' @inheritParams mapFlandersUI 
+#' @return UI object
+#' @export
+timePlotFlandersUI <- function(id,
+  type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
+  includeParams = FALSE,
+  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
+    "Aantal/100ha bos & natuur" = "relativeDekking")
+  ){
+
+  type <- match.arg(type)
+  
+  ns <- NS(id)
+
+  c(
+    h3("Evolutie", 
+      if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
+      tags$br(), "Vlaanderen"
+    ),
+    if(includeParams)
+      c(
+        uiOutput(ns("period")),
+        selectInput(
+          inputId = ns("unit"), 
+          label = "Eenheid",
+          choices = unitChoices
+        )
+      ),
+    plotModuleUI(id = id, height = "400px"),
+    optionsModuleUI(id = id, exportData = TRUE,
+      doWellPanel = FALSE)
   )
   
 }

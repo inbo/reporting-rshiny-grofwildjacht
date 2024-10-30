@@ -163,6 +163,10 @@ schadeServer <- function(id, specie){
                 categoryCard(
                   id = id, specie = results$specie(), 
                   output = "tableSchadeSummaryUI", uiText = uiText
+                ),
+                categoryCard(
+                  id = id, specie = results$specie(), 
+                  output = "timePlotFlandersUI", uiText = uiText
                 )
               )
             )
@@ -188,6 +192,19 @@ schadeServer <- function(id, specie){
     })
     observe(print(outputCreated()))
     
+    # TODO: check
+    observeEvent(input$`timePlotFlandersUI-button`, {
+      output$`output-vlaanderen` <- renderUI(
+          timePlotFlandersUI(
+            id = ns(id),
+            type = "wildschade",
+            includeParams = TRUE
+          )
+        )
+        outputCreated("timePlotFlandersUI")
+    })
+    observe(print(outputCreated()))
+    
     # Update plot in path
     output$pathPlot <- renderText({
       if(isTruthy(outputCreated()))
@@ -206,7 +223,16 @@ schadeServer <- function(id, specie){
           id = "table-summary", 
           data = results$schade_data, 
           schadeTypes = schadeTypes, schadeCodes = schadeCodes
-        )  
+        ),
+        # TODO: check
+        timePlotFlandersUI = timePlotFlandersServer(
+          id = id, 
+          geoData = results$schade_data, 
+          allSpatialData = allSpatialData, 
+          biotoopData = biotoopData, 
+          species = results$specie,
+          type = "wildschade"
+        )
       )
     )
       

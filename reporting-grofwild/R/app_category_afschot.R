@@ -4,7 +4,7 @@
 #' @import shiny
 #' @author lcougnaud
 #' @export
-afschotUI <- function(id){
+afschotUI <- function(id, specie){
   
   ns <- NS(namespace = id)
       
@@ -13,7 +13,7 @@ afschotUI <- function(id){
     # header
     headerUI(
       path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, specie = id, 
+      id = id, #specie = id, 
       category = "Afschot",
       subcategory = getTabTitle(value = "vlaanderen", category = "afschot")
     ),
@@ -37,7 +37,7 @@ afschotUI <- function(id){
         title = getTabTitle(value = "vlaanderen", category = "afschot"), 
         value = "vlaanderen",
         afschotPanel(
-          id = id,
+          id = id, specie = specie,
           uiOutput(outputId = ns("afschot-plots-vlaanderen"))
         )
       ),
@@ -45,7 +45,7 @@ afschotUI <- function(id){
         title = getTabTitle(value = "regio", category = "afschot"), 
         value = "regio",
         afschotPanel(
-          id = id,
+          id = id, specie = specie,
           uiOutput(outputId = ns("afschot-plots-regio"))
         )
       ),
@@ -53,7 +53,7 @@ afschotUI <- function(id){
         title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
         value = "leeftijdcategorie",
         afschotPanel(
-          id = id,
+          id = id, specie = specie,
            uiOutput(outputId = ns("afschot-plots-leeftijdcategorie"))
         )
       ),
@@ -61,7 +61,7 @@ afschotUI <- function(id){
         title = getTabTitle(value = "jachtmethode", category = "afschot"),
         value = "jachtmethode",
         afschotPanel(
-          id = id,
+          id = id, specie = specie,
           uiOutput(outputId = ns("afschot-plots-jachtmethode"))
         )
       )
@@ -77,26 +77,31 @@ afschotUI <- function(id){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-afschotServer <- function(id){
+afschotServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns
     
+    ## initialization
+    nextPage <- reactiveVal(value = NULL)
+    
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
     
-    specieEcoData <- ecoData[ecoData$wildsoort == id, ] # specieEcoData
-    specieGeoData <- geoData[geoData$wildsoort == id, ] # specieGeoData
-    results$ecoData <- reactive(specieEcoData)
+    results$specie <- reactive(specie())
+    
+    results$ecoData <- reactive(
+      ecoData[ecoData$wildsoort == results$specie(), ]
+    )
     results$geoData <- reactive({
       req(geoData)
-      specieGeoData
+      geoData[geoData$wildsoort == results$specie(), ]
     })
-    results$specie <- reactive(id)
+    
     results$timeRange <- reactive(range(results$ecoData()$afschotjaar))
     results$openingstijdenData <- reactive(
-      openingstijdenData[openingstijdenData$Soort == id, ]
+      openingstijdenData[openingstijdenData$Soort == results$specie(), ]
     )
     results$openingstijd <- reactive({
       # for Ree: openingseason contains more year than in the data
@@ -105,7 +110,7 @@ afschotServer <- function(id){
       # so retains the years when data and opening season specified
       # and doesn't retain the last year (because not full)
               
-      if (id %in% c("Ree", "Wild zwijn")) {
+      if (results$specie() %in% c("Ree", "Wild zwijn")) {
         openingstijd <- c(
           max(
             min(results$ecoData()$afschotjaar), 
@@ -131,14 +136,14 @@ afschotServer <- function(id){
     # Plot: Percentage jaarlijkse afschot
     results$labeltypes <- reactive({
       req(results$openingstijdenData())
-      types <- loadMetaEco(species = id)$labeltype
-      if (length(types) == 1 && id == types)
+      types <- loadMetaEco(species = results$specie())$labeltype
+      if (length(types) == 1 && results$specie() == types)
         return(c("alle" = "all")) else 
         return(types)
     })
     
     results$leeftijdtypes <- reactive(
-      c(loadMetaEco(species = id)$leeftijd_comp_inbo, "Onbekend")
+      c(loadMetaEco(species = results$specie())$leeftijd_comp_inbo, "Onbekend")
     )
     
     results$jachttypes <- reactive({
@@ -172,7 +177,9 @@ afschotServer <- function(id){
     ## Header
         
     # Update specie in path
-    output$pathSpecie <- renderText(id)
+    output$pathSpecie <- renderUI(
+      actionLink(inputId = ns("pathSpecie-button"), label = results$specie())    
+    )
     
     # Update subcategory in path
     output$pathSubcategory <- renderUI(
@@ -201,9 +208,9 @@ afschotServer <- function(id){
             output$`afschot-plots-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(id = id, plot = "trendYearRegionUI", uiText = uiText),
-                categoryCard(id = id, plot = "countYearProvinceUI", uiText = uiText),
-                categoryCard(id = id, plot = "yearlyShotAnimalsUI", uiText = uiText)
+                categoryCard(id = id, specie = results$specie(), plot = "trendYearRegionUI", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), plot = "countYearProvinceUI", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), plot = "yearlyShotAnimalsUI", uiText = uiText)
               )
             )
           },
@@ -211,7 +218,7 @@ afschotServer <- function(id){
             output$`afschot-plots-regio` <- renderUI(          
               bslib::layout_column_wrap(
                   width = 1/3, gap = "2em",
-                  categoryCard(id = id, plot = "mapFlandersUI", uiText = uiText)
+                  categoryCard(id = id, specie = results$specie(), plot = "mapFlandersUI", uiText = uiText)
               )
             )
           },
@@ -219,8 +226,8 @@ afschotServer <- function(id){
             output$`afschot-plots-leeftijdcategorie` <- renderUI(          
               bslib::layout_column_wrap(
                  width = 1/3, gap = "2em",
-                 categoryCard(id = id, plot = "tableProvinceUI", uiText = uiText),
-                 categoryCard(id = id, plot = "countYearShotUI-leeftijd_comp", uiText = uiText),
+                 categoryCard(id = id, specie = results$specie(), plot = "tableProvinceUI", uiText = uiText),
+                 categoryCard(id = id, specie = results$specie(), plot = "countYearShotUI-leeftijd_comp", uiText = uiText),
               )
             )
           },
@@ -228,8 +235,8 @@ afschotServer <- function(id){
             output$`afschot-plots-jachtmethode` = renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(id = id, plot = "countYearShotUI-jachtmethode_comp", uiText = uiText),
-                categoryCard(id = id, plot = "F04_3", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), plot = "countYearShotUI-jachtmethode_comp", uiText = uiText),
+                categoryCard(id = id, specie = results$specie(), plot = "F04_3", uiText = uiText),
               )
             )
           }
@@ -245,7 +252,7 @@ afschotServer <- function(id){
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
           id = ns("dash"),
-          uiText = uiText, context = "fauna", specie = id,
+          uiText = uiText, context = "fauna", specie = results$specie(),
           showCombinatie = TRUE,
           doHide = FALSE
         )
@@ -258,7 +265,7 @@ afschotServer <- function(id){
         countYearProvinceUI(
           id = ns("dash"), 
           uiText = uiText, context = "wild",
-          specie = id,
+          specie = results$specie(),
           doHide = FALSE
         )
       );
@@ -270,7 +277,7 @@ afschotServer <- function(id){
         yearlyShotAnimalsUI(
           id = ns("dash"), 
           uiText = uiText, context = "wild",
-          specie = id,
+          specie = results$specie(),
           doHide = FALSE
         )
        );
@@ -282,7 +289,7 @@ afschotServer <- function(id){
         mapFlandersUI(
           id = ns("wild"), 
           type = "grofwild", plotDetails = "region",
-          uiText = uiText, specie = id, typeTitle = "afschot"
+          uiText = uiText, specie = results$specie(), typeTitle = "afschot"
         )
       );
       plotCreated("mapFlandersUI")
@@ -292,7 +299,7 @@ afschotServer <- function(id){
       output$`afschot-plots-leeftijdcategorie` <- renderUI(
         tableProvinceUI(
           id = ns("wild"), doHide = FALSE,
-          uiText = uiText, context = "wild", specie = id
+          uiText = uiText, context = "wild", specie = results$specie()
         )
       );
       plotCreated("tableProvinceUI")
@@ -303,7 +310,7 @@ afschotServer <- function(id){
         countYearShotUI(
           id = ns("wild_leeftijd"), groupVariable = "leeftijd_comp",
           regionLevels = c(1:2, 4), 
-          uiText = uiText, context = "wild", specie = id,
+          uiText = uiText, context = "wild", specie = results$specie(),
           doHide = FALSE
         )
       );
@@ -315,7 +322,7 @@ afschotServer <- function(id){
         countYearShotUI(
           id = ns("wild_jachtmethode"), groupVariable = "jachtmethode_comp",
           regionLevels = c(1:2, 4), 
-          uiText = uiText, context = "wild", specie = id,
+          uiText = uiText, context = "wild", specie = results$specie(),
           doHide = FALSE
         )
       );
@@ -326,7 +333,7 @@ afschotServer <- function(id){
       output$`afschot-plots-jachtmethode` <- renderUI(
         countYearProvinceUI(
           id = ns("dash"), 
-          uiText = uiText, context = "dash", specie = id,
+          uiText = uiText, context = "dash", specie = results$specie(),
           plotFunction = "F04_3", 
           doHide = FALSE,
           regionLevels = 1:4
@@ -342,7 +349,7 @@ afschotServer <- function(id){
       if(isTruthy(plotCreated()))
         getPlotTitle(
           plot = plotCreated(), 
-          uiText = uiText, specie = id, type = "afschot",
+          uiText = uiText, specie = results$specie(), type = "afschot",
           n = 55
         )
       else ""
@@ -366,7 +373,7 @@ afschotServer <- function(id){
             id = "dash",
             data = results$ecoData,
             timeRange = if (id == "Edelhert")
-              reactive(c(2008, max(specieEcoData$afschotjaar))) else 
+              reactive(c(2008, max(results$ecoData()$afschotjaar))) else 
               results$timeRange
            ),
            yearlyShotAnimalsUI = yearlyShotAnimalsServer(
@@ -380,7 +387,7 @@ afschotServer <- function(id){
             id = "wild",
             uiText = uiText,
             defaultYear = defaultYear,
-            species = reactive(id),
+            species = results$specie,
             type = "grofwild",
             geoData = results$geoData,
             biotoopData = biotoopData,
@@ -414,6 +421,22 @@ afschotServer <- function(id){
              
         )
       )
+      
+    ## Output
+      
+    # Redirection:
+
+    observeEvent(input$`pathHome`, {
+      print("afschot: Go to home page")
+      nextPage("home")
+    })
+  
+    observeEvent(input$`pathSpecie-button`, {
+      print("afschot: Go to specie page")
+      nextPage("specie")
+    })
+      
+    return(nextPage)
 
   })
   
@@ -424,7 +447,7 @@ afschotServer <- function(id){
 #' @param ... Elements for the \code{\link[shiny]{mainPanel}}
 #' @inherit shiny::sidebarLayout return
 #' @author lcougnaud
-afschotPanel <- function(id, ...){
+afschotPanel <- function(id, specie, ...){
   
   ns <- NS(namespace = id)
   
@@ -434,10 +457,10 @@ afschotPanel <- function(id, ...){
     sidebarPanel = sidebarPanel(
       width = 3, 
       id = "category-sidebar", 
-      h4(id, align = "center"),
-      img(src = getSpecieImage(specie = id, relative = TRUE), width = "100%", height = "auto"),
+      h4(specie, align = "center"),
+      img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
       br(),
-      div(strong(paste("Latijn:", getLatinName(specie = id))), align = "center")
+      div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center")
     ),
       
     mainPanel = mainPanel(width = 9, ...)
@@ -453,13 +476,13 @@ afschotPanel <- function(id, ...){
 #' @author lcougnaud
 #' @importFrom bslib card card_header card_image card_body card_footer
 #' @importFrom shiny actionButton
-categoryCard <- function(id, plot, uiText){
+categoryCard <- function(id, specie, plot, uiText){
   
   ns <- NS(id)
   
-  title <- getPlotTitle(plot = plot, specie = id, uiText = uiText)
+  title <- getPlotTitle(plot = plot, specie = specie, uiText = uiText)
 
-  description <- getPlotDescription(plot = plot, specie = id, uiText = uiText)
+  description <- getPlotDescription(plot = plot, specie = specie, uiText = uiText)
   
   file <- system.file("ui", "www", paste0("category-", plot, ".png"), package = "reportingGrofwild")
   

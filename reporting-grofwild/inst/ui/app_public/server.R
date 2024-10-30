@@ -21,52 +21,52 @@ shinyServer(function(input, output, session) {
     })
   # Current page (home at initialization)
   page <- reactiveVal("home")
+  nextPage <- reactiveVal(NULL)
   
   # Current specie
   specie <- reactiveVal()
         
-  ## Home page
+  ## Create the page (UI side)
   observeEvent(page(), {
     switch(page(),
       home = {
         print("Open home page")
         output$page <- renderUI(frontUI())
       },
+      specie = {
+        print("Open specie page")
+        output$page <- renderUI(specieUI(id = "specie", specie = input$wildsoort))
+      },
       afschot = {
-        print("Open afschot page")
-        output$page <- renderUI(afschotUI(id = specie()))
+        print(paste("Open afschot page with specie:", specie()))
+        output$page <- renderUI(afschotUI(id = "afschot", specie = specie()))
     })
   })
-   
-  ## Specie page
-  
-  # Create the page
-  observeEvent(input$wildsoort, {
-    if(isTruthy(input$wildsoort)){
-      print("Create specie page")
-      output$page <- renderUI(specieUI(id = input$wildsoort))
-    }
-  })
 
-  # Update the components of the page which are specie-specific
-  observe({
-    nextPage <- specieServer(id = input$wildsoort)
-
-    if(!is.null(nextPage())){
-      
-      # re-direct to 'Home' or 'Category' page
-      page(nextPage())
-      
-      # save specie selected in the app
-      if(!is.null(attr(nextPage(), "specie")))
-        specie(attr(nextPage(), "specie"))
-    }
-  })
+  observeEvent(input$wildsoort, 
+    if(isTruthy(input$wildsoort))	page("specie")
+  )
 
   observe(print(paste("Page currently selected is:", page())))
   observe(print(paste("Specie currently selected is:", specie())))
   
-  ## Category page
-  observe(if(page() == "afschot") afschotServer(id = specie()))
+  ## Update the page (server side)
+  
+  # Specie:
+  nextPageSpecie <- specieServer(id = "specie")
+  observeEvent(nextPageSpecie(), ignoreNULL = TRUE, {
+    # re-direct to 'Home' or 'Category' page
+    page(nextPageSpecie())
+    # save specie selected in the app
+    if(!is.null(attr(nextPageSpecie(), "specie")))
+      specie(attr(nextPageSpecie(), "specie"))
+  })
+
+  # Category
+  nextPageCategory <- afschotServer(id = "afschot", specie = specie)
+  observeEvent(nextPageCategory(), ignoreNULL = TRUE, {
+    # re-direct to 'Home' or 'Specie' page
+    page(nextPageCategory())
+   })
 
 })

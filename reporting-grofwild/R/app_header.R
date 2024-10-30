@@ -42,7 +42,7 @@ headerUI <- function(
         pathSpecie <- if(!is.null(specie)){
           specie
         }else{
-          textOutput(outputId = ns("pathSpecie"))
+          uiOutput(outputId = ns("pathSpecie"))
         }
         list(
           column(width = 0.1, "/"), 

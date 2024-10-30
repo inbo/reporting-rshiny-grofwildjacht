@@ -4,7 +4,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id){
+specieUI <- function(id, specie){
   
   tagList(
       
@@ -37,7 +37,7 @@ specieUI <- function(id){
             inputId = NS(id, "wildsoort"), 
             label = "Selecteer een diersoort:",
             choices = schadeWildsoorten,
-            selected = id
+            selected = specie
           ),
            
           imageOutput(outputId = NS(id, "image"), height = "auto"),
@@ -71,13 +71,8 @@ specieServer <- function(id){
   moduleServer(id, function(input, output, session){   
         
     # initialization
-    specie <- reactiveVal(value = id)
+    specie <- reactive(input$wildsoort)
     nextPage <- reactiveVal(value = NULL)
-    
-    # update value
-    observeEvent(input$wildsoort, 
-      if(!is.null(input$wildsoort))  specie(input$wildsoort)
-    )
         
     ## Header
     
@@ -99,16 +94,23 @@ specieServer <- function(id){
     ## Main panel
     
     # Specie - available items/pages
-    output$items <- renderUI(getSpecieCards(specie = specie()))
+    output$items <- renderUI(getSpecieCards(id = id, specie = specie()))
     
     ## Output
     
     # Redirection:
-    observeEvent(input$pathHome, nextPage("home"))
-    nextPage <- eventReactive(input$cards, structure(input$cards, specie = specie()))
+        
+    observeEvent(input$`pathHome`, {
+      print("specie: Go to home page")
+      nextPage("home")
+    })
+    observeEvent(input$cards, {
+      print(paste("specie: Go to category page:", input$cards, "with specie", specie()))
+      nextPage(structure(input$cards, specie = specie()))
+    })
 
-    return(nextPage)
- 
+    return(reactive(nextPage()))
+
   })
 
 }
@@ -167,7 +169,7 @@ getSpecieImage <- function(specie, relative = FALSE){
 #' @inherit shiny::radioButtons return
 #' @author lcougnaud
 #' @inheritParams getSpecieImage
-getSpecieCards <- function(specie){
+getSpecieCards <- function(id, specie){
   
   baseApp <- (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
   
@@ -193,7 +195,7 @@ getSpecieCards <- function(specie){
   div(
       
     radioButtons(
-      inputId = NS(specie, "cards"), label = "", inline = TRUE,
+      inputId = NS(id, "cards"), label = "", inline = TRUE,
       choiceValues = values, choiceNames = names,
       selected = character(0)
      ),

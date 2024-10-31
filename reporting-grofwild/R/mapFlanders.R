@@ -1126,7 +1126,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       ## ---------------------------------- ##
       
       trendYearFlandersServer(
-        id = "timePlotFlanders", 
+        id = id, 
         geoData = geoData, allSpatialData = allSpatialData, 
         biotoopData = biotoopData, species = species,
         type = type,
@@ -1436,11 +1436,12 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     
     if (type != "wbe") {
       
+      nRegios <- sum(c("flanders", "region") %in% plotDetails)
       fixedRow(
         if ("flanders" %in% plotDetails) 
-          column(6, 
+          column(12/nRegios, 
             trendYearFlandersUI(
-              id = ns("trendYearFlanders"), 
+              id = ns(id), 
               type = type,
               unitChoices = unitChoices,
               includeOptions = FALSE,
@@ -1448,7 +1449,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
             )
           ),
         if ("region" %in% plotDetails)
-          column(6,
+          column(12/nRegios,
             uiOutput(ns("timeTitle")),
             plotModuleUI(id = ns("timePlot"), height = "400px"),
             optionsModuleUI(id = ns("timePlot"), exportData = TRUE,

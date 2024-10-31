@@ -55,9 +55,17 @@ schadeUI <- function(id, specie){
           id = id, specie = specie,
           uiOutput(outputId = ns("output-vlaanderen"))
         )
+      ),
+      tabPanel(
+        title = getTabTitle(value = "regio", category = "schade"), 
+        value = "regio",
+        schadePanel(
+          id = id, specie = specie,
+          uiOutput(outputId = ns("output-regio"))
+        )
       )
-    )
 
+    )
   )
   
 }
@@ -178,6 +186,14 @@ schadeServer <- function(id, specie){
                 categoryCardSchade(output = "countYearProvinceUI")
               )
             )
+          },
+          regio = {
+            output$`output-regio` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardSchade(output = "mapFlandersUI")
+              )
+            )
           }
         )
         
@@ -226,6 +242,18 @@ schadeServer <- function(id, specie){
       outputCreated("countYearProvinceUI")
     })
 
+    observeEvent(input$`mapFlandersUI-button`, {
+      output$`output-regio` <- renderUI(
+        mapFlandersUI(
+          id = ns("schade"), 
+          type = "wildschade", plotDetails = "region",
+          showCombine = FALSE,
+          uiText = uiText, specie = results$specie(), typeTitle = "schade"
+        )
+      )
+      outputCreated("mapFlandersUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -267,6 +295,17 @@ schadeServer <- function(id, specie){
           labelTypes = "Regio", 
           typesDefault = reactive("provinces"), 
           timeRange = results$schade_timeRange
+        ),
+        mapFlandersUI = mapFlandersServer(
+          id = id,
+          uiText = uiText,
+          defaultYear = defaultYear,
+          species = results$specie,
+          type = "wildschade",
+          geoData = results$schade_data,
+          biotoopData = biotoopData,
+          allSpatialData = spatialData,
+          sourceChoices = loadMetaSchade()$sources 
         )
 
       )

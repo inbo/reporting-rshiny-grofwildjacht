@@ -27,7 +27,7 @@ Wanneer je als periode meerdere jaren kiest, worden de verschillende subcategori
 "14";"countYearShotUI-leeftijd_comp";"Evolutie gerapporteerd afschot van {wildsoort} per leeftijdscategorie ";"Een staafdiagram met het jaarlijks gerapporteerd afschot per leeftijdscategorie.";"Verdeling van afschot over de jaren heen opgesplitst per interval.";"";"Verdeling van afschot over de jaren heen opgesplitst per interval.";"";""
 "15";"mapAfschotUI";"KAART: Gerapporteerde afschotlocaties";"";"";"";"Het weergegeven afschot werd geselecteerd o.b.v. de aan de WBE toegekende labels.
 Afschot dat zich buiten de grenzen van de wbe of in de bebouwde kom bevindt, werd zo aangeduid op het e-loket";"";""
-"16";"mapFlandersUI";"Landkaart gerapporteerd {type} van {wildsoort} per regio ";"Een landkaart en lijngrafiek van het jaarlijks afschot van wild zwijn per regio.";"";"<p><b><u>Gebruiksinfo:</u></b>
+"16";"mapFlandersUI";"Landkaart gerapporteerd {type} van {wildsoort} per regio ";"Een landkaart en lijngrafiek van het jaarlijks {type} van wild zwijn per regio.";"";"<p><b><u>Gebruiksinfo:</u></b>
 </br><ul>
 <li>De eerste kaart toont de geografische spreiding van de gemelde schadegevallen in Vlaanderen. De schadegevallen zijn hier telkens gegroepeerd weergegeven voor een bepaalde regio-schaal (Vlaanderen, provincies, faunabeheerzones, gemeenten, 5x5 km UTM-hok, ...).
 <li>De getoonde schadetypes hangen af van je keuze in het hoofdmenu.

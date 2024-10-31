@@ -117,23 +117,24 @@ trendYearFlandersUI <- function(id,
         )
       }
   
-  fluidRow(
-    column(8, plotModuleUI(id = ns("trendYearFlanders"), height = "400px")),
-    column(4,
-      h3(title),
-      if(includeOptions)
-        tagList(
-          uiOutput(ns("period")),
-          selectInput(
-              inputId = ns("unit"), 
-              label = "Eenheid",
-              choices = unitChoices
-          )
-      ),
-      optionsModuleUI(id = ns("trendYearFlanders"), exportData = TRUE,
-          doWellPanel = FALSE)
+  tagList(
+    h3(title),
+    fluidRow(
+      column(8, plotModuleUI(id = ns("trendYearFlanders"), height = "400px")),
+      column(4,
+        if(includeOptions)
+          tagList(
+            uiOutput(ns("period")),
+            selectInput(
+                inputId = ns("unit"), 
+                label = "Eenheid",
+                choices = unitChoices
+            )
+        ),
+        optionsModuleUI(id = ns("trendYearFlanders"), exportData = TRUE,
+            doWellPanel = FALSE)
+      )
     )
   )
-  
 }
 

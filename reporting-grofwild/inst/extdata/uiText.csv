@@ -107,5 +107,5 @@ De vraag die werd gesteld was <b>'Hoe aanvaardbaar vind je volgende maatregelen 
   Door op de rij van deze tabel te klikken krijgt u een lijst van de gemeentes die aan de voorwaarden van de rij voldoen. <br><i>Gemeentes die in het <b>oranje</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor waarnemingen. <br>Gemeentes die in het <b>wit</b> worden geaccentueerd voldoen aan beide drempelwaardes. <br>Gemeentes die in het <b>blauw</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor afschot. </i>
   ";""
 "49";"tableSchadeSummaryUI";"Overzicht schadegevallen voor {wildsoort} in Vlaanderen per type schade";"Een tabel met het aantal schadegevallen van {wildsoort} in Vlaanderen per schade type.";"";"";"";"";""
-"50";"timePlotFlandersUI";"Jaarlijks totaal aantal schadegevallen voor {wildsoort} in Vlaanderen";"Een lijngrafiek met het jaarlijks aantal schadegevallen in Vlaanderen.";"";"";"";""
+"50";"trendYearFlandersUI";"Jaarlijks totaal aantal schadegevallen voor {wildsoort} in Vlaanderen";"Een lijngrafiek met het jaarlijks aantal schadegevallen in Vlaanderen.";"";"";"";"";""
 

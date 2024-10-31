@@ -166,7 +166,7 @@ schadeServer <- function(id, specie){
                 ),
                 categoryCard(
                   id = id, specie = results$specie(), 
-                  output = "timePlotFlandersUI", uiText = uiText
+                  output = "trendYearFlandersUI", uiText = uiText
                 )
               )
             )
@@ -192,16 +192,16 @@ schadeServer <- function(id, specie){
     })
     observe(print(outputCreated()))
     
-    # TODO: check
-    observeEvent(input$`timePlotFlandersUI-button`, {
+    observeEvent(input$`trendYearFlandersUI-button`, {
       output$`output-vlaanderen` <- renderUI(
-          timePlotFlandersUI(
-            id = ns(id),
+          trendYearFlandersUI(
+            id = ns("schade"),
             type = "wildschade",
-            includeParams = TRUE
+            includeOptions = TRUE,
+            uiText = uiText, specie = results$specie()
           )
         )
-        outputCreated("timePlotFlandersUI")
+        outputCreated("trendYearFlandersUI")
     })
     observe(print(outputCreated()))
     
@@ -220,18 +220,18 @@ schadeServer <- function(id, specie){
     observe(
       switch(outputCreated(),
         tableSchadeSummaryUI = tableSchadeSummaryServer(
-          id = "table-summary", 
+          id = id, 
           data = results$schade_data, 
           schadeTypes = schadeTypes, schadeCodes = schadeCodes
         ),
-        # TODO: check
-        timePlotFlandersUI = timePlotFlandersServer(
+        trendYearFlandersUI = trendYearFlandersServer(
           id = id, 
           geoData = results$schade_data, 
-          allSpatialData = allSpatialData, 
+          allSpatialData = spatialData, 
           biotoopData = biotoopData, 
           species = results$specie,
-          type = "wildschade"
+          type = "wildschade",
+          includeOptions = TRUE
         )
       )
     )

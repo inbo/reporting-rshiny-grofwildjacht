@@ -194,15 +194,18 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @export
 countYearProvinceUI <- function(
   id, 
-  uiText, context = id, plotFunction = "countYearProvinceUI", specie = NULL, 
+  uiText, context = id, plotFunction = "countYearProvinceUI", 
+  specie = NULL, type = NULL,
   showType = FALSE, showDataSource = NULL, regionLevels = NULL,
   doHide = TRUE) {
   
   ns <- NS(id)
   
-  title <- getOutputTitle(output = plotFunction, specie = specie, uiText = uiText)
+  title <- getOutputTitle(output = plotFunction, specie = specie, 
+    uiText = uiText, type = type)
   description <- getOutputDescription(output = plotFunction, 
-    specie = specie, uiText = uiText, context = context)
+    specie = specie, uiText = uiText, context = context,
+    type = type)
   
   tagList(
     

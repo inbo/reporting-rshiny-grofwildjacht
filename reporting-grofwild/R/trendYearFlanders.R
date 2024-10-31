@@ -90,7 +90,7 @@ trendYearFlandersServer <- function(id,
 
 #' Shiny module for creating the time plot Flanders - UI side
 #' @inheritParams mapFlandersUI 
-#' @params includeOptions logical, if TRUE (by default) the options
+#' @param includeOptions logical, if TRUE (by default) the options
 #' to filter the plot are included.
 #' @return UI object
 #' @export

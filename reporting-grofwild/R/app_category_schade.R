@@ -109,6 +109,10 @@ schadeServer <- function(id, specie){
           
       return(schadeData[toRetain, ])
     })
+
+    results$schade_timeRange <- reactive(
+      range(results$schade_data()$afschotjaar)
+    ) 
     
     ## Header
     
@@ -153,25 +157,31 @@ schadeServer <- function(id, specie){
     # Create tab
     observe(if(initTab()){
 
-      if(isTruthy(input$subcategory))
+      if(isTruthy(input$subcategory)){
+        
+        categoryCardSchade <- function(output){
+          categoryCard(
+              id = id, specie = results$specie(), 
+              output = output, uiText = uiText,
+              type = "schade"
+          )
+        }
+        
         switch(input$subcategory, 
             
           vlaanderen = {
             output$`output-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(
-                  id = id, specie = results$specie(), 
-                  output = "tableSchadeSummaryUI", uiText = uiText
-                ),
-                categoryCard(
-                  id = id, specie = results$specie(), 
-                  output = "trendYearFlandersUI", uiText = uiText
-                )
+                categoryCardSchade(output = "tableSchadeSummaryUI"),
+                categoryCardSchade(output = "trendYearFlandersUI"),
+                categoryCardSchade(output = "countYearProvinceUI")
               )
             )
           }
         )
+        
+      }
       
       initTab(FALSE)
       
@@ -190,7 +200,6 @@ schadeServer <- function(id, specie){
       )
        outputCreated("tableSchadeSummaryUI")
     })
-    observe(print(outputCreated()))
     
     observeEvent(input$`trendYearFlandersUI-button`, {
       output$`output-vlaanderen` <- renderUI(
@@ -203,6 +212,20 @@ schadeServer <- function(id, specie){
         )
         outputCreated("trendYearFlandersUI")
     })
+
+    observeEvent(input$`countYearProvinceUI-button`, {
+      output$`output-vlaanderen` <- renderUI(
+        countYearProvinceUI(
+          id = ns("schade"), 
+          uiText = uiText, type = "schade",
+          specie = results$specie(),
+          showType = TRUE, doHide = FALSE,
+          showDataSource = "schade"
+        )
+      )
+      outputCreated("countYearProvinceUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -232,7 +255,20 @@ schadeServer <- function(id, specie){
           species = results$specie,
           type = "wildschade",
           includeOptions = TRUE
+        ),
+        countYearProvinceUI = countYearProvinceServer(
+          id = id,
+          data = results$schade_data,
+          types = reactive(c(
+            "Vlaanderen" = "flanders",
+            "Provincie" = "provinces", 
+            "Faunabeheerzones" = "faunabeheerzones"
+          )), 
+          labelTypes = "Regio", 
+          typesDefault = reactive("provinces"), 
+          timeRange = results$schade_timeRange
         )
+
       )
     )
       

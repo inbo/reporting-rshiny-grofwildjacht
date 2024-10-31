@@ -49,8 +49,10 @@ getOutputTitle <- function(output,
   if(!is.null(specie))
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
   
-  if(!is.null(type))
-    title <- gsub("{type}", type, title, fixed = TRUE)
+  if(!is.null(type)){
+    typeInfo <- switch(type, afschot = "afschot", schade = "schadegevallen")
+    title <- gsub("{type}", typeInfo, title, fixed = TRUE)
+  }
   
   if(length(n) > 0)
     title <- paste0(substr(x = title, start = 1, stop = n), "...")
@@ -63,12 +65,18 @@ getOutputTitle <- function(output,
 #' @inheritParams getOutputTitle
 #' @return character vector of length 1 with output description
 #' @author lcougnaud
-getOutputDescription <- function(output, specie = NULL, uiText, context = "fauna"){
+getOutputDescription <- function(output, 
+  uiText, specie = NULL, type = NULL, context = "fauna"){
   
   title <- uiText[uiText$plotFunction == output, context]
   
   if(!is.null(specie))
     title <- gsub("{wildsoort}", specie, title, fixed = TRUE)
+  
+  if(!is.null(type)){
+    typeInfo <- switch(type, afschot = "afschot", schade = "schadegevallen")
+    title <- gsub("{type}", typeInfo, title, fixed = TRUE)
+  }
   
   return(title)
   
@@ -81,15 +89,17 @@ getOutputDescription <- function(output, specie = NULL, uiText, context = "fauna
 #' @author lcougnaud
 #' @importFrom bslib card card_header card_image card_body card_footer
 #' @importFrom shiny actionButton
-categoryCard <- function(id, specie, output, uiText){
+categoryCard <- function(id, specie, output, uiText, type = NULL){
   
   ns <- NS(id)
   
-  title <- getOutputTitle(output = output, specie = specie, uiText = uiText)
+  title <- getOutputTitle(output = output, specie = specie, uiText = uiText, type = type)
   
-  description <- getOutputDescription(output = output, specie = specie, uiText = uiText)
+  description <- getOutputDescription(output = output, specie = specie,
+    uiText = uiText, type = type)
   
-  file <- system.file("ui", "www", paste0("category-", output, ".png"), package = "reportingGrofwild")
+  file <- system.file("ui", "www", paste0("category-", type, "-", output, ".png"), 
+    package = "reportingGrofwild")
   
   outputCard <- bslib::card(
       class = "category-card",

@@ -198,22 +198,30 @@ afschotServer <- function(id, specie){
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$`afschot-subcategory`, initTab(TRUE))
+    
+
 
     # Create tab
     observe(if(initTab()){
-      print("update tab")
-      if(isTruthy(input$`afschot-subcategory`))
+
+      if(isTruthy(input$`afschot-subcategory`)){
+        
+        categoryCardAfschot <- function(output){
+          categoryCard(
+              id = id, specie = results$specie(), 
+              output = output, uiText = uiText,
+              type = "afschot"
+          )
+        }
+        
         switch(input$`afschot-subcategory`, 
           vlaanderen = {
             output$`afschot-plots-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(id = id, specie = results$specie(), 
-                  output = "trendYearRegionUI", uiText = uiText),
-                categoryCard(id = id, specie = results$specie(), 
-                  output = "countYearProvinceUI", uiText = uiText),
-                categoryCard(id = id, specie = results$specie(), 
-                  output = "yearlyShotAnimalsUI", uiText = uiText)
+                categoryCardAfschot(output = "trendYearRegionUI"),
+                categoryCardAfschot(output = "countYearProvinceUI"),
+                categoryCardAfschot(output = "yearlyShotAnimalsUI")
               )
             )
           },
@@ -221,8 +229,7 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-regio` <- renderUI(          
               bslib::layout_column_wrap(
                   width = 1/3, gap = "2em",
-                  categoryCard(id = id, specie = results$specie(), 
-                    output = "mapFlandersUI", uiText = uiText)
+                  categoryCardAfschot(output = "mapFlandersUI")
               )
             )
           },
@@ -230,10 +237,8 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-leeftijdcategorie` <- renderUI(          
               bslib::layout_column_wrap(
                  width = 1/3, gap = "2em",
-                 categoryCard(id = id, specie = results$specie(),
-                  output = "tableProvinceUI", uiText = uiText),
-                 categoryCard(id = id, specie = results$specie(), 
-                  output = "countYearShotUI-leeftijd_comp", uiText = uiText),
+                 categoryCardAfschot(output = "tableProvinceUI"),
+                 categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
               )
             )
           },
@@ -241,14 +246,13 @@ afschotServer <- function(id, specie){
             output$`afschot-plots-jachtmethode` = renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCard(id = id, specie = results$specie(), 
-                  output = "countYearShotUI-jachtmethode_comp", uiText = uiText),
-                categoryCard(id = id, specie = results$specie(), 
-                  output = "F04_3", uiText = uiText),
+                categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
+                categoryCardAfschot(output = "F04_3")
               )
             )
           }
         )
+       }
       initTab(FALSE)
     })
     
@@ -272,7 +276,7 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-vlaanderen` <- renderUI(
         countYearProvinceUI(
           id = ns("dash"), 
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "wild", type = "afschot",
           specie = results$specie(),
           doHide = FALSE
         )

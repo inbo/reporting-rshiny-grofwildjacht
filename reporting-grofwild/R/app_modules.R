@@ -65,7 +65,7 @@ optionsModuleUI <- function(id,
       if ("schade" %in% showDataSource)
         selectInput(inputId = ns("dataSource_schade"), 
           label = "Data bron",
-          choices = sourcesSchade,
+          choices = sourcesSchade, selected = sourcesSchade,
           multiple = TRUE),
       if ("onderkaak" %in% showDataSource)
         selectInput(inputId = ns("dataSource_onderkaak"), 

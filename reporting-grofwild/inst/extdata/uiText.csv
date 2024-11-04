@@ -34,9 +34,9 @@ Afschot dat zich buiten de grenzen van de wbe of in de bebouwde kom bevindt, wer
 <li>Je kan zelf nog kiezen welk jaar, schaalniveau en eenheid (absoluut aantal of aantal per 100 ha) je op de kaart weergegeven wil zien.
 <li>Je kan op de kaart interactief een of meerdere deelgebieden selecteren waarvoor de gegevens dan in de onderstaande grafiek worden weergegeven. Ook de periode waarvoor informatie in de grafieken wordt weergegeven, kan je hier selecteren.
 </ul></p>";"Op onderstaand kaartje worden de, van 15 april van het gekozen jaar tot 15 april van het volgende jaar, bij de WBE aangesloten jachtterreinen weergegeven. <i>De doorstroom van de jachtterreinen is momenteel een 'work in progress', hierdoor is het mogelijk dat de jachtterreinen voor het recentste jaar niet beschikbaar zijn.</i>";"";""
-"17";"mapSchadeUI";"KAART: Schadegevallen";"";"";"<p><b><u>Gebruiksinfo:</u></b>
+"17";"mapSchadeUI";"Geografische spreiding van de schadegevallen voor {wildsoort} per {type} schade";"Een landkaart met het aantal schadegevallen in Vlaanderen per {type} schade.";"";"<p><b><u>Gebruiksinfo:</u></b>
 </br><ul>
-<li>De onderstaande kaart geeft de geografische spreiding van de individuele schadegevallen per variabele weer. Mogelijke variabelen zijn <i>seizoen, jaar</i> en <i>type schade</i>. Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het keuzemenu.
+<li>De kaart geeft de geografische spreiding van de individuele schadegevallen per {type} schade. Welke schadegevallen getoond worden, hangt af van je filterkeuzes in het keuzemenu.
 <li>Voor deze kaart kan je bovendien zelf de periode bepalen die je wil weergeven. Door met de muis een bepaalde schadegeval te selecteren, krijg je verdere informatie over deze schadegeval (jaar, wildsoort, gemeente, schadetype en eventueel seizoen.
 </ul></p>";"";"";""
 "18";"mapSpreadUI";"KAART: Verspreidingsgebied";"";"";"";"";"";""

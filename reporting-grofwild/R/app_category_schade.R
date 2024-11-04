@@ -63,6 +63,14 @@ schadeUI <- function(id, specie){
           id = id, specie = specie,
           uiOutput(outputId = ns("output-regio"))
         )
+      ),
+      tabPanel(
+          title = getTabTitle(value = "type", category = "schade"), 
+          value = "type",
+          schadePanel(
+            id = id, specie = specie,
+            uiOutput(outputId = ns("output-type"))
+          )
       )
 
     )
@@ -167,11 +175,13 @@ schadeServer <- function(id, specie){
 
       if(isTruthy(input$subcategory)){
         
-        categoryCardSchade <- function(output){
+        categoryCardSchade <- function(...){
           categoryCard(
-              id = id, specie = results$specie(), 
-              output = output, uiText = uiText,
-              type = "schade"
+            id = id, 
+            uiText = uiText,
+            specie = results$specie(), 
+            category = "schade", 
+            ...
           )
         }
         
@@ -194,6 +204,19 @@ schadeServer <- function(id, specie){
                 categoryCardSchade(output = "mapFlandersUI")
               )
             )
+          },
+          type = {
+            output$`output-type` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardSchade(
+                  output = "countYearSchadeUI-type", 
+                  outputFunction = "countYearSchadeUI",
+                  type = "type"
+                )
+              )
+            )   
+                
           }
         )
         
@@ -254,6 +277,18 @@ schadeServer <- function(id, specie){
       outputCreated("mapFlandersUI")
     })
 
+    observeEvent(input$`countYearSchadeUI-type-button`, {
+      output$`output-type` <- renderUI(
+        countYearSchadeUI(
+          id = ns("schade-type"), 
+          doHide = FALSE,
+          uiText = uiText, context = "schade",
+          type = "type", specie = results$specie()
+        )
+      )
+      outputCreated("countYearSchadeUI-type")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -306,6 +341,13 @@ schadeServer <- function(id, specie){
           biotoopData = biotoopData,
           allSpatialData = spatialData,
           sourceChoices = loadMetaSchade()$sources 
+        ),
+        `countYearSchadeUI-type` = countYearSchadeServer(
+          id = "schade-type",
+          data = results$schade_data,
+          type = "schadeCode", 
+          timeRange = results$schade_timeRange,
+          fullNames = schadeCodes
         )
 
       )

@@ -35,23 +35,24 @@ getTabTitle <- function(value, category){
 
 #' Get output title
 #' @param output character vector of length 1 with output name
-#' @param specie character vector of length 1 with specie
+#' @param uiText data.frame with plot title and description
+#' @param specie (optional) character vector of length 1 with specie
+#' @param type (optional) character vector of length 1 with type
 #' @param n (optional) integer vector of length 1 with maximum 
 #' number of characters to include
-#' @param uiText data.frame with plot titles
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
 getOutputTitle <- function(output, 
   uiText, specie = NULL, type = NULL, n = integer()){
   
-  title <- uiText[uiText$plotFunction == output, "title"]
+  title <- uiText[which(uiText$plotFunction == output), "title"]
   
   if(!is.null(specie))
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
   
   if(!is.null(type)){
-    typeInfo <- switch(type, afschot = "afschot", schade = "schadegevallen")
-    title <- gsub("{type}", typeInfo, title, fixed = TRUE)
+    if(type == "schade")	type <- "schadegevallen"
+    title <- gsub("{type}", type, title, fixed = TRUE)
   }
   
   if(length(n) > 0)
@@ -68,14 +69,14 @@ getOutputTitle <- function(output,
 getOutputDescription <- function(output, 
   uiText, specie = NULL, type = NULL, context = "fauna"){
   
-  title <- uiText[uiText$plotFunction == output, context]
+  title <- uiText[which(uiText$plotFunction == output), context]
   
   if(!is.null(specie))
-    title <- gsub("{wildsoort}", specie, title, fixed = TRUE)
+    title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
   
   if(!is.null(type)){
-    typeInfo <- switch(type, afschot = "afschot", schade = "schadegevallen")
-    title <- gsub("{type}", typeInfo, title, fixed = TRUE)
+    if(type == "schade")	type <- "schadegevallen"
+    title <- gsub("{type}", type, title, fixed = TRUE)
   }
   
   return(title)
@@ -85,21 +86,31 @@ getOutputDescription <- function(output,
 #' Get category card for a specific output
 #' @param id id character, module id/specie
 #' @param output character, output name, e.g. 'trendYearRegionUI'
+#' @param category character, category for the card 
+#' (e.g.'afschot' or 'schade'), used to extract
+#' the picture for the card
+#' @inheritParams getOutputTitle
 #' @inherit bslib::card return
 #' @author lcougnaud
 #' @importFrom bslib card card_header card_image card_body card_footer
 #' @importFrom shiny actionButton
-categoryCard <- function(id, specie, output, uiText, type = NULL){
+categoryCard <- function(id, 
+  uiText, output, outputFunction = output, 
+  category, specie, type = category){
   
   ns <- NS(id)
   
-  title <- getOutputTitle(output = output, specie = specie, uiText = uiText, type = type)
-  
-  description <- getOutputDescription(output = output, specie = specie,
+  title <- getOutputTitle(output = outputFunction, specie = specie, 
     uiText = uiText, type = type)
   
-  file <- system.file("ui", "www", paste0("category-", type, "-", output, ".png"), 
-    package = "reportingGrofwild")
+  description <- getOutputDescription(
+    output = outputFunction, specie = specie,
+    uiText = uiText, type = type)
+  
+  file <- system.file("ui", "www", 
+    paste0("category-", category, "-", output, ".png"), 
+    package = "reportingGrofwild"
+  )
   
   outputCard <- bslib::card(
       class = "category-card",

@@ -206,11 +206,13 @@ afschotServer <- function(id, specie){
 
       if(isTruthy(input$`afschot-subcategory`)){
         
-        categoryCardAfschot <- function(output){
+        categoryCardAfschot <- function(...){
           categoryCard(
-              id = id, specie = results$specie(), 
-              output = output, uiText = uiText,
-              type = "afschot"
+            id = id, 
+            uiText = uiText,
+            specie = results$specie(), 
+            category = "afschot",
+            ...
           )
         }
         

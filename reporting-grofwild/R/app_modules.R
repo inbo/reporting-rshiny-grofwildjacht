@@ -432,7 +432,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, title = NULL,
     verticalGroups = NULL,
-    fullNames = NULL) {
+    fullNames = NULL, type = NULL) {
   
   subData <- reactive({
         
@@ -511,6 +511,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(regio = input$region),
             if (!is.null(input$type))
               list(type = input$type),
+            if (!is.null(type))
+              list(type = type),
             if (!is.null(input$type) & !is.null(input$year) & is.null(input$dataSource_schade))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))

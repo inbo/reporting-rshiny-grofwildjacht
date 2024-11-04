@@ -71,6 +71,14 @@ schadeUI <- function(id, specie){
             id = id, specie = specie,
             uiOutput(outputId = ns("output-type"))
           )
+      ),
+      tabPanel(
+        title = getTabTitle(value = "seizoen", category = "schade"), 
+        value = "seizoen",
+        schadePanel(
+          id = id, specie = specie,
+          uiOutput(outputId = ns("output-seizoen"))
+        )
       )
 
     )
@@ -228,8 +236,19 @@ schadeServer <- function(id, specie){
                 ),
                 categoryCardSchade(output = "tableGewasUI")
               )
-            )   
-                
+            )      
+          },
+          seizoen = {
+            output$`output-seizoen` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardSchade(
+                  output = "countYearSchadeUI-seizoen", 
+                  outputFunction = "countYearSchadeUI",
+                  type = "seizoen"
+                )
+              )
+            )      
           }
         )
         
@@ -350,6 +369,19 @@ schadeServer <- function(id, specie){
       outputCreated("tableGewasUI")
     })
 
+    observeEvent(input$`countYearSchadeUI-seizoen-button`, {
+      output$`output-seizoen` <- renderUI(
+        countYearSchadeUI(
+          id = ns("schade-seizoen"), 
+          doHide = FALSE,
+          uiText = uiText, context = "schade",
+          type = "seizoen", specie = results$specie(),
+          regionLevels = c(1:2, 4)
+        )
+      )
+      outputCreated("countYearSchadeUI-seizoen")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -456,6 +488,12 @@ schadeServer <- function(id, specie){
           typesDefault = reactive("provinces"),
           timeRange = results$schade_timeRange,
           variable = "SoortNaam"
+        ),
+        `countYearSchadeUI-seizoen` = countYearSchadeServer(
+            id = "schade-seizoen",
+            data = results$schade_data,
+            type = "season", 
+            timeRange = results$schade_timeRange
         )
       )
     )

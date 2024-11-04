@@ -22,6 +22,7 @@
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
+    regio = "",
     sourceIndicator = NULL, width = 800, height = 600) {
   
   # For R CMD check
@@ -31,6 +32,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
       "wildsoort" = "Wildsoort",
       "SoortNaam" = "Gewas", 
       "schadeCode" = "Type Schade",
+      "season" = "Seizoen",
       type
   )
   
@@ -61,7 +63,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   nRecords <- nrow(plotData)
   
   # Remove some categories
-  plotData[is.na(plotData$variabele), "variabele"] <- "Onbekend"
+  if(any(is.na(plotData$variabele)))
+    plotData[is.na(plotData$variabele), "variabele"] <- "Onbekend"
   plotData <- plotData[!is.na(plotData$jaar) & !is.na(plotData$variabele), ]
   
   # Summarize data per year and age category
@@ -114,7 +117,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   
   title <- paste0(typeNaam, " ",
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-          paste("in", jaartallen))
+          paste("in", jaartallen)),
+      if (!all(regio == "")) paste0("\n(", toString(regio), ")")
   )
   
   singleYear <- length(unique(totalCount$jaar)) == 1
@@ -190,7 +194,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
 countYearSchadeServer <- function(
   id, data, 
   types = NULL, labelTypes = "Type", typesDefault = types, type = NULL,
-  timeRange, fullNames) {
+  timeRange, fullNames = NULL) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -223,7 +227,8 @@ countYearSchadeServer <- function(
 #' 
 #' @export
 countYearSchadeUI <- function(id, 
-  uiText, context = id, specie = NULL, type = NULL, doHide = TRUE) {
+  uiText, context = id, specie = NULL, type = NULL, doHide = TRUE,
+  regionLevels = NULL) {
   
   showType <- (is.null(type))
   
@@ -257,7 +262,9 @@ countYearSchadeUI <- function(id,
             showTime = TRUE, 
             showType = showType, 
             showDataSource = "schade",
-            exportData = TRUE),
+            regionLevels = regionLevels,
+            exportData = TRUE
+          ),
           tags$p(HTML(description))
         ),
         tags$hr()

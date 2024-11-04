@@ -225,7 +225,8 @@ schadeServer <- function(id, specie){
                   output = "countYearSchadeUI-gewas", 
                   outputFunction = "countYearSchadeUI",
                   type = "gewas"
-                )
+                ),
+                categoryCardSchade(output = "tableGewasUI")
               )
             )   
                 
@@ -234,7 +235,7 @@ schadeServer <- function(id, specie){
         
       }
       
-      outputCreated("")
+      outputCreated("")# reset path
       initTab(FALSE)
       
     })
@@ -337,6 +338,18 @@ schadeServer <- function(id, specie){
       outputCreated("countYearSchadeUI-gewas")
     })
 
+    observeEvent(input$`tableGewasUI-button`, {
+      output$`output-type` <- renderUI(
+        tableGewasUI(
+          id = ns("schade"), 
+          uiText = uiText, context = "schade",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+      outputCreated("tableGewasUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -430,6 +443,19 @@ schadeServer <- function(id, specie){
             type = "SoortNaam", 
             timeRange = results$schade_timeRange,
             fullNames = schadeCodes
+        ),
+        tableGewasUI = tableGewasServer(
+          id = "schade",
+          data = results$schade_data,
+          types = reactive(c(
+            "Vlaanderen" = "flanders",
+            "Provincie" = "provinces", 
+            "Faunabeheerzones" = "faunabeheerzones"
+          )), 
+          labelTypes = "Regio", 
+          typesDefault = reactive("provinces"),
+          timeRange = results$schade_timeRange,
+          variable = "SoortNaam"
         )
       )
     )

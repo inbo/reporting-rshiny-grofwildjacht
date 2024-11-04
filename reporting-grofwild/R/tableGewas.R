@@ -135,30 +135,38 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-tableGewasUI <- function(id, uiText) {
+tableGewasUI <- function(id, 
+  uiText, context = id, specie = NULL, 
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(
+    output = "tableSchadeUI", specie = specie, 
+    uiText = uiText
+  )
+  description <- getOutputDescription(
+    output = "tableSchadeUI", 
+    specie = specie, uiText = uiText, context = context
+  )
   
   tagList(
     
     actionLink(inputId = ns("linkTableGewas"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkTableGewas % 2 == 1", ns = ns,
-      
-      fixedRow(
-        
-        column(4,
-          optionsModuleUI(id = ns("tableGewas"), 
-            showTime = TRUE, 
-            showType = TRUE,
-            showDataSource = "schade",
-            exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, tableModuleUI(id = ns("tableGewas")))  
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkTableGewas % 2",
+        as.numeric(doHide)),
+      ns = ns,
+      optionsModuleUI(
+        id = ns("tableGewas"), 
+        showTime = TRUE, 
+        showType = TRUE,
+        showDataSource = "schade",
+        exportData = TRUE, oneRow = TRUE
       ),
+      tableModuleUI(id = ns("tableGewas")),
+      tags$p(HTML(description)),
       tags$hr()
     )
   )

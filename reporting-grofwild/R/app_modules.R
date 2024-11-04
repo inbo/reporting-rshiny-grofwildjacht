@@ -112,8 +112,13 @@ optionsModuleUI <- function(id,
   
   )
   
-  if(oneRow)
+  toReturn <- toReturn[!sapply(toReturn, is.null)]
+  
+  if(oneRow){
+    width <- 12/floor(length(toReturn))
+    toReturn <- lapply(toReturn, function(x) column(width = width, x))
     toReturn <- fluidRow(toReturn)
+  }
   
   if (doWellPanel)
     wellPanel(toReturn) else

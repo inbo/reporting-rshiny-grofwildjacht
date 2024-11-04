@@ -91,6 +91,7 @@ schadeServer <- function(id, specie){
     ns <- session$ns
     
     ## initialization
+    outputCreated <- reactiveVal(value = NULL)
     nextPage <- reactiveVal(value = NULL)
     
     ## input
@@ -210,16 +211,21 @@ schadeServer <- function(id, specie){
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
                 categoryCardSchade(
-                  output = "countYearSchadeUI-type", 
+                  output = "countYearSchadeUI-schade", 
                   outputFunction = "countYearSchadeUI",
-                  type = "type"
+                  type = "schade"
                 ),
                 categoryCardSchade(
                   output = "mapSchadeUI-type", 
                   outputFunction = "mapSchadeUI",
-                  type = "type"
+                  type = "schade"
                 ),
-                categoryCardSchade(output = "tableSchadeUI")
+                categoryCardSchade(output = "tableSchadeUI"),
+                categoryCardSchade(
+                  output = "countYearSchadeUI-gewas", 
+                  outputFunction = "countYearSchadeUI",
+                  type = "gewas"
+                )
               )
             )   
                 
@@ -228,12 +234,12 @@ schadeServer <- function(id, specie){
         
       }
       
+      outputCreated("")
       initTab(FALSE)
       
     })
   
     ## Tab content with selected plot/table
-    outputCreated <- reactiveVal("")
 
     # UI
     observeEvent(input$`tableSchadeSummaryUI-button`, {
@@ -283,16 +289,16 @@ schadeServer <- function(id, specie){
       outputCreated("mapFlandersUI")
     })
 
-    observeEvent(input$`countYearSchadeUI-type-button`, {
+    observeEvent(input$`countYearSchadeUI-schade-button`, {
       output$`output-type` <- renderUI(
         countYearSchadeUI(
-          id = ns("schade-type"), 
+          id = ns("schade"), 
           doHide = FALSE,
           uiText = uiText, context = "schade",
-          type = "type", specie = results$specie()
+          type = "schade", specie = results$specie()
         )
       )
-      outputCreated("countYearSchadeUI-type")
+      outputCreated("countYearSchadeUI-schade")
     })
 
     observeEvent(input$`mapSchadeUI-type-button`, {
@@ -300,7 +306,7 @@ schadeServer <- function(id, specie){
         mapSchadeUI(
           id = ns("schade-type"), 
           uiText = uiText, context = "schade",
-          type = "type", specie = results$specie(),
+          type = "schade", specie = results$specie(),
           filterVariable = FALSE
         )
       )
@@ -319,13 +325,25 @@ schadeServer <- function(id, specie){
       outputCreated("tableSchadeUI")
     })
 
+    observeEvent(input$`countYearSchadeUI-gewas-button`, {
+      output$`output-type` <- renderUI(
+        countYearSchadeUI(
+          id = ns("schade-gewas"), 
+          doHide = FALSE,
+          uiText = uiText, context = "schade",
+          type = "gewas", specie = results$specie()
+        )
+      )
+      outputCreated("countYearSchadeUI-gewas")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
     output$pathPlot <- renderText({
       if(isTruthy(outputCreated()))
         getOutputTitle(
-          output = outputCreated(), 
+          output = sub("(.+)(-[[:alnum:]]{1,})$", "\\1", outputCreated()), 
           uiText = uiText, specie = results$specie(), type = "schade",
           n = 55
         )
@@ -372,8 +390,8 @@ schadeServer <- function(id, specie){
           allSpatialData = spatialData,
           sourceChoices = loadMetaSchade()$sources 
         ),
-        `countYearSchadeUI-type` = countYearSchadeServer(
-          id = "schade-type",
+        `countYearSchadeUI-schade` = countYearSchadeServer(
+          id = "schade",
           data = results$schade_data,
           type = "schadeCode", 
           timeRange = results$schade_timeRange,
@@ -405,6 +423,13 @@ schadeServer <- function(id, specie){
           schadeChoicesGewas = reactive(input$schade_gewas),
           datatable = TRUE,
           fullNames = c(schadeTypes, schadeCodes)
+        ),
+        `countYearSchadeUI-gewas` = countYearSchadeServer(
+            id = "schade-gewas",
+            data = results$schade_data,
+            type = "SoortNaam", 
+            timeRange = results$schade_timeRange,
+            fullNames = schadeCodes
         )
       )
     )

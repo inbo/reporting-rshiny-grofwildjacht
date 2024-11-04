@@ -246,6 +246,11 @@ schadeServer <- function(id, specie){
                   output = "countYearSchadeUI-seizoen", 
                   outputFunction = "countYearSchadeUI",
                   type = "seizoen"
+                ),
+                categoryCardSchade(
+                  output = "mapSchadeUI-seizoen", 
+                  outputFunction = "mapSchadeUI",
+                  type = "seizoen"
                 )
               )
             )      
@@ -382,6 +387,18 @@ schadeServer <- function(id, specie){
       outputCreated("countYearSchadeUI-seizoen")
     })
 
+    observeEvent(input$`mapSchadeUI-seizoen-button`, {
+      output$`output-seizoen` <- renderUI(
+        mapSchadeUI(
+          id = ns("schade-seizoen"), 
+          uiText = uiText, context = "schade",
+          type = "schade", specie = results$specie(),
+          filterVariable = FALSE
+        )
+      )
+      outputCreated("mapSchadeUI-seizoen")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -494,6 +511,16 @@ schadeServer <- function(id, specie){
             data = results$schade_data,
             type = "season", 
             timeRange = results$schade_timeRange
+        ),
+        `mapSchadeUI-seizoen`= mapSchadeServer(
+          id = "schade-seizoen", 
+          schadeData = results$schade_data,
+          allSpatialData = reactive(spatialData),
+          timeRange = results$schade_timeRange,
+          defaultYear = defaultYear,
+          species = results$specie,
+          borderRegion = "provinces",
+          variable = "season"
         )
       )
     )

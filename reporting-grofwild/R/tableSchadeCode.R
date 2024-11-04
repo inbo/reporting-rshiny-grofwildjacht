@@ -125,7 +125,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(comb$Var1)]
 
   # group columns together from same schadeBasisCode
-  codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
+  codeNames <- unique(unlist(fullNames[match(comb$Var2, fullNames)]))
   summaryTable <- summaryTable[, c(colnames(summaryTable)[1], codeNames)]
   
   
@@ -202,7 +202,9 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
         typesDefault = typesDefault, 
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "tableSchade",
+      
+      callModule(
+        module = plotModuleServer, id = "tableSchade",
         plotFunction = "tableSchadeCode", 
         data = data,
         schadeChoices = schadeChoices,
@@ -210,7 +212,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
         schadeChoicesGewas = schadeChoicesGewas,
         datatable = datatable,
         fullNames = fullNames
-        )
+      )
       
     })
   
@@ -222,34 +224,38 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-tableSchadeUI <- function(id, uiText) {
+tableSchadeUI <- function(id, 
+  uiText, context = id, specie = NULL, 
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
-  
-  tagList(
-    
-    actionLink(inputId = ns("linkTableSchade"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkTableSchade % 2 == 1", ns = ns,
-      
-      fixedRow(
-        
-        column(4,
-          optionsModuleUI(id = ns("tableSchade"), 
-            showTime = TRUE, 
-            showType = TRUE,
-            showDataSource = "schade",
-            exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, tableModuleUI(id = ns("tableSchade")))  
-      ),
-      tags$hr()
-    )
+  title <- getOutputTitle(
+    output = "tableSchadeUI", specie = specie, 
+    uiText = uiText
   )
-  
+  description <- getOutputDescription(
+    output = "tableSchadeUI", 
+    specie = specie, uiText = uiText, context = context
+  )  
+  tagList(
+    actionLink(inputId = ns("linkTableSchade"), 
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkTableSchade % 2 ==", 
+        as.numeric(doHide)), 
+      ns = ns,
+      optionsModuleUI(id = ns("tableSchade"), 
+        showTime = TRUE, 
+        showType = TRUE,
+        showDataSource = "schade",
+        exportData = TRUE, oneRow = TRUE
+      ),
+      tableModuleUI(id = ns("tableSchade")),
+      tags$p(HTML(description)),
+      tags$hr()
+    ) 
+  )
   
 }
 

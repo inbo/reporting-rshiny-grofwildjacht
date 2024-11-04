@@ -23,7 +23,8 @@
 #' \code{shiny::wellPanel()}
 #' @param showCategorie boolean, if TRUE gives user option to select categorie
 #' @param showInterval boolean, if TRUE gives user option to select interval
-#' 
+#' @param oneRow boolean, if TRUE (FALSE by default) all the
+#' options are combined in one row.
 #' @return ui object (tagList)
 #' @importFrom shinyjs hidden
 #' @export
@@ -33,7 +34,7 @@ optionsModuleUI <- function(id,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, 
     showDataSource = NULL,
-    doWellPanel = TRUE
+    doWellPanel = TRUE, oneRow = FALSE
     ) {
   
   
@@ -110,6 +111,9 @@ optionsModuleUI <- function(id,
   
   
   )
+  
+  if(oneRow)
+    toReturn <- fluidRow(toReturn)
   
   if (doWellPanel)
     wellPanel(toReturn) else

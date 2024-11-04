@@ -218,7 +218,8 @@ schadeServer <- function(id, specie){
                   output = "mapSchadeUI-type", 
                   outputFunction = "mapSchadeUI",
                   type = "type"
-                )
+                ),
+                categoryCardSchade(output = "tableSchadeUI")
               )
             )   
                 
@@ -306,6 +307,18 @@ schadeServer <- function(id, specie){
       outputCreated("mapSchadeUI-type")
     })
 
+    observeEvent(input$`tableSchadeUI-button`, {
+      output$`output-type` <- renderUI(
+        tableSchadeUI(
+          id = ns("schade"), 
+          uiText = uiText, context = "schade",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+      outputCreated("tableSchadeUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -375,8 +388,24 @@ schadeServer <- function(id, specie){
           species = results$specie,
           borderRegion = "provinces",
           variable = "schadeCode"
+        ),
+        tableSchadeUI = tableSchadeServer(
+          id = "schade",  
+          data = results$schade_data,
+          types = reactive(c(
+            "Vlaanderen" = "flanders",
+            "Provincie" = "provinces", 
+            "Faunabeheerzones" = "faunabeheerzones"
+          )), 
+          labelTypes = "Regio", 
+          typesDefault = reactive("provinces"), 
+          timeRange = results$schade_timeRange,
+          schadeChoices = reactive(input$schade_code),
+          schadeChoicesVrtg = reactive(input$schade_voertuig),
+          schadeChoicesGewas = reactive(input$schade_gewas),
+          datatable = TRUE,
+          fullNames = c(schadeTypes, schadeCodes)
         )
-
       )
     )
       

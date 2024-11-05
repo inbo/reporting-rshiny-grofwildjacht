@@ -79,6 +79,14 @@ schadeUI <- function(id, specie){
           id = id, specie = specie,
           uiOutput(outputId = ns("output-seizoen"))
         )
+      ),
+      tabPanel(
+        title = getTabTitle(value = "kosten", category = "schade"), 
+        value = "kosten",
+        schadePanel(
+          id = id, specie = specie,
+          uiOutput(outputId = ns("output-kosten"))
+        )
       )
 
     )
@@ -254,6 +262,14 @@ schadeServer <- function(id, specie){
                 )
               )
             )      
+          },
+          kosten = {
+            output$`output-kosten` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardSchade(output = "barCostUI")
+              )
+            )
           }
         )
         
@@ -399,6 +415,21 @@ schadeServer <- function(id, specie){
       outputCreated("mapSchadeUI-seizoen")
     })
 
+    # dash plot F09_2
+    observeEvent(input$`barCostUI-button`, {
+      output$`output-kosten` <- renderUI(
+        barCostUI(
+          id = ns("schade"), 
+          uiText = uiText, context = "schade",
+          specie = results$specie(),
+          typeMelding = c("Landbouw" = "landbouw"),
+          regionLevels = c(1:2, 4),
+          doHide = FALSE
+        )
+      )
+      outputCreated("barCostUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -521,7 +552,13 @@ schadeServer <- function(id, specie){
           species = results$specie,
           borderRegion = "provinces",
           variable = "season"
+        ),
+        barCostUI = barCostServer(
+          id = "schade",
+          data = results$schade_data,
+          yVar = "schadeBedrag"
         )
+        
       )
     )
       

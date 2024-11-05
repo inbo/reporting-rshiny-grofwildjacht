@@ -441,7 +441,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, title = NULL,
     verticalGroups = NULL,
-    fullNames = NULL, type = NULL) {
+    fullNames = NULL, type = NULL,
+    typeMelding = NULL) {
   
   subData <- reactive({
         
@@ -565,6 +566,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(timeRange = timeRange()),
             if (!is.null(unit))
               list(unit = unit()),
+            if(!is.null(typeMelding))
+              list(typeMelding = typeMelding()),
             if (!is.null(schadeChoices))
               list(schadeChoices = schadeChoices()),
             if (!is.null(schadeChoicesVrtg))

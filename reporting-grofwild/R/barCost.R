@@ -17,8 +17,11 @@
 #' @import plotly
 #' @importFrom stats aggregate
 #' @export 
-barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
+barCost <- function(data, 
+  unit = NULL, yVar = c("schadeBedrag", "count"), 
+  typeMelding = NULL, regio = "") {
   
+  wildNaam <- unique(data$wildsoort)
   
   yVar <- match.arg(yVar)  
   
@@ -66,6 +69,14 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
   
   totalCount <- table(subData$afschotjaar)
   
+  title <- paste0(
+    yLabel, " kosten voor schadegevallen",
+    if(!is.null(typeMelding)) paste(" over", toString(typeMelding)),
+    paste(" van", tolower(wildNaam)),
+    if(!is.null(groupLabel)) paste(" per", tolower(groupLabel)),
+    if (!all(regio == "")) paste0("\n(", toString(regio), ")")
+  )
+  
   myPlot <- plot_ly(plotData, 
       x = as.character(plotData$afschotjaar), 
       y = ~x , type = 'bar', name = if (!is.null(unit)) ~base::get(unit),
@@ -77,6 +88,8 @@ barCost <- function(data, unit = NULL, yVar = c("schadeBedrag", "count")) {
       text = if (!is.null(unit)) ~base::get(unit),
       textposition = "none") %>%
     plotly::layout(
+      title = title,
+      margin = list(t = 100),
       legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
       yaxis = if (max(totalCount) < 5)
         list(title = yLabel, dtick = 1) else
@@ -163,7 +176,8 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
-        unit = reactive(input$unit)
+        unit = reactive(input$unit),
+        typeMelding = reactive(input$typeMelding)
       )
       
       
@@ -182,41 +196,67 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 #' @inherit welcomeSectionUI
 #' @param typeMelding character vector, choices for filtering on `typeMelding` in data
 #' @export
-barCostUI <- function(id, uiText, typeMelding = NULL) {
+barCostUI <- function(id, 
+  uiText, context = strsplit(id, split = "_")[[1]][1], 
+  specie = NULL,
+  typeMelding = NULL, doHide = TRUE,
+  regionLevels = NULL) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+  title <- getOutputTitle(
+    output = "barCostUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(
+    output = "barCostUI", 
+    specie = specie, uiText = uiText, context = context
+  )
+  
   metaSchade <- loadMetaSchade()
   
   tagList(
     
     actionLink(inputId = ns("linkBarCost"), 
-      label = paste("FIGUUR:", uiText$title), class = "action-h3"),
-    conditionalPanel("input.linkBarCost % 2 == 0", ns = ns,
-      
-      uiOutput(ns("disclaimerBarCost")),
+      label = title, class = "action-h3"),
+    conditionalPanel(
+      condition = 
+        paste("input.linkBarCost % 2 ==", as.numeric(doHide)), 
+      ns = ns,
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("barCost"))
+        ),
+          
         column(4,
           wellPanel(
+            optionsModuleUI(
+              id = ns("barCost"), 
+              regionLevels = regionLevels, 
+              doWellPanel = FALSE
+            ),
             if (!is.null(typeMelding))
-              selectInput(inputId = ns("typeMelding"), label = "Type schade",
-                choices = typeMelding),
+              selectInput(
+                inputId = ns("typeMelding"), 
+                label = "Type schade",
+                choices = typeMelding
+              ),
             uiOutput(ns("unitChoices")),
             selectInput(inputId = ns("bron"), label = "Data bron",
               choices = metaSchade$sources,
               selected = metaSchade$sources,
               multiple = TRUE),
-            optionsModuleUI(id = ns("barCost"), exportData = TRUE, doWellPanel = FALSE)
-          ),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("barCost"))
+            optionsModuleUI(
+              id = ns("barCost"), 
+              exportData = TRUE, 
+              doWellPanel = FALSE
+            )
+          )
         )
       ),
+      uiOutput(ns("disclaimerBarCost")),
+      tags$p(HTML(description)),
       tags$hr()
     )    
   )

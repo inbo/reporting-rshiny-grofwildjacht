@@ -174,29 +174,35 @@ countAgeGenderServer <- function(id, data, timeRange) {
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-countAgeGenderUI <- function(id, uiText) {
+countAgeGenderUI <- function(id,
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = "countAgeGenderUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "countAgeGenderUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkAgeGender"),
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkAgeGender % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkAgeGender % 2 ==",
+        as.numeric(doHide)), 
+      ns = ns,
       
       fixedRow(
-        
+        column(8, plotModuleUI(id = ns("ageGender"))), 
         column(4,
           optionsModuleUI(id = ns("ageGender"), showTime = TRUE,
-            showDataSource = c("leeftijd", "geslacht"), exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("ageGender"))
+            showDataSource = c("leeftijd", "geslacht"), 
+            exportData = TRUE),
         )
       ),
+      tags$p(description),
       tags$hr()
     )
   )

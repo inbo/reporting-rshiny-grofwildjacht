@@ -52,6 +52,16 @@ populatieUI <- function(id, specie){
         id = id, specie = specie,
         uiOutput(outputId = ns("output-onderkaak"))
        )
+      ),
+      tabPanel(
+        title = getTabTitle(
+          value = "geslacht", category = "populatie"
+        ), 
+        value = "geslacht",
+        categoryPanel(
+          id = id, specie = specie,
+          uiOutput(outputId = ns("output-geslacht"))
+        )
       )
     )
   )
@@ -164,6 +174,14 @@ populatieServer <- function(id, specie){
                 categoryCardPopulatie(output = "countAgeCheekUI")
               )
             )
+          },
+          geslacht = {
+            output$`output-geslacht` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardPopulatie(output = "countAgeGenderUI")
+              )
+            )
           }
         )
         
@@ -201,6 +219,18 @@ populatieServer <- function(id, specie){
       outputCreated("countAgeCheekUI")
     })
 
+    observeEvent(input$`countAgeGenderUI-button`, {
+      output$`output-geslacht` <- renderUI(
+        countAgeGenderUI(
+          id = ns(id), 
+          uiText = uiText, context = "wild",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+      outputCreated("countAgeGenderUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -232,6 +262,11 @@ populatieServer <- function(id, specie){
           timeRange = reactive(if (results$specie() == "Ree")
             c(2005, max(results$timeRange())) else 
             results$timeRange())
+        ),
+        countAgeGenderUI = countAgeGenderServer(
+          id = id,
+          data = results$ecoData,
+          timeRange = results$timeRange
         )
       )
     )
@@ -241,12 +276,12 @@ populatieServer <- function(id, specie){
     # Redirection:
 
     observeEvent(input$`pathHome`, {
-      print("schade: Go to home page")
+      print("populatie: Go to home page")
       nextPage("home")
     })
   
     observeEvent(input$`pathSpecie-button`, {
-      print("schade: Go to specie page")
+      print("populatie: Go to specie page")
       nextPage("specie")
     })
       

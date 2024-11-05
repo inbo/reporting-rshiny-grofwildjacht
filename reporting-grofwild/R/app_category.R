@@ -33,6 +33,11 @@ getTabTitle <- function(value, category){
         onderkaak = "Onderkaak gegevens",
         geslacht = "Geslacht",
         voortplanting = "Voortplanting"
+      ),
+    verspreiding = 
+      switch(value,
+        huidig = "Huidige verspreiding",
+        toekomstig = "Toekomstige verspreiding"
       )
   )
   

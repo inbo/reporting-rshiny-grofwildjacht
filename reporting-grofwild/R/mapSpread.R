@@ -184,7 +184,9 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 #' @importFrom webshot webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
-mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData, 
+mapSpreadServer <- function(id, 
+  regionLevel = reactive(NULL), locaties = reactive(NULL), 
+  allSpatialData, species,
   type = c("F06", "F17_4"), title = reactive(NULL)) {
   moduleServer(id,
     function(input, output, session) {
@@ -194,7 +196,6 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       ## User Input ##
       ## ---------- ##
       
-      
       # Selected regions of interest
       spatialData <- reactive({
           
@@ -202,7 +203,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           
           filterSpatial(
             allSpatialData = allSpatialData, 
-            species = "Wild zwijn", 
+            species = species, 
             regionLevel = regionLevel(), 
             year = NULL,
             locaties = locaties()
@@ -228,13 +229,13 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           if (type == "F17_4") {
             
             if (!exists("spreadData"))
-              readS3(file = "spreadData_sf.RData")
+              spreadData <- loadSpreadData()
             spreadData[grep(req(input$regionLevel), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
             
             if (!exists("trafficData"))
-              readS3(file = "trafficData.RData")            
+              trafficData <- loadTrafficData()
             trafficData
             
           }
@@ -453,7 +454,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
           addPolylines(data = selectedPolygons(), color = "black", weight = 3,
             group = "regionLines")
         
-        newMap
+          return(newMap)
           
         }) 
       
@@ -461,7 +462,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       # Download the map
       output$download <- downloadHandler(
         filename = function()
-          nameFile(species = "Wild zwijn",
+          nameFile(species = species,
             content = "kaart", fileExt = "png"),
         content = function(file) {
           
@@ -480,7 +481,7 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
       # Download data
       output$downloadData <- downloadHandler(
         filename = function()
-          nameFile(species = paste("Wild zwijn", collapse = "-"),
+          nameFile(species = paste(species, collapse = "-"),
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
           
@@ -516,23 +517,28 @@ mapSpreadServer <- function(id, regionLevel, locaties, allSpatialData,
 #' @return UI object
 #' 
 #' @export
-mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
+mapSpreadUI <- function(id, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE, showLayer = FALSE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+  title <- getOutputTitle(output = "mapSpreadUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "mapSpreadUI", 
+    specie = specie, uiText = uiText, context = context)
   
   # Map spread
   
   tagList(
     
     actionLink(inputId = ns("linkSpread"),
-      label = paste("FIGUUR:", uiText$title), class = "action-h3"),
-    conditionalPanel("input.linkSpread % 2 == 0", ns = ns,
+      label = title, class = "action-h3"),
+    conditionalPanel(
+      condition = paste("input.linkSpread % 2 ==", as.numeric(doHide)),
+      ns = ns,
       
       uiOutput(ns("disclaimerMapSpread")),
-      
-      tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
   
       wellPanel(
         
@@ -547,11 +553,15 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
           } else {
             
             fixedRow(
-              column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+              column(4, 
+                selectInput(
+                  inputId = ns("regionLevel"), 
+                  label = "Regio-schaal",
                   choices = c(
                     "Gemeente" = "municipalities",
                     "2x2 UTM" = "pixels"
-                  ))
+                  )
+                )
               ),
               column(4, uiOutput(ns("year"))),
               column(4, selectInput(inputId = ns("legend"), label = "Legende",
@@ -585,6 +595,8 @@ mapSpreadUI <- function(id, uiText, showLayer = FALSE) {
             downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
         )
       ),
+      
+      tags$p(HTML(description)),
       
       tags$hr()
     

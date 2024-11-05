@@ -50,6 +50,10 @@ shinyServer(function(input, output, session) {
       `populatie indicatoren` = {
         print(paste("Open populatie page with specie:", specie()))
         output$page <- renderUI(populatieUI(id = "populatie", specie = specie()))
+      },
+      `verspreiding` = {
+        print(paste("Open verspreiding page with specie:", specie()))
+        output$page <- renderUI(verspreidingUI(id = "verspreiding", specie = specie()))
       }
     )
   })
@@ -87,5 +91,10 @@ shinyServer(function(input, output, session) {
   nextPagePopulatie <- populatieServer(id = "populatie", specie = specie)
   # re-direct to 'Home' or 'Specie' page
   observeEvent(nextPagePopulatie(), ignoreNULL = TRUE, page(nextPagePopulatie()))
+  
+  # Category: verspreiding
+  nextPageVerspreiding <- verspreidingServer(id = "verspreiding", specie = specie)
+  # re-direct to 'Home' or 'Specie' page
+  observeEvent(nextPageVerspreiding(), ignoreNULL = TRUE, page(nextPageVerspreiding()))
   
 })

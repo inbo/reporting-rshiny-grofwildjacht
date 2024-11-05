@@ -400,4 +400,40 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   
 }
 
+#' Load Spread data
+#' @inheritParams loadRawData
+#' @export
+loadSpreadData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  pathFile <- "spreadData_sf.RData"
+  
+  if(!identical(path, "")){
+    load(file = file.path(path, pathFile), envir = environment())
+  }else{
+    readS3(file = pathFile, bucket = bucket, envir = environment())
+  }
+  
+  return(spreadData)
+  
+}
 
+#' Load Traffic data
+#' @inheritParams loadRawData
+#' @export
+loadTrafficData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  pathFile <- "trafficData.RData"
+  
+  if(!identical(path, "")){
+    load(file = file.path(path, pathFile), envir = environment())
+  }else{
+    readS3(file = pathFile, bucket = bucket, envir = environment())
+  }
+  
+  return(trafficData)
+  
+}

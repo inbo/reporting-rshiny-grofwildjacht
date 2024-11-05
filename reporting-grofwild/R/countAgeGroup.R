@@ -163,31 +163,36 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' 
 #' @export
-countAgeGroupUI <- function(id, uiText, doHide = TRUE) {
+countAgeGroupUI <- function(id, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
-  
+  title <- getOutputTitle(output = "countAgeGroupUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "countAgeGroupUI", 
+    specie = specie, uiText = uiText, context = context)
+
   tagList(
     
     actionLink(inputId = ns("linkAgeGroup"),
-      label = h3(HTML(uiText$title)),
+      label = h3(HTML(title)),
       class = "action-h3"),
-    conditionalPanel(paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), ns = ns,
+    conditionalPanel(
+      condition = paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), 
+      ns = ns,
       
       uiOutput(ns("disclaimerAgeGroup")),
       
       fixedRow(
-        
+        column(8, plotModuleUI(id = ns("ageGroup"))),
         column(4,
-          optionsModuleUI(id = ns("ageGroup"), showTime = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("ageGroup"))
+          optionsModuleUI(id = ns("ageGroup"), 
+            showTime = TRUE, exportData = TRUE)
         )
       ),
+      tags$p(HTML(description)),
       tags$hr()
     )
   )

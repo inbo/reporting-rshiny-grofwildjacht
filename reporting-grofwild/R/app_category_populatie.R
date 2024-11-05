@@ -212,7 +212,8 @@ populatieServer <- function(id, specie){
             output$`output-voortplanting` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
-                categoryCardPopulatie(output = "countEmbryosUI")
+                categoryCardPopulatie(output = "countEmbryosUI"),
+                categoryCardPopulatie(output = "countAgeGroupUI")
               )
             )
           }
@@ -277,6 +278,19 @@ populatieServer <- function(id, specie){
       outputCreated("countEmbryosUI")
     })
 
+    # dash plot F16_1
+    observeEvent(input$`countAgeGroupUI-button`, {
+      output$`output-voortplanting` <- renderUI(
+        countAgeGroupUI(
+          id = ns(id), 
+          uiText = uiText, context = "dash",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+      outputCreated("countAgeGroupUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -320,6 +334,22 @@ populatieServer <- function(id, specie){
           timeRange = results$timeRange,
           types = results$typesFemale,
           uiText = uiText
+        ),
+        countAgeGroupUI = countAgeGroupServer(
+          id = id,
+          data = reactive({
+            plotData <- results$ecoData()[
+              results$ecoData()$geslacht_comp == "Vrouwelijk", 
+            ]
+            validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
+            plotData$reproductiestatus <- ifelse(
+              is.na(plotData$aantal_embryos), "Onbekend",
+              ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
+            )
+            plotData
+          }),
+          timeRange = results$timeRange,
+          groupVariable = "reproductiestatus"
         )
       )
     )

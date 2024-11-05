@@ -178,7 +178,8 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
+countEmbryosServer <- function(id, data, timeRange, types, 
+  uiText, wildsoort = reactive(), context = id) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -207,7 +208,9 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
       
       output$descriptionEmbryos <- renderUI({
           
-          oldText <- uiText[, id]
+          req(wildsoort())   
+            
+          oldText <- uiText[, context]
           if (wildsoort() != "Ree")
             oldText <- strsplit(oldText, split = "Opmerking")[[1]][1]
           
@@ -236,28 +239,45 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
 #' 
 #' @author mvarewyck
 #' @export
-countEmbryosUI <- function(id, regionLevels) {
+countEmbryosUI <- function(id, regionLevels,
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
+  if(!is.null(specie)){
+    title <- getOutputTitle(output = "countEmbryosUI", specie = specie, 
+      uiText = uiText)
+    title <- h3(HTML(title))
+    description <- getOutputDescription(output = "countEmbryosUI", 
+      specie = specie, uiText = uiText, context = context)
+    if (specie != "Ree")
+      description <- strsplit(description, split = "Opmerking")[[1]][1]
+    description <- tags$p(HTML(description))
+  }else{
+     title <- uiOutput(ns("titleEmbryos"))
+     description <- NULL
+  }
+
   tagList(
     
-    actionLink(inputId = ns("countEmbryos"),
-      label = uiOutput(ns("titleEmbryos"))),
-    conditionalPanel("input.countEmbryos % 2 == 1", ns = ns,
+    actionLink(inputId = ns("countEmbryos"), label = title),
+    conditionalPanel(
+      condition = paste("input.countEmbryos % 2 ==", as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
-        
+        column(8, plotModuleUI(id = ns("countEmbryos"))),
         column(4,
-          optionsModuleUI(id = ns("countEmbryos"), showTime = TRUE, showType = TRUE,
+          optionsModuleUI(id = ns("countEmbryos"), 
+            showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("embryos", "leeftijd", "geslacht")),
-          uiOutput(ns("descriptionEmbryos"))),
-        column(8, 
-          plotModuleUI(id = ns("countEmbryos"))
-        ),
-        tags$hr()
-      )
+          if(is.null(specie))  uiOutput(ns("descriptionEmbryos"))
+        )
+      ),
+      description,
+      tags$hr()
     )
   )
   

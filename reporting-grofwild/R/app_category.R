@@ -54,8 +54,18 @@ getOutputTitle <- function(output,
   
   title <- uiText[which(uiText$plotFunction == output), "title"]
   
-  if(!is.null(specie))
+  if(!is.null(specie)){
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
+    title <- gsub("{wildsoorten}", 
+      switch(specie, 
+        "Ree" = "ree\u00EBn",
+        "Wild zwijn" = "wilde zwijnen",
+        "Damhert" = "damherten",
+        "Edelhert" = "edelherten",
+        specie
+      ), title, fixed = TRUE
+    )
+  }
   
   if(!is.null(type)){
     if(type == "schade")	type <- "schadegevallen"
@@ -78,8 +88,18 @@ getOutputDescription <- function(output,
   
   title <- uiText[which(uiText$plotFunction == output), context]
   
-  if(!is.null(specie))
+  if(!is.null(specie)){
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
+    title <- gsub("{wildsoorten}", 
+      switch(specie, 
+        "Ree" = "ree\u00EBn",
+        "Wild zwijn" = "wilde zwijnen",
+        "Damhert" = "damherten",
+        "Edelhert" = "edelherten",
+        specie
+      ), title, fixed = TRUE
+    )
+  }
   
   if(!is.null(type)){
     if(type == "schade")	type <- "schadegevallen"

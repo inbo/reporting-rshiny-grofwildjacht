@@ -62,6 +62,16 @@ populatieUI <- function(id, specie){
           id = id, specie = specie,
           uiOutput(outputId = ns("output-geslacht"))
         )
+      ),
+      tabPanel(
+        title = getTabTitle(
+          value = "voortplanting", category = "populatie"
+        ), 
+        value = "voortplanting",
+        categoryPanel(
+          id = id, specie = specie,
+          uiOutput(outputId = ns("output-voortplanting"))
+        )
       )
     )
   )
@@ -107,6 +117,10 @@ populatieServer <- function(id, specie){
         by = "ID"
       )
     )
+
+    results$timeRange <- reactive(
+      range(results$ecoData()$afschotjaar)
+    ) 
     
     # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
     results$leeftijdtypes <- reactive(
@@ -116,9 +130,20 @@ populatieServer <- function(id, specie){
       )
     )
     
-    results$timeRange <- reactive(
-      range(results$ecoData()$afschotjaar)
-    )  
+    # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
+    results$typesFemale <- reactive({
+          
+      types <- levels(droplevels(results$ecoData()$type_comp))
+          
+      types <- if (results$specie() == "Ree") {
+        types[types %in% c("Reegeit", "Smalree")] 
+      } else if (results$specie() == "Wild zwijn"){
+        types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+      } else {
+        types[types %in% c("Kalf (v)", "Smaldier", "Hinde")]        
+      }
+      c(types, "Onbekend")
+    })
     
     ## Header
     
@@ -182,6 +207,14 @@ populatieServer <- function(id, specie){
                 categoryCardPopulatie(output = "countAgeGenderUI")
               )
             )
+          },
+          voortplanting = {
+            output$`output-voortplanting` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardPopulatie(output = "countEmbryosUI")
+              )
+            )
           }
         )
         
@@ -231,6 +264,19 @@ populatieServer <- function(id, specie){
       outputCreated("countAgeGenderUI")
     })
 
+    observeEvent(input$`countEmbryosUI-button`, {
+      output$`output-voortplanting` <- renderUI(
+        countEmbryosUI(
+          id = ns(id), 
+          regionLevels = c(1:2, 4),
+          uiText = uiText, context = "wild",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+      outputCreated("countEmbryosUI")
+    })
+
     observe(print(outputCreated()))
     
     # Update plot in path
@@ -267,6 +313,13 @@ populatieServer <- function(id, specie){
           id = id,
           data = results$ecoData,
           timeRange = results$timeRange
+        ),
+        countEmbryosUI = countEmbryosServer(
+          id = id,
+          data = results$combinedData,
+          timeRange = results$timeRange,
+          types = results$typesFemale,
+          uiText = uiText
         )
       )
     )

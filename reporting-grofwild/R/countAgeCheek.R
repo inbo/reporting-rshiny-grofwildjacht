@@ -167,31 +167,39 @@ countAgeCheekServer <- function(id, data, timeRange) {
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-countAgeCheekUI <- function(id, showAccuracy = FALSE, uiText) {
+countAgeCheekUI <- function(id, showAccuracy = FALSE, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
-  
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+
+  title <- getOutputTitle(output = "countAgeCheekUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "countAgeCheekUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkAgeCheek"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkAgeCheek % 2 == 1", ns = ns,
+      label = h3(title)),
+    conditionalPanel(
+      condition = paste("input.linkAgeCheek % 2 ==", 
+        as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
         
-        column(4,
-          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, id])),
-          if (showAccuracy)
-            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode"),
-        ),
         column(8, 
           plotModuleUI(id = ns("ageCheek"))
         ),
-        tags$hr()
-      )
+        column(4,
+          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
+          if (showAccuracy)
+            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
+        )
+      ),
+      tags$p(description),
+      tags$hr()
     )
   )
   

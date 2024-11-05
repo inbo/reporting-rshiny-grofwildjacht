@@ -42,6 +42,16 @@ populatieUI <- function(id, specie){
           id = id, specie = specie,
           uiOutput(outputId = ns("output-leeggewicht"))
         )
+      ),
+      tabPanel(
+       title = getTabTitle(
+        value = "onderkaak", category = "populatie"
+       ), 
+       value = "onderkaak",
+       categoryPanel(
+        id = id, specie = specie,
+        uiOutput(outputId = ns("output-onderkaak"))
+       )
       )
     )
   )
@@ -146,6 +156,14 @@ populatieServer <- function(id, specie){
                 categoryCardPopulatie(output = "boxAgeWeightUI")
               )
             )
+          },
+          onderkaak = {
+            output$`output-onderkaak` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardPopulatie(output = "countAgeCheekUI")
+              )
+            )
           }
         )
         
@@ -169,6 +187,18 @@ populatieServer <- function(id, specie){
         )
       )
        outputCreated("boxAgeWeightUI")
+    })
+
+    observeEvent(input$`countAgeCheekUI-button`, {
+      output$`output-onderkaak` <- renderUI(
+        countAgeCheekUI(
+          id = ns(id), 
+          uiText = uiText, context = "wild",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+      outputCreated("countAgeCheekUI")
     })
 
     observe(print(outputCreated()))
@@ -195,7 +225,14 @@ populatieServer <- function(id, specie){
           timeRange = reactive(if (results$specie() == "Ree")
             c(2014, max(results$timeRange())) else 
               results$timeRange())
-          )
+        ),
+        countAgeCheekUI = countAgeCheekServer(
+          id = id,
+          data = results$ecoData,
+          timeRange = reactive(if (results$specie() == "Ree")
+            c(2005, max(results$timeRange())) else 
+            results$timeRange())
+        )
       )
     )
       

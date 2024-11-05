@@ -11,22 +11,29 @@
 getTabTitle <- function(value, category){
   
   title <- switch(category,
-   afschot = 
-     switch(value,
-       vlaanderen = "Afschot in Vlaanderen",
-         regio =  "Afschot per regio",
-         leeftijdcategorie = "Afschot per leeftijdscategorie",
-         jachtmethode = "Afschot per jachtmethode"
-       ),
-  schade = 
-    switch(value,
-      informatie = "Informatie over schadegevallen",
-      vlaanderen = "Schadegevallen in Vlaanderen",
-      regio =  "Schadegevallen per regio",
-      type = "Schadegevallen per type schade",
-      seizoen = "Schadegevallen per seizoen",
-      kosten = "Inschatting kosten"
-    )
+    afschot = 
+      switch(value,
+        vlaanderen = "Afschot in Vlaanderen",
+        regio =  "Afschot per regio",
+        leeftijdcategorie = "Afschot per leeftijdscategorie",
+        jachtmethode = "Afschot per jachtmethode"
+      ),
+    schade = 
+      switch(value,
+        informatie = "Informatie over schadegevallen",
+        vlaanderen = "Schadegevallen in Vlaanderen",
+        regio =  "Schadegevallen per regio",
+        type = "Schadegevallen per type schade",
+        seizoen = "Schadegevallen per seizoen",
+        kosten = "Inschatting kosten"
+    ),
+    populatie = 
+      switch(value,
+        leeggewicht = "Leeggewicht",
+        onderkaak = "Onderkaak gegevens",
+        geslacht = "Geslacht",
+        voortplanting = "Voortplanting"
+      )
   )
   
   return(title)
@@ -130,5 +137,33 @@ categoryCard <- function(id,
   )
   
   return(outputCard)
+  
+}
+
+#' Wrapper for the sidebar of the Category pages
+#' @param id id character, module id/specie
+#' @param ... Elements for the \code{\link[shiny]{mainPanel}}
+#' @inherit shiny::sidebarLayout return
+#' @author lcougnaud
+categoryPanel <- function(id, specie, ..., sidebarExtra = NULL){
+  
+  ns <- NS(namespace = id)
+  
+  sidebarLayout(
+    position = "left", 
+      
+    sidebarPanel = sidebarPanel(
+      width = 3, 
+      id = ns("category-sidebar"), 
+      h4(specie, align = "center"),
+      img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
+      br(),
+      div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center"),
+      sidebarExtra
+    ),
+      
+    mainPanel = mainPanel(width = 9, ...)
+  
+  )
   
 }

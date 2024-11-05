@@ -172,29 +172,36 @@ boxAgeWeightServer <- function(id, data, type, timeRange) {
 #' @inherit welcomeSectionUI
 #' 
 #' @export
-boxAgeWeightUI <- function(id, uiText) {
+boxAgeWeightUI <- function(id, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = "boxAgeWeightUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "boxAgeWeightUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkBoxAgeWeight"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkBoxAgeWeight % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkBoxAgeWeight % 2", 
+        as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
-        
+        column(8, 
+          plotModuleUI(id = ns("boxAgeWeight"))
+        ),   
         column(4,
           optionsModuleUI(id = ns("boxAgeWeight"), 
             showTime = TRUE, showType = TRUE, regionLevels = c(1:2, 4), 
-            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(uiText[, id]))
+            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")), 
         ),
-        column(8, 
-          plotModuleUI(id = ns("boxAgeWeight"))
-        ),
+        tags$p(HTML(description)),
         tags$hr()
       )
     )

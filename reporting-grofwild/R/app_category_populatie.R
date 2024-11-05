@@ -1,0 +1,220 @@
+#' UI for the 'populatie indicatoren' Category page
+#' @param id id character, module id
+#' @inherit shiny::verticalLayout return
+#' @import shiny
+#' @author lcougnaud
+#' @export
+populatieUI <- function(id, specie){
+  
+  ns <- NS(namespace = id)
+      
+  verticalLayout(
+          
+    # header
+    headerUI(
+      path = c("home", "specie", "category", "subcategory", "plot"), 
+      id = id, specie = specie, 
+      category = "Populatie indicatoren",
+      subcategory = getTabTitle(value = "leeggewicht", category = "populatie")
+    ),
+            
+    # image
+    fluidRow(
+      column(width = 12, 
+        img(src = "www/category-populatie-header.png", width = "100%")
+      )
+    ),
+    br(),
+           
+    # navigation page with plots and specie sidebar panel
+    navbarPage(
+        
+      title = "",
+      
+      id = ns("subcategory"),
+            
+      tabPanel(
+        title = getTabTitle(
+          value = "leeggewicht", category = "populatie"
+        ), 
+        value = "leeggewicht",
+        categoryPanel(
+          id = id, specie = specie,
+          uiOutput(outputId = ns("output-leeggewicht"))
+        )
+      )
+    )
+  )
+  
+}
+
+#' Server function for the 'populatie indicatoren' Category page
+#' @param id id character, module id
+#' @return Shiny module function
+#' @import shiny
+#' @author lcougnaud
+#' @export
+populatieServer <- function(id, specie){
+  
+  moduleServer(id, function(input, output, session){  
+        
+    ns <- session$ns
+    
+    ## initialization
+    outputCreated <- reactiveVal(value = NULL)
+    nextPage <- reactiveVal(value = NULL)
+    
+    ## input
+    results <- reactiveValues(renderedTabs = "Populatie")
+    
+    results$specie <- reactive(specie())
+    
+    # Create data upon user choices
+    results$ecoData <- reactive(
+      subset(ecoData, wildsoort == results$specie())
+    )
+    
+    results$geoData <- reactive({
+      req(geoData)
+      subset(geoData, wildsoort == results$specie())
+    })
+    
+    # Enrich data with FBZ
+    results$combinedData <- reactive(
+      merge(
+        x = results$ecoData(), 
+        y = results$geoData()[, c("ID", "FaunabeheerZone")], 
+        by = "ID"
+      )
+    )
+    
+    # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+    results$leeftijdtypes <- reactive(
+      c(
+        loadMetaEco(species = results$specie())$leeftijd_comp_inbo, 
+        "Onbekend"
+      )
+    )
+    
+    results$timeRange <- reactive(
+      range(results$ecoData()$afschotjaar)
+    )  
+    
+    ## Header
+    
+    # Update subcategory in path
+    output$pathSubcategory <- renderUI(
+      actionLink(
+        inputId = ns("pathSubcategory-button"), 
+        label = getTabTitle(
+          value = input$subcategory, 
+          category = "populatie"
+        )
+      )
+    )
+    
+    ## Sidebar with input parameters
+    
+    ## Tab with available plots
+    
+    initTab <- reactiveVal(TRUE)
+    # Go back to page if subcategory is clicked on in the path
+    observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
+    observeEvent(input$subcategory, initTab(TRUE))
+
+    # Create tab
+    observe(if(initTab()){
+
+      if(isTruthy(input$subcategory)){
+        
+        categoryCardPopulatie <- function(...){
+          categoryCard(
+            id = id, 
+            uiText = uiText,
+            specie = results$specie(), 
+            category = "populatie", 
+            ...
+          )
+        }
+        
+        switch(input$subcategory, 
+            
+          leeggewicht = {
+            output$`output-leeggewicht` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardPopulatie(output = "boxAgeWeightUI")
+              )
+            )
+          }
+        )
+        
+      }
+      
+      outputCreated("")# reset path
+      initTab(FALSE)
+      
+    })
+  
+    ## Tab content with selected plot/table
+
+    # UI
+    observeEvent(input$`boxAgeWeightUI-button`, {
+      output$`output-leeggewicht` <- renderUI(
+        boxAgeWeightUI(
+          id = ns(id), 
+          uiText = uiText, context = "wild",
+          specie = results$specie(),
+          doHide = FALSE
+        )
+      )
+       outputCreated("boxAgeWeightUI")
+    })
+
+    observe(print(outputCreated()))
+    
+    # Update plot in path
+    output$pathPlot <- renderText({
+      if(isTruthy(outputCreated()))
+        getOutputTitle(
+          output = outputCreated(), 
+          uiText = uiText, specie = results$specie(), 
+            type = "populatie",
+          n = 55
+        )
+      else ""
+    })
+
+    # Server
+    observe(
+      switch(outputCreated(),
+        boxAgeWeightUI = boxAgeWeightServer(
+          id = id,
+          data = results$combinedData,
+          type = results$leeftijdtypes,
+          timeRange = reactive(if (results$specie() == "Ree")
+            c(2014, max(results$timeRange())) else 
+              results$timeRange())
+          )
+      )
+    )
+      
+    ## Output
+      
+    # Redirection:
+
+    observeEvent(input$`pathHome`, {
+      print("schade: Go to home page")
+      nextPage("home")
+    })
+  
+    observeEvent(input$`pathSpecie-button`, {
+      print("schade: Go to specie page")
+      nextPage("specie")
+    })
+      
+    return(nextPage)
+
+  })
+  
+}

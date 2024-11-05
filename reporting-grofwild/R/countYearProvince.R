@@ -211,7 +211,10 @@ countYearProvinceUI <- function(
     
     actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(title)), 
       class = "action-h3"),
-    conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
+    conditionalPanel(
+      condition = paste("input.linkYearProvince % 2 ==", 
+        as.numeric(doHide)), 
+      ns = ns,
       
       uiOutput(ns("disclaimerYearProvince")),
 

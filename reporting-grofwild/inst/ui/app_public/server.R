@@ -46,7 +46,12 @@ shinyServer(function(input, output, session) {
       schade = {
         print(paste("Open schade page with specie:", specie()))
         output$page <- renderUI(schadeUI(id = "schade", specie = specie()))
-      })
+      },
+      `populatie indicatoren` = {
+        print(paste("Open populatie page with specie:", specie()))
+        output$page <- renderUI(populatieUI(id = "populatie", specie = specie()))
+      }
+    )
   })
 
   observeEvent(input$wildsoort, 
@@ -78,4 +83,9 @@ shinyServer(function(input, output, session) {
   # re-direct to 'Home' or 'Specie' page
   observeEvent(nextPageSchade(), ignoreNULL = TRUE, page(nextPageSchade()))
 
+  # Category: populatie indicatoren
+  nextPagePopulatie <- populatieServer(id = "populatie", specie = specie)
+  # re-direct to 'Home' or 'Specie' page
+  observeEvent(nextPagePopulatie(), ignoreNULL = TRUE, page(nextPagePopulatie()))
+  
 })

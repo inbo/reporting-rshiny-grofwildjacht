@@ -582,25 +582,17 @@ schadeServer <- function(id, specie){
   
 }
 
-#' Wrapper for the sidebar of the 'afschot' Category page
-#' @param id id character, module id/specie
-#' @param ... Elements for the \code{\link[shiny]{mainPanel}}
-#' @inherit shiny::sidebarLayout return
+#' Wrapper for the sidebar of the 'schade' Category page
+#' @inheritParams categoryPanel
+#' @inherit categoryPanel return
 #' @author lcougnaud
 schadePanel <- function(id, specie, ...){
   
   ns <- NS(namespace = id)
   
-  sidebarLayout(
-    position = "left", 
-      
-    sidebarPanel = sidebarPanel(
-      width = 3, 
-      id = ns("category-sidebar"), 
-      h4(specie, align = "center"),
-      img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
-      br(),
-      div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center"),
+  categoryPanel(
+    id = id, specie = specie,    
+    sidebarExtra = tagList(
       br(),
       # Select type schade
       selectInput(
@@ -634,9 +626,7 @@ schadePanel <- function(id, specie, ...){
       ),
       uiOutput(ns("schade_warning"))
     ),
-      
-    mainPanel = mainPanel(width = 9, ...)
-
+    ...
   )
   
 }

@@ -36,7 +36,7 @@ afschotUI <- function(id, specie){
       tabPanel(
         title = getTabTitle(value = "vlaanderen", category = "afschot"), 
         value = "vlaanderen",
-        afschotPanel(
+        categoryPanel(
           id = id, specie = specie,
           uiOutput(outputId = ns("afschot-plots-vlaanderen"))
         )
@@ -44,7 +44,7 @@ afschotUI <- function(id, specie){
       tabPanel(
         title = getTabTitle(value = "regio", category = "afschot"), 
         value = "regio",
-        afschotPanel(
+        categoryPanel(
           id = id, specie = specie,
           uiOutput(outputId = ns("afschot-plots-regio"))
         )
@@ -52,7 +52,7 @@ afschotUI <- function(id, specie){
       tabPanel(
         title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
         value = "leeftijdcategorie",
-        afschotPanel(
+        categoryPanel(
           id = id, specie = specie,
            uiOutput(outputId = ns("afschot-plots-leeftijdcategorie"))
         )
@@ -60,7 +60,7 @@ afschotUI <- function(id, specie){
       tabPanel(
         title = getTabTitle(value = "jachtmethode", category = "afschot"),
         value = "jachtmethode",
-        afschotPanel(
+        categoryPanel(
           id = id, specie = specie,
           uiOutput(outputId = ns("afschot-plots-jachtmethode"))
         )
@@ -178,7 +178,10 @@ afschotServer <- function(id, specie){
         
     # Update specie in path
     output$pathSpecie <- renderUI(
-      actionLink(inputId = ns("pathSpecie-button"), label = results$specie())    
+      actionLink(
+        inputId = ns("pathSpecie-button"), 
+        label = results$specie()
+      )    
     )
     
     # Update subcategory in path
@@ -198,8 +201,6 @@ afschotServer <- function(id, specie){
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$`afschot-subcategory`, initTab(TRUE))
-    
-
 
     # Create tab
     observe(if(initTab()){
@@ -453,32 +454,5 @@ afschotServer <- function(id, specie){
     return(nextPage)
 
   })
-  
-}
-
-#' Wrapper for the sidebar of the 'afschot' Category page
-#' @param id id character, module id/specie
-#' @param ... Elements for the \code{\link[shiny]{mainPanel}}
-#' @inherit shiny::sidebarLayout return
-#' @author lcougnaud
-afschotPanel <- function(id, specie, ...){
-  
-  ns <- NS(namespace = id)
-  
-  sidebarLayout(
-    position = "left", 
-      
-    sidebarPanel = sidebarPanel(
-      width = 3, 
-      id = ns("category-sidebar"), 
-      h4(specie, align = "center"),
-      img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
-      br(),
-      div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center")
-    ),
-      
-    mainPanel = mainPanel(width = 9, ...)
-
-  )
   
 }

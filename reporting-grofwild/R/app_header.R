@@ -30,11 +30,11 @@ headerUI <- function(
     )
     
     path <- c(
-      list(column(width = 0.02, "")),
+      list(column(width = 0.01, "")),
       if("home" %in% path)
         list(
           column(
-            width = 0.5, 
+            width = 0.4, 
             actionLink(inputId = ns("pathHome"), label = "Home")
           )
         ),
@@ -46,13 +46,13 @@ headerUI <- function(
         }
         list(
           column(width = 0.1, "/"), 
-          column(width = 2, pathSpecie)
+          column(width = 1.5, pathSpecie)
         )
       },
       if("category" %in% path)
         list(
           column(width = 0.1, "/"), 
-          column(width = 1, category)
+          column(width = 2, category)
         ),
       if("subcategory" %in% path)
         list(
@@ -84,7 +84,7 @@ headerUI <- function(
         )
       )
     ),
-    column(width = 0.5, 
+    column(width = 0.3, 
       shiny::actionLink(
         inputId = "WBE", 
         label = "WBE", 
@@ -92,7 +92,7 @@ headerUI <- function(
         style = cssColor
       )
     ),
-    column(width = 0.5, versionUI(id = "public"), style = cssColor)
+    column(width = 0.3, versionUI(id = "public"), style = cssColor)
   )
   
   header <- fluidRow(..., headerLeft, headerRight)

@@ -230,6 +230,17 @@ p, li, label {
   color:#ffffff;
 }
 
+/* custom info icon */
+.info_icon {
+  background: url("info-icon.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 25px;
+  width: 25px;
+  display: block;
+}
+
 /*category cards*/
 
 # category-sidebar{

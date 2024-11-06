@@ -15,7 +15,7 @@
 #' @inherit shiny::fluidRow return
 #' @export
 headerUI <- function( 
-  offset = ifelse(is.null(path), 8, 0), color = "black",
+  offset = ifelse(is.null(path), 10, 0), color = "black",
   path = NULL, category, subcategory, specie = NULL, 
   id, ...){
 
@@ -30,7 +30,7 @@ headerUI <- function(
     )
     
     path <- c(
-      list(column(width = 0.01, "")),
+      list(column(width = 0.001, "  ")),
       if("home" %in% path)
         list(
           column(
@@ -103,18 +103,16 @@ headerUI <- function(
 
 #' Extend \code{\link[shiny]{column}} to a decimal width
 #' @inheritParams shiny::column
-#' @return \code{\link[shiny]{div}}
+#' @inherit shiny::column
 #' @importFrom shiny column
 #' @author lcougnaud
 column <- function(width, ...){
   
-  if(width %% 1 > 0)
-    div(
-      class = "col-sm-1", 
-      style = paste0("width: ", round(width*8.33333333, 8), "%"), 
-      ...
-    )
-  else
-    shiny::column(width = width, ...)
+  args <- list(width = width, ...)
+  if(width %% 1 > 0){
+    args$width <- 1
+    args$style <- paste0("width: ", round(width*8.33333333, 8), "%")
+  }
+  do.call(shiny::column, args)
   
 }

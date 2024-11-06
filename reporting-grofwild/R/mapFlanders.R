@@ -478,8 +478,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         year_value = defaultYear
       )
       
-      browser()
-      
       output$descriptionMapFlanders <- renderUI({
         if (!is.null(uiText)) {
           description <- getOutputDescription(

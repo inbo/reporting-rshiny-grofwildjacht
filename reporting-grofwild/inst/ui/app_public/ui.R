@@ -1,6 +1,9 @@
 shinyUI(
         
   bootstrapPage(
+      
+#    shinyjs::useShinyjs(),
+    shinyjs::extendShinyjs(text = js_code, functions = 'browseURL'),
                 
     ## For debugging
     uiOutput("debug"),

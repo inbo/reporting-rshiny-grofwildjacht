@@ -176,13 +176,13 @@ schadeServer <- function(id, specie){
     # show/hide filters
     observe(
       toggle(
-        id = ns("schade_gewas"), 
+        id = "schade_gewas", 
         condition = "GEWAS" %in% input$schade_code
       )
     )
     observe(
       toggle(
-        id = ns("schade_voertuig"), 
+        id = "schade_voertuig", 
         condition = "VRTG" %in% input$schade_code
       )
     )

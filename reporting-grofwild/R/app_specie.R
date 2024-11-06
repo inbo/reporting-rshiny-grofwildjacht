@@ -122,11 +122,11 @@ specieServer <- function(id){
 getLatinName <- function(specie){
   
   specieInfo <- read.csv(
-    file = system.file("extdata", "specie-info.csv", 
+    file = system.file("extdata", "species-info.csv", 
     package = "reportingGrofwild"),
     check.names = FALSE
   )	
-  latinName <- subset(specieInfo, `specie name` == specie)[, "latin name"]
+  latinName <- subset(specieInfo, `species name` == specie)[, "latin name"]
   
   validate(
     need(

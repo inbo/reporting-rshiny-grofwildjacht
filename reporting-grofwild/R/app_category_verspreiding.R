@@ -89,25 +89,31 @@ verspreidingServer <- function(id, specie){
 #        regionLevel = req(input$dash_regionLevel), 
         year = NULL
       )
-  })
+    })
+
+    # F17_1 plot
+    results$geoData <- reactive({
+      req(geoData)
+      subset(geoData, wildsoort == results$specie())
+    })
         
-#    results$ecoData <- reactive(
-#      subset(ecoData, wildsoort == results$specie())
-#    )
-#    
-#    results$geoData <- reactive({
-#      req(geoData)
-#      subset(geoData, wildsoort == results$specie())
-#    })
-#    
-#    # Enrich data with FBZ
-#    results$combinedData <- reactive(
-#      merge(
-#        x = results$ecoData(), 
-#        y = results$geoData()[, c("ID", "FaunabeheerZone")], 
-#        by = "ID"
-#      )
-#    )
+    waarnemingenData <- loadRawData(type = "waarnemingen")
+    # Restrict all to same date
+    waarnemingenData <- waarnemingenData[
+      waarnemingenData$afschotjaar <= 
+        format(max(ecoData$afschot_datum, na.rm = TRUE), "%Y"), 
+    ]
+
+    # Combine waarnemingen.be & afschot
+    results$geoDataAll <- reactive({
+      rbind(
+        # waarnemingen
+        data.table::as.data.table(waarnemingenData),
+        # afschot
+        results$geoData(),
+        fill = TRUE
+      )
+    })
     
     ## Header
     
@@ -148,6 +154,18 @@ verspreidingServer <- function(id, specie){
         
         switch(input$subcategory, 
             
+          huidig = {
+            output$`output-huidig` <- renderUI(          
+              bslib::layout_column_wrap(
+                width = 1/3, gap = "2em",
+                categoryCardVerspreiding(
+                  output = "mapFlandersUI", 
+                  outputFunction = "F17_1"
+                )
+              )
+            )
+          },
+            
           toekomstig = {
             output$`output-toekomstig` <- renderUI(          
               bslib::layout_column_wrap(
@@ -168,6 +186,22 @@ verspreidingServer <- function(id, specie){
     ## Tab content with selected plot/table
 
     # UI
+
+    # dash plot F17_1
+    observeEvent(input$`mapFlandersUI-button`, {
+      output$`output-huidig` <- renderUI(
+        mapFlandersUI(
+          id = ns(id), 
+          uiText = uiText, output = "F17_1", 
+          specie = results$specie(),
+          showCombine = FALSE, type = "dash",  
+          regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
+          unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+          plotDetails = ""#, showTitle = FALSE
+        )
+      )
+      outputCreated("mapFlandersUI")
+    })
 
     # dash plot F17_4
     observeEvent(input$`mapSpreadUI-button`, {
@@ -199,6 +233,20 @@ verspreidingServer <- function(id, specie){
     # Server
     observe(
       switch(outputCreated(),
+        mapFlandersUI = mapFlandersServer(
+          id = id,
+          defaultYear = defaultYear,
+          species = results$specie,
+          type = "dash",
+          regionLevel = reactive("flanders"),
+          locaties = reactive("Vlaams Gewest"),
+          geoData = results$geoDataAll,
+          allSpatialData = spatialData,
+          hideGlobeDefault = FALSE,
+          countVariable = "aantal",
+          sourceChoices = c("waarnemingen.be", "afschot"),
+          uiText = uiText, outputFunction = "F17_1", context = "dash"
+        ),
         mapSpreadUI = mapSpreadServer(
           id = id,
           allSpatialData = spatialData,

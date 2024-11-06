@@ -89,29 +89,37 @@ getOutputTitle <- function(output,
 #' @return character vector of length 1 with output description
 #' @author lcougnaud
 getOutputDescription <- function(output, 
-  uiText, specie = NULL, type = NULL, context = "fauna"){
+  uiText, context = "fauna", 
+  specie = NULL, type = NULL, statsMap = NULL){
   
-  title <- uiText[which(uiText$plotFunction == output), context]
+  text <- uiText[which(uiText$plotFunction == output), context]
   
   if(!is.null(specie)){
-    title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
-    title <- gsub("{wildsoorten}", 
+    text <- gsub("{wildsoort}", tolower(specie), text, fixed = TRUE)
+    text <- gsub("{wildsoorten}", 
       switch(specie, 
         "Ree" = "ree\u00EBn",
         "Wild zwijn" = "wilde zwijnen",
         "Damhert" = "damherten",
         "Edelhert" = "edelherten",
         specie
-      ), title, fixed = TRUE
+      ), text, fixed = TRUE
     )
   }
   
   if(!is.null(type)){
     if(type == "schade")	type <- "schadegevallen"
-    title <- gsub("{type}", type, title, fixed = TRUE)
+    text <- gsub("{type}", type, text, fixed = TRUE)
   }
   
-  return(title)
+  if (grepl("\\{\\{statsMap\\}\\}", text))
+    text <- gsub(
+      pattern = "\\{\\{statsMap\\}\\}", 
+      replacement = if (!is.null(statsMap)) paste0(statsMap, ".") else "", 
+      x = text
+    )
+  
+  return(text)
   
 }
 

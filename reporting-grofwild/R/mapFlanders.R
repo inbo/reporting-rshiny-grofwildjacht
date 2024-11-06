@@ -464,7 +464,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
   geoData, biotoopData = NULL, allSpatialData,
   regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL,
   sourceChoices = NULL,
-  uiText = NULL) {
+  uiText = NULL, outputFunction = "mapFlandersUI", context = id) {
+
   moduleServer(id,
     function(input, output, session) {
       
@@ -477,24 +478,19 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         year_value = defaultYear
       )
       
+      browser()
       
       output$descriptionMapFlanders <- renderUI({
-          
-          splitId <- strsplit(id, split = "_")[[1]]
-          
-          if (!is.null(uiText)) {
-            
-            if (is.na(splitId[2]))
-              splitId[2] <- "mapFlandersUI"
-            
-            description <- uiText[uiText$plotFunction == paste(splitId[2:length(splitId)], collapse = "_"), splitId[1]]
-            
-            if (length(description) > 0)
-              tags$p(HTML(decodeText(text = description, statsMap = statsMap())))
-            
+        if (!is.null(uiText)) {
+          description <- getOutputDescription(
+            output = outputFunction, 
+            uiText = uiText, specie = species(), 
+            context = context, statsMap = statsMap()
+          )
+          if (length(description) > 0)
+            tags$p(HTML(description))
           }
-          
-        })
+      })
       
       
       # Minimum year
@@ -1295,7 +1291,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @import shiny
 #' @export
 mapFlandersUI <- function(id, showRegion = TRUE, 
-  showCombine = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
+  showCombine = TRUE, 
+  type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
     "Provincie" = "provinces", 
@@ -1307,7 +1304,8 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("flanders", "region"),
   showTitle = TRUE, 
-  uiText = NULL, specie = NULL, typeTitle = type) {
+  uiText = NULL, specie = NULL, typeTitle = type,
+  output = "mapFlandersUI") {
   
   ns <- NS(id)
   type <- match.arg(type)
@@ -1328,7 +1326,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   title <- ifelse(
     !is.null(uiText),
     getOutputTitle(
-      output = "mapFlandersUI", 
+      output = output, 
       uiText = uiText, specie = specie, type = typeTitle
     ),
     "Landkaart"
@@ -1457,10 +1455,8 @@ mapFlandersUI <- function(id, showRegion = TRUE,
           )
       )
       
-    }
-    
-    
-    , tags$hr()
+    },
+    tags$hr()
   
   )
   

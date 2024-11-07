@@ -266,7 +266,7 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
           id = ns("dash"),
-          uiText = uiText, context = "fauna", specie = results$specie(),
+          uiText = uiText, context = "wild", specie = results$specie(),
           showCombinatie = TRUE,
           doHide = FALSE
         )

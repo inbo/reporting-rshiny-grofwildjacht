@@ -282,16 +282,16 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
       
       fixedRow(
         
+        column(8, plotModuleUI(id = ns("countYearShot"))),
         column(4,
           optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
             regionLevels = regionLevels, exportData = TRUE,
             showType = TRUE, showInterval = TRUE,
-            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd"),
-          tags$p(HTML(description)),
-        ),
-        column(8, plotModuleUI(id = ns("countYearShot")))
+            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd")
+        )
+        
       ),
-      tags$hr(),
+      tags$p(HTML(description))
     )
   
   ) 

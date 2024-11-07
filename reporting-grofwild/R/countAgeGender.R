@@ -199,11 +199,10 @@ countAgeGenderUI <- function(id,
         column(4,
           optionsModuleUI(id = ns("ageGender"), showTime = TRUE,
             showDataSource = c("leeftijd", "geslacht"), 
-            exportData = TRUE),
+            exportData = TRUE)
         )
       ),
-      tags$p(description),
-      tags$hr()
+      tags$p(description)
     )
   )
   

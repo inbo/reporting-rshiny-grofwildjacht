@@ -94,6 +94,9 @@ getOutputDescription <- function(output,
   
   text <- uiText[which(uiText$plotFunction == output), context]
   
+  if(length(text) == 0)
+    return(NULL)
+  
   if(!is.null(specie)){
     text <- gsub("{wildsoort}", tolower(specie), text, fixed = TRUE)
     text <- gsub("{wildsoorten}", 

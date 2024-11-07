@@ -217,7 +217,6 @@ countYearProvinceUI <- function(
       ns = ns,
       
       uiOutput(ns("disclaimerYearProvince")),
-
       
       fixedRow(
         
@@ -231,11 +230,10 @@ countYearProvinceUI <- function(
             showType = showType,
             showDataSource = showDataSource,
             regionLevels = regionLevels
-          ),
-          tags$p(HTML(description))
+          )
         )
       ),
-      tags$hr()
+      tags$p(HTML(description))
     )
   )
   

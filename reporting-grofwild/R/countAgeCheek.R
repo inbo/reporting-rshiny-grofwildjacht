@@ -198,8 +198,7 @@ countAgeCheekUI <- function(id, showAccuracy = FALSE,
             accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
         )
       ),
-      tags$p(description),
-      tags$hr()
+      tags$p(description)
     )
   )
   

@@ -370,17 +370,17 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
     conditionalPanel(paste("input.linkYearlyShotAnimals % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
-        
-        column(4,
-          optionsModuleUI(id = ns("yearlyShotAnimals"), 
-            showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE),
-          tags$p(HTML(description))
-        ),
+          
         column(8, 
           plotModuleUI(id = ns("yearlyShotAnimals"))
-        ),
-        tags$hr()
-      )
+        ), 
+        column(4,
+          optionsModuleUI(id = ns("yearlyShotAnimals"), 
+            showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE)
+        )
+
+      ),
+      tags$p(HTML(description))
     )
   )
   

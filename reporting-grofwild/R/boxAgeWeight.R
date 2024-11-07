@@ -188,7 +188,7 @@ boxAgeWeightUI <- function(id,
     actionLink(inputId = ns("linkBoxAgeWeight"), 
       label = h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkBoxAgeWeight % 2", 
+      condition = paste("input.linkBoxAgeWeight % 2 ==", 
         as.numeric(doHide)),
       ns = ns,
       
@@ -199,11 +199,10 @@ boxAgeWeightUI <- function(id,
         column(4,
           optionsModuleUI(id = ns("boxAgeWeight"), 
             showTime = TRUE, showType = TRUE, regionLevels = c(1:2, 4), 
-            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")), 
-        ),
-        tags$p(HTML(description)),
-        tags$hr()
-      )
+            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")) 
+        )
+      ),
+      tags$p(HTML(description))
     )
   )
 

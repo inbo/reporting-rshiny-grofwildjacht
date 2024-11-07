@@ -192,8 +192,7 @@ countAgeGroupUI <- function(id,
             showTime = TRUE, exportData = TRUE)
         )
       ),
-      tags$p(HTML(description)),
-      tags$hr()
+      tags$p(HTML(description))
     )
   )
   

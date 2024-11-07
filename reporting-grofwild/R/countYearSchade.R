@@ -265,11 +265,10 @@ countYearSchadeUI <- function(id,
             showDataSource = "schade",
             regionLevels = regionLevels,
             exportData = TRUE
-          ),
-          tags$p(HTML(description))
-        ),
-        tags$hr()
-      )
+          )
+        )
+      ),
+      tags$p(HTML(description))
     )
   )
 }

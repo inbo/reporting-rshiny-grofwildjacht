@@ -390,9 +390,11 @@ trendYearRegionUI <- function(
   
   toShow <- tagList(
     
+    uiOutput(ns("disclaimerTrendRegion")), 
+      
     fixedRow(
       
-      uiOutput(ns("disclaimerTrendRegion")),
+      column(8, plotModuleUI(id = ns("trendRegion"))),
       
       column(4,
         wellPanel(
@@ -404,12 +406,11 @@ trendYearRegionUI <- function(
               label = "Combineer alle geselecteerde regio's"),
           optionsModuleUI(id = ns("trendRegion"), exportData = TRUE,
             doWellPanel = FALSE)
-        ),
-        tags$p(HTML(description))
+        )
       ),
-      column(8, plotModuleUI(id = ns("trendRegion")))
+      
     ),
-    tags$hr(),
+    tags$p(HTML(description))
   )
   
   if (plotFunction == "trendYearRegionUI")

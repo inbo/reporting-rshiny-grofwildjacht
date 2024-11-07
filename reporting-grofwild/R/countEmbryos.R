@@ -276,8 +276,7 @@ countEmbryosUI <- function(id, regionLevels,
           if(is.null(specie))  uiOutput(ns("descriptionEmbryos"))
         )
       ),
-      description,
-      tags$hr()
+      description
     )
   )
   

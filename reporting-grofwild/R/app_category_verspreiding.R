@@ -205,7 +205,7 @@ verspreidingServer <- function(id, specie){
     # dash plot F17_4
     observeEvent(input$`mapSpreadUI-button`, {
       output$`output-toekomstig` <- renderUI(
-          mapSpreadUI(
+         mapSpreadUI(
           id = ns(id), 
           uiText = uiText, context = "wild",
           specie = results$specie(),

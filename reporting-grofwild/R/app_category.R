@@ -173,30 +173,51 @@ categoryCard <- function(id,
   
 }
 
-#' Wrapper for the sidebar of the Category pages
-#' @param id id character, module id/specie
+#' Wrapper for the sidebar layout of the Category pages
+#' @inheritParams categorySidebarPanel
 #' @param ... Elements for the \code{\link[shiny]{mainPanel}}
 #' @inherit shiny::sidebarLayout return
 #' @author lcougnaud
-categoryPanel <- function(id, specie, ..., sidebarExtra = NULL){
+categoryPanel <- function(id, specie, ...){
   
   ns <- NS(namespace = id)
   
   sidebarLayout(
     position = "left", 
       
-    sidebarPanel = sidebarPanel(
-      width = 3, 
-      id = ns("category-sidebar"), 
-      h4(specie, align = "center"),
-      img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
-      br(),
-      div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center"),
-      sidebarExtra
+    sidebarPanel = categorySidebarPanel(
+      id = id, specie = specie
     ),
       
     mainPanel = mainPanel(width = 9, ...)
   
+  )
+  
+}
+
+#' Wrapper for the sidebar of the Category pages
+#' @param id character, module id
+#' @param specie character, specie
+#' @param topExtra (optional) extra elements to include at 
+#' the top of the sidebar
+#' @param bottomExtra (optional) extra elements to include at 
+#' the bottom of the sidebar
+#' @return shiny::sidebarPanel return
+#' @author lcougnaud
+categorySidebarPanel <- function(id, specie, 
+  topExtra = NULL, bottomExtra = NULL){
+  
+  ns <- NS(namespace = id)
+  
+  sidebarPanel(
+    width = 3, 
+    id = ns("category-sidebar"), 
+    topExtra,
+    h4(specie, align = "center"),
+    img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
+    br(),
+    div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center"),
+    bottomExtra
   )
   
 }

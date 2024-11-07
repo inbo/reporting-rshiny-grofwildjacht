@@ -2,7 +2,7 @@ shinyUI(
         
   bootstrapPage(
       
-#    shinyjs::useShinyjs(),
+    shinyjs::useShinyjs(),
     shinyjs::extendShinyjs(text = js_code, functions = 'browseURL'),
                 
     ## For debugging

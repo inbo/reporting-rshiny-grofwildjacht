@@ -72,6 +72,8 @@ runWildApp <- function(installDependencies = FALSE,
     Sys.setenv("GIT_SHA" = tryCatch(system("git rev-parse HEAD", intern = TRUE), error = function(err) ""))
     
   
+  shinyjs::useShinyjs()
+  
   # (6) Run the application
   if (exists("errorApp") && is(errorApp, "shiny.appobj"))
     errorApp else 

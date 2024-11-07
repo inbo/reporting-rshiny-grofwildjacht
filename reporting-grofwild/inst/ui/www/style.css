@@ -213,7 +213,7 @@ p, li, label {
 
 /*category navigation bar*/
 
-.navbar {
+.navbar .navbar-nav {
   background-color: #456394; 
 }
 
@@ -229,6 +229,19 @@ p, li, label {
   background-color: #b24c82;
   color:#ffffff;
 }
+
+/* navigation bar for the schade page*/
+
+/*overlay with header*/
+.navbar-schade .navbar {background-color: transparent;}
+.navbar-schade .navbar-nav {margin-top: 180px;}
+.navbar-schade .container-fluid .tab-content {margin-top: 70px;}
+.schade-category-sidebar {margin-top: 70px;}
+
+/*right align information tab*/
+
+.navbar-schade .navbar-nav {float: none !important;}
+.navbar-schade .navbar-nav > li:nth-child(6) {float: right;}
 
 /* custom info icon */
 .info_icon {

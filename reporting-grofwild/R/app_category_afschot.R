@@ -24,7 +24,6 @@ afschotUI <- function(id, specie){
         img(src = "www/category-afschot-header.png", width = "100%")
       )
     ),
-    br(),
            
     # navigation page with plots and specie sidebar panel
     navbarPage(

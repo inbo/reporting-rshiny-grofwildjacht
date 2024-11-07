@@ -7,10 +7,10 @@
 schadeUI <- function(id, specie){
   
   ns <- NS(namespace = id)
-      
-  verticalLayout(
-          
-    # header
+  
+  # header
+  tagList(
+        
     headerUI(
       path = c("home", "specie", "category", "subcategory", "plot"), 
       id = id, specie = specie, 
@@ -24,82 +24,69 @@ schadeUI <- function(id, specie){
         img(src = "www/category-schade-header.png", width = "100%")
       )
     ),
-    br(),
     
-    # navigation page with plots and specie sidebar panel
-    tagList(
-        
-      # right-align 'Informatie' tab
-      tags$head(tags$style(HTML("
-      	.navbar-nav {float: none !important;}
-							.navbar-nav > li:nth-child(6) {float: right;}
-						"))),
-
-      navbarPage(
+    sidebarLayout(
+    
+      sidebarPanel = schadePanel(id = id, specie = specie),
+    
+      # navigation page with plots and specie sidebar panel
+      mainPanel = mainPanel(
+  
+        div(class = "navbar-schade", 
+        navbarPage(
           
-        title = "",
-        
-        id = ns("subcategory"),
-        
-        selected = "informatie",
-        
-        tabPanel(
-          title = getTabTitle(value = "vlaanderen", category = "schade"), 
-          value = "vlaanderen",
-          schadePanel(
-            id = id, specie = specie,
+          id = ns("subcategory"),
+          
+          selected = "informatie",
+          
+          title = "",
+          
+          # navigation bar overlays side bar
+          position = "fixed-top",
+          
+          tabPanel(
+            title = getTabTitle(value = "vlaanderen", category = "schade"), 
+            value = "vlaanderen",
             uiOutput(outputId = ns("output-vlaanderen"))
-          )
-        ),
-        tabPanel(
-          title = getTabTitle(value = "regio", category = "schade"), 
-          value = "regio",
-          schadePanel(
-            id = id, specie = specie,
+          ),
+          tabPanel(
+            title = getTabTitle(value = "regio", category = "schade"), 
+            value = "regio",
             uiOutput(outputId = ns("output-regio"))
-          )
-        ),
-        tabPanel(
-          title = getTabTitle(value = "type", category = "schade"), 
-          value = "type",
-          schadePanel(
-            id = id, specie = specie,
+          ),
+          tabPanel(
+            title = getTabTitle(value = "type", category = "schade"), 
+            value = "type",
             uiOutput(outputId = ns("output-type"))
-          )
-        ),
-        tabPanel(
-          title = getTabTitle(value = "seizoen", category = "schade"), 
-          value = "seizoen",
-          schadePanel(
-            id = id, specie = specie,
+          ),
+          tabPanel(
+            title = getTabTitle(value = "seizoen", category = "schade"), 
+            value = "seizoen",
             uiOutput(outputId = ns("output-seizoen"))
-          )
-        ),
-        tabPanel(
-          title = getTabTitle(value = "kosten", category = "schade"), 
-          value = "kosten",
-          schadePanel(
-            id = id, specie = specie,
+          ),
+          tabPanel(
+            title = getTabTitle(value = "kosten", category = "schade"), 
+            value = "kosten",
             uiOutput(outputId = ns("output-kosten"))
-          )
-        ),
-        tabPanel(
-          title = "", #getTabTitle(value = "informatie", category = "schade"), 
-          value = "informatie", 
-          icon = shiny::icon(name = NULL, class = "info_icon"), #name = "circle-info"
-          schadePanel(
-            id = id, specie = specie,
-            tags$div(
-              align = "center",
-              h1("Welkom op de informatiepagina rond wildschade")
-            ),
-            welcomeSectionUI(
-              id = id, context = "fauna", uiText = uiText, 
-              maxDate = max(schadeData$afschot_datum, na.rm = TRUE)
+          ),
+          tabPanel(
+            title = "", #getTabTitle(value = "informatie", category = "schade"), 
+            value = "informatie", 
+            icon = shiny::icon(name = NULL, class = "info_icon"), #name = "circle-info"
+            fluidRow(
+              tags$div(
+                align = "center",
+                h1("Welkom op de informatiepagina rond wildschade")
+              ),
+              welcomeSectionUI(
+                id = id, context = "fauna", uiText = uiText, 
+                maxDate = max(schadeData$afschot_datum, na.rm = TRUE)
+              )
             )
           )
         )
-      )
+        )
+       )
     )
   )
   
@@ -175,13 +162,13 @@ schadeServer <- function(id, specie){
     
     # show/hide filters
     observe(
-      toggle(
+      shinyjs::toggle(
         id = "schade_gewas", 
         condition = "GEWAS" %in% input$schade_code
       )
     )
     observe(
-      toggle(
+      shinyjs::toggle(
         id = "schade_voertuig", 
         condition = "VRTG" %in% input$schade_code
       )
@@ -601,16 +588,17 @@ schadePanel <- function(id, specie, ...){
   
   ns <- NS(namespace = id)
   
-  categoryPanel(
+  categorySidebarPanel(
     id = id, specie = specie,    
-    sidebarExtra = tagList(
+    topExtra = tagList(br(), br()),
+    bottomExtra = tagList(
       br(),
       # Select type schade
       selectInput(
         inputId = ns("schade_code"), 
         label = "Selecteer type(s) schade:",
         choices = schadeTypes,
-        selected = schadeTypes,
+        selected = NULL,
         multiple = TRUE,
         width = "100%"
       ),

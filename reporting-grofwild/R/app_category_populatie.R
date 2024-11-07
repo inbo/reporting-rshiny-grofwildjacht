@@ -232,7 +232,7 @@ populatieServer <- function(id, specie){
       output$`output-leeggewicht` <- renderUI(
         boxAgeWeightUI(
           id = ns(id), 
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -244,7 +244,7 @@ populatieServer <- function(id, specie){
       output$`output-onderkaak` <- renderUI(
         countAgeCheekUI(
           id = ns(id), 
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -256,7 +256,7 @@ populatieServer <- function(id, specie){
       output$`output-geslacht` <- renderUI(
         countAgeGenderUI(
           id = ns(id), 
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -269,7 +269,7 @@ populatieServer <- function(id, specie){
         countEmbryosUI(
           id = ns(id), 
           regionLevels = c(1:2, 4),
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -282,7 +282,7 @@ populatieServer <- function(id, specie){
       output$`output-voortplanting` <- renderUI(
         countAgeGroupUI(
           id = ns(id), 
-          uiText = uiText, context = "dash",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )

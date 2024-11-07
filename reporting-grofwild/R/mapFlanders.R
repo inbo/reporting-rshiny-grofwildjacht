@@ -1303,7 +1303,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   plotDetails = c("flanders", "region"),
   showTitle = TRUE, 
   uiText = NULL, specie = NULL, typeTitle = type,
-  output = "mapFlandersUI") {
+  outputFunction = "mapFlandersUI") {
   
   ns <- NS(id)
   type <- match.arg(type)
@@ -1324,7 +1324,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
   title <- ifelse(
     !is.null(uiText),
     getOutputTitle(
-      output = output, 
+      output = outputFunction, 
       uiText = uiText, specie = specie, type = typeTitle
     ),
     "Landkaart"

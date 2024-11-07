@@ -207,7 +207,7 @@ verspreidingServer <- function(id, specie){
       output$`output-toekomstig` <- renderUI(
          mapSpreadUI(
           id = ns(id), 
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -244,7 +244,7 @@ verspreidingServer <- function(id, specie){
           hideGlobeDefault = FALSE,
           countVariable = "aantal",
           sourceChoices = c("waarnemingen.be", "afschot"),
-          uiText = uiText, outputFunction = "F17_1", context = "dash"
+          uiText = uiText, outputFunction = "F17_1", context = "description"
         ),
         mapSpreadUI = mapSpreadServer(
           id = id,

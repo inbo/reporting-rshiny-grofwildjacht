@@ -79,7 +79,7 @@ schadeUI <- function(id, specie){
                 h1("Welkom op de informatiepagina rond wildschade")
               ),
               welcomeSectionUI(
-                id = id, context = "fauna", uiText = uiText, 
+                id = id, context = "summary", uiText = uiText, 
                 maxDate = max(schadeData$afschot_datum, na.rm = TRUE)
               )
             )
@@ -309,7 +309,8 @@ schadeServer <- function(id, specie){
           uiText = uiText, type = "schade",
           specie = results$specie(),
           showType = TRUE, doHide = FALSE,
-          showDataSource = "schade"
+          showDataSource = "schade",
+          plotFunction = "countYearProvinceUI-schade"
         )
       )
       outputCreated("countYearProvinceUI")
@@ -321,7 +322,8 @@ schadeServer <- function(id, specie){
           id = ns("schade"), 
           type = "wildschade", plotDetails = "region",
           showCombine = FALSE,
-          uiText = uiText, specie = results$specie(), typeTitle = "schade"
+          uiText = uiText, outputFunction = "mapFlandersUI-schade",
+          specie = results$specie(), typeTitle = "schade"
         )
       )
       outputCreated("mapFlandersUI")
@@ -332,7 +334,7 @@ schadeServer <- function(id, specie){
         countYearSchadeUI(
           id = ns("schade"), 
           doHide = FALSE,
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           type = "schade", specie = results$specie()
         )
       )
@@ -343,7 +345,7 @@ schadeServer <- function(id, specie){
       output$`output-type` <- renderUI(
         mapSchadeUI(
           id = ns("schade-type"), 
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           type = "schade", specie = results$specie(),
           filterVariable = FALSE
         )
@@ -355,7 +357,7 @@ schadeServer <- function(id, specie){
       output$`output-type` <- renderUI(
         tableSchadeUI(
           id = ns("schade"), 
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -368,7 +370,7 @@ schadeServer <- function(id, specie){
         countYearSchadeUI(
           id = ns("schade-gewas"), 
           doHide = FALSE,
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           type = "gewas", specie = results$specie()
         )
       )
@@ -379,7 +381,7 @@ schadeServer <- function(id, specie){
       output$`output-type` <- renderUI(
         tableGewasUI(
           id = ns("schade"), 
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -392,7 +394,7 @@ schadeServer <- function(id, specie){
         countYearSchadeUI(
           id = ns("schade-seizoen"), 
           doHide = FALSE,
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           type = "seizoen", specie = results$specie(),
           regionLevels = c(1:2, 4)
         )
@@ -404,7 +406,7 @@ schadeServer <- function(id, specie){
       output$`output-seizoen` <- renderUI(
         mapSchadeUI(
           id = ns("schade-seizoen"), 
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           type = "schade", specie = results$specie(),
           filterVariable = FALSE
         )
@@ -417,7 +419,7 @@ schadeServer <- function(id, specie){
       output$`output-kosten` <- renderUI(
         barCostUI(
           id = ns("schade"), 
-          uiText = uiText, context = "schade",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           typeMelding = c("Landbouw" = "landbouw"),
           regionLevels = c(1:2, 4),
@@ -471,7 +473,7 @@ schadeServer <- function(id, specie){
         ),
         mapFlandersUI = mapFlandersServer(
           id = id,
-          uiText = uiText,
+          uiText = uiText, outputFunction = "mapFlandersServer-schade",
           defaultYear = defaultYear,
           species = results$specie,
           type = "wildschade",

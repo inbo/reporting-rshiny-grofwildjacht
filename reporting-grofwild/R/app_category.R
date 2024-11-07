@@ -89,7 +89,7 @@ getOutputTitle <- function(output,
 #' @return character vector of length 1 with output description
 #' @author lcougnaud
 getOutputDescription <- function(output, 
-  uiText, context = "fauna", 
+  uiText, context = "summary", 
   specie = NULL, type = NULL, statsMap = NULL){
   
   text <- uiText[which(uiText$plotFunction == output), context]

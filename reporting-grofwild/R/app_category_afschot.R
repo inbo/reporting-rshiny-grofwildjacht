@@ -266,7 +266,7 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-vlaanderen` <- renderUI(
         trendYearRegionUI(
           id = ns("dash"),
-          uiText = uiText, context = "wild", specie = results$specie(),
+          uiText = uiText, context = "description", specie = results$specie(),
           showCombinatie = TRUE,
           doHide = FALSE
         )
@@ -278,9 +278,10 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-vlaanderen` <- renderUI(
         countYearProvinceUI(
           id = ns("dash"), 
-          uiText = uiText, context = "wild", type = "afschot",
+          uiText = uiText, context = "description", type = "afschot",
           specie = results$specie(),
-          doHide = FALSE
+          doHide = FALSE,
+          plotFunction = "countYearProvinceUI-afschot"
         )
       );
       plotCreated("countYearProvinceUI")
@@ -290,7 +291,7 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-vlaanderen` <- renderUI(
         yearlyShotAnimalsUI(
           id = ns("dash"), 
-          uiText = uiText, context = "wild",
+          uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
         )
@@ -303,7 +304,8 @@ afschotServer <- function(id, specie){
         mapFlandersUI(
           id = ns("wild"), 
           type = "grofwild", plotDetails = "region",
-          uiText = uiText, specie = results$specie(), typeTitle = "afschot"
+          uiText = uiText, specie = results$specie(), 
+          typeTitle = "afschot"
         )
       );
       plotCreated("mapFlandersUI")
@@ -313,7 +315,7 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-leeftijdcategorie` <- renderUI(
         tableProvinceUI(
           id = ns("wild"), doHide = FALSE,
-          uiText = uiText, context = "wild", specie = results$specie()
+          uiText = uiText, context = "description", specie = results$specie()
         )
       );
       plotCreated("tableProvinceUI")
@@ -324,7 +326,7 @@ afschotServer <- function(id, specie){
         countYearShotUI(
           id = ns("wild_leeftijd"), groupVariable = "leeftijd_comp",
           regionLevels = c(1:2, 4), 
-          uiText = uiText, context = "wild", specie = results$specie(),
+          uiText = uiText, context = "description", specie = results$specie(),
           doHide = FALSE
         )
       );
@@ -336,7 +338,7 @@ afschotServer <- function(id, specie){
         countYearShotUI(
           id = ns("wild_jachtmethode"), groupVariable = "jachtmethode_comp",
           regionLevels = c(1:2, 4), 
-          uiText = uiText, context = "wild", specie = results$specie(),
+          uiText = uiText, context = "description", specie = results$specie(),
           doHide = FALSE
         )
       );
@@ -347,10 +349,11 @@ afschotServer <- function(id, specie){
       output$`afschot-plots-jachtmethode` <- renderUI(
         countYearProvinceUI(
           id = ns("dash"), 
-          uiText = uiText, context = "dash", specie = results$specie(),
+          uiText = uiText, context = "description", specie = results$specie(),
           plotFunction = "F04_3", 
           doHide = FALSE,
-          regionLevels = 1:4
+          regionLevels = 1:4,
+          plotFunction = "countYearProvinceUI-afschot"
         )    
       );
       plotCreated("F04_3")

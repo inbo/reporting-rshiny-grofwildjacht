@@ -42,7 +42,7 @@ schadeUI <- function(id, specie){
           title = "",
           
           # navigation bar overlays side bar
-          position = "fixed-top",
+          position = "static-top", #"fixed-top",
           
           tabPanel(
             title = getTabTitle(value = "vlaanderen", category = "schade"), 
@@ -84,8 +84,7 @@ schadeUI <- function(id, specie){
               )
             )
           )
-        )
-        )
+        ))
        )
     )
   )
@@ -589,8 +588,7 @@ schadePanel <- function(id, specie, ...){
   ns <- NS(namespace = id)
   
   categorySidebarPanel(
-    id = id, specie = specie,    
-    topExtra = tagList(br(), br()),
+    id = id, specie = specie,
     bottomExtra = tagList(
       br(),
       # Select type schade

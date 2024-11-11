@@ -1335,8 +1335,6 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     if (showTitle)
       h2(title),
     
-    uiOutput(ns("descriptionMapFlanders")),
-    
     ## countMap: all species
     wellPanel(
       if (type == "dash") {
@@ -1454,6 +1452,8 @@ mapFlandersUI <- function(id, showRegion = TRUE,
       )
       
     },
+    br(),
+    uiOutput(ns("descriptionMapFlanders")),
     tags$hr()
   
   )

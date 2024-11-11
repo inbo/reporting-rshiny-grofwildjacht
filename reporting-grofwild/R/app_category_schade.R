@@ -207,7 +207,8 @@ schadeServer <- function(id, specie){
                 width = 1/3, gap = "2em",
                 categoryCardSchade(output = "tableSchadeSummaryUI"),
                 categoryCardSchade(output = "trendYearFlandersUI"),
-                categoryCardSchade(output = "countYearProvinceUI")
+                categoryCardSchade(output = "countYearProvinceUI",
+                  outputFunction = "countYearProvinceUI-schade")
               )
             )
           },

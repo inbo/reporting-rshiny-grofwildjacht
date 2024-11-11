@@ -222,7 +222,7 @@ afschotServer <- function(id, specie){
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
                 categoryCardAfschot(output = "trendYearRegionUI"),
-                categoryCardAfschot(output = "countYearProvinceUI"),
+                categoryCardAfschot(output = "countYearProvinceUI", outputFunction = "countYearProvinceUI-afschot"),
                 categoryCardAfschot(output = "yearlyShotAnimalsUI")
               )
             )
@@ -352,8 +352,7 @@ afschotServer <- function(id, specie){
           uiText = uiText, context = "description", specie = results$specie(),
           plotFunction = "F04_3", 
           doHide = FALSE,
-          regionLevels = 1:4,
-          plotFunction = "countYearProvinceUI-afschot"
+          regionLevels = 1:4
         )    
       );
       plotCreated("F04_3")

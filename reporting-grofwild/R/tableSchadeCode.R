@@ -125,7 +125,8 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(comb$Var1)]
 
   # group columns together from same schadeBasisCode
-  codeNames <- unique(unlist(fullNames[match(comb$Var2, fullNames)]))
+  codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
+  codeNames <- codeNames[!duplicated(codeNames)] # Note: 'unique' would remove names
   summaryTable <- summaryTable[, c(colnames(summaryTable)[1], codeNames)]
   
   

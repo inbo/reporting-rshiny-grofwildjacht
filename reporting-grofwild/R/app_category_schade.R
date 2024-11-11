@@ -447,12 +447,12 @@ schadeServer <- function(id, specie){
     observe(
       switch(outputCreated(),
         tableSchadeSummaryUI = tableSchadeSummaryServer(
-          id = id, 
+          id = "table-summary", 
           data = results$schade_data, 
           schadeTypes = schadeTypes, schadeCodes = schadeCodes
         ),
         trendYearFlandersUI = trendYearFlandersServer(
-          id = id, 
+          id = "schade", 
           geoData = results$schade_data, 
           allSpatialData = spatialData, 
           biotoopData = biotoopData, 
@@ -461,7 +461,7 @@ schadeServer <- function(id, specie){
           includeOptions = TRUE
         ),
         countYearProvinceUI = countYearProvinceServer(
-          id = id,
+          id = "schade",
           data = results$schade_data,
           types = reactive(c(
             "Vlaanderen" = "flanders",
@@ -473,7 +473,7 @@ schadeServer <- function(id, specie){
           timeRange = results$schade_timeRange
         ),
         mapFlandersUI = mapFlandersServer(
-          id = id,
+          id = "schade",
           uiText = uiText, outputFunction = "mapFlandersServer-schade",
           defaultYear = defaultYear,
           species = results$specie,

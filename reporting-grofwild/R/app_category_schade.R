@@ -29,7 +29,6 @@ schadeUI <- function(id, specie){
     
       sidebarPanel = schadePanel(id = id, specie = specie),
     
-      # navigation page with plots and specie sidebar panel
       mainPanel = mainPanel(
   
         div(class = "navbar-schade", 
@@ -69,20 +68,11 @@ schadeUI <- function(id, specie){
             value = "kosten",
             uiOutput(outputId = ns("output-kosten"))
           ),
-          tabPanel(
-            title = "", #getTabTitle(value = "informatie", category = "schade"), 
-            value = "informatie", 
-            icon = shiny::icon(name = NULL, class = "info_icon"), #name = "circle-info"
-            fluidRow(
-              tags$div(
-                align = "center",
-                h1("Welkom op de informatiepagina rond wildschade")
-              ),
-              welcomeSectionUI(
-                id = id, context = "summary", uiText = uiText, 
-                maxDate = max(schadeData$afschot_datum, na.rm = TRUE)
-              )
-            )
+          tabPanelInformatie(
+            category = "schade", id = id, 
+            uiText = uiText, 
+            maxDate = max(schadeData$afschot_datum, na.rm = TRUE),
+            specie = specie
           )
         ))
        )
@@ -583,8 +573,8 @@ schadeServer <- function(id, specie){
 }
 
 #' Wrapper for the sidebar of the 'schade' Category page
-#' @inheritParams categoryPanel
-#' @inherit categoryPanel return
+#' @inheritParams categorySidebarPanel
+#' @inherit categorySidebarPanel return
 #' @author lcougnaud
 schadePanel <- function(id, specie, ...){
   

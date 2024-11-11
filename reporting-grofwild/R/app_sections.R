@@ -7,29 +7,34 @@
 
 #' Section for welcoming (top of the page) - UI side (no server side)
 #' 
-#' @param maxDate date, the last observation date to be replaced in the text
 #' @param id character, unique identifier for the module
-#' @param uiText data.frame, HTML formatted text to be displayed in the UI
+#' @param category character of length 1 with the name of the
+#' page.
+#' @inheritParams getOutputDescription
+#' @param ... Extra parameters for \code{\link{getOutputDescription}}
 #' @return HTML object
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-welcomeSectionUI <- function(id, context = id, uiText, maxDate = NA) {
+welcomeSectionUI <- function(id, context = id, uiText, 
+  category = c("schade", "afschot", "populatie", "verspreiding"),
+  ...) {
   
-  description <- uiText[
-    uiText$plotFunction == as.character(match.call())[1], 
-    context
-  ]
-  # Handling embedded quoting
-  description <- gsub("\\\\", "\"", description)
+  category <- match.arg(category)
+
+  outputFunction <- paste("welcomeSectionUI", category, sep = "-")
   
-  # Replace last date
-  if (!is.na(maxDate))
-    description <- gsub("\\{\\{maxDate\\}\\}", format(maxDate, "%d/%m/%Y"), description)
+  title <- getOutputTitle(output = outputFunction, uiText = uiText)
   
-  tags$div(style = "margin-bottom:20px;",
-    HTML(description)
+  description <- getOutputDescription(
+    output = outputFunction, 
+    uiText = uiText, context = context,
+    ...
+  )
+  
+  tagList(
+    tags$div(align = "center", h1(title)), 
+    tags$div(style = "margin-bottom:20px;", HTML(description))
   )
 
 }

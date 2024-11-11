@@ -26,31 +26,41 @@ verspreidingUI <- function(id, specie){
     ),
            
     # navigation page with plots and specie sidebar panel
-    navbarPage(
-        
-      title = "",
+    sidebarLayout(
+          
+      sidebarPanel = categorySidebarPanel(id = id, specie = specie),
       
-      id = ns("subcategory"),
+      mainPanel = mainPanel(
+          
+        navbarPage(
             
-      tabPanel(
-        title = getTabTitle(
-          value = "huidig", category = "verspreiding"
-        ), 
-        value = "huidig",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("output-huidig"))
-        )
-      ),
-      
-      tabPanel(
-        title = getTabTitle(
-          value = "toekomstig", category = "verspreiding"
-        ), 
-        value = "toekomstig",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("output-toekomstig"))
+          title = "",
+          
+          id = ns("subcategory"),
+          
+          selected = "informatie",
+                
+          tabPanel(
+            title = getTabTitle(
+              value = "huidig", category = "verspreiding"
+            ), 
+            value = "huidig",
+            uiOutput(outputId = ns("output-huidig"))
+          ),
+          
+          tabPanel(
+            title = getTabTitle(
+              value = "toekomstig", category = "verspreiding"
+            ), 
+            value = "toekomstig",
+            uiOutput(outputId = ns("output-toekomstig"))
+          ),
+          tabPanelInformatie(
+            category = "verspreiding", id = id, 
+            uiText = uiText, 
+            maxDate = max(ecoData$afschot_datum, na.rm = TRUE),
+            specie = specie
+          )
         )
       )
     )

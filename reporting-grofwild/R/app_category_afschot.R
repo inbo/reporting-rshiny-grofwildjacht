@@ -24,46 +24,51 @@ afschotUI <- function(id, specie){
         img(src = "www/category-afschot-header.png", width = "100%")
       )
     ),
-           
-    # navigation page with plots and specie sidebar panel
-    navbarPage(
+    
+    sidebarLayout(
         
-      title = "",
-      
-      id = ns("afschot-subcategory"),
+      sidebarPanel = categorySidebarPanel(id = id, specie = specie),
+        
+      mainPanel = mainPanel(
+
+        navbarPage(
             
-      tabPanel(
-        title = getTabTitle(value = "vlaanderen", category = "afschot"), 
-        value = "vlaanderen",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("afschot-plots-vlaanderen"))
+          title = "",
+          
+          id = ns("afschot-subcategory"),
+          
+          selected = "informatie",
+                
+          tabPanel(
+            title = getTabTitle(value = "vlaanderen", category = "afschot"), 
+            value = "vlaanderen",
+            uiOutput(outputId = ns("afschot-plots-vlaanderen"))
+          ),
+          tabPanel(
+            title = getTabTitle(value = "regio", category = "afschot"), 
+            value = "regio",
+            uiOutput(outputId = ns("afschot-plots-regio"))
+          ),
+          tabPanel(
+            title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
+            value = "leeftijdcategorie",
+            uiOutput(outputId = ns("afschot-plots-leeftijdcategorie"))
+          ),
+          tabPanel(
+            title = getTabTitle(value = "jachtmethode", category = "afschot"),
+            value = "jachtmethode",
+            uiOutput(outputId = ns("afschot-plots-jachtmethode"))
+          ),
+          tabPanelInformatie(
+            category = "afschot", id = id, 
+            uiText = uiText, 
+            maxDate = max(ecoData$afschot_datum, na.rm = TRUE),
+            specie = specie
+          )
         )
-      ),
-      tabPanel(
-        title = getTabTitle(value = "regio", category = "afschot"), 
-        value = "regio",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("afschot-plots-regio"))
-        )
-      ),
-      tabPanel(
-        title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
-        value = "leeftijdcategorie",
-        categoryPanel(
-          id = id, specie = specie,
-           uiOutput(outputId = ns("afschot-plots-leeftijdcategorie"))
-        )
-      ),
-      tabPanel(
-        title = getTabTitle(value = "jachtmethode", category = "afschot"),
-        value = "jachtmethode",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("afschot-plots-jachtmethode"))
-        )
+
       )
+  
     )
 
   )

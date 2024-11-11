@@ -16,28 +16,31 @@ getTabTitle <- function(value, category){
         vlaanderen = "Afschot in Vlaanderen",
         regio =  "Afschot per regio",
         leeftijdcategorie = "Afschot per leeftijdscategorie",
-        jachtmethode = "Afschot per jachtmethode"
+        jachtmethode = "Afschot per jachtmethode",
+        informatie = "Informatie over afschot"
       ),
     schade = 
       switch(value,
-        informatie = "Informatie over schadegevallen",
         vlaanderen = "Schadegevallen in Vlaanderen",
         regio =  "Schadegevallen per regio",
         type = "Schadegevallen per type schade",
         seizoen = "Schadegevallen per seizoen",
-        kosten = "Inschatting kosten"
+        kosten = "Inschatting kosten",
+        informatie = "Informatie over schadegevallen"
     ),
     populatie = 
       switch(value,
         leeggewicht = "Leeggewicht",
         onderkaak = "Onderkaak gegevens",
         geslacht = "Geslacht",
-        voortplanting = "Voortplanting"
+        voortplanting = "Voortplanting",
+        informatie = "Informatie over populatie"
       ),
     verspreiding = 
       switch(value,
         huidig = "Huidige verspreiding",
-        toekomstig = "Toekomstige verspreiding"
+        toekomstig = "Toekomstige verspreiding",
+        informatie = "Informatie over verspreiding"
       )
   )
   
@@ -47,7 +50,8 @@ getTabTitle <- function(value, category){
 
 #' Get output title
 #' @param output character vector of length 1 with output name
-#' @param uiText data.frame with plot title and description
+#' @param uiText data.frame, HTML formatted text to be displayed 
+#' in the UI
 #' @param specie (optional) character vector of length 1 with specie
 #' @param type (optional) character vector of length 1 with type
 #' @param n (optional) integer vector of length 1 with maximum 
@@ -85,12 +89,17 @@ getOutputTitle <- function(output,
 }
 
 #' Get output description
+#' @param maxDate date, the last observation date to be 
+#' replaced in the text
+#' @param statsMap character, statistics to be printed 
+#' instead of \code{'{{statsMap}}'}
 #' @inheritParams getOutputTitle
 #' @return character vector of length 1 with output description
 #' @author lcougnaud
 getOutputDescription <- function(output, 
   uiText, context = "summary", 
-  specie = NULL, type = NULL, statsMap = NULL){
+  specie = NULL, type = NULL, statsMap = NULL,
+  maxDate = NULL){
   
   text <- uiText[which(uiText$plotFunction == output), context]
   
@@ -122,6 +131,14 @@ getOutputDescription <- function(output,
       x = text
     )
   
+  # Replace last date
+  if (!is.null(maxDate))
+    text <- gsub("\\{\\{maxDate\\}\\}", 
+      format(maxDate, "%d/%m/%Y"), text)
+  
+  # Handling embedded quoting
+  description <- gsub("\\\\", "\"", text)
+
   return(text)
   
 }
@@ -176,28 +193,6 @@ categoryCard <- function(id,
   
 }
 
-#' Wrapper for the sidebar layout of the Category pages
-#' @inheritParams categorySidebarPanel
-#' @param ... Elements for the \code{\link[shiny]{mainPanel}}
-#' @inherit shiny::sidebarLayout return
-#' @author lcougnaud
-categoryPanel <- function(id, specie, ...){
-  
-  ns <- NS(namespace = id)
-  
-  sidebarLayout(
-    position = "left", 
-      
-    sidebarPanel = categorySidebarPanel(
-      id = id, specie = specie
-    ),
-      
-    mainPanel = mainPanel(width = 9, ...)
-  
-  )
-  
-}
-
 #' Wrapper for the sidebar of the Category pages
 #' @param id character, module id
 #' @param specie character, specie
@@ -214,13 +209,43 @@ categorySidebarPanel <- function(id, specie,
   
   sidebarPanel(
     width = 3, 
-    id = ns("category-sidebar"), 
+    id = ns("category-sidebar"), class = "category-sidebar",
     topExtra,
     h4(specie, align = "center"),
     img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
     br(),
     div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center"),
     bottomExtra
+  )
+  
+}
+
+#' Get 'Informatie' tab panel for a 'Category' page
+#' @inheritParams welcomeSectionUI
+#' @param ... Extra parameters passed to \code{\link{welcomeSectionUI}}
+#' @return \code{\link[shiny]{tabPanel}}
+#' @importFrom shiny tabPanel fluidRow icon
+#' @author lcougnaud
+tabPanelInformatie <- function(
+  id, uiText, 
+  category = c("schade", "afschot", "populatie", "verspreiding"),
+  ...){
+
+  category <- match.arg(category)
+  
+  tabPanel(
+    title = "", #getTabTitle(value = "informatie", category = "schade"), 
+    value = "informatie", 
+    class = "tab-informatie",
+    icon = shiny::icon(name = NULL, class = "info_icon"), #name = "circle-info"
+    fluidRow(
+      welcomeSectionUI(
+        id = id, uiText = uiText,
+        category = category,
+        context = "description",
+        ...
+      )
+    )
   )
   
 }

@@ -26,50 +26,54 @@ populatieUI <- function(id, specie){
     ),
            
     # navigation page with plots and specie sidebar panel
-    navbarPage(
-        
-      title = "",
-      
-      id = ns("subcategory"),
+    sidebarLayout(
+          
+      sidebarPanel = categorySidebarPanel(id = id, specie = specie),
+          
+      mainPanel = mainPanel(
+          
+        navbarPage(
             
-      tabPanel(
-        title = getTabTitle(
-          value = "leeggewicht", category = "populatie"
-        ), 
-        value = "leeggewicht",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("output-leeggewicht"))
-        )
-      ),
-      tabPanel(
-       title = getTabTitle(
-        value = "onderkaak", category = "populatie"
-       ), 
-       value = "onderkaak",
-       categoryPanel(
-        id = id, specie = specie,
-        uiOutput(outputId = ns("output-onderkaak"))
-       )
-      ),
-      tabPanel(
-        title = getTabTitle(
-          value = "geslacht", category = "populatie"
-        ), 
-        value = "geslacht",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("output-geslacht"))
-        )
-      ),
-      tabPanel(
-        title = getTabTitle(
-          value = "voortplanting", category = "populatie"
-        ), 
-        value = "voortplanting",
-        categoryPanel(
-          id = id, specie = specie,
-          uiOutput(outputId = ns("output-voortplanting"))
+          title = "",
+          
+          id = ns("subcategory"),
+          
+          selected = "informatie",
+                
+          tabPanel(
+            title = getTabTitle(
+              value = "leeggewicht", category = "populatie"
+            ), 
+            value = "leeggewicht",
+            uiOutput(outputId = ns("output-leeggewicht"))
+          ),
+          tabPanel(
+            title = getTabTitle(
+             value = "onderkaak", category = "populatie"
+            ), 
+            value = "onderkaak",
+            uiOutput(outputId = ns("output-onderkaak"))
+          ),
+          tabPanel(
+            title = getTabTitle(
+              value = "geslacht", category = "populatie"
+            ), 
+            value = "geslacht",
+            uiOutput(outputId = ns("output-geslacht"))
+          ),
+          tabPanel(
+            title = getTabTitle(
+              value = "voortplanting", category = "populatie"
+            ), 
+            value = "voortplanting",
+            uiOutput(outputId = ns("output-voortplanting"))
+          ),
+          tabPanelInformatie(
+            category = "populatie", id = id, 
+            uiText = uiText,
+            maxDate = max(ecoData$afschot_datum, na.rm = TRUE),
+            specie = specie
+          )
         )
       )
     )

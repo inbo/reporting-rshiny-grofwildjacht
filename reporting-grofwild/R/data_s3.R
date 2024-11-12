@@ -3,23 +3,38 @@
 #' 
 #' INFO: https://www.gormanalysis.com/blog/connecting-to-aws-s3-with-r/
 #' @param awsFile path to AWS file
+#' @param inboUserName set NULL if not a inbo user, for inbo user, provide your user name firstName_lastName
 #' @return no return value, ENV variables are set correctly
 #' 
 #' @author mvarewyck
+#' @importFrom aws.signature read_credentials
 #' @export
-setupS3 <- function(awsFile = "~/.aws/credentials") {
+setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
+  
+  #"sander_devisscher"
+  profile <- if (is.null(inboUserName)) 
+      "inbo-fauna" else 
+      sprintf("inbo-uat-%s", gsub("_", "-", inboUserName))
+  
+  # for inbo user on their PC
+  userProfile <- Sys.getenv("USERPROFILE", unset = NA)
+  
+  
+  if (!is.na(userProfile))
+    awsFile <- normalizePath(file.path(userProfile, ".aws", "credentials"))
+  
   
   # credentials are in ~/.aws/credentials OR manually copy/paste OR using aws.signature::
-  x <- rawToChar(readBin(awsFile, "raw", n = 1e5L))
-  profile <- Sys.getenv("AWS_PROFILE")
-  credentials <- strsplit(x, profile)[[1]][2]
+  x <- aws.signature::read_credentials(file = awsFile)[[profile]]
+  
   
   Sys.setenv(
     AWS_DEFAULT_REGION = eval(parse(text = config::get("credentials", file = system.file("config.yml", package = "reportingGrofwild"))$region)),
-    AWS_ACCESS_KEY_ID = strsplit(strsplit(credentials, "aws_access_key_id = ")[[1]][2], "\n")[[1]][1], 
-    AWS_SECRET_ACCESS_KEY = strsplit(strsplit(credentials, "aws_secret_access_key = ")[[1]][2], "\n")[[1]][1]
+    AWS_ACCESS_KEY_ID = x$AWS_ACCESS_KEY_ID, 
+    AWS_SECRET_ACCESS_KEY = x$AWS_SECRET_ACCESS_KEY,
+    AWS_SESSION_TOKEN = x$AWS_SESSION_TOKEN 
   )
-  
+    
 }
 
 
@@ -59,7 +74,7 @@ checkS3 <- function() {
     # Try to retrieve metadata from the instance
     metadata$instance_id()
   } else {
-    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"))
+    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", 'AWS_SESSION_TOKEN'))
     if (any(credentials == ""))
       stop("Please specify 'Sys.setenv()' for ", 
         paste(names(credentials)[which(credentials == "")], collapse = ", "))

@@ -75,7 +75,7 @@ tryCatch({
       # leaflet
       tmpFile <- tempfile(fileext = ".html")
       htmlwidgets::saveWidget(params$plot, file = tmpFile, selfcontained = FALSE)
-      webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+      webshot2::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
       
     } else if (!is.null(params$pdfTable)){
       

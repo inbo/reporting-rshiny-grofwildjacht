@@ -32,7 +32,7 @@ Configure connection to [S3 data buckets](https://docs.aws.amazon.com/cli/latest
 Run docker image, public app. 
 
 ```
-sudo docker run -p 3001:3838 inbo/wildapp R -e "Sys.setenv('AWS_DEFAULT_REGION'='eu-west-1','AWS_ACCESS_KEY_ID'='xxx','AWS_SECRET_ACCESS_KEY'='xxx'); reportingGrofwild::runWildApp(public=TRUE)" 
+sudo docker run -it -v ~/.aws:/root/.aws -p 3001:3838 inbo/wildapp R -e "reportingGrofwild::setupS3(); reportingGrofwild::runWildApp(public=TRUE)" 
 ```
 
 Browse to `localhost:3001`.
@@ -40,13 +40,13 @@ Browse to `localhost:3001`.
 Run docker image, private app for specific KBO.
 
 ```
-sudo docker run -p 3001:3838 inbo/wildapp R -e "Sys.setenv('AWS_DEFAULT_REGION'='eu-west-1','AWS_ACCESS_KEY_ID'='xxx','AWS_SECRET_ACCESS_KEY'='xxx'); reportingGrofwild::runWildApp(public=FALSE, kbo = xxx)" 
+sudo docker run -it -v ~/.aws:/root/.aws -p 3001:3838 inbo/wildapp R -e "reportingGrofwild::setupS3(); reportingGrofwild::runWildApp(public=FALSE, kbo = xxx)" 
 ```
 
 In a similar way, an R session can be started to run specific functions of the reportingGrofwild R package.
 
 ```
-sudo docker run -p 3001:3838 inbo/wildapp R
+sudo docker run -it -p 3001:3838 inbo/wildapp R
 ```
 
 

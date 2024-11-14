@@ -185,7 +185,6 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 #' @importFrom htmlwidgets saveWidget
 #' @export
 mapSpreadServer <- function(id, 
-  regionLevel = reactive(NULL), locaties = reactive(NULL), 
   allSpatialData, species,
   type = c("F06", "F17_4"), title = reactive(NULL)) {
   moduleServer(id,
@@ -196,17 +195,26 @@ mapSpreadServer <- function(id,
       ## User Input ##
       ## ---------- ##
       
+      # update region
+      observeEvent(input$regionLevel,
+        updateSelectInput(session, inputId = "region", 
+          choices = sort(unique(allSpatialData[[input$regionLevel]]$NAAM))
+        ), priority = 1
+      )
+      
       # Selected regions of interest
       spatialData <- reactive({
+      
+        validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
           req(allSpatialData)
           
           filterSpatial(
             allSpatialData = allSpatialData, 
             species = species, 
-            regionLevel = regionLevel(), 
+            regionLevel = input$regionLevel, 
             year = NULL,
-            locaties = locaties()
+            locaties = input$region
           )
           
         })
@@ -216,7 +224,7 @@ mapSpreadServer <- function(id,
           
           validate(need(spatialData(), "Geen data beschikbaar"))
           
-          subset(spatialData(), spatialData()$NAAM %in% locaties())
+          subset(spatialData(), spatialData()$NAAM %in% input$region)
           
         })
       
@@ -230,7 +238,7 @@ mapSpreadServer <- function(id,
             
             if (!exists("spreadData"))
               spreadData <- loadSpreadData()
-            spreadData[grep(req(input$regionLevel), names(spreadData), value = TRUE)]
+            spreadData[grep(req(input$regionScale), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
             
@@ -519,7 +527,13 @@ mapSpreadServer <- function(id,
 #' @export
 mapSpreadUI <- function(id, 
   uiText, context = id, specie = NULL,
-  doHide = TRUE, showLayer = FALSE) {
+  doHide = TRUE, showLayer = FALSE,
+  regionChoices = c(
+      "Vlaanderen" = "flanders",
+      "Provincie" = "provinces", 
+      "Faunabeheerzones" = "faunabeheerzones",
+      "Gemeente" = "communes")
+  ) {
   
   ns <- NS(id)
   
@@ -541,6 +555,24 @@ mapSpreadUI <- function(id,
       uiOutput(ns("disclaimerMapSpread")),
   
       wellPanel(
+          
+        if(!is.null(regionChoices)){
+          fixedRow(
+            column(4, 
+              selectInput(
+                inputId = ns("regionLevel"), label = "Regio-schaal",
+                choices = regionChoices, selected = "communes"
+              )
+            ),
+            column(8, 
+              selectInput(
+                inputId = ns("region"), label = "Regio('s)",
+                choices = "",
+                multiple = TRUE
+              )
+            )      
+          )
+        },
         
         if (showLayer) {
             checkboxGroupInput(inputId = ns("layers"), label = "Toon",
@@ -555,8 +587,8 @@ mapSpreadUI <- function(id,
             fixedRow(
               column(4, 
                 selectInput(
-                  inputId = ns("regionLevel"), 
-                  label = "Regio-schaal",
+                  inputId = ns("regionScale"), 
+                  label = "Map-schaal",
                   choices = c(
                     "Gemeente" = "municipalities",
                     "2x2 UTM" = "pixels"

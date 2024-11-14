@@ -259,8 +259,6 @@ verspreidingServer <- function(id, specie){
         mapSpreadUI = mapSpreadServer(
           id = id,
           allSpatialData = spatialData,
-          regionLevel = reactive("flanders"),
-          locaties = reactive("Vlaams Gewest"),
           species = results$specie(),
           type = "F17_4"
         )

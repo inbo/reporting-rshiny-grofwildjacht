@@ -14,7 +14,7 @@ afschotUI <- function(id, specie){
     headerUI(
       path = c("home", "specie", "category", "subcategory", "plot"), 
       id = id, #specie = id, 
-      category = "Afschot",
+      category = "Beheer",
       subcategory = getTabTitle(value = "vlaanderen", category = "afschot")
     ),
             

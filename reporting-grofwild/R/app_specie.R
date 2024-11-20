@@ -186,8 +186,10 @@ getSpecieCards <- function(id, specie){
   
   names <- lapply(values, function(type){
     foto <- paste0("specie-", gsub("[[:blank:]]", "-", type), ".png")
+    title <- ifelse(type == "afschot", "beheer", type)
+    title <- toupper(title)
     HTML(paste0(
-      "<div class='specie-card-title'>", toupper(type), "</div>",
+      "<div class='specie-card-title'>", title, "</div>",
       "<div>", img(src = paste0("www/", foto), width = "100%"), "</div>"
     ))
   })

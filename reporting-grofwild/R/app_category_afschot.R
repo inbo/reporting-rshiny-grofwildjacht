@@ -1,3 +1,10 @@
+afshotPlots <- c(
+  "trendYearRegionUI", "countYearProvinceUI-afschot", "yearlyShotAnimalsUI",
+  "mapFlandersUI", "tableProvinceUI", 
+  "countYearShotUI-leeftijd_comp", "countYearShotUI-jachtmethode_comp", 
+  "F04_3"
+)
+
 #' UI for the 'afschot' Category page
 #' @param id id character, module id
 #' @inherit shiny::verticalLayout return
@@ -35,7 +42,7 @@ afschotUI <- function(id, specie){
             
           title = "",
           
-          id = ns("afschot-subcategory"),
+          id = ns("subcategory"),
           
           selected = "informatie",
                 
@@ -58,7 +65,21 @@ afschotUI <- function(id, specie){
             title = getTabTitle(value = "jachtmethode", category = "afschot"),
             value = "jachtmethode",
             uiOutput(outputId = ns("afschot-plots-jachtmethode"))
-          ),
+          ), 
+          # menu with all plots/tables
+          {
+            args <- lapply(afshotPlots, function(plot){
+              title <- getOutputTitle(
+                output = plot, #specie = specie(), 
+                uiText = uiText, type = "afschot"
+              )
+              title <- sub(" (van)*(op)* \\{wildsoort\\}(, )*", "", title)
+              tabPanel(title = title, value = plot, uiOutput(outputId = ns("plot")))
+            })
+            args[["title"]] <- "Alle grafieken/tabellen"
+            args[["menuName"]] <- "all"
+            do.call(navbarMenu, args)
+          },
           tabPanelInformatie(
             category = "afschot", id = id, 
             uiText = uiText, 
@@ -193,7 +214,7 @@ afschotServer <- function(id){
       actionLink(
         inputId = ns("pathSubcategory-button"), 
         label = getTabTitle(
-          value = input$`afschot-subcategory`, 
+          value = input$subcategory, 
           category = "afschot"
         )
       )
@@ -216,12 +237,12 @@ afschotServer <- function(id){
     initTab <- reactiveVal(TRUE)
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
-    observeEvent(input$`afschot-subcategory`, initTab(TRUE))
+    observeEvent(input$subcategory, initTab(TRUE))
 
     # Create tab
     observe(if(initTab()){
 
-      if(isTruthy(input$`afschot-subcategory`)){
+      if(isTruthy(input$subcategory)){
         
         categoryCardAfschot <- function(...){
           categoryCard(
@@ -233,7 +254,7 @@ afschotServer <- function(id){
           )
         }
         
-        switch(input$`afschot-subcategory`, 
+        switch(input$subcategory, 
           vlaanderen = {
             output$`afschot-plots-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
@@ -277,19 +298,31 @@ afschotServer <- function(id){
     
     ## Tab content with selected plot
     plotCreated <- reactiveVal("")
-
+    
+    observe(print(paste("Selected tab:", input$subcategory)))
+    
     # UI
-    observeEvent(input$`trendYearRegionUI-button`, {
-      output$`afschot-plots-vlaanderen` <- renderUI(
+    toListen <- reactive({
+      list(input$`trendYearRegionUI-button`, input$subcategory)
+    })
+    observeEvent(toListen(), {
+#      TODO
+      uiPlot <- renderUI(
         trendYearRegionUI(
           id = ns("dash"),
           uiText = uiText, context = "description", specie = results$specie(),
           showCombinatie = TRUE,
           doHide = FALSE
         )
-       );
+       )
+       if(isTruthy(input$subcategory == "trendYearRegionUI")){
+        output$plot <- uiPlot
+       }else{
+         output$`afschot-plots-vlaanderen` <- uiPlot
+       }
        plotCreated("trendYearRegionUI")
-    })
+      }
+    )
 
     observeEvent(input$`countYearProvinceUI-button`, {
       output$`afschot-plots-vlaanderen` <- renderUI(
@@ -301,7 +334,7 @@ afschotServer <- function(id){
           plotFunction = "countYearProvinceUI-afschot"
         )
       );
-      plotCreated("countYearProvinceUI")
+      plotCreated("countYearProvinceUI-afschot")
     })
 
     observeEvent(input$`yearlyShotAnimalsUI-button`, {
@@ -402,7 +435,7 @@ afschotServer <- function(id){
             allSpatialData = spatialData,
             biotoopData = reactive(biotoopData[["flanders"]])
           ),
-          countYearProvinceUI = countYearProvinceServer(
+          `countYearProvinceUI-afschot` = countYearProvinceServer(
             id = "dash",
             data = results$ecoData,
             timeRange = if (id == "Edelhert")

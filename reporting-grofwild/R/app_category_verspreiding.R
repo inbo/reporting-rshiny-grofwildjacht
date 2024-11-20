@@ -74,7 +74,7 @@ verspreidingUI <- function(id, specie){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-verspreidingServer <- function(id, specie){
+verspreidingServer <- function(id){
   
   moduleServer(id, function(input, output, session){  
         
@@ -87,7 +87,7 @@ verspreidingServer <- function(id, specie){
     ## input
     results <- reactiveValues(renderedTabs = "Verspreiding")
     
-    results$specie <- reactive(specie())
+    results$specie <- reactive(input$specie)
     
     # Create data upon user choices
     results$spatialData <- reactive({
@@ -138,6 +138,16 @@ verspreidingServer <- function(id, specie){
     )
     
     ## Sidebar with input parameters
+    
+    # Specie image	
+    output$`specie-image` <- renderImage(
+      list(src = getSpecieImage(specie = results$specie()), width = "100%")
+      , deleteFile = FALSE)
+    
+    # Specie latin name
+    output$`specie-name` <- renderText(
+      paste("Latijn:", getLatinName(specie = results$specie()))
+    )
     
     ## Tab with available plots
     

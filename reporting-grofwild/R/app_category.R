@@ -202,7 +202,7 @@ categoryCard <- function(id,
 #' the bottom of the sidebar
 #' @return shiny::sidebarPanel return
 #' @author lcougnaud
-categorySidebarPanel <- function(id, specie, 
+categorySidebarPanel <- function(id, specie,
   topExtra = NULL, bottomExtra = NULL){
   
   ns <- NS(namespace = id)
@@ -211,10 +211,14 @@ categorySidebarPanel <- function(id, specie,
     width = 3, 
     id = ns("category-sidebar"), class = "category-sidebar",
     topExtra,
-    h4(specie, align = "center"),
-    img(src = getSpecieImage(specie = specie, relative = TRUE), width = "100%", height = "auto"),
-    br(),
-    div(strong(paste("Latijn:", getLatinName(specie = specie))), align = "center"),
+    selectInput(
+      inputId = ns("specie"), 
+      label = "Selecteer een diersoort:",
+      choices = schadeWildsoorten,
+      selected = specie
+    ),
+    imageOutput(outputId = ns("specie-image"), height = "auto"),
+    textOutput(outputId = ns("specie-name")),
     bottomExtra
   )
   

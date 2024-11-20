@@ -81,7 +81,7 @@ afschotUI <- function(id, specie){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-afschotServer <- function(id, specie){
+afschotServer <- function(id){
   
   moduleServer(id, function(input, output, session){  
         
@@ -93,7 +93,7 @@ afschotServer <- function(id, specie){
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
     
-    results$specie <- reactive(specie())
+    results$specie <- reactive(input$specie)
     
     results$ecoData <- reactive(
       ecoData[ecoData$wildsoort == results$specie(), ]
@@ -197,6 +197,18 @@ afschotServer <- function(id, specie){
           category = "afschot"
         )
       )
+    )
+    
+    ## Sidebar panel
+    
+    # Specie image	
+    output$`specie-image` <- renderImage(
+      list(src = getSpecieImage(specie = results$specie()), width = "100%")
+      , deleteFile = FALSE)
+    
+    # Specie latin name
+    output$`specie-name` <- renderText(
+      paste("Latijn:", getLatinName(specie = results$specie()))
     )
     
     ## Tab with available plots

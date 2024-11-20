@@ -78,22 +78,22 @@ shinyServer(function(input, output, session) {
   })
 
   # Category: afschot
-  nextPageAfschot <- afschotServer(id = "afschot", specie = specie)
+  nextPageAfschot <- afschotServer(id = "afschot")
   # re-direct to 'Home' or 'Specie' page
   observeEvent(nextPageAfschot(), ignoreNULL = TRUE, page(nextPageAfschot()))
 
   # Category: schade
-  nextPageSchade <- schadeServer(id = "schade", specie = specie)
+  nextPageSchade <- schadeServer(id = "schade")
   # re-direct to 'Home' or 'Specie' page
   observeEvent(nextPageSchade(), ignoreNULL = TRUE, page(nextPageSchade()))
 
   # Category: populatie indicatoren
-  nextPagePopulatie <- populatieServer(id = "populatie", specie = specie)
+  nextPagePopulatie <- populatieServer(id = "populatie")
   # re-direct to 'Home' or 'Specie' page
   observeEvent(nextPagePopulatie(), ignoreNULL = TRUE, page(nextPagePopulatie()))
   
   # Category: verspreiding
-  nextPageVerspreiding <- verspreidingServer(id = "verspreiding", specie = specie)
+  nextPageVerspreiding <- verspreidingServer(id = "verspreiding")
   # re-direct to 'Home' or 'Specie' page
   observeEvent(nextPageVerspreiding(), ignoreNULL = TRUE, page(nextPageVerspreiding()))
   

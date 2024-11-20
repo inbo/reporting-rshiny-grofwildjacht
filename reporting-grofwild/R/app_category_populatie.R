@@ -13,7 +13,7 @@ populatieUI <- function(id, specie){
     # header
     headerUI(
       path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, specie = specie, 
+      id = id, #specie = specie, 
       category = "Populatie indicatoren",
       subcategory = getTabTitle(value = "leeggewicht", category = "populatie")
     ),
@@ -149,6 +149,14 @@ populatieServer <- function(id){
     })
     
     ## Header
+    
+    # Update specie in path
+    output$pathSpecie <- renderUI(
+      actionLink(
+        inputId = ns("pathSpecie-button"), 
+        label = results$specie()
+      )    
+    )
     
     # Update subcategory in path
     output$pathSubcategory <- renderUI(
@@ -378,7 +386,7 @@ populatieServer <- function(id){
   
     observeEvent(input$`pathSpecie-button`, {
       print("populatie: Go to specie page")
-      nextPage("specie")
+      nextPage(structure("specie", specie = results$specie()))
     })
       
     return(nextPage)

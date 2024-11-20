@@ -466,7 +466,7 @@ afschotServer <- function(id){
   
     observeEvent(input$`pathSpecie-button`, {
       print("afschot: Go to specie page")
-      nextPage("specie")
+      nextPage(structure("specie", specie = results$specie()))
     })
       
     return(nextPage)

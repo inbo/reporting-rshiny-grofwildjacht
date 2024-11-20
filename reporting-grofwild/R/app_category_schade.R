@@ -13,7 +13,7 @@ schadeUI <- function(id, specie){
         
     headerUI(
       path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, specie = specie, 
+      id = id, #specie = specie, 
       category = "Schade",
       subcategory = getTabTitle(value = "vlaanderen", category = "schade")
     ),
@@ -135,6 +135,14 @@ schadeServer <- function(id){
     ) 
     
     ## Header
+    
+    # Update specie in path
+    output$pathSpecie <- renderUI(
+      actionLink(
+        inputId = ns("pathSpecie-button"), 
+        label = results$specie()
+      )    
+    )
     
     # Update subcategory in path
     output$pathSubcategory <- renderUI(
@@ -573,7 +581,7 @@ schadeServer <- function(id){
   
     observeEvent(input$`pathSpecie-button`, {
       print("schade: Go to specie page")
-      nextPage("specie")
+      nextPage(structure("specie", specie = results$specie()))
     })
       
     return(nextPage)

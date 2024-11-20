@@ -36,8 +36,8 @@ shinyServer(function(input, output, session) {
         output$page <- renderUI(frontUI())
       },
       specie = {
-        print("Open specie page")
-        output$page <- renderUI(specieUI(id = "specie", specie = input$wildsoort))
+        print(paste("Open specie page with specie:", specie()))
+        output$page <- renderUI(specieUI(id = "specie", specie = specie()))
       },
       afschot = {
         print(paste("Open afschot page with specie:", specie()))
@@ -59,11 +59,11 @@ shinyServer(function(input, output, session) {
   })
 
   observeEvent(input$wildsoort, 
-    if(isTruthy(input$wildsoort))	page("specie")
+    if(isTruthy(input$wildsoort)){
+      page("specie")
+      specie(input$wildsoort)
+    }
   )
-
-  observe(print(paste("Page currently selected is:", page())))
-  observe(print(paste("Specie currently selected is:", specie())))
   
   ## Update the page (server side)
   
@@ -80,21 +80,41 @@ shinyServer(function(input, output, session) {
   # Category: afschot
   nextPageAfschot <- afschotServer(id = "afschot")
   # re-direct to 'Home' or 'Specie' page
-  observeEvent(nextPageAfschot(), ignoreNULL = TRUE, page(nextPageAfschot()))
+  observeEvent(nextPageAfschot(), ignoreNULL = TRUE, {
+    page(nextPageAfschot())
+    # save specie selected in the app
+    if(!is.null(attr(nextPageAfschot(), "specie")))
+      specie(attr(nextPageAfschot(), "specie"))
+  })
 
   # Category: schade
   nextPageSchade <- schadeServer(id = "schade")
   # re-direct to 'Home' or 'Specie' page
-  observeEvent(nextPageSchade(), ignoreNULL = TRUE, page(nextPageSchade()))
+  observeEvent(nextPageSchade(), ignoreNULL = TRUE, {
+    page(nextPageSchade())
+    # save specie selected in the app
+    if(!is.null(attr(nextPageSchade(), "specie")))
+      specie(attr(nextPageSchade(), "specie"))
+  })
 
   # Category: populatie indicatoren
   nextPagePopulatie <- populatieServer(id = "populatie")
   # re-direct to 'Home' or 'Specie' page
-  observeEvent(nextPagePopulatie(), ignoreNULL = TRUE, page(nextPagePopulatie()))
+  observeEvent(nextPagePopulatie(), ignoreNULL = TRUE, {
+    page(nextPagePopulatie())
+    # save specie selected in the app
+    if(!is.null(attr(nextPagePopulatie(), "specie")))
+      specie(attr(nextPagePopulatie(), "specie"))
+  })
   
   # Category: verspreiding
   nextPageVerspreiding <- verspreidingServer(id = "verspreiding")
   # re-direct to 'Home' or 'Specie' page
-  observeEvent(nextPageVerspreiding(), ignoreNULL = TRUE, page(nextPageVerspreiding()))
+  observeEvent(nextPageVerspreiding(), ignoreNULL = TRUE, {
+    page(nextPageVerspreiding())
+    # save specie selected in the app
+    if(!is.null(attr(nextPageVerspreiding(), "specie")))
+      specie(attr(nextPageVerspreiding(), "specie"))
+  })
   
 })

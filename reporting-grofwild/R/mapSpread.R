@@ -238,7 +238,7 @@ mapSpreadServer <- function(id,
             
             if (!exists("spreadData"))
               spreadData <- loadSpreadData()
-            spreadData[grep(req(input$regionScale), names(spreadData), value = TRUE)]
+            spreadData[grep(req(input$mapScale), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
             
@@ -587,7 +587,7 @@ mapSpreadUI <- function(id,
             fixedRow(
               column(4, 
                 selectInput(
-                  inputId = ns("regionScale"), 
+                  inputId = ns("mapScale"), 
                   label = "Map-schaal",
                   choices = c(
                     "Gemeente" = "municipalities",

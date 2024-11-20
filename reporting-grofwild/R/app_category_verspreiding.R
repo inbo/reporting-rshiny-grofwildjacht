@@ -200,11 +200,18 @@ verspreidingServer <- function(id, specie){
     observeEvent(input$`mapFlandersUI-button`, {
       output$`output-huidig` <- renderUI(
         mapFlandersUI(
-          id = ns(id), 
+          id = ns("huidig"), 
           uiText = uiText, output = "F17_1", 
           specie = results$specie(),
-          showCombine = FALSE, type = "dash",  
-          regionChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"), 
+          showCombine = FALSE, type = "dash",
+          mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
+          showRegion = TRUE,
+          regionChoices = c(
+            "Vlaanderen" = "flanders",
+            "Provincie" = "provinces", 
+            "Faunabeheerzones" = "faunabeheerzones",
+            "Gemeente" = "communes"
+          ),
           unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
           plotDetails = ""#, showTitle = FALSE
         )
@@ -216,7 +223,7 @@ verspreidingServer <- function(id, specie){
     observeEvent(input$`mapSpreadUI-button`, {
       output$`output-toekomstig` <- renderUI(
          mapSpreadUI(
-          id = ns(id), 
+          id = ns("toekomstig"), 
           uiText = uiText, context = "description",
           specie = results$specie(),
           doHide = FALSE
@@ -243,12 +250,10 @@ verspreidingServer <- function(id, specie){
     observe(
       switch(outputCreated(),
         mapFlandersUI = mapFlandersServer(
-          id = id,
+          id = "huidig",
           defaultYear = defaultYear,
           species = results$specie,
           type = "dash",
-          regionLevel = reactive("flanders"),
-          locaties = reactive("Vlaams Gewest"),
           geoData = results$geoDataAll,
           allSpatialData = spatialData,
           hideGlobeDefault = FALSE,
@@ -257,7 +262,7 @@ verspreidingServer <- function(id, specie){
           uiText = uiText, outputFunction = "F17_1", context = "description"
         ),
         mapSpreadUI = mapSpreadServer(
-          id = id,
+          id = "toekomstig",
           allSpatialData = spatialData,
           species = results$specie(),
           type = "F17_4"

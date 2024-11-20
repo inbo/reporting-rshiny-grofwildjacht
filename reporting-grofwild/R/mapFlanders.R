@@ -900,7 +900,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Pre-selected polygons to highlight
       selectedPolygons <- reactive({
           
-          req(!type %in% c("empty", "dash"))
+#          req(!type %in% c("empty", "dash"))
           
           tmpSpatial <- filterSpatial(
             allSpatialData = allSpatialData, 
@@ -1061,7 +1061,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               zoom = input$spacePlot_zoom
             )
           
-          if (!type %in% c("empty", "dash", "wbe"))
+          if (isTruthy(selectedPolygons))
             # Selected regions
             newMap <- newMap %>%
               addPolylines(data = selectedPolygons(), color = "gray", weight = 5,
@@ -1288,7 +1288,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @author mvarewyck
 #' @import shiny
 #' @export
-mapFlandersUI <- function(id, showRegion = TRUE, 
+mapFlandersUI <- function(id, showRegion = (type != "dash"),
   showCombine = TRUE, 
   type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   regionChoices = c(
@@ -1299,6 +1299,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
     "5x5 UTM" = "utm5"
   ),
+  mapScaleChoices = regionChoices,
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("flanders", "region"),
   showTitle = TRUE, 
@@ -1337,11 +1338,19 @@ mapFlandersUI <- function(id, showRegion = TRUE,
     
     ## countMap: all species
     wellPanel(
+      if (showRegion)
+        fixedRow(
+          column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+            choices = regionChoices,
+            selected = "communes")),
+          column(8, uiOutput(ns("region")))      
+        ),  
+        
       if (type == "dash") {
           
           fixedRow(
-            column(6, selectInput(inputId = ns("regionLevel"), label = "Schaal",
-                choices = regionChoices,
+            column(6, selectInput(inputId = ns("regionLevel"), label = "Map-schaal",
+                choices = mapScaleChoices,
                 selected = "communes")),
             column(6, selectInput(inputId = ns("legend"), label = "Legende",
                 choices = legendChoices)
@@ -1352,15 +1361,7 @@ mapFlandersUI <- function(id, showRegion = TRUE,
           
         } else if (type != "empty") {
           
-          tagList(
-            if (showRegion)
-              fixedRow(
-                column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                    choices = regionChoices,
-                    selected = "communes")),
-                column(8, uiOutput(ns("region")))      
-              ),
-            
+          tagList(            
             fixedRow(
               column(6, uiOutput(ns("year"))),
               column(6, if (type %in% c("wbe")) 

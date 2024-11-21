@@ -230,10 +230,10 @@ p, li, label {
   color:#ffffff;
 }
 
-/*right align information tab*/
+/*right align 'information' and 'all plots/tables' tab*/
 
 .navbar .navbar-nav {float: none !important;}
-.navbar .navbar-nav > li:nth-last-child(1) {float: right;}
+.navbar .navbar-nav > li:nth-last-child(-n + 2) {float: right;}
 
 /*overlay with header*/
 

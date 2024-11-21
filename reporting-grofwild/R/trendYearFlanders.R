@@ -107,7 +107,7 @@ trendYearFlandersUI <- function(id,
   ns <- NS(id)
   
   title <- if(!is.null(uiText)){
-        getOutputTitle(output = "timePlotFlandersUI", 
+        getOutputTitle(output = "trendYearFlandersUI", 
             specie = specie, uiText = uiText)
       }else{
         tagList("Evolutie", 

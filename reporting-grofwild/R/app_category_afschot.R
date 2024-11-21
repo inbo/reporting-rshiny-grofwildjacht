@@ -222,8 +222,7 @@ afschotServer <- function(id){
           getOutputTitle(
             output = outputName(), 
             uiText = uiText, specie = results$specie(), 
-            type = "afschot",
-            n = 55
+            type = "afschot"
           )
         }
       )
@@ -247,6 +246,8 @@ afschotServer <- function(id){
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$subcategory, initTab(TRUE))
+    
+    outputName <- reactiveVal(NULL)
 
     # Create tab
     observe(if(initTab()){

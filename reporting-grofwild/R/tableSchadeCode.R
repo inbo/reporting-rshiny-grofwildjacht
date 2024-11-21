@@ -196,7 +196,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
       
       ns <- session$ns
       
-      callModule(module = optionsModuleServer, id = "tableSchade", 
+      callModule(module = optionsModuleServer, id = id, 
         data = data,
         types = types,
         labelTypes = labelTypes,
@@ -205,7 +205,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
       )
       
       callModule(
-        module = plotModuleServer, id = "tableSchade",
+        module = plotModuleServer, id = id,
         plotFunction = "tableSchadeCode", 
         data = data,
         schadeChoices = schadeChoices,

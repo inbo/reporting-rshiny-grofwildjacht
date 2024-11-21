@@ -1,4 +1,4 @@
-afschotPlots <- c(
+afschotOutputs <- c(
   "trendYearRegionUI", "countYearProvinceUI-afschot", "yearlyShotAnimalsUI",
   "mapFlandersUI", "tableProvinceUI", 
   "countYearShotUI-leeftijd_comp", "countYearShotUI-jachtmethode_comp", 
@@ -49,41 +49,29 @@ afschotUI <- function(id, specie){
           tabPanel(
             title = getTabTitle(value = "vlaanderen", category = "afschot"), 
             value = "vlaanderen",
-            uiOutput(outputId = ns("afschot-plots-vlaanderen"))
+            uiOutput(outputId = ns("output-vlaanderen"))
           ),
           tabPanel(
             title = getTabTitle(value = "regio", category = "afschot"), 
             value = "regio",
-            uiOutput(outputId = ns("afschot-plots-regio"))
+            uiOutput(outputId = ns("output-regio"))
           ),
           tabPanel(
             title = getTabTitle(value = "leeftijdcategorie", category = "afschot"), 
             value = "leeftijdcategorie",
-            uiOutput(outputId = ns("afschot-plots-leeftijdcategorie"))
+            uiOutput(outputId = ns("output-leeftijdcategorie"))
           ),
           tabPanel(
             title = getTabTitle(value = "jachtmethode", category = "afschot"),
             value = "jachtmethode",
-            uiOutput(outputId = ns("afschot-plots-jachtmethode"))
+            uiOutput(outputId = ns("output-jachtmethode"))
           ), 
           # menu with all plots/tables
-          {
-            args <- lapply(afschotPlots, function(plot){
-              title <- getOutputTitle(
-                output = plot, #specie = specie(), 
-                uiText = uiText, type = "afschot"
-              )
-              title <- sub(" (van)*(op)* \\{wildsoort\\}(, )*", "", title)
-              tabPanel(
-                title = title, 
-                value = plot, 
-                uiOutput(outputId = ns(paste0("afschot-plots-", plot)))
-              )
-            })
-            args[["title"]] <- getTabTitle(value = "all", category = "afschot")
-            args[["menuName"]] <- "all"
-            do.call(navbarMenu, args)
-          },
+          tabPanelAll(
+            category = "afschot", id = id,
+            outputs = afschotOutputs, 
+            uiText = uiText
+          ),
           tabPanelInformatie(
             category = "afschot", id = id, 
             uiText = uiText, 
@@ -224,6 +212,22 @@ afschotServer <- function(id){
       )
     )
     
+    # Update plot in path
+    observeEvent(outputName(), ignoreNULL = TRUE,
+      output$pathPlot <- renderText(
+        if(outputName() == ""){
+          ""
+        }else{
+          getOutputTitle(
+            output = outputName(), 
+            uiText = uiText, specie = results$specie(), 
+            type = "afschot",
+            n = 55
+          )
+        }
+      )
+    )
+    
     ## Sidebar panel
     
     # Specie image	
@@ -242,6 +246,8 @@ afschotServer <- function(id){
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$subcategory, initTab(TRUE))
+    
+    outputName <- reactiveVal(NULL)
 
     # Create tab
     observe(if(initTab()){
@@ -260,7 +266,7 @@ afschotServer <- function(id){
         
         switch(input$subcategory, 
           vlaanderen = {
-            output$`afschot-plots-vlaanderen` <- renderUI(          
+            output$`output-vlaanderen` <- renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
                 categoryCardAfschot(output = "trendYearRegionUI"),
@@ -268,64 +274,66 @@ afschotServer <- function(id){
                 categoryCardAfschot(output = "yearlyShotAnimalsUI")
               )
             )
+            outputName("")
           },
           regio = {
-            output$`afschot-plots-regio` <- renderUI(          
+            output$`output-regio` <- renderUI(          
               bslib::layout_column_wrap(
                   width = 1/3, gap = "2em",
                   categoryCardAfschot(output = "mapFlandersUI")
               )
             )
+            outputName("")
           },
           leeftijdcategorie = {
-            output$`afschot-plots-leeftijdcategorie` <- renderUI(          
+            output$`output-leeftijdcategorie` <- renderUI(          
               bslib::layout_column_wrap(
                  width = 1/3, gap = "2em",
                  categoryCardAfschot(output = "tableProvinceUI"),
                  categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
               )
             )
+            outputName("")
           },
           jachtmethode = {
-            output$`afschot-plots-jachtmethode` = renderUI(          
+            output$`output-jachtmethode` = renderUI(          
               bslib::layout_column_wrap(
                 width = 1/3, gap = "2em",
                 categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
                 categoryCardAfschot(output = "F04_3")
               )
             )
+            outputName("")
           }
         )
        }
       initTab(FALSE)
     })
     
-    ## Tab content with selected plot
+    ## Tab content with selected plot/table
     
-    plotUI <- reactiveVal(NULL)
-    observe(print(paste("Plot to create - UI side:", plotUI())))
-    plotServer <- reactiveVal(NULL)
-    observe(print(paste("Plot to create - server side:", plotServer())))
+    outputUI <- reactiveVal(NULL)
+    outputServer <- reactiveVal(NULL)
 
     # if plot is selected in the 'all' tab
     observeEvent(input$subcategory, 
-      if(input$subcategory %in% afschotPlots)
-        plotUI(input$subcategory)
+      if(input$subcategory %in% afschotOutputs)
+        outputUI(input$subcategory)
     )
 
     # if plot is selected based on the category cards
-    observeEvent(input$`trendYearRegionUI-button`, plotUI("trendYearRegionUI"))
-    observeEvent(input$`countYearProvinceUI-button`, plotUI("countYearProvinceUI-afschot"))
-    observeEvent(input$`yearlyShotAnimalsUI-button`, plotUI("yearlyShotAnimalsUI"))
-    observeEvent(input$`mapFlandersUI-button`, plotUI("mapFlandersUI"))
-    observeEvent(input$`tableProvinceUI-button`, plotUI("tableProvinceUI"))
-    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, plotUI("countYearShotUI-leeftijd_comp"))
-    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, plotUI("countYearShotUI-jachtmethode_comp"))
-    observeEvent(input$`F04_3-button`, plotUI("F04_3"))
+    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
+    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
+    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
+    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
+    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
+    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
+    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
+    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
 
     # Create plot - UI side
-    observeEvent(plotUI(), ignoreNULL = TRUE, {
-      plotName <- plotUI()
+    observeEvent(outputUI(), ignoreNULL = TRUE, {
+      plotName <- outputUI()
           
       # create the plot/table
       switch(plotName, 
@@ -336,7 +344,7 @@ afschotServer <- function(id){
             showCombinatie = TRUE,
             doHide = FALSE
           )
-          card <- "afschot-plots-vlaanderen"
+          card <- "output-vlaanderen"
          },
         "countYearProvinceUI-afschot" = {
           plot <- countYearProvinceUI(
@@ -346,7 +354,7 @@ afschotServer <- function(id){
             doHide = FALSE,
             plotFunction = "countYearProvinceUI-afschot"
           )
-          card <- "afschot-plots-vlaanderen"
+          card <- "output-vlaanderen"
         },
         "yearlyShotAnimalsUI" = {
           plot <- yearlyShotAnimalsUI(
@@ -355,7 +363,7 @@ afschotServer <- function(id){
             specie = results$specie(),
             doHide = FALSE
           )
-          card <- "afschot-plots-vlaanderen"
+          card <- "output-vlaanderen"
         },
         "mapFlandersUI" = {
           plot <- mapFlandersUI(
@@ -364,14 +372,14 @@ afschotServer <- function(id){
             uiText = uiText, specie = results$specie(), 
             typeTitle = "afschot"
           )
-          card <- "afschot-plots-regio"
+          card <- "output-regio"
         },
         "tableProvinceUI" = {
           plot <- tableProvinceUI(
             id = ns(plotName), doHide = FALSE,
             uiText = uiText, context = "description", specie = results$specie()
           )
-          card <- "afschot-plots-leeftijdcategorie"
+          card <- "output-leeftijdcategorie"
         },
         "countYearShotUI-leeftijd_comp" = {
           plot <- countYearShotUI(
@@ -380,7 +388,7 @@ afschotServer <- function(id){
             uiText = uiText, context = "description", specie = results$specie(),
             doHide = FALSE
           )
-          card <- "afschot-plots-leeftijdcategorie"
+          card <- "output-leeftijdcategorie"
         },
         "countYearShotUI-jachtmethode_comp" = {
           plot <- countYearShotUI(
@@ -389,7 +397,7 @@ afschotServer <- function(id){
             uiText = uiText, context = "description", specie = results$specie(),
             doHide = FALSE
           )
-          card <- "afschot-plots-jachtmethode"
+          card <- "output-jachtmethode"
         },
         "F04_3" = {
           plot <- countYearProvinceUI(
@@ -399,40 +407,29 @@ afschotServer <- function(id){
             doHide = FALSE,
             regionLevels = 1:4
           )
-          card <- "afschot-plots-jachtmethode"
+          card <- "output-jachtmethode"
         }
       )
 
       # include plot/table in UI
       cnt <- ifelse(
-        input$subcategory %in% afschotPlots,
-        paste0("afschot-plots-", plotName),
+        input$subcategory %in% afschotOutputs,
+        paste0("plots-", plotName),
         card
       )
       output[[cnt]] <- renderUI(plot)
       
       # re-set in case plot selected via tab after/before category card
-      plotUI(NULL)
+      outputUI(NULL)
      
       # activate server-side update
-      plotServer(plotName)
+      outputServer(plotName)
       
-    })
-    
-    # Update plot in path
-    output$pathPlot <- renderText({
-      if(isTruthy(plotServer()))
-        getOutputTitle(
-          output = plotServer(), 
-          uiText = uiText, specie = results$specie(), type = "afschot",
-          n = 55
-        )
-      else ""
     })
 
     # Create plot - server side
-    observeEvent(plotServer(), ignoreNULL = TRUE, {
-      plotName <- plotServer()
+    observeEvent(outputServer(), ignoreNULL = TRUE, {
+      plotName <- outputServer()
       
       switch(plotName,
         "trendYearRegionUI" = trendYearRegionServer(
@@ -496,8 +493,10 @@ afschotServer <- function(id){
           timeRange = reactive(range(results$drukjachtData()$afschotjaar))
         )
       )
+      outputName(plotName)
+      
       # re-set in case plot selected via tab after/before category card
-      plotServer(NULL)
+      outputServer(NULL)
     })
       
     ## Output

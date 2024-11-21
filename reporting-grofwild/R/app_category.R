@@ -27,7 +27,8 @@ getTabTitle <- function(value, category){
         type = "Schadegevallen per type schade",
         seizoen = "Schadegevallen per seizoen",
         kosten = "Inschatting kosten",
-        informatie = "Informatie over schadegevallen"
+        informatie = "Informatie over schadegevallen",
+        "Alle grafieken/tabellen"
     ),
     populatie = 
       switch(value,
@@ -35,13 +36,15 @@ getTabTitle <- function(value, category){
         onderkaak = "Onderkaak gegevens",
         geslacht = "Geslacht",
         voortplanting = "Voortplanting",
-        informatie = "Informatie over populatie"
+        informatie = "Informatie over populatie",
+        "Alle grafieken/tabellen"
       ),
     verspreiding = 
       switch(value,
         huidig = "Huidige verspreiding",
         toekomstig = "Toekomstige verspreiding",
-        informatie = "Informatie over verspreiding"
+        informatie = "Informatie over verspreiding",
+        "Alle grafieken/tabellen"
       )
   )
   
@@ -61,8 +64,19 @@ getTabTitle <- function(value, category){
 #' @author lcougnaud
 getOutputTitle <- function(output, 
   uiText, specie = NULL, type = NULL, n = integer()){
+
+  # check if output name formatted as 'output-[type]'
+  outputInfo <- strsplit(output, split = "-")[[1]]
+  if(
+    !is.null(type) && type == "schade" && 
+    length(outputInfo) == 2 && outputInfo[2] != type){
+    outputFunction <- outputInfo[1]
+    type <- outputInfo[2]
+  }else{
+    outputFunction <- output
+  }
   
-  title <- uiText[which(uiText$plotFunction == output), "title"]
+  title <- uiText[which(uiText$plotFunction == outputFunction), "title"]
   
   if(!is.null(specie)){
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
@@ -138,7 +152,7 @@ getOutputDescription <- function(output,
       format(maxDate, "%d/%m/%Y"), text)
   
   # Handling embedded quoting
-  description <- gsub("\\\\", "\"", text)
+  text <- gsub("\\\\", "\"", text)
 
   return(text)
   
@@ -252,5 +266,39 @@ tabPanelInformatie <- function(
       )
     )
   )
+  
+}
+
+#' Get 'All plots/tables' tab panel for a 'Category' page
+#' @inheritParams welcomeSectionUI 
+#' @param plots Character vector with all plots to include.
+#' The name should match the name in \code{uiText}
+#' @inherit shiny::navbarMenu return
+#' @importFrom shiny navbarMenu NS
+#' @author lcougnaud
+tabPanelAll <- function(category, outputs, uiText, id){
+  
+  ns <- NS(namespace = id)
+  
+  args <- lapply(outputs, function(output){
+
+    title <- getOutputTitle(
+      output = output, #specie = specie(), 
+      uiText = uiText, type = category
+     )
+     title <- sub(" (van)*(op)*(voor)* \\{wildsoort\\}(,)*", "", title)
+     
+     tabPanel(
+      title = title, 
+      value = output, 
+      uiOutput(outputId = ns(paste0("plots-", output)))
+    )
+        
+  })
+
+  args[["title"]] <- getTabTitle(value = "all", category = category)
+  args[["menuName"]] <- "all"
+  
+  do.call(shiny::navbarMenu, args)
   
 }

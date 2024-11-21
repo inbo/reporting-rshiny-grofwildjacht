@@ -1,3 +1,9 @@
+populatieOutputs <- c(
+  "boxAgeWeightUI", 
+  "countAgeCheekUI", "countAgeGenderUI", "countEmbryosUI", 
+  "countAgeGroupUI"
+)
+
 #' UI for the 'populatie indicatoren' Category page
 #' @param id id character, module id
 #' @inherit shiny::verticalLayout return
@@ -67,6 +73,12 @@ populatieUI <- function(id, specie){
             ), 
             value = "voortplanting",
             uiOutput(outputId = ns("output-voortplanting"))
+          ),
+          # menu with all plots/tables
+          tabPanelAll(
+            category = "populatie", id = id,
+            outputs = populatieOutputs, 
+            uiText = uiText
           ),
           tabPanelInformatie(
             category = "populatie", id = id, 
@@ -169,6 +181,22 @@ populatieServer <- function(id){
       )
     )
     
+    # Update plot in path
+    observeEvent(outputName(), ignoreNULL = TRUE,
+      output$pathPlot <- renderText(
+        if(outputName() == ""){
+          ""
+        }else{
+          getOutputTitle(
+            output = outputName(), 
+            uiText = uiText, specie = results$specie(), 
+            type = "populatie",
+            n = 55
+          )
+        }
+      )
+    )
+    
     ## Sidebar with input parameters
     
     # Specie image	
@@ -187,6 +215,8 @@ populatieServer <- function(id){
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$subcategory, initTab(TRUE))
+    
+    outputName <- reactiveVal(NULL)
 
     # Create tab
     observe(if(initTab()){
@@ -212,6 +242,7 @@ populatieServer <- function(id){
                 categoryCardPopulatie(output = "boxAgeWeightUI")
               )
             )
+            outputName("")
           },
           onderkaak = {
             output$`output-onderkaak` <- renderUI(          
@@ -220,6 +251,7 @@ populatieServer <- function(id){
                 categoryCardPopulatie(output = "countAgeCheekUI")
               )
             )
+            outputName("")
           },
           geslacht = {
             output$`output-geslacht` <- renderUI(          
@@ -228,6 +260,7 @@ populatieServer <- function(id){
                 categoryCardPopulatie(output = "countAgeGenderUI")
               )
             )
+            outputName("")
           },
           voortplanting = {
             output$`output-voortplanting` <- renderUI(          
@@ -237,127 +270,136 @@ populatieServer <- function(id){
                 categoryCardPopulatie(output = "countAgeGroupUI")
               )
             )
+            outputName("")
           }
         )
-        
       }
-      
-      outputCreated("")# reset path
       initTab(FALSE)
-      
     })
   
     ## Tab content with selected plot/table
-
-    # UI
-    observeEvent(input$`boxAgeWeightUI-button`, {
-      output$`output-leeggewicht` <- renderUI(
-        boxAgeWeightUI(
-          id = ns(id), 
-          uiText = uiText, context = "description",
-          specie = results$specie(),
-          doHide = FALSE
-        )
-      )
-       outputCreated("boxAgeWeightUI")
-    })
-
-    observeEvent(input$`countAgeCheekUI-button`, {
-      output$`output-onderkaak` <- renderUI(
-        countAgeCheekUI(
-          id = ns(id), 
-          uiText = uiText, context = "description",
-          specie = results$specie(),
-          doHide = FALSE
-        )
-      )
-      outputCreated("countAgeCheekUI")
-    })
-
-    observeEvent(input$`countAgeGenderUI-button`, {
-      output$`output-geslacht` <- renderUI(
-        countAgeGenderUI(
-          id = ns(id), 
-          uiText = uiText, context = "description",
-          specie = results$specie(),
-          doHide = FALSE
-        )
-      )
-      outputCreated("countAgeGenderUI")
-    })
-
-    observeEvent(input$`countEmbryosUI-button`, {
-      output$`output-voortplanting` <- renderUI(
-        countEmbryosUI(
-          id = ns(id), 
-          regionLevels = c(1:2, 4),
-          uiText = uiText, context = "description",
-          specie = results$specie(),
-          doHide = FALSE
-        )
-      )
-      outputCreated("countEmbryosUI")
-    })
-
-    # dash plot F16_1
-    observeEvent(input$`countAgeGroupUI-button`, {
-      output$`output-voortplanting` <- renderUI(
-        countAgeGroupUI(
-          id = ns(id), 
-          uiText = uiText, context = "description",
-          specie = results$specie(),
-          doHide = FALSE
-        )
-      )
-      outputCreated("countAgeGroupUI")
-    })
-
-    observe(print(outputCreated()))
     
-    # Update plot in path
-    output$pathPlot <- renderText({
-      if(isTruthy(outputCreated()))
-        getOutputTitle(
-          output = outputCreated(), 
-          uiText = uiText, specie = results$specie(), 
-            type = "populatie",
-          n = 55
-        )
-      else ""
+    outputUI <- reactiveVal(NULL)
+    outputServer <- reactiveVal(NULL)
+    
+    # if plot is selected in the 'all' tab
+    observeEvent(input$subcategory, 
+      if(input$subcategory %in% populatieOutputs)
+        outputUI(input$subcategory)
+    )
+    
+    # if plot is selected based on the category cards
+    observeEvent(input$`boxAgeWeightUI-button`, outputUI("boxAgeWeightUI"))
+    observeEvent(input$`countAgeCheekUI-button`, outputUI("countAgeCheekUI"))
+    observeEvent(input$`countAgeGenderUI-button`, outputUI("countAgeGenderUI"))
+    observeEvent(input$`countEmbryosUI-button`, outputUI("countEmbryosUI"))
+    observeEvent(input$`countAgeGroupUI-button`, outputUI("countAgeGroupUI"))
+
+    # Create plot - UI side
+    observeEvent(outputUI(), ignoreNULL = TRUE, {
+      plotName <- outputUI()
+      
+      # create the plot/table
+      switch(plotName, 
+          
+        "boxAgeWeightUI" = {
+          plot <- boxAgeWeightUI(
+            id = ns(plotName), 
+            uiText = uiText, context = "description",
+            specie = results$specie(),
+            doHide = FALSE
+          )
+          card <- "output-leeggewicht"
+        },
+        "countAgeCheekUI" = {
+          plot <- countAgeCheekUI(
+            id = ns(plotName), 
+            uiText = uiText, context = "description",
+            specie = results$specie(),
+            doHide = FALSE
+          )
+          card <- "output-onderkaak"
+        },
+        "countAgeGenderUI" = {
+          plot <- countAgeGenderUI(
+            id = ns(plotName), 
+            uiText = uiText, context = "description",
+            specie = results$specie(),
+            doHide = FALSE
+          )
+          card <- "output-geslacht"
+        },
+        "countEmbryosUI" = {
+          plot <- countEmbryosUI(
+            id = ns(plotName), 
+            regionLevels = c(1:2, 4),
+            uiText = uiText, context = "description",
+            specie = results$specie(),
+            doHide = FALSE
+          )
+          card <- "output-voortplanting"
+        },
+        "countAgeGroupUI" = {# dash plot F16_1
+          plot <- countAgeGroupUI(
+            id = ns(plotName), 
+            uiText = uiText, context = "description",
+            specie = results$specie(),
+            doHide = FALSE
+          )
+          card <- "output-voortplanting"
+        }
+      )
+      
+      # include plot/table in UI
+      cnt <- ifelse(
+        input$subcategory %in% populatieOutputs,
+        paste0("plots-", plotName),
+        card
+      )
+      output[[cnt]] <- renderUI(plot)
+      
+      # re-set in case plot selected via tab after/before category card
+      outputUI(NULL)
+      
+      # activate server-side update
+      outputServer(plotName)
+
     })
 
-    # Server
-    observe(
-      switch(outputCreated(),
-        boxAgeWeightUI = boxAgeWeightServer(
-          id = id,
+    # Create plot - server side
+    observeEvent(outputServer(), ignoreNULL = TRUE, {
+      plotName <- outputServer()
+      
+      switch(plotName,
+        "boxAgeWeightUI" = boxAgeWeightServer(
+          id = plotName,
           data = results$combinedData,
           type = results$leeftijdtypes,
           timeRange = reactive(if (results$specie() == "Ree")
             c(2014, max(results$timeRange())) else 
               results$timeRange())
         ),
-        countAgeCheekUI = countAgeCheekServer(
-          id = id,
+        "countAgeCheekUI" = countAgeCheekServer(
+          id = plotName,
           data = results$ecoData,
           timeRange = reactive(if (results$specie() == "Ree")
             c(2005, max(results$timeRange())) else 
             results$timeRange())
         ),
-        countAgeGenderUI = countAgeGenderServer(
-          id = id,
+        "countAgeGenderUI" = countAgeGenderServer(
+          id = plotName,
           data = results$ecoData,
           timeRange = results$timeRange
         ),
-        countEmbryosUI = countEmbryosServer(
-          id = id,
+        "countEmbryosUI" = countEmbryosServer(
+          id = plotName,
           data = results$combinedData,
           timeRange = results$timeRange,
           types = results$typesFemale,
           uiText = uiText
         ),
-        countAgeGroupUI = countAgeGroupServer(
-          id = id,
+        "countAgeGroupUI" = countAgeGroupServer(
+          id = plotName,
           data = reactive({
             plotData <- results$ecoData()[
               results$ecoData()$geslacht_comp == "Vrouwelijk", 
@@ -373,7 +415,11 @@ populatieServer <- function(id){
           groupVariable = "reproductiestatus"
         )
       )
-    )
+      outputName(plotName)
+      
+      # re-set in case plot selected via tab after/before category card
+      outputServer(NULL)
+    })
       
     ## Output
       

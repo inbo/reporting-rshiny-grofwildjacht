@@ -1,3 +1,5 @@
+verspreidingOutputs <- c("mapFlandersUI", "mapSpreadUI")
+
 #' UI for the 'verspreiding' Category page
 #' @param id id character, module id
 #' @inherit shiny::verticalLayout return
@@ -55,6 +57,12 @@ verspreidingUI <- function(id, specie){
             value = "toekomstig",
             uiOutput(outputId = ns("output-toekomstig"))
           ),
+          # menu with all plots/tables
+          tabPanelAll(
+            category = "verspreiding", id = id,
+            outputs = verspreidingOutputs, 
+            uiText = uiText
+          ),
           tabPanelInformatie(
             category = "verspreiding", id = id, 
             uiText = uiText, 
@@ -81,7 +89,7 @@ verspreidingServer <- function(id){
     ns <- session$ns
     
     ## initialization
-    outputCreated <- reactiveVal(value = NULL)
+    outputName <- reactiveVal(NULL)
     nextPage <- reactiveVal(value = NULL)
     
     ## input
@@ -145,6 +153,22 @@ verspreidingServer <- function(id){
       )
     )
     
+    # Update plot in path
+    observeEvent(outputName(), ignoreNULL = TRUE,
+      output$pathPlot <- renderText(
+        if(outputName() == ""){
+          ""
+        }else{
+          getOutputTitle(
+            output = outputName(), 
+            uiText = uiText, specie = results$specie(), 
+            type = "verspreiding",
+            n = 55
+          )
+        }
+      )
+    )
+    
     ## Sidebar with input parameters
     
     # Specie image	
@@ -191,6 +215,7 @@ verspreidingServer <- function(id){
                 )
               )
             )
+            outputName("")
           },
             
           toekomstig = {
@@ -200,75 +225,87 @@ verspreidingServer <- function(id){
                 categoryCardVerspreiding(output = "mapSpreadUI")
               )
             )
+            outputName("")
           }
         )
-        
       }
-      
-      outputCreated("")# reset path
       initTab(FALSE)
-      
     })
   
     ## Tab content with selected plot/table
 
-    # UI
-
-    # dash plot F17_1
-    observeEvent(input$`mapFlandersUI-button`, {
-      output$`output-huidig` <- renderUI(
-        mapFlandersUI(
-          id = ns("huidig"), 
-          uiText = uiText, output = "F17_1", 
-          specie = results$specie(),
-          showCombine = FALSE, type = "dash",
-          mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
-          showRegion = TRUE,
-          regionChoices = c(
-            "Vlaanderen" = "flanders",
-            "Provincie" = "provinces", 
-            "Faunabeheerzones" = "faunabeheerzones",
-            "Gemeente" = "communes"
-          ),
-          unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
-          plotDetails = ""#, showTitle = FALSE
-        )
-      )
-      outputCreated("mapFlandersUI")
-    })
-
-    # dash plot F17_4
-    observeEvent(input$`mapSpreadUI-button`, {
-      output$`output-toekomstig` <- renderUI(
-         mapSpreadUI(
-          id = ns("toekomstig"), 
-          uiText = uiText, context = "description",
-          specie = results$specie(),
-          doHide = FALSE
-        )
-      )
-       outputCreated("mapSpreadUI")
-    })
-
-    observe(print(outputCreated()))
+    outputUI <- reactiveVal(NULL)
+    outputServer <- reactiveVal(NULL)
     
-    # Update plot in path
-    output$pathPlot <- renderText({
-      if(isTruthy(outputCreated()))
-        getOutputTitle(
-          output = outputCreated(), 
-          uiText = uiText, specie = results$specie(), 
-            type = "verspreiding",
-          n = 55
-        )
-      else ""
+    # if plot is selected in the 'all' tab
+    observeEvent(input$subcategory, 
+      if(input$subcategory %in% verspreidingOutputs)
+        outputUI(input$subcategory)
+    )
+
+    # if plot is selected based on the category cards
+    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
+    observeEvent(input$`mapSpreadUI-button`, outputUI("mapSpreadUI"))
+    
+    # Create plot - UI side
+    observeEvent(outputUI(), ignoreNULL = TRUE, {
+      plotName <- outputUI()
+          
+      # create the plot/table
+      switch(plotName, 
+        "mapFlandersUI" = {
+          plot <- mapFlandersUI(
+            id = ns(plotName), 
+            uiText = uiText, output = "F17_1", 
+            specie = results$specie(),
+            showCombine = FALSE, type = "dash",
+            mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
+            showRegion = TRUE,
+            regionChoices = c(
+              "Vlaanderen" = "flanders",
+              "Provincie" = "provinces", 
+              "Faunabeheerzones" = "faunabeheerzones",
+              "Gemeente" = "communes"
+            ),
+            unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+            plotDetails = ""#, showTitle = FALSE
+          )
+          card <- "output-huidig"
+        },
+        "mapSpreadUI" = {
+          plot <- mapSpreadUI(
+            id = ns(plotName), 
+            uiText = uiText, context = "description",
+            specie = results$specie(),
+            doHide = FALSE
+          )
+          card <- "output-toekomstig"
+        }
+      )
+      
+      # include plot/table in UI
+      cnt <- ifelse(
+        input$subcategory %in% verspreidingOutputs,
+        paste0("plots-", plotName),
+        card
+      )
+      output[[cnt]] <- renderUI(plot)
+      
+      # re-set in case plot selected via tab after/before category card
+      outputUI(NULL)
+      
+      # activate server-side update
+      outputServer(plotName)
+      
     })
 
-    # Server
-    observe(
-      switch(outputCreated(),
+    # Create plot - server side
+    observeEvent(outputServer(), ignoreNULL = TRUE, {
+      plotName <- outputServer()
+      
+      switch(plotName,
         mapFlandersUI = mapFlandersServer(
-          id = "huidig",
+          id = plotName,
           defaultYear = defaultYear,
           species = results$specie,
           type = "dash",
@@ -280,13 +317,17 @@ verspreidingServer <- function(id){
           uiText = uiText, outputFunction = "F17_1", context = "description"
         ),
         mapSpreadUI = mapSpreadServer(
-          id = "toekomstig",
+          id = plotName,
           allSpatialData = spatialData,
           species = results$specie(),
           type = "F17_4"
         )
       )
-    )
+      outputName(plotName)
+      
+      # re-set in case plot selected via tab after/before category card
+      outputServer(NULL)
+    })
       
     ## Output
       

@@ -108,7 +108,7 @@ schadeServer <- function(id){
     ns <- session$ns
     
     ## initialization
-    outputCreated <- reactiveVal(value = NULL)
+    outputName <- reactiveVal(NULL)
     nextPage <- reactiveVal(value = NULL)
     
     ## input
@@ -205,8 +205,6 @@ schadeServer <- function(id){
     # Go back to page if subcategory is clicked on in the path
     observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
     observeEvent(input$subcategory, initTab(TRUE))
-    
-    outputName <- reactiveVal(NULL)
 
     # Create tab
     observe(if(initTab()){
@@ -301,10 +299,7 @@ schadeServer <- function(id){
         )
         
       }
-      
-      outputCreated("")# reset path
       initTab(FALSE)
-      
     })
   
     ## Tab content with selected plot/table

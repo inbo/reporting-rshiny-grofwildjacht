@@ -286,7 +286,8 @@ tabPanelAll <- function(category, outputs, uiText, id){
       output = output, #specie = specie(), 
       uiText = uiText, type = category
      )
-     title <- sub(" (van)*(op)*(voor)* \\{wildsoort\\}(,)*", "", title)
+     # shorten title
+     title <- sub(" (van )*(op )*(voor )*\\{wildsoort\\}(,)*", "", title)
      
      tabPanel(
       title = title, 

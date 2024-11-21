@@ -17,7 +17,8 @@ getTabTitle <- function(value, category){
         regio =  "Afschot per regio",
         leeftijdcategorie = "Afschot per leeftijdscategorie",
         jachtmethode = "Afschot per jachtmethode",
-        informatie = "Informatie over beheer"
+        informatie = "Informatie over beheer",
+        "Alle grafieken/tabellen"
       ),
     schade = 
       switch(value,

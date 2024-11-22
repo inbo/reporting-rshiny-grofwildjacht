@@ -392,7 +392,7 @@ schadeServer <- function(id){
           card <- "output-type"
         },
         "tableSchadeUI" = {
-          tableSchadeUI(
+          plot <- tableSchadeUI(
             id = ns(plotName), 
             uiText = uiText, context = "description",
             specie = results$specie(),

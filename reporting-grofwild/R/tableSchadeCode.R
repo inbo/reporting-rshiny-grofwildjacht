@@ -34,8 +34,9 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
     stop("Niet beschikbaar")
-  }    
-  type = match.arg(type)
+  }
+  
+  type <- match.arg(type)
   
   if (!"GEWAS" %in% schadeChoices)
     schadeChoicesGewas <- NULL
@@ -196,7 +197,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
       
       ns <- session$ns
       
-      callModule(module = optionsModuleServer, id = id, 
+      callModule(module = optionsModuleServer, id = "tableSchade", 
         data = data,
         types = types,
         labelTypes = labelTypes,
@@ -205,7 +206,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
       )
       
       callModule(
-        module = plotModuleServer, id = id,
+        module = plotModuleServer, id = "tableSchade",
         plotFunction = "tableSchadeCode", 
         data = data,
         schadeChoices = schadeChoices,

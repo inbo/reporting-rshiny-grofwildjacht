@@ -16,7 +16,7 @@
 #' 
 #' @author mvarewyck
 #' @export
-fullNames <- function(x, type = "maanden", rev = FALSE) {
+getFullNames <- function(x, type = "maanden", rev = FALSE) {
   
   type <- match.arg(type)
   

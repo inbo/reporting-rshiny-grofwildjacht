@@ -18,13 +18,6 @@ schadeUI <- function(id, specie){
   
   # header
   tagList(
-        
-    headerUI(
-      path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, #specie = specie, 
-      category = "Schade",
-      subcategory = getTabTitle(value = "vlaanderen", category = "schade")
-    ),
             
     # image
     fluidRow(
@@ -101,7 +94,7 @@ schadeUI <- function(id, specie){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-schadeServer <- function(id){
+schadeServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){  
         
@@ -114,7 +107,7 @@ schadeServer <- function(id){
     ## input
     results <- reactiveValues(renderedTabs = "Schade")
     
-    results$specie <- reactive(input$specie)
+    results$specie <- reactive(specie)
     
     # Filter data upon user choices
     results$schade_data <- reactive({
@@ -148,38 +141,9 @@ schadeServer <- function(id){
       range(results$schade_data()$afschotjaar)
     ) 
     
-    ## Header
-    
-    # Update specie in path
-    output$pathSpecie <- renderUI(
-      actionLink(
-        inputId = ns("pathSpecie-button"), 
-        label = results$specie()
-      )    
-    )
-    
-    # Update subcategory in path
-    output$pathSubcategory <- renderUI(
-      actionLink(
-        inputId = ns("pathSubcategory-button"), 
-        label = getTabTitle(
-          value = input$subcategory, 
-          category = "schade"
-        )
-      )
-    )
-    
     ## Sidebar with input parameters
     
-    # Specie image	
-    output$`specie-image` <- renderImage(
-      list(src = getSpecieImage(specie = results$specie()), width = "100%")
-      , deleteFile = FALSE)
-    
-    # Specie latin name
-    output$`specie-name` <- renderText(
-      paste("Latijn:", getLatinName(specie = results$specie()))
-    )
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     # show/hide filters
     observe(
@@ -628,15 +592,15 @@ schadeServer <- function(id){
 }
 
 #' Wrapper for the sidebar of the 'schade' Category page
-#' @inheritParams categorySidebarPanel
-#' @inherit categorySidebarPanel return
+#' @inheritParams specieSidebarUI
+#' @inherit specieSidebarUI return
 #' @author lcougnaud
 schadePanel <- function(id, specie, ...){
   
   ns <- NS(namespace = id)
   
-  categorySidebarPanel(
-    id = id, specie = specie,
+  specieSidebarUI(
+    id = ns("sidebar"), specie = specie,
     bottomExtra = tagList(
       br(),
       # Select type schade

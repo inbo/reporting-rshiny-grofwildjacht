@@ -16,14 +16,6 @@ afschotUI <- function(id, specie){
   ns <- NS(namespace = id)
       
   verticalLayout(
-          
-    # header
-    headerUI(
-      path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, #specie = id, 
-      category = "Beheer",
-      subcategory = getTabTitle(value = "vlaanderen", category = "afschot")
-    ),
             
     # image
     fluidRow(
@@ -34,7 +26,7 @@ afschotUI <- function(id, specie){
     
     sidebarLayout(
         
-      sidebarPanel = categorySidebarPanel(id = id, specie = specie),
+      sidebarPanel = specieSidebarUI(id = ns("sidebar"), specie = specie),
         
       mainPanel = mainPanel(
 
@@ -94,7 +86,7 @@ afschotUI <- function(id, specie){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-afschotServer <- function(id){
+afschotServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){  
         
@@ -107,7 +99,7 @@ afschotServer <- function(id){
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
     
-    results$specie <- reactive(input$specie)
+    results$specie <- reactive(specie)
     
     results$ecoData <- reactive(
       ecoData[ecoData$wildsoort == results$specie(), ]
@@ -192,53 +184,9 @@ afschotServer <- function(id){
       return(drukjachtData)
     })
     
-    ## Header
-        
-    # Update specie in path
-    output$pathSpecie <- renderUI(
-      actionLink(
-        inputId = ns("pathSpecie-button"), 
-        label = results$specie()
-      )    
-    )
-    
-    # Update subcategory in path
-    output$pathSubcategory <- renderUI(
-      actionLink(
-        inputId = ns("pathSubcategory-button"), 
-        label = getTabTitle(
-          value = input$subcategory, 
-          category = "afschot"
-        )
-      )
-    )
-    
-    # Update plot in path
-    observeEvent(outputName(), ignoreNULL = TRUE,
-      output$pathPlot <- renderText(
-        if(outputName() == ""){
-          ""
-        }else{
-          getOutputTitle(
-            output = outputName(), 
-            uiText = uiText, specie = results$specie(), 
-            type = "afschot"
-          )
-        }
-      )
-    )
-    
     ## Sidebar panel
     
-    # Specie image	
-    output$`specie-image` <- renderImage(
-      list(src = getSpecieImage(specie = results$specie()), width = "100%")
-      , deleteFile = FALSE)
-    
-    # Specie latin name
-    output$`specie-name` <- renderText(
-      paste("Latijn:", getLatinName(specie = results$specie()))
-    )
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Tab with available plots
     

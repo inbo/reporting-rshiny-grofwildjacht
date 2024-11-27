@@ -15,14 +15,6 @@ populatieUI <- function(id, specie){
   ns <- NS(namespace = id)
       
   verticalLayout(
-          
-    # header
-    headerUI(
-      path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, #specie = specie, 
-      category = "Populatie indicatoren",
-      subcategory = getTabTitle(value = "leeggewicht", category = "populatie")
-    ),
             
     # image
     fluidRow(
@@ -34,7 +26,7 @@ populatieUI <- function(id, specie){
     # navigation page with plots and specie sidebar panel
     sidebarLayout(
           
-      sidebarPanel = categorySidebarPanel(id = id, specie = specie),
+      sidebarPanel = specieSidebarUI(id = ns("sidebar"), specie = specie),
           
       mainPanel = mainPanel(
           
@@ -99,7 +91,7 @@ populatieUI <- function(id, specie){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-populatieServer <- function(id){
+populatieServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){  
         
@@ -112,7 +104,7 @@ populatieServer <- function(id){
     ## input
     results <- reactiveValues(renderedTabs = "Populatie")
     
-    results$specie <- reactive(input$specie)
+    results$specie <- reactive(specie)
     
     # Create data upon user choices
     results$ecoData <- reactive(
@@ -160,54 +152,9 @@ populatieServer <- function(id){
       c(types, "Onbekend")
     })
     
-    ## Header
-    
-    # Update specie in path
-    output$pathSpecie <- renderUI(
-      actionLink(
-        inputId = ns("pathSpecie-button"), 
-        label = results$specie()
-      )    
-    )
-    
-    # Update subcategory in path
-    output$pathSubcategory <- renderUI(
-      actionLink(
-        inputId = ns("pathSubcategory-button"), 
-        label = getTabTitle(
-          value = input$subcategory, 
-          category = "populatie"
-        )
-      )
-    )
-    
-    # Update plot in path
-    observeEvent(outputName(), ignoreNULL = TRUE,
-      output$pathPlot <- renderText(
-        if(outputName() == ""){
-          ""
-        }else{
-          getOutputTitle(
-            output = outputName(), 
-            uiText = uiText, specie = results$specie(), 
-            type = "populatie",
-            n = 55
-          )
-        }
-      )
-    )
-    
     ## Sidebar with input parameters
     
-    # Specie image	
-    output$`specie-image` <- renderImage(
-      list(src = getSpecieImage(specie = results$specie()), width = "100%")
-      , deleteFile = FALSE)
-    
-    # Specie latin name
-    output$`specie-name` <- renderText(
-      paste("Latijn:", getLatinName(specie = results$specie()))
-    )
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Tab with available plots
     

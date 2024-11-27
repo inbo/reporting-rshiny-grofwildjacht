@@ -6,14 +6,11 @@
 #' @export
 specieUI <- function(id, specie){
   
+  ns <- NS(namespace = id)
+  
   tagList(
-      
-    #tags$head(tags$style("body{overflow-y:hidden;}")),
     
     verticalLayout(
-      
-      # header
-      headerUI(path = c("home", "specie"), id = id),
       
       # image
       fluidRow(
@@ -29,21 +26,7 @@ specieUI <- function(id, specie){
           
         position = "left", 
           
-        sidebarPanel = sidebarPanel(
-            
-          width = 3,
-              
-          selectInput(
-            inputId = NS(id, "wildsoort"), 
-            label = "Selecteer een diersoort:",
-            choices = schadeWildsoorten,
-            selected = specie
-          ),
-           
-          imageOutput(outputId = NS(id, "image"), height = "auto"),
-          textOutput(outputId = NS(id, "name"))
-        
-        ),
+        sidebarPanel = specieSidebarUI(id = ns("sidebar"), specie = specie),
         
         mainPanel = mainPanel(
           width = 9,
@@ -61,55 +44,23 @@ specieUI <- function(id, specie){
 
 #' Server function for the 'specie' page
 #' @inheritParams specieUI
-#' @return \link[shiny]{reactiveVal} with text of 
-#' redirected page: 'home' or one of the 'category' pages
+#' @return no returned value
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieServer <- function(id){
+specieServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){   
-        
-    # initialization
-    specie <- reactive(input$wildsoort)
-    nextPage <- reactiveVal(value = NULL)
-        
-    ## Header
-    
-    # Update specie in path
-    output$pathSpecie <- renderText(specie())
     
     ## Sidebar panel
- 
-    # Specie image	
-    output$image <- renderImage(
-      list(src = getSpecieImage(specie = specie()), width = "100%")
-    , deleteFile = FALSE)
-
-    # Specie latin name
-    output$name <- renderText(
-      paste("Latijn:", getLatinName(specie = specie()))
-    )
-
+    specieSidebarServer(id = "sidebar", specie = specie)
+      
     ## Main panel
     
     # Specie - available items/pages
-    output$items <- renderUI(getSpecieCards(id = id, specie = specie()))
+    output$items <- renderUI(getSpecieCards(id = id, specie = specie))
     
-    ## Output
-    
-    # Redirection:
-        
-    observeEvent(input$`pathHome`, {
-      print("specie: Go to home page")
-      nextPage("home")
-    })
-    observeEvent(input$cards, {
-      print(paste("specie: Go to category page:", input$cards, "with specie", specie()))
-      nextPage(structure(input$cards, specie = specie()))
-    })
-
-    return(reactive(nextPage()))
+    return(input$cards)
 
   })
 
@@ -171,18 +122,7 @@ getSpecieImage <- function(specie, relative = FALSE){
 #' @inheritParams getSpecieImage
 getSpecieCards <- function(id, specie){
   
-  baseApp <- (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
-  
-  values <- c(
-      if(baseApp)  "afschot",
-      if(specie %in% unlist(schadeWildsoorten))
-        "schade",
-      if(specie %in% c("Wild zwijn", "Ree"))
-        "populatie indicatoren",
-      if(baseApp)
-        c("verspreiding", "maatschappelijk draagvlak"),
-      "woordenlijst"
-  )
+  values <- getCategories(specie = specie)
   
   names <- lapply(values, function(type){
     foto <- paste0("specie-", gsub("[[:blank:]]", "-", type), ".png")

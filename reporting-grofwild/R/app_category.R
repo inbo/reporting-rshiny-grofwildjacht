@@ -11,7 +11,7 @@
 getTabTitle <- function(value, category){
   
   title <- switch(category,
-    afschot = 
+    beheer = 
       switch(value,
         vlaanderen = "Afschot in Vlaanderen",
         regio =  "Afschot per regio",
@@ -158,6 +158,29 @@ getOutputDescription <- function(output,
   
 }
 
+#' Get categories available for a specie
+#' @param specie string with specie
+#' @return character vector with available categories
+#' @author lcougnaud
+#' @export
+getCategories <- function(specie){
+  
+  baseApp <- (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
+  
+  categories <- c(
+    if(baseApp)  "beheer",
+    "schade",
+    if(specie %in% c("Wild zwijn", "Ree"))
+      "populatie-indicatoren",
+    if(baseApp)
+      c("verspreiding", "maatschappelijk-draagvlak"),
+    "woordenlijst"
+  )
+  
+  return(categories)
+  
+}
+
 #' Get category card for a specific output
 #' @param id id character, module id/specie
 #' @param output character, output name, e.g. 'trendYearRegionUI'
@@ -205,37 +228,6 @@ categoryCard <- function(id,
   )
   
   return(outputCard)
-  
-}
-
-#' Wrapper for the sidebar of the Category pages
-#' @param id character, module id
-#' @param specie character, specie
-#' @param topExtra (optional) extra elements to include at 
-#' the top of the sidebar
-#' @param bottomExtra (optional) extra elements to include at 
-#' the bottom of the sidebar
-#' @return shiny::sidebarPanel return
-#' @author lcougnaud
-categorySidebarPanel <- function(id, specie,
-  topExtra = NULL, bottomExtra = NULL){
-  
-  ns <- NS(namespace = id)
-  
-  sidebarPanel(
-    width = 3, 
-    id = ns("category-sidebar"), class = "category-sidebar",
-    topExtra,
-    selectInput(
-      inputId = ns("specie"), 
-      label = "Selecteer een diersoort:",
-      choices = schadeWildsoorten,
-      selected = specie
-    ),
-    imageOutput(outputId = ns("specie-image"), height = "auto"),
-    textOutput(outputId = ns("specie-name")),
-    bottomExtra
-  )
   
 }
 

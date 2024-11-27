@@ -217,6 +217,10 @@ p, li, label {
   background-color: #456394; 
 }
 
+.navbar .navbar-default{
+  margin-bottom: 0
+}
+
 .navbar-default .navbar-nav > li > a {
   color:#ffffff;
 }
@@ -232,8 +236,8 @@ p, li, label {
 
 /*right align 'information' and 'all plots/tables' tab*/
 
-.navbar .navbar-nav {float: none !important;}
-.navbar .navbar-nav > li:nth-last-child(-n + 2) {float: right;}
+/*.navbar .navbar-nav {float: none !important;}*/
+/*.navbar .navbar-nav > li:nth-last-child(-n + 3) {float: right;}*/
 
 /*overlay with header*/
 
@@ -243,10 +247,10 @@ p, li, label {
 
 .category-sidebar {margin-top: 75px;}
 
-.navbar {
-  left: -380px;
-  width: 100vw
-}
+/*.navbar {*/
+/*  left: -380px;*/
+/*  width: 100vw*/
+/*}*/
 
 /* custom info icon */
 .info_icon {

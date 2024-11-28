@@ -1,90 +1,3 @@
-populatieOutputs <- c(
-  "boxAgeWeightUI", 
-  "countAgeCheekUI", "countAgeGenderUI", "countEmbryosUI", 
-  "countAgeGroupUI"
-)
-
-#' UI for the 'populatie indicatoren' Category page
-#' @param id id character, module id
-#' @inherit shiny::verticalLayout return
-#' @import shiny
-#' @author lcougnaud
-#' @export
-populatieUI <- function(id, specie){
-  
-  ns <- NS(namespace = id)
-      
-  verticalLayout(
-            
-    # image
-    fluidRow(
-      column(width = 12, 
-        img(src = "www/category-populatie-header.png", width = "100%")
-      )
-    ),
-           
-    # navigation page with plots and specie sidebar panel
-    sidebarLayout(
-          
-      sidebarPanel = specieSidebarUI(id = ns("sidebar"), specie = specie),
-          
-      mainPanel = mainPanel(
-          
-        navbarPage(
-            
-          title = "",
-          
-          id = ns("subcategory"),
-          
-          selected = "informatie",
-                
-          tabPanel(
-            title = getTabTitle(
-              value = "leeggewicht", category = "populatie"
-            ), 
-            value = "leeggewicht",
-            uiOutput(outputId = ns("output-leeggewicht"))
-          ),
-          tabPanel(
-            title = getTabTitle(
-             value = "onderkaak", category = "populatie"
-            ), 
-            value = "onderkaak",
-            uiOutput(outputId = ns("output-onderkaak"))
-          ),
-          tabPanel(
-            title = getTabTitle(
-              value = "geslacht", category = "populatie"
-            ), 
-            value = "geslacht",
-            uiOutput(outputId = ns("output-geslacht"))
-          ),
-          tabPanel(
-            title = getTabTitle(
-              value = "voortplanting", category = "populatie"
-            ), 
-            value = "voortplanting",
-            uiOutput(outputId = ns("output-voortplanting"))
-          ),
-          # menu with all plots/tables
-          tabPanelAll(
-            category = "populatie", id = id,
-            outputs = populatieOutputs, 
-            uiText = uiText
-          ),
-          tabPanelInformatie(
-            category = "populatie", id = id, 
-            uiText = uiText,
-            maxDate = max(ecoData$afschot_datum, na.rm = TRUE),
-            specie = specie
-          )
-        )
-      )
-    )
-  )
-  
-}
-
 #' Server function for the 'populatie indicatoren' Category page
 #' @param id id character, module id
 #' @return Shiny module function
@@ -98,6 +11,7 @@ populatieServer <- function(id, specie){
     ns <- session$ns
     
     ## initialization
+    populatieOutputs <- getOutputs(category = "populatie")
     outputName <- reactiveVal(NULL)
     nextPage <- reactiveVal(value = NULL)
     

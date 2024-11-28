@@ -1,73 +1,3 @@
-verspreidingOutputs <- c("mapFlandersUI", "mapSpreadUI")
-
-#' UI for the 'verspreiding' Category page
-#' @param id id character, module id
-#' @inherit shiny::verticalLayout return
-#' @import shiny
-#' @author lcougnaud
-#' @export
-verspreidingUI <- function(id, specie){
-  
-  ns <- NS(namespace = id)
-      
-  verticalLayout(
-            
-    # image
-    fluidRow(
-      column(width = 12, 
-        img(src = "www/category-verspreiding-header.png", width = "100%")
-      )
-    ),
-           
-    # navigation page with plots and specie sidebar panel
-    sidebarLayout(
-          
-      sidebarPanel = specieSidebarUI(id = ns("sidebar"), specie = specie),
-      
-      mainPanel = mainPanel(
-          
-        navbarPage(
-            
-          title = "",
-          
-          id = ns("subcategory"),
-          
-          selected = "informatie",
-                
-          tabPanel(
-            title = getTabTitle(
-              value = "huidig", category = "verspreiding"
-            ), 
-            value = "huidig",
-            uiOutput(outputId = ns("output-huidig"))
-          ),
-          
-          tabPanel(
-            title = getTabTitle(
-              value = "toekomstig", category = "verspreiding"
-            ), 
-            value = "toekomstig",
-            uiOutput(outputId = ns("output-toekomstig"))
-          ),
-          # menu with all plots/tables
-          tabPanelAll(
-            category = "verspreiding", id = id,
-            outputs = verspreidingOutputs, 
-            uiText = uiText
-          ),
-          tabPanelInformatie(
-            category = "verspreiding", id = id, 
-            uiText = uiText, 
-            maxDate = max(ecoData$afschot_datum, na.rm = TRUE),
-            specie = specie
-          )
-        )
-      )
-    )
-  )
-  
-}
-
 #' Server function for the 'verspreiding' Category page
 #' @param id id character, module id
 #' @return Shiny module function
@@ -81,6 +11,7 @@ verspreidingServer <- function(id, specie){
     ns <- session$ns
     
     ## initialization
+    verspreidingOutputs <- getOutputs(category = "verspreiding")
     outputName <- reactiveVal(NULL)
     nextPage <- reactiveVal(value = NULL)
     

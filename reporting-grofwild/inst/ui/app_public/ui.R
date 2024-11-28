@@ -33,7 +33,7 @@ categoryTabs <- lapply(categories, function(category){
   
 })
 
-# build all subcategory tabs - contain plot and parameters
+# build all subcategory tabs - contain placeholder for cards 
 subcategoryTabs <- lapply(subcategories, function(subcategory){
    
   tabPanel(
@@ -44,13 +44,40 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
       # specie info
       sidebarPanel = specieSidebarUI(id = subcategory),
       
-      # plot/table
+      # cards
       mainPanel = mainPanel(width = 9,
         uiOutput(outputId = paste(subcategory, "output", sep = "-"))
       )
     )
   )
   
+})
+
+# build all output tabs - contain placeholder for plot/table and parameters
+outputTabs <- lapply(outputs, function(output){
+    
+#  
+#  if(category == "schade"){
+#    outputFct <- sub("(.+)(-[[:alnum:]]{1,})$", "\\1", output)
+#  }else outputFct <- output
+
+  category <- getCategoryOutput(output)
+  title <- getOutputTitle(output = output, 
+    uiText = uiText, n = 120, type = category)
+
+  tabPanel(
+    title = title,   
+    value = output,
+    sidebarLayout(position = "left", 
+      # specie info
+      sidebarPanel = specieSidebarUI(id = output),
+      # plot/table
+      mainPanel = mainPanel(width = 9,
+        uiOutput(outputId = paste(output, "output", sep = "-"))
+      )
+    )
+  )
+
 })
 
 shinyUI(
@@ -101,6 +128,12 @@ shinyUI(
         append(
           list(title = htmlOutput("subcategory", inline = TRUE)), 
           subcategoryTabs
+        )
+      ),
+      do.call(navbarMenu,
+        append(
+          list(title = htmlOutput("output", inline = TRUE)), 
+          outputTabs
         )
       ),
       

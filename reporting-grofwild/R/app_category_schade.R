@@ -1,93 +1,3 @@
-schadeOutputs <- c(
-  "tableSchadeSummaryUI", "trendYearFlandersUI", 
-  "countYearProvinceUI-schade", "mapFlandersUI-schade", 
-  "countYearSchadeUI-wildschade", "mapSchadeUI-wildschade", 
-  "tableSchadeUI", "countYearSchadeUI-gewas", "tableGewasUI", 
-  "countYearSchadeUI-seizoen", "mapSchadeUI-seizoen", "barCostUI"
-)
-
-#' UI for the 'schade' Category page
-#' @param id id character, module id
-#' @inherit shiny::verticalLayout return
-#' @import shiny
-#' @author lcougnaud
-#' @export
-schadeUI <- function(id, specie){
-  
-  ns <- NS(namespace = id)
-  
-  # header
-  tagList(
-            
-    # image
-    fluidRow(
-      column(width = 12, 
-        img(src = "www/category-schade-header.png", width = "100%")
-      )
-    ),
-    
-    sidebarLayout(
-    
-      sidebarPanel = schadePanel(id = id, specie = specie),
-    
-      mainPanel = mainPanel(
-  
-        div(class = "navbar-schade", 
-        navbarPage(
-          
-          id = ns("subcategory"),
-          
-          selected = "informatie",
-          
-          title = "",
-          
-          # navigation bar overlays side bar
-          position = "static-top", #"fixed-top",
-          
-          tabPanel(
-            title = getTabTitle(value = "vlaanderen", category = "schade"), 
-            value = "vlaanderen",
-            uiOutput(outputId = ns("output-vlaanderen"))
-          ),
-          tabPanel(
-            title = getTabTitle(value = "regio", category = "schade"), 
-            value = "regio",
-            uiOutput(outputId = ns("output-regio"))
-          ),
-          tabPanel(
-            title = getTabTitle(value = "type", category = "schade"), 
-            value = "type",
-            uiOutput(outputId = ns("output-type"))
-          ),
-          tabPanel(
-            title = getTabTitle(value = "seizoen", category = "schade"), 
-            value = "seizoen",
-            uiOutput(outputId = ns("output-seizoen"))
-          ),
-          tabPanel(
-            title = getTabTitle(value = "kosten", category = "schade"), 
-            value = "kosten",
-            uiOutput(outputId = ns("output-kosten"))
-          ),
-          # menu with all plots/tables
-          tabPanelAll(
-            category = "schade", id = id,
-            outputs = schadeOutputs, 
-            uiText = uiText
-          ),
-          tabPanelInformatie(
-            category = "schade", id = id, 
-            uiText = uiText, 
-            maxDate = max(schadeData$afschot_datum, na.rm = TRUE),
-            specie = specie
-          )
-        ))
-       )
-    )
-  )
-  
-}
-
 #' Server function for the 'afschot' Category page
 #' @param id id character, module id/specie
 #' @return Shiny module function
@@ -101,6 +11,7 @@ schadeServer <- function(id, specie){
     ns <- session$ns
     
     ## initialization
+    schadeOutputs <- getOutputs(category = category)
     outputName <- reactiveVal(NULL)
     nextPage <- reactiveVal(value = NULL)
     

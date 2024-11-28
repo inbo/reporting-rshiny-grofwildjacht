@@ -105,3 +105,4 @@ species <- unname(unlist(schadeWildsoorten))
 
 categories <- getCategories()
 subcategories <- getSubcategories()
+outputs <- getOutputs() # tables/visualisations

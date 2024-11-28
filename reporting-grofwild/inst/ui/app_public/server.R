@@ -23,14 +23,15 @@ shinyServer(function(input, output, session) {
   ## Selection
   
   selection <- reactiveValues(
-    specie = species[1],
+    specie = "Specie",
     category = "Categorie",
     subcategory = "Subcategorie",
-    plot = "Visualisatie"
+    output = "Visualisatie/Tabel"
   )
   
   # Save selection 
   observeEvent(input$navbarID, {      
+    print(paste("navbar ID is:", input$navbarID))
     if (input$navbarID %in% species) {
       selection$specie <- input$navbarID
     } else if (input$navbarID %in% categories) {
@@ -71,12 +72,11 @@ shinyServer(function(input, output, session) {
     categoriesSpecie <- getCategories(specie = selection$specie)    
         
     categoriesToHide <- setdiff(categories, categoriesSpecie)
-      for(category in categoriesToHide)
-        hideTab(inputId = "navbarID", target = category)
+    for(category in categoriesToHide)
+      hideTab(inputId = "navbarID", target = category)
         
-    categoriesToShow <- categoriesSpecie
-      for(category in categoriesToShow)
-        showTab(inputId = "navbarID", target = category)
+    for(category in categoriesSpecie)
+      showTab(inputId = "navbarID", target = category)
         
   })
 
@@ -88,16 +88,21 @@ shinyServer(function(input, output, session) {
     updateTabsetPanel(session, "navbarID", selected = selection$category)
    }, ignoreInit = TRUE)
 
-  # Update tab content
-#  observeEvent(selection$category, {
-#    if(isTruthy(selection$category))
-#      switch(selection$category,
-#        beheer = afschotServer(id = "beheer", specie = selection$specie),
-#        schade = schadeServer(id = "schade", specie = selection$specie),
-#        populatie = populatieServer(id = "populatie", specie = selection$specie),
-#        verspreiding = verspreidingServer(id = "verspreiding", specie = selection$specie)
-#      )
-#  })
+  # Update page content
+  observe({
+    if(isTruthy(selection$subcategory) && selection$subcategory != "Subcategorie"){
+      
+      browser()
+      args <- list(
+        id = selection$category, 
+        specie = selection$specie,
+        subcategory = selection$subcategory
+      )
+      fct <- paste0(selection$category, "Server")
+      do.call(fct, args)
+      
+    }
+  })
 
   ## Subcategory
 
@@ -112,11 +117,13 @@ shinyServer(function(input, output, session) {
       for(subcategory in categoriesToHide)
         hideTab(inputId = "navbarID", target = subcategory)
         
-      categoriesToShow <- subcategoriesCategory
-      for(subcategory in categoriesToShow)
+      for(subcategory in subcategoriesCategory)
         showTab(inputId = "navbarID", target = subcategory)
       
     }
+    
+    # reset selected subcategory
+    selection$subcategory <- "Subcategorie"
       
   })
 
@@ -124,6 +131,29 @@ shinyServer(function(input, output, session) {
   output$subcategory <- renderUI(
     getSubcategoryTitle(subcategory = selection$subcategory)
   )
+  
+  ## Outputs
+  
+  # Display available output tabs
+  observeEvent(selection$subcategory, {
+        
+    if(selection$output != "Subcategorie"){
+          
+      outputsSubcategory <- getOutputs(subcategory = selection$subcategory)    
+          
+      outputsToHide <- setdiff(outputs, outputsSubcategory)
+      for(output in outputsToHide)
+        hideTab(inputId = "navbarID", target = output)
+        
+      for(output in outputsSubcategory)
+        showTab(inputId = "navbarID", target = output)
+          
+    }
+        
+    # reset selected ouput
+    selection$output <- "Visualisatie/Tabel"
+        
+  })
 
   ## Navigation
 
@@ -138,7 +168,7 @@ shinyServer(function(input, output, session) {
         if (!is.na(newSelection[1])) selection$specie <- newSelection[1]
         if (!is.na(newSelection[2])) selection$category <- newSelection[2]
         if (!is.na(newSelection[3])) selection$subcategory <- newSelection[3]
-        if (!is.na(newSelection[4])) selection$plot <- newSelection[4]
+        if (!is.na(newSelection[4])) selection$output <- newSelection[4]
       }
     }, 
     priority = 1

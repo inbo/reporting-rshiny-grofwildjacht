@@ -9,7 +9,7 @@ createQueryString <- function(selection, page) {
   
   if (page == "Home")
     return("")
-  
+#  browser()
   selectionList <- reactiveValuesToList(selection)
   toKeep <- which(!is.na(match(selectionList, page)))
   string <- paste0("#", paste(selectionList[seq_along(toKeep)], collapse = "/"))

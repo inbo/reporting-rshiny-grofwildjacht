@@ -103,6 +103,77 @@ getSubcategoryTitle <- function(
   
 }
 
+#' Get available outputs (visualization/table) for a category
+#' or subcategory
+#' @inheritParams getSubcategories
+#' @return Character vector with ouput names
+#' @author lcougnaud
+#' @export
+getOutputs <- function(...){
+  
+  subcategories <- getSubcategories(...)
+  
+  # Should be unique in the entire app!
+  outputs <- list( 
+    `beheer-vlaanderen` = c("trendYearRegionUI", 
+      "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
+    `beheer-regio` = "mapFlandersUI",
+    `beheer-leeftijdcategorie` = 
+      c("tableProvinceUI", "countYearShotUI-leeftijd_comp"),
+    `beheer-jachtmethode` = 
+        c("countYearShotUI-jachtmethode_comp", "F04_3"),
+    
+    # schade
+    `schade-vlaanderen` = c(
+      "tableSchadeSummaryUI", "trendYearFlandersUI", 
+      "countYearProvinceUI-schade"
+    ),
+    `schade-regio` =  "mapFlandersUI-schade",
+    `schade-type` = c("countYearSchadeUI-wildschade",
+        "mapSchadeUI-wildschade", "tableSchadeUI",
+        "countYearSchadeUI-gewas"
+     ),
+    `schade-seizoen` = c("countYearSchadeUI-seizoen",
+        "mapSchadeUI-seizoen"),
+    `schade-kosten` = "barCostUI",
+    
+    # populatie
+    `populatie-leeggewicht` = "boxAgeWeightUI",
+    `populatie-onderkaak` = "countAgeCheekUI",
+    `populatie-geslacht` = "countAgeGenderUI",
+    `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
+
+    # verspreiding
+    `verspreiding-huidig` = "mapSpreadUI",
+    `verspreiding-toekomstig` = "F17_1"
+    
+  )
+  
+  outputs <- unname(unlist(outputs[subcategories]))
+  
+  return(outputs)
+  
+}
+
+#' Get a category for an output
+#' @param output string with output name
+#' @return string with category name
+#' @author lcougnaud
+#' @export
+getCategoryOutput <- function(output){
+  
+  outputByCategory <- sapply(getCategories(), function(category)
+    getOutputs(category = category)
+  , simplify = FALSE)
+
+  isInCat <- sapply(outputByCategory, function(outputs) 
+    output %in% outputs)
+  
+  category <- names(which(isInCat))
+  
+  return(category)
+}
+
 #' Get output title
 #' @param output character vector of length 1 with output name
 #' @param uiText data.frame, HTML formatted text to be displayed 
@@ -113,6 +184,7 @@ getSubcategoryTitle <- function(
 #' number of characters to include
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
+#' @export
 getOutputTitle <- function(output, 
   uiText, specie = NULL, type = NULL, n = integer()){
 
@@ -120,7 +192,8 @@ getOutputTitle <- function(output,
   outputInfo <- strsplit(output, split = "-")[[1]]
   if(
     !is.null(type) && type == "schade" && 
-    length(outputInfo) == 2 && outputInfo[2] != type){
+    length(outputInfo) == 2 && outputInfo[2] != type &&
+    type[1] != "countYearProvinceUI"){
     outputFunction <- outputInfo[1]
     type <- outputInfo[2]
   }else{
@@ -140,6 +213,8 @@ getOutputTitle <- function(output,
         specie
       ), title, fixed = TRUE
     )
+  }else{
+    title <- sub(" (op)*(voor)*(van)* \\{wildsoort\\}(,)*", "", title)
   }
   
   if(!is.null(type)){
@@ -256,70 +331,5 @@ categoryCard <- function(id,
   )
   
   return(outputCard)
-  
-}
-
-#' Get 'Informatie' tab panel for a 'Category' page
-#' @inheritParams welcomeSectionUI
-#' @param ... Extra parameters passed to \code{\link{welcomeSectionUI}}
-#' @return \code{\link[shiny]{tabPanel}}
-#' @importFrom shiny tabPanel fluidRow icon
-#' @author lcougnaud
-tabPanelInformatie <- function(
-  id, uiText, 
-  category = getCategories(),
-  ...){
-
-  category <- match.arg(category)
-  
-  tabPanel(
-    title = "", #getTabTitle(value = "informatie", category = "schade"), 
-    value = "informatie", 
-    class = "tab-informatie",
-    icon = shiny::icon(name = NULL, class = "info_icon"), #name = "circle-info"
-    fluidRow(
-      welcomeSectionUI(
-        id = id, uiText = uiText,
-        category = category,
-        context = "description",
-        ...
-      )
-    )
-  )
-  
-}
-
-#' Get 'All plots/tables' tab panel for a 'Category' page
-#' @inheritParams welcomeSectionUI 
-#' @param plots Character vector with all plots to include.
-#' The name should match the name in \code{uiText}
-#' @inherit shiny::navbarMenu return
-#' @importFrom shiny navbarMenu NS
-#' @author lcougnaud
-tabPanelAll <- function(category, outputs, uiText, id){
-  
-  ns <- NS(namespace = id)
-  
-  args <- lapply(outputs, function(output){
-
-    title <- getOutputTitle(
-      output = output, #specie = specie(), 
-      uiText = uiText, type = category
-     )
-     # shorten title
-     title <- sub(" (van )*(op )*(voor )*\\{wildsoort\\}(,)*", "", title)
-     
-     tabPanel(
-      title = title, 
-      value = output, 
-      uiOutput(outputId = ns(paste0("plots-", output)))
-    )
-        
-  })
-
-  args[["title"]] <- getTabTitle(value = "all", category = category)
-  args[["menuName"]] <- "all"
-  
-  do.call(shiny::navbarMenu, args)
   
 }

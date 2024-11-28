@@ -32,7 +32,7 @@ getCategories <- function(specie = NULL){
 getCategoryTitle <- function(category){
   
   title <- switch(category,
-    draagvlaak = "Maatschappelijk draagvlak",
+    draagvlak = "Maatschappelijk draagvlak",
     populatie = "Populatie indicatoren",
     tools::toTitleCase(sub("-", " ", category))
   )
@@ -222,7 +222,7 @@ getOutputTitle <- function(output,
     title <- gsub("{type}", type, title, fixed = TRUE)
   }
   
-  if(length(n) > 0)
+  if(length(n) > 0 && nchar(title) > n)
     title <- paste0(substr(x = title, start = 1, stop = n), "...")
   
   return(title)

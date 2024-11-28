@@ -17,7 +17,6 @@ specieSidebarUI <- function(id, specie,
   sidebarPanel(
     width = 3, 
     id = ns("sidebar"), 
-    class = ifelse(category, "category-sidebar", "sidebar"),
     topExtra,
     htmlOutput(outputId = ns("specie-name")),
     imageOutput(outputId = ns("specie-image"), height = "auto"),

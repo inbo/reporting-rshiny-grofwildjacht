@@ -38,6 +38,8 @@ shinyServer(function(input, output, session) {
       selection$category <- input$navbarID        
     } else if (input$navbarID %in% subcategories) {
       selection$subcategory <- input$navbarID
+    }else if (input$navbarID %in% outputs) {
+      selection$output <- input$navbarID
     }
   })
   
@@ -88,22 +90,6 @@ shinyServer(function(input, output, session) {
     updateTabsetPanel(session, "navbarID", selected = selection$category)
    }, ignoreInit = TRUE)
 
-  # Update page content
-  observe({
-    if(isTruthy(selection$subcategory) && selection$subcategory != "Subcategorie"){
-      
-      browser()
-      args <- list(
-        id = selection$category, 
-        specie = selection$specie,
-        subcategory = selection$subcategory
-      )
-      fct <- paste0(selection$category, "Server")
-      do.call(fct, args)
-      
-    }
-  })
-
   ## Subcategory
 
   # Display available subcategory tabs
@@ -132,7 +118,20 @@ shinyServer(function(input, output, session) {
     getSubcategoryTitle(subcategory = selection$subcategory)
   )
   
-  ## Outputs
+  # Update page content
+  observe({
+    if(isTruthy(selection$subcategory) && selection$subcategory != "Subcategorie"){
+      args <- list(
+        id = selection$subcategory, 
+        specie = selection$specie,
+        subcategory = selection$subcategory
+      )
+      fct <- paste0(selection$category, "CardServer")
+      do.call(fct, args)
+    }
+  })
+  
+  ## Outputs (table/plot)
   
   # Display available output tabs
   observeEvent(selection$subcategory, {
@@ -153,6 +152,28 @@ shinyServer(function(input, output, session) {
     # reset selected ouput
     selection$output <- "Visualisatie/Tabel"
         
+  })
+
+  # Update tab title
+  output$output <- renderUI(
+    if(selection$output %in% outputs)
+      getOutputTitle(output = selection$output, 
+        uiText = uiText, n = 200, 
+        type = getCategoryOutput(selection$output)
+      )
+  )
+
+  # Update page content
+  observe({
+    if(isTruthy(selection$output) && selection$output != "Visualisatie/Tabel"){
+      args <- list(
+        id = selection$output, 
+        specie = selection$specie,
+        plot = selection$output
+      )
+      fct <- paste0(selection$category, "OutputServer")
+      do.call(fct, args)
+    }
   })
 
   ## Navigation

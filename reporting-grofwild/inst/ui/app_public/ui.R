@@ -36,46 +36,27 @@ categoryTabs <- lapply(categories, function(category){
 # build all subcategory tabs - contain placeholder for cards 
 subcategoryTabs <- lapply(subcategories, function(subcategory){
    
+  category <- strsplit(subcategory, split = "-")[[1]][1]
+
   tabPanel(
     title = getSubcategoryTitle(subcategory = subcategory),   
     value = subcategory,
-    sidebarLayout(position = "left", 
-        
-      # specie info
-      sidebarPanel = specieSidebarUI(id = subcategory),
-      
-      # cards
-      mainPanel = mainPanel(width = 9,
-        uiOutput(outputId = paste(subcategory, "output", sep = "-"))
-      )
-    )
+    outputUI(id = subcategory, category = category)
   )
   
 })
 
 # build all output tabs - contain placeholder for plot/table and parameters
 outputTabs <- lapply(outputs, function(output){
-    
-#  
-#  if(category == "schade"){
-#    outputFct <- sub("(.+)(-[[:alnum:]]{1,})$", "\\1", output)
-#  }else outputFct <- output
-
+      
   category <- getCategoryOutput(output)
   title <- getOutputTitle(output = output, 
-    uiText = uiText, n = 120, type = category)
+    uiText = uiText, n = 200, type = category)
 
   tabPanel(
     title = title,   
     value = output,
-    sidebarLayout(position = "left", 
-      # specie info
-      sidebarPanel = specieSidebarUI(id = output),
-      # plot/table
-      mainPanel = mainPanel(width = 9,
-        uiOutput(outputId = paste(output, "output", sep = "-"))
-      )
-    )
+    outputUI(id = output, category = category)
   )
 
 })

@@ -1,10 +1,85 @@
-#' Server function for the 'beheer' Category page
+#' Server function for the cards of the 'beheer' Category page
 #' @param id id character, module id
 #' @return Shiny module function
 #' @import shiny
 #' @author lcougnaud
 #' @export
-beheerServer <- function(id, specie, subcategory){
+beheerCardServer <- function(id, specie, subcategory){
+  
+  moduleServer(id, function(input, output, session){  
+        
+    ns <- session$ns
+    
+    ## input
+    results <- reactiveValues(renderedTabs = "Grofwild")
+    results$specie <- reactive(specie)
+    
+    ## Sidebar panel
+    
+    specieSidebarServer(id = "sidebar", specie = specie)
+    
+    ## Main panel
+    
+    observe({    
+          
+      if(subcategory %in% subcategories){
+            
+            categoryCardAfschot <- function(...){
+              categoryCard(
+                  id = id, 
+                  uiText = uiText,
+                  specie = results$specie(), 
+                  category = "beheer",
+                  ...
+              )
+            }
+            
+            group <- strsplit(subcategory, split = "-")[[1]][2]
+            
+            cards <- switch(group,
+                vlaanderen = 
+                    bslib::layout_column_wrap(
+                        width = 1/3, gap = "2em",
+                        categoryCardAfschot(output = "trendYearRegionUI"),
+                        categoryCardAfschot(output = "countYearProvinceUI", outputFunction = "countYearProvinceUI-afschot"),
+                        categoryCardAfschot(output = "yearlyShotAnimalsUI")
+                    ),
+                regio =       
+                    bslib::layout_column_wrap(
+                        width = 1/3, gap = "2em",
+                        categoryCardAfschot(output = "mapFlandersUI")
+                    ),
+                leeftijdcategorie = 
+                    bslib::layout_column_wrap(
+                        width = 1/3, gap = "2em",
+                        categoryCardAfschot(output = "tableProvinceUI"),
+                        categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
+                    ),
+                jachtmethode =     
+                    bslib::layout_column_wrap(
+                        width = 1/3, gap = "2em",
+                        categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
+                        categoryCardAfschot(output = "F04_3")
+                    )
+            )
+            
+            output[["output"]] <- renderUI(cards)
+            
+          }
+          
+        })
+        
+  })
+  
+}
+
+#' Server function for an output (plot/table) of the 'beheer' Category page
+#' @param id id character, module id
+#' @return Shiny module function
+#' @import shiny
+#' @author lcougnaud
+#' @export
+beheerOutputServer <- function(id, specie, plot){
   
   moduleServer(id, function(input, output, session){  
         
@@ -100,180 +175,109 @@ beheerServer <- function(id, specie, subcategory){
       validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
       return(drukjachtData)
     })
-    
-    browser()
 
     ## Sidebar panel
     
     specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Main panel
-    
-    # Tab with cards
-    observe({    
-      browser()
-      if(subcategory %in% subcategories){
-        
-        categoryCardAfschot <- function(...){
-          categoryCard(
-            id = id, 
-            uiText = uiText,
-            specie = results$specie(), 
-            category = "beheer",
-            ...
-          )
-        }
-        
-        group <- strsplit(subcategory, split = "-")[[1]][2]
-        
-        cards <- switch(group,
-          vlaanderen = 
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "trendYearRegionUI"),
-              categoryCardAfschot(output = "countYearProvinceUI", outputFunction = "countYearProvinceUI-afschot"),
-              categoryCardAfschot(output = "yearlyShotAnimalsUI")
-            ),
-          regio =       
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "mapFlandersUI")
-            ),
-          leeftijdcategorie = 
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "tableProvinceUI"),
-              categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
-            ),
-          jachtmethode =     
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
-              categoryCardAfschot(output = "F04_3")
-            )
-          )
-          
-          output[[paste0(subcategory, "output", sep = "-")]] <- 
-            renderUI(cards)
-          
-       }
 
-    })
+    # Tab content with selected plot/table
     
-    ## Tab content with selected plot/table
-    
-    outputUI <- reactiveVal(NULL)
     outputServer <- reactiveVal(NULL)
 
-    # if plot is selected in the 'all' tab
-    observe(subcategory, 
-      if(subcategory %in% beheerOutputs)
-        outputUI(subcategory)
-    )
-
-    # if plot is selected based on the category cards
-    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
-    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
-    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
-    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
-    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
-    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
-    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
-    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
+#    # if plot is selected based on the category cards
+#    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
+#    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
+#    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
+#    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
+#    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
+#    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
+#    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
+#    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
 
     # Create plot - UI side
-    observeEvent(outputUI(), ignoreNULL = TRUE, {
-      outputName <- outputUI()
+    observe({
           
-      # create the plot/table
-      switch(outputName, 
-        "trendYearRegionUI" = {
-          plot <- trendYearRegionUI(
-            id = ns(outputName),
-            uiText = uiText, context = "description", specie = results$specie(),
-            showCombinatie = TRUE,
-            doHide = FALSE
-          )
-          card <- "output-vlaanderen"
-         },
-        "countYearProvinceUI-afschot" = {
-          plot <- countYearProvinceUI(
-            id = ns(outputName), 
-            uiText = uiText, context = "description", type = "afschot",
-            specie = results$specie(),
-            doHide = FALSE,
-            plotFunction = "countYearProvinceUI-afschot"
-          )
-          card <- "output-vlaanderen"
-        },
-        "yearlyShotAnimalsUI" = {
-          plot <- yearlyShotAnimalsUI(
-            id = ns(outputName), 
-            uiText = uiText, context = "description",
-            specie = results$specie(),
-            doHide = FALSE
-          )
-          card <- "output-vlaanderen"
-        },
-        "mapFlandersUI" = {
-          plot <- mapFlandersUI(
-            id = ns(outputName), 
-            type = "grofwild", plotDetails = "region",
-            uiText = uiText, specie = results$specie(), 
-            typeTitle = "afschot"
-          )
-          card <- "output-regio"
-        },
-        "tableProvinceUI" = {
-          plot <- tableProvinceUI(
-            id = ns(outputName), doHide = FALSE,
-            uiText = uiText, context = "description", specie = results$specie()
-          )
-          card <- "output-leeftijdcategorie"
-        },
-        "countYearShotUI-leeftijd_comp" = {
-          plot <- countYearShotUI(
-            id = ns(outputName), groupVariable = "leeftijd_comp",
-            regionLevels = c(1:2, 4), 
-            uiText = uiText, context = "description", specie = results$specie(),
-            doHide = FALSE
-          )
-          card <- "output-leeftijdcategorie"
-        },
-        "countYearShotUI-jachtmethode_comp" = {
-          plot <- countYearShotUI(
-            id = ns(outputName), groupVariable = "jachtmethode_comp",
-            regionLevels = c(1:2, 4), 
-            uiText = uiText, context = "description", specie = results$specie(),
-            doHide = FALSE
-          )
-          card <- "output-jachtmethode"
-        },
-        "F04_3" = {
-          plot <- countYearProvinceUI(
-            id = ns(outputName), 
-            uiText = uiText, context = "description", specie = results$specie(),
-            plotFunction = "F04_3", 
-            doHide = FALSE,
-            regionLevels = 1:4
-          )
-          card <- "output-jachtmethode"
-        }
-      )
+      if(plot %in% beheerOutputs){
+        
+        outputName <- plot
+        
+        # create the plot/table
+        ui <- switch(outputName, 
+          "trendYearRegionUI" = {
+            trendYearRegionUI(
+              id = ns(outputName),
+              uiText = uiText, context = "description", specie = results$specie(),
+              showCombinatie = TRUE,
+              doHide = FALSE
+            )
+           },
+          "countYearProvinceUI-afschot" = {
+            countYearProvinceUI(
+              id = ns(outputName), 
+              uiText = uiText, context = "description", type = "afschot",
+              specie = results$specie(),
+              doHide = FALSE,
+              plotFunction = "countYearProvinceUI-afschot"
+            )
+          },
+          "yearlyShotAnimalsUI" = {
+            yearlyShotAnimalsUI(
+              id = ns(outputName), 
+              uiText = uiText, context = "description",
+              specie = results$specie(),
+              doHide = FALSE
+            )
+          },
+          "mapFlandersUI" = {
+            mapFlandersUI(
+              id = ns(outputName), 
+              type = "grofwild", plotDetails = "region",
+              uiText = uiText, specie = results$specie(), 
+              typeTitle = "afschot"
+            )
+          },
+          "tableProvinceUI" = {
+            tableProvinceUI(
+              id = ns(outputName), doHide = FALSE,
+              uiText = uiText, context = "description", specie = results$specie()
+            )
+          },
+          "countYearShotUI-leeftijd_comp" = {
+            countYearShotUI(
+              id = ns(outputName), groupVariable = "leeftijd_comp",
+              regionLevels = c(1:2, 4), 
+              uiText = uiText, context = "description", specie = results$specie(),
+              doHide = FALSE
+            )
+          },
+          "countYearShotUI-jachtmethode_comp" = {
+            countYearShotUI(
+              id = ns(outputName), groupVariable = "jachtmethode_comp",
+              regionLevels = c(1:2, 4), 
+              uiText = uiText, context = "description", specie = results$specie(),
+              doHide = FALSE
+            )
+          },
+          "F04_3" = {
+            countYearProvinceUI(
+              id = ns(outputName), 
+              uiText = uiText, context = "description", specie = results$specie(),
+              plotFunction = "F04_3", 
+              doHide = FALSE,
+              regionLevels = 1:4
+            )
+          }
+        )
+  
+        # include plot/table in UI
+        output[["output"]] <- renderUI(ui)
 
-      # include plot/table in UI
-      cnt <- ifelse(
-        input$subcategory %in% beheerOutputs,
-        paste0("plots-", outputName),
-        card
-      )
-      output[[cnt]] <- renderUI(plot)
-      
-      # re-set in case plot selected via tab after/before category card
-      outputUI(NULL)
-     
-      # activate server-side update
-      outputServer(outputName)
+        # activate server-side update
+        outputServer(outputName)
+        
+      }
       
     })
 

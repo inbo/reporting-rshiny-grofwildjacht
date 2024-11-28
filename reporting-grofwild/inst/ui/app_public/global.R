@@ -103,10 +103,5 @@ uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
 
 species <- unname(unlist(schadeWildsoorten))
 
-categories <- c(
-  "beheer", "schade", "populatie-indicatoren", 
-  "verspreiding", "maatschappelijk-draagvlak", "woordenlijst"
-)
-
-subcategories <- "plotX"
-
+categories <- getCategories()
+subcategories <- getSubcategories()

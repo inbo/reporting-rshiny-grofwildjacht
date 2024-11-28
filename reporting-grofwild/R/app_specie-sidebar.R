@@ -7,14 +7,17 @@
 #' the bottom of the sidebar
 #' @return shiny::sidebarPanel return
 #' @author lcougnaud
+#' @export
 specieSidebarUI <- function(id, specie,
-  topExtra = NULL, bottomExtra = NULL){
+  topExtra = NULL, bottomExtra = NULL,
+  category = TRUE){
   
   ns <- NS(namespace = id)
   
   sidebarPanel(
     width = 3, 
-    id = ns("category-sidebar"), class = "category-sidebar",
+    id = ns("sidebar"), 
+    class = ifelse(category, "category-sidebar", "sidebar"),
     topExtra,
     htmlOutput(outputId = ns("specie-name")),
     imageOutput(outputId = ns("specie-image"), height = "auto"),
@@ -35,7 +38,7 @@ specieSidebarServer <- function(id, specie){
   moduleServer(id, function(input, output, session){
     
     # Specie name
-    output$`specie-name` <- renderUI(h3(specie))
+    output$`specie-name` <- renderUI(h4(specie))
     
     # Specie image	
     output$`specie-image` <- renderImage(

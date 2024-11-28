@@ -217,8 +217,8 @@ p, li, label {
   background-color: #456394; 
 }
 
-.navbar .navbar-default{
-  margin-bottom: 0
+.navbar .navbar-default .navbar-static-top {
+  margin-bottom: 0 !important;
 }
 
 .navbar-default .navbar-nav > li > a {

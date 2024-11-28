@@ -9,18 +9,48 @@ specieTabs <- lapply(species, function(specie){
 
 # build all category tabs
 categoryTabs <- lapply(categories, function(category){
-  specie <- species[1]
-  categoryUI <- switch(category, 
-    beheer = afschotUI(id = "beheer", specie = specie),
-    schade = schadeUI(id = "schade", specie = specie),
-    populatie = populatieUI(id = "populatie", specie = specie),
-    verspreiding = verspreidingUI(id = "verspreiding", specie = specie)
-  )    
+      
+  dataDate <- if(category == "schade"){
+    schadeData
+  }else{ecoData}
+  maxDate <- max(dataDate$afschot_datum, na.rm = TRUE)
+  
+  infoText <- welcomeSectionUI(
+    id = category, uiText = uiText,
+    category = category,
+    context = "description",
+    maxDate = maxDate
+  )
+ 
+  img <- file.path("www", paste("category", category, "header.png", sep = "-"))   
+      
   tabPanel(
-    title = tools::toTitleCase(sub("-", " ", category)), 
-    value = category,
-    categoryUI
-  )    
+    title = getCategoryTitle(category),
+    value = category, 
+    if(file.exists(img))  fluidRow(img(src = img, width = "100%")),
+    fluidRow(column(10, offset = 1, infoText))
+  )
+  
+})
+
+# build all subcategory tabs - contain plot and parameters
+subcategoryTabs <- lapply(subcategories, function(subcategory){
+   
+  tabPanel(
+    title = getSubcategoryTitle(subcategory = subcategory),   
+    value = subcategory,
+    sidebarLayout(position = "left", 
+        
+      # specie info
+      sidebarPanel = specieSidebarUI(id = subcategory),
+      
+      # plot/table
+      mainPanel = mainPanel(width = 9,
+        uiOutput(outputId = paste(subcategory, "output", sep = "-"))
+      )
+    )
+  )
+  
 })
 
 shinyUI(
@@ -67,9 +97,11 @@ shinyUI(
           categoryTabs
         )
       ),
-      
-      navbarMenu(title = htmlOutput("subcategory", inline = TRUE),
-        uiOutput("tabsSubcategories")
+      do.call(navbarMenu,
+        append(
+          list(title = htmlOutput("subcategory", inline = TRUE)), 
+          subcategoryTabs
+        )
       ),
       
       tabPanel(title = 

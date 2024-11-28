@@ -1,54 +1,105 @@
-#' Get title for a specific tab of the 'Category' page.
-#' 
-#' This is used for the title of the tab and the path.
-#' @param value character of length 1 with 
-#' \code{\link[shiny]{tabPanel}} value
-#' @param category character of length 1 with the name of the
-#' category page.
-#' @return character of length 1 with 
-#' \code{\link[shiny]{tabPanel}} title
+#' Get categories available for a specie
+#' @param specie string with specie. If not specified,
+#' all categories are returned.
+#' @return character vector with available categories
 #' @author lcougnaud
-getTabTitle <- function(value, category){
+#' @export
+getCategories <- function(specie = NULL){
+  
+  baseApp <- 
+    is.null(specie) ||
+    (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
+  
+  categories <- c(
+      if(baseApp)  "beheer",
+      "schade",
+      if(is.null(specie) || specie %in% c("Wild zwijn", "Ree"))
+        "populatie",
+      if(baseApp)
+        c("verspreiding", "draagvlak"),
+      "woordenlijst"
+  )
+  
+  return(categories)
+  
+}
+
+#' Get title for a 'Category' tab
+#' @param category string with category
+#' @return string with category title
+#' @author lcougnaud
+#' @export
+getCategoryTitle <- function(category){
   
   title <- switch(category,
-    beheer = 
-      switch(value,
-        vlaanderen = "Afschot in Vlaanderen",
-        regio =  "Afschot per regio",
-        leeftijdcategorie = "Afschot per leeftijdscategorie",
-        jachtmethode = "Afschot per jachtmethode",
-        informatie = "Informatie over beheer",
-        "Alle grafieken/tabellen"
-      ),
-    schade = 
-      switch(value,
-        vlaanderen = "Schadegevallen in Vlaanderen",
-        regio =  "Schadegevallen per regio",
-        type = "Schadegevallen per type schade",
-        seizoen = "Schadegevallen per seizoen",
-        kosten = "Inschatting kosten",
-        informatie = "Informatie over schadegevallen",
-        "Alle grafieken/tabellen"
-    ),
-    populatie = 
-      switch(value,
-        leeggewicht = "Leeggewicht",
-        onderkaak = "Onderkaak gegevens",
-        geslacht = "Geslacht",
-        voortplanting = "Voortplanting",
-        informatie = "Informatie over populatie",
-        "Alle grafieken/tabellen"
-      ),
-    verspreiding = 
-      switch(value,
-        huidig = "Huidige verspreiding",
-        toekomstig = "Toekomstige verspreiding",
-        informatie = "Informatie over verspreiding",
-        "Alle grafieken/tabellen"
-      )
+    draagvlaak = "Maatschappelijk draagvlak",
+    populatie = "Populatie indicatoren",
+    tools::toTitleCase(sub("-", " ", category))
   )
   
   return(title)
+  
+}
+
+#' Get subcategories available in the app
+#' @inheritParams getSubcategoryTitle
+#' @author lcougnaud
+#' @export
+getSubcategories <- function(...){
+  
+  titles <- getSubcategoryTitle(...)
+  subcategories <- names(titles)
+  
+  return(subcategories)
+  
+}
+
+#' Get title for the 'Subcategory' tab(s)
+#' @param category character of length 1 with the name of the
+#' category page.
+#' @return named character vector with tab titles
+#' @author lcougnaud
+#' @export
+getSubcategoryTitle <- function(
+  category = getCategories(), 
+  subcategory = NULL){
+ 
+  category <- match.arg(category, several.ok = TRUE)
+
+  titles <- c(
+    if("beheer" %in% category)
+      c(
+        `beheer-vlaanderen` = "Afschot in Vlaanderen",
+        `beheer-regio` =  "Afschot per regio",
+        `beheer-leeftijdcategorie` = "Afschot per leeftijdscategorie",
+        `beheer-jachtmethode` = "Afschot per jachtmethode"
+      ),
+    if("schade" %in% category)
+      c(
+        `schade-vlaanderen` = "Schadegevallen in Vlaanderen",
+        `schade-regio` =  "Schadegevallen per regio",
+        `schade-type` = "Schadegevallen per type schade",
+        `schade-seizoen` = "Schadegevallen per seizoen",
+        `schade-kosten` = "Inschatting kosten"
+      ),
+    if("populatie" %in% category)
+      c(
+        `populatie-leeggewicht` = "Leeggewicht",
+        `populatie-onderkaak` = "Onderkaak gegevens",
+        `populatie-geslacht` = "Geslacht",
+        `populatie-voortplanting` = "Voortplanting"
+      ),
+    if("verspreiding" %in% category)
+      c(
+        `verspreiding-huidig` = "Huidige verspreiding",
+        `verspreiding-toekomstig` = "Toekomstige verspreiding"
+      )
+  )
+  
+  if(!is.null(subcategory))
+    titles <- titles[subcategory]
+  
+  return(titles)
   
 }
 
@@ -158,29 +209,6 @@ getOutputDescription <- function(output,
   
 }
 
-#' Get categories available for a specie
-#' @param specie string with specie
-#' @return character vector with available categories
-#' @author lcougnaud
-#' @export
-getCategories <- function(specie){
-  
-  baseApp <- (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
-  
-  categories <- c(
-    if(baseApp)  "beheer",
-    "schade",
-    if(specie %in% c("Wild zwijn", "Ree"))
-      "populatie-indicatoren",
-    if(baseApp)
-      c("verspreiding", "maatschappelijk-draagvlak"),
-    "woordenlijst"
-  )
-  
-  return(categories)
-  
-}
-
 #' Get category card for a specific output
 #' @param id id character, module id/specie
 #' @param output character, output name, e.g. 'trendYearRegionUI'
@@ -239,7 +267,7 @@ categoryCard <- function(id,
 #' @author lcougnaud
 tabPanelInformatie <- function(
   id, uiText, 
-  category = c("schade", "afschot", "populatie", "verspreiding"),
+  category = getCategories(),
   ...){
 
   category <- match.arg(category)

@@ -26,12 +26,15 @@ specieUI <- function(id, specie){
           
         position = "left", 
           
-        sidebarPanel = specieSidebarUI(id = ns("sidebar"), specie = specie),
+        sidebarPanel = specieSidebarUI(
+          id = ns("sidebar"), 
+          specie = specie, category = FALSE
+        ),
         
         mainPanel = mainPanel(
           width = 9,
           # style = "overflow-y: auto;max-height: 100vh;", # scrolling bar?
-          uiOutput(outputId = NS(id, "items"))
+          uiOutput(outputId = ns("items"))
         )
   
      )
@@ -51,6 +54,8 @@ specieUI <- function(id, specie){
 specieServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){   
+        
+    category <- reactiveVal(value = NULL)
     
     ## Sidebar panel
     specieSidebarServer(id = "sidebar", specie = specie)
@@ -60,7 +65,12 @@ specieServer <- function(id, specie){
     # Specie - available items/pages
     output$items <- renderUI(getSpecieCards(id = id, specie = specie))
     
-    return(input$cards)
+    observeEvent(input$cards, {
+      category(input$cards)
+      print(paste("Specie page: category set to:", category()))
+    })
+    
+    return(category)
 
   })
 

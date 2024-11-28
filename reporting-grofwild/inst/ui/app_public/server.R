@@ -29,34 +29,6 @@ shinyServer(function(input, output, session) {
     plot = "Visualisatie"
   )
   
-  observeEvent(input$specie, selection$specie <- input$specie)
-  
-  ## Navigation
-  
-  # Change tabs
-  observeEvent(selection$specie, {
-    updateTabsetPanel(session, "navbarID", selected = selection$specie)
-  }, ignoreInit = TRUE)
-  observeEvent(selection$category, {
-    updateTabsetPanel(session, "navbarID", selected = selection$category)
-  }, ignoreInit = TRUE)
-
-
-  # Display available category tabs for a specie
-  observeEvent(selection$specie, {
-        
-    categoriesSpecie <- getCategories(specie = selection$specie)    
-    
-    categoriesToHide <- setdiff(categories, categoriesSpecie)
-    for(category in categoriesToHide)
-      hideTab(inputId = "navbarID", target = category)
-    
-    categoriesToShow <- categoriesSpecie
-    for(category in categoriesToShow)
-      showTab(inputId = "navbarID", target = category)
-
-  })
-  
   # Save selection 
   observeEvent(input$navbarID, {      
     if (input$navbarID %in% species) {
@@ -67,11 +39,93 @@ shinyServer(function(input, output, session) {
       selection$subcategory <- input$navbarID
     }
   })
-
-  # Update title of tabs in the navigation bar
+  
+  ## Specie
+  
+  # Save user choice
+  observeEvent(input$specie, selection$specie <- input$specie)
+  
+  # Update tab title
   output$specie <- renderUI(selection$specie)
-  output$category <- renderUI(tools::toTitleCase(sub("-", " ", selection$category)))
-  output$subcategory <- renderUI(selection$subcategory)
+  
+  # Change tab
+  observeEvent(selection$specie, {
+    updateTabsetPanel(session, "navbarID", selected = selection$specie)
+  }, ignoreInit = TRUE)
+
+  # Update page content
+  observe({
+    if(isTruthy(selection$specie)){
+      category <- specieServer(id = selection$specie, specie = selection$specie)
+      if(isTruthy(category()))
+        selection$category <- category()
+    }
+   })
+  observe(paste("Selected category is:", selection$category))
+  
+  ## Category
+  
+  # Display available category tabs for a specie
+  observeEvent(selection$specie, {
+        
+    categoriesSpecie <- getCategories(specie = selection$specie)    
+        
+    categoriesToHide <- setdiff(categories, categoriesSpecie)
+      for(category in categoriesToHide)
+        hideTab(inputId = "navbarID", target = category)
+        
+    categoriesToShow <- categoriesSpecie
+      for(category in categoriesToShow)
+        showTab(inputId = "navbarID", target = category)
+        
+  })
+
+  # Update tab title
+  output$category <- renderUI(getCategoryTitle(selection$category))
+  
+  # Change tab
+  observeEvent(selection$category, {
+    updateTabsetPanel(session, "navbarID", selected = selection$category)
+   }, ignoreInit = TRUE)
+
+  # Update tab content
+#  observeEvent(selection$category, {
+#    if(isTruthy(selection$category))
+#      switch(selection$category,
+#        beheer = afschotServer(id = "beheer", specie = selection$specie),
+#        schade = schadeServer(id = "schade", specie = selection$specie),
+#        populatie = populatieServer(id = "populatie", specie = selection$specie),
+#        verspreiding = verspreidingServer(id = "verspreiding", specie = selection$specie)
+#      )
+#  })
+
+  ## Subcategory
+
+  # Display available subcategory tabs
+  observeEvent(selection$category, {
+        
+    if(selection$category != "Categorie"){
+      
+      subcategoriesCategory <- getSubcategories(category = selection$category)    
+        
+      categoriesToHide <- setdiff(subcategories, subcategoriesCategory)
+      for(subcategory in categoriesToHide)
+        hideTab(inputId = "navbarID", target = subcategory)
+        
+      categoriesToShow <- subcategoriesCategory
+      for(subcategory in categoriesToShow)
+        showTab(inputId = "navbarID", target = subcategory)
+      
+    }
+      
+  })
+
+  # Update tab title
+  output$subcategory <- renderUI(
+    getSubcategoryTitle(subcategory = selection$subcategory)
+  )
+
+  ## Navigation
 
   # Update the selected tabPanel based on the hash
   # (see https://stackoverflow.com/a/74874638)
@@ -101,26 +155,6 @@ shinyServer(function(input, output, session) {
     if (currentHash != pushQueryString){
       updateQueryString(pushQueryString, mode = "push", session)
     }
-  }, priority = 0)  
-
-  # Page content
-
-  observeEvent(selection$specie, {
-    category <- specieServer(id = selection$specie, specie = selection$specie)
-    selection$category <- category
-  })
-
-  observeEvent(selection$category, {
-    switch(selection$category,
-      beheer = 
-        afschotServer(id = "beheer", specie = selection$specie),
-      schade = 
-        schadeServer(id = "schade", specie = selection$specie),
-      `populatie-indicatoren` = 
-        populatieServer(id = "populatie", specie = selection$specie),
-      verspreiding = 
-        verspreidingServer(id = "verspreiding", specie = selection$specie)
-    )
-  })
+  }, priority = 0)
 
 })

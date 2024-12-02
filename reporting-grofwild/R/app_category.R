@@ -214,7 +214,8 @@ getOutputTitle <- function(output,
       ), title, fixed = TRUE
     )
   }else{
-    title <- sub(" (op)*(voor)*(van)* \\{wildsoort\\}(,)*", "", title)
+    regex <- " (op)*(voor)*(van)* ([[:alnum:]]{1,} )*\\{wildsoort(en)*\\}(,)*"
+    title <- sub(regex, "", title)
   }
   
   if(!is.null(type)){

@@ -80,7 +80,8 @@ beheerCardServer <- function(id,
 #' @import shiny
 #' @author lcougnaud
 #' @export
-beheerOutputServer <- function(id, specie, plot){
+beheerOutputServer <- function(id, 
+  specie = reactiveVal(), plot = reactiveVal()){
   
   moduleServer(id, function(input, output, session){  
         

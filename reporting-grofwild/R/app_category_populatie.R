@@ -72,7 +72,8 @@ populatieCardServer <- function(id,
 #' @import shiny
 #' @author lcougnaud
 #' @export
-populatieOutputServer <- function(id, specie, plot){
+populatieOutputServer <- function(id, 
+  specie = reactiveVal(), plot = reactiveVal()){
   
   moduleServer(id, function(input, output, session){  
         
@@ -152,7 +153,7 @@ populatieOutputServer <- function(id, specie, plot){
         # create the plot/table
         ui <- switch(outputName,  
           "boxAgeWeightUI" = {
-            plot <- boxAgeWeightUI(
+            boxAgeWeightUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
               specie = results$specie(),
@@ -160,7 +161,7 @@ populatieOutputServer <- function(id, specie, plot){
             )
           },
           "countAgeCheekUI" = {
-            plot <- countAgeCheekUI(
+            countAgeCheekUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
               specie = results$specie(),
@@ -168,7 +169,7 @@ populatieOutputServer <- function(id, specie, plot){
             )
           },
           "countAgeGenderUI" = {
-            plot <- countAgeGenderUI(
+            countAgeGenderUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
               specie = results$specie(),
@@ -176,7 +177,7 @@ populatieOutputServer <- function(id, specie, plot){
             )
           },
           "countEmbryosUI" = {
-            plot <- countEmbryosUI(
+            countEmbryosUI(
               id = ns(outputName), 
               regionLevels = c(1:2, 4),
               uiText = uiText, context = "description",
@@ -185,7 +186,7 @@ populatieOutputServer <- function(id, specie, plot){
             )
           },
           "countAgeGroupUI" = {# dash plot F16_1
-            plot <- countAgeGroupUI(
+            countAgeGroupUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
               specie = results$specie(),

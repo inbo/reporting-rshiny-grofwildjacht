@@ -4,7 +4,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id, specie){
+specieUI <- function(id){
   
   ns <- NS(namespace = id)
   
@@ -28,7 +28,7 @@ specieUI <- function(id, specie){
           
         sidebarPanel = specieSidebarUI(
           id = ns("sidebar"), 
-          specie = specie, category = FALSE
+          category = FALSE
         ),
         
         mainPanel = mainPanel(
@@ -55,7 +55,7 @@ specieServer <- function(id, specie){
   
   moduleServer(id, function(input, output, session){   
         
-    category <- reactiveVal(value = NULL)
+    category <- reactiveVal("Categorie")
     
     ## Sidebar panel
     specieSidebarServer(id = "sidebar", specie = specie)
@@ -63,12 +63,11 @@ specieServer <- function(id, specie){
     ## Main panel
     
     # Specie - available items/pages
-    output$items <- renderUI(getSpecieCards(id = id, specie = specie))
+    output$items <- renderUI(getSpecieCards(id = id, specie = specie()))
     
-    observeEvent(input$cards, {
-      category(input$cards)
-      print(paste("Specie page: category set to:", category()))
-    })
+    observeEvent(input$cards, category(input$cards))
+    
+    observe(print(paste("Specie tab: category updated to:", category())))
     
     return(category)
 

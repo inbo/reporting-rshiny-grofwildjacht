@@ -22,56 +22,57 @@ shinyServer(function(input, output, session) {
 
   ## Selection
   
-  selection <- reactiveValues(
-    specie = "Specie",
-    category = "Categorie",
-    subcategory = "Subcategorie",
-    output = "Visualisatie/Tabel"
-  )
+  specie <- reactiveVal("Specie")
+  category <- reactiveVal("Categorie")
+  subcategory <- reactiveVal("Subcategorie")
+  plot <- reactiveVal("Visualisatie/Tabel")
+  
+  observe(print(paste("Specie:", specie())))
+  observe(print(paste("Category:", category())))
+  observe(print(paste("Subcategory:", subcategory())))
+  observe(print(paste("Output:", plot())))
   
   # Save selection 
   observeEvent(input$navbarID, {      
     print(paste("navbar ID is:", input$navbarID))
     if (input$navbarID %in% species) {
-      selection$specie <- input$navbarID
+      specie(input$navbarID)
     } else if (input$navbarID %in% categories) {
-      selection$category <- input$navbarID        
+      category(input$navbarID)       
     } else if (input$navbarID %in% subcategories) {
-      selection$subcategory <- input$navbarID
+      subcategory(input$navbarID)
     }else if (input$navbarID %in% outputs) {
-      selection$output <- input$navbarID
+      plot(input$navbarID)
     }
   })
   
   ## Specie
   
   # Save user choice
-  observeEvent(input$specie, selection$specie <- input$specie)
+  observeEvent(input$specie, 
+    if(isTruthy(input$specie))
+      specie(input$specie)
+  )
   
   # Update tab title
-  output$specie <- renderUI(selection$specie)
+  output$specie <- renderUI(specie())
   
   # Change tab
-  observeEvent(selection$specie, {
-    updateTabsetPanel(session, "navbarID", selected = selection$specie)
+  observeEvent(specie(), {
+    updateTabsetPanel(session, "navbarID", selected = specie())
   }, ignoreInit = TRUE)
 
   # Update page content
   observe({
-    if(isTruthy(selection$specie)){
-      category <- specieServer(id = selection$specie, specie = selection$specie)
-      if(isTruthy(category()))
-        selection$category <- category()
-    }
-   })
-  observe(paste("Selected category is:", selection$category))
+    category <- specieServer(id = specie(), specie = specie)
+  })
   
   ## Category
   
   # Display available category tabs for a specie
-  observeEvent(selection$specie, {
+  observeEvent(specie(), {
         
-    categoriesSpecie <- getCategories(specie = selection$specie)    
+    categoriesSpecie <- getCategories(specie = specie())    
         
     categoriesToHide <- setdiff(categories, categoriesSpecie)
     for(category in categoriesToHide)
@@ -83,21 +84,27 @@ shinyServer(function(input, output, session) {
   })
 
   # Update tab title
-  output$category <- renderUI(getCategoryTitle(selection$category))
+  output$category <- renderUI(
+    ifelse(
+      isTruthy(category()),
+      getCategoryTitle(category()),
+      "Categorie"
+    )
+  )
   
   # Change tab
-  observeEvent(selection$category, {
-    updateTabsetPanel(session, "navbarID", selected = selection$category)
-   }, ignoreInit = TRUE)
+  observeEvent(category(), {
+    updateTabsetPanel(session, "navbarID", selected = category())
+  }, ignoreInit = TRUE)
 
   ## Subcategory
 
   # Display available subcategory tabs
-  observeEvent(selection$category, {
+  observeEvent(category(), {
         
-    if(selection$category != "Categorie"){
+    if(category() != "Categorie"){
       
-      subcategoriesCategory <- getSubcategories(category = selection$category)    
+      subcategoriesCategory <- getSubcategories(category = category())    
         
       categoriesToHide <- setdiff(subcategories, subcategoriesCategory)
       for(subcategory in categoriesToHide)
@@ -109,24 +116,29 @@ shinyServer(function(input, output, session) {
     }
     
     # reset selected subcategory
-    selection$subcategory <- "Subcategorie"
+    subcategory("Subcategorie")
       
   })
 
   # Update tab title
   output$subcategory <- renderUI(
-    getSubcategoryTitle(subcategory = selection$subcategory)
+    ifelse(
+      isTruthy(subcategory()),
+      getSubcategoryTitle(subcategory = subcategory()),
+      "Subcategorie"
+    )
   )
   
   # Update page content
   observe({
-    if(isTruthy(selection$subcategory) && selection$subcategory != "Subcategorie"){
+    if(isTruthy(subcategory()) && subcategory() != "Subcategorie"){
+      print(paste("Update page content for category: ", category()))
       args <- list(
-        id = selection$subcategory, 
-        specie = selection$specie,
-        subcategory = selection$subcategory
+        id = subcategory(), 
+        specie = specie,
+        subcategory = subcategory
       )
-      fct <- paste0(selection$category, "CardServer")
+      fct <- paste0(category(), "CardServer")
       do.call(fct, args)
     }
   })
@@ -134,11 +146,11 @@ shinyServer(function(input, output, session) {
   ## Outputs (table/plot)
   
   # Display available output tabs
-  observeEvent(selection$subcategory, {
+  observeEvent(subcategory(), {
         
-    if(selection$output != "Subcategorie"){
+    if(plot() != "Subcategorie"){
           
-      outputsSubcategory <- getOutputs(subcategory = selection$subcategory)    
+      outputsSubcategory <- getOutputs(subcategory = subcategory())    
           
       outputsToHide <- setdiff(outputs, outputsSubcategory)
       for(output in outputsToHide)
@@ -150,62 +162,63 @@ shinyServer(function(input, output, session) {
     }
         
     # reset selected ouput
-    selection$output <- "Visualisatie/Tabel"
+    plot("Visualisatie/Tabel")
         
   })
 
   # Update tab title
   output$output <- renderUI(
-    if(selection$output %in% outputs)
-      getOutputTitle(output = selection$output, 
+    if(plot() %in% outputs)
+      getOutputTitle(output = plot(), 
         uiText = uiText, n = 200, 
-        type = getCategoryOutput(selection$output)
+        type = getCategoryOutput(plot())
       )
   )
 
   # Update page content
   observe({
-    if(isTruthy(selection$output) && selection$output != "Visualisatie/Tabel"){
+    if(isTruthy(plot()) && plot() != "Visualisatie/Tabel"){
       args <- list(
-        id = selection$output, 
-        specie = selection$specie,
-        plot = selection$output
+        id = plot(), 
+        specie = specie,
+        plot = plot
       )
-      fct <- paste0(selection$category, "OutputServer")
+      fct <- paste0(category(), "OutputServer")
       do.call(fct, args)
     }
   })
 
   ## Navigation
-
-  # Update the selected tabPanel based on the hash
-  # (see https://stackoverflow.com/a/74874638)
-  observeEvent(session$clientData$url_hash, {
-      
-    req(input$navbarID)
-      currentHash <- utils::URLdecode(session$clientData$url_hash)
-      if (currentHash != createQueryString(selection, page = input$navbarID)) {
-        newSelection <- gsub("^#", "", strsplit(currentHash, split = "/")[[1]])
-        if (!is.na(newSelection[1])) selection$specie <- newSelection[1]
-        if (!is.na(newSelection[2])) selection$category <- newSelection[2]
-        if (!is.na(newSelection[3])) selection$subcategory <- newSelection[3]
-        if (!is.na(newSelection[4])) selection$output <- newSelection[4]
-      }
-    }, 
-    priority = 1
-  )
-  
-  # Update the hash based on the selected tabPanel
-  observeEvent(input$navbarID, {
-        
-    req(input$navbarID != "Home")
-    currentHash <- session$clientData$url_hash
-    pushQueryString <- createQueryString(
-      selection = selection, page = input$navbarID
-    )
-    if (currentHash != pushQueryString){
-      updateQueryString(pushQueryString, mode = "push", session)
-    }
-  }, priority = 0)
+#
+#  # Update the selected tabPanel based on the hash
+#  # (see https://stackoverflow.com/a/74874638)
+#  observeEvent(session$clientData$url_hash, {
+#      
+#    req(input$navbarID)
+#      currentHash <- utils::URLdecode(session$clientData$url_hash)
+# TODO
+#      if (currentHash != createQueryString(selection, page = input$navbarID)) {
+#        newSelection <- gsub("^#", "", strsplit(currentHash, split = "/")[[1]])
+#        if (!is.na(newSelection[1])) specie(newSelection[1])
+#        if (!is.na(newSelection[2])) category(newSelection[2])
+#        if (!is.na(newSelection[3])) subcategory(newSelection[3])
+#        if (!is.na(newSelection[4])) plot(newSelection[4])
+#      }
+#    }, 
+#    priority = 1
+#  )
+#  
+#  # Update the hash based on the selected tabPanel
+#  observeEvent(input$navbarID, {
+#        
+#    req(input$navbarID != "Home")
+#    currentHash <- session$clientData$url_hash
+#    pushQueryString <- createQueryString(
+#      selection = selection, page = input$navbarID
+#    )
+#    if (currentHash != pushQueryString){
+#      updateQueryString(pushQueryString, mode = "push", session)
+#    }
+#  }, priority = 0)
 
 })

@@ -4,7 +4,8 @@
 #' @import shiny
 #' @author lcougnaud
 #' @export
-beheerCardServer <- function(id, specie, subcategory){
+beheerCardServer <- function(id, 
+  specie = reactiveVal(), subcategory = reactiveVal()){
   
   moduleServer(id, function(input, output, session){  
         
@@ -12,17 +13,17 @@ beheerCardServer <- function(id, specie, subcategory){
     
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
-    results$specie <- reactive(specie)
+    results$specie <- reactive(specie())
     
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = specie)
+    specieSidebarServer(id = "sidebar", specie = results$specie)
     
     ## Main panel
     
     observe({    
           
-      if(subcategory %in% subcategories){
+      if(subcategory() %in% subcategories){
             
             categoryCardAfschot <- function(...){
               categoryCard(
@@ -34,7 +35,7 @@ beheerCardServer <- function(id, specie, subcategory){
               )
             }
             
-            group <- strsplit(subcategory, split = "-")[[1]][2]
+            group <- strsplit(subcategory(), split = "-")[[1]][2]
             
             cards <- switch(group,
                 vlaanderen = 
@@ -91,7 +92,7 @@ beheerOutputServer <- function(id, specie, plot){
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
     
-    results$specie <- reactive(specie)
+    results$specie <- reactive(specie())
     
     results$ecoData <- reactive(
       ecoData[ecoData$wildsoort == results$specie(), ]
@@ -186,22 +187,12 @@ beheerOutputServer <- function(id, specie, plot){
     
     outputServer <- reactiveVal(NULL)
 
-#    # if plot is selected based on the category cards
-#    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
-#    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
-#    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
-#    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
-#    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
-#    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
-#    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
-#    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
-
     # Create plot - UI side
     observe({
           
-      if(plot %in% beheerOutputs){
+      if(plot() %in% beheerOutputs){
         
-        outputName <- plot
+        outputName <- plot()
         
         # create the plot/table
         ui <- switch(outputName, 

@@ -8,7 +8,7 @@
 #' @return shiny::sidebarPanel return
 #' @author lcougnaud
 #' @export
-specieSidebarUI <- function(id, specie,
+specieSidebarUI <- function(id, 
   topExtra = NULL, bottomExtra = NULL,
   category = TRUE){
   
@@ -32,21 +32,21 @@ specieSidebarUI <- function(id, specie,
 #' @import shiny
 #' @author lcougnaud
 #' @export
-specieSidebarServer <- function(id, specie){
+specieSidebarServer <- function(id, specie = reactiveVal()){
   
   moduleServer(id, function(input, output, session){
     
     # Specie name
-    output$`specie-name` <- renderUI(h4(specie))
+    output$`specie-name` <- renderUI(h4(specie()))
     
     # Specie image	
     output$`specie-image` <- renderImage(
-      list(src = getSpecieImage(specie = specie), width = "100%")
+      list(src = getSpecieImage(specie = specie()), width = "100%")
       , deleteFile = FALSE)
     
     # Specie latin name
     output$`specie-latin-name` <- renderText(
-      paste("Latijn:", getLatinName(specie = specie))
+      paste("Latijn:", getLatinName(specie = specie()))
     )
         
   })

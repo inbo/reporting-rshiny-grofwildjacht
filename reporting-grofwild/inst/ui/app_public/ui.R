@@ -3,7 +3,7 @@ specieTabs <- lapply(species, function(specie){
   tabPanel(
     title = tools::toTitleCase(specie), 
     value = specie,
-    specieUI(id = specie, specie = specie)
+    specieUI(id = specie)
   )
 })
 

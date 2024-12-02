@@ -144,8 +144,8 @@ getOutputs <- function(...){
     `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
 
     # verspreiding
-    `verspreiding-huidig` = "mapSpreadUI",
-    `verspreiding-toekomstig` = "F17_1"
+    `verspreiding-huidig` = "F17_1",
+    `verspreiding-toekomstig` = "mapSpreadUI"
     
   )
   
@@ -214,7 +214,7 @@ getOutputTitle <- function(output,
       ), title, fixed = TRUE
     )
   }else{
-    regex <- " (op)*(voor)*(van)* ([[:alnum:]]{1,} )*\\{wildsoort(en)*\\}(,)*"
+    regex <- "( op \\w{0,})*( voor \\w{0,})*( van \\w{0,})* \\{wildsoort(en)*\\},*"
     title <- sub(regex, "", title)
   }
   

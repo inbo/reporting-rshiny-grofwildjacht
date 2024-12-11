@@ -1,6 +1,6 @@
 #' Server function for the cards of the 'verspreiding' Category page
 #' @param id id character, module id
-#' @return Shiny module function
+#' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -57,6 +57,14 @@ verspreidingCardServer <- function(id,
         
       }
     })
+
+    # if plot is selected based on the category cards
+    outputUI <- reactiveVal("Visualisatie/Tabel")
+    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
+    observeEvent(input$`mapSpreadUI-button`, outputUI("mapSpreadUI"))
+    
+    return(outputUI)
+
   })
 }
 

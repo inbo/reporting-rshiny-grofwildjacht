@@ -214,7 +214,9 @@ getOutputTitle <- function(output,
       ), title, fixed = TRUE
     )
   }else{
-    regex <- "( op \\w{0,})*( voor \\w{0,})*( van \\w{0,})* \\{wildsoort(en)*\\},*"
+    regex <- paste0("( ", c("op", "voor", "van"), "[ [:alpha:]{1,}]*", ")*")
+    regex <- paste(regex, collapse = "")
+    regex <- paste0(regex, " \\{wildsoort(en)*\\},*")
     title <- sub(regex, "", title)
   }
   

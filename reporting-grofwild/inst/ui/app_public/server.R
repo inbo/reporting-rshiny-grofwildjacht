@@ -135,7 +135,7 @@ shinyServer(function(input, output, session) {
   # Update tab title
   output$subcategory <- renderUI(
     ifelse(
-      isTruthy(subcategory()),
+      isTruthy(subcategory()) && subcategory() != "Subcategorie",
       getSubcategoryTitle(subcategory = subcategory()),
       "Subcategorie"
     )
@@ -168,7 +168,7 @@ shinyServer(function(input, output, session) {
   # Display available output tabs
   observeEvent(subcategory(), {
         
-    if(plot() != "Subcategorie"){
+    if(subcategory() != "Subcategorie"){
           
       print(paste("Update output tabs for", subcategory()))
       outputsSubcategory <- getOutputs(subcategory = subcategory())    
@@ -182,18 +182,19 @@ shinyServer(function(input, output, session) {
           
     }
         
-    # reset selected ouput
+    # reset selected output
     plot("Visualisatie/Tabel")
         
   })
 
   # Update tab title
   output$output <- renderUI(
-    if(plot() %in% outputs)
+    if(plot() %in% outputs){
       getOutputTitle(output = plot(), 
         uiText = uiText, n = 200, 
         type = getCategoryOutput(plot())
       )
+    }else plot()
   )
   
   # Change tab

@@ -59,12 +59,21 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(specie(), {
+    print(paste("Update tab to", specie()))
     updateTabsetPanel(session, "navbarID", selected = specie())
   }, ignoreInit = TRUE)
 
   # Update page content
-  observe({
-    category <- specieServer(id = specie(), specie = specie)
+  categorySpecie <- reactive(
+    specieServer(id = specie(), specie = specie)
+  )
+ 
+  # Go to a 'category' page if respective card is selected in the specie page
+  observeEvent(categorySpecie()(), {
+    if(isTruthy(categorySpecie()()) && categorySpecie()() != "Categorie"){
+      print(paste("Update category to:", categorySpecie()()))
+      category(categorySpecie()())
+    }
   })
   
   ## Category
@@ -72,7 +81,8 @@ shinyServer(function(input, output, session) {
   # Display available category tabs for a specie
   observeEvent(specie(), {
         
-    categoriesSpecie <- getCategories(specie = specie())    
+    categoriesSpecie <- getCategories(specie = specie()) 
+    print(paste("Update category tabs for", specie()))
         
     categoriesToHide <- setdiff(categories, categoriesSpecie)
     for(category in categoriesToHide)
@@ -94,6 +104,7 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(category(), {
+    print(paste("Update tab to", category()))    
     updateTabsetPanel(session, "navbarID", selected = category())
   }, ignoreInit = TRUE)
 
@@ -104,6 +115,7 @@ shinyServer(function(input, output, session) {
         
     if(category() != "Categorie"){
       
+      print(paste("Update subcategory tabs for", category()))
       subcategoriesCategory <- getSubcategories(category = category())    
         
       categoriesToHide <- setdiff(subcategories, subcategoriesCategory)
@@ -130,9 +142,9 @@ shinyServer(function(input, output, session) {
   )
   
   # Update page content
-  observe({
+  outputCategory <- reactive({
     if(isTruthy(subcategory()) && subcategory() != "Subcategorie"){
-      print(paste("Update page content for category: ", category()))
+      print(paste("Go to:", category(), "page"))
       args <- list(
         id = subcategory(), 
         specie = specie,
@@ -140,7 +152,15 @@ shinyServer(function(input, output, session) {
       )
       fct <- paste0(category(), "CardServer")
       do.call(fct, args)
-    }
+    }else reactiveVal()
+  })
+
+  # Go to 'output' page if respective output clicked on the category page
+  observeEvent(outputCategory()(), {
+    if(isTruthy(outputCategory()()) && outputCategory()() != "Visualisatie/Tabel"){
+      print(paste("Update plot to:", outputCategory()()))
+      plot(outputCategory()())
+    }else reactiveVal()
   })
   
   ## Outputs (table/plot)
@@ -150,6 +170,7 @@ shinyServer(function(input, output, session) {
         
     if(plot() != "Subcategorie"){
           
+      print(paste("Update output tabs for", subcategory()))
       outputsSubcategory <- getOutputs(subcategory = subcategory())    
           
       outputsToHide <- setdiff(outputs, outputsSubcategory)
@@ -174,10 +195,17 @@ shinyServer(function(input, output, session) {
         type = getCategoryOutput(plot())
       )
   )
+  
+  # Change tab
+  observeEvent(plot(), {
+    print(paste("Update tab to", plot()))    
+    updateTabsetPanel(session, "navbarID", selected = plot())
+  }, ignoreInit = TRUE)
 
   # Update page content
   observe({
     if(isTruthy(plot()) && plot() != "Visualisatie/Tabel"){
+      print(paste("Go to:", category(), plot(), "output page"))
       args <- list(
         id = plot(), 
         specie = specie,

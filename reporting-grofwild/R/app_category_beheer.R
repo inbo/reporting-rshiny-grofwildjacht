@@ -1,6 +1,6 @@
 #' Server function for the cards of the 'beheer' Category page
 #' @param id id character, module id
-#' @return Shiny module function
+#' @return reactive value with name of output, if selected
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -69,6 +69,19 @@ beheerCardServer <- function(id,
       }
           
     })
+
+    # if plot is selected based on the category cards
+    outputUI <- reactiveVal("Visualisatie/Tabel")
+    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
+    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
+    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
+    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
+    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
+    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
+    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
+    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
+    
+    return(outputUI)
     
   })
 

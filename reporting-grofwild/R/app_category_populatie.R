@@ -1,6 +1,6 @@
 #' Server function for the cards of the 'populatie indicatoren' Category page
 #' @param id id character, module id
-#' @return Shiny module function
+#' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -62,6 +62,16 @@ populatieCardServer <- function(id,
           output[["output"]] <- renderUI(cards)
         }
     })
+
+    # if plot is selected based on the category cards
+    outputUI <- reactiveVal("Visualisatie/Tabel")
+    observeEvent(input$`boxAgeWeightUI-button`, outputUI("boxAgeWeightUI"))
+    observeEvent(input$`countAgeCheekUI-button`, outputUI("countAgeCheekUI"))
+    observeEvent(input$`countAgeGenderUI-button`, outputUI("countAgeGenderUI"))
+    observeEvent(input$`countEmbryosUI-button`, outputUI("countEmbryosUI"))
+    observeEvent(input$`countAgeGroupUI-button`, outputUI("countAgeGroupUI"))
+    
+    return(outputUI)
 
   })  
 }

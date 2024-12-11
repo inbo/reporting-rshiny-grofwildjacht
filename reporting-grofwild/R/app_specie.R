@@ -51,9 +51,9 @@ specieUI <- function(id){
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieServer <- function(id, specie){
+specieServer <- function(id, specie = reactiveVal()){
   
-  moduleServer(id, function(input, output, session){   
+  moduleServer(id, function(input, output, session){  
         
     category <- reactiveVal("Categorie")
     

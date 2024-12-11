@@ -1,6 +1,6 @@
 #' Server function for the cards of the 'schade' Category page
 #' @param id id character, module id
-#' @return Shiny module function
+#' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -97,6 +97,23 @@ schadeCardServer <- function(id,
         
       } 
    })
+   
+   # if plot is selected based on the category cards
+   outputUI <- reactiveVal("Visualisatie/Tabel")
+   observeEvent(input$`tableSchadeSummaryUI-button`, outputUI("tableSchadeSummaryUI"))
+   observeEvent(input$`trendYearFlandersUI-button`, outputUI("trendYearFlandersUI"))
+   observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-schade"))
+   observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI-schade"))
+   observeEvent(input$`countYearSchadeUI-wildschade-button`, outputUI("countYearSchadeUI-wildschade"))
+   observeEvent(input$`mapSchadeUI-wildschade-button`, outputUI("mapSchadeUI-wildschade"))
+   observeEvent(input$`tableSchadeUI-button`, outputUI("tableSchadeUI"))
+   observeEvent(input$`countYearSchadeUI-gewas-button`, outputUI("countYearSchadeUI-gewas"))
+   observeEvent(input$`tableGewasUI-button`, outputUI("tableGewasUI"))
+   observeEvent(input$`countYearSchadeUI-seizoen-button`, outputUI("countYearSchadeUI-seizoen"))
+   observeEvent(input$`mapSchadeUI-seizoen-button`, outputUI("mapSchadeUI-seizoen"))
+   observeEvent(input$`barCostUI-button`, outputUI("barCostUI"))
+   
+   return(outputUI)
      
   })
      

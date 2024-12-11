@@ -25,53 +25,53 @@ beheerCardServer <- function(id,
           
       if(subcategory() %in% subcategories){
             
-            categoryCardAfschot <- function(...){
-              categoryCard(
-                  id = id, 
-                  uiText = uiText,
-                  specie = results$specie(), 
-                  category = "beheer",
-                  ...
-              )
-            }
+        categoryCardAfschot <- function(...){
+          categoryCard(
+            id = id, 
+            uiText = uiText,
+            specie = results$specie(), 
+            category = "beheer",
+            ...
+          )
+        }
             
-            group <- strsplit(subcategory(), split = "-")[[1]][2]
+        group <- strsplit(subcategory(), split = "-")[[1]][2]
             
-            cards <- switch(group,
-                vlaanderen = 
-                    bslib::layout_column_wrap(
-                        width = 1/3, gap = "2em",
-                        categoryCardAfschot(output = "trendYearRegionUI"),
-                        categoryCardAfschot(output = "countYearProvinceUI", outputFunction = "countYearProvinceUI-afschot"),
-                        categoryCardAfschot(output = "yearlyShotAnimalsUI")
-                    ),
-                regio =       
-                    bslib::layout_column_wrap(
-                        width = 1/3, gap = "2em",
-                        categoryCardAfschot(output = "mapFlandersUI")
-                    ),
-                leeftijdcategorie = 
-                    bslib::layout_column_wrap(
-                        width = 1/3, gap = "2em",
-                        categoryCardAfschot(output = "tableProvinceUI"),
-                        categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
-                    ),
-                jachtmethode =     
-                    bslib::layout_column_wrap(
-                        width = 1/3, gap = "2em",
-                        categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
-                        categoryCardAfschot(output = "F04_3")
-                    )
+        cards <- switch(group,
+          vlaanderen = 
+            bslib::layout_column_wrap(
+              width = 1/3, gap = "2em",
+              categoryCardAfschot(output = "trendYearRegionUI"),
+              categoryCardAfschot(output = "countYearProvinceUI", outputFunction = "countYearProvinceUI-afschot"),
+              categoryCardAfschot(output = "yearlyShotAnimalsUI")
+            ),
+          regio =       
+            bslib::layout_column_wrap(
+              width = 1/3, gap = "2em",
+              categoryCardAfschot(output = "mapFlandersUI")
+            ),
+          leeftijdcategorie = 
+            bslib::layout_column_wrap(
+              width = 1/3, gap = "2em",
+              categoryCardAfschot(output = "tableProvinceUI"),
+              categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
+            ),
+          jachtmethode =     
+            bslib::layout_column_wrap(
+              width = 1/3, gap = "2em",
+              categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
+              categoryCardAfschot(output = "F04_3")
             )
+          )
             
-            output[["output"]] <- renderUI(cards)
+        output[["output"]] <- renderUI(cards)
             
-          }
+      }
           
-        })
-        
+    })
+    
   })
-  
+
 }
 
 #' Server function for an output (plot/table) of the 'beheer' Category page

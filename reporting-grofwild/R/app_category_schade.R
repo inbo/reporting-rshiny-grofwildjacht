@@ -181,7 +181,7 @@ schadeOutputServer <- function(id,
     ## Tab content with selected plot/table
 
     outputServer <- reactiveVal(NULL)
-
+    
     # Create plot - UI side
     observe({
           

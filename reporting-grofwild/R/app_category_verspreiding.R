@@ -151,7 +151,6 @@ verspreidingOutputServer <- function(id,
               specie = results$specie(),
               showCombine = FALSE, type = "dash",
               mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
-              showRegion = TRUE,
               regionChoices = c(
                 "Vlaanderen" = "flanders",
                 "Provincie" = "provinces", 

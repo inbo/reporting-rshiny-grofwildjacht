@@ -195,17 +195,10 @@ mapSpreadServer <- function(id,
       ## User Input ##
       ## ---------- ##
       
-      # update region
-      observeEvent(input$regionLevel,
-        updateSelectInput(session, inputId = "region", 
-          choices = sort(unique(allSpatialData[[input$regionLevel]]$NAAM))
-        ), priority = 1
-      )
-      
       # Selected regions of interest
       spatialData <- reactive({
-      
-        validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
           
           req(allSpatialData)
           
@@ -213,11 +206,16 @@ mapSpreadServer <- function(id,
             allSpatialData = allSpatialData, 
             species = species, 
             regionLevel = input$regionLevel, 
-            year = NULL,
-            locaties = input$region
+            year = NULL
           )
           
         })
+      
+      # update region
+      observeEvent(input$regionLevel, 
+        updateSelectInput(session, inputId = "region", 
+          choices = sort(unique(spatialData()$NAAM))
+        ), priority = 1)
       
       
       selectedPolygons <- reactive({

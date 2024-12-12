@@ -442,10 +442,6 @@ mapFlanders <- function(
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
 #' @param allSpatialData list with sf objects 
-#' @param regionLevel reactive, pre-selected value of regionLevel chosen outside module;
-#' to draw black borders and zoom
-#' @param locaties reactive, pre-selected value of region chosen outside module;
-#' to draw black borders and zoom
 #' @inheritParams createSpaceData
 #' @param sourceChoices named character vector, choices for the source
 #' @param uiText data.frame
@@ -462,7 +458,7 @@ mapFlanders <- function(
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NULL),
   hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
   geoData, biotoopData = NULL, allSpatialData,
-  regionLevel = reactive(NULL), locaties = reactive(NULL), countVariable = NULL,
+  countVariable = NULL,
   sourceChoices = NULL,
   uiText = NULL, outputFunction = "mapFlandersUI", context = id) {
 
@@ -505,6 +501,23 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Data dependent input #
       # -------------------- #
       
+      ## For verspreiding
+      regionLevel <- reactive(input$borderLevel)
+      output$borderRegion <- renderUI({
+          
+          tmpSpatial <- filterSpatial(
+            allSpatialData = allSpatialData, 
+            species = if (!is.null(species())) species(), 
+            regionLevel = input$borderLevel, 
+            year = req(input$year)
+          )
+          
+          selectInput(inputId = ns("borderRegion"), label = "Regio('s)",
+              choices = sort(unique(tmpSpatial$NAAM)), multiple = TRUE)
+          
+        })
+      locaties <- reactive(input$borderRegion)
+    
       ## Region level
       regionLevelLocal <- reactive({
           
@@ -512,8 +525,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             validate(need(locaties(), "Gelieve regio('s) te selecteren"))
           
           if (!is.null(currentWbe()))
-            "WBE_buitengrenzen" else if (type == "empty")
-            regionLevel() else
+            "WBE_buitengrenzen" else 
             req(input$regionLevel)
           
         })
@@ -1341,14 +1353,18 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       if (showRegion)
         fixedRow(
           column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-            choices = regionChoices,
-            selected = "communes")),
+              choices = regionChoices,
+              selected = "communes")),
           column(8, uiOutput(ns("region")))      
         ),  
         
       if (type == "dash") {
           
           fixedRow(
+            column(4, selectInput(inputId = ns("borderLevel"), label = "Regio-schaal",
+                choices = regionChoices,
+                selected = "provinces")),
+            column(8, uiOutput(ns("borderRegion"))),  
             column(6, selectInput(inputId = ns("regionLevel"), label = "Map-schaal",
                 choices = mapScaleChoices,
                 selected = "communes")),

@@ -59,6 +59,7 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(specie(), {
+    req(specie() != "Specie")
     print(paste("Update tab to", specie()))
     updateTabsetPanel(session, "navbarID", selected = specie())
   }, ignoreInit = TRUE)
@@ -104,6 +105,7 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(category(), {
+    req(category() != "Categorie")
     print(paste("Update tab to", category()))    
     updateTabsetPanel(session, "navbarID", selected = category())
   }, ignoreInit = TRUE)
@@ -199,6 +201,7 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(plot(), {
+    req(plot() != "Visualizatie/Tabel")
     print(paste("Update tab to", plot()))    
     updateTabsetPanel(session, "navbarID", selected = plot())
   }, ignoreInit = TRUE)
@@ -218,36 +221,45 @@ shinyServer(function(input, output, session) {
   })
 
   ## Navigation
-#
-#  # Update the selected tabPanel based on the hash
-#  # (see https://stackoverflow.com/a/74874638)
-#  observeEvent(session$clientData$url_hash, {
-#      
-#    req(input$navbarID)
-#      currentHash <- utils::URLdecode(session$clientData$url_hash)
-# TODO
-#      if (currentHash != createQueryString(selection, page = input$navbarID)) {
-#        newSelection <- gsub("^#", "", strsplit(currentHash, split = "/")[[1]])
-#        if (!is.na(newSelection[1])) specie(newSelection[1])
-#        if (!is.na(newSelection[2])) category(newSelection[2])
-#        if (!is.na(newSelection[3])) subcategory(newSelection[3])
-#        if (!is.na(newSelection[4])) plot(newSelection[4])
-#      }
-#    }, 
-#    priority = 1
-#  )
-#  
-#  # Update the hash based on the selected tabPanel
-#  observeEvent(input$navbarID, {
-#        
-#    req(input$navbarID != "Home")
-#    currentHash <- session$clientData$url_hash
-#    pushQueryString <- createQueryString(
-#      selection = selection, page = input$navbarID
-#    )
-#    if (currentHash != pushQueryString){
-#      updateQueryString(pushQueryString, mode = "push", session)
-#    }
-#  }, priority = 0)
+  
+  selection <- reactive(
+    c(
+      specie = specie(),
+      category = category(), 
+      subcategory = subcategory(),
+      plot = plot()
+    )
+  )
+  
+
+  # Update the selected tabPanel based on the hash
+  # (see https://stackoverflow.com/a/74874638)
+  observeEvent(session$clientData$url_hash, {
+      
+    req(input$navbarID)
+    
+    currentHash <- utils::URLdecode(URL = session$clientData$url_hash)
+    query <- createQueryString(selection(), page = input$navbarID)
+      
+    if (currentHash != query) {
+      
+      newSelection <- gsub("^#", "", strsplit(currentHash, split = "/")[[1]])
+      
+      specie(ifelse(!is.na(newSelection[1]), newSelection[1], "Specie"))
+      category(ifelse(!is.na(newSelection[2]), newSelection[2], "Categorie"))
+      subcategory(ifelse(!is.na(newSelection[3]), newSelection[3], "Subcategorie"))
+      plot(ifelse(!is.na(newSelection[4]), newSelection[4], "Visualisatie/Tabel"))
+
+    }
+  }, priority = 1)
+  
+  # Update the hash based on the selected tabPanel
+  observeEvent(input$navbarID, { 
+    req(input$navbarID != "Home")
+    currentHash <- session$clientData$url_hash
+    query <- createQueryString(selection(), page = input$navbarID)
+    if (currentHash != query)
+      updateQueryString(queryString = query, mode = "push", session)
+  }, priority = 0)
 
 })

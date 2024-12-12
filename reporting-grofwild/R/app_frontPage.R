@@ -17,12 +17,11 @@ frontUI <- function(){
         obj = img, slideId = "carousel", 
         slideType = 'img',
         width = "100%", padding = 0,
-        height = "100vh;"
+        height = "95vh;"
       ) + 
       slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE)
     ),
-    headerUI(style = "margin-top: -30em", color = "white", offset = 9),
-    fluidRow(style = "margin-top: 1em",
+    fluidRow(style = "margin-top: -25em",
       column(
         width = 6, offset = 3, align = "center",
         tags$span(
@@ -33,11 +32,11 @@ frontUI <- function(){
         )
       ), 
     ),
-    fluidRow(style = "margin-top: 19em", 
+    fluidRow(style = "margin-top: 20em", 
       column(
         width = 6, offset = 3, align = "center",
         selectInput(
-          inputId = "wildsoort", 
+          inputId = "specie", 
           label = tags$span(
             style = "color: white; font-size: 1.5em", 
             "Selecteer een diersoort:"

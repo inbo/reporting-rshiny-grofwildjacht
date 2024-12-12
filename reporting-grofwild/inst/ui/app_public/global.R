@@ -34,6 +34,7 @@ if (!doDebug | !exists("metaSchade"))
   metaSchade <- loadMetaSchade()
 
 schadeWildsoorten <- metaSchade$wildsoorten
+
 schadeTypes <- metaSchade$types
 schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
@@ -98,13 +99,10 @@ names(availableData)[3:6] <- c("flanders", "provinces", "communes", "faunabeheer
 uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
   all.x = TRUE)
 
+# UI
 
+species <- unname(unlist(schadeWildsoorten))
 
-# Choices for Dashboard
-## Ideally these are read from availableData
-populatieChoices <- c("F16_1", "F17_1", "F17_4", "F18_1", "F18_8")
-jachtChoices <- c("F04_3", "F05_1", "F05_2")
-schadeChoices <- c("F07_1", "F09_2", "F07_3")
-maatschappijChoices <- c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
-
-
+categories <- getCategories()
+subcategories <- getSubcategories()
+outputs <- getOutputs() # tables/visualisations

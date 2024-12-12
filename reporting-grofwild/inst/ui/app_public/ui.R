@@ -1,3 +1,66 @@
+# build all specie tabs
+specieTabs <- lapply(species, function(specie){
+  bslib::nav_panel(
+    title = tools::toTitleCase(specie), 
+    value = specie,
+    specieUI(id = specie)
+  )
+})
+
+# build all category tabs
+categoryTabs <- lapply(categories, function(category){
+      
+  dataDate <- if(category == "schade"){
+    schadeData
+  }else{ecoData}
+  maxDate <- max(dataDate$afschot_datum, na.rm = TRUE)
+  
+  infoText <- welcomeSectionUI(
+    id = category, uiText = uiText,
+    category = category,
+    context = "description",
+    maxDate = maxDate
+  )
+ 
+  img <- file.path("www", paste("category", category, "header.png", sep = "-"))   
+      
+  bslib::nav_panel(
+    title = getCategoryTitle(category),
+    value = category, 
+    if(file.exists(img))  fluidRow(img(src = img, width = "100%")),
+    fluidRow(column(10, offset = 1, infoText))
+  )
+  
+})
+
+# build all subcategory tabs - contain placeholder for cards 
+subcategoryTabs <- lapply(subcategories, function(subcategory){
+   
+  category <- strsplit(subcategory, split = "-")[[1]][1]
+
+  bslib::nav_panel(
+    title = getSubcategoryTitle(subcategory = subcategory),   
+    value = subcategory,
+    outputUI(id = subcategory, category = category)
+  )
+  
+})
+
+# build all output tabs - contain placeholder for plot/table and parameters
+outputTabs <- lapply(outputs, function(output){
+      
+  category <- getCategoryOutput(output)
+  title <- getOutputTitle(output = output, 
+    uiText = uiText, n = 200, type = category)
+
+  bslib::nav_panel(
+    title = title,   
+    value = output,
+    outputUI(id = output, category = category)
+  )
+
+})
+
 shinyUI(
         
   bootstrapPage(
@@ -24,7 +87,54 @@ shinyUI(
                 
     ## Body
     ## ------
-    tags$body(uiOutput("page"))
+    bslib::navset_tab(
+        
+      id = "navbarID",
+      
+      bslib::nav_panel(title = "Home", frontUI()),
+      
+      do.call(bslib::nav_menu, 
+        append(
+          list(title = htmlOutput("specie", inline = TRUE)), 
+          specieTabs
+        )
+      ),
+      do.call(bslib::nav_menu,
+        append(
+          list(title = htmlOutput("category", inline = TRUE)), 
+          categoryTabs
+        )
+      ),
+      do.call(bslib::nav_menu,
+        append(
+          list(title = htmlOutput("subcategory", inline = TRUE)), 
+          subcategoryTabs
+        )
+      ),
+      do.call(bslib::nav_menu,
+        append(
+          list(title = htmlOutput("output", inline = TRUE)), 
+          outputTabs
+        )
+      ),
+      bslib::nav_spacer(), # right align next items
+      bslib::nav_item(
+        tags$a(
+          id = "contact", 
+          href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", 
+          target="_blank", "Contact"
+        )
+      ),
+      bslib::nav_item(
+        shiny::actionLink(
+          inputId = "WBE", 
+          label = "WBE", 
+          onclick = "window.open('https://wbe.inbo.be', '_self')"
+        )
+      ),
+      bslib::nav_item(versionUI(id = "public"))
+
+    )
 
   )
 

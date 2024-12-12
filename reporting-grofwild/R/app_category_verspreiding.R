@@ -1,101 +1,94 @@
-verspreidingOutputs <- c("mapFlandersUI", "mapSpreadUI")
-
-#' UI for the 'verspreiding' Category page
+#' Server function for the cards of the 'verspreiding' Category page
 #' @param id id character, module id
-#' @inherit shiny::verticalLayout return
+#' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
-verspreidingUI <- function(id, specie){
+verspreidingCardServer <- function(id, 
+  specie = reactiveVal(), subcategory = reactiveVal()){
   
-  ns <- NS(namespace = id)
+  moduleServer(id, function(input, output, session){  
       
-  verticalLayout(
-          
-    # header
-    headerUI(
-      path = c("home", "specie", "category", "subcategory", "plot"), 
-      id = id, #specie = specie, 
-      category = "Verspreiding",
-      subcategory = getTabTitle(value = "huidig", category = "verspreiding")
-    ),
-            
-    # image
-    fluidRow(
-      column(width = 12, 
-        img(src = "www/category-verspreiding-header.png", width = "100%")
-      )
-    ),
-           
-    # navigation page with plots and specie sidebar panel
-    sidebarLayout(
-          
-      sidebarPanel = categorySidebarPanel(id = id, specie = specie),
+    ns <- session$ns
       
-      mainPanel = mainPanel(
+    ## input
+    results <- reactiveValues(renderedTabs = "Grofwild")
+    results$specie <- reactive(specie())
+      
+    ## Sidebar panel
+    
+    specieSidebarServer(id = "sidebar", specie = results$specie)
+      
+    ## Main panel
+      
+    # Create tab
+    observe({
           
-        navbarPage(
-            
-          title = "",
-          
-          id = ns("subcategory"),
-          
-          selected = "informatie",
-                
-          tabPanel(
-            title = getTabTitle(
-              value = "huidig", category = "verspreiding"
-            ), 
-            value = "huidig",
-            uiOutput(outputId = ns("output-huidig"))
-          ),
-          
-          tabPanel(
-            title = getTabTitle(
-              value = "toekomstig", category = "verspreiding"
-            ), 
-            value = "toekomstig",
-            uiOutput(outputId = ns("output-toekomstig"))
-          ),
-          # menu with all plots/tables
-          tabPanelAll(
-            category = "verspreiding", id = id,
-            outputs = verspreidingOutputs, 
-            uiText = uiText
-          ),
-          tabPanelInformatie(
-            category = "verspreiding", id = id, 
-            uiText = uiText, 
-            maxDate = max(ecoData$afschot_datum, na.rm = TRUE),
-            specie = specie
+      if(subcategory() %in% subcategories){
+        
+        categoryCardVerspreiding <- function(...){
+          categoryCard(
+            id = id, 
+            uiText = uiText,
+            specie = results$specie(), 
+            category = "verspreiding", 
+            ...
           )
+        }
+        
+        group <- strsplit(subcategory(), split = "-")[[1]][2]
+          
+        cards <- switch(group,
+          huidig = 
+            bslib::layout_column_wrap(
+              width = 1/3, gap = "2em",
+              categoryCardVerspreiding(
+                output = "mapFlandersUI", 
+                outputFunction = "F17_1"
+              )
+            ),
+          toekomstig =        
+            bslib::layout_column_wrap(
+              width = 1/3, gap = "2em",
+              categoryCardVerspreiding(output = "mapSpreadUI")
+            )
         )
-      )
-    )
-  )
-  
+        output[["output"]] <- renderUI(cards)
+        
+      }
+    })
+
+    # if plot is selected based on the category cards
+    outputUI <- reactiveVal("Visualisatie/Tabel")
+    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
+    observeEvent(input$`mapSpreadUI-button`, outputUI("mapSpreadUI"))
+    
+    return(outputUI)
+
+  })
 }
 
-#' Server function for the 'verspreiding' Category page
+
+#' Server function for an output (plot/table) of the 'verspreiding' Category page
 #' @param id id character, module id
 #' @return Shiny module function
 #' @import shiny
 #' @author lcougnaud
 #' @export
-verspreidingServer <- function(id){
+verspreidingOutputServer <- function(id, 
+  specie = reactiveVal(), plot = reactiveVal()){
   
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns
-    
+        
     ## initialization
-    outputName <- reactiveVal(NULL)
-    nextPage <- reactiveVal(value = NULL)
+    verspreidingOutputs <- getOutputs(category = "verspreiding")
     
     ## input
     results <- reactiveValues(renderedTabs = "Verspreiding")
     
-    results$specie <- reactive(input$specie)
+    results$specie <- reactive(specie())
     
     # Create data upon user choices
     results$spatialData <- reactive({
@@ -132,179 +125,69 @@ verspreidingServer <- function(id){
       )
     })
     
-    ## Header
+    ## Sidebar panel
     
-    # Update specie in path
-    output$pathSpecie <- renderUI(
-      actionLink(
-        inputId = ns("pathSpecie-button"), 
-        label = results$specie()
-      )    
-    )
+    specieSidebarServer(id = "sidebar", specie = specie)
     
-    # Update subcategory in path
-    output$pathSubcategory <- renderUI(
-      actionLink(
-        inputId = ns("pathSubcategory-button"), 
-        label = getTabTitle(
-          value = input$subcategory, 
-          category = "verspreiding"
-        )
-      )
-    )
+    ## Main panel
     
-    # Update plot in path
-    observeEvent(outputName(), ignoreNULL = TRUE,
-      output$pathPlot <- renderText(
-        if(outputName() == ""){
-          ""
-        }else{
-          getOutputTitle(
-            output = outputName(), 
-            uiText = uiText, specie = results$specie(), 
-            type = "verspreiding",
-            n = 55
-          )
-        }
-      )
-    )
+    # Tab content with selected plot/table
     
-    ## Sidebar with input parameters
-    
-    # Specie image	
-    output$`specie-image` <- renderImage(
-      list(src = getSpecieImage(specie = results$specie()), width = "100%")
-      , deleteFile = FALSE)
-    
-    # Specie latin name
-    output$`specie-name` <- renderText(
-      paste("Latijn:", getLatinName(specie = results$specie()))
-    )
-    
-    ## Tab with available plots
-    
-    initTab <- reactiveVal(TRUE)
-    # Go back to page if subcategory is clicked on in the path
-    observeEvent(input$`pathSubcategory-button`, initTab(TRUE))
-    observeEvent(input$subcategory, initTab(TRUE))
+    outputServer <- reactiveVal(NULL)
 
-    # Create tab
-    observe(if(initTab()){
-
-      if(isTruthy(input$subcategory)){
+    # Create plot - UI side
+    observe({
+      
+      if(plot() %in% verspreidingOutputs){
         
-        categoryCardVerspreiding <- function(...){
-          categoryCard(
-            id = id, 
-            uiText = uiText,
-            specie = results$specie(), 
-            category = "verspreiding", 
-            ...
-          )
-        }
+        outputName <- plot()
         
-        switch(input$subcategory, 
-            
-          huidig = {
-            output$`output-huidig` <- renderUI(          
-              bslib::layout_column_wrap(
-                width = 1/3, gap = "2em",
-                categoryCardVerspreiding(
-                  output = "mapFlandersUI", 
-                  outputFunction = "F17_1"
-                )
-              )
+        # create the plot/table
+        ui <- switch(outputName, 
+          "F17_1" = {
+            mapFlandersUI(
+              id = ns(outputName), 
+              uiText = uiText, output = "F17_1", 
+              specie = results$specie(),
+              showCombine = FALSE, type = "dash",
+              mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
+              regionChoices = c(
+                "Vlaanderen" = "flanders",
+                "Provincie" = "provinces", 
+                "Faunabeheerzones" = "faunabeheerzones",
+                "Gemeente" = "communes"
+              ),
+              unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+              plotDetails = ""#, showTitle = FALSE
             )
-            outputName("")
           },
-            
-          toekomstig = {
-            output$`output-toekomstig` <- renderUI(          
-              bslib::layout_column_wrap(
-                width = 1/3, gap = "2em",
-                categoryCardVerspreiding(output = "mapSpreadUI")
-              )
+          "mapSpreadUI" = {
+            mapSpreadUI(
+              id = ns(outputName), 
+              uiText = uiText, context = "description",
+              specie = results$specie(),
+              doHide = FALSE
             )
-            outputName("")
           }
         )
+      
+        # include plot/table in UI
+        output[["output"]] <- renderUI(ui)
+        
+        # activate server-side update
+        outputServer(outputName)
+      
       }
-      initTab(FALSE)
-    })
-  
-    ## Tab content with selected plot/table
-
-    outputUI <- reactiveVal(NULL)
-    outputServer <- reactiveVal(NULL)
-    
-    # if plot is selected in the 'all' tab
-    observeEvent(input$subcategory, 
-      if(input$subcategory %in% verspreidingOutputs)
-        outputUI(input$subcategory)
-    )
-
-    # if plot is selected based on the category cards
-    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
-    observeEvent(input$`mapSpreadUI-button`, outputUI("mapSpreadUI"))
-    
-    # Create plot - UI side
-    observeEvent(outputUI(), ignoreNULL = TRUE, {
-      plotName <- outputUI()
-          
-      # create the plot/table
-      switch(plotName, 
-        "mapFlandersUI" = {
-          plot <- mapFlandersUI(
-            id = ns(plotName), 
-            uiText = uiText, output = "F17_1", 
-            specie = results$specie(),
-            showCombine = FALSE, type = "dash",
-            mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
-            regionChoices = c(
-              "Vlaanderen" = "flanders",
-              "Provincie" = "provinces", 
-              "Faunabeheerzones" = "faunabeheerzones",
-              "Gemeente" = "communes"
-            ),
-            unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
-            plotDetails = ""#, showTitle = FALSE
-          )
-          card <- "output-huidig"
-        },
-        "mapSpreadUI" = {
-          plot <- mapSpreadUI(
-            id = ns(plotName), 
-            uiText = uiText, context = "description",
-            specie = results$specie(),
-            doHide = FALSE
-          )
-          card <- "output-toekomstig"
-        }
-      )
-      
-      # include plot/table in UI
-      cnt <- ifelse(
-        input$subcategory %in% verspreidingOutputs,
-        paste0("plots-", plotName),
-        card
-      )
-      output[[cnt]] <- renderUI(plot)
-      
-      # re-set in case plot selected via tab after/before category card
-      outputUI(NULL)
-      
-      # activate server-side update
-      outputServer(plotName)
       
     })
 
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
-      plotName <- outputServer()
+      outputName <- outputServer()
       
-      switch(plotName,
-        mapFlandersUI = mapFlandersServer(
-          id = plotName,
+      switch(outputName,
+        `F17_1` = mapFlandersServer(
+          id = outputName,
           defaultYear = defaultYear,
           species = results$specie,
           type = "dash",
@@ -316,33 +199,16 @@ verspreidingServer <- function(id){
           uiText = uiText, outputFunction = "F17_1", context = "description"
         ),
         mapSpreadUI = mapSpreadServer(
-          id = plotName,
+          id = outputName,
           allSpatialData = spatialData,
           species = results$specie(),
           type = "F17_4"
         )
       )
-      outputName(plotName)
       
       # re-set in case plot selected via tab after/before category card
       outputServer(NULL)
     })
-      
-    ## Output
-      
-    # Redirection:
-
-    observeEvent(input$`pathHome`, {
-      print("verspreiding: Go to home page")
-      nextPage("home")
-    })
-  
-    observeEvent(input$`pathSpecie-button`, {
-      print("verspreiding: Go to specie page")
-      nextPage(structure("specie", specie = results$specie()))
-    })
-      
-    return(nextPage)
 
   })
   

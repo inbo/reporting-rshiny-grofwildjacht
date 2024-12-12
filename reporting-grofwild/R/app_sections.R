@@ -5,7 +5,7 @@
 
 
 
-#' Section for welcoming (top of the page) - UI side (no server side)
+#' Section for welcoming - UI side (no server side)
 #' 
 #' @param id character, unique identifier for the module
 #' @param category character of length 1 with the name of the
@@ -16,13 +16,9 @@
 #' @author mvarewyck
 #' @import shiny
 #' @export
-welcomeSectionUI <- function(id, context = id, uiText, 
-  category = c("schade", "afschot", "populatie", "verspreiding"),
-  ...) {
-  
-  category <- match.arg(category)
+welcomeSectionUI <- function(id, context = id, uiText, category, ...) {
 
-  outputFunction <- paste("welcomeSectionUI", category, sep = "-")
+  outputFunction <- paste("informatie", category, sep = "-")
   
   title <- getOutputTitle(output = outputFunction, uiText = uiText)
   

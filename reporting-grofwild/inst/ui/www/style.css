@@ -213,31 +213,23 @@ p, li, label {
 
 /*category navigation bar*/
 
-.navbar {
+.nav-tabs {
   background-color: #456394; 
-}
-
-.navbar .navbar-default .navbar-static-top {
-  margin-bottom: 0 !important;
-}
-
-.navbar-default .navbar-nav > li > a {
   color:#ffffff;
 }
 
-.navbar-default .navbar-nav > .active > a:focus {
+.nav-tabs > li:.active {
   background-color: #b24c82;
-  color:#ffffff;
 }
-.navbar-default .navbar-nav > .active > a:hover {
-  background-color: #b24c82;
+
+.nav-tabs > li > a {
   color:#ffffff;
 }
 
 /*right align 'information' and 'all plots/tables' tab*/
 
-/*.navbar .navbar-nav {float: none !important;}*/
-/*.navbar .navbar-nav > li:nth-last-child(-n + 3) {float: right;}*/
+.nav .nav-tabs {float: none !important;}
+.nav .nav-tabs > li:nth-last-child(-n + 3) {float: right;}
 
 /*overlay with header*/
 

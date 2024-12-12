@@ -21,7 +21,7 @@ frontUI <- function(){
       ) + 
       slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE)
     ),
-    fluidRow(style = "margin-top: -10em",
+    fluidRow(style = "margin-top: -25em",
       column(
         width = 6, offset = 3, align = "center",
         tags$span(
@@ -32,7 +32,7 @@ frontUI <- function(){
         )
       ), 
     ),
-    fluidRow(style = "margin-top: 4em", 
+    fluidRow(style = "margin-top: 20em", 
       column(
         width = 6, offset = 3, align = "center",
         selectInput(

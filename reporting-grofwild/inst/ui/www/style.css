@@ -211,38 +211,43 @@ p, li, label {
   background-size: 260px 186px;
 }
 
-/*category navigation bar*/
+/*navigation bar*/
 
 .nav-tabs {
   background-color: #456394; 
-  color:#ffffff;
 }
 
-.nav-tabs > li:.active {
-  background-color: #b24c82;
+/* text in navigation menu*/
+.nav-tabs > li > a > span { 
+  color: #ffffff;
 }
 
+/* navigation items */
 .nav-tabs > li > a {
-  color:#ffffff;
+  color: #ffffff !important;
+}
+.nav-tabs > li.active > a {
+  background-color: #b24c82; 
+  border-color: #456394;
+  font-weight: 900;
 }
 
-/*right align 'information' and 'all plots/tables' tab*/
+/* navigation tab arrow */
+.nav-tabs > li > a > .caret {
+  color: #ffffff !important;
+}
 
-.nav .nav-tabs {float: none !important;}
-.nav .nav-tabs > li:nth-last-child(-n + 3) {float: right;}
+/*navigation menu (nested within navigation bar) */
 
-/*overlay with header*/
-
-/*.navbar-schade .navbar {background-color: transparent;}*/
-/*.navbar-schade .navbar-nav {margin-top: 180px;}*/
-/*.navbar-schade .container-fluid .tab-content {margin-top: 70px;}*/
-
-/*.category-sidebar {margin-top: 75px;}*/
-
-/*.navbar {*/
-/*  left: -380px;*/
-/*  width: 100vw*/
-/*}*/
+.dropdown-menu {
+  background-color: #456394; 
+}
+.dropdown-menu > li > a {
+  color: #ffffff;
+}
+.dropdown-menu > li.active > a, .dropdown-menu > li.hover > a {
+  background-color: #b24c82; 
+}
 
 /* custom info icon */
 .info_icon {

@@ -117,7 +117,7 @@ shinyUI(
           outputTabs
         )
       ),
-      bslib::nav_spacer(),
+      bslib::nav_spacer(), # right align next items
       bslib::nav_item(
         tags$a(
           id = "contact", 

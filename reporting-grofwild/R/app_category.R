@@ -174,6 +174,25 @@ getCategoryOutput <- function(output){
   return(category)
 }
 
+#' Get a subcategory for an output
+#' @param output string with output name
+#' @return string with subcategory name
+#' @author lcougnaud
+#' @export
+getSubcategoryOutput <- function(output){
+  
+  outputBySubcategory <- sapply(getSubcategories(), function(subcategory)
+    getOutputs(subcategory = subcategory)
+  , simplify = FALSE)
+  
+  isInSubcat <- sapply(outputBySubcategory, function(outputs) 
+    output %in% outputs)
+  
+  subcategory <- names(which(isInSubcat))
+  
+  return(subcategory)
+}
+
 #' Get output title
 #' @param output character vector of length 1 with output name
 #' @param uiText data.frame, HTML formatted text to be displayed 

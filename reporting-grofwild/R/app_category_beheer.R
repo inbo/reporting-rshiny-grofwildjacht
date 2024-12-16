@@ -1,5 +1,5 @@
 #' Server function for the cards of the 'beheer' Category page
-#' @param id id character, module id
+#' @param id character, module id
 #' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud

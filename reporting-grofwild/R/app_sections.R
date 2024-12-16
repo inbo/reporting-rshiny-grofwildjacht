@@ -12,15 +12,21 @@
 #' page.
 #' @inheritParams getOutputDescription
 #' @param ... Extra parameters for \code{\link{getOutputDescription}}
-#' @return HTML object
+#' @return if \code{split} is FALSE, one single HTML object;
+#' otherwise a list with 'title', 'summary' and 'description' 
+#' as separate HTML objects
 #' @author mvarewyck
 #' @import shiny
 #' @export
-welcomeSectionUI <- function(id, context = id, uiText, category, ...) {
+welcomeSectionUI <- function(id, 
+  context = id, uiText, category, split = FALSE, ...) {
 
   outputFunction <- paste("informatie", category, sep = "-")
   
   title <- getOutputTitle(output = outputFunction, uiText = uiText)
+  
+  summary <- getOutputDescription(output = outputFunction, 
+    uiText = uiText, context = "summary")
   
   description <- getOutputDescription(
     output = outputFunction, 
@@ -28,10 +34,15 @@ welcomeSectionUI <- function(id, context = id, uiText, category, ...) {
     ...
   )
   
-  tagList(
-    tags$div(align = "center", h1(title)), 
-    tags$div(style = "margin-bottom:20px;", HTML(description))
-  )
+  title <- tags$div(align = "center", h1(title))
+  summary <- tags$div(style = "margin-bottom:20px;", HTML(summary))
+  description <- HTML(description)
+  
+  result <- if(split){
+    list(title = title, summary = summary, description = description)
+  }else{tagList(title, summary, description)}
+    
+  return(result)
 
 }
 

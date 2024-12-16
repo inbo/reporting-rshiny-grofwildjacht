@@ -45,61 +45,42 @@ getCategoryTitle <- function(category){
 #' @inheritParams getSubcategoryTitle
 #' @author lcougnaud
 #' @export
-getSubcategories <- function(...){
-  
-  titles <- getSubcategoryTitle(...)
-  subcategories <- names(titles)
+getSubcategories <- function(category = getCategories()){
+
+  category <- match.arg(category, several.ok = TRUE)
+
+  subcategories <- c(
+    if("beheer" %in% category)
+      c("beheer-vlaanderen", "beheer-regio",
+          "beheer-leeftijdcategorie", "beheer-jachtmethode"
+      ),
+    if("schade" %in% category)
+      c("schade-vlaanderen", "schade-regio", "schade-type",
+          "schade-seizoen", "schade-kosten"
+      ),
+    if("populatie" %in% category)
+      c(
+          "populatie-leeggewicht", "populatie-onderkaak",
+          "populatie-geslacht", "populatie-voortplanting"
+      ),
+    if("verspreiding" %in% category)
+      c("verspreiding-huidig", "verspreiding-toekomstig")
+  )
   
   return(subcategories)
   
 }
 
 #' Get title for the 'Subcategory' tab(s)
-#' @param category character of length 1 with the name of the
-#' category page.
+#' @param subcategory string with subcategory(ies)
 #' @return named character vector with tab titles
 #' @author lcougnaud
 #' @export
-getSubcategoryTitle <- function(
-  category = getCategories(), 
-  subcategory = NULL){
- 
-  category <- match.arg(category, several.ok = TRUE)
+getSubcategoryTitle <- function(subcategory, uiText){
+  
+  title <- uiText[which(uiText$plotFunction == subcategory), "title"]
 
-  titles <- c(
-    if("beheer" %in% category)
-      c(
-        `beheer-vlaanderen` = "Afschot in Vlaanderen",
-        `beheer-regio` =  "Afschot per regio",
-        `beheer-leeftijdcategorie` = "Afschot per leeftijdscategorie",
-        `beheer-jachtmethode` = "Afschot per jachtmethode"
-      ),
-    if("schade" %in% category)
-      c(
-        `schade-vlaanderen` = "Schadegevallen in Vlaanderen",
-        `schade-regio` =  "Schadegevallen per regio",
-        `schade-type` = "Schadegevallen per type schade",
-        `schade-seizoen` = "Schadegevallen per seizoen",
-        `schade-kosten` = "Inschatting kosten"
-      ),
-    if("populatie" %in% category)
-      c(
-        `populatie-leeggewicht` = "Leeggewicht",
-        `populatie-onderkaak` = "Onderkaak gegevens",
-        `populatie-geslacht` = "Geslacht",
-        `populatie-voortplanting` = "Voortplanting"
-      ),
-    if("verspreiding" %in% category)
-      c(
-        `verspreiding-huidig` = "Huidige verspreiding",
-        `verspreiding-toekomstig` = "Toekomstige verspreiding"
-      )
-  )
-  
-  if(!is.null(subcategory))
-    titles <- titles[subcategory]
-  
-  return(titles)
+  return(title)
   
 }
 
@@ -109,9 +90,10 @@ getSubcategoryTitle <- function(
 #' @return Character vector with ouput names
 #' @author lcougnaud
 #' @export
-getOutputs <- function(...){
+getOutputs <- function(category = getCategories(), subcategory = NULL){
   
-  subcategories <- getSubcategories(...)
+  if(is.null(subcategory))
+    subcategory <- getSubcategories(category)
   
   # Should be unique in the entire app!
   outputs <- list( 
@@ -149,7 +131,7 @@ getOutputs <- function(...){
     
   )
   
-  outputs <- unname(unlist(outputs[subcategories]))
+  outputs <- unname(unlist(outputs[subcategory]))
   
   return(outputs)
   

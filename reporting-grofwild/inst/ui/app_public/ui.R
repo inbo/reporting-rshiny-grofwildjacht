@@ -9,26 +9,11 @@ specieTabs <- lapply(species, function(specie){
 
 # build all category tabs
 categoryTabs <- lapply(categories, function(category){
-      
-  dataDate <- if(category == "schade"){
-    schadeData
-  }else{ecoData}
-  maxDate <- max(dataDate$afschot_datum, na.rm = TRUE)
-  
-  infoText <- welcomeSectionUI(
-    id = category, uiText = uiText,
-    category = category,
-    context = "description",
-    maxDate = maxDate
-  )
- 
-  img <- file.path("www", paste("category", category, "header.png", sep = "-"))   
-      
+
   bslib::nav_panel(
     title = getCategoryTitle(category),
     value = category, 
-    if(file.exists(img))  fluidRow(img(src = img, width = "100%")),
-    fluidRow(column(10, offset = 1, infoText))
+    categoryUI(category = category, id = category)
   )
   
 })
@@ -39,7 +24,8 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
   category <- strsplit(subcategory, split = "-")[[1]][1]
 
   bslib::nav_panel(
-    title = getSubcategoryTitle(subcategory = subcategory),   
+    title = getSubcategoryTitle(subcategory = subcategory, 
+      uiText = uiText),   
     value = subcategory,
     outputUI(id = subcategory, category = category)
   )

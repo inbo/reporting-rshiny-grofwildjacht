@@ -132,6 +132,11 @@ shinyServer(function(input, output, session) {
     }
   })
 
+  # Update page content
+  observe(
+    categoryServer(id = category(), specie = specie)
+  )
+
   ## Subcategory
 
   # Display available subcategory tabs
@@ -163,7 +168,7 @@ shinyServer(function(input, output, session) {
   output$subcategory <- renderUI(
     ifelse(
       isTruthy(subcategory()) && subcategory() != "Subcategorie",
-      getSubcategoryTitle(subcategory = subcategory()),
+      getSubcategoryTitle(subcategory = subcategory(), uiText = uiText),
       "Subcategorie"
     )
   )

@@ -197,9 +197,7 @@ mapSpreadServer <- function(id,
       
       # Selected regions of interest
       spatialData <- reactive({
-          
-          validate(need(input$region, "Gelieve regio('s) te selecteren"))
-          
+                    
           req(allSpatialData)
           
           filterSpatial(
@@ -221,7 +219,8 @@ mapSpreadServer <- function(id,
       selectedPolygons <- reactive({
           
           validate(need(spatialData(), "Geen data beschikbaar"))
-          
+          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+
           subset(spatialData(), spatialData()$NAAM %in% input$region)
           
         })

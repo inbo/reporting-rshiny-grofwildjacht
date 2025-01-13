@@ -150,7 +150,7 @@ getSpecieCards <- function(id, specie){
       choiceValues = values, choiceNames = names,
       selected = character(0)
      ),
-    tags$script("$('.radio-inline').addClass('col-3');"),
-    tags$head(tags$style(HTML(".col-3 {width: 32%;} .radio-inline{margin-left:10px;}")) )
+    tags$script("$('.radio-inline').addClass('radio-tiles');")#,
+#    tags$head(tags$style(HTML(".radio-inline{margin-left:10px;}")) )
   )
 }

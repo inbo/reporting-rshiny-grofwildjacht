@@ -377,7 +377,8 @@ shinyServer(function(input, output, session) {
   }, priority = 1)
   
   # Update the hash based on the selected tabPanel
-  observeEvent(input$navbarID, { 
+  updateHash <- reactive(list(selection(), input$navbarID))
+  observeEvent(updateHash(), { 
     req(input$navbarID != "Home")
     print("Update hash")
     currentHash <- session$clientData$url_hash

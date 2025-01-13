@@ -138,7 +138,7 @@ getSpecieCards <- function(id, specie){
     title <- ifelse(type == "afschot", "beheer", type)
     title <- toupper(title)
     HTML(paste0(
-      "<div class='specie-card-title'>", title, "</div>",
+      "<div class='radio-tiles-title'>", title, "</div>",
       "<div>", img(src = paste0("www/", foto), width = "100%"), "</div>"
     ))
   })

@@ -154,7 +154,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     data$yLabel <- NULL
     yLabels <- gsub("populatie_evolutie", "Populatie everzwijnen", yLabels)
     yLabels <- gsub("schade_landbouw_evolutie", "Schade aan de landbouw", yLabels)
-    yLabels <- gsub("schade_privpub_evolutie", "Schade aan privéterreinen", yLabels)
+    yLabels <- gsub("schade_privpub_evolutie", "Schade aan priv\u00e9terreinen", yLabels)
     yLabels <- gsub("schade_verkeer_evolutie", "Schade in het verkeer", yLabels)
     
     myPlot <- plot_ly(data, x = ~base::get(xVar), y = ~base::get(yVar), 

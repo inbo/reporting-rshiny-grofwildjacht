@@ -42,7 +42,7 @@ outputTabs <- lapply(outputs, function(output){
   bslib::nav_panel(
     title = title,   
     value = output,
-    outputUI(id = output, category = category)
+    outputUI(id = output, category = category, select = TRUE)
   )
 
 })

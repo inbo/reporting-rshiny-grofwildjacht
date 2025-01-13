@@ -89,7 +89,7 @@ beheerCardServer <- function(id,
 
 #' Server function for an output (plot/table) of the 'beheer' Category page
 #' @param id id character, module id
-#' @return Shiny module function
+#' @return reactive value with name of selected specie
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -193,7 +193,15 @@ beheerOutputServer <- function(id,
 
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = specie)
+    specieSidebarServer(id = "sidebar", specie = results$specie)
+
+    # specie is updated in this page
+    observe( 
+      updateSelectInput(session, inputId = "sidebar-specie", 
+        selected = specie())
+    )
+    observeEvent(input$`sidebar-specie`, 
+      results$specie <- reactive(input$`sidebar-specie`))
     
     ## Main panel
 
@@ -356,6 +364,8 @@ beheerOutputServer <- function(id,
       # re-set in case plot selected via tab after/before category card
       outputServer(NULL)
     })
+    
+    return(reactive(results$specie()))
 
   })
   

@@ -1,10 +1,13 @@
 #' UI for a category page
 #' @param id character, module id
+#' @param category character, categroy
+#' @param ... any parameters passed to \code{\link{specieSidebarUI}}
+#' /\code{\link{specieSidebarUI}}
 #' @inherit shiny::verticalLayout return
 #' @author lcougnaud
 #' @import shiny
 #' @export
-outputUI <- function(id, category){
+outputUI <- function(id, category, ...){
   
   ns <- NS(namespace = id)
   
@@ -24,9 +27,9 @@ outputUI <- function(id, category){
     sidebarLayout(    
       position = "left", 
       sidebarPanel = if(category == "schade"){
-        schadeSidebarUI(id = ns("sidebar"))
+        schadeSidebarUI(id = ns("sidebar"), ...)
       }else{
-        specieSidebarUI(id = ns("sidebar"))
+        specieSidebarUI(id = ns("sidebar"), ...)
       },
       mainPanel = mainPanel(width = 9, 
        uiOutput(outputId = ns("output"))

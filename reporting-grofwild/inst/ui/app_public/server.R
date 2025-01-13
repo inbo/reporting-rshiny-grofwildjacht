@@ -303,7 +303,7 @@ shinyServer(function(input, output, session) {
   }, priority = 2)
 
   # Update page content
-  observe({
+  outputSpecie <- reactive({
     if(currentTab() %in% outputs){
       isolate({
         categoryOutput <- getCategoryOutput(output = plot())  
@@ -315,7 +315,16 @@ shinyServer(function(input, output, session) {
         )
         fct <- paste0(categoryOutput, "OutputServer")
         do.call(fct, args)
-      })
+     })
+    }else reactiveVal()
+  })
+  # Update specie in top bar if changed in the 'output' page
+  observeEvent(outputSpecie()(), {
+    if(isTruthy(outputSpecie()()) && !identical(outputSpecie()(), specie())){
+      print(paste("Specie updated in the 'output' page:", outputSpecie()()))
+      specie(outputSpecie()())
+      updateTab(FALSE)
+      resetNextTab(FALSE)
     }
   })
 

@@ -5,12 +5,17 @@
 #' the top of the sidebar
 #' @param bottomExtra (optional) extra elements to include at 
 #' the bottom of the sidebar
+#' @param name logical (TRUE if select is FALSE and opposite)
+#' should the specie name be displayed as text?
+#' @param select logical (FALSE by default), should a button
+#' be included to select the specie?
 #' @return shiny::sidebarPanel return
 #' @author lcougnaud
 #' @export
 specieSidebarUI <- function(id, 
   topExtra = NULL, bottomExtra = NULL,
-  category = TRUE){
+  category = TRUE, 
+  name = !select, select = FALSE){
   
   ns <- NS(namespace = id)
   
@@ -18,7 +23,14 @@ specieSidebarUI <- function(id,
     width = 3, 
     id = ns("sidebar"), 
     topExtra,
-    htmlOutput(outputId = ns("specie-name")),
+    if(select)
+      selectInput(
+        inputId = ns("specie"), 
+        label = "Selecteer een diersoort:",
+        choices = c("", schadeWildsoorten)
+      ),
+    if(name)
+      htmlOutput(outputId = ns("specie-name")),
     imageOutput(outputId = ns("specie-image"), height = "auto"),
     textOutput(outputId = ns("specie-latin-name")),
     bottomExtra

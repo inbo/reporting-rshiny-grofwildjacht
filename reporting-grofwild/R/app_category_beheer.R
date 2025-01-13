@@ -5,7 +5,8 @@
 #' @author lcougnaud
 #' @export
 beheerCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal()){
+  specie = reactiveVal(), subcategory = reactiveVal(),
+  subcategories, uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -71,7 +72,7 @@ beheerCardServer <- function(id,
     })
 
     # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")
+    outputUI <- reactiveVal("Visualisatie/Tabel")    
     observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
     observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
     observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
@@ -94,7 +95,10 @@ beheerCardServer <- function(id,
 #' @author lcougnaud
 #' @export
 beheerOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal()){
+  specie = reactiveVal(), plot = reactiveVal(),
+  ecoData, geoData, openingstijdenData, spatialData, biotoopData,
+  defaultYear,
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -109,11 +113,11 @@ beheerOutputServer <- function(id,
     results$specie <- reactive(specie())
     
     results$ecoData <- reactive(
-      ecoData[ecoData$wildsoort == results$specie(), ]
+      ecoData[which(ecoData$wildsoort == results$specie()), ]
     )
     results$geoData <- reactive({
       req(geoData)
-      geoData[geoData$wildsoort == results$specie(), ]
+      geoData[which(geoData$wildsoort == results$specie()), ]
     })
     
     results$timeRange <- reactive(range(results$ecoData()$afschotjaar))

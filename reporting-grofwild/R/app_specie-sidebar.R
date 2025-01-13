@@ -15,7 +15,8 @@
 specieSidebarUI <- function(id, 
   topExtra = NULL, bottomExtra = NULL,
   category = TRUE, 
-  name = !select, select = FALSE){
+  name = !select, select = FALSE,
+  speciesList){
   
   ns <- NS(namespace = id)
   
@@ -27,7 +28,7 @@ specieSidebarUI <- function(id,
       selectInput(
         inputId = ns("specie"), 
         label = "Selecteer een diersoort:",
-        choices = c("", schadeWildsoorten)
+        choices = c("", speciesList)
       ),
     if(name)
       htmlOutput(outputId = ns("specie-name")),

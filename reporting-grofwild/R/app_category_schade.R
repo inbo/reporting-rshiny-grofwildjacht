@@ -5,7 +5,8 @@
 #' @author lcougnaud
 #' @export
 schadeCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal()){
+  specie = reactiveVal(), subcategory = reactiveVal(),
+  subcategories, uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -126,7 +127,11 @@ schadeCardServer <- function(id,
 #' @author lcougnaud
 #' @export               
 schadeOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal()){
+  specie = reactiveVal(), plot = reactiveVal(),
+  schadeData, spatialData, biotoopData, 
+  defaultYear, 
+  schadeTypes, schadeCodes,
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -446,7 +451,8 @@ schadeOutputServer <- function(id,
 #' @inheritParams specieSidebarUI
 #' @inherit specieSidebarUI return
 #' @author lcougnaud
-schadeSidebarUI <- function(id, ...){
+schadeSidebarUI <- function(id, 
+  schadeTypes, gewasChoices, voertuigChoices, ...){
   
   ns <- NS(namespace = id)
   

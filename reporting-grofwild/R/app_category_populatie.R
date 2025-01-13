@@ -5,7 +5,8 @@
 #' @author lcougnaud
 #' @export
 populatieCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal()){
+  specie = reactiveVal(), subcategory = reactiveVal(),
+  subcategories, uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -83,7 +84,9 @@ populatieCardServer <- function(id,
 #' @author lcougnaud
 #' @export
 populatieOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal()){
+  specie = reactiveVal(), plot = reactiveVal(),
+  ecoData, geoData,
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -99,12 +102,12 @@ populatieOutputServer <- function(id,
   
     # Create data upon user choices
     results$ecoData <- reactive(
-      subset(ecoData, wildsoort == results$specie())
+      ecoData[which(ecoData$wildsoort == results$specie()), ]
     )
     
     results$geoData <- reactive({
       req(geoData)
-      subset(geoData, wildsoort == results$specie())
+      geoData[which(geoData$wildsoort == results$specie()), ]
     })
     
     # Enrich data with FBZ

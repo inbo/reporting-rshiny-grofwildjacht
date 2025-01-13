@@ -4,7 +4,9 @@
 #' @return \code{\link[shiny]{verticalLayout}}
 #' @author lcougnaud
 #' @export
-categoryUI <- function(id, category){
+categoryUI <- function(id, category,
+ ecoData, schadeData,
+ uiText, speciesList){
   
   ns <- NS(namespace = id)
   
@@ -44,7 +46,10 @@ categoryUI <- function(id, category){
     # Specie
     sidebarLayout(    
       position = "left", 
-      sidebarPanel = specieSidebarUI(id = ns("sidebar")),
+      sidebarPanel = specieSidebarUI(
+        id = ns("sidebar"), 
+        speciesList = speciesList
+      ),
       mainPanel = mainPanel(
         width = 9, 
         style = "overflow-y: auto;max-height: 100vh;", # scrolling bar

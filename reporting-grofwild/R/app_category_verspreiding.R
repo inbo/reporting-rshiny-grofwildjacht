@@ -5,7 +5,8 @@
 #' @author lcougnaud
 #' @export
 verspreidingCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal()){
+  specie = reactiveVal(), subcategory = reactiveVal(),
+  subcategories, uiText){
   
   moduleServer(id, function(input, output, session){  
       
@@ -76,7 +77,10 @@ verspreidingCardServer <- function(id,
 #' @author lcougnaud
 #' @export
 verspreidingOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal()){
+  specie = reactiveVal(), plot = reactiveVal(),
+  ecoData, geoData, spatialData,
+  defaultYear,
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -104,7 +108,7 @@ verspreidingOutputServer <- function(id,
     # F17_1 plot
     results$geoData <- reactive({
       req(geoData)
-      subset(geoData, wildsoort == results$specie())
+      geoData[which(geoData$wildsoort == results$specie()), ]
     })
         
     waarnemingenData <- loadRawData(type = "waarnemingen")
@@ -156,7 +160,7 @@ verspreidingOutputServer <- function(id,
           "F17_1" = {
             mapFlandersUI(
               id = ns(outputName), 
-              uiText = uiText, output = "F17_1", 
+              uiText = uiText, outputFunction = "F17_1", 
               specie = results$specie(),
               showCombine = FALSE, type = "dash",
               mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),

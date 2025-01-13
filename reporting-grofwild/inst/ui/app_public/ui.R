@@ -3,7 +3,7 @@ specieTabs <- lapply(species, function(specie){
   bslib::nav_panel(
     title = tools::toTitleCase(specie), 
     value = specie,
-    specieUI(id = specie)
+    specieUI(id = specie, speciesList = schadeWildsoorten)
   )
 })
 
@@ -13,7 +13,12 @@ categoryTabs <- lapply(categories, function(category){
   bslib::nav_panel(
     title = getCategoryTitle(category),
     value = category, 
-    categoryUI(category = category, id = category)
+    categoryUI(
+      category = category, id = category,
+      ecoData = ecoData, schadeData = schadeData,
+      uiText = uiText,
+      speciesList = schadeWildsoorten
+    )
   )
   
 })
@@ -23,11 +28,23 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
    
   category <- strsplit(subcategory, split = "-")[[1]][1]
 
+  args <- c(
+    list(
+      id = subcategory, category = category, 
+      speciesList = schadeWildsoorten
+    ),
+    if(category == "schade")
+      list(
+        schadeTypes = schadeTypes, gewasChoices = gewasChoices, 
+        voertuigChoices = voertuigChoices
+      )
+  )
+  
   bslib::nav_panel(
     title = getSubcategoryTitle(subcategory = subcategory, 
       uiText = uiText),   
     value = subcategory,
-    outputUI(id = subcategory, category = category)
+    do.call(outputUI, args)
   )
   
 })
@@ -39,10 +56,20 @@ outputTabs <- lapply(outputs, function(output){
   title <- getOutputTitle(output = output, 
     uiText = uiText, n = 200, type = category)
 
+  args <- c(
+    list(id = output, category = category, select = TRUE),
+    if(category == "schade")
+      list(
+        schadeTypes = schadeTypes, 
+        gewasChoices = gewasChoices, 
+        voertuigChoices = voertuigChoices
+      )
+  )
+
   bslib::nav_panel(
     title = title,   
     value = output,
-    outputUI(id = output, category = category, select = TRUE)
+    do.call(outputUI, args)
   )
 
 })
@@ -77,7 +104,9 @@ shinyUI(
         
       id = "navbarID",
       
-      bslib::nav_panel(title = "Home", frontUI()),
+      bslib::nav_panel(title = "Home", 
+        frontUI(speciesList = schadeWildsoorten)
+      ),
       
       do.call(bslib::nav_menu, 
         append(

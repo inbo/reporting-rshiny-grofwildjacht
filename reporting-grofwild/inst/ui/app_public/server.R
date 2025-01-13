@@ -205,7 +205,10 @@ shinyServer(function(input, output, session) {
         args <- list(
           id = subcategory(), 
           specie = specie,
-          subcategory = subcategory
+          subcategory = subcategory,
+          # general
+          subcategories = subcategories,
+          uiText = uiText
         )
         fct <- paste0(category(), "CardServer")
         do.call(fct, args)
@@ -308,10 +311,37 @@ shinyServer(function(input, output, session) {
       isolate({
         categoryOutput <- getCategoryOutput(output = plot())  
         print(paste("Go to:", categoryOutput, plot(), "output page"))
-        args <- list(
-          id = plot(), 
-          specie = specie,
-          plot = plot
+        args <- c(
+          list(
+            id = plot(), 
+            specie = specie,
+            plot = plot,
+            uiText = uiText
+          ),
+          switch(categoryOutput, 
+            beheer = list(
+              ecoData = ecoData, geoData = geoData, 
+              openingstijdenData = openingstijdenData, 
+              spatialData = spatialData, 
+              biotoopData = biotoopData,
+              defaultYear = defaultYear
+            ),
+            populatie = list(
+              ecoData = ecoData, geoData = geoData
+            ),
+            schade = list(
+              schadeData = schadeData, 
+              spatialData = spatialData, 
+              biotoopData = biotoopData, 
+              defaultYear = defaultYear, 
+              schadeTypes = schadeTypes, schadeCodes = schadeCodes
+            ),
+            verspreiding = list(
+              ecoData = ecoData, geoData = geoData, 
+              spatialData = spatialData,
+              defaultYear = defaultYear 
+            )
+          )
         )
         fct <- paste0(categoryOutput, "OutputServer")
         do.call(fct, args)

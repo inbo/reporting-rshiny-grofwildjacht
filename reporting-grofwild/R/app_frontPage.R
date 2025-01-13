@@ -4,7 +4,7 @@
 #' @importFrom slickR slickROutput
 #' @import shiny
 #' @export
-frontUI <- function(){
+frontUI <- function(speciesList){
 
   img <- system.file(
       "ui", "www", paste0("carousel-", 1:4, ".png"), 
@@ -41,7 +41,7 @@ frontUI <- function(){
             style = "color: white; font-size: 1.5em", 
             "Selecteer een diersoort:"
           ),
-          choices = c("", schadeWildsoorten),
+          choices = c("", speciesList),
           width = "100%"
         )
       )

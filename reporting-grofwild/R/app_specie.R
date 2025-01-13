@@ -4,7 +4,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id){
+specieUI <- function(id, speciesList){
   
   ns <- NS(namespace = id)
   
@@ -28,7 +28,8 @@ specieUI <- function(id){
           
         sidebarPanel = specieSidebarUI(
           id = ns("sidebar"), 
-          category = FALSE
+          category = FALSE,
+          speciesList = speciesList
         ),
         
         mainPanel = mainPanel(
@@ -86,7 +87,10 @@ getLatinName <- function(specie){
     package = "reportingGrofwild"),
     check.names = FALSE
   )	
-  latinName <- subset(specieInfo, `species name` == specie)[, "latin name"]
+  latinName <- specieInfo[
+    which(specieInfo$`species name` == specie), 
+    "latin name"
+  ]
   
   validate(
     need(

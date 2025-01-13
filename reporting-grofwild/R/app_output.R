@@ -31,7 +31,9 @@ outputUI <- function(id, category, ...){
       }else{
         specieSidebarUI(id = ns("sidebar"), ...)
       },
-      mainPanel = mainPanel(width = 9, 
+      mainPanel = mainPanel(
+       width = 9, 
+       style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
        uiOutput(outputId = ns("output"))
       )
     )

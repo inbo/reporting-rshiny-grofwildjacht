@@ -47,6 +47,7 @@ categoryUI <- function(id, category){
       sidebarPanel = specieSidebarUI(id = ns("sidebar")),
       mainPanel = mainPanel(
         width = 9, 
+        style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
         infoText[["title"]], infoText[["summary"]],
         cards,
         infoText[["description"]]

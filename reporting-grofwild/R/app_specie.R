@@ -33,7 +33,7 @@ specieUI <- function(id){
         
         mainPanel = mainPanel(
           width = 9,
-          # style = "overflow-y: auto;max-height: 100vh;", # scrolling bar?
+          style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
           uiOutput(outputId = ns("items"))
         )
   

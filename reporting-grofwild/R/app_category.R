@@ -58,12 +58,15 @@ categoryUI <- function(id, category){
 }
 
 #' Server function for the Category page
-#' @param id id character, module id
-#' @return Shiny module function
+#' @param id character, module id
+#' @param category character, category
+#' @param specie reactive value with specie
+#' @return reactive value with name of subcategory (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
-categoryServer <- function(id, specie = reactiveVal()){
+categoryServer <- function(id, 
+  specie = reactiveVal(), category = character()){
   
   moduleServer(id, function(input, output, session){  
         
@@ -72,6 +75,19 @@ categoryServer <- function(id, specie = reactiveVal()){
     ## Sidebar panel
     
     specieSidebarServer(id = "sidebar", specie = specie)
+    
+    ## Main panel
+    
+    # if a subcategory is selected based on the subcategory cards
+    subcategoryUI <- reactiveVal("Subcategorie")
+    subcategories <- getSubcategories(category = category)
+    lapply(subcategories, function(subcategory){
+      observeEvent(input[[paste0(subcategory, "-button")]], {
+        subcategoryUI(subcategory)
+      })
+    })
+    
+    return(subcategoryUI)
     
   })
   

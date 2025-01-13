@@ -133,9 +133,33 @@ shinyServer(function(input, output, session) {
   })
 
   # Update page content
-  observe(
-    categoryServer(id = category(), specie = specie)
-  )
+  outputCategory <- reactive({
+    if(currentTab() %in% categories){
+      isolate({
+        print(paste("Go to:", category(), "page"))
+        categoryServer(id = category(), 
+          specie = specie, category = category()
+        )
+      })
+    }else reactiveVal()
+  })
+  
+  # Go to 'output' page if respective output clicked on the category page
+  observeEvent(outputCategory()(), {
+    if(isTruthy(outputCategory()()) && outputCategory()() != "Subcategorie"){
+      print(paste("Update subcategory to:", outputCategory()()))
+      subcategory(outputCategory()())
+      updateTab(TRUE)
+    }
+  })
+
+  # Change tab
+  observeEvent(subcategory(), {
+    if(subcategory() != "Subcategorie" && updateTab()){
+      print(paste("Update current tab to:", subcategory()))
+      currentTab(subcategory())
+    }
+  })
 
   ## Subcategory
 
@@ -148,7 +172,7 @@ shinyServer(function(input, output, session) {
     }else{category()}
     
     print(paste("Update subcategory tabs for", 
-      capture.output(str(args, no.list = TRUE))))
+      capture.output(str(category, no.list = TRUE))))
     
     subcategoriesToShow <- getSubcategories(category = category)
         
@@ -174,10 +198,10 @@ shinyServer(function(input, output, session) {
   )
   
   # Update page content
-  outputCategory <- reactive({
+  outputSubcategory <- reactive({
     if(currentTab() %in% subcategories){
       isolate({
-        print(paste("Go to:", category(), "page"))
+        print(paste("Go to:", subcategory(), "page"))
         args <- list(
           id = subcategory(), 
           specie = specie,
@@ -190,10 +214,10 @@ shinyServer(function(input, output, session) {
   })
 
   # Go to 'output' page if respective output clicked on the category page
-  observeEvent(outputCategory()(), {
-    if(isTruthy(outputCategory()()) && outputCategory()() != "Visualisatie/Tabel"){
-      print(paste("Update plot to:", outputCategory()()))
-      plot(outputCategory()())
+  observeEvent(outputSubcategory()(), {
+    if(isTruthy(outputSubcategory()()) && outputSubcategory()() != "Visualisatie/Tabel"){
+      print(paste("Update plot to:", outputSubcategory()()))
+      plot(outputSubcategory()())
       updateTab(TRUE)
     }
   })

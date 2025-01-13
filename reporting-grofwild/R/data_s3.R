@@ -5,8 +5,8 @@
 #' @param awsFile path to AWS file
 #' @param inboUserName set NULL if not a inbo user, for inbo user, provide your user name firstName_lastName
 #' @return no return value, ENV variables are set correctly
-#' 
 #' @author mvarewyck
+#' @importFrom aws.signature read_credentials
 #' @export
 setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
   

@@ -11,6 +11,7 @@ Imports:
     arrow,
     aws.ec2metadata,
     aws.s3,
+    aws.signature,
     config,
     data.table,
     DT, 

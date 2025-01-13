@@ -113,7 +113,7 @@ getOutputs <- function(category = getCategories(), subcategory = NULL){
     `schade-regio` =  "mapFlandersUI-schade",
     `schade-type` = c("countYearSchadeUI-wildschade",
         "mapSchadeUI-wildschade", "tableSchadeUI",
-        "countYearSchadeUI-gewas"
+        "countYearSchadeUI-gewas", "tableGewasUI"
      ),
     `schade-seizoen` = c("countYearSchadeUI-seizoen",
         "mapSchadeUI-seizoen"),

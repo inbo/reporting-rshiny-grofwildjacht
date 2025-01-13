@@ -142,11 +142,11 @@ tableGewasUI <- function(id,
   ns <- NS(id)
   
   title <- getOutputTitle(
-    output = "tableSchadeUI", specie = specie, 
+    output = "tableGewasUI", specie = specie, 
     uiText = uiText
   )
   description <- getOutputDescription(
-    output = "tableSchadeUI", 
+    output = "tableGewasUI", 
     specie = specie, uiText = uiText, context = context
   )
   

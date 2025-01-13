@@ -146,23 +146,23 @@ schadeOutputServer <- function(id,
       # Select species & code & exclude data before 2014
       toRetain <- 
         schadeData$wildsoort %in% req(results$specie()) &
-        schadeData$schadeBasisCode %in% req(input$schade_code) &
+        schadeData$schadeBasisCode %in% req(input$`sidebar-schade_code`) &
         schadeData$afschotjaar >= 2014
           
       # Filter gewas
-      if ("GEWAS" %in% input$schade_code) {
-        otherCodes <- input$schade_code[input$schade_code != "GEWAS"]
+      if ("GEWAS" %in% input$`sidebar-schade_code`) {
+        otherCodes <- input$`sidebar-schade_code`[input$`sidebar-schade_code` != "GEWAS"]
           toRetain <- toRetain &
             (schadeData$schadeBasisCode %in% otherCodes |
-            schadeData$schadeCode %in% input$schade_gewas)
+            schadeData$schadeCode %in% input$`sidebar-schade_gewas`)
       }
           
       # Filter voertuig
-      if ("VRTG" %in% input$schade_code) {
-        otherCodes <- input$schade_code[input$schade_code != "VRTG"]
+      if ("VRTG" %in% input$`sidebar-schade_code`) {
+        otherCodes <- input$`sidebar-schade_code`[input$`sidebar-schade_code` != "VRTG"]
         toRetain <- toRetain &
           (schadeData$schadeBasisCode %in% otherCodes |
-          schadeData$schadeCode %in% input$schade_voertuig)
+          schadeData$schadeCode %in% input$`sidebar-schade_voertuig`)
       }
           
       return(schadeData[toRetain, ])
@@ -383,9 +383,9 @@ schadeOutputServer <- function(id,
           labelTypes = "Regio", 
           typesDefault = reactive("provinces"), 
           timeRange = results$schade_timeRange,
-          schadeChoices = reactive(input$schade_code),
-          schadeChoicesVrtg = reactive(input$schade_voertuig),
-          schadeChoicesGewas = reactive(input$schade_gewas),
+          schadeChoices = reactive(input$`sidebar-schade_code`),
+          schadeChoicesVrtg = reactive(input$`sidebar-schade_voertuig`),
+          schadeChoicesGewas = reactive(input$`sidebar-schade_gewas`),
           datatable = TRUE,
           fullNames = c(schadeTypes, schadeCodes)
         ),

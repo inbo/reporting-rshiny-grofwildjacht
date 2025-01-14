@@ -77,14 +77,19 @@ shinyServer(function(input, output, session) {
   observeEvent(specie(), {
     if(specie() != "Specie" && updateTab()){
       currentTab(specie())
-      print(paste("Go to:", specie(), "page"))
+      print(paste("Update current tab to:", specie(), "page"))
     }
   })
 
   # Update page content
-  categorySpecie <- reactive(
-    specieServer(id = specie(), specie = specie)
-  )
+  categorySpecie <- reactive({
+    if(currentTab() %in% species){
+      isolate({
+        print(paste("Go to:", specie(), "page"))
+        specieServer(id = specie(), specie = specie)
+      })
+    }else reactiveVal()
+   })
  
   # Go to a 'category' page if respective card is selected in the specie page
   observeEvent(categorySpecie()(), {
@@ -402,6 +407,9 @@ shinyServer(function(input, output, session) {
       
       # no extra reset(s)
       resetNextTab(FALSE) 
+      
+      # tabs should not be updated
+      updateTab(FALSE)
 
     }
   }, priority = 1)

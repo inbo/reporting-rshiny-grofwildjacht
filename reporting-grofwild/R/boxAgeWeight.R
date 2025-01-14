@@ -19,15 +19,14 @@
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the distribution of weight
-#' in function of age is plotted in box plots}
-#' \item{'data': }{raw data used for the plot, as data.frame with:
+#' \item 'plot': plotly object, for a given species the distribution of weight
+#' in function of age is plotted in box plots 
+#' \item 'data': raw data used for the plot, as data.frame with:
 #' \itemize{
-#' \item{'gewicht': }{weight in kilograms}
-#' \item{'leeftijd': }{age category}
-#' \item{'maanden': }{age in months}
-#' \item{'geslacht': }{gender}
-#' }
+#' \item 'gewicht': weight in kilograms 
+#' \item 'leeftijd': age category 
+#' \item 'maanden': age in months 
+#' \item 'geslacht': gender 
 #' }
 #' }
 #' @import plotly

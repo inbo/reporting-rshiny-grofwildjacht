@@ -18,14 +18,13 @@
 #' @param height plot height (optional)
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given specie the observed number 
-#' per year and per province is plotted in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given specie the observed number 
+#' per year and per province is plotted in a stacked bar chart 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animals was shot}
-#' \item{'locatie': }{location name, could be province, flanders or fbz name}
-#' \item{'value': }{counts of animals}
-#' }
+#' \item 'afschotjaar':  year at which the animals was shot 
+#' \item 'locatie':  location name, could be province, flanders or fbz name 
+#' \item 'value':  counts of animals 
 #' }
 #' }
 #' @import plotly

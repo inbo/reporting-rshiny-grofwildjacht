@@ -11,15 +11,15 @@
 #' @param currentYear numeric, current year to calculate accuracy for
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the percentage per age category
+#' \item{'plot': plotly object, for a given species the percentage per age category
 #' based on cheek or hunter report in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item{'data': data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jager': }{category based on the meldingsformulier}
-#' \item{'kaak': }{category based on the lower jaw inspection}
-#' \item{'freq': }{counts of animals}
-#' \item{'percent': }{percentage in the entire category based on
-#' the lower jaw inspection}
+#' \item 'jager': category based on the meldingsformulier 
+#' \item 'kaak': category based on the lower jaw inspection 
+#' \item 'freq': counts of animals 
+#' \item 'percent': percentage in the entire category based on
+#' the lower jaw inspection 
 #' }
 #' }
 #' }

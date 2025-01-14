@@ -135,11 +135,11 @@ loadGemeentes <- function(
 #' @inheritParams loadRawData
 #' @return data.frame with columns:
 #' \itemize{
-#' \item{'Soort': }{specie}
-#' \item{'Type': }{specie type}
-#' \item{'Jaar': }{year}
-#' \item{'Startdatum': }{start datum, in the format '\%d/\%m/\%Y'}
-#' \item{'Stopdatum': }{end datum, in the format '\%d/\%m/\%Y'}
+#' \item 'Soort':  specie 
+#' \item 'Type':  specie type 
+#' \item 'Jaar':  year 
+#' \item 'Startdatum':  start datum, in the format '\%d/\%m/\%Y' 
+#' \item 'Stopdatum':  end datum, in the format '\%d/\%m/\%Y' 
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
@@ -182,14 +182,14 @@ loadOpeningstijdenData <- function(
 #' @inheritParams loadRawData
 #' @return data.frame with columns:
 #' \itemize{
-#' \item{'labeltype': }{character, type of Ree, one of \code{c("geit", "bok", "kits")}}
-#' \item{'WBE_Naam': }{character, WBE name}
-#' \item{'labeljaar': }{integer, year}
-#' \item{'provincie_toek': }{character, province}
-#' \item{'toegekend': }{integer, no. of assigned animals}
-#' \item{'verwezenlijkt': }{integer, no. of shot animals} 
-#' \item{'percentage_verwezenlijkt': }{numeric, percentage shot animals}
-#' \item{'KboNummer_Toek': }{character, WBE KBO number}
+#' \item 'labeltype':  character, type of Ree, one of \code{c("geit", "bok", "kits")} 
+#' \item 'WBE_Naam':  character, WBE name 
+#' \item 'labeljaar':  integer, year 
+#' \item 'provincie_toek': character, province 
+#' \item 'toegekend':  integer, no. of assigned animals 
+#' \item 'verwezenlijkt':  integer, no. of shot animals 
+#' \item 'percentage_verwezenlijkt':  numeric, percentage shot animals 
+#' \item 'KboNummer_Toek':  character, WBE KBO number 
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv

@@ -12,17 +12,17 @@
 #' @importFrom stats na.omit predict qnorm
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified specie and years}
-#' \item{'data': }{
+#' \item 'plot':  plotly object, for the specified specie and years 
+#' \item 'data':  
 #' \itemize{
-#' \item{for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte': }{
+#' \item for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte':  
 #' raw data used for the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animal was shot}
-#' \item{'variable': }{value of the bioindicator, a.k.a
+#' \item 'afschotjaar':  year at which the animal was shot 
+#' \item 'variable':  value of the bioindicator, a.k.a
 #' weight for 'ontweid_gewicht' or length of the lower jaw for
-#' 'onderkaaklengte'}}
-#' }}
+#' 'onderkaaklengte'
+#' }
 #' }
 #' }
 #' @author Laure Cougnaud

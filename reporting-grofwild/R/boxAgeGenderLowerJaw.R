@@ -6,13 +6,12 @@
 #' @param type animal type, used to filter \code{data}, based on 'ageGender' column
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object with length lower jaw per 
-#' age/gender category for specified \code{jaartallen}}
-#' \item{'data': }{raw data used for the plot, as data.frame with:
+#' \item 'plot': plotly object with length lower jaw per 
+#' age/gender category for specified \code{jaartallen} 
+#' \item 'data': raw data used for the plot, as data.frame with:
 #' \itemize{
-#' \item{'ageGender': }{age/gender category}
-#' \item{'onderkaaklengte': }{length of the lower jaw in mm}
-#' }
+#' \item 'ageGender': age/gender category 
+#' \item 'onderkaaklengte': length of the lower jaw in mm 
 #' }
 #' }
 #' @author Laure Cougnaud

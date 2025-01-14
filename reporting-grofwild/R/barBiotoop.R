@@ -12,13 +12,12 @@
 #' @inheritParams countAgeGender
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given year a summary of the WBE parameters
-#' defining the percentage of land, water, forest etc}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot': plotly object, for a given year a summary of the WBE parameters
+#' defining the percentage of land, water, forest etc
+#' \item 'data': data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'Naam': }{characteristic}
-#' \item{'Value': }{value}
-#' }
+#' \item 'Naam': characteristic 
+#' \item 'Value': value 
 #' }
 #' }
 #' @import plotly

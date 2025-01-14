@@ -146,14 +146,13 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @inheritParams countYearProvince
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the observed number 
-#' per year and per selected commune is plotted in a line plot}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the observed number 
+#' per year and per selected commune is plotted in a line plot 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animals was shot}
-#' \item{'locatie': }{comune name}
-#' \item{'aantal' or 'aantal/100ha': }{absolute or relative counts of animals}
-#' }
+#' \item 'afschotjaar':  year at which the animals was shot 
+#' \item 'locatie':  commune name
+#' \item 'aantal' or 'aantal/100ha': absolute or relative counts of animals
 #' }
 #' }
 #' @import plotly

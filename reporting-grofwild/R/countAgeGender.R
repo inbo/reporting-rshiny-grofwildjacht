@@ -12,15 +12,14 @@
 #' @inheritParams boxAgeWeight
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the percentage per age category
-#' and per gender, based on meldingsformulier data in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the percentage per age category
+#' and per gender, based on meldingsformulier data in a stacked bar chart 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'geslacht': }{gender}
-#' \item{'leeftijd': }{age category}
-#' \item{'freq': }{counts of animals}
-#' \item{'percent': }{percentage of counts of animals}
-#' }
+#' \item 'geslacht':  gender 
+#' \item 'leeftijd':  age category 
+#' \item 'freq':  counts of animals 
+#' \item 'percent':  percentage of counts of animals 
 #' }
 #' }
 #' @import plotly

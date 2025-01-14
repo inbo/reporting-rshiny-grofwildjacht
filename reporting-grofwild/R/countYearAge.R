@@ -7,19 +7,17 @@
 #' @param summarizeBy character, whether to summarize data in terms of counts or percentages
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the observed number 
-#' per year and per age category is plotted in a stacked bar chart}
-#' \item{'data'}{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the observed number 
+#' per year and per age category is plotted in a stacked bar chart 
+#' \item 'data' data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jaar': }{year at which the animals was counted}
-#' \item{count, depending if \code{summarizeBy} is: }{
+#' \item 'jaar': year at which the animals was counted 
+#' \item count, depending if \code{summarizeBy} is:  
 #' \itemize{
-#' \item{'count': }{counts of animals in the 'freq' column}
-#' \item{'percent': }{percentage of counts of animals in the 'percent'  column}
+#' \item 'count':  counts of animals in the 'freq' column 
+#' \item 'percent':  percentage of counts of animals in the 'percent'  column 
 #' }
-#' }
-#' \item{'totaal': }{total number of animals across categories}
-#' }
+#' \item 'totaal':  total number of animals across categories 
 #' }
 #' }
 #' @import plotly

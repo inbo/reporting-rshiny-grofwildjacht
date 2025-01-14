@@ -8,14 +8,14 @@
 #' @inheritParams filterGrofwild
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified specie and years}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for the specified specie and years 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animal was shot}
-#' \item{'embryos': }{aantal embryos}
-#' \item{'Freq': }{counts of females}
-#' \item{'percent': }{percentage of females with given number of embryos per year}
-#' }}
+#' \item 'afschotjaar':  year at which the animal was shot 
+#' \item 'embryos':  aantal embryos 
+#' \item 'Freq':  counts of females 
+#' \item 'percent':  percentage of females with given number of embryos per year 
+#'  }
 #' }
 #' @author mvarewyck
 #' @import plotly

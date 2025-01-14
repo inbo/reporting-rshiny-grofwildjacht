@@ -5,24 +5,22 @@
 #' in the plot; if NULL no selection on year(s) is made
 #' @param jaar year of interest
 #' @param openingstijdenData data.frame with opening season, 
-#' as returned by the link{loadOpeningstijdenData} function
+#' as returned by the \link{loadOpeningstijdenData} function
 #' @param type animal type, used to filter \code{data} and \code{openingstijdenData} ('type' column)
 #' If NULL (by default) or 'all', the data is not filtered.
 #' @inheritParams countYearProvince
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given specie the observed yearly percentage
+#' \item 'plot':  plotly object, for a given specie the observed yearly percentage
 #' killed animals for the year \code{jaar}. 
 #' The mean in the entire year is represented by a dotted line.
 #' The range of the yearly percentage killed for the \code{jaartallen} period is represented
-#' by a ribbon, and its median by a full line.}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' by a ribbon, and its median by a full line. 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'dateHalfMonth': }{date in half-month resolution,
+#' \item 'dateHalfMonth':  date in half-month resolution,
 #' e.g. January (01) for 01/01 -> 14/01 and January (02) for 15/01 -> end month (31/01)
-#' }
-#' \item{'obsYear': }{observed percentage of the counts for the specific half-month}
-#' }
+#' \item 'obsYear':  observed percentage of the counts for the specific half-month 
 #' }
 #' }
 #' @import plotly
@@ -314,11 +312,11 @@ percentageYearlyShotAnimals <- function(
 
 
 
-#' Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - server side
+#' Shiny module for creating the plot 
+#' \code{\link{percentageYearlyShotAnimals}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams percentageYearlyShotAnimals
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export

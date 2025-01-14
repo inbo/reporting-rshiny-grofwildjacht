@@ -16,14 +16,14 @@
 #' should be one of \code{c("absolute", "percentage")}; default \code{"absolute"}
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified type and jaartallen}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot': plotly object, for the specified type and jaartallen 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jaar': }{year at which the animal was shot}
-#' \item{'verwezenlijkt': }{count for actually shot animals}
-#' \item{'toegekend': }{count for assigned animals}
-#' \item{'percent': }{verwezenlijkt / toegekend * 100}
-#' }}
+#' \item 'jaar':  year at which the animal was shot 
+#' \item 'verwezenlijkt':  count for actually shot animals 
+#' \item 'toegekend':  count for assigned animals 
+#' \item 'percent':  verwezenlijkt / toegekend * 100 
+#' }
 #' }
 #' @author mvarewyck
 #' @import plotly

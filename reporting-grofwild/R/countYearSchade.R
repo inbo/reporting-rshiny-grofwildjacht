@@ -13,8 +13,8 @@
 #' displayed instead of original data values
 #' @return list with
 #' \itemize{
-#' \item{'plot': }{plotly object}
-#' \item{'data': }{data.fram used for plot}
+#' \item 'plot': plotly object 
+#' \item 'data': data.frame used for plot 
 #' } 
 #' @author mvarewyck
 #' @import plotly

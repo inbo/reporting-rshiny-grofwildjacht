@@ -57,7 +57,10 @@ outputTabs <- lapply(outputs, function(output){
     uiText = uiText, n = 200, type = category)
 
   args <- c(
-    list(id = output, category = category, select = TRUE),
+    list(
+      id = output, category = category, select = TRUE,
+      speciesList = schadeWildsoorten
+    ),
     if(category == "schade")
       list(
         schadeTypes = schadeTypes, 

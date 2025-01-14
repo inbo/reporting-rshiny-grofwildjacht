@@ -6,7 +6,6 @@
 
 
 #' User input for controlling specific plot (ui-side)
-#' @param id character, module id, unique name per plot
 #' @param showLegend boolean, whether to show input field for the legend
 #' @param showTime boolean, whether to show slider input field for time range
 #' @param showYear boolean, whether to show numeric input field for year selection
@@ -25,6 +24,7 @@
 #' @param showInterval boolean, if TRUE gives user option to select interval
 #' @param oneRow boolean, if TRUE (FALSE by default) all the
 #' options are combined in one row.
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object (tagList)
 #' @importFrom shinyjs hidden
 #' @export
@@ -328,9 +328,9 @@ optionsModuleServer <- function(input, output, session,
 
 
 #' Interactive plot (ui-side)
-#' @param id character, module id, unique name per plot
 #' @param height character, plot height, default is "600px" 
 #' @param filter boolean, whether to display filters UI
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
@@ -372,8 +372,8 @@ accuracyModuleUI <- function(id, title) {
 
 
 #' Interactive table (ui-side)
-#' @param id character, module id, unique name per plot
 #' @param includeTotal boolean, whether include text with total number of records in table
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
@@ -418,6 +418,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param combinatie logical, summarised view of selected regions
 #' @param verticalGroups reactive boolean; see also \link{barDraagkracht};
 #' default is NULL
+#' @param typeMelding reactive with type of notification ('melding')
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
@@ -722,11 +723,11 @@ plotModuleServer <- function(input, output, session, plotFunction,
 
 
 #' Display formatted frequency table of data (ui-side)
-#' @param id character, unique identifier for the shiny module
 #' @param data, character vector, values for which frequency table should be generated
 #' @param variable character, name of the variable that is summarized
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object (tagList)
 #' @importFrom sf st_drop_geometry
 #' @export

@@ -6,11 +6,10 @@
 
 
 #' Section for welcoming - UI side (no server side)
-#' 
-#' @param id character, unique identifier for the module
-#' @param category character of length 1 with the name of the
-#' page.
+#' @param split boolean (FALSE by default), should the output be 
+#' returned separately, as a list
 #' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @param ... Extra parameters for \code{\link{getOutputDescription}}
 #' @return if \code{split} is FALSE, one single HTML object;
 #' otherwise a list with 'title', 'summary' and 'description' 
@@ -49,10 +48,9 @@ welcomeSectionUI <- function(id,
 
 #' Decode species indicator in description
 #' @param text character, input from uiText
-#' @param species character, currently selected species
 #' @param statsMap character, statistics to be printed instead of \code{'{{statsMap}}'}
+#' @inheritParams reportingGrofwild-common-args
 #' @return character, modified for the conditional species mentioned in the text  
-#' 
 #' @author mvarewyck
 #' @export
 decodeText <- function(text, species, statsMap = NULL) {

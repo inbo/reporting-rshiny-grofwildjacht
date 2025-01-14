@@ -2,6 +2,7 @@
 #' @inheritParams createSpaceData
 #' @inheritParams trendYearRegion
 #' @inheritParams createShapeData
+#' @inheritParams filterSpatial
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
@@ -253,13 +254,13 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams trendYearRegion 
 #' @inheritParams createTrendData
-#' @param id character, unique identifier for the module
+#' @inheritParams reportingGrofwild-common-args
 #' @param geoData reactive data.frame, geographical data for the selected species
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @param type character, type of module e.g. "wbe"
 #' @param locaties reactive character vector, region name to be shown in the plot title
+#' @param ns session namespace
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -365,13 +366,12 @@ trendYearRegionServer <- function(
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' 
 #' @inherit welcomeSectionUI
-#' @param context character, where the plot is shown; 
-#' to define text/titles to be shown (\code{id} by default)
 #' @param specie character of length 1, specie
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
-#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @param unitChoices, character vector with choices for the units
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 trendYearRegionUI <- function(
   id, uiText, context = id, specie = NULL, plotFunction = "trendYearRegionUI", 

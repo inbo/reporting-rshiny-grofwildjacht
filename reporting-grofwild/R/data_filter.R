@@ -151,13 +151,13 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
 #' @param allSpatialData list with sf objects as loaded by 
 #' \code{readS3(file = "spatialData.RData")}
-#' @param species character, animal species
 #' @param regionLevel character, region level. Should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}
 #' @param year integer, year of interest. Only relevant when \code{regionLevel}
 #' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
 #' @param locaties character vector, only relevant when \code{regionLevel} is 
 #' "WBE_binnengrenzen"; it selects the relevant WBE only; default is NULL
+#' @inheritParams reportingGrofwild-common-args
 #' @return single sf object
 #' 
 #' @author mvarewyck

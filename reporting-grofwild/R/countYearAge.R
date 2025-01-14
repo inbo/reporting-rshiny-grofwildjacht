@@ -2,8 +2,7 @@
 #' 
 #' Figure p. 11 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearProvince
-#' @param regio character vector, names of the selected regions in \code{data}
-#' to be shown in the plot title
+#' @inheritParams reportingGrofwild-common-args
 #' @param summarizeBy character, whether to summarize data in terms of counts or percentages
 #' @return list with:
 #' \itemize{
@@ -183,7 +182,6 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 #' @inheritParams countAgeGenderServer 
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -233,8 +231,7 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
 #' @inherit welcomeSectionUI
 #' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
-#' @param doHide boolean, whether to initially hide the plot; default TRUE
-#' 
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   showRegion = TRUE, doHide = TRUE) {

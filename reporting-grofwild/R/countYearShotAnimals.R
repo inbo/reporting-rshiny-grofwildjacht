@@ -216,13 +216,12 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @param types character vector
 #' @inheritParams countYearShotAnimals
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -254,10 +253,11 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
-#' @param regionLevels numeric vector, region level choices
+#' @inheritParams optionsModuleUI
 #' @inheritParams countYearShotAnimals
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @inherit welcomeSectionUI
-#' 
 #' @export
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
   uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,

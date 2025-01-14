@@ -1,4 +1,6 @@
 #' Shiny module for creating the schade summary tables - UI side
+#' @inheritParams reportingGrofwild-common-args
+#' @inheritParams getOutputTitle
 #' @export
 tableSchadeSummaryUI <- function(id, uiText, specie = NULL) {
   
@@ -25,6 +27,8 @@ tableSchadeSummaryUI <- function(id, uiText, specie = NULL) {
 }
 
 #' Shiny module for creating the schade summary tables- server side
+#' @inheritParams dataModuleServer
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' @import shiny
 #' @export

@@ -10,6 +10,7 @@
 #' Figure p. 15 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countAgeCheek
 #' @inheritParams boxAgeWeight
+#' @inheritParams reportingGrofwild-common-args
 #' @return list with:
 #' \itemize{
 #' \item 'plot':  plotly object, for a given species the percentage per age category
@@ -139,9 +140,9 @@ countAgeGender <- function(data, jaartallen = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -171,7 +172,8 @@ countAgeGenderServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 countAgeGenderUI <- function(id,
   uiText, context = id, specie = NULL,

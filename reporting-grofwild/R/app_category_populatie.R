@@ -1,5 +1,6 @@
 #' Server function for the cards of the 'populatie indicatoren' Category page
-#' @param id id character, module id
+#' @inheritParams categoryCard
+#' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
@@ -78,7 +79,7 @@ populatieCardServer <- function(id,
 }
 
 #' Server function for an output (plot/table) of the 'populatie' Category page
-#' @param id id character, module id
+#' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
 #' @import shiny
 #' @author lcougnaud

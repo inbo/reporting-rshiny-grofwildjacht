@@ -1,5 +1,5 @@
 #' Server function for the cards of the 'schade' Category page
-#' @param id id character, module id
+#' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
@@ -121,7 +121,7 @@ schadeCardServer <- function(id,
 }
                               
 #' Server function for an output (plot/table) of the 'schade' Category page
-#' @param id id character, module id
+#' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
 #' @import shiny
 #' @author lcougnaud
@@ -448,7 +448,8 @@ schadeOutputServer <- function(id,
 }
 
 #' UI function for the sidebar of the 'schade' Category page
-#' @inheritParams specieSidebarUI
+#' @param ... any extra parameters for \code{\link{specieSidebarUI}}
+#' @inheritParams reportingGrofwild-common-args
 #' @inherit specieSidebarUI return
 #' @author lcougnaud
 schadeSidebarUI <- function(id, 
@@ -499,7 +500,7 @@ schadeSidebarUI <- function(id,
 }
 
 #' Server function for the sidebar of the 'schade' Category page
-#' @param id id character, module id
+#' @inheritParams reportingGrofwild-common-args
 #' @return Shiny module function
 #' @import shiny
 #' @author lcougnaud

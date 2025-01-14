@@ -21,7 +21,9 @@ trendYearFlanders <- function(data, timeRange,
 }
 
 #' Shiny module for creating the time plot Flanders - server side
-#' @inheritParams mapFlandersServer
+#' @inheritParams trendYearFlandersUI
+#' @inheritParams createTrendData
+#' @inheritParams reportingGrofwild-common-args
 #' @return no returned value
 #' @export
 trendYearFlandersServer <- function(id, 
@@ -90,6 +92,7 @@ trendYearFlandersServer <- function(id,
 
 #' Shiny module for creating the time plot Flanders - UI side
 #' @inheritParams mapFlandersUI 
+#' @inheritParams getOutputTitle
 #' @param includeOptions logical, if TRUE (by default) the options
 #' to filter the plot are included.
 #' @return UI object

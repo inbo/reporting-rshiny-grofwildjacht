@@ -1,5 +1,6 @@
 #' UI with front page of the application
 #' @inherit shiny::fluidPage return
+#' @inheritParams reportingGrofwild-common-args
 #' @author lcougnaud
 #' @importFrom slickR slickROutput
 #' @import shiny

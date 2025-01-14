@@ -1,6 +1,5 @@
 #' UI for a category page
-#' @param id character, module id
-#' @param category character, categroy
+#' @inheritParams reportingGrofwild-common-args
 #' @param ... any parameters passed to \code{\link{specieSidebarUI}}
 #' /\code{\link{specieSidebarUI}}
 #' @inherit shiny::verticalLayout return

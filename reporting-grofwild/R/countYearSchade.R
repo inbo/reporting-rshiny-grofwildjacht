@@ -224,7 +224,9 @@ countYearSchadeServer <- function(
 
 #' Shiny module for creating the plot \code{\link{countYearSchade}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams optionsModuleUI
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 countYearSchadeUI <- function(id, 
   uiText, context = id, specie = NULL, type = NULL, doHide = TRUE,

@@ -133,7 +133,8 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
 
 #' Shiny module for creating the plot \code{\link{tableGewas}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 tableGewasUI <- function(id, 
   uiText, context = id, specie = NULL, 

@@ -170,11 +170,10 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams optionsModuleServer
-#' @param uiText data.frame, HTML formatted text to be displayed in the UI
+#' @inheritParams getOutputDescription
 #' @param wildsoort character, species to be displayed. 
 #' Needed to format title and description in \code{uiText}
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -234,9 +233,9 @@ countEmbryosServer <- function(id, data, timeRange, types,
 
 
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
-#' @param id character, identifier
-#' @param regionLevels character, choices for region
-#' 
+#' @inheritParams optionsModuleUI
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @author mvarewyck
 #' @export
 countEmbryosUI <- function(id, regionLevels,

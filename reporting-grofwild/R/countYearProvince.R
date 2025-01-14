@@ -13,6 +13,7 @@
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
 #' @inheritParams filterDataSource
+#' @inheritParams reportingGrofwild-common-args
 #' @param title character, title prefix; default is NULL
 #' @param width plot width (optional)
 #' @param height plot height (optional)
@@ -190,6 +191,7 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @inherit welcomeSectionUI
 #' @inheritParams trendYearRegionUI
 #' @inheritParams optionsModuleUI 
+#' @inheritParams getOutputDescription
 #' @export
 countYearProvinceUI <- function(
   id, 

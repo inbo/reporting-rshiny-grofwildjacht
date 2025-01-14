@@ -103,12 +103,11 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @inheritParams countAgeGroup
-#'  
+#' @inheritParams reportingGrofwild-common-args  
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -157,9 +156,9 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - UI side
-#' @inherit welcomeSectionUI
-#' @param doHide boolean, whether to initially hide the plot; default TRUE
-#' 
+#' @inherit welcomeSectionUI 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 countAgeGroupUI <- function(id, 
   uiText, context = id, specie = NULL,

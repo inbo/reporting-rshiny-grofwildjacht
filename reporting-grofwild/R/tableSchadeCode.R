@@ -224,7 +224,8 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 
 #' Shiny module for creating the plot \code{\link{tableSchadeCode}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 tableSchadeUI <- function(id, 
   uiText, context = id, specie = NULL, 

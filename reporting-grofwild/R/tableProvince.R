@@ -297,7 +297,8 @@ tableProvinceServer <- function(id, data, categorie, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{tableProvince}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 tableProvinceUI <- function(id, doHide = TRUE,
   uiText, context = id, specie = NULL) {

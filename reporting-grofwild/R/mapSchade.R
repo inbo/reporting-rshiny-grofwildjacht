@@ -258,21 +258,18 @@ mapSchade <- function(
 
 
 #' Shiny module for creating map on schade data - server side
-#' @param id character, unique identifier for module
 #' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
 #' @param allSpatialData reactive with sf objects with spatial data 
 #' for selected region (and year for WBE)
 #' @param timeRange integer vector, relevant period that can be selected for the map
-#' @param defaultYear integer, current (default) end year of the selected period
-#' @param species character vector, selected species for the plot
 #' @param borderRegion character, for which \code{regionLevel} to show black border;
 #' see also \code{\link{mapSchade}}; default is NULL
 #' @param type character, type of plot this module is used for. Historically
 #' only \code{"schade"}. Later extended to also cover \code{"afschot"}, i.e. 
 #' "gerapporteerde afschot locaties", see also \code{mapAfschotUI}
 #' @param variable (optional) character with variable of interest
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @importFrom webshot webshot
@@ -653,9 +650,10 @@ mapSchadeServer <- function(
 #' @param filterSource boolean, whether to show filter option for source
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
 #' @param variableChoices named character vector, choices for coloring 
-#' @inheritParams mapFlandersUI
+#' @inheritParams getOutputTitle
+#' @inheritParams getOutputDescription
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams reportingGrofwild-common-args
 #' @author mvarewyck
 #' @importFrom leaflet leafletOutput
 #' @export

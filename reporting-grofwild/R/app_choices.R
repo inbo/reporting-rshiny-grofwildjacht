@@ -25,7 +25,7 @@ getCategories <- function(specie = NULL){
 }
 
 #' Get title for a 'Category' tab
-#' @param category string with category
+#' @inheritParams reportingGrofwild-common-args
 #' @return string with category title
 #' @author lcougnaud
 #' @export
@@ -42,7 +42,7 @@ getCategoryTitle <- function(category){
 }
 
 #' Get subcategories available in the app
-#' @inheritParams getSubcategoryTitle
+#' @inheritParams reportingGrofwild-common-args
 #' @author lcougnaud
 #' @export
 getSubcategories <- function(category = getCategories()){
@@ -72,7 +72,10 @@ getSubcategories <- function(category = getCategories()){
 }
 
 #' Get title for the 'Subcategory' tab(s)
-#' @param subcategory string with subcategory(ies)
+#' @param subcategory character with subcategory of interest,
+#' to be extracted from the \code{plotFunction} column
+#' of \code{uiText}
+#' @inheritParams reportingGrofwild-common-args
 #' @return named character vector with tab titles
 #' @author lcougnaud
 #' @export
@@ -87,6 +90,7 @@ getSubcategoryTitle <- function(subcategory, uiText){
 #' Get available outputs (visualization/table) for a category
 #' or subcategory
 #' @inheritParams getSubcategories
+#' @inheritParams reportingGrofwild-common-args
 #' @return Character vector with ouput names
 #' @author lcougnaud
 #' @export
@@ -138,7 +142,7 @@ getOutputs <- function(category = getCategories(), subcategory = NULL){
 }
 
 #' Get a category for an output
-#' @param output string with output name
+#' @inheritParams reportingGrofwild-common-args
 #' @return string with category name
 #' @author lcougnaud
 #' @export
@@ -157,7 +161,7 @@ getCategoryOutput <- function(output){
 }
 
 #' Get a subcategory for an output
-#' @param output string with output name
+#' @inheritParams reportingGrofwild-common-args
 #' @return string with subcategory name
 #' @author lcougnaud
 #' @export
@@ -176,13 +180,12 @@ getSubcategoryOutput <- function(output){
 }
 
 #' Get output title
-#' @param output character vector of length 1 with output name
-#' @param uiText data.frame, HTML formatted text to be displayed 
-#' in the UI
+#' @inheritParams reportingGrofwild-common-args
 #' @param specie (optional) character vector of length 1 with specie
 #' @param type (optional) character vector of length 1 with type
 #' @param n (optional) integer vector of length 1 with maximum 
 #' number of characters to include
+#' @inheritParams reportingGrofwild-common-args
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
 #' @export
@@ -238,6 +241,8 @@ getOutputTitle <- function(output,
 #' replaced in the text
 #' @param statsMap character, statistics to be printed 
 #' instead of \code{'{{statsMap}}'}
+#' @param context character, where the plot is shown, should
+#' corresponds to a column in \code{uiText}
 #' @inheritParams getOutputTitle
 #' @return character vector of length 1 with output description
 #' @author lcougnaud

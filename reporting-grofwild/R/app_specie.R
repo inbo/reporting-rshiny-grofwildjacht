@@ -1,5 +1,5 @@
 #' UI for the 'specie' page
-#' @param id character, module id/specie
+#' @inheritParams reportingGrofwild-common-args
 #' @inherit shiny::verticalLayout return
 #' @author lcougnaud
 #' @import shiny
@@ -47,7 +47,7 @@ specieUI <- function(id, speciesList){
 }
 
 #' Server function for the 'specie' page
-#' @inheritParams specieUI
+#' @inheritParams reportingGrofwild-common-args
 #' @return no returned value
 #' @author lcougnaud
 #' @import shiny
@@ -130,6 +130,7 @@ getSpecieImage <- function(specie, relative = FALSE){
 }
 
 #' Get all cards UI element for a specific specie
+#' @inheritParams reportingGrofwild-common-args
 #' @inherit shiny::radioButtons return
 #' @author lcougnaud
 #' @inheritParams getSpecieImage

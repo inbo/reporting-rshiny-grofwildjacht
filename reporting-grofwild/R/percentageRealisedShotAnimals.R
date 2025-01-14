@@ -174,9 +174,8 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @param regionLevels numeric vector, region level choices
+#' @inheritParams optionsModuleUI
 #' @inherit welcomeSectionUI
-#' 
 #' @export
 percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiText) {
   

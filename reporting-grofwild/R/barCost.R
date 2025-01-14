@@ -8,11 +8,11 @@
 #' 
 #' @param data data.frame with schadeData
 #' @param unit character, variable in \code{data} to summarize on
+#' @param typeMelding character vector, choices for filtering on `typeMelding` in data
 #' @inheritParams barDraagkracht
-#' 
+#' @inheritParams reportingGrofwild-common-args
 #' @return list with plotly object and data.frame 
 #' plot per year (xaxis) and group (color): freq x schadeBedrag (yaxis)
-#' 
 #' @author wverlinden
 #' @import plotly
 #' @importFrom stats aggregate
@@ -194,7 +194,10 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 
 #' Shiny module for creating the plot \code{\link{barCost}} - UI side
 #' @inherit welcomeSectionUI
-#' @param typeMelding character vector, choices for filtering on `typeMelding` in data
+#' @inheritParams getOutputDescription
+#' @inheritParams barCost
+#' @inheritParams optionsModuleUI
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 barCostUI <- function(id, 
   uiText, context = strsplit(id, split = "_")[[1]][1], 

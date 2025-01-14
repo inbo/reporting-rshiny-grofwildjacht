@@ -519,8 +519,9 @@ mapSpreadServer <- function(id,
 #' Shiny module for creating the plot \code{\link{mapSpread}} - UI side
 #' @inherit welcomeSectionUI
 #' @param showLayer boolean, whether to display option to choose layer
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @return UI object
-#' 
 #' @export
 mapSpreadUI <- function(id, 
   uiText, context = id, specie = NULL,

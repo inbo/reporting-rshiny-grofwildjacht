@@ -51,7 +51,6 @@ getCenterView <- function(sf_object) {
 #' @param allSpatialData list of sp, spatial data for all spatial levels
 #' @param biotoopData data.frame, background data for the WBE, as read from \code{loadHabitats}
 #' @param year integer, year of interest
-#' @param species character, species of interest
 #' @param regionLevel character, regional level of interest should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
 #' @param unit character, whether absolute frequencies, relative frequencies (aantal/100ha),
@@ -61,6 +60,7 @@ getCenterView <- function(sf_object) {
 #' if NULL then each row in the data contains 1 count
 #' @inheritParams filterDataSource
 #' @inheritParams createShapeData
+#' @inheritParams reportingGrofwild-common-args
 #' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
 #' @author mvarewyck
 #' @importFrom reshape2 dcast
@@ -316,6 +316,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @param legend character, legend placement; default is "none", no legend
 #' @param legendText character, legend title; default is 'Legende'
 #' @param addGlobe boolean, whether to add world map to background; default is FALSE
+#' @inheritParams filterSpatial
 #' @return leaflet map
 #' @author mvarewyck
 #' @importFrom leaflet leaflet addPolygons addPolylines colorFactor addLegend addProviderTiles
@@ -430,8 +431,6 @@ mapFlanders <- function(
 
 
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - server side
-#' @param id character, unique identifier for the module
-#' @param defaultYear numeric, default year
 #' @param species character, species for which to show the graphs
 #' @param currentWbe numeric, KBO number; default value is NULL
 #' @param hideGlobeDefault boolean, whether the globe is shown by default 
@@ -442,12 +441,13 @@ mapFlanders <- function(
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
 #' @param allSpatialData list with sf objects 
+#' @inheritParams mapFlandersUI
 #' @inheritParams createSpaceData
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @param sourceChoices named character vector, choices for the source
-#' @param uiText data.frame
-#' 
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @import leaflet
@@ -1289,14 +1289,18 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @inheritParams mapFlandersServer 
 #' @param showRegion boolean, whether to show choices for regionLevel and selected region(s)
 #' @param showCombine boolean, whether to show option to combine selected regions
-#' @param regionChoices named character vector, choices for the region levels
 #' @param unitChoices named character vector, choices for unit option;
 #' default is \code{c("Aantal" = "absolute", "Aantal/100ha" = "relative")}
-#' @param plotDetails character vector, detail plots to be shown below the map;
-#' should be subset of \code{c("flanders", "region", "biotoop")}
 #' @param showTitle boolean, whether to show title above the map
+#' @param mapScaleChoices named character vector, choices for the
+#' map scales
+#' @param outputFunction character, named of output function used
+#' to extract title, by default: 'mapFlandersUI'
+#' @param typeTitle character vector with type to be used 
+#' in the title
+#' @inheritParams getOutputTitle
+#' @inheritParams reportingGrofwild-common-args
 #' @return UI object
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export

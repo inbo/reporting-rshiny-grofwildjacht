@@ -1,6 +1,5 @@
 #' UI function for the cards of the Category page
-#' @param id character, module id
-#' @param category string, category
+#' @inheritParams reportingGrofwild-common-args
 #' @return \code{\link[shiny]{verticalLayout}}
 #' @author lcougnaud
 #' @export
@@ -64,9 +63,7 @@ categoryUI <- function(id, category,
 }
 
 #' Server function for the Category page
-#' @param id character, module id
-#' @param category character, category
-#' @param specie reactive value with specie
+#' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of subcategory (if selected)
 #' @import shiny
 #' @author lcougnaud
@@ -100,11 +97,9 @@ categoryServer <- function(id,
 }
 
 #' Get category card for a specific output or category
-#' @param id id character, module id/specie
-#' @param output character, output name, e.g. 'trendYearRegionUI'
-#' @param category character, category for the card 
-#' (e.g.'afschot' or 'schade'), used to extract
-#' the picture for the card
+#' @param outputFunction character, named of output function used
+#' to extract title, by default: \code{output}
+#' @inheritParams reportingGrofwild-common-args
 #' @inheritParams getOutputTitle
 #' @inherit bslib::card return
 #' @author lcougnaud

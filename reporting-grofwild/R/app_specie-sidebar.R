@@ -1,6 +1,4 @@
 #' UI for the specie sidebar panel
-#' @param id character, module id
-#' @param specie character, specie
 #' @param topExtra (optional) extra elements to include at 
 #' the top of the sidebar
 #' @param bottomExtra (optional) extra elements to include at 
@@ -9,6 +7,7 @@
 #' should the specie name be displayed as text?
 #' @param select logical (FALSE by default), should a button
 #' be included to select the specie?
+#' @inheritParams reportingGrofwild-common-args
 #' @return shiny::sidebarPanel return
 #' @author lcougnaud
 #' @export
@@ -40,7 +39,7 @@ specieSidebarUI <- function(id,
 }
 
 #' Server function for the specie sidebar panel
-#' @param id id character, module id
+#' @inheritParams reportingGrofwild-common-args
 #' @return Shiny module function
 #' @import shiny
 #' @author lcougnaud

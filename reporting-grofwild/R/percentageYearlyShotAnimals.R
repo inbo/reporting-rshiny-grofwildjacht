@@ -348,7 +348,8 @@ yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenDat
 
 #' Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 yearlyShotAnimalsUI <- function(id, uiText, specie = NULL, 
   context = id, doHide = TRUE) {

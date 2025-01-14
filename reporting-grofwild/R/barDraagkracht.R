@@ -207,13 +207,12 @@ barDraagkracht <- function(data, groupVariable = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param title reactive, plot title to be displayed
 #' @param groupLabel character, label for the grouping variable choices
 #' @inheritParams barDraagkracht
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export

@@ -397,7 +397,7 @@ shinyServer(function(input, output, session) {
       newSelection <- strsplit(gsub("^#", "", currentHash), split = "/")[[1]]
       
       # update selection in navigation bar
-      specie(ifelse(!is.na(newSelection[1]), newSelection[1], "Specie"))
+      specie(ifelse(!is.na(newSelection[1]), newSelection[1], "Diersoort"))
       category(ifelse(!is.na(newSelection[2]), newSelection[2], "Categorie"))
       subcategory(ifelse(!is.na(newSelection[3]), newSelection[3], "Subcategorie"))
       plot(ifelse(!is.na(newSelection[4]), newSelection[4], "Visualisatie/Tabel"))
@@ -427,5 +427,16 @@ shinyServer(function(input, output, session) {
 
 
   versionServer(id = "public")
+  
+  output$mailLink <- renderUI({
+      
+      tags$a(
+          id = "contact", 
+          href = paste("mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie&body=Link:", 
+            paste0("faunabeheer.inbo.be/", createQueryString(selection(), page = input$navbarID))), 
+          target="_blank", "Contact"
+        )
+      
+    })
 
 })

@@ -136,13 +136,7 @@ shinyUI(
         )
       ),
       bslib::nav_spacer(), # right align next items
-      bslib::nav_item(
-        tags$a(
-          id = "contact", 
-          href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", 
-          target="_blank", "Contact"
-        )
-      ),
+      bslib::nav_item(uiOutput("mailLink")),
       bslib::nav_item(
         tags$a(
           id = "WBE", 

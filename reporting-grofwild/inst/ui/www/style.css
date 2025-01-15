@@ -77,34 +77,6 @@ h1, h2, h3, h4 {
   color: #356196;
 }
 
-#wildZwijnFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("wildZwijn.jpeg");
-  background-size: 260px 186px;
-}
-
-#reeFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("ree.jpeg");
-  background-size: 260px 186px;
-}
-
-#edelhertFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("edelhert.jpeg");
-  background-size: 260px 186px;
-}
-
-#damhertFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("damhert.jpeg");
-  background-size: 260px 186px;
-}
-
 .fotoTitel {
   font-size: 20px;
   font-weight: bold;
@@ -183,33 +155,6 @@ p, li, label {
 /*  text-align: center*/
 /*}*/
 
-#wildZwijnFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("wildZwijn.jpeg");
-  background-size: 260px 186px;
-}
-
-#reeFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("ree.jpeg");
-  background-size: 260px 186px;
-}
-
-#edelhertFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("edelhert.jpeg");
-  background-size: 260px 186px;
-}
-
-#damhertFoto {
-  width: 260px; 
-  height: 186px;
-  background-image: url("damhert.jpeg");
-  background-size: 260px 186px;
-}
 
 /*navigation bar*/
 
@@ -224,6 +169,9 @@ p, li, label {
 
 /* navigation items */
 .nav-tabs > li > a {
+  color: #ffffff !important;
+}
+.nav-tabs > li > div > a {
   color: #ffffff !important;
 }
 .nav-tabs > li.active > a {

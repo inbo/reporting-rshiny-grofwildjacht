@@ -22,7 +22,7 @@ shinyServer(function(input, output, session) {
 
   ## Selection
   
-  specie <- reactiveVal("Specie")
+  specie <- reactiveVal("Diersoort")
   category <- reactiveVal("Categorie")
   subcategory <- reactiveVal("Subcategorie")
   plot <- reactiveVal("Visualisatie/Tabel")
@@ -424,5 +424,8 @@ shinyServer(function(input, output, session) {
     if (currentHash != query)
       updateQueryString(queryString = query, mode = "push", session)
   }, priority = 0)
+
+
+  versionServer(id = "public")
 
 })

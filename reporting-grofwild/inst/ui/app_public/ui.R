@@ -144,10 +144,11 @@ shinyUI(
         )
       ),
       bslib::nav_item(
-        shiny::actionLink(
-          inputId = "WBE", 
-          label = "WBE", 
-          onclick = "window.open('https://wbe.inbo.be', '_self')"
+        tags$a(
+          id = "WBE", 
+          href = "https://wbe.inbo.be", 
+          # target="_blank", 
+          "WBE"
         )
       ),
       bslib::nav_item(versionUI(id = "public"))

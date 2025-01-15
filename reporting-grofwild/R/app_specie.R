@@ -19,10 +19,8 @@ specieUI <- function(id, speciesList){
         )
       ),
       
-      br(),
-  
       # Choice of specie and options
-      sidebarLayout(
+      tags$div(style = "margin-left: 15px; margin-top: 15px", sidebarLayout(    
           
         position = "left", 
           
@@ -39,6 +37,7 @@ specieUI <- function(id, speciesList){
         )
   
      )
+   )
   
     )
 
@@ -148,8 +147,7 @@ getSpecieCards <- function(id, specie){
     ))
   })
   
-  div(
-      
+  tags$div(style = "margin-top: -20px;",
     radioButtons(
       inputId = NS(id, "cards"), label = "", inline = TRUE,
       choiceValues = values, choiceNames = names,

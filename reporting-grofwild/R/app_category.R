@@ -39,11 +39,9 @@ categoryUI <- function(id, category,
       
     # image
     fluidRow(img(src = img, width = "100%")),
-      
-    br(),
-      
+    
     # Specie
-    sidebarLayout(    
+    tags$div(style = "margin-left: 15px; margin-top: 15px", sidebarLayout(    
       position = "left", 
       sidebarPanel = specieSidebarUI(
         id = ns("sidebar"), 
@@ -57,6 +55,7 @@ categoryUI <- function(id, category,
         infoText[["description"]]
       )
     )
+  )
   
   )
   
@@ -147,14 +146,14 @@ categoryCard <- function(id,
     bslib::card_image(file = file, class = "category-card-image"),
     br(),
     bslib::card_body(description),
-    br(), br(),
+    br(), 
     bslib::card_footer(
       align = "center",
-      shiny::actionButton(
+      tags$div(style = "margin-bottom: 2px", shiny::actionButton(
         inputId = ns(paste0(btnName, "-button")), 
         label = btnLabel, 
         class = "category-card-action-button"
-      )
+      ))
     )
   )
   

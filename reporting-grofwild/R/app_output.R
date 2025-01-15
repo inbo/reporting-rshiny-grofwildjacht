@@ -19,21 +19,21 @@ outputUI <- function(id, category, ...){
        width = "100%")
       )
     ),
-          
-    br(),
-          
+           
     # Specie and options
-    sidebarLayout(    
-      position = "left", 
-      sidebarPanel = if(category == "schade"){
-        schadeSidebarUI(id = ns("sidebar"), ...)
-      }else{
-        specieSidebarUI(id = ns("sidebar"), ...)
-      },
-      mainPanel = mainPanel(
-       width = 9, 
-       style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
-       uiOutput(outputId = ns("output"))
+    tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
+      sidebarLayout(    
+        position = "left", 
+        sidebarPanel = if(category == "schade"){
+            schadeSidebarUI(id = ns("sidebar"), ...)
+          }else{
+            specieSidebarUI(id = ns("sidebar"), ...)
+          },
+        mainPanel = mainPanel(
+          width = 9, 
+          style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
+          uiOutput(outputId = ns("output"))
+        )
       )
     )
   

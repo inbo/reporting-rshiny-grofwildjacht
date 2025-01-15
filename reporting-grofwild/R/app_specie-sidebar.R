@@ -21,19 +21,19 @@ specieSidebarUI <- function(id,
   
   sidebarPanel(
     width = 3, 
-    id = ns("sidebar"), 
-    topExtra,
-    if(select)
-      selectInput(
-        inputId = ns("specie"), 
-        label = "Selecteer een diersoort:",
-        choices = c("", speciesList)
-      ),
-    if(name)
-      htmlOutput(outputId = ns("specie-name")),
-    imageOutput(outputId = ns("specie-image"), height = "auto"),
-    textOutput(outputId = ns("specie-latin-name")),
-    bottomExtra
+    id = ns("sidebar"),
+      topExtra,
+      if(select)
+        selectInput(
+          inputId = ns("specie"), 
+          label = "Selecteer een diersoort:",
+          choices = c("", speciesList)
+        ),
+      if(name)
+        htmlOutput(outputId = ns("specie-name")),
+      imageOutput(outputId = ns("specie-image"), height = "auto"),
+      uiOutput(outputId = ns("specie-latin-name")),
+      bottomExtra
   )
   
 }
@@ -49,7 +49,7 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
   moduleServer(id, function(input, output, session){
     
     # Specie name
-    output$`specie-name` <- renderUI(h4(specie()))
+    output$`specie-name` <- renderUI(tags$p(style = "text-align:center", tags$b(specie())))
     
     # Specie image	
     output$`specie-image` <- renderImage(
@@ -57,8 +57,8 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
       , deleteFile = FALSE)
     
     # Specie latin name
-    output$`specie-latin-name` <- renderText(
-      paste("Latijn:", getLatinName(specie = specie()))
+    output$`specie-latin-name` <- renderUI(
+      tags$em(paste("Latijn:", getLatinName(specie = specie())))
     )
         
   })

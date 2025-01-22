@@ -20,6 +20,7 @@ specieSidebarUI <- function(id,
   ns <- NS(namespace = id)
   
   sidebarPanel(
+    class = "well-white",
     width = 3, 
     id = ns("sidebar"),
       topExtra,

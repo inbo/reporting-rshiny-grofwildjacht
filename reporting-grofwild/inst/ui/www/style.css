@@ -222,6 +222,7 @@ p, li, label {
 .category-card {
   border: solid 1px;
   border-color: #b7b7b7;
+  background-color: white;
 }
 
 .category-card-header {
@@ -250,5 +251,18 @@ p, li, label {
 .category-card-image{
   border: solid;
   border-width: 1px;
-  border-color: #999999;
+  border-color: #e9e6e6;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+
+/*Custom colors for backgrounds*/
+
+body {
+  background-color: #f5f5f5;    
+}
+
+.well-white {
+  background-color: white;    
 }

@@ -59,7 +59,8 @@ outputTabs <- lapply(outputs, function(output){
   args <- c(
     list(
       id = output, category = category, select = TRUE,
-      speciesList = schadeWildsoorten
+      speciesList = schadeWildsoorten,
+      whiteWell = TRUE
     ),
     if(category == "schade")
       list(

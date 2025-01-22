@@ -1,12 +1,14 @@
 #' UI for a category page
 #' @inheritParams reportingGrofwild-common-args
+#' @param whiteWell boolean whether to draw a white well panel around the output;
+#' default is FALSE 
 #' @param ... any parameters passed to \code{\link{specieSidebarUI}}
 #' /\code{\link{specieSidebarUI}}
 #' @inherit shiny::verticalLayout return
 #' @author lcougnaud
 #' @import shiny
 #' @export
-outputUI <- function(id, category, ...){
+outputUI <- function(id, category, whiteWell = FALSE, ...){
   
   ns <- NS(namespace = id)
   
@@ -32,7 +34,9 @@ outputUI <- function(id, category, ...){
         mainPanel = mainPanel(
           width = 9, 
           style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
-          uiOutput(outputId = ns("output"))
+          if (whiteWell)
+              wellPanel(class = "well-white", uiOutput(outputId = ns("output"))) else
+              uiOutput(outputId = ns("output"))
         )
       )
     )

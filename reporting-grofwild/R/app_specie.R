@@ -65,8 +65,8 @@ specieServer <- function(id, specie = reactiveVal()){
     # Specie - available items/pages
     output$items <- renderUI(getSpecieCards(id = id, specie = specie()))
     
-    observeEvent(input$cards, category(input$cards))
-    
+    observeEvent(input$cards, category(input$cards), ignoreInit = TRUE)
+ 
     observe(print(paste("Specie tab: category updated to:", category())))
     
     return(category)

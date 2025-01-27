@@ -67,11 +67,14 @@ populatieCardServer <- function(id,
 
     # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")
-    observeEvent(input$`boxAgeWeightUI-button`, outputUI("boxAgeWeightUI"), ignoreInit = TRUE)
-    observeEvent(input$`countAgeCheekUI-button`, outputUI("countAgeCheekUI"), ignoreInit = TRUE)
-    observeEvent(input$`countAgeGenderUI-button`, outputUI("countAgeGenderUI"), ignoreInit = TRUE)
-    observeEvent(input$`countEmbryosUI-button`, outputUI("countEmbryosUI"), ignoreInit = TRUE)
-    observeEvent(input$`countAgeGroupUI-button`, outputUI("countAgeGroupUI"), ignoreInit = TRUE)
+    outputs <- getOutputs(category = "populatie")
+    lapply(outputs, function(output){
+      observeEvent(
+        input[[paste0(output, "-button")]], 
+        outputUI(output), 
+        ignoreInit = TRUE
+      )
+    })
     
     return(outputUI)
 

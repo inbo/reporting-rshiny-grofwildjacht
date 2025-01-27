@@ -100,21 +100,21 @@ schadeCardServer <- function(id,
    })
    
    # if plot is selected based on the category cards
-   outputUI <- reactiveVal("Visualisatie/Tabel")
-   observeEvent(input$`tableSchadeSummaryUI-button`, outputUI("tableSchadeSummaryUI"), ignoreInit = TRUE)
-   observeEvent(input$`trendYearFlandersUI-button`, outputUI("trendYearFlandersUI"), ignoreInit = TRUE)
-   observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-schade"), ignoreInit = TRUE)
-   observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI-schade"), ignoreInit = TRUE)
-   observeEvent(input$`countYearSchadeUI-wildschade-button`, outputUI("countYearSchadeUI-wildschade"), ignoreInit = TRUE)
-   observeEvent(input$`mapSchadeUI-wildschade-button`, outputUI("mapSchadeUI-wildschade"), ignoreInit = TRUE)
-   observeEvent(input$`tableSchadeUI-button`, outputUI("tableSchadeUI"), ignoreInit = TRUE)
-   observeEvent(input$`countYearSchadeUI-gewas-button`, outputUI("countYearSchadeUI-gewas"), ignoreInit = TRUE)
-   observeEvent(input$`tableGewasUI-button`, outputUI("tableGewasUI"), ignoreInit = TRUE)
-   observeEvent(input$`countYearSchadeUI-seizoen-button`, outputUI("countYearSchadeUI-seizoen"), ignoreInit = TRUE)
-   observeEvent(input$`mapSchadeUI-seizoen-button`, outputUI("mapSchadeUI-seizoen"), ignoreInit = TRUE)
-   observeEvent(input$`barCostUI-button`, outputUI("barCostUI"), ignoreInit = TRUE)
-   
-   return(outputUI)
+    outputUI <- reactiveVal("Visualisatie/Tabel")
+    outputs <- getOutputs(category = "schade")
+    lapply(outputs, function(output){
+      btn <- paste0(output, "-button")
+      # exceptions
+      if(output %in% c("countYearProvinceUI-schade", "mapFlandersUI-schade"))
+        btn <- paste0(sub("(.+)-.+", "\\1", output), "-button")
+      observeEvent(
+        input[[btn]], 
+        outputUI(output), 
+        ignoreInit = TRUE
+      )
+    })
+
+    return(outputUI)
      
   })
      

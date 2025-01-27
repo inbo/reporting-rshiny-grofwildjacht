@@ -73,14 +73,14 @@ beheerCardServer <- function(id,
 
     # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")    
-    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
-    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
-    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
-    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
-    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
-    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
-    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
-    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
+    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"), ignoreInit = TRUE)
+    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"), ignoreInit = TRUE)
+    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"), ignoreInit = TRUE)
+    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"), ignoreInit = TRUE)
+    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"), ignoreInit = TRUE)
+    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"), ignoreInit = TRUE)
+    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"), ignoreInit = TRUE)
+    observeEvent(input$`F04_3-button`, outputUI("F04_3"), ignoreInit = TRUE)
     
     return(outputUI)
     

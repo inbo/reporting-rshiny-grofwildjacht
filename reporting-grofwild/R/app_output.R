@@ -33,7 +33,7 @@ outputUI <- function(id, category, whiteWell = FALSE, ...){
           },
         mainPanel = mainPanel(
           width = 9, 
-          style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
+          style = "overflow-y: hidden", # avoid 2 scrolling bar
           if (whiteWell)
               wellPanel(class = "well-white", uiOutput(outputId = ns("output"))) else
               uiOutput(outputId = ns("output"))

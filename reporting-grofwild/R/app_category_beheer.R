@@ -72,16 +72,20 @@ beheerCardServer <- function(id,
     })
 
     # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")    
-    observeEvent(input$`trendYearRegionUI-button`, outputUI("trendYearRegionUI"))
-    observeEvent(input$`countYearProvinceUI-button`, outputUI("countYearProvinceUI-afschot"))
-    observeEvent(input$`yearlyShotAnimalsUI-button`, outputUI("yearlyShotAnimalsUI"))
-    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
-    observeEvent(input$`tableProvinceUI-button`, outputUI("tableProvinceUI"))
-    observeEvent(input$`countYearShotUI-leeftijd_comp-button`, outputUI("countYearShotUI-leeftijd_comp"))
-    observeEvent(input$`countYearShotUI-jachtmethode_comp-button`, outputUI("countYearShotUI-jachtmethode_comp"))
-    observeEvent(input$`F04_3-button`, outputUI("F04_3"))
-    
+    outputUI <- reactiveVal("Visualisatie/Tabel")
+    outputs <- getOutputs(category = "beheer")
+    lapply(outputs, function(output){
+      btn <- paste0(output, "-button")
+      # exception
+      if(output == "countYearProvinceUI-afschot")
+        btn <- "countYearProvinceUI-button"
+      observeEvent(
+        input[[btn]], 
+        outputUI(output), 
+        ignoreInit = TRUE
+      )
+    })
+
     return(outputUI)
     
   })

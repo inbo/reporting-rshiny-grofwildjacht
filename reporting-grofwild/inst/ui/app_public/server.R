@@ -75,7 +75,7 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(specie(), {
-    if(specie() != "Specie" && updateTab()){
+    if(specie() != "Diersoort" && updateTab()){
       currentTab(specie())
       print(paste("Update current tab to:", specie(), "page"))
     }

@@ -61,8 +61,17 @@ verspreidingCardServer <- function(id,
 
     # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")
-    observeEvent(input$`mapFlandersUI-button`, outputUI("mapFlandersUI"))
-    observeEvent(input$`mapSpreadUI-button`, outputUI("mapSpreadUI"))
+    outputs <- getOutputs(category = "verspreiding")
+    lapply(outputs, function(output){
+      btn <- paste0(output, "-button")
+      # exception
+      if(output == "F17_1")  btn <- "mapFlandersUI-button"
+      observeEvent(
+        input[[btn]], 
+        outputUI(output), 
+        ignoreInit = TRUE
+      )
+    })
     
     return(outputUI)
 

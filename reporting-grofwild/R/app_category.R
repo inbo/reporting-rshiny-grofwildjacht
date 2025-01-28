@@ -85,9 +85,11 @@ categoryServer <- function(id,
     subcategoryUI <- reactiveVal("Subcategorie")
     subcategories <- getSubcategories(category = category)
     lapply(subcategories, function(subcategory){
-      observeEvent(input[[paste0(subcategory, "-button")]], {
-        subcategoryUI(subcategory)
-      })
+      observeEvent(
+        input[[paste0(subcategory, "-button")]], 
+        subcategoryUI(subcategory), 
+        ignoreInit = TRUE
+      )
     })
     
     return(subcategoryUI)

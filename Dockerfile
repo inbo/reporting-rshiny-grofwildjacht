@@ -22,12 +22,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'arrow', 'kableExtra'))"
+RUN R -q -e "options(warn = 2); remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'arrow', 'kableExtra', 'slickR'))"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+# NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work
 RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', repos = 'https://cloud.r-project.org', upgrade = 'never')" 
 RUN R -q -e "remotes::install_version('rmarkdown', version = '2.18', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 RUN R -q -e "remotes::install_version('magick', version = '2.7.3', repos = 'https://cloud.r-project.org', upgrade = 'never')"
-# NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work
+# NOTE: Need later versions for bslib::card() to be available
+RUN R -q -e "options(warn = 2); remotes::install_version('htmltools', version = '0.5.7', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+RUN R -q -e "options(warn = 2); remotes::install_version('bslib', version = '0.6.0', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 
 RUN R -q -e "remotes::install_github('inbo/INBOtheme@v0.5.10')"
 RUN R -q -e "install.packages('oaStyle', repos = c(rdepot = 'https://repos.openanalytics.eu/repo/public', getOption('repos')))"
@@ -57,7 +60,7 @@ RUN R -q -e "remotes::install_cran(c('config', 'aws.s3', 'aws.ec2metadata', 'lwg
 
 # Install the package without the source files ending up in the Docker image
 COPY reporting-grofwild /tmp/package
-RUN R -q -e "remotes::install_local('/tmp/package', dependencies=FALSE)"
+RUN R -q -e "options(warn = 2); remotes::install_local('/tmp/package', dependencies=FALSE)"
 
 # set host
 COPY Rprofile.site /usr/local/lib/R/etc/

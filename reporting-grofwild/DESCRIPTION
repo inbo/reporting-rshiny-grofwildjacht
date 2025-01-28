@@ -12,6 +12,7 @@ Imports:
     aws.ec2metadata,
     aws.s3,
     aws.signature,
+    bslib (>= 0.4.2),
     config,
     data.table,
     DT, 
@@ -31,12 +32,11 @@ Imports:
     shiny, 
     shinycssloaders,
     shinyjs, 
+    slickR,
     stringr,
     testthat,
     units,
-    webshot,
-    slickR,
-    bslib
+    webshot
 Suggests:
     kableExtra,
     lwgeom,

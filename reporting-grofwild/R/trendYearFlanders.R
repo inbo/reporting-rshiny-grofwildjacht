@@ -36,24 +36,27 @@ trendYearFlandersServer <- function(id,
   moduleServer(id, function(input, output, session) {
         
         ns <- session$ns
+         
+        output$period <- renderUI({
+            
+            req(geoData())
+            
+            maxYear <- max(geoData()$afschotjaar)
+            minYear <- min(geoData()$afschotjaar)
+            defaultYear <- config::get("defaultYear", 
+              file = system.file("config.yml", package = "reportingGrofwild"))
+            
+            sliderInput(
+              inputId = ns("period"), 
+              label = "Periode", 
+              value = c(minYear, defaultYear),
+              min = minYear,
+              max = maxYear,
+              step = 1,
+              sep = ""
+            )
+          })
         
-        if(includeOptions){
-          maxYear <- max(geoData()$afschotjaar)
-          minYear <- min(geoData()$afschotjaar)
-          defaultYear <- config::get("defaultYear", 
-            file = system.file("config.yml", package = "reportingGrofwild"))
-          output$period <- renderUI(
-              sliderInput(
-                  inputId = ns("period"), 
-                  label = "Periode", 
-                  value = c(minYear, defaultYear),
-                  min = minYear,
-                  max = maxYear,
-                  step = 1,
-                  sep = ""
-              )
-          )
-        }
         
         timeDataFlanders <- reactive({
               

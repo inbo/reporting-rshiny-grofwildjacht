@@ -1135,8 +1135,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         id = id, 
         geoData = geoData, allSpatialData = allSpatialData, 
         biotoopData = biotoopData, species = species,
-        type = type,
-        includeOptions = FALSE
+        type = type
       )
       
       ## Time plot for selected region ##

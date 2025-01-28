@@ -334,8 +334,7 @@ schadeOutputServer <- function(id,
           allSpatialData = spatialData, 
           biotoopData = biotoopData, 
           species = results$specie,
-          type = "wildschade",
-          includeOptions = TRUE
+          type = "wildschade"
         ),
         "countYearProvinceUI-schade" = countYearProvinceServer(
           id = outputName,

@@ -256,6 +256,11 @@ p, li, label {
   margin-right: 20px;
 }
 
+.category-card > .card-body {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
 
 /*Custom colors for backgrounds*/
 

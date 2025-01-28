@@ -39,14 +39,19 @@ shinyServer(function(input, output, session) {
   # should tab be updated (if category/subcategory/plot updated)?
   updateTab <- reactiveVal(TRUE)
   
-  observe(print(paste("Specie:", specie())))
-  observe(print(paste("Category:", category())))
-  observe(print(paste("Subcategory:", subcategory())))
-  observe(print(paste("Output:", plot())))
+  if(doDebug)
+    observe(print(paste("Specie:", specie())))
+  if(doDebug)
+    observe(print(paste("Category:", category())))
+  if(doDebug)
+    observe(print(paste("Subcategory:", subcategory())))
+  if(doDebug)
+    observe(print(paste("Output:", plot())))
   
   # Save selection 
-  observeEvent(input$navbarID, {      
-    print(paste("Update of navbar ID to:", input$navbarID))
+  observeEvent(input$navbarID, {
+    if(doDebug)
+      print(paste("Update of navbar ID to:", input$navbarID))
     if (input$navbarID %in% species) {
       specie(input$navbarID)
     } else if (input$navbarID %in% categories) {
@@ -64,7 +69,7 @@ shinyServer(function(input, output, session) {
   # Save user choice
   observeEvent(input$specie, 
     if(isTruthy(input$specie)){
-      print("Save specie")
+      if(doDebug)  print("Save specie")
       specie(input$specie)
       updateTab(TRUE);resetNextTab(TRUE)
     }
@@ -77,7 +82,8 @@ shinyServer(function(input, output, session) {
   observeEvent(specie(), {
     if(specie() != "Diersoort" && updateTab()){
       currentTab(specie())
-      print(paste("Update current tab to:", specie(), "page"))
+      if(doDebug)  
+        print(paste("Update current tab to:", specie(), "page"))
     }
   })
 
@@ -85,7 +91,8 @@ shinyServer(function(input, output, session) {
   categorySpecie <- reactive({
     if(currentTab() %in% species){
       isolate({
-        print(paste("Go to:", specie(), "page"))
+        if(doDebug)
+          print(paste("Go to:", specie(), "page"))
         specieServer(id = specie(), specie = specie)
       })
     }else reactiveVal()
@@ -94,7 +101,8 @@ shinyServer(function(input, output, session) {
   # Go to a 'category' page if respective card is selected in the specie page
   observeEvent(categorySpecie()(), {
     if(isTruthy(categorySpecie()()) && categorySpecie()() != "Categorie"){
-      print(paste("Update category to:", categorySpecie()()))
+      if(doDebug)
+        print(paste("Update category to:", categorySpecie()()))
       category(categorySpecie()())
       updateTab(TRUE);resetNextTab(TRUE)
     }
@@ -106,7 +114,8 @@ shinyServer(function(input, output, session) {
   observeEvent(specie(), {
 
     categoriesToShow <- getCategories(specie = specie()) 
-    print(paste("Update category tabs for", specie()))
+    if(doDebug)
+      print(paste("Update category tabs for", specie()))
         
     categoriesToHide <- setdiff(categories, categoriesToShow)
     for(category in categoriesToHide)
@@ -132,7 +141,8 @@ shinyServer(function(input, output, session) {
   # Change tab
   observeEvent(category(), {
     if(category() != "Categorie" && updateTab()){
-      print(paste("Update current tab to:", category()))
+      if(doDebug)
+        print(paste("Update current tab to:", category()))
       currentTab(category())
     }
   })
@@ -141,7 +151,8 @@ shinyServer(function(input, output, session) {
   outputCategory <- reactive({
     if(currentTab() %in% categories){
       isolate({
-        print(paste("Go to:", category(), "page"))
+        if(doDebug)
+          print(paste("Go to:", category(), "page"))
         categoryServer(id = category(), 
           specie = specie, category = category()
         )
@@ -152,7 +163,8 @@ shinyServer(function(input, output, session) {
   # Go to 'output' page if respective output clicked on the category page
   observeEvent(outputCategory()(), {
     if(isTruthy(outputCategory()()) && outputCategory()() != "Subcategorie"){
-      print(paste("Update subcategory to:", outputCategory()()))
+      if(doDebug)
+        print(paste("Update subcategory to:", outputCategory()()))
       subcategory(outputCategory()())
       updateTab(TRUE)
     }
@@ -161,7 +173,8 @@ shinyServer(function(input, output, session) {
   # Change tab
   observeEvent(subcategory(), {
     if(subcategory() != "Subcategorie" && updateTab()){
-      print(paste("Update current tab to:", subcategory()))
+      if(doDebug)
+        print(paste("Update current tab to:", subcategory()))
       currentTab(subcategory())
     }
   })
@@ -176,8 +189,9 @@ shinyServer(function(input, output, session) {
       getCategories(specie = specie())
     }else{category()}
     
-    print(paste("Update subcategory tabs for", 
-      capture.output(str(category, no.list = TRUE))))
+    if(doDebug)
+      print(paste("Update subcategory tabs for", 
+        capture.output(str(category, no.list = TRUE))))
     
     subcategoriesToShow <- getSubcategories(category = category)
         
@@ -206,7 +220,8 @@ shinyServer(function(input, output, session) {
   outputSubcategory <- reactive({
     if(currentTab() %in% subcategories){
       isolate({
-        print(paste("Go to:", subcategory(), "page"))
+        if(doDebug)
+          print(paste("Go to:", subcategory(), "page"))
         args <- list(
           id = subcategory(), 
           specie = specie,
@@ -224,7 +239,8 @@ shinyServer(function(input, output, session) {
   # Go to 'output' page if respective output clicked on the category page
   observeEvent(outputSubcategory()(), {
     if(isTruthy(outputSubcategory()()) && outputSubcategory()() != "Visualisatie/Tabel"){
-      print(paste("Update plot to:", outputSubcategory()()))
+      if(doDebug)
+        print(paste("Update plot to:", outputSubcategory()()))
       plot(outputSubcategory()())
       updateTab(TRUE)
     }
@@ -249,8 +265,10 @@ shinyServer(function(input, output, session) {
       }else{
         list(subcategory = subcategory())
       }
-    print(paste("Update output tabs for", 
-      capture.output(str(args, no.list = TRUE))))
+  
+    if(doDebug)
+      print(paste("Update output tabs for", 
+        capture.output(str(args, no.list = TRUE))))
       
     outputsToShow <- do.call(getOutputs, args)
         
@@ -279,7 +297,8 @@ shinyServer(function(input, output, session) {
   # Change tab
   observeEvent(plot(), {
     if(plot() != "Visualisatie/Tabel" && updateTab()){
-      print(paste("Update current tab to:", plot()))
+      if(doDebug)
+        print(paste("Update current tab to:", plot()))
       currentTab(plot())
     }
   })
@@ -293,7 +312,8 @@ shinyServer(function(input, output, session) {
       # ... respective subcategory not selected
       subcategoryOutput <- getSubcategoryOutput(plot())
       if(subcategory() != subcategoryOutput){
-        print(paste("Reset subcategory to", subcategoryOutput))
+        if(doDebug)
+          print(paste("Reset subcategory to", subcategoryOutput))
         subcategory(subcategoryOutput)
         updateTab(FALSE);resetNextTab(FALSE)# only update shown nav
       }
@@ -301,7 +321,8 @@ shinyServer(function(input, output, session) {
       # ... respective category not selected
       categoryOutput <- getCategoryOutput(plot())    
       if(category() != categoryOutput){
-        print(paste("Reset category to", categoryOutput))
+        if(doDebug)
+          print(paste("Reset category to", categoryOutput))
         category(categoryOutput)
         updateTab(FALSE);resetNextTab(FALSE) # only update shown nav
       }
@@ -314,8 +335,9 @@ shinyServer(function(input, output, session) {
   outputSpecie <- reactive({
     if(currentTab() %in% outputs){
       isolate({
-        categoryOutput <- getCategoryOutput(output = plot())  
-        print(paste("Go to:", categoryOutput, plot(), "output page"))
+        categoryOutput <- getCategoryOutput(output = plot()) 
+        if(doDebug)
+          print(paste("Go to:", categoryOutput, plot(), "output page"))
         args <- c(
           list(
             id = plot(), 
@@ -356,7 +378,8 @@ shinyServer(function(input, output, session) {
   # Update specie in top bar if changed in the 'output' page
   observeEvent(outputSpecie()(), {
     if(isTruthy(outputSpecie()()) && !identical(outputSpecie()(), specie())){
-      print(paste("Specie updated in the 'output' page:", outputSpecie()()))
+      if(doDebug)
+        print(paste("Specie updated in the 'output' page:", outputSpecie()()))
       specie(outputSpecie()())
       updateTab(FALSE)
       resetNextTab(FALSE)
@@ -364,9 +387,12 @@ shinyServer(function(input, output, session) {
   })
 
   ## Change tabs
-  observe(print(paste("Current tab is:", currentTab())))
+  if(doDebug)
+    observe(print(paste("Current tab is:", currentTab())))
+  
   observeEvent(currentTab(), {
-    print(paste("Update tab to", currentTab()))
+    if(doDebug)
+      print(paste("Update tab to", currentTab()))
     updateTabsetPanel(session, "navbarID", selected = currentTab())    
   }, ignoreInit = TRUE)
 
@@ -392,7 +418,8 @@ shinyServer(function(input, output, session) {
       
     if (currentHash != query) {
       
-      print("Update selected tab panel based on hash")
+      if(doDebug)
+        print("Update selected tab panel based on hash")
       
       newSelection <- strsplit(gsub("^#", "", currentHash), split = "/")[[1]]
       
@@ -418,7 +445,8 @@ shinyServer(function(input, output, session) {
   updateHash <- reactive(list(selection(), input$navbarID))
   observeEvent(updateHash(), { 
     req(input$navbarID != "Home")
-    print("Update hash")
+    if(doDebug)
+      print("Update hash")
     currentHash <- session$clientData$url_hash
     query <- createQueryString(selection(), page = input$navbarID)
     if (currentHash != query)

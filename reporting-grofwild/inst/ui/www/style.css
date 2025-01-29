@@ -44,12 +44,20 @@ footer {
   visibility: hidden;
 }
 
+.radiogroup.shiny-input-container-inline label~.shiny-options-group {
+  margin-top: 0px;  
+} 
+
+.radio-tiles-image > img {
+  aspect-ratio: 400/270;
+}
+
 .radio-tiles {
   width: 32%;
   margin-left: 5px !important; 
   margin-top: 5px !important;
-  margin-right: 0px !important;;
-  margin-bottom: 0px !important;; 
+  margin-right: 0px;
+  margin-bottom: 20px; 
 }
 
 .radio-tiles:hover {

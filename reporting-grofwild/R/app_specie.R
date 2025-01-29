@@ -141,7 +141,7 @@ getSpecieCards <- function(id, specie){
     title <- toupper(title)
     HTML(paste0(
       "<div class='radio-tiles-title'>", title, "</div>",
-      "<div>", img(src = paste0("www/", foto), width = "100%"), "</div>"
+      "<div class='radio-tiles-image'>", img(src = paste0("www/", foto), width = "100%", `aspect-ratio` = "400/270"), "</div>"
     ))
   })
   

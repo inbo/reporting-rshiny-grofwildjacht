@@ -152,11 +152,14 @@ categoryCard <- function(id,
     br(), 
     bslib::card_footer(
       align = "center",
-      tags$div(style = "margin-bottom: 2px", shiny::actionButton(
-        inputId = ns(paste0(btnName, "-button")), 
-        label = btnLabel, 
-        class = "category-card-action-button"
-      ))
+      tags$div(
+        style = "margin-bottom: 5px;margin-top: 5px", 
+          shiny::actionButton(
+          inputId = ns(paste0(btnName, "-button")), 
+          label = btnLabel, 
+          class = "category-card-action-button"
+        )
+      )
     )
   )
   

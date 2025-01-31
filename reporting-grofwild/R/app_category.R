@@ -146,17 +146,22 @@ categoryCard <- function(id,
     class = "category-card",
     bslib::card_header(title, class = "category-card-header"), 
     br(),
-    bslib::card_image(file = file, class = "category-card-image"),
+    bslib::card_image(file = file, 
+      class = "category-card-image"
+    ),
     br(),
     bslib::card_body(description),
     br(), 
     bslib::card_footer(
       align = "center",
-      tags$div(style = "margin-bottom: 2px", shiny::actionButton(
-        inputId = ns(paste0(btnName, "-button")), 
-        label = btnLabel, 
-        class = "category-card-action-button"
-      ))
+      tags$div(
+        style = "margin-bottom: 10px;margin-top: 10px", 
+          shiny::actionButton(
+          inputId = ns(paste0(btnName, "-button")), 
+          label = btnLabel, 
+          class = "category-card-action-button"
+        )
+      )
     )
   )
   

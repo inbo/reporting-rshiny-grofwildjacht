@@ -326,6 +326,7 @@ p, li, label {
   border-color: #e9e6e6;
   margin-left: 20px;
   margin-right: 20px;
+  margin-top: 10px;
 }
 
 .category-card > .card-body {

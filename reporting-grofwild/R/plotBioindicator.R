@@ -217,6 +217,9 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("plotBioindicator"))
+        ),
         column(4,
           optionsModuleUI(id = ns("plotBioindicator"),
             showTime = TRUE, showType = TRUE,
@@ -228,9 +231,6 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
           tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
           if (showAccuracy)
             accuracyModuleUI(id = ns("plotBioindicator"), title = "Accuraatheid onderkaaklengte"),
-        ),
-        column(8, 
-          plotModuleUI(id = ns("plotBioindicator"))
         ),
         tags$hr()
       )

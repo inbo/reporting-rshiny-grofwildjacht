@@ -192,6 +192,9 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("percentageRealisedShot"))
+        ),
         column(4,
           wellPanel(
             selectInput(inputId = ns("percentageRealisedUnit"), label = "Eenheid",
@@ -204,9 +207,6 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
           tags$p(HTML(uiText[, id])),
           if (showAccuracy)
             accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
-        ),
-        column(8, 
-          plotModuleUI(id = ns("percentageRealisedShot"))
         ),
         tags$hr()
       )

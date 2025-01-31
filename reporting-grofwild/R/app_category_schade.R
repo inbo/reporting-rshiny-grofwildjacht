@@ -251,7 +251,8 @@ schadeOutputServer <- function(id,
               id = ns(outputName), 
               uiText = uiText, context = "description",
               type = "schade", specie = results$specie(),
-              filterVariable = FALSE
+              filterVariable = FALSE,
+              doHide = FALSE
             )
           },
           "tableSchadeUI" = {
@@ -292,7 +293,8 @@ schadeOutputServer <- function(id,
               id = ns(outputName), 
               uiText = uiText, context = "description",
               type = "schade", specie = results$specie(),
-              filterVariable = FALSE
+              filterVariable = FALSE,
+              doHide = FALSE
             )
           },
           # dash plot F09_2

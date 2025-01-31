@@ -186,13 +186,13 @@ tableSpeciesUI <- function(id, uiText) {
     
     fixedRow(
       
+      column(8, tableModuleUI(id = ns("tableSpecies"))),
       column(4,
         optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, 
           showCategorie = TRUE, exportData = TRUE),
         uiOutput(ns("tableSpeciesText"))
-      ),
-      column(8, tableModuleUI(id = ns("tableSpecies")))
-    
+      )
+  
     ),
     tags$hr()
     

@@ -250,15 +250,15 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("yearAge"))
+        ),
         column(4,
           optionsModuleUI(id = ns("yearAge"), 
             summarizeBy = c("Aantal (alle data)" = "count",
               "Percentage (enkel ingezamelde onderkaken)" = "percent"),
             showTime = TRUE, regionLevels = if (showRegion) c(1:2, 4), exportData = TRUE),
           tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("yearAge"))
         )
       ),
       tags$hr()

@@ -1355,19 +1355,19 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
     wellPanel(
       if (showRegion)
         fixedRow(
+          column(8, uiOutput(ns("region"))),
           column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
               choices = regionChoices,
-              selected = "communes")),
-          column(8, uiOutput(ns("region")))      
+              selected = "communes"))
         ),  
         
       if (type == "dash") {
           
           fixedRow(
+            column(8, uiOutput(ns("borderRegion"))),  
             column(4, selectInput(inputId = ns("borderLevel"), label = "Regio-schaal",
                 choices = regionChoices,
                 selected = "provinces")),
-            column(8, uiOutput(ns("borderRegion"))),  
             column(6, selectInput(inputId = ns("regionLevel"), label = "Map-schaal",
                 choices = mapScaleChoices,
                 selected = "communes")),

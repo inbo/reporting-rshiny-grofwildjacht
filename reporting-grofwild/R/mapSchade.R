@@ -664,24 +664,27 @@ mapSchadeUI <- function(
     "Seizoen" = "season",
     "Jaar" = "afschotjaar",
     "Type schade" = "schadeCode"),
-  uiText, context = id, specie = NULL, type = NULL, plotDetails = NULL) {
+  uiText, context = id, specie = NULL, type = NULL, plotDetails = NULL,
+  doHide = TRUE, outputFunction = "mapSchadeUI") {
   
   ns <- NS(id)
   
   metaSchade <- loadMetaSchade()
   
   title <- getOutputTitle(
-    output = "mapSchadeUI", specie = specie, 
+    output = outputFunction, specie = specie, 
     uiText = uiText, type = type)
   description <- getOutputDescription(
-    output = "mapSchadeUI", 
+    output = outputFunction, 
     specie = specie, uiText = uiText, context = context,
     type = type
   )
   
   tagList(  
     
-    h3(HTML(title)),
+    actionLink(inputId = ns("linkMapSchade"),
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkMapSchade % 2  ==", as.numeric(doHide)), ns = ns,
     
       wellPanel(
         if (filterCode || filterSubcode)
@@ -763,39 +766,8 @@ mapSchadeUI <- function(
       
       tags$hr()
     
-  )
-
-  
-}
-
-#' Copy of mapSchadeUI as being used for "WBE" pagina
-#' @inherit welcomeSectionUI
-#' @inheritParams mapSchadeUI 
-#' @export
-mapAfschotUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,  
-  filterSource = TRUE, filterAccuracy = FALSE,
-  variableChoices = c(
-    "Seizoen" = "season",
-    "Jaar" = "afschotjaar",
-    "Type schade" = "schadeCode"),
-  uiText, plotDetails = NULL) {
-  
-  ns <- NS(id)
-  
-  uiText <- uiText[uiText$plotFunction == "mapAfschotUI", ]
-  
-  tagList(
-    actionLink(inputId = ns("linkMapAfschot"), label =
-        h3(HTML(uiText$title))),
-    conditionalPanel("input.linkMapAfschot % 2 == 1", ns = ns,
-      
-      mapSchadeUI(id = id, filterCode = filterCode, filterSubcode = filterSubcode, 
-        filterSource = filterSource, filterAccuracy = filterAccuracy,
-        variableChoices = variableChoices, 
-        uiText = uiText, 
-        plotDetails = plotDetails)
     )
   )
 
+  
 }
-

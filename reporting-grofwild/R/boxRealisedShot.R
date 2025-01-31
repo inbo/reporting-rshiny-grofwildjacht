@@ -125,14 +125,14 @@ boxRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiT
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("boxRealisedShot"))
+        ),
         column(4,
           optionsModuleUI(id = ns("boxRealisedShot"),
             showTime = TRUE, showType = TRUE, regionLevels = regionLevels,
             exportData = TRUE),
           tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("boxRealisedShot"))
         ),
         tags$hr()
       )

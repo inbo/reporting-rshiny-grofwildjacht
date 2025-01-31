@@ -556,19 +556,19 @@ mapSpreadUI <- function(id,
           
         if(!is.null(regionChoices)){
           fixedRow(
-            column(4, 
-              selectInput(
-                inputId = ns("regionLevel"), label = "Regio-schaal",
-                choices = regionChoices, selected = "communes"
-              )
-            ),
             column(8, 
               selectInput(
                 inputId = ns("region"), label = "Regio('s)",
                 choices = "",
                 multiple = TRUE
               )
-            )      
+            ),
+            column(4, 
+              selectInput(
+                inputId = ns("regionLevel"), label = "Regio-schaal",
+                choices = regionChoices, selected = "communes"
+              )
+            )
           )
         },
         

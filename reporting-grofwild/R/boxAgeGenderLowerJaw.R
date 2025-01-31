@@ -166,14 +166,15 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("ageGenderLowerJaw"))
+        ),
         column(4,
           optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(uiText[, id]))),
-        column(8, 
-          plotModuleUI(id = ns("ageGenderLowerJaw"))
-        )
+          tags$p(HTML(uiText[, id]))
+        )     
       ),
       tags$hr()
     )

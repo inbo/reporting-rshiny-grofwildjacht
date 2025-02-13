@@ -40,7 +40,9 @@
 #' @param subcategory reactive with subcategory of interest
 #' @param subcategories character vector with subcategories,
 #' as returned by \code{\link{getSubcategoryOutput}}
-#' @param output character vector with output (i.e. table or plot),
+#' @param output character vector of length 1 with single output (i.e. table or plot),
+#' as returned by \code{\link{getOutputSpecie}} (e.g. 'trendYearRegionUI')
+#' @param outputs character vector with outputs (i.e. table or plot),
 #' as returned by \code{\link{getOutputSpecie}} (e.g. 'trendYearRegionUI')
 #' @param plot reactive with selected plot (or table)
 #' @param plotDetails character vector, detail plots to be shown below the map;

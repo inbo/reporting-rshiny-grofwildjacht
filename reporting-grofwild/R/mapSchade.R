@@ -650,6 +650,8 @@ mapSchadeServer <- function(
 #' @param filterSource boolean, whether to show filter option for source
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
 #' @param variableChoices named character vector, choices for coloring 
+#' @param outputFunction character, named of output function used
+#' to extract title and description, by default: 'mapSchadeUI'
 #' @inheritParams getOutputTitle
 #' @inheritParams getOutputDescription
 #' @inherit welcomeSectionUI

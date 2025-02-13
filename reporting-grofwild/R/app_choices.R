@@ -412,6 +412,10 @@ getCategorySubcategory <- function(subcategory){
 #' @param subcategory reactive with subcategory of interest
 #' @param variable string with variable of interest, either: 
 #' 'category', 'subcategory' or 'output'
+#' @param infoOutput data.frame with information on available
+#' outputs, as returned by \code{\link{getOutputInfo}}
+#' @param defaults (optional) named character vector with defaults
+#' for the category, subcategory and output.
 #' @return character vector with elements of \code{variable}
 #' @author lcougnaud
 #' @inheritParams reportingGrofwild-common-args

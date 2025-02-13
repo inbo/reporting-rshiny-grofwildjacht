@@ -303,6 +303,7 @@ countEmbryosUI <- function(id, regionLevels,
 
 #' Get types for females
 #' @param specie character with specie
+#' @inheritParams reportingGrofwild-common-args
 #' @return character vector with female types 
 #' (from the \code{type_comp} column) for the specific specie
 #' @author lcougnaud

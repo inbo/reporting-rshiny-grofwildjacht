@@ -1,29 +1,3 @@
-#' Get categories available for a specie
-#' @param specie string with specie. If not specified,
-#' all categories are returned.
-#' @return character vector with available categories
-#' @author lcougnaud
-#' @export
-getCategories <- function(specie = NULL){
-  
-  baseApp <- 
-    is.null(specie) ||
-    (specie %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"))
-  
-  categories <- c(
-      if(baseApp)  "beheer",
-      "schade",
-      if(is.null(specie) || specie %in% c("Wild zwijn", "Ree"))
-        "populatie",
-      if(baseApp)
-        c("verspreiding", "draagvlak"),
-      "woordenlijst"
-  )
-  
-  return(categories)
-  
-}
-
 #' Get title for a 'Category' tab
 #' @inheritParams reportingGrofwild-common-args
 #' @return string with category title
@@ -41,36 +15,6 @@ getCategoryTitle <- function(category){
   
 }
 
-#' Get subcategories available in the app
-#' @inheritParams reportingGrofwild-common-args
-#' @author lcougnaud
-#' @export
-getSubcategories <- function(category = getCategories()){
-
-  category <- match.arg(category, several.ok = TRUE)
-
-  subcategories <- c(
-    if("beheer" %in% category)
-      c("beheer-vlaanderen", "beheer-regio",
-          "beheer-leeftijdcategorie", "beheer-jachtmethode"
-      ),
-    if("schade" %in% category)
-      c("schade-vlaanderen", "schade-regio", "schade-type",
-          "schade-seizoen", "schade-kosten"
-      ),
-    if("populatie" %in% category)
-      c(
-          "populatie-leeggewicht", "populatie-onderkaak",
-          "populatie-geslacht", "populatie-voortplanting"
-      ),
-    if("verspreiding" %in% category)
-      c("verspreiding-huidig", "verspreiding-toekomstig")
-  )
-  
-  return(subcategories)
-  
-}
-
 #' Get title for the 'Subcategory' tab(s)
 #' @param subcategory character with subcategory of interest,
 #' to be extracted from the \code{plotFunction} column
@@ -85,98 +29,6 @@ getSubcategoryTitle <- function(subcategory, uiText){
 
   return(title)
   
-}
-
-#' Get available outputs (visualization/table) for a category
-#' or subcategory
-#' @inheritParams getSubcategories
-#' @inheritParams reportingGrofwild-common-args
-#' @return Character vector with ouput names
-#' @author lcougnaud
-#' @export
-getOutputs <- function(category = getCategories(), subcategory = NULL){
-  
-  if(is.null(subcategory))
-    subcategory <- getSubcategories(category)
-  
-  # Should be unique in the entire app!
-  outputs <- list( 
-    `beheer-vlaanderen` = c("trendYearRegionUI", 
-      "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
-    `beheer-regio` = "mapFlandersUI",
-    `beheer-leeftijdcategorie` = 
-      c("tableProvinceUI", "countYearShotUI-leeftijd_comp"),
-    `beheer-jachtmethode` = 
-        c("countYearShotUI-jachtmethode_comp", "F04_3"),
-    
-    # schade
-    `schade-vlaanderen` = c(
-      "tableSchadeSummaryUI", "trendYearFlandersUI", 
-      "countYearProvinceUI-schade"
-    ),
-    `schade-regio` =  "mapFlandersUI-schade",
-    `schade-type` = c("countYearSchadeUI-wildschade",
-        "mapSchadeUI-wildschade", "tableSchadeUI",
-        "countYearSchadeUI-gewas", "tableGewasUI"
-     ),
-    `schade-seizoen` = c("countYearSchadeUI-seizoen",
-        "mapSchadeUI-seizoen"),
-    `schade-kosten` = "barCostUI",
-    
-    # populatie
-    `populatie-leeggewicht` = "boxAgeWeightUI",
-    `populatie-onderkaak` = "countAgeCheekUI",
-    `populatie-geslacht` = "countAgeGenderUI",
-    `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
-
-    # verspreiding
-    `verspreiding-huidig` = "F17_1",
-    `verspreiding-toekomstig` = "mapSpreadUI"
-    
-  )
-  
-  outputs <- unname(unlist(outputs[subcategory]))
-  
-  return(outputs)
-  
-}
-
-#' Get a category for an output
-#' @inheritParams reportingGrofwild-common-args
-#' @return string with category name
-#' @author lcougnaud
-#' @export
-getCategoryOutput <- function(output){
-  
-  outputByCategory <- sapply(getCategories(), function(category)
-    getOutputs(category = category)
-  , simplify = FALSE)
-
-  isInCat <- sapply(outputByCategory, function(outputs) 
-    output %in% outputs)
-  
-  category <- names(which(isInCat))
-  
-  return(category)
-}
-
-#' Get a subcategory for an output
-#' @inheritParams reportingGrofwild-common-args
-#' @return string with subcategory name
-#' @author lcougnaud
-#' @export
-getSubcategoryOutput <- function(output){
-  
-  outputBySubcategory <- sapply(getSubcategories(), function(subcategory)
-    getOutputs(subcategory = subcategory)
-  , simplify = FALSE)
-  
-  isInSubcat <- sapply(outputBySubcategory, function(outputs) 
-    output %in% outputs)
-  
-  subcategory <- names(which(isInSubcat))
-  
-  return(subcategory)
 }
 
 #' Get output title
@@ -290,5 +142,308 @@ getOutputDescription <- function(output,
   text <- gsub("\\\\", "\"", text)
 
   return(text)
+  
+}
+
+#' Get available outputs for a specified specie
+#' 
+#' @section Outputs available by specie:
+#' The outputs are determined based on the available data
+#' for the specific specie.
+#' @param specie character with specie
+#' @inheritParams reportingGrofwild-common-args
+#' @return character vector with available outputs
+#' @author lcougnaud
+#' @export
+getOutputSpecie <- function(specie,
+  geoData, ecoData, openingstijdenData,
+  schadeData, waarnemingenData){
+ 
+  ## filter all datasets by specie
+  
+  geoDataSpecie <- geoData[which(geoData$wildsoort == specie), ]
+  
+  ecoDataSpecie <- ecoData[which(ecoData$wildsoort == specie), ]
+  
+  waarnemingenDataSpecie <- waarnemingenData[
+    which(waarnemingenData$wildsoort == specie), ]
+  
+  # only for yearlyShotAnimalsUI
+  # filtering actually more complex (season for specific year)
+  # assumes there are eco data available if openingstijd specified
+  openingstijdenDataSpecie <- openingstijdenData[
+    which(openingstijdenData$Soort == specie), ]
+
+  # countYearShotUI-leeftijd_comp
+  combinedDataSpecie <- merge(
+    x = ecoDataSpecie, 
+    y = geoDataSpecie[, c("ID", "FaunabeheerZone")], 
+    by = "ID"
+  )
+  
+  # for countYearProvinceUI-afschot
+#  if(specie == "2008")
+#    ecoDataSpecie <- ecoData[which(ecoData$afshotjaar >= afschotjaar), ]
+  
+  # F04_3
+  drukjachtDataID <- intersect(
+    ecoDataSpecie[which(ecoDataSpecie$jachtmethode_comp == "Drukjacht"), ]$ID, 
+    geoDataSpecie$ID
+  )
+  
+  # schade
+  schadeDataSpecie <- schadeData[
+    which(schadeData$wildsoort == specie & schadeData$afschotjaar >= 2014),
+  ]  
+  
+  # populatie
+  
+  # Embryos
+  typesFemale <- getFemaleTypes(
+    ecoData = ecoDataSpecie, 
+    specie = specie
+  )
+  combinedDataEmbryo <- getEmbryoData(
+    data = combinedDataSpecie,
+    type = typesFemale
+  )
+  
+  outputs <- c(
+    if(nrow(geoDataSpecie) > 0)
+      c("trendYearRegionUI", "mapFlandersUI"),
+    if(nrow(ecoDataSpecie) > 0)
+      c(
+        # beheer
+        "countYearProvinceUI-afschot", "tableProvinceUI",
+        # populatie
+        "countAgeGenderUI"
+      ),
+    if(nrow(ecoDataSpecie) > 0 & nrow(openingstijdenDataSpecie) > 0)
+      c("yearlyShotAnimalsUI"),
+    if(nrow(combinedDataSpecie) > 0)
+      c("countYearShotUI-leeftijd_comp"),
+    if(any(combinedDataSpecie$afschotjaar >= 2014))
+      c("countYearShotUI-jachtmethode_comp"),
+    if(length(drukjachtDataID) > 0)
+      c("F04_3"),
+    if(nrow(schadeDataSpecie) > 0)
+      c(
+        "tableSchadeSummaryUI", "trendYearFlandersUI", 
+        "countYearProvinceUI-schade",
+        "countYearSchadeUI-wildschade", "tableSchadeUI",
+        "countYearSchadeUI-seizoen"
+      ),
+    if(!all(is.na(schadeDataSpecie$SoortNaam))) {
+      c("tableGewasUI", "countYearSchadeUI-gewas")
+    },
+    if(!all(is.na(schadeDataSpecie$schadeBedrag)))
+      "barCostUI",
+    if(nrow(geoDataSpecie) > 0 & nrow(schadeDataSpecie) > 0)
+      c("mapFlandersUI-schade", "mapSchadeUI-wildschade", "mapSchadeUI-seizoen"),
+    if(specie == "Ree" & any(combinedDataSpecie$afschotjaar >= 2014)  ||
+        nrow(combinedDataSpecie) > 0)
+      c("boxAgeWeightUI"),
+    if(specie == "Ree" & any(ecoDataSpecie$afschotjaar >= 2005)  ||
+        nrow(ecoDataSpecie) > 0)
+      c("countAgeCheekUI"),
+    if(nrow(combinedDataEmbryo) > 0)
+      "countEmbryosUI",
+    if(any(ecoDataSpecie$geslacht_comp == "Vrouwelijk"))
+      "countAgeGroupUI",
+    if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
+      "F17_1",
+    if(specie == "Wild zwijn") # TO UPDATE!
+      "mapSpreadUI"
+  )
+    
+  return(outputs)
+  
+}
+
+#' Get information on available outputs (tables/visualizations)
+#' by specie, including category and subcategory
+#' 
+#' Outputs specified in the file: '\code{output-info-blacklist.csv}'.
+#' available in the packages are filtered.
+#' @inheritSection getOutputSpecie Outputs available by specie
+#' @inheritParams reportingGrofwild-common-args
+#' @inheritDotParams getOutputSpecie
+#' @return data.frame with specie, category, subcategory and output,
+#' ordered as shown in the UI
+#' @author lcougnaud
+#' @export
+getOutputInfo <- function(species, ...){
+  
+  # extract available outputs (tables/visualisations) - based on the data
+  outputsBySpecie <- sapply(species, function(specie)
+    getOutputSpecie(
+      specie = specie,
+      ...
+    ),
+    simplify = FALSE
+  )
+  
+  # format as data.frame
+  info <- lapply(names(outputsBySpecie), function(specie){
+    
+    outputs <- outputsBySpecie[[specie]]
+    subcategories <- sapply(outputs, getSubcategoryOutput)
+    categories <- sapply(subcategories, getCategorySubcategory)
+    
+    res <- data.frame(
+      specie = specie, 
+      category = categories, subcategory = subcategories, 
+      output = outputs,
+      stringsAsFactors = FALSE
+    )
+  })
+
+  info <- do.call(rbind, info)
+  rownames(info) <- NULL
+  cols <- colnames(info)
+  
+  # sort to have correct order in the UI
+  info[, "specie"] <- factor(info[, "specie"], levels = species)
+  info <- info[do.call(order, info), ]
+  
+  # filter output(s) for a specific specie from the blacklist
+  blacklist <- read.csv(
+    file = system.file("extdata", "output-info-blacklist.csv", 
+      package = "reportingGrofwild")
+  )
+  blacklist$blacklist <- rep(TRUE, nrow(blacklist))
+  info <- merge(
+    x = info, y = blacklist,
+    all.x = TRUE, by = c("specie", "output"), sort = FALSE
+  )
+  info <- info[which(is.na(info$blacklist)), cols, drop = FALSE]
+  
+  return(info)
+  
+}
+
+#' Get a subcategory for an output
+#' @inheritParams reportingGrofwild-common-args
+#' @return string with subcategory(ies) name
+#' @author lcougnaud
+#' @export
+getSubcategoryOutput <- function(output){
+  
+  # Should be unique in the entire app!
+  subcategoryOutput <- list( 
+      `beheer-vlaanderen` = c("trendYearRegionUI", 
+          "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
+      `beheer-regio` = "mapFlandersUI",
+      `beheer-leeftijdcategorie` = 
+          c("tableProvinceUI", "countYearShotUI-leeftijd_comp"),
+      `beheer-jachtmethode` = 
+          c("countYearShotUI-jachtmethode_comp", "F04_3"),
+      
+      # schade
+      `schade-vlaanderen` = c(
+          "tableSchadeSummaryUI", "trendYearFlandersUI", 
+          "countYearProvinceUI-schade"
+      ),
+      `schade-regio` =  "mapFlandersUI-schade",
+      `schade-type` = c("countYearSchadeUI-wildschade",
+          "mapSchadeUI-wildschade", "tableSchadeUI",
+          "countYearSchadeUI-gewas", "tableGewasUI"
+      ),
+      `schade-seizoen` = c("countYearSchadeUI-seizoen",
+          "mapSchadeUI-seizoen"),
+      `schade-kosten` = "barCostUI",
+      
+      # populatie
+      `populatie-leeggewicht` = "boxAgeWeightUI",
+      `populatie-onderkaak` = "countAgeCheekUI",
+      `populatie-geslacht` = "countAgeGenderUI",
+      `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
+      
+      # verspreiding
+      `verspreiding-huidig` = "F17_1",
+      `verspreiding-toekomstig` = "mapSpreadUI"
+  )
+  
+  isSubcat <- sapply(subcategoryOutput, function(outputs){
+    any(output %in% outputs)    
+  })
+  
+  subcategories <- names(which(isSubcat))
+  
+  subcategories <- factor(subcategories, levels = names(subcategoryOutput))
+  
+  return(subcategories)
+  
+}
+
+#' Get subcategories available in the app
+#' @inheritParams reportingGrofwild-common-args
+#' @author lcougnaud
+#' @export
+getCategorySubcategory <- function(subcategory){
+  
+  categorySubcategory <- list(
+      beheer = c("beheer-vlaanderen", "beheer-regio",
+          "beheer-leeftijdcategorie", "beheer-jachtmethode"),
+      schade = c("schade-vlaanderen", "schade-regio", 
+          "schade-type", "schade-seizoen", "schade-kosten"
+      ),
+      populatie = c("populatie-leeggewicht", "populatie-onderkaak",
+          "populatie-geslacht", "populatie-voortplanting"
+      ),
+      verspreiding = c("verspreiding-huidig", "verspreiding-toekomstig")        
+  )
+  
+  isCat <- sapply(categorySubcategory, function(subcategories){
+        any(subcategory %in% subcategories)    
+      })
+  
+  categories <- names(which(isCat))
+  
+  categories <- factor(categories, levels = names(categorySubcategory))
+  
+  return(categories)
+  
+}
+
+#' Get available categories, subcategories or outputs
+#' for a (optionally) specified specie, category, subcategory
+#' @param specie string with specie
+#' @param subcategory reactive with subcategory of interest
+#' @param variable string with variable of interest, either: 
+#' 'category', 'subcategory' or 'output'
+#' @return character vector with elements of \code{variable}
+#' @author lcougnaud
+#' @inheritParams reportingGrofwild-common-args
+#' @export
+getInfo <- function(
+  specie = NULL, category = NULL, subcategory = NULL,
+  infoOutput, defaults = NULL, 
+  variable = c("category", "subcategory", "output")){
+
+  variable <- match.arg(variable)
+  
+  select <- function(var, name){
+    keep <- is.null(var) || 
+    (!is.null(defaults[[name]]) && var == defaults[[name]])
+    return(!keep)
+  }
+
+  if(select(var = specie, name = "specie"))
+    infoOutput <- infoOutput[which(infoOutput$specie == specie), ]
+  
+  if(select(var = category, name = "category"))
+    infoOutput <- infoOutput[which(infoOutput$category == category), ]
+  
+  if(select(var = subcategory, name = "subcategory"))
+    infoOutput <- infoOutput[which(infoOutput$subcategory == subcategory), ]
+  
+  results <- unique(as.character(infoOutput[, variable]))
+  
+  # TODO: remove draagvlak when outputs will be available
+  if(variable == "category")
+    results <- c(results, "draagvlak", "woordenlijst")
+  
+  return(results)
   
 }

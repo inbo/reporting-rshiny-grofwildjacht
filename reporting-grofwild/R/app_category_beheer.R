@@ -6,7 +6,8 @@
 #' @export
 beheerCardServer <- function(id, 
   specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories, uiText){
+  subcategories = character(), outputs = character(),
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -26,44 +27,27 @@ beheerCardServer <- function(id,
           
       if(subcategory() %in% subcategories){
             
-        categoryCardAfschot <- function(...){
-          categoryCard(
-            id = id, 
+        categoryCards <- lapply(outputs, function(output){
+        
+          args <- list(
+          	output = output,
+          	 id = id, 
             uiText = uiText,
             specie = results$specie(), 
-            category = "beheer",
-            ...
+            category = "beheer"
           )
-        }
+          
+          if(output == "countYearProvinceUI-afschot"){
+            args[["output"]] <- "countYearProvinceUI"
+            args[["outputFunction"]] <- output
+          }
             
-        group <- strsplit(subcategory(), split = "-")[[1]][2]
-            
-        cards <- switch(group,
-          vlaanderen = 
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "trendYearRegionUI"),
-              categoryCardAfschot(output = "countYearProvinceUI", outputFunction = "countYearProvinceUI-afschot"),
-              categoryCardAfschot(output = "yearlyShotAnimalsUI")
-            ),
-          regio =       
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "mapFlandersUI")
-            ),
-          leeftijdcategorie = 
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "tableProvinceUI"),
-              categoryCardAfschot(output = "countYearShotUI-leeftijd_comp")
-            ),
-          jachtmethode =     
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardAfschot(output = "countYearShotUI-jachtmethode_comp"),
-              categoryCardAfschot(output = "F04_3")
-            )
-          )
+          do.call(categoryCard, args)
+          
+        })
+    
+        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
+        cards <- do.call(bslib::layout_column_wrap, args)
             
         output[["output"]] <- renderUI(cards)
             
@@ -73,7 +57,6 @@ beheerCardServer <- function(id,
 
     # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")
-    outputs <- getOutputs(category = "beheer")
     lapply(outputs, function(output){
       btn <- paste0(output, "-button")
       # exception
@@ -100,6 +83,7 @@ beheerCardServer <- function(id,
 #' @export
 beheerOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
+  outputs = character(),
   ecoData, geoData, openingstijdenData, spatialData, biotoopData,
   defaultYear,
   uiText){
@@ -107,9 +91,6 @@ beheerOutputServer <- function(id,
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns
-    
-    ## initialization
-    beheerOutputs <- getOutputs(category = "beheer")
     
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
@@ -220,7 +201,7 @@ beheerOutputServer <- function(id,
     # Create plot - UI side
     observe({
           
-      if(plot() %in% beheerOutputs){
+      if(plot() %in% outputs){
         
         outputName <- plot()
         

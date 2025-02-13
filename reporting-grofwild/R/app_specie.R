@@ -1,10 +1,11 @@
 #' UI for the 'specie' page
+#' @inheritParams getSpecieCards
 #' @inheritParams reportingGrofwild-common-args
 #' @inherit shiny::verticalLayout return
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id, speciesList){
+specieUI <- function(id, speciesList, categories){
   
   ns <- NS(namespace = id)
   
@@ -20,27 +21,27 @@ specieUI <- function(id, speciesList){
       ),
       
       # Choice of specie and options
-      tags$div(style = "margin-left: 15px; margin-top: 15px", sidebarLayout(    
+      tags$div(
+        style = "margin-left: 15px; margin-top: 15px", 
+        sidebarLayout(    
           
-        position = "left", 
+          position = "left", 
+            
+          sidebarPanel = specieSidebarUI(
+            id = ns("sidebar"), 
+            category = FALSE,
+            speciesList = speciesList
+          ),
           
-        sidebarPanel = specieSidebarUI(
-          id = ns("sidebar"), 
-          category = FALSE,
-          speciesList = speciesList
-        ),
-        
-        mainPanel = mainPanel(
-          width = 9,
-          style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
-          uiOutput(outputId = ns("items"))
-        )
+          mainPanel = mainPanel(
+            width = 9,
+            style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
+            getSpecieCards(id = id, categories = categories)
+          )
   
+       )
      )
-   )
-  
     )
-
   )
 
 }
@@ -61,9 +62,6 @@ specieServer <- function(id, specie = reactiveVal()){
     specieSidebarServer(id = "sidebar", specie = specie)
       
     ## Main panel
-    
-    # Specie - available items/pages
-    output$items <- renderUI(getSpecieCards(id = id, specie = specie()))
     
     observeEvent(input$cards, category(input$cards), ignoreInit = TRUE)
     
@@ -127,15 +125,14 @@ getSpecieImage <- function(specie, relative = FALSE){
 }
 
 #' Get all cards UI element for a specific specie
+#' @param categories character vector with categories
 #' @inheritParams reportingGrofwild-common-args
 #' @inherit shiny::radioButtons return
 #' @author lcougnaud
 #' @inheritParams getSpecieImage
-getSpecieCards <- function(id, specie){
+getSpecieCards <- function(id, categories){
   
-  values <- getCategories(specie = specie)
-  
-  names <- lapply(values, function(type){
+  names <- lapply(categories, function(type){
     foto <- paste0("specie-", gsub("[[:blank:]]", "-", type), ".png")
     title <- ifelse(type == "afschot", "beheer", type)
     title <- toupper(title)
@@ -148,7 +145,7 @@ getSpecieCards <- function(id, specie){
   tags$div(style = "margin-top: -20px;",
     radioButtons(
       inputId = NS(id, "cards"), label = "", inline = TRUE,
-      choiceValues = values, choiceNames = names,
+      choiceValues = categories, choiceNames = names,
       selected = character(0)
      ),
     tags$script("$('.radio-inline').addClass('radio-tiles');")#,

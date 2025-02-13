@@ -69,6 +69,25 @@ shinyServer(function(input, output, session) {
     }
     currentTab(input$navbarID);updateTab(TRUE);resetNextTab(TRUE)
   })
+
+  # list of current available categories, subcategories, outputs
+  categoriesCur <- reactive(
+    getInfo(specie = specie(), variable = "category",
+      infoOutput = infoOutput, defaults = defaultTabs
+    )
+  )
+  subcategoriesCur <- reactive(
+    getInfo(specie = specie(), category = category(), variable = "subcategory",
+      infoOutput = infoOutput, defaults = defaultTabs
+    )
+  )
+  outputsCur <- reactive(
+    getInfo(specie = specie(), 
+      category = category(), subcategory = subcategory(), 
+      variable = "output",
+      infoOutput = infoOutput, defaults = defaultTabs
+    )
+  )
   
   ## Specie
   
@@ -123,11 +142,11 @@ shinyServer(function(input, output, session) {
   ## Category
   
   # Display available category tabs for a specie
-  observeEvent(specie(), {
+  observeEvent(categoriesCur(), {
 
-    categoriesToShow <- getCategories(specie = specie()) 
+    categoriesToShow <- categoriesCur()
     if(doDebug)
-      print(paste("Update category tabs for", specie()))
+      print(paste("Update category tabs to", categoriesToShow))
         
     categoriesToHide <- setdiff(categories, categoriesToShow)
     for(category in categoriesToHide)
@@ -170,14 +189,18 @@ shinyServer(function(input, output, session) {
         subcategory(defaultTabs$subcategory)
         plot(defaultTabs$plot)
         
-        categoryServer(id = category(), 
-          specie = specie, category = category()
+        categoryServer(
+          id = category(), 
+          specie = specie, category = category(),
+          subcategories = subcategoriesCur(),
+          subcategoriesAll = subcategories
         )
+        
       })
     }else reactiveVal()
   })
   
-  # Go to 'output' page if respective output clicked on the category page
+  # Go to 'subcategory' page if respective subcategory clicked on the category page
   observeEvent(outputCategory()(), {
     if(isTruthy(outputCategory()()) && outputCategory()() != defaultTabs$subcategory){
       if(doDebug)
@@ -197,20 +220,16 @@ shinyServer(function(input, output, session) {
   })
 
   ## Subcategory
+  
+  subcategorySpecie <- reactiveVal()
 
   # Display available subcategory tabs
-  showAvailableSubcategoryTabs <- reactive(list(category(), specie()))
-  observeEvent(showAvailableSubcategoryTabs(), {
-
-    category <- if(category() == defaultTabs$category){
-      getCategories(specie = specie())
-    }else{category()}
+  observeEvent(subcategoriesCur(), {
     
     if(doDebug)
-      print(paste("Update subcategory tabs for", 
-        capture.output(str(category, no.list = TRUE))))
+      print("Update subcategory tabs")
     
-    subcategoriesToShow <- getSubcategories(category = category)
+    subcategoriesToShow <- subcategoriesCur()
         
     subcategoriesToHide <- setdiff(subcategories, subcategoriesToShow)
     for(subcategory in subcategoriesToHide)
@@ -247,8 +266,9 @@ shinyServer(function(input, output, session) {
           id = subcategory(), 
           specie = specie,
           subcategory = subcategory,
+          outputs = outputsCur(),
           # general
-          subcategories = subcategories,
+          subcategories = subcategoriesCur(),
           uiText = uiText
         )
         fct <- paste0(category(), "CardServer")
@@ -257,7 +277,7 @@ shinyServer(function(input, output, session) {
     }else reactiveVal()
   })
 
-  # Go to 'output' page if respective output clicked on the category page
+  # Go to 'output' page if respective output clicked on the subcategory page
   observeEvent(outputSubcategory()(), {
     if(isTruthy(outputSubcategory()()) && outputSubcategory()() != defaultTabs$plot){
       if(doDebug)
@@ -270,28 +290,12 @@ shinyServer(function(input, output, session) {
   ## Outputs (table/plot)
   
   # Display available output tabs
-  showAvailableOutputTabs <- reactive(list(subcategory(), category(), specie()))
-  observeEvent(showAvailableOutputTabs(), {
-        
-    args <- 
-      # no specified subcategory, and ...
-      if(subcategory() == defaultTabs$subcategory){
-        # no specified category
-        category <- if(category() == defaultTabs$category){
-          getCategories(specie = specie())
-        # specified category
-        }else{category()}
-        list(category = category)
-      # specified category/subcategory
-      }else{
-        list(subcategory = subcategory())
-      }
+  observeEvent(outputsCur(), {
   
     if(doDebug)
-      print(paste("Update output tabs for", 
-        capture.output(str(args, no.list = TRUE))))
+      print("Update output tabs")
       
-    outputsToShow <- do.call(getOutputs, args)
+    outputsToShow <- outputsCur()
         
     outputsToHide <- setdiff(outputs, outputsToShow)
     for(output in outputsToHide)
@@ -308,9 +312,10 @@ shinyServer(function(input, output, session) {
   # Update tab title
   output$output <- renderUI(
     if(plot() %in% outputs){
-      getOutputTitle(output = plot(), 
+      getOutputTitle(
+        output = plot(), 
         uiText = uiText, n = 200, 
-        type = getCategoryOutput(plot())
+        type = unique(subset(infoOutput, output == plot())$category)
       )
     }else plot()
   )
@@ -340,7 +345,7 @@ shinyServer(function(input, output, session) {
       }
       
       # ... respective category not selected
-      categoryOutput <- getCategoryOutput(plot())    
+      categoryOutput <- getCategorySubcategory(subcategoryOutput) 
       if(category() != categoryOutput){
         if(doDebug)
           print(paste("Reset category to", categoryOutput))
@@ -356,7 +361,7 @@ shinyServer(function(input, output, session) {
   outputSpecie <- reactive({
     if(currentTab() %in% outputs){
       isolate({
-        categoryOutput <- getCategoryOutput(output = plot()) 
+        categoryOutput <- unique(as.character(subset(infoOutput, output == plot())$category))
         if(doDebug)
           print(paste("Go to:", categoryOutput, plot(), "output page"))
         args <- c(
@@ -364,7 +369,8 @@ shinyServer(function(input, output, session) {
             id = plot(), 
             specie = specie,
             plot = plot,
-            uiText = uiText
+            uiText = uiText,
+            outputs = outputsCur()
           ),
           switch(categoryOutput, 
             beheer = list(
@@ -387,6 +393,7 @@ shinyServer(function(input, output, session) {
             verspreiding = list(
               ecoData = ecoData, geoData = geoData, 
               spatialData = spatialData,
+              waarnemingenData = waarnemingenData,
               defaultYear = defaultYear 
             )
           )

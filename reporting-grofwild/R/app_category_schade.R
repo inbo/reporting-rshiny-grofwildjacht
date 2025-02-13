@@ -6,7 +6,8 @@
 #' @export
 schadeCardServer <- function(id, 
   specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories, uiText){
+  subcategories = character(), outputs = character(),
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -26,74 +27,48 @@ schadeCardServer <- function(id,
               
       if(subcategory() %in% subcategories){
         
-        categoryCardSchade <- function(...){
-          categoryCard(
+        categoryCards <- lapply(outputs, function(output){
+              
+          args <- list(
+            output = output,
             id = id, 
             uiText = uiText,
             specie = results$specie(), 
-            category = "schade", 
-              ...
+            category = "schade"
           )
-        }
-        
-        group <- strsplit(subcategory(), split = "-")[[1]][2]
-        
-        cards <- switch(group, 
-            
-          vlaanderen =           
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardSchade(output = "tableSchadeSummaryUI"),
-              categoryCardSchade(output = "trendYearFlandersUI"),
-              categoryCardSchade(output = "countYearProvinceUI",
-                outputFunction = "countYearProvinceUI-schade")
-          ),
-          regio =         
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardSchade(output = "mapFlandersUI")
-           ),
-          type =          
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardSchade(
-                output = "countYearSchadeUI-wildschade", 
-                outputFunction = "countYearSchadeUI",
-                type = "wildschade"
-              ),
-              categoryCardSchade(
-                output = "mapSchadeUI-wildschade", 
-                outputFunction = "mapSchadeUI",
-                type = "wildschade"
-              ),
-              categoryCardSchade(output = "tableSchadeUI"),
-              categoryCardSchade(
-                output = "countYearSchadeUI-gewas", 
-                outputFunction = "countYearSchadeUI",
-                type = "gewas"
-              ),
-              categoryCardSchade(output = "tableGewasUI")
-          ),          
-          seizoen =        
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardSchade(
-                output = "countYearSchadeUI-seizoen", 
-                outputFunction = "countYearSchadeUI",
-                type = "seizoen"
-              ),
-              categoryCardSchade(
-                output = "mapSchadeUI-seizoen", 
-                outputFunction = "mapSchadeUI",
-                type = "seizoen"
-              )
-            ),
-          kosten =         
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardSchade(output = "barCostUI")
+          
+          if(output == "countYearProvinceUI-schade"){
+          		args[["output"]] <- "countYearProvinceUI"
+          		args[["outputFunction"]] <- output
+          }else if(output == "mapFlandersUI-schade"){
+            args[["output"]] <- "mapFlandersUI"
+          }else if(output == "countYearSchadeUI-wildschade"){
+            args <- c(args, 
+              list(outputFunction = "countYearSchadeUI", type = "wildschade")
             )
-        )
+          }else if(output == "mapSchadeUI-wildschade"){
+            args <- c(args, 
+              list(outputFunction = "mapSchadeUI", type = "wildschade")
+            )
+          }else if(output == "countYearSchadeUI-gewas"){
+            args <- c(args, 
+              list(outputFunction = "countYearSchadeUI", type = "gewas")
+            )
+          }else if(output == "countYearSchadeUI-seizoen"){
+            args <- c(args, 
+              list(outputFunction = "countYearSchadeUI", type = "seizoen")
+            )
+          }else if(output == "mapSchadeUI-seizoen"){
+            args <- c(args, 
+              list(outputFunction = "mapSchadeUI", type = "seizoen")
+            )
+          }
+          do.call(categoryCard, args)
+        })
+    
+        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
+        cards <- do.call(bslib::layout_column_wrap, args)
+        
         output[["output"]] <- renderUI(cards)
         
       } 
@@ -101,7 +76,6 @@ schadeCardServer <- function(id,
    
    # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")
-    outputs <- getOutputs(category = "schade")
     lapply(outputs, function(output){
       btn <- paste0(output, "-button")
       # exceptions
@@ -128,6 +102,7 @@ schadeCardServer <- function(id,
 #' @export               
 schadeOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
+  outputs = character(),
   schadeData, spatialData, biotoopData, 
   defaultYear, 
   schadeTypes, schadeCodes,
@@ -136,9 +111,6 @@ schadeOutputServer <- function(id,
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns
-    
-    ## initialization
-    schadeOutputs <- getOutputs(category = "schade")
     
     ## input
     results <- reactiveValues(renderedTabs = "Schade")
@@ -199,7 +171,7 @@ schadeOutputServer <- function(id,
     # Create plot - UI side
     observe({
           
-      if(plot() %in% schadeOutputs){
+      if(plot() %in% outputs){
           
         outputName <- plot()
           

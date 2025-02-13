@@ -4,8 +4,10 @@
 #' \code{loadRawData(type = "eco")}
 #' @param geoData data.frame, geographical data as loaded by
 #' \code{loadRawData(type = "geo")}
-#' @param openingstijdenData data.frame, openingstijden data as loaded by
-#' \code{loadOpeningstijdenData}
+#' @param openingstijdenData data.frame, openingstijden data as 
+#' loaded by \code{loadOpeningstijdenData}
+#' @param waarnemingenData data.frame waarnemingen data as loaded
+#' by \code{loadRawData(type = "waarnemingen")}
 #' @param allSpatialData data.frame, spatial data
 #' @param spatialData data.frame, spatial data
 #' @param biotoopData data.frame, biotoop data as loaded by
@@ -34,13 +36,12 @@
 #' @param id character, unique identified for the Shiny module
 #' @param specie reactive with specie as character
 #' @param category character vector with category/ies,
-#' as returned by \code{\link{getCategories}}
 #' (e.g.'afschot' or 'schade')
 #' @param subcategory reactive with subcategory of interest
 #' @param subcategories character vector with subcategories,
-#' as returned by \code{\link{getSubcategories}}
+#' as returned by \code{\link{getSubcategoryOutput}}
 #' @param output character vector with output (i.e. table or plot),
-#' as returned by \code{\link{getOutputs}} (e.g. 'trendYearRegionUI')
+#' as returned by \code{\link{getOutputSpecie}} (e.g. 'trendYearRegionUI')
 #' @param plot reactive with selected plot (or table)
 #' @param plotDetails character vector, detail plots to be shown below the map;
 #' should be subset of \code{c("flanders", "region", "biotoop")}

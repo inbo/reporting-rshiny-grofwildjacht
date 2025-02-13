@@ -23,12 +23,7 @@ categoryTabs <- lapply(categories, function(category){
       category = category, id = category,
       ecoData = ecoData, schadeData = schadeData,
       uiText = uiText,
-      speciesList = schadeWildsoorten,
-      # this will be updated in the categoryServer when a specie is selected
-      subcategories = getInfo(
-        category = category, variable = "subcategory",
-        infoOutput = infoOutput
-      )
+      speciesList = schadeWildsoorten
     )
   )
   

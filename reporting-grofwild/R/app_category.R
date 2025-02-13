@@ -4,7 +4,7 @@
 #' @author lcougnaud
 #' @export
 categoryUI <- function(
- id, category, subcategories,
+ id, category, 
  ecoData, schadeData,
  uiText, speciesList){
   
@@ -23,17 +23,7 @@ categoryUI <- function(
     split = TRUE
   )
   
-  img <- file.path("www", paste("category", category, "header.png", sep = "-"))   
-  
-  cards <- lapply(subcategories, function(subcategory)
-    categoryCard(
-      id = id, 
-      uiText = uiText,
-      category = category, subcategory = subcategory
-    )
-  )
-  args <- c(list(width = 1/3, gap = "2em"), cards)
-  cards <- do.call(bslib::layout_column_wrap, args)
+  img <- file.path("www", paste("category", category, "header.png", sep = "-"))
   
   verticalLayout(
       
@@ -52,7 +42,7 @@ categoryUI <- function(
         style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
         
         infoText[["title"]], infoText[["summary"]],
-        cards,
+        uiOutput(outputId = ns("cards")),
         tags$div(style = "margin-top: 25px;", infoText[["description"]])
       )
     )
@@ -70,7 +60,8 @@ categoryUI <- function(
 #' @export
 categoryServer <- function(id, 
   specie = reactiveVal(), category = character(),
-  subcategories = character(), subcategoriesAll = character()){
+  subcategories = character(),
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -83,16 +74,16 @@ categoryServer <- function(id,
     ## Main panel
     
     # get subcategories
-    
-    # show/hide subcategory tile depending if it is available
-    # for the specific specie
-    lapply(subcategoriesAll, function(subcategory) {
-      if(subcategory %in% subcategories){
-        shinyjs::show(id = paste0(subcategory, "-card"))
-      }else{
-        shinyjs::hide(id = paste0(subcategory, "-card"))
-      }
-    })
+        
+    cards <- lapply(subcategories, function(subcategory)
+      categoryCard(
+        id = id, 
+        uiText = uiText,
+        category = category, subcategory = subcategory
+      )
+    )
+    args <- c(list(width = 1/3, gap = "2em"), cards)
+    output$cards <- renderUI(do.call(bslib::layout_column_wrap, args))
     
     # save subcategory if corresponding tile is clicked on
     subcategoryUI <- reactiveVal("Subcategorie")

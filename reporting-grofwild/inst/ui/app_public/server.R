@@ -193,7 +193,7 @@ shinyServer(function(input, output, session) {
           id = category(), 
           specie = specie, category = category(),
           subcategories = subcategoriesCur(),
-          subcategoriesAll = subcategories
+          uiText = uiText
         )
         
       })

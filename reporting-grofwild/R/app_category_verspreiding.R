@@ -6,7 +6,8 @@
 #' @export
 verspreidingCardServer <- function(id, 
   specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories, uiText){
+  subcategories = character(), outputs = character(),
+  uiText){
   
   moduleServer(id, function(input, output, session){  
       
@@ -27,33 +28,27 @@ verspreidingCardServer <- function(id,
           
       if(subcategory() %in% subcategories){
         
-        categoryCardVerspreiding <- function(...){
-          categoryCard(
+        categoryCards <- lapply(outputs, function(output){
+              
+          args <- list(
+            output = output,
             id = id, 
             uiText = uiText,
             specie = results$specie(), 
-            category = "verspreiding", 
-            ...
+            category = "verspreiding"
           )
-        }
-        
-        group <- strsplit(subcategory(), split = "-")[[1]][2]
           
-        cards <- switch(group,
-          huidig = 
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardVerspreiding(
-                output = "mapFlandersUI", 
-                outputFunction = "F17_1"
-              )
-            ),
-          toekomstig =        
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardVerspreiding(output = "mapSpreadUI")
-            )
-        )
+          if(output == "F17_1"){
+            args[["output"]] <- "mapFlandersUI"
+            args[["outputFunction"]] <- "F17_1"
+          }
+          
+          do.call(categoryCard, args)
+        })
+    
+        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
+        cards <- do.call(bslib::layout_column_wrap, args)
+    
         output[["output"]] <- renderUI(cards)
         
       }
@@ -61,7 +56,6 @@ verspreidingCardServer <- function(id,
 
     # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")
-    outputs <- getOutputs(category = "verspreiding")
     lapply(outputs, function(output){
       btn <- paste0(output, "-button")
       # exception
@@ -87,16 +81,14 @@ verspreidingCardServer <- function(id,
 #' @export
 verspreidingOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
-  ecoData, geoData, spatialData,
+  outputs = character(),
+  ecoData, geoData, spatialData, waarnemingenData,
   defaultYear,
   uiText){
   
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns
-        
-    ## initialization
-    verspreidingOutputs <- getOutputs(category = "verspreiding")
     
     ## input
     results <- reactiveValues(renderedTabs = "Verspreiding")
@@ -120,7 +112,7 @@ verspreidingOutputServer <- function(id,
       geoData[which(geoData$wildsoort == results$specie()), ]
     })
         
-    waarnemingenData <- loadRawData(type = "waarnemingen")
+    #waarnemingenData <- loadRawData(type = "waarnemingen")
     # Restrict all to same date
     waarnemingenData <- waarnemingenData[
       waarnemingenData$afschotjaar <= 
@@ -160,7 +152,7 @@ verspreidingOutputServer <- function(id,
     # Create plot - UI side
     observe({
       
-      if(plot() %in% verspreidingOutputs){
+      if(plot() %in% outputs){
         
         outputName <- plot()
         

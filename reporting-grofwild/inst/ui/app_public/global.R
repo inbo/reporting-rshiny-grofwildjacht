@@ -73,6 +73,8 @@ if (!doDebug | !exists("schadeData"))
 if (!doDebug | !exists("biotoopData"))
   biotoopData <- loadHabitats()
 
+if (!doDebug | !exists("waarnemingenData"))
+  waarnemingenData <- loadRawData(type = "waarnemingen")
 
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))
@@ -99,10 +101,24 @@ names(availableData)[3:6] <- c("flanders", "provinces", "communes", "faunabeheer
 uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
   all.x = TRUE)
 
-# UI
+## UI
 
 species <- unname(unlist(schadeWildsoorten))
 
-categories <- getCategories()
-subcategories <- getSubcategories()
-outputs <- getOutputs() # tables/visualisations
+# extract available outputs (tables/visualisations) - based on the data
+infoOutput <- getOutputInfo(
+  species = species,
+  geoData = geoData, ecoData = ecoData, 
+  openingstijdenData = openingstijdenData,
+  schadeData = schadeData, 
+  waarnemingenData = waarnemingenData
+)
+
+# extract all available categories
+categories <- getInfo(infoOutput = infoOutput, variable = "category")
+
+# subcategories
+subcategories <- getInfo(infoOutput = infoOutput, variable = "subcategory")
+
+# output
+outputs <- getInfo(infoOutput = infoOutput, variable = "output")

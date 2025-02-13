@@ -1,3 +1,24 @@
+
+#' Get embryo data
+#' @inheritParams countEmbryos
+#' @return data.frame with embryo data
+#' @export
+getEmbryoData <- function(data, jaartallen = NULL, type){
+  
+  if(!is.null(jaartallen))
+    data <- data[which(data$afschotjaar %in% jaartallen), ]
+  
+  data <- data[which(
+    data$type_comp %in% type & 
+    # exclude males & totally unknown
+    data$geslacht_comp != "Mannelijk" & 
+    !(data$geslacht_comp == "Onbekend" & data$type_comp == "Onbekend")
+  ), ]
+
+  return(data)
+  
+}
+
 #' Create interactive plot for number of embryos versus year
 #' 
 #' Adapted version from Figure p. 30 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
@@ -46,13 +67,12 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
  
  
  # Select data of specified years and type
- plotData <- subset(data, data$afschotjaar %in% jaartallen & 
-     data$type_comp %in% type & 
-     # exclude males & totally unknown
-     data$geslacht_comp != "Mannelijk" & 
-     !(data$geslacht_comp == "Onbekend" & data$type_comp == "Onbekend"),
+  plotData <- getEmbryoData(data, 
+    jaartallen = jaartallen, type = type)
+  plotData <- plotData[,
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
-     "leeftijd_comp_bron", "geslacht_comp_bron", "leeftijd_comp_inbo"))
+     "leeftijd_comp_bron", "geslacht_comp_bron", "leeftijd_comp_inbo")
+  ]
  nRecords <- nrow(plotData)
  
  # Filter on source & rename to embryos
@@ -281,3 +301,26 @@ countEmbryosUI <- function(id, regionLevels,
   
 }
 
+#' Get types for females
+#' @param specie character with specie
+#' @return character vector with female types 
+#' (from the \code{type_comp} column) for the specific specie
+#' @author lcougnaud
+#' @export
+getFemaleTypes <- function(ecoData, specie){
+  
+  types <- levels(droplevels(ecoData$type_comp))
+  
+  types <- if (specie == "Ree") {
+    types[types %in% c("Reegeit", "Smalree")] 
+  } else if (specie == "Wild zwijn"){
+    types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+  } else {
+    types[types %in% c("Kalf (v)", "Smaldier", "Hinde")]        
+  }
+  
+  types <- c(types, "Onbekend")
+  
+  return(types)
+  
+}

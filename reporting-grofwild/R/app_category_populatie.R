@@ -7,7 +7,8 @@
 #' @export
 populatieCardServer <- function(id, 
   specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories, uiText){
+  subcategories = character(), outputs = character(),
+  uiText){
   
   moduleServer(id, function(input, output, session){  
         
@@ -26,48 +27,25 @@ populatieCardServer <- function(id,
               
       if(subcategory() %in% subcategories){
             
-        categoryCardPopulatie <- function(...){
+        categoryCards <- lapply(outputs, function(output)
           categoryCard(
+            output = output,
             id = id, 
             uiText = uiText,
             specie = results$specie(), 
-            category = "populatie", 
-            ...
+            category = "populatie"
           )
-        }
-            
-        group <- strsplit(subcategory(), split = "-")[[1]][2]
-              
-        cards <- switch(group, 
-          leeggewicht =        
-            bslib::layout_column_wrap(
-              width = 1/3, gap = "2em",
-              categoryCardPopulatie(output = "boxAgeWeightUI")
-            ),
-           onderkaak =          
-             bslib::layout_column_wrap(
-               width = 1/3, gap = "2em",
-               categoryCardPopulatie(output = "countAgeCheekUI")
-            ),
-            geslacht =        
-              bslib::layout_column_wrap(
-                width = 1/3, gap = "2em",
-                categoryCardPopulatie(output = "countAgeGenderUI")
-              ),
-            voortplanting =
-              bslib::layout_column_wrap(
-                width = 1/3, gap = "2em",
-                categoryCardPopulatie(output = "countEmbryosUI"),
-                categoryCardPopulatie(output = "countAgeGroupUI")
-              )
-          )
-          output[["output"]] <- renderUI(cards)
-        }
+        )
+        
+        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
+        cards <- do.call(bslib::layout_column_wrap, args)
+        output[["output"]] <- renderUI(cards)
+        
+      }
     })
 
     # if plot is selected based on the category cards
     outputUI <- reactiveVal("Visualisatie/Tabel")
-    outputs <- getOutputs(category = "populatie")
     lapply(outputs, function(output){
       observeEvent(
         input[[paste0(output, "-button")]], 
@@ -89,15 +67,13 @@ populatieCardServer <- function(id,
 #' @export
 populatieOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
+  outputs = character(),
   ecoData, geoData,
   uiText){
   
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns
-    
-    ## initialization
-    populatieOutputs <- getOutputs(category = "populatie")
         
     ## input
     results <- reactiveValues(renderedTabs = "Grofwild")
@@ -137,17 +113,10 @@ populatieOutputServer <- function(id,
     
     # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
     results$typesFemale <- reactive({
-          
-      types <- levels(droplevels(results$ecoData()$type_comp))
-          
-      types <- if (results$specie() == "Ree") {
-        types[types %in% c("Reegeit", "Smalree")] 
-      } else if (results$specie() == "Wild zwijn"){
-        types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
-      } else {
-        types[types %in% c("Kalf (v)", "Smaldier", "Hinde")]        
-      }
-      c(types, "Onbekend")
+      getFemaleTypes(
+        ecoData = results$ecoData(), 
+        specie = results$specie()
+      )
     })
     
     ## Sidebar panel
@@ -172,7 +141,7 @@ populatieOutputServer <- function(id,
     # Create plot - UI side
     observe({
           
-      if(plot() %in% populatieOutputs){   
+      if(plot() %in% outputs){   
         
         outputName <- plot()
         

@@ -3,7 +3,8 @@
 #' @return \code{\link[shiny]{verticalLayout}}
 #' @author lcougnaud
 #' @export
-categoryUI <- function(id, category,
+categoryUI <- function(
+ id, category, subcategories,
  ecoData, schadeData,
  uiText, speciesList){
   
@@ -24,7 +25,6 @@ categoryUI <- function(id, category,
   
   img <- file.path("www", paste("category", category, "header.png", sep = "-"))   
   
-  subcategories <- getSubcategories(category = category)
   cards <- lapply(subcategories, function(subcategory)
     categoryCard(
       id = id, 
@@ -69,7 +69,8 @@ categoryUI <- function(id, category,
 #' @author lcougnaud
 #' @export
 categoryServer <- function(id, 
-  specie = reactiveVal(), category = character()){
+  specie = reactiveVal(), category = character(),
+  subcategories = character(), subcategoriesAll = character()){
   
   moduleServer(id, function(input, output, session){  
         
@@ -81,9 +82,20 @@ categoryServer <- function(id,
     
     ## Main panel
     
-    # if a subcategory is selected based on the subcategory cards
+    # get subcategories
+    
+    # show/hide subcategory tile depending if it is available
+    # for the specific specie
+    lapply(subcategoriesAll, function(subcategory) {
+      if(subcategory %in% subcategories){
+        shinyjs::show(id = paste0(subcategory, "-card"))
+      }else{
+        shinyjs::hide(id = paste0(subcategory, "-card"))
+      }
+    })
+    
+    # save subcategory if corresponding tile is clicked on
     subcategoryUI <- reactiveVal("Subcategorie")
-    subcategories <- getSubcategories(category = category)
     lapply(subcategories, function(subcategory){
       observeEvent(
         input[[paste0(subcategory, "-button")]], 
@@ -121,7 +133,7 @@ categoryCard <- function(id,
     title <- getSubcategoryTitle(subcategory, uiText = uiText)
     description <- NULL
     filename <- subcategory
-    btnName <- subcategory; btnLabel <- "Lijst grafieken"
+    idCard <- subcategory; btnLabel <- "Lijst grafieken"
     
   }else if(!missing(output)){
     
@@ -133,7 +145,7 @@ categoryCard <- function(id,
       output = outputFunction, specie = specie,
       uiText = uiText, type = type)
     filename <- paste0(category, "-", output)
-    btnName <- output; btnLabel <- "Bekijk grafiek"
+    idCard <- output; btnLabel <- "Bekijk grafiek"
     
   }else stop("'output' or 'subcategory' should be specified.")
   
@@ -143,6 +155,7 @@ categoryCard <- function(id,
   )
   
   card <- bslib::card(
+    id = ns(paste0(idCard, "-card")),
     class = "category-card",
     bslib::card_header(title, class = "category-card-header"), 
     br(),
@@ -157,7 +170,7 @@ categoryCard <- function(id,
       tags$div(
         style = "margin-bottom: 10px;margin-top: 10px", 
           shiny::actionButton(
-          inputId = ns(paste0(btnName, "-button")), 
+          inputId = ns(paste0(idCard, "-button")), 
           label = btnLabel, 
           class = "category-card-action-button"
         )

@@ -3,7 +3,13 @@ specieTabs <- lapply(species, function(specie){
   bslib::nav_panel(
     title = tools::toTitleCase(specie), 
     value = specie,
-    specieUI(id = specie, speciesList = schadeWildsoorten)
+    specieUI(
+      id = specie, 
+      speciesList = schadeWildsoorten,
+      categories = getInfo(specie = specie, variable = "category",
+        infoOutput = infoOutput
+      )
+    )
   )
 })
 
@@ -17,7 +23,12 @@ categoryTabs <- lapply(categories, function(category){
       category = category, id = category,
       ecoData = ecoData, schadeData = schadeData,
       uiText = uiText,
-      speciesList = schadeWildsoorten
+      speciesList = schadeWildsoorten,
+      # this will be updated in the categoryServer when a specie is selected
+      subcategories = getInfo(
+        category = category, variable = "subcategory",
+        infoOutput = infoOutput
+      )
     )
   )
   
@@ -51,8 +62,8 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
 
 # build all output tabs - contain placeholder for plot/table and parameters
 outputTabs <- lapply(outputs, function(output){
-      
-  category <- getCategoryOutput(output)
+
+  category <- unique(infoOutput[which(infoOutput$output == output), "category"])
   title <- getOutputTitle(output = output, 
     uiText = uiText, n = 200, type = category)
 

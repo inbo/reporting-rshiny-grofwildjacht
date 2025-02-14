@@ -1,4 +1,5 @@
-0.3.5.9000
+0.3.6
+    o restructure public app 'heerlijk helder'
     o support load local data (reportingGrofwild-data-path env var)
     o setupS3: add AWS session token
 0.3.5

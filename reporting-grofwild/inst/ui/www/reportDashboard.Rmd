@@ -26,7 +26,6 @@ knitr::opts_chunk$set(
   fig.width = 10, 
   fig.height = 8
 )
-options(tinytex.tlmgr_update = FALSE)
 ```
 
 ```{r locaties}
@@ -47,7 +46,7 @@ incProgress(amount = 0.1, detail = "Achtergrondinformatie")
 
 tmpFile <- tempfile(fileext = ".html")
 htmlwidgets::saveWidget(dash_results$dash_finalMap()$plot, file = tmpFile, selfcontained = FALSE)
-webshot::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
+webshot2::webshot(url = tmpFile, vwidth = 1000, vheight = 500, cliprect = "viewport")
 ```
 
 ## Biotoop beschrijving

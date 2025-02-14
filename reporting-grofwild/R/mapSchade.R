@@ -272,7 +272,7 @@ mapSchade <- function(
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
-#' @importFrom webshot webshot
+#' @importFrom webshot2 webshot
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
 #' @export
 mapSchadeServer <- function(
@@ -558,7 +558,7 @@ mapSchadeServer <- function(
           htmlwidgets::saveWidget(results$perceelMap(), file = htmlFile, selfcontained = FALSE)
           
           # convert temp .html file into .png for download
-          webshot::webshot(url = htmlFile, file = pngFile,
+          webshot2::webshot(url = htmlFile, file = pngFile,
             vwidth = 1000, vheight = 500, cliprect = "viewport")
           
           # save in reactive value

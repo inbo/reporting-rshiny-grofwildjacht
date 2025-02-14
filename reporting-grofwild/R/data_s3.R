@@ -21,7 +21,6 @@ setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
   if (!is.na(userProfile))
     awsFile <- normalizePath(file.path(userProfile, ".aws", "credentials"))
   
-  
   # credentials are in ~/.aws/credentials OR manually copy/paste OR using aws.signature::
   x <- aws.signature::read_credentials(file = awsFile)[[profile]]
     
@@ -31,7 +30,7 @@ setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
     AWS_SECRET_ACCESS_KEY = x$AWS_SECRET_ACCESS_KEY,
     AWS_SESSION_TOKEN = x$AWS_SESSION_TOKEN 
   )
-  
+    
 }
 
 
@@ -71,7 +70,7 @@ checkS3 <- function() {
     # Try to retrieve metadata from the instance
     metadata$instance_id()
   } else {
-    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"))
+    credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", 'AWS_SESSION_TOKEN'))
     if (any(credentials == ""))
       stop("Please specify 'Sys.setenv()' for ", 
         paste(names(credentials)[which(credentials == "")], collapse = ", "))

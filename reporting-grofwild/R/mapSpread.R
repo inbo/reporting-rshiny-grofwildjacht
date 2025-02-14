@@ -181,7 +181,7 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 #' @author mvarewyck
 #' @import shiny
 #' @import leaflet
-#' @importFrom webshot webshot
+#' @importFrom webshot2 webshot
 #' @importFrom htmlwidgets saveWidget
 #' @export
 mapSpreadServer <- function(id, 
@@ -477,7 +477,7 @@ mapSpreadServer <- function(id,
           htmlwidgets::saveWidget(finalMap(), file = tmpFile, selfcontained = FALSE)
           
           # convert temp .html file into .png for download
-          webshot::webshot(url = tmpFile, file = file,
+          webshot2::webshot(url = tmpFile, file = file,
             vwidth = 1000, vheight = 500, cliprect = "viewport")
           
         }

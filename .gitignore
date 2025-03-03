@@ -54,3 +54,6 @@ reporting-grofwild/inst/extdata/spatialData*.RData
 # Local copy of data files
 /dataS3
 /data
+
+# AWS connection
+/scripts/putSecret.sh

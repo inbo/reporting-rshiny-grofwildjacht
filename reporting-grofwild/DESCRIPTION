@@ -21,7 +21,7 @@ Imports:
     htmlwidgets,
     INBOtheme, 
     leaflet, 
-    methods, 
+    methods,
     mgcv, 
     plotly,
     plyr, 
@@ -36,10 +36,9 @@ Imports:
     stringr,
     testthat,
     units,
-    webshot
+    webshot2
 Suggests:
     kableExtra,
-    lwgeom,
     magick,
     oaStyle,
     rmarkdown

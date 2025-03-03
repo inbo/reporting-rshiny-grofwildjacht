@@ -19,6 +19,9 @@ addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <- as.numeric(format(Sys.Date(), "%Y")) - 1
 
+chromote::set_chrome_args(c('--headless','--no-sandbox'))
+
+
 ### Debugging
 ### -----------
 

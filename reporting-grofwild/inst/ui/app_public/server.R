@@ -104,12 +104,14 @@ shinyServer(function(input, output, session) {
   output$specie <- renderUI(specie())
   
   # Change tab
-  observeEvent(specie(), {
-    if(specie() != defaultTabs$specie && updateTab()){
+  observe({
+      # Re-trigger whenever input changes
+      req(input$specie)
+      req(specie() != defaultTabs$specie)
+      req(updateTab())
       currentTab(specie())
       if(doDebug)  
         print(paste("Update current tab to:", specie(), "page"))
-    }
   })
 
   # Update page content

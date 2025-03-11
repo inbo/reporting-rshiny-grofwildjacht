@@ -82,7 +82,7 @@ verspreidingCardServer <- function(id,
 verspreidingOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
   outputs = character(),
-  ecoData, geoData, spatialData, waarnemingenData,
+  ecoData, geoData, spatialData, waarnemingenData, biotoopData,
   defaultYear,
   uiText){
   
@@ -182,6 +182,12 @@ verspreidingOutputServer <- function(id,
               specie = results$specie(),
               doHide = FALSE
             )
+          },
+          "kencijferUI" = {
+            kencijferModuleUI(
+              id = ns(outputName), 
+              uiText = uiText
+            )
           }
         )
       
@@ -217,6 +223,12 @@ verspreidingOutputServer <- function(id,
           allSpatialData = spatialData,
           species = results$specie(),
           type = "F17_4"
+        ),
+        kencijferUI = kencijferModuleServer(
+          id = outputName,
+          kencijfersData = reactive(results$geoDataAll()[wildsoort == results$specie()]),
+          biotoopData = reactive(biotoopData$communes),
+          species = results$specie
         )
       )
       

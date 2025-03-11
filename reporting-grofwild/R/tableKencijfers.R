@@ -251,41 +251,45 @@ kencijferModuleUI <- function(id, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+  title <- getOutputTitle(output = "kencijferUI", uiText = uiText)
+  description <- getOutputDescription(output = "kencijferUI", uiText = uiText, 
+    context = "description")
   
   tagList(
     
     actionLink(inputId = ns("linkKencijferTabel"), 
-      label = paste("TABEL:", uiText$title), class = "action-h3"),
+      label = paste("TABEL:", title), class = "action-h3"),
     
     conditionalPanel(
       condition = "input.linkKencijferTabel % 2 == 0", ns = ns,
-      fixedRow(
-        tags$p(HTML(decodeText(text = uiText$dash))),
-        column(8,
-          tags$div(
-            style = "margin-bottom: 10px",
-            withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
-          ),
-          downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
-        ),
-        column(4,
-          wellPanel(
-            uiOutput(ns("filterYear")),
-            uiOutput(ns("filterPeriod")),
-            selectInput(inputId = ns("unit"), label = "Eenheid",
-              choices = c(
-                "Aantal" = "absolute", 
-                "Aantal/100ha" = "relative", 
-                "Aantal/100ha bos & natuur" = "relativeDekking")),
-            uiOutput(ns("filterSource")),
-            conditionalPanel(
-              condition = "input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
-              uiOutput(ns("sliderObserve"))
+      tagList(
+        tags$p(HTML(description)),
+        fixedRow(
+          column(8,
+            tags$div(
+              style = "margin-bottom: 10px",
+              withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
             ),
-            conditionalPanel(
-              condition = "input.bron && input.bron.includes('afschot')", ns = ns,
-              uiOutput(ns("sliderAfschot"))
+            downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
+          ),
+          column(4,
+            wellPanel(
+              uiOutput(ns("filterYear")),
+              uiOutput(ns("filterPeriod")),
+              selectInput(inputId = ns("unit"), label = "Eenheid",
+                choices = c(
+                  "Aantal" = "absolute", 
+                  "Aantal/100ha" = "relative", 
+                  "Aantal/100ha bos & natuur" = "relativeDekking")),
+              uiOutput(ns("filterSource")),
+              conditionalPanel(
+                condition = "input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
+                uiOutput(ns("sliderObserve"))
+              ),
+              conditionalPanel(
+                condition = "input.bron && input.bron.includes('afschot')", ns = ns,
+                uiOutput(ns("sliderAfschot"))
+              )
             )
           )
         )
@@ -309,7 +313,7 @@ kencijferModuleUI <- function(id, uiText) {
 #' @export
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, 
-  biotoopData, timeRange, species){
+  biotoopData, species){
   
   # For R CMD check
   afschotjaar <- aantal <- NULL
@@ -324,6 +328,8 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
     function(input, output, session) {
       
       ns <- session$ns
+      
+      timeRange <- reactive(range(kencijfersData()$afschotjaar))
       
       output$filterYear <- renderUI({
           
@@ -386,7 +392,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
           maxWaarnemingen <- max(if (input$unit == "absolute") 10 else 5, 
-            max(valueChoices, na.rm = TRUE))
+            suppressWarnings(max(valueChoices, na.rm = TRUE)))
           
           sliderInput(
             inputId = ns("thresholdWaarnemingen"),
@@ -437,6 +443,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
           req(input$bron)
           req(input$year)
+          req(input$period)
           
           tableKencijfers(
             data = req(kencijferSummarized()), 

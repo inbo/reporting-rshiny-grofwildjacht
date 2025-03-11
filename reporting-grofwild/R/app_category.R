@@ -39,7 +39,7 @@ categoryUI <- function(
       ),
       mainPanel = mainPanel(
         width = 9, 
-        style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
+        style = "overflow-y: hidden;", # single scrolling bar
         
         infoText[["title"]], infoText[["summary"]],
         uiOutput(outputId = ns("cards")),

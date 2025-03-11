@@ -159,21 +159,25 @@ optionsModuleServer <- function(input, output, session,
   ns <- session$ns
   
   results <- reactiveValues()
+  current <- reactiveValues(
+    year = definedYear)
   
   
   output$time <- renderUI({
       
       results$minTime <- min(timeRange())
+      if (is.null(current$time))
+        current$time <- c(min(timeRange()), definedYear)
       
       sliderInput(inputId = ns("time"), label = timeLabel, 
-        value = c(min(timeRange()), definedYear),
+        value = current$time,
         min = min(timeRange()),
         max = max(timeRange()),
         step = 1,
         sep = "")
       
     })
-  
+  observe(current$time <- input$time)
   
   
     observe({
@@ -204,8 +208,9 @@ optionsModuleServer <- function(input, output, session,
           
           if (currentTime[2] < newMin) 
             currentTime[2] <- newMin
+          current$time <- c(max(newMin, currentTime[1]), currentTime[2])
           updateSliderInput(session, inputId = "time", 
-            value = c(max(newMin, currentTime[1]), currentTime[2]),
+            value = current$time,
             min = newMin)      
         }
         
@@ -216,7 +221,7 @@ optionsModuleServer <- function(input, output, session,
         
         div(class = "sliderBlank", 
             sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-                value = definedYear,
+                value = current$year,
                 min = min(timeRange()),
                 max = max(timeRange()),
                 step = 1,
@@ -225,6 +230,7 @@ optionsModuleServer <- function(input, output, session,
         
         
       })
+  observe(current$year <- input$year)
   
   
   output$region <- renderUI({
@@ -255,15 +261,15 @@ optionsModuleServer <- function(input, output, session,
         }
         
         
-        if (input$regionLevel == "flanders")
-          selected <- choices[1] else
-          selected <- NULL
+        current$region <- if (input$regionLevel == "flanders")
+          choices[1] else
+          NULL
         
         selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices, selected = selected, multiple = TRUE)
-        
+            choices = choices, selected = current$region, multiple = TRUE)
         
       })
+  observe(current$region <- input$region)
   
   
   ## this is applicable for 
@@ -279,36 +285,43 @@ optionsModuleServer <- function(input, output, session,
         
         if (input$dataSource_leeftijd == "both") {
           
+          current$type <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
+          
           ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
           updateSelectInput(session, inputId = "type",
             choices = c("Frisling", "Overloper", "Volwassen", "Onbekend"),
-            selected = c("Frisling", "Overloper", "Volwassen", "Onbekend"))
+            selected = current$type)
           
         } else {
           
+          current$type <- typesDefault()
+          
           updateSelectInput(session, inputId = "type",
             choices = types(),
-            selected = typesDefault())
+            selected = current$type)
         }
       }
       
     })
   
   output$type <- renderUI({
+      
+      current$type <- typesDefault()
         
         selectInput(inputId = ns("type"), label = labelTypes,
             choices = types(), 
-            selected = typesDefault(), multiple = multipleTypes)
+            selected = current$type, multiple = multipleTypes)
         
       })
+  observe(current$type <- input$type)
     
   output$categorie <- renderUI({
       
       selectInput(inputId = ns("categorie"), label = "Categorie",
-        choices = categories())
+        choices = categories(), selected = current$categorie)
       
     })  
-  
+  observe(current$categorie <- input$categorie)
    
   observe({
         
@@ -319,9 +332,11 @@ optionsModuleServer <- function(input, output, session,
   
   output$interval <- renderUI({
         
-        selectInput(inputId = ns("interval"), label = "Interval", choices = intervals)
+        selectInput(inputId = ns("interval"), label = "Interval", 
+          choices = intervals, selected = current$interval)
         
       })
+  observe(current$interval <- input$interval)
  
 }
 

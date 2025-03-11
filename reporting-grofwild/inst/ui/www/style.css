@@ -201,9 +201,9 @@ p, li, label {
 
 /* carousel */
 
-/* slide */
-.slick-slide {
-  width: 100%
+/* slide image */
+.slick-slide img {
+    width: 100vw !important;
 }
 
 /* dots */

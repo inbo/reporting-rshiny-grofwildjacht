@@ -35,7 +35,7 @@ specieUI <- function(id, speciesList, categories){
           
           mainPanel = mainPanel(
             width = 9,
-            style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
+            style = "overflow-y: hidden;", # single scrolling bar
             getSpecieCards(id = id, categories = categories)
           )
   

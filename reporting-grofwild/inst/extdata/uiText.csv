@@ -66,6 +66,14 @@
 "F17_1";"Huidig verspreidingsgebied {wildsoort}";"Landkaart met de verspreiding van {wildsoort} in Vlaanderen.";"{{statsMap}} Info is niet beschikbaar indien data over gemeente niet werd geregistreerd of indien de nauwkeurigheid van de locatie minder is dan 5x5 km. <i>Opmerking: Data voor de bron waarnemingen.be is beperkt wegens vertragingen in de dataflow.</i>";""
 "F17_4";"Toekomstig verspreidingsgebied";"";"";""
 "F18_1";"Inschatting populatiegroei";"";"";""
-"F18_8";"Kencijfers";"";"";""
+"kencijferUI";"Kencijfers";"Tabel met kencijfers";"<ul><li><b>Totaal aantal gemeentes :</b> Totaal aantal gemeentes binnen de gekozen regio boven de drempelwaarde voor afschot en/of waarnemingen.
+<li><b>Dezelfde gemeentes :</b> Aantal gemeentes binnen de gekozen regio waar de aantallen<sup>1</sup> boven de drempelwaarde van afschot en/of waarnemingen uitkomen.
+<li><b>Nieuwe gemeentes :</b> Aantal gemeentes binnen de gekozen regio die voor het gekozen jaar boven de drempelwaarde van afschot en/of waarnemingen uitkomen en waar het gemiddelde van de referentieperiode onder de drempelwaarde uitkwam.
+<li><b>Niet meer in deze gemeentes :</b> Aantal gemeentes binnen de gekozen regio die voor het gekozen jaar onder de drempelwaarde van afschot en/of waarnemingen uitkomen en het gemiddelde van de referentieperiode boven de drempelwaarde uitkwam.<br><br>
+  
+  <sup>1</sup>Het gekozen jaar en gemiddelde van de referentieperiode<br><br>
+  
+  Door op de rij van deze tabel te klikken krijgt u een lijst van de gemeentes die aan de voorwaarden van de rij voldoen. <br><i>Gemeentes die in het <b>oranje</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor waarnemingen. <br>Gemeentes die in het <b>wit</b> worden geaccentueerd voldoen aan beide drempelwaardes. <br>Gemeentes die in het <b>blauw</b> worden geaccentueerd voldoen enkel aan de drempelwaarde voor afschot. </i>
+  ";""
 "tableSchadeSummaryUI";"Overzicht schadegevallen voor {wildsoort} in Vlaanderen per type schade";"Een tabel met het aantal schadegevallen van {wildsoort} in Vlaanderen per schade type.";"";""
 "trendYearFlandersUI";"Jaarlijks totaal aantal schadegevallen voor {wildsoort} in Vlaanderen";"Een lijngrafiek met het jaarlijks aantal schadegevallen in Vlaanderen.";"";""

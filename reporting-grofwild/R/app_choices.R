@@ -210,7 +210,7 @@ getOutputSpecie <- function(specie,
   
   outputs <- c(
     if(nrow(geoDataSpecie) > 0)
-      c("trendYearRegionUI", "mapFlandersUI"),
+      c("trendYearRegionUI", "mapFlandersUI", "kencijferUI"),
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -252,7 +252,7 @@ getOutputSpecie <- function(specie,
       "countAgeGroupUI",
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
-    if(specie == "Wild zwijn") # TO UPDATE!
+    if(specie == "Wild zwijn") # TODO UPDATE!
       "mapSpreadUI"
   )
     
@@ -361,7 +361,7 @@ getSubcategoryOutput <- function(output){
       `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
       
       # verspreiding
-      `verspreiding-huidig` = "F17_1",
+      `verspreiding-huidig` = c("F17_1", "kencijferUI"),
       `verspreiding-toekomstig` = "mapSpreadUI"
   )
   
@@ -392,7 +392,8 @@ getCategorySubcategory <- function(subcategory){
       populatie = c("populatie-leeggewicht", "populatie-onderkaak",
           "populatie-geslacht", "populatie-voortplanting"
       ),
-      verspreiding = c("verspreiding-huidig", "verspreiding-toekomstig")        
+      verspreiding = c("verspreiding-huidig", "verspreiding-toekomstig", 
+        "verspreiding-kencijfer")        
   )
   
   isCat <- sapply(categorySubcategory, function(subcategories){

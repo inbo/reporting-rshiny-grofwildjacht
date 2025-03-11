@@ -396,6 +396,7 @@ shinyServer(function(input, output, session) {
               ecoData = ecoData, geoData = geoData, 
               spatialData = spatialData,
               waarnemingenData = waarnemingenData,
+              biotoopData = biotoopData,
               defaultYear = defaultYear 
             )
           )

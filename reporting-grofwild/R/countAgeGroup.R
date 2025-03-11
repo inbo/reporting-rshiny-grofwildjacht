@@ -4,18 +4,16 @@
 #' @param groupVariable character, variable in \code{data}
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the percentage per age category
-#' and per group, based on meldingsformulier data in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the percentage per age category
+#' and per group, based on meldingsformulier data in a stacked bar chart 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'leeftijd': }{age category}
-#' \item{'group': }{group indicator}
-#' \item{'freq': }{counts of animals}
-#' \item{'percent': }{percentage of counts of animals}
+#' \item 'leeftijd':  age category 
+#' \item 'group':  group indicator 
+#' \item 'freq':  counts of animals 
+#' \item 'percent':  percentage of counts of animals 
 #' }
 #' }
-#' }
-#' 
 #' @author mvarewyck
 #' @import plotly
 #' @importFrom plyr count ddply
@@ -105,12 +103,11 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @inheritParams countAgeGroup
-#'  
+#' @inheritParams reportingGrofwild-common-args  
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -159,36 +156,40 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGroup}} - UI side
-#' @inherit welcomeSectionUI
-#' @param doHide boolean, whether to initially hide the plot; default TRUE
-#' 
+#' @inherit welcomeSectionUI 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeGroupUI <- function(id, uiText, doHide = TRUE) {
+countAgeGroupUI <- function(id, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
-  
+  title <- getOutputTitle(output = "countAgeGroupUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "countAgeGroupUI", 
+    specie = specie, uiText = uiText, context = context)
+
   tagList(
     
     actionLink(inputId = ns("linkAgeGroup"),
-      label = h3(HTML(uiText$title)),
+      label = h3(HTML(title)),
       class = "action-h3"),
-    conditionalPanel(paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), ns = ns,
+    conditionalPanel(
+      condition = paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), 
+      ns = ns,
       
       uiOutput(ns("disclaimerAgeGroup")),
       
       fixedRow(
-        
+        column(8, plotModuleUI(id = ns("ageGroup"))),
         column(4,
-          optionsModuleUI(id = ns("ageGroup"), showTime = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("ageGroup"))
+          optionsModuleUI(id = ns("ageGroup"), 
+            showTime = TRUE, exportData = TRUE)
         )
       ),
-      tags$hr()
+      tags$p(HTML(description))
     )
   )
   

@@ -34,8 +34,9 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
     stop("Niet beschikbaar")
-  }    
-  type = match.arg(type)
+  }
+  
+  type <- match.arg(type)
   
   if (!"GEWAS" %in% schadeChoices)
     schadeChoicesGewas <- NULL
@@ -126,6 +127,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 
   # group columns together from same schadeBasisCode
   codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
+  codeNames <- codeNames[!duplicated(codeNames)] # Note: 'unique' would remove names
   summaryTable <- summaryTable[, c(colnames(summaryTable)[1], codeNames)]
   
   
@@ -202,7 +204,9 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
         typesDefault = typesDefault, 
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "tableSchade",
+      
+      callModule(
+        module = plotModuleServer, id = "tableSchade",
         plotFunction = "tableSchadeCode", 
         data = data,
         schadeChoices = schadeChoices,
@@ -210,7 +214,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
         schadeChoicesGewas = schadeChoicesGewas,
         datatable = datatable,
         fullNames = fullNames
-        )
+      )
       
     })
   
@@ -220,36 +224,41 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 
 #' Shiny module for creating the plot \code{\link{tableSchadeCode}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-tableSchadeUI <- function(id, uiText) {
+tableSchadeUI <- function(id, 
+  uiText, context = id, specie = NULL, 
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
-  
-  tagList(
-    
-    actionLink(inputId = ns("linkTableSchade"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkTableSchade % 2 == 1", ns = ns,
-      
-      fixedRow(
-        
-        column(4,
-          optionsModuleUI(id = ns("tableSchade"), 
-            showTime = TRUE, 
-            showType = TRUE,
-            showDataSource = "schade",
-            exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, tableModuleUI(id = ns("tableSchade")))  
-      ),
-      tags$hr()
-    )
+  title <- getOutputTitle(
+    output = "tableSchadeUI", specie = specie, 
+    uiText = uiText
   )
-  
+  description <- getOutputDescription(
+    output = "tableSchadeUI", 
+    specie = specie, uiText = uiText, context = context
+  )  
+  tagList(
+    actionLink(inputId = ns("linkTableSchade"), 
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkTableSchade % 2 ==", 
+        as.numeric(doHide)), 
+      ns = ns,
+      optionsModuleUI(id = ns("tableSchade"), 
+        showTime = TRUE, 
+        showType = TRUE,
+        showDataSource = "schade",
+        exportData = TRUE, oneRow = TRUE
+      ),
+      tableModuleUI(id = ns("tableSchade")),
+      tags$p(HTML(description)),
+      tags$hr()
+    ) 
+  )
   
 }
 

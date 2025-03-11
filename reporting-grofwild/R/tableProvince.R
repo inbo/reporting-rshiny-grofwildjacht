@@ -297,32 +297,29 @@ tableProvinceServer <- function(id, data, categorie, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{tableProvince}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-tableProvinceUI <- function(id, uiText) {
+tableProvinceUI <- function(id, doHide = TRUE,
+  uiText, context = id, specie = NULL) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = "tableProvinceUI", 
+    specie = specie, uiText = uiText)
+  description <- getOutputDescription(output = "tableProvinceUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkTableProvince"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkTableProvince % 2 == 1", ns = ns,
-      
-      fixedRow(
-        
-        column(4,
-          optionsModuleUI(id = ns("tableProvince"), 
-            showYear = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          tableModuleUI(id = ns("tableProvince"))
-        ),
-        tags$hr()
-      )
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkTableProvince % 2 ==", as.numeric(doHide)), ns = ns,
+    
+      optionsModuleUI(id = ns("tableProvince"), 
+        showYear = TRUE, exportData = TRUE),
+      tableModuleUI(id = ns("tableProvince")),
+      tags$p(HTML(description))
     )
   )
   

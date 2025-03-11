@@ -38,18 +38,62 @@ footer {
 
 
 
-/*** For the fancy noButton but tiles - radiobuttons ***/
+/*** For the fancy tiles - radiobuttons - not inline ***/
+
+.radio-tiles input[type='radio'] { /* style for radiobutton */
+  visibility: hidden;
+}
+
+.radiogroup.shiny-input-container-inline label~.shiny-options-group {
+  margin-top: 0px;  
+} 
+
+.radio-tiles-image > img {
+  aspect-ratio: 400/270;
+}
+
+.radio-tiles {
+  width: 32%;
+  margin-left: 5px !important; 
+  margin-top: 5px !important;
+  margin-right: 0px;
+  margin-bottom: 20px; 
+}
+
+.radio-tiles:hover {
+  box-shadow: 10px 5px 5px #888888;
+}
+
+.radio-tiles:hover > span > .radio-tiles-title {
+  background-color: #456394 !important;
+}
+
+.radio-tiles-title {
+  font-size: 20px;
+  font-weight: bold;
+  height: 60px;
+  color: #ffffff;
+  background-color: #c04384;
+  text-align: center; /*  horizontal centering*/
+/*  vertical centering*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/*** For the fancy noButton but tiles - radiobuttons - inline ***/
 
 .noButton input[type='radio'] { /* style for radiobutton */
-        visibility: hidden;
-      }
+  visibility: hidden;
+}
 
 .noButton .radio-inline {
-	margin-bottom: 10px;
-	margin-left: 0px;
-	margin-right: 10px;
-	padding-left: 0;
-      }
+  margin-bottom: 10px;
+  margin-left: 0px;
+  margin-right: 10px;
+  padding-left: 0;
+}
       
 .radio-inline input:checked ~ span div {
   background-image: url("blue-white-pattern.jpg");
@@ -59,43 +103,50 @@ footer {
 .radio-inline:hover {
   box-shadow: 10px 5px 5px #888888;
 }
-      
-h1, h2, h3, h4 {
-  color: #356196;
-}
-
-#geodataBron, #contact, .version {
-  font-size: 14px;
-  line-height: 20px;
-  color: #595959
-}
 
 #wildZwijnFoto {
   width: 260px; 
   height: 186px;
-  background-image: url("wildZwijn.jpeg");
+  background-image: url("specie-wild-zwijn.png");
   background-size: 260px 186px;
 }
 
 #reeFoto {
   width: 260px; 
   height: 186px;
-  background-image: url("ree.jpeg");
+  background-image: url("specie-ree.png");
   background-size: 260px 186px;
 }
 
 #edelhertFoto {
   width: 260px; 
   height: 186px;
-  background-image: url("edelhert.jpeg");
+  background-image: url("specie-edelhert.png");
   background-size: 260px 186px;
 }
 
 #damhertFoto {
   width: 260px; 
   height: 186px;
-  background-image: url("damhert.jpeg");
+  background-image: url("specie-damhert.png");
   background-size: 260px 186px;
+}
+
+.fotoTitel {
+  font-size: 20px;
+  font-weight: bold;
+  height: 80px;
+  color: #fff;
+  background-color: #c04384;
+  padding-top: 25px;
+}
+
+
+
+/* General styling */
+      
+h1, h2, h3, h4 {
+  color: #356196;
 }
 
 .fotoTitel {
@@ -147,3 +198,149 @@ p, li, label {
   column-count: 3;
 }
 
+
+/* carousel */
+
+/* slide */
+.slick-slide {
+  width: 100%
+}
+
+/* dots */
+.slick-dots { 
+  margin-top:-10em
+}
+.slick-dots li button:before{
+  background-color: transparent;
+  color: white
+}
+.slick-dots li.slick-active button:before{
+  color: white
+}
+
+/*specie page*/
+
+/*.specie-card-header {*/
+/*  background-color: purple;*/
+/*  color: white;*/
+/*  font-weight: bold;*/
+/*  text-align: center*/
+/*}*/
+
+
+/*navigation bar*/
+
+.nav-tabs {
+  background-color: #456394; 
+}
+
+/* text in navigation menu*/
+.nav-tabs > li > a > span { 
+  color: #ffffff;
+}
+
+/* navigation items */
+.nav-tabs > li > a {
+  color: #ffffff !important;
+}
+.nav-tabs > li > div > a {
+  color: #ffffff !important;
+}
+.nav-tabs > li.active > a {
+  background-color: #b24c82; 
+  border-color: #456394;
+  font-weight: 900;
+}
+
+/* navigation tab arrow */
+.nav-tabs > li > a > .caret {
+  color: #ffffff !important;
+}
+
+/* hover navigation item */
+.nav-tabs > li > a:hover, .nav-tabs > li > a:focus {
+  background-color: #bab9b9 !important;
+}
+
+/*navigation menu (nested within navigation bar) */
+
+.dropdown-menu {
+  background-color: #456394; 
+}
+.dropdown-menu > li > a {
+  color: #ffffff;
+}
+.dropdown-menu > li.active > a, .dropdown-menu > li.hover > a {
+  background-color: #b24c82; 
+}
+
+/* custom info icon */
+.info_icon {
+  background: url("info-icon.png");
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 25px;
+  width: 25px;
+  display: block;
+}
+
+/*category cards*/
+
+# category-sidebar{
+  background-color: #ffffff
+}
+
+.category-card {
+  border: solid 1px;
+  border-color: #b7b7b7;
+  background-color: white;
+}
+
+.category-card-header {
+  background-color: #eeeeee;
+  color: #3465a4;
+  font-weight: bold;
+  text-align: center;
+}
+
+.category-card-action-button {
+  background-color: #c1c443;
+  color: #ffffff;
+  border: solid;
+  border-width: 1px;
+  border-color: black;
+  font-weight: bold;
+  font: 2em;
+  text-align: center;
+}
+
+.category-card-action-button:active {
+  background-color: #c1c443;
+  color: #ffffff;
+}
+
+.category-card-image{
+  border: solid;
+  border-width: 1px;
+  border-color: #e9e6e6;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-top: 10px;
+}
+
+.category-card > .card-body {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+
+/*Custom colors for backgrounds*/
+
+body > .tabbable {
+  background-color: #f5f5f5;    
+}
+
+.well-white {
+  background-color: white;    
+}

@@ -6,7 +6,6 @@
 
 
 #' User input for controlling specific plot (ui-side)
-#' @param id character, module id, unique name per plot
 #' @param showLegend boolean, whether to show input field for the legend
 #' @param showTime boolean, whether to show slider input field for time range
 #' @param showYear boolean, whether to show numeric input field for year selection
@@ -23,7 +22,9 @@
 #' \code{shiny::wellPanel()}
 #' @param showCategorie boolean, if TRUE gives user option to select categorie
 #' @param showInterval boolean, if TRUE gives user option to select interval
-#' 
+#' @param oneRow boolean, if TRUE (FALSE by default) all the
+#' options are combined in one row.
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object (tagList)
 #' @importFrom shinyjs hidden
 #' @export
@@ -33,7 +34,7 @@ optionsModuleUI <- function(id,
     regionLevels = NULL, summarizeBy = NULL,
     exportData = FALSE, 
     showDataSource = NULL,
-    doWellPanel = TRUE
+    doWellPanel = TRUE, oneRow = FALSE
     ) {
   
   
@@ -65,7 +66,7 @@ optionsModuleUI <- function(id,
       if ("schade" %in% showDataSource)
         selectInput(inputId = ns("dataSource_schade"), 
           label = "Data bron",
-          choices = sourcesSchade,
+          choices = sourcesSchade, selected = sourcesSchade,
           multiple = TRUE),
       if ("onderkaak" %in% showDataSource)
         selectInput(inputId = ns("dataSource_onderkaak"), 
@@ -110,6 +111,14 @@ optionsModuleUI <- function(id,
   
   
   )
+  
+  toReturn <- toReturn[!sapply(toReturn, is.null)]
+  
+  if(oneRow){
+    width <- 12/floor(length(toReturn))
+    toReturn <- lapply(toReturn, function(x) column(width = width, x))
+    toReturn <- fluidRow(toReturn)
+  }
   
   if (doWellPanel)
     wellPanel(toReturn) else
@@ -319,9 +328,9 @@ optionsModuleServer <- function(input, output, session,
 
 
 #' Interactive plot (ui-side)
-#' @param id character, module id, unique name per plot
 #' @param height character, plot height, default is "600px" 
 #' @param filter boolean, whether to display filters UI
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
@@ -363,8 +372,8 @@ accuracyModuleUI <- function(id, title) {
 
 
 #' Interactive table (ui-side)
-#' @param id character, module id, unique name per plot
 #' @param includeTotal boolean, whether include text with total number of records in table
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object
 #' @author mvarewyck
 #' @importFrom shinycssloaders withSpinner
@@ -374,8 +383,9 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   
   ns <- NS(id)
   
-  tags$div(style = "margin-bottom: 10px",
-      withSpinner(DT::dataTableOutput(ns("table"))),
+  tags$div(
+#      style = "margin-top: -400px",
+      DT::dataTableOutput(ns("table")),
       if (includeTotal)
         uiOutput(ns("total"))
   )
@@ -408,6 +418,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param combinatie logical, summarised view of selected regions
 #' @param verticalGroups reactive boolean; see also \link{barDraagkracht};
 #' default is NULL
+#' @param typeMelding reactive with type of notification ('melding')
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
@@ -431,7 +442,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, title = NULL,
     verticalGroups = NULL,
-    fullNames = NULL) {
+    fullNames = NULL, type = NULL,
+    typeMelding = NULL) {
   
   subData <- reactive({
         
@@ -447,6 +459,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
             subData <- subset(subData, provincie %in% input$region)
           } else if (input$regionLevel == "faunabeheerzones") {   
             subData <- subData[subData$FaunabeheerZone %in% as.numeric(input$region), ]
+          }else if(input$regionLevel == "communes") {   
+            subData <- subData[subData$gemeente_afschot_locatie %in% input$region, ]
           }
         }
         
@@ -508,6 +522,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(regio = input$region),
             if (!is.null(input$type))
               list(type = input$type),
+            if (!is.null(type))
+              list(type = type),
             if (!is.null(input$type) & !is.null(input$year) & is.null(input$dataSource_schade))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))
@@ -551,6 +567,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(timeRange = timeRange()),
             if (!is.null(unit))
               list(unit = unit()),
+            if(!is.null(typeMelding))
+              list(typeMelding = typeMelding()),
             if (!is.null(schadeChoices))
               list(schadeChoices = schadeChoices()),
             if (!is.null(schadeChoicesVrtg))
@@ -705,11 +723,11 @@ plotModuleServer <- function(input, output, session, plotFunction,
 
 
 #' Display formatted frequency table of data (ui-side)
-#' @param id character, unique identifier for the shiny module
 #' @param data, character vector, values for which frequency table should be generated
 #' @param variable character, name of the variable that is summarized
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
+#' @inheritParams reportingGrofwild-common-args
 #' @return ui object (tagList)
 #' @importFrom sf st_drop_geometry
 #' @export

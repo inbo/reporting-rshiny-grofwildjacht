@@ -16,14 +16,14 @@
 #' should be one of \code{c("absolute", "percentage")}; default \code{"absolute"}
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified type and jaartallen}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot': plotly object, for the specified type and jaartallen 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jaar': }{year at which the animal was shot}
-#' \item{'verwezenlijkt': }{count for actually shot animals}
-#' \item{'toegekend': }{count for assigned animals}
-#' \item{'percent': }{verwezenlijkt / toegekend * 100}
-#' }}
+#' \item 'jaar':  year at which the animal was shot 
+#' \item 'verwezenlijkt':  count for actually shot animals 
+#' \item 'toegekend':  count for assigned animals 
+#' \item 'percent':  verwezenlijkt / toegekend * 100 
+#' }
 #' }
 #' @author mvarewyck
 #' @import plotly
@@ -174,9 +174,8 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @param regionLevels numeric vector, region level choices
+#' @inheritParams optionsModuleUI
 #' @inherit welcomeSectionUI
-#' 
 #' @export
 percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiText) {
   
@@ -193,6 +192,9 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("percentageRealisedShot"))
+        ),
         column(4,
           wellPanel(
             selectInput(inputId = ns("percentageRealisedUnit"), label = "Eenheid",
@@ -205,9 +207,6 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
           tags$p(HTML(uiText[, id])),
           if (showAccuracy)
             accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
-        ),
-        column(8, 
-          plotModuleUI(id = ns("percentageRealisedShot"))
         ),
         tags$hr()
       )

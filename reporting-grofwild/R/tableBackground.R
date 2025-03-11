@@ -8,12 +8,11 @@
 #' 
 #' @param data data.frame with row for each location of interest;
 #' columns are measured background variables
-#' @inheritParams mapFlandersServer
 #' @return data.frame
 #' 
 #' @author wverlinden
 #' @export 
-tableBackground <- function(data, regionLevel, locaties){
+tableBackground <- function(data){
   
   # Subset
   data <- data[, c("regio", "perimeter_bos_m", "gem_opp_bos_km2", "densiteit_bos", 

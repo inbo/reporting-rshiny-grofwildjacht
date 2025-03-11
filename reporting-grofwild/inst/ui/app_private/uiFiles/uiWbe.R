@@ -19,7 +19,7 @@ tagList(
       uiOutput("wbe_title")
     ),
     
-    welcomeSectionUI(id = "wbe", uiText = uiText, 
+    welcomeSectionUI(id = "wbe", uiText = uiText, category = "wbe", 
       maxDate = max(ecoData$afschot_datum, na.rm = TRUE))
           
   ),
@@ -69,13 +69,14 @@ tagList(
     
     conditionalPanel("output.wbe_emptyAfschot == false",
       
-      mapAfschotUI(id = "wbe_afschot",
+      mapSchadeUI(id = "wbe_afschot",
         uiText = uiText,
         filterSource = FALSE, filterAccuracy = TRUE,
         variableChoices = c(
           "Seizoen" = "season",
           "Jaar" = "afschotjaar",
-          "Jachtmethode" = "jachtmethode_comp")
+          "Jachtmethode" = "jachtmethode_comp"),
+        outputFunction = "mapAfschotUI"
       ),
       
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
@@ -88,16 +89,11 @@ tagList(
     conditionalPanel("output.wbe_emptySchade == false",
       # When no afschot, might still be schadeData
       
-      actionLink(inputId = "wbe_linkMapSchade", label =
-          h3(HTML(uiText$title[uiText$plotFunction == "mapSchadeUI"]))),
-      conditionalPanel("input.wbe_linkMapSchade % 2 == 1",
-        
         mapSchadeUI(id = "wbe",
           uiText = uiText[uiText$plotFunction == "mapSchadeUI", ], 
-          filterCode = TRUE, filterSubcode = TRUE,
+          filterCode = TRUE, filterSubcode = TRUE, type = "",
           plotDetails = "region")
   
-      )
     ),
     
     conditionalPanel("output.wbe_emptyAfschot == false",
@@ -123,7 +119,7 @@ tagList(
             regionLevels = NULL, uiText = uiText)
         )
       ),
-      countEmbryosUI("wbe", regionLevels = NULL)
+      uiOutput("wbe_embryos")
     
     )
   )

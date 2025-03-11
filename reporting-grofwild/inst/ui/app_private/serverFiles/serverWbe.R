@@ -374,3 +374,9 @@ mapSchadeServer(id = "wbe_afschot",
   species = reactive(input$wbe_species),
   borderRegion = "WBE_buitengrenzen"
 )
+
+output$wbe_embryos <- renderUI({
+    
+    countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText, specie = input$wbe_species)
+    
+  })

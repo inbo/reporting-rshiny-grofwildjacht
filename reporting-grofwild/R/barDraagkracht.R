@@ -154,7 +154,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
     data$yLabel <- NULL
     yLabels <- gsub("populatie_evolutie", "Populatie everzwijnen", yLabels)
     yLabels <- gsub("schade_landbouw_evolutie", "Schade aan de landbouw", yLabels)
-    yLabels <- gsub("schade_privpub_evolutie", "Schade aan privéterreinen", yLabels)
+    yLabels <- gsub("schade_privpub_evolutie", "Schade aan priv\u00e9terreinen", yLabels)
     yLabels <- gsub("schade_verkeer_evolutie", "Schade in het verkeer", yLabels)
     
     myPlot <- plot_ly(data, x = ~base::get(xVar), y = ~base::get(yVar), 
@@ -207,13 +207,12 @@ barDraagkracht <- function(data, groupVariable = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{barDraagkracht}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param title reactive, plot title to be displayed
 #' @param groupLabel character, label for the grouping variable choices
 #' @inheritParams barDraagkracht
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export

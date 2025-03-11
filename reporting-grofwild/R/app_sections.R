@@ -5,39 +5,52 @@
 
 
 
-#' Section for welcoming (top of the page) - UI side (no server side)
-#' 
-#' @param maxDate date, the last observation date to be replaced in the text
-#' @param id character, unique identifier for the module
-#' @param uiText data.frame, HTML formatted text to be displayed in the UI
-#' @return HTML object
-#' 
+#' Section for welcoming - UI side (no server side)
+#' @param split boolean (FALSE by default), should the output be 
+#' returned separately, as a list
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
+#' @param ... Extra parameters for \code{\link{getOutputDescription}}
+#' @return if \code{split} is FALSE, one single HTML object;
+#' otherwise a list with 'title', 'summary' and 'description' 
+#' as separate HTML objects
 #' @author mvarewyck
 #' @import shiny
 #' @export
-welcomeSectionUI <- function(id, uiText, maxDate = NA) {
+welcomeSectionUI <- function(id, 
+  context = id, uiText, category, split = FALSE, ...) {
+
+  outputFunction <- paste("informatie", category, sep = "-")
   
-  description <- uiText[uiText$plotFunction == as.character(match.call())[1], id]
-  # Handling embedded quoting
-  description <- gsub("\\\\", "\"", description)
+  title <- getOutputTitle(output = outputFunction, uiText = uiText)
   
-  # Replace last date
-  if (!is.na(maxDate))
-    description <- gsub("\\{\\{maxDate\\}\\}", format(maxDate, "%d/%m/%Y"), description)
+  summary <- getOutputDescription(output = outputFunction, 
+    uiText = uiText, context = "summary")
   
-  tags$div(style = "margin-bottom:20px;",
-    HTML(description)
+  description <- getOutputDescription(
+    output = outputFunction, 
+    uiText = uiText, context = context,
+    ...
   )
+  
+  title <- tags$div(align = "center", h1(title))
+  summary <- tags$div(style = "margin-bottom:20px;", HTML(summary))
+  description <- HTML(description)
+  
+  result <- if(split){
+    list(title = title, summary = summary, description = description)
+  }else{tagList(title, summary, description)}
+    
+  return(result)
 
 }
 
 
 #' Decode species indicator in description
 #' @param text character, input from uiText
-#' @param species character, currently selected species
 #' @param statsMap character, statistics to be printed instead of \code{'{{statsMap}}'}
+#' @inheritParams reportingGrofwild-common-args
 #' @return character, modified for the conditional species mentioned in the text  
-#' 
 #' @author mvarewyck
 #' @export
 decodeText <- function(text, species, statsMap = NULL) {

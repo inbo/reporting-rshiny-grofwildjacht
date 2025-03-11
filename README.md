@@ -24,7 +24,7 @@ If you want to check on the EC2 or locally how the Rshiny App inside the Docker 
 Build docker image.
 
 ```
-sudo docker build --build-arg GIT_SHA=$(git rev-parse HEAD) -t inbo/wildapp .
+docker build --build-arg GIT_SHA=$(git rev-parse HEAD) -t inbo/wildapp .
 ```
 
 Configure connection to [S3 data buckets](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html).
@@ -32,7 +32,7 @@ Configure connection to [S3 data buckets](https://docs.aws.amazon.com/cli/latest
 Run docker image, public app. 
 
 ```
-sudo docker run -it -v ~/.aws:/root/.aws -p 3001:3838 inbo/wildapp R -e "reportingGrofwild::setupS3(); reportingGrofwild::runWildApp(public=TRUE)" 
+docker run -it -v ~/.aws:/root/.aws -p 3001:3838 inbo/wildapp R -e "reportingGrofwild::setupS3(); reportingGrofwild::runWildApp()"  
 ```
 
 Browse to `localhost:3001`.
@@ -40,13 +40,13 @@ Browse to `localhost:3001`.
 Run docker image, private app for specific KBO.
 
 ```
-sudo docker run -it -v ~/.aws:/root/.aws -p 3001:3838 inbo/wildapp R -e "reportingGrofwild::setupS3(); reportingGrofwild::runWildApp(public=FALSE, kbo = xxx)" 
+docker run -it -v ~/.aws:/root/.aws -p 3001:3838 inbo/wildapp R -e "reportingGrofwild::setupS3(); reportingGrofwild::runWildApp(public = FALSE, kbo = xxx)"  
 ```
 
 In a similar way, an R session can be started to run specific functions of the reportingGrofwild R package.
 
 ```
-sudo docker run -it -p 3001:3838 inbo/wildapp R
+docker run -it -p 3001:3838 inbo/wildapp R
 ```
 
 

@@ -12,17 +12,17 @@
 #' @importFrom stats na.omit predict qnorm
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified specie and years}
-#' \item{'data': }{
+#' \item 'plot':  plotly object, for the specified specie and years 
+#' \item 'data':  
 #' \itemize{
-#' \item{for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte': }{
+#' \item for bioindicator set to 'ontweid_gewicht' or 'onderkaaklengte':  
 #' raw data used for the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animal was shot}
-#' \item{'variable': }{value of the bioindicator, a.k.a
+#' \item 'afschotjaar':  year at which the animal was shot 
+#' \item 'variable':  value of the bioindicator, a.k.a
 #' weight for 'ontweid_gewicht' or length of the lower jaw for
-#' 'onderkaaklengte'}}
-#' }}
+#' 'onderkaaklengte'
+#' }
 #' }
 #' }
 #' @author Laure Cougnaud
@@ -217,6 +217,9 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("plotBioindicator"))
+        ),
         column(4,
           optionsModuleUI(id = ns("plotBioindicator"),
             showTime = TRUE, showType = TRUE,
@@ -228,9 +231,6 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
           tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
           if (showAccuracy)
             accuracyModuleUI(id = ns("plotBioindicator"), title = "Accuraatheid onderkaaklengte"),
-        ),
-        column(8, 
-          plotModuleUI(id = ns("plotBioindicator"))
         ),
         tags$hr()
       )

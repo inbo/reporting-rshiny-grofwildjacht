@@ -10,17 +10,17 @@
 #' Figure p. 15 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countAgeCheek
 #' @inheritParams boxAgeWeight
+#' @inheritParams reportingGrofwild-common-args
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the percentage per age category
-#' and per gender, based on meldingsformulier data in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the percentage per age category
+#' and per gender, based on meldingsformulier data in a stacked bar chart 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'geslacht': }{gender}
-#' \item{'leeftijd': }{age category}
-#' \item{'freq': }{counts of animals}
-#' \item{'percent': }{percentage of counts of animals}
-#' }
+#' \item 'geslacht':  gender 
+#' \item 'leeftijd':  age category 
+#' \item 'freq':  counts of animals 
+#' \item 'percent':  percentage of counts of animals 
 #' }
 #' }
 #' @import plotly
@@ -140,9 +140,9 @@ countAgeGender <- function(data, jaartallen = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -172,32 +172,38 @@ countAgeGenderServer <- function(id, data, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeGenderUI <- function(id, uiText) {
+countAgeGenderUI <- function(id,
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = "countAgeGenderUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "countAgeGenderUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkAgeGender"),
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkAgeGender % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkAgeGender % 2 ==",
+        as.numeric(doHide)), 
+      ns = ns,
       
       fixedRow(
-        
+        column(8, plotModuleUI(id = ns("ageGender"))), 
         column(4,
           optionsModuleUI(id = ns("ageGender"), showTime = TRUE,
-            showDataSource = c("leeftijd", "geslacht"), exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("ageGender"))
+            showDataSource = c("leeftijd", "geslacht"), 
+            exportData = TRUE)
         )
       ),
-      tags$hr()
+      tags$p(description)
     )
   )
   

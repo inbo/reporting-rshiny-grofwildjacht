@@ -6,13 +6,12 @@
 #' @param type animal type, used to filter \code{data}, based on 'ageGender' column
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object with length lower jaw per 
-#' age/gender category for specified \code{jaartallen}}
-#' \item{'data': }{raw data used for the plot, as data.frame with:
+#' \item 'plot': plotly object with length lower jaw per 
+#' age/gender category for specified \code{jaartallen} 
+#' \item 'data': raw data used for the plot, as data.frame with:
 #' \itemize{
-#' \item{'ageGender': }{age/gender category}
-#' \item{'onderkaaklengte': }{length of the lower jaw in mm}
-#' }
+#' \item 'ageGender': age/gender category 
+#' \item 'onderkaaklengte': length of the lower jaw in mm 
 #' }
 #' }
 #' @author Laure Cougnaud
@@ -151,9 +150,8 @@ ageGenderLowerJawServer <- function(id, data, types, timeRange) {
 
 
 #' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - UI side
-#' @param regionLevels character, choices for region
+#' @inheritParams optionsModuleUI
 #' @inherit welcomeSectionUI
-#' 
 #' @export
 ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
   
@@ -168,14 +166,15 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("ageGenderLowerJaw"))
+        ),
         column(4,
           optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(uiText[, id]))),
-        column(8, 
-          plotModuleUI(id = ns("ageGenderLowerJaw"))
-        )
+          tags$p(HTML(uiText[, id]))
+        )     
       ),
       tags$hr()
     )

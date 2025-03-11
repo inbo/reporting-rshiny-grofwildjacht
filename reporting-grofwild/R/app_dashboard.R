@@ -35,13 +35,11 @@ namedChoices <- function(choices, uiText, regionLevel) {
 
 
 #' List choices for indicatoren - UI side
-#' @param id character, unique identifier for module
 #' @param choices character vector, plotFunction names in \code{uiText} 
 #' for which to create named choices, i.e. F_* codes
 #' @param selected character vector, subset of \code{choices} pre-selected choices
-#' @param uiText data.frame as loaded by \code{read.csv(file = file.path(dataDir, "uiText.csv"))}
+#' @inheritParams reportingGrofwild-common-args
 #' @return named character vector
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export

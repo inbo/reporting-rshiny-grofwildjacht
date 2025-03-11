@@ -216,13 +216,12 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - server side
-#' @param id character, unique identifier for the module
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
 #' @param types character vector
 #' @inheritParams countYearShotAnimals
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -254,35 +253,45 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
-#' @param regionLevels numeric vector, region level choices
+#' @inheritParams optionsModuleUI
 #' @inheritParams countYearShotAnimals
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @inherit welcomeSectionUI
-#' 
 #' @export
-countYearShotUI <- function(id, groupVariable, regionLevels = NULL, uiText) {
+countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
+  uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", groupVariable), ]
+  plotFunction <- paste0("countYearShotUI-", groupVariable)
+  title <- getOutputTitle(
+    output = plotFunction, specie = specie, uiText = uiText
+  )
+  description <- getOutputDescription(
+    output = plotFunction, 
+    specie = specie, uiText = uiText, context = context
+  )
   
   tagList(
     
     actionLink(inputId = ns("linkYearShot"),
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearShot % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkYearShot % 2  ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         
+        column(8, plotModuleUI(id = ns("countYearShot"))),
         column(4,
           optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
             regionLevels = regionLevels, exportData = TRUE,
             showType = TRUE, showInterval = TRUE,
-            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd"),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
-        ),
-        column(8, plotModuleUI(id = ns("countYearShot")))
+            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd")
+        )
+        
       ),
-      tags$hr(),
+      tags$p(HTML(description))
     )
   
   ) 

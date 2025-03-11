@@ -258,27 +258,28 @@ mapSchade <- function(
 
 
 #' Shiny module for creating map on schade data - server side
-#' @param id character, unique identifier for module
 #' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
 #' @param allSpatialData reactive with sf objects with spatial data 
 #' for selected region (and year for WBE)
 #' @param timeRange integer vector, relevant period that can be selected for the map
-#' @param defaultYear integer, current (default) end year of the selected period
-#' @param species character vector, selected species for the plot
 #' @param borderRegion character, for which \code{regionLevel} to show black border;
 #' see also \code{\link{mapSchade}}; default is NULL
 #' @param type character, type of plot this module is used for. Historically
 #' only \code{"schade"}. Later extended to also cover \code{"afschot"}, i.e. 
 #' "gerapporteerde afschot locaties", see also \code{mapAfschotUI}
+#' @param variable (optional) character with variable of interest
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @importFrom webshot2 webshot
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
 #' @export
-mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange, 
-  defaultYear, species, borderRegion = NULL, type = c("schade", "afschot")) {
+mapSchadeServer <- function(
+  id, schadeData, allSpatialData, timeRange, 
+  defaultYear, species, borderRegion = NULL, 
+  type = c("schade", "afschot"),
+  variable = NULL) {
   
   type <- match.arg(type)
   
@@ -344,6 +345,9 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
           
         })
       
+      variableCurrent <- reactive(
+        ifelse(!is.null(variable), variable, input$variable)
+      )
       
       output$titlePerceel <- renderUI({
           
@@ -356,7 +360,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
               "voor", if (nSpecies > 1) 
                   paste(paste(tolower(species())[1:nSpecies-1], collapse = ", "), "en", tolower(species()[nSpecies])) else
                   tolower(species()),
-              "per", switch(input$variable, 
+              "per", switch(variableCurrent(), 
                 season = "seizoen",
                 schadeCode = "schadetype",
                 afschotjaar = "jaar",
@@ -483,7 +487,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
             regionLevel = if (grepl("WBE", borderRegion)) 
                 paste0(borderRegion, "_", input$time_schade[2]) else
                 borderRegion,
-            variable = input$variable,
+            variable = variableCurrent(),
             allSpatialData = allSpatialData(),
             addGlobe = input$globe_schade %% 2 == 0, 
             legend = input$legend_schade)
@@ -500,7 +504,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
             regionLevel = if (grepl("WBE", borderRegion)) 
                 paste0(borderRegion, "_", input$time_schade[2]) else
                 borderRegion, 
-            variable = input$variable,
+            variable = variableCurrent(),
             allSpatialData = allSpatialData(),
             legend = input$legend_schade,
             addGlobe = input$globe_schade %% 2 == 0
@@ -571,7 +575,7 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
         filename = function()
           nameFile(species = species(),
             year = unique(input$time_schade), 
-            content = paste0(type, "Kaart", switch(input$variable, 
+            content = paste0(type, "Kaart", switch(variableCurrent(), 
               season = "Seizoen", 
               schadeCode = "TypeSchade",
               afschotjaar = "SchadeJaar",
@@ -645,28 +649,44 @@ mapSchadeServer <- function(id, schadeData, allSpatialData, timeRange,
 #' default value is FALSE
 #' @param filterSource boolean, whether to show filter option for source
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
-#' @param variableChoices named character vector, choices for coloring variable
-#' @inheritParams mapFlandersUI
+#' @param variableChoices named character vector, choices for coloring 
+#' @param outputFunction character, named of output function used
+#' to extract title and description, by default: 'mapSchadeUI'
+#' @inheritParams getOutputTitle
+#' @inheritParams getOutputDescription
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams reportingGrofwild-common-args
 #' @author mvarewyck
 #' @importFrom leaflet leafletOutput
 #' @export
-mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,  
+mapSchadeUI <- function(
+  id, filterCode = FALSE, filterSubcode = FALSE,  
   filterSource = TRUE, filterAccuracy = FALSE,
-  variableChoices = c(
+  filterVariable = TRUE, variableChoices = c(
     "Seizoen" = "season",
     "Jaar" = "afschotjaar",
     "Type schade" = "schadeCode"),
-  uiText, plotDetails = NULL) {
+  uiText, context = id, specie = NULL, type = NULL, plotDetails = NULL,
+  doHide = TRUE, outputFunction = "mapSchadeUI") {
   
   ns <- NS(id)
   
   metaSchade <- loadMetaSchade()
   
+  title <- getOutputTitle(
+    output = outputFunction, specie = specie, 
+    uiText = uiText, type = type)
+  description <- getOutputDescription(
+    output = outputFunction, 
+    specie = specie, uiText = uiText, context = context,
+    type = type
+  )
+  
   tagList(  
     
-    tags$p(HTML(uiText[, strsplit(id, "_")[[1]][1]])),
+    actionLink(inputId = ns("linkMapSchade"),
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkMapSchade % 2  ==", as.numeric(doHide)), ns = ns,
     
       wellPanel(
         if (filterCode || filterSubcode)
@@ -689,9 +709,10 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
         
         fixedRow(
           column(6, uiOutput(ns("time_schade"))),
-          column(6, selectInput(inputId = ns("variable"), label = "Variabele",
-              choices = variableChoices)
-          )
+            if(filterVariable)
+            column(6, selectInput(inputId = ns("variable"), label = "Variabele",
+                choices = variableChoices)
+            )
         ),
         fixedRow(
           column(6,
@@ -743,41 +764,12 @@ mapSchadeUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,
           )      
       ),
       
+      tags$p(HTML(description)),
+      
       tags$hr()
     
-  )
-
-  
-}
-
-#' Copy of mapSchadeUI as being used for "WBE" pagina
-#' @inherit welcomeSectionUI
-#' @inheritParams mapSchadeUI 
-#' @export
-mapAfschotUI <- function(id, filterCode = FALSE, filterSubcode = FALSE,  
-  filterSource = TRUE, filterAccuracy = FALSE,
-  variableChoices = c(
-    "Seizoen" = "season",
-    "Jaar" = "afschotjaar",
-    "Type schade" = "schadeCode"),
-  uiText, plotDetails = NULL) {
-  
-  ns <- NS(id)
-  
-  uiText <- uiText[uiText$plotFunction == "mapAfschotUI", ]
-  
-  tagList(
-    actionLink(inputId = ns("linkMapAfschot"), label =
-        h3(HTML(uiText$title))),
-    conditionalPanel("input.linkMapAfschot % 2 == 1", ns = ns,
-      
-      mapSchadeUI(id = id, filterCode = filterCode, filterSubcode = filterSubcode, 
-        filterSource = filterSource, filterAccuracy = filterAccuracy,
-        variableChoices = variableChoices, 
-        uiText = uiText, 
-        plotDetails = plotDetails)
     )
   )
 
+  
 }
-

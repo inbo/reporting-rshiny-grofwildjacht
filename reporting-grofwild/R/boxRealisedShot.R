@@ -12,14 +12,14 @@
 #' @param regio, empty function argument needed for generalization in \code{\link{plotModuleServer}}
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified type and jaartallen}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot': plotly object, for the specified type and jaartallen 
+#' \item 'data': data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jaar': }{year at which the animal was shot}
-#' \item{'verwezenlijkt': }{count for actually shot animals}
-#' \item{'toegekend': }{count for assigned animals}
-#' \item{'percent': }{verwezenlijkt / toegekend * 100}
-#' }}
+#' \item 'jaar': year at which the animal was shot 
+#' \item 'verwezenlijkt': count for actually shot animals 
+#' \item 'toegekend': count for assigned animals 
+#' \item 'percent': verwezenlijkt / toegekend * 100 
+#' }
 #' }
 #' @author mvarewyck
 #' @import plotly
@@ -106,7 +106,7 @@ boxRealisedShotServer <- function(id, data, timeRange, types) {
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
-#' @param regionLevels numeric vector, region level choices
+#' @inheritParams optionsModuleUI
 #' @inherit welcomeSectionUI
 #' 
 #' @export
@@ -125,14 +125,14 @@ boxRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiT
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("boxRealisedShot"))
+        ),
         column(4,
           optionsModuleUI(id = ns("boxRealisedShot"),
             showTime = TRUE, showType = TRUE, regionLevels = regionLevels,
             exportData = TRUE),
           tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("boxRealisedShot"))
         ),
         tags$hr()
       )

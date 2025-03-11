@@ -28,12 +28,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # Use the remotes package instead of devtools as it is much lighter
 RUN R -q -e "install.packages('remotes')"
 
-RUN R -q -e "options(warn = 2); remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'arrow', 'kableExtra', 'webshot2'))"
-RUN R -q -e "options(warn = 2); remotes::install_version('DT', version = '0.23', repos = 'https://cloud.r-project.org', upgrade = 'never')"
-RUN R -q -e "options(warn = 2); remotes::install_version('plotly', version = '4.10.1', repos = 'https://cloud.r-project.org', upgrade = 'never')" 
-RUN R -q -e "options(warn = 2); remotes::install_version('rmarkdown', version = '2.18', repos = 'https://cloud.r-project.org', upgrade = 'never')"
-RUN R -q -e "options(warn = 2); remotes::install_version('magick', version = '2.7.3', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+RUN R -q -e "options(warn = 2); remotes::install_cran(c('shiny', 'sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'kableExtra', 'webshot2', 'slickR'))"
+RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 # NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work
+RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', repos = 'https://cloud.r-project.org', upgrade = 'never')" 
+RUN R -q -e "remotes::install_version('rmarkdown', version = '2.18', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+RUN R -q -e "remotes::install_version('magick', version = '2.7.3', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+# NOTE: Need later versions for bslib::card() to be available
+RUN R -q -e "options(warn = 2); remotes::install_version('htmltools', version = '0.5.7', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+RUN R -q -e "options(warn = 2); remotes::install_version('bslib', version = '0.6.0', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 
 RUN R -q -e "options(warn = 2); remotes::install_github(c('inbo/INBOtheme@v0.5.10', 'daattali/shinycssloaders'))"
 
@@ -51,8 +54,8 @@ ENV CHROMOTE_CHROME=/usr/bin/vivaldi
 ARG GIT_SHA
 ENV GIT_SHA=$GIT_SHA
 
-# For access to S3 on UAT
-RUN R -q -e "options(warn = 2); remotes::install_cran(c('config', 'aws.s3', 'aws.ec2metadata', 'aws.signature'))"
+# Access to S3 on UAT
+RUN R -q -e "options(warn = 2); Sys.setenv(LIBARROW_MINIMAL=FALSE); remotes::install_cran(c('arrow', 'config', 'aws.ec2metadata', 'aws.s3', 'aws.signature'), Ncpus=1)"
 
 
 # Install the package without the source files ending up in the Docker image

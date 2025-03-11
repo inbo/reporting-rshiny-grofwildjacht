@@ -11,15 +11,15 @@
 #' @param currentYear numeric, current year to calculate accuracy for
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the percentage per age category
+#' \item{'plot': plotly object, for a given species the percentage per age category
 #' based on cheek or hunter report in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item{'data': data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jager': }{category based on the meldingsformulier}
-#' \item{'kaak': }{category based on the lower jaw inspection}
-#' \item{'freq': }{counts of animals}
-#' \item{'percent': }{percentage in the entire category based on
-#' the lower jaw inspection}
+#' \item 'jager': category based on the meldingsformulier 
+#' \item 'kaak': category based on the lower jaw inspection 
+#' \item 'freq': counts of animals 
+#' \item 'percent': percentage in the entire category based on
+#' the lower jaw inspection 
 #' }
 #' }
 #' }
@@ -165,33 +165,41 @@ countAgeCheekServer <- function(id, data, timeRange) {
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
 #' @param showAccuracy boolean, whether to show gauge for accuracy
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeCheekUI <- function(id, showAccuracy = FALSE, uiText) {
+countAgeCheekUI <- function(id, showAccuracy = FALSE, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
-  
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+
+  title <- getOutputTitle(output = "countAgeCheekUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "countAgeCheekUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkAgeCheek"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkAgeCheek % 2 == 1", ns = ns,
+      label = h3(title)),
+    conditionalPanel(
+      condition = paste("input.linkAgeCheek % 2 ==", 
+        as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
         
-        column(4,
-          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, id])),
-          if (showAccuracy)
-            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode"),
-        ),
         column(8, 
           plotModuleUI(id = ns("ageCheek"))
         ),
-        tags$hr()
-      )
+        column(4,
+          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
+          if (showAccuracy)
+            accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
+        )
+      ),
+      tags$p(description)
     )
   )
   

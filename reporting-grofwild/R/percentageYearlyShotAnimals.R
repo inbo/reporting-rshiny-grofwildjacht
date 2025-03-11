@@ -5,24 +5,22 @@
 #' in the plot; if NULL no selection on year(s) is made
 #' @param jaar year of interest
 #' @param openingstijdenData data.frame with opening season, 
-#' as returned by the link{loadOpeningstijdenData} function
+#' as returned by the \link{loadOpeningstijdenData} function
 #' @param type animal type, used to filter \code{data} and \code{openingstijdenData} ('type' column)
 #' If NULL (by default) or 'all', the data is not filtered.
 #' @inheritParams countYearProvince
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given specie the observed yearly percentage
+#' \item 'plot':  plotly object, for a given specie the observed yearly percentage
 #' killed animals for the year \code{jaar}. 
 #' The mean in the entire year is represented by a dotted line.
 #' The range of the yearly percentage killed for the \code{jaartallen} period is represented
-#' by a ribbon, and its median by a full line.}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' by a ribbon, and its median by a full line. 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'dateHalfMonth': }{date in half-month resolution,
+#' \item 'dateHalfMonth':  date in half-month resolution,
 #' e.g. January (01) for 01/01 -> 14/01 and January (02) for 15/01 -> end month (31/01)
-#' }
-#' \item{'obsYear': }{observed percentage of the counts for the specific half-month}
-#' }
+#' \item 'obsYear':  observed percentage of the counts for the specific half-month 
 #' }
 #' }
 #' @import plotly
@@ -314,11 +312,11 @@ percentageYearlyShotAnimals <- function(
 
 
 
-#' Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - server side
+#' Shiny module for creating the plot 
+#' \code{\link{percentageYearlyShotAnimals}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams percentageYearlyShotAnimals
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -350,32 +348,38 @@ yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenDat
 
 #' Shiny module for creating the plot \code{\link{percentageYearlyShotAnimals}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-yearlyShotAnimalsUI <- function(id, uiText) {
+yearlyShotAnimalsUI <- function(id, uiText, specie = NULL, 
+  context = id, doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  plotFunction <- "yearlyShotAnimalsUI"
+    
+  title <- getOutputTitle(output = plotFunction, specie = specie, uiText = uiText)
+  description <- getOutputDescription(output = plotFunction, 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkYearlyShotAnimals"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearlyShotAnimals % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkYearlyShotAnimals % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
-        
-        column(4,
-          optionsModuleUI(id = ns("yearlyShotAnimals"), 
-            showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
+          
         column(8, 
           plotModuleUI(id = ns("yearlyShotAnimals"))
-        ),
-        tags$hr()
-      )
+        ), 
+        column(4,
+          optionsModuleUI(id = ns("yearlyShotAnimals"), 
+            showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE)
+        )
+
+      ),
+      tags$p(HTML(description))
     )
   )
   

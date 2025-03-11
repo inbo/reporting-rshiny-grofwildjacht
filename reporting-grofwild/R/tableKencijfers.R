@@ -262,6 +262,13 @@ kencijferModuleUI <- function(id, uiText) {
       condition = "input.linkKencijferTabel % 2 == 0", ns = ns,
       fixedRow(
         tags$p(HTML(decodeText(text = uiText$dash))),
+        column(8,
+          tags$div(
+            style = "margin-bottom: 10px",
+            withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
+          ),
+          downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
+        ),
         column(4,
           wellPanel(
             uiOutput(ns("filterYear")),
@@ -281,13 +288,6 @@ kencijferModuleUI <- function(id, uiText) {
               uiOutput(ns("sliderAfschot"))
             )
           )
-        ),
-        column(8,
-          tags$div(
-            style = "margin-bottom: 10px",
-            withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
-          ),
-          downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
         )
       ),
       tags$hr()

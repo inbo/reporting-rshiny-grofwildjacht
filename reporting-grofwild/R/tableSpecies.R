@@ -131,9 +131,8 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
 #' @inheritParams mapFlandersServer
 #' @param data data.frame for the plot function
 #' @param timeRange numeric vector of length 2, min and max year to subset data
-#' @param uiText data.frame for description
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -187,13 +186,13 @@ tableSpeciesUI <- function(id, uiText) {
     
     fixedRow(
       
+      column(8, tableModuleUI(id = ns("tableSpecies"))),
       column(4,
         optionsModuleUI(id = ns("tableSpecies"), showYear = TRUE, 
           showCategorie = TRUE, exportData = TRUE),
         uiOutput(ns("tableSpeciesText"))
-      ),
-      column(8, tableModuleUI(id = ns("tableSpecies")))
-    
+      )
+  
     ),
     tags$hr()
     

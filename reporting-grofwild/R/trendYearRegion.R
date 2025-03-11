@@ -2,6 +2,7 @@
 #' @inheritParams createSpaceData
 #' @inheritParams trendYearRegion
 #' @inheritParams createShapeData
+#' @inheritParams filterSpatial
 #' @return data.frame, summary of number of animals per species, region and year.
 #' Ready for plotting with \code{\link{trendYearFlanders}} 
 #' @author mvarewyck
@@ -146,14 +147,13 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @inheritParams countYearProvince
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the observed number 
-#' per year and per selected commune is plotted in a line plot}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the observed number 
+#' per year and per selected commune is plotted in a line plot 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animals was shot}
-#' \item{'locatie': }{comune name}
-#' \item{'aantal' or 'aantal/100ha': }{absolute or relative counts of animals}
-#' }
+#' \item 'afschotjaar':  year at which the animals was shot 
+#' \item 'locatie':  commune name
+#' \item 'aantal' or 'aantal/100ha': absolute or relative counts of animals
 #' }
 #' }
 #' @import plotly
@@ -254,17 +254,19 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams trendYearRegion 
 #' @inheritParams createTrendData
-#' @param id character, unique identifier for the module
+#' @inheritParams reportingGrofwild-common-args
 #' @param geoData reactive data.frame, geographical data for the selected species
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @param type character, type of module e.g. "wbe"
 #' @param locaties reactive character vector, region name to be shown in the plot title
+#' @param ns session namespace
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-trendYearRegionServer <- function(id, data, timeRange = reactive(NULL), 
+trendYearRegionServer <- function(
+  id, ns = NULL,
+  data, timeRange = reactive(NULL), 
   species, regionLevel = reactive("WBE_buitengrenzen"), locaties,
   geoData, allSpatialData, biotoopData = reactive(NULL), title = reactive(NULL),
   type = "wbe") {
@@ -275,7 +277,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
   moduleServer(id,
     function(input, output, session) {
       
-      ns <- session$ns
+      if(is.null(ns))  ns <- session$ns
       
       output$trendRegionTitle <- renderUI({
           
@@ -313,7 +315,7 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
             data = geoData(),
             allSpatialData = allSpatialData,
             biotoopData = biotoopData(),
-            timeRange = req(input$trendPeriod),
+            timeRange = req(input$trendPeriod), # TODO: issue
             species = req(species()),
             regionLevel = regionLevel(),
             unit = req(input$trendUnit)
@@ -337,7 +339,6 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
             getDisclaimerLimited()
           
         })      
-      
       
       callModule(module = optionsModuleServer, id = "trendRegion", 
         data = trendRegionData,
@@ -365,13 +366,15 @@ trendYearRegionServer <- function(id, data, timeRange = reactive(NULL),
 #' Shiny module for creating the plot \code{\link{trendYearRegion}} - UI side
 #' 
 #' @inherit welcomeSectionUI
+#' @param specie character of length 1, specie
 #' @param plotFunction character, for matching uiText
 #' @param showCombinatie boolean, whether to show the option to combine lines
-#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @param unitChoices, character vector with choices for the units
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI", 
+trendYearRegionUI <- function(
+  id, uiText, context = id, specie = NULL, plotFunction = "trendYearRegionUI", 
   showCombinatie = FALSE, doHide = TRUE,
   unitChoices = c("Aantal" = "absolute", 
     "Aantal/100ha" = "relative", 
@@ -379,13 +382,18 @@ trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI",
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == plotFunction, ]
+  title <- getOutputTitle(output = plotFunction, specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = plotFunction, 
+    specie = specie, uiText = uiText, context = context)
   
   toShow <- tagList(
     
+    uiOutput(ns("disclaimerTrendRegion")), 
+      
     fixedRow(
       
-      uiOutput(ns("disclaimerTrendRegion")),
+      column(8, plotModuleUI(id = ns("trendRegion"))),
       
       column(4,
         wellPanel(
@@ -397,12 +405,11 @@ trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI",
               label = "Combineer alle geselecteerde regio's"),
           optionsModuleUI(id = ns("trendRegion"), exportData = TRUE,
             doWellPanel = FALSE)
-        ),
-        tags$p(HTML(uiText[, id]))
+        )
       ),
-      column(8, plotModuleUI(id = ns("trendRegion")))
+      
     ),
-    tags$hr(),
+    tags$p(HTML(description))
   )
   
   if (plotFunction == "trendYearRegionUI")
@@ -411,7 +418,7 @@ trendYearRegionUI <- function(id, uiText, plotFunction = "trendYearRegionUI",
       toShow
     ) else
     tagList(
-      actionLink(inputId = ns("linkYearRegion"), label = uiText$title, class = "action-h3"),
+      actionLink(inputId = ns("linkYearRegion"), label = title, class = "action-h3"),
       conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
         toShow
       )

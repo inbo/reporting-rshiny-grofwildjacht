@@ -5,7 +5,6 @@
 #' @param awsFile path to AWS file
 #' @param inboUserName set NULL if not a inbo user, for inbo user, provide your user name firstName_lastName
 #' @return no return value, ENV variables are set correctly
-#' 
 #' @author mvarewyck
 #' @importFrom aws.signature read_credentials
 #' @export
@@ -19,15 +18,12 @@ setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
   # for inbo user on their PC
   userProfile <- Sys.getenv("USERPROFILE", unset = NA)
   
-  
   if (!is.na(userProfile))
     awsFile <- normalizePath(file.path(userProfile, ".aws", "credentials"))
   
-  
   # credentials are in ~/.aws/credentials OR manually copy/paste OR using aws.signature::
   x <- aws.signature::read_credentials(file = awsFile)[[profile]]
-  
-  
+    
   Sys.setenv(
     AWS_DEFAULT_REGION = eval(parse(text = config::get("credentials", file = system.file("config.yml", package = "reportingGrofwild"))$region)),
     AWS_ACCESS_KEY_ID = x$AWS_ACCESS_KEY_ID, 
@@ -143,10 +139,10 @@ testS3 <- function() {
 #' @param envir environment, where to load the data; default is \code{.GlobalEnv}
 #' @return depending on the input file
 #' \itemize{
-#' \item{rdata}{no return value,
+#' \item rdata no return value,
 #' the R object (data.frame or list) loaded from the \code{file} is assigned to
-#' the \code{.GlobalEnv}}
-#' \item{other files}{R object (data.frame or list) is returned}
+#' the \code{.GlobalEnv} 
+#' \item other files R object (data.frame or list) is returned 
 #' }
 #' @author mvarewyck
 #' @importFrom aws.s3 s3load s3read_using

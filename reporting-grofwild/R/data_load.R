@@ -1,35 +1,64 @@
-
+#' Common arguments for the functions that load data
+#' @param path (optional) string, path to local folder 
+#' containing the data, by default value of the environment
+#' variable: '\emph{reportingGrofwild-data-path} '
+#' - for development purpose only
+#' @name reportingGrofwild-data-load
+NULL
 
 #' Load spatial data
 #' @param WBE_NR integer, if not NULL select only relevant data for given WBE;
 #' default value is NULL 
 #' @inheritParams readS3
+#' @inheritParams reportingGrofwild-data-load
 #' @return list of sf objects
 #' 
 #' @author mvarewyck
 #' @importFrom sf st_read st_layers
 #' @export
-loadShapeData <- function(WBE_NR = NULL,
-  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
-  
+loadShapeData <- function(
+  WBE_NR = NULL,
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("reportingGrofwild-data-path")
+) {
+	
   if (all(is.na(WBE_NR)))
     return(NULL)
   
   if (is.null(WBE_NR) | length(WBE_NR) > 100) {
-    # From 100 it is faster to load single object, but requires more memory (+-80 MB)
-    readS3(file = "spatialDataWBE_sf.RData", envir = environment())
-    return(spatialDataWBE)
+  	if(!identical(path, "")){
+  		load(
+        file = file.path(path, "spatialDataWBE_sf.RData"), 
+        envir = environment()
+      )
+  	}else{
+      # From 100 it is faster to load single object, but requires more memory (+-80 MB)
+      readS3(file = "spatialDataWBE_sf.RData", envir = environment())
+  	}
+  	return(spatialDataWBE)
   }
   
   # 1st layer (WBE)
-  readS3(file = paste0("spatialDataWBE/", WBE_NR[1], ".RData"), bucket = bucket, 
-    envir = environment())
+	file <- paste0("spatialDataWBE/", WBE_NR[1], ".RData")
+ 	if(!identical(path, "")){
+		load(file.path(path, file), envir = environment())
+	}else{
+    readS3(file = file, bucket = bucket, envir = environment())
+	}
   
   if (length(WBE_NR) > 1)
     for (wbe in WBE_NR[-1]) {
       envTmp <- new.env()
-      readS3(file = paste0("spatialDataWBE/", wbe, ".RData"), bucket = bucket,
-        envir = envTmp)
+      file <- paste0(wbe, ".RData")
+      if(!identical(path, "")){
+        load(file.path(path, file), envir = envTmp)
+      }else{
+        readS3(
+          file = paste0("spatialDataWBE/", file), 
+          bucket = bucket,
+          envir = envTmp
+        )
+      }
       spatialDataWBE <- sapply(names(spatialDataWBE), function(iLayer)
           rbind(spatialDataWBE[[iLayer]], envTmp$spatialDataWBE[[iLayer]]))
     }
@@ -44,7 +73,7 @@ loadShapeData <- function(WBE_NR = NULL,
 #' @param bucket character, name of the S3 bucket as specified in the config.yml file;
 #' default value is "inbo-wbe-uat-data"
 #' @param type data type, "eco" for ecology data and "geo" for geography data
-#' 
+#' @inheritParams reportingGrofwild-data-load
 #' @return data.frame, loaded data
 #' @importFrom arrow read_parquet
 #' @importFrom sf st_as_sf st_transform
@@ -52,7 +81,9 @@ loadShapeData <- function(WBE_NR = NULL,
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")) {
+  path = Sys.getenv("reportingGrofwild-data-path"),
+  type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")
+) {
   
   type <- match.arg(type)
   
@@ -63,8 +94,14 @@ loadRawData <- function(
       "kbo_wbe" = "Data_Partij_Cleaned_processed.parquet",
       "waarnemingen" = "waarnemingen_wild_zwijn_processed.parquet"
     )
-  
-  rawData <- read_parquet(file = file.path("s3:/", bucket, dataFile))
+
+  dataFile <- if(!identical(path, "")){
+    file.path(path, dataFile)
+  }else{
+    file.path("s3:/", bucket, dataFile)
+  }
+
+  rawData <- read_parquet(file = dataFile)
   
   return(rawData)
   
@@ -79,9 +116,17 @@ loadRawData <- function(
 #' 
 #' @author mvarewyck
 #' @export
-loadGemeentes <- function(bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+loadGemeentes <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("reportingGrofwild-data-path")) {
   
-  readS3(FUN = read.csv, header = TRUE, file = "gemeentecodes.csv", bucket = bucket)
+  pathFile <- "gemeentecodes.csv"
+
+  if(!identical(path, "")){
+	  read.csv(file.path(path, pathFile), header = TRUE)
+  }else{
+    readS3(FUN = read.csv, header = TRUE, file = pathFile, bucket = bucket)
+  }
   
 }
 
@@ -90,11 +135,11 @@ loadGemeentes <- function(bucket = config::get("bucket", file = system.file("con
 #' @inheritParams loadRawData
 #' @return data.frame with columns:
 #' \itemize{
-#' \item{'Soort': }{specie}
-#' \item{'Type': }{specie type}
-#' \item{'Jaar': }{year}
-#' \item{'Startdatum': }{start datum, in the format '\%d/\%m/\%Y'}
-#' \item{'Stopdatum': }{end datum, in the format '\%d/\%m/\%Y'}
+#' \item 'Soort':  specie 
+#' \item 'Type':  specie type 
+#' \item 'Jaar':  year 
+#' \item 'Startdatum':  start datum, in the format '\%d/\%m/\%Y' 
+#' \item 'Stopdatum':  end datum, in the format '\%d/\%m/\%Y' 
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
@@ -102,16 +147,31 @@ loadGemeentes <- function(bucket = config::get("bucket", file = system.file("con
 #' @importFrom aws.s3 get_bucket
 #' @export
 loadOpeningstijdenData <- function(
-  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))){
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("reportingGrofwild-data-path")){
   
   pathFile <- "Openingstijden_grofwild.csv"
-  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
-    file = pathFile, bucket = bucket)
+  
+  if(!identical(path, "")){
+    pathFile <- file.path(path, pathFile)
+    rawData <- read.csv(
+      file = pathFile, 
+      sep = ";", stringsAsFactors = FALSE
+    )
+    modifTime <- file.mtime(pathFile)
+  }else{
+    rawData <- readS3(
+      FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
+      file = pathFile, bucket = bucket
+    )
+    tmpInfo <- data.table::rbindlist(aws.s3::get_bucket(bucket = bucket))
+    modifTime <- tmpInfo[tmpInfo$Key == pathFile, ]$LastModified[1]
+    
+  }
   
   rawData$Type <- simpleCap(rawData$Type)
-  
-  tmpInfo <- data.table::rbindlist(aws.s3::get_bucket(bucket = bucket))
-  attr(rawData, "Date") <- as.Date(tmpInfo[tmpInfo$Key == pathFile, ]$LastModified[1])
+
+  attr(rawData, "Date") <- as.Date(modifTime)
   
   return(rawData)
   
@@ -122,24 +182,35 @@ loadOpeningstijdenData <- function(
 #' @inheritParams loadRawData
 #' @return data.frame with columns:
 #' \itemize{
-#' \item{'labeltype': }{character, type of Ree, one of \code{c("geit", "bok", "kits")}}
-#' \item{'WBE_Naam': }{character, WBE name}
-#' \item{'labeljaar': }{integer, year}
-#' \item{'provincie_toek': }{character, province}
-#' \item{'toegekend': }{integer, no. of assigned animals}
-#' \item{'verwezenlijkt': }{integer, no. of shot animals} 
-#' \item{'percentage_verwezenlijkt': }{numeric, percentage shot animals}
-#' \item{'KboNummer_Toek': }{character, WBE KBO number}
+#' \item 'labeltype':  character, type of Ree, one of \code{c("geit", "bok", "kits")} 
+#' \item 'WBE_Naam':  character, WBE name 
+#' \item 'labeljaar':  integer, year 
+#' \item 'provincie_toek': character, province 
+#' \item 'toegekend':  integer, no. of assigned animals 
+#' \item 'verwezenlijkt':  integer, no. of shot animals 
+#' \item 'percentage_verwezenlijkt':  numeric, percentage shot animals 
+#' \item 'KboNummer_Toek':  character, WBE KBO number 
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
 #' @export
 loadToekenningen <- function(
-  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("reportingGrofwild-data-path")) {
   
   pathFile <- "Verwezenlijkt_categorie_per_afschotplan.csv"
-  rawData <- readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
-    file = pathFile, bucket = bucket)
+  
+  rawData <- if(!identical(path, "")){
+    pathFile <- file.path(path, pathFile)
+    read.csv(
+      file = pathFile,  
+      sep = ";", stringsAsFactors = FALSE
+    )
+  }else{
+    readS3(FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
+      file = pathFile, bucket = bucket
+    )
+  }
   
   # Rename LabelType to non-plural
   rawData$labeltype[rawData$labeltype == "Geiten"] <- "Geit"
@@ -181,12 +252,19 @@ loadToekenningen <- function(
 #' @export
 loadHabitats <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  regionLevels = NULL) {
+  regionLevels = NULL,
+  path = Sys.getenv("reportingGrofwild-data-path")) {
   
   # For R CMD check
   habitatData <- NULL
   
-  readS3(file = "habitatData.RData", bucket = bucket, envir = environment())
+  pathFile <- "habitatData.RData"
+  
+  rawData <- if(!identical(path, "")){
+    load(file = file.path(path, pathFile), envir = environment())
+  }else{
+    readS3(file = pathFile, bucket = bucket, envir = environment())
+  }
   
   allLevels <- names(habitatData)
   
@@ -322,4 +400,40 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   
 }
 
+#' Load Spread data
+#' @inheritParams loadRawData
+#' @export
+loadSpreadData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  pathFile <- "spreadData_sf.RData"
+  
+  if(!identical(path, "")){
+    load(file = file.path(path, pathFile), envir = environment())
+  }else{
+    readS3(file = pathFile, bucket = bucket, envir = environment())
+  }
+  
+  return(spreadData)
+  
+}
 
+#' Load Traffic data
+#' @inheritParams loadRawData
+#' @export
+loadTrafficData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  pathFile <- "trafficData.RData"
+  
+  if(!identical(path, "")){
+    load(file = file.path(path, pathFile), envir = environment())
+  }else{
+    readS3(file = pathFile, bucket = bucket, envir = environment())
+  }
+  
+  return(trafficData)
+  
+}

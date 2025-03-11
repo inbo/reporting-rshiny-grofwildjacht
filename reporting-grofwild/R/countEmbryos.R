@@ -1,3 +1,24 @@
+
+#' Get embryo data
+#' @inheritParams countEmbryos
+#' @return data.frame with embryo data
+#' @export
+getEmbryoData <- function(data, jaartallen = NULL, type){
+  
+  if(!is.null(jaartallen))
+    data <- data[which(data$afschotjaar %in% jaartallen), ]
+  
+  data <- data[which(
+    data$type_comp %in% type & 
+    # exclude males & totally unknown
+    data$geslacht_comp != "Mannelijk" & 
+    !(data$geslacht_comp == "Onbekend" & data$type_comp == "Onbekend")
+  ), ]
+
+  return(data)
+  
+}
+
 #' Create interactive plot for number of embryos versus year
 #' 
 #' Adapted version from Figure p. 30 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
@@ -8,14 +29,14 @@
 #' @inheritParams filterGrofwild
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for the specified specie and years}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for the specified specie and years 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animal was shot}
-#' \item{'embryos': }{aantal embryos}
-#' \item{'Freq': }{counts of females}
-#' \item{'percent': }{percentage of females with given number of embryos per year}
-#' }}
+#' \item 'afschotjaar':  year at which the animal was shot 
+#' \item 'embryos':  aantal embryos 
+#' \item 'Freq':  counts of females 
+#' \item 'percent':  percentage of females with given number of embryos per year 
+#'  }
 #' }
 #' @author mvarewyck
 #' @import plotly
@@ -46,13 +67,12 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
  
  
  # Select data of specified years and type
- plotData <- subset(data, data$afschotjaar %in% jaartallen & 
-     data$type_comp %in% type & 
-     # exclude males & totally unknown
-     data$geslacht_comp != "Mannelijk" & 
-     !(data$geslacht_comp == "Onbekend" & data$type_comp == "Onbekend"),
+  plotData <- getEmbryoData(data, 
+    jaartallen = jaartallen, type = type)
+  plotData <- plotData[,
    c("afschotjaar", bioindicator, "type_comp", "aantal_embryos_bron",
-     "leeftijd_comp_bron", "geslacht_comp_bron", "leeftijd_comp_inbo"))
+     "leeftijd_comp_bron", "geslacht_comp_bron", "leeftijd_comp_inbo")
+  ]
  nRecords <- nrow(plotData)
  
  # Filter on source & rename to embryos
@@ -170,15 +190,15 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams optionsModuleServer
-#' @param uiText data.frame, HTML formatted text to be displayed in the UI
+#' @inheritParams getOutputDescription
 #' @param wildsoort character, species to be displayed. 
 #' Needed to format title and description in \code{uiText}
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
+countEmbryosServer <- function(id, data, timeRange, types, 
+  uiText, wildsoort = reactive(), context = id) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -207,7 +227,9 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
       
       output$descriptionEmbryos <- renderUI({
           
-          oldText <- uiText[, id]
+          req(wildsoort())   
+            
+          oldText <- uiText[, context]
           if (wildsoort() != "Ree")
             oldText <- strsplit(oldText, split = "Opmerking")[[1]][1]
           
@@ -231,35 +253,75 @@ countEmbryosServer <- function(id, data, timeRange, types, uiText, wildsoort) {
 
 
 #' Shiny module for creating the plot \code{\link{countEmbryos}} - UI side
-#' @param id character, identifier
-#' @param regionLevels character, choices for region
-#' 
+#' @inheritParams optionsModuleUI
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @author mvarewyck
 #' @export
-countEmbryosUI <- function(id, regionLevels) {
+countEmbryosUI <- function(id, regionLevels,
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
+  if(!is.null(specie)){
+    title <- getOutputTitle(output = "countEmbryosUI", specie = specie, 
+      uiText = uiText)
+    title <- h3(HTML(title))
+    description <- getOutputDescription(output = "countEmbryosUI", 
+      specie = specie, uiText = uiText, context = context)
+    if (specie != "Ree")
+      description <- strsplit(description, split = "Opmerking")[[1]][1]
+    description <- tags$p(HTML(description))
+  }else{
+     title <- uiOutput(ns("titleEmbryos"))
+     description <- NULL
+  }
+
   tagList(
     
-    actionLink(inputId = ns("countEmbryos"),
-      label = uiOutput(ns("titleEmbryos"))),
-    conditionalPanel("input.countEmbryos % 2 == 1", ns = ns,
+    actionLink(inputId = ns("countEmbryos"), label = title),
+    conditionalPanel(
+      condition = paste("input.countEmbryos % 2 ==", as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
-        
+        column(8, plotModuleUI(id = ns("countEmbryos"))),
         column(4,
-          optionsModuleUI(id = ns("countEmbryos"), showTime = TRUE, showType = TRUE,
+          optionsModuleUI(id = ns("countEmbryos"), 
+            showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("embryos", "leeftijd", "geslacht")),
-          uiOutput(ns("descriptionEmbryos"))),
-        column(8, 
-          plotModuleUI(id = ns("countEmbryos"))
-        ),
-        tags$hr()
-      )
+          if(is.null(specie))  uiOutput(ns("descriptionEmbryos"))
+        )
+      ),
+      description
     )
   )
   
 }
 
+#' Get types for females
+#' @param specie character with specie
+#' @inheritParams reportingGrofwild-common-args
+#' @return character vector with female types 
+#' (from the \code{type_comp} column) for the specific specie
+#' @author lcougnaud
+#' @export
+getFemaleTypes <- function(ecoData, specie){
+  
+  types <- levels(droplevels(ecoData$type_comp))
+  
+  types <- if (specie == "Ree") {
+    types[types %in% c("Reegeit", "Smalree")] 
+  } else if (specie == "Wild zwijn"){
+    types[types %in% c("Zeug", "Overloper (v)", "Frisling (v)")]      
+  } else {
+    types[types %in% c("Kalf (v)", "Smaldier", "Hinde")]        
+  }
+  
+  types <- c(types, "Onbekend")
+  
+  return(types)
+  
+}

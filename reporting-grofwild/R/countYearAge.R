@@ -2,24 +2,21 @@
 #' 
 #' Figure p. 11 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearProvince
-#' @param regio character vector, names of the selected regions in \code{data}
-#' to be shown in the plot title
+#' @inheritParams reportingGrofwild-common-args
 #' @param summarizeBy character, whether to summarize data in terms of counts or percentages
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the observed number 
-#' per year and per age category is plotted in a stacked bar chart}
-#' \item{'data'}{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given species the observed number 
+#' per year and per age category is plotted in a stacked bar chart 
+#' \item 'data' data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'jaar': }{year at which the animals was counted}
-#' \item{count, depending if \code{summarizeBy} is: }{
+#' \item 'jaar': year at which the animals was counted 
+#' \item count, depending if \code{summarizeBy} is:  
 #' \itemize{
-#' \item{'count': }{counts of animals in the 'freq' column}
-#' \item{'percent': }{percentage of counts of animals in the 'percent'  column}
+#' \item 'count':  counts of animals in the 'freq' column 
+#' \item 'percent':  percentage of counts of animals in the 'percent'  column 
 #' }
-#' }
-#' \item{'totaal': }{total number of animals across categories}
-#' }
+#' \item 'totaal':  total number of animals across categories 
 #' }
 #' }
 #' @import plotly
@@ -185,7 +182,6 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 #' @inheritParams countAgeGenderServer 
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
-#' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -235,8 +231,7 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
 #' @inherit welcomeSectionUI
 #' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
-#' @param doHide boolean, whether to initially hide the plot; default TRUE
-#' 
+#' @inheritParams reportingGrofwild-common-args
 #' @export
 countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   showRegion = TRUE, doHide = TRUE) {
@@ -255,15 +250,15 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
       
       fixedRow(
         
+        column(8, 
+          plotModuleUI(id = ns("yearAge"))
+        ),
         column(4,
           optionsModuleUI(id = ns("yearAge"), 
             summarizeBy = c("Aantal (alle data)" = "count",
               "Percentage (enkel ingezamelde onderkaken)" = "percent"),
             showTime = TRUE, regionLevels = if (showRegion) c(1:2, 4), exportData = TRUE),
           tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("yearAge"))
         )
       ),
       tags$hr()

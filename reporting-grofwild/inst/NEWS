@@ -1,4 +1,6 @@
 0.3.6
+    o restructure public app 'heerlijk helder'
+    o support load local data (reportingGrofwild-data-path env var)
     o replace webshot by webshot2
     o convert dockerfile for ARM64    
     o mimick aws configuration alien species portal

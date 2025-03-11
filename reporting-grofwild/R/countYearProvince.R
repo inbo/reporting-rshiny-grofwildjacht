@@ -13,19 +13,19 @@
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
 #' @inheritParams filterDataSource
+#' @inheritParams reportingGrofwild-common-args
 #' @param title character, title prefix; default is NULL
 #' @param width plot width (optional)
 #' @param height plot height (optional)
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given specie the observed number 
-#' per year and per province is plotted in a stacked bar chart}
-#' \item{'data': }{data displayed in the plot, as data.frame with:
+#' \item 'plot':  plotly object, for a given specie the observed number 
+#' per year and per province is plotted in a stacked bar chart 
+#' \item 'data':  data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item{'afschotjaar': }{year at which the animals was shot}
-#' \item{'locatie': }{location name, could be province, flanders or fbz name}
-#' \item{'value': }{counts of animals}
-#' }
+#' \item 'afschotjaar':  year at which the animals was shot 
+#' \item 'locatie':  location name, could be province, flanders or fbz name 
+#' \item 'value':  counts of animals 
 #' }
 #' }
 #' @import plotly
@@ -34,7 +34,8 @@
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
-        sourceIndicator = NULL, title = NULL, width = NULL, height = NULL) {
+        sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
+        regio = "") {
   
   
   type <- match.arg(type)
@@ -88,9 +89,13 @@ countYearProvince <- function(data, jaartallen = NULL,
   # summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
 	
   colorList <- replicateColors(values = levels(summaryData$locatie))
-  title <- paste0(if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
-			ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-					jaartallen)
+  title <- paste0(
+    if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
+			 ifelse(length(jaartallen) > 1, 
+      paste(min(jaartallen), "tot", max(jaartallen)),
+					 jaartallen
+    ),
+    if (!all(regio == "")) paste0("\n(", toString(regio), ")")
 	)
   
   singleYear <- length(unique(summaryData$afschotjaar)) == 1
@@ -139,7 +144,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
-  typesDefault = types, timeRange, title) {
+  typesDefault = types, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -186,38 +191,50 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @inherit welcomeSectionUI
 #' @inheritParams trendYearRegionUI
 #' @inheritParams optionsModuleUI 
-#' 
+#' @inheritParams getOutputDescription
 #' @export
-countYearProvinceUI <- function(id, uiText, plotFunction = "countYearProvinceUI",
-  showType = FALSE, showDataSource = NULL, doHide = TRUE) {
+countYearProvinceUI <- function(
+  id, 
+  uiText, context = id, plotFunction = "countYearProvinceUI", 
+  specie = NULL, type = NULL,
+  showType = FALSE, showDataSource = NULL, regionLevels = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == plotFunction, ]
+  title <- getOutputTitle(output = plotFunction, specie = specie, 
+    uiText = uiText, type = type)
+  description <- getOutputDescription(output = plotFunction, 
+    specie = specie, uiText = uiText, context = context,
+    type = type)
   
   tagList(
     
-    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(uiText$title)), 
+    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(title)), 
       class = "action-h3"),
-    conditionalPanel(paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), ns = ns,
+    conditionalPanel(
+      condition = paste("input.linkYearProvince % 2 ==", 
+        as.numeric(doHide)), 
+      ns = ns,
       
       uiOutput(ns("disclaimerYearProvince")),
-
       
       fixedRow(
         
-        column(4,
-          optionsModuleUI(id = ns("yearProvince"), 
-            showTime = TRUE, exportData = TRUE,
-            showType = showType,
-            showDataSource = showDataSource),
-          tags$p(HTML(uiText[, id]))
-        ),
         column(8, 
           plotModuleUI(id = ns("yearProvince"))
+        ),
+        column(4,
+          optionsModuleUI(
+            id = ns("yearProvince"), 
+            showTime = TRUE, exportData = TRUE,
+            showType = showType,
+            showDataSource = showDataSource,
+            regionLevels = regionLevels
+          )
         )
       ),
-      tags$hr()
+      tags$p(HTML(description))
     )
   )
   

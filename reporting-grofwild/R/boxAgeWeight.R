@@ -19,15 +19,14 @@
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @return list with:
 #' \itemize{
-#' \item{'plot': }{plotly object, for a given species the distribution of weight
-#' in function of age is plotted in box plots}
-#' \item{'data': }{raw data used for the plot, as data.frame with:
+#' \item 'plot': plotly object, for a given species the distribution of weight
+#' in function of age is plotted in box plots 
+#' \item 'data': raw data used for the plot, as data.frame with:
 #' \itemize{
-#' \item{'gewicht': }{weight in kilograms}
-#' \item{'leeftijd': }{age category}
-#' \item{'maanden': }{age in months}
-#' \item{'geslacht': }{gender}
-#' }
+#' \item 'gewicht': weight in kilograms 
+#' \item 'leeftijd': age category 
+#' \item 'maanden': age in months 
+#' \item 'geslacht': gender 
 #' }
 #' }
 #' @import plotly
@@ -170,33 +169,40 @@ boxAgeWeightServer <- function(id, data, type, timeRange) {
 
 #' Shiny module for creating the plot \code{\link{boxAgeWeight}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-boxAgeWeightUI <- function(id, uiText) {
+boxAgeWeightUI <- function(id, 
+  uiText, context = id, specie = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = "boxAgeWeightUI", specie = specie, 
+    uiText = uiText)
+  description <- getOutputDescription(output = "boxAgeWeightUI", 
+    specie = specie, uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkBoxAgeWeight"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkBoxAgeWeight % 2 == 1", ns = ns,
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkBoxAgeWeight % 2 ==", 
+        as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
-        
+        column(8, 
+          plotModuleUI(id = ns("boxAgeWeight"))
+        ),   
         column(4,
           optionsModuleUI(id = ns("boxAgeWeight"), 
             showTime = TRUE, showType = TRUE, regionLevels = c(1:2, 4), 
-            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(uiText[, id]))
-        ),
-        column(8, 
-          plotModuleUI(id = ns("boxAgeWeight"))
-        ),
-        tags$hr()
-      )
+            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")) 
+        )
+      ),
+      tags$p(HTML(description))
     )
   )
 

@@ -1,0 +1,35 @@
+/*** For the fancy tiles - radiobuttons ***/
+
+.radio-tiles input[type='radio'] { /* style for radiobutton */
+  visibility: hidden;
+}
+
+.radio-tiles {
+  width: 32%;
+  margin-left: 5px !important; 
+  margin-top: 5px !important;
+  margin-right: 0px !important;;
+  margin-bottom: 0px !important;; 
+}
+
+.radio-tiles:hover {
+  box-shadow: 10px 5px 5px #888888;
+}
+
+.radio-tiles:hover > span > .radio-tiles-title {
+  background-color: #456394 !important;
+}
+
+.radio-tiles-title {
+  font-size: 20px;
+  font-weight: bold;
+  height: 60px;
+  color: #ffffff;
+  background-color: #c04384;
+  text-align: center; /*  horizontal centering*/
+/*  vertical centering*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+      

@@ -13,8 +13,8 @@
 #' displayed instead of original data values
 #' @return list with
 #' \itemize{
-#' \item{'plot': }{plotly object}
-#' \item{'data': }{data.fram used for plot}
+#' \item 'plot': plotly object 
+#' \item 'data': data.frame used for plot 
 #' } 
 #' @author mvarewyck
 #' @import plotly
@@ -22,6 +22,7 @@
 #' @export
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
+    regio = "",
     sourceIndicator = NULL, width = 800, height = 600) {
   
   # For R CMD check
@@ -31,6 +32,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
       "wildsoort" = "Wildsoort",
       "SoortNaam" = "Gewas", 
       "schadeCode" = "Type Schade",
+      "season" = "Seizoen",
       type
   )
   
@@ -61,7 +63,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   nRecords <- nrow(plotData)
   
   # Remove some categories
-  plotData[is.na(plotData$variabele), "variabele"] <- "Onbekend"
+  if(any(is.na(plotData$variabele)))
+    plotData[is.na(plotData$variabele), "variabele"] <- "Onbekend"
   plotData <- plotData[!is.na(plotData$jaar) & !is.na(plotData$variabele), ]
   
   # Summarize data per year and age category
@@ -114,7 +117,8 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   
   title <- paste0(typeNaam, " ",
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-          paste("in", jaartallen))
+          paste("in", jaartallen)),
+      if (!all(regio == "")) paste0("\n(", toString(regio), ")")
   )
   
   singleYear <- length(unique(totalCount$jaar)) == 1
@@ -187,8 +191,10 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearSchadeServer <- function(id, data, types, labelTypes, typesDefault, 
-  timeRange, fullNames) {
+countYearSchadeServer <- function(
+  id, data, 
+  types = NULL, labelTypes = "Type", typesDefault = types, type = NULL,
+  timeRange, fullNames = NULL) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -202,10 +208,13 @@ countYearSchadeServer <- function(id, data, types, labelTypes, typesDefault,
         typesDefault = typesDefault,
         timeRange = timeRange
       )
-      callModule(module = plotModuleServer, id = "yearSchade",
+      callModule(
+        module = plotModuleServer, id = "yearSchade",
         plotFunction = "countYearSchade", 
         data = data,
-        fullNames = fullNames)
+        fullNames = fullNames,
+        type = type
+      )
       
     })
   
@@ -215,36 +224,53 @@ countYearSchadeServer <- function(id, data, types, labelTypes, typesDefault,
 
 #' Shiny module for creating the plot \code{\link{countYearSchade}} - UI side
 #' @inherit welcomeSectionUI
-#' 
+#' @inheritParams getOutputDescription
+#' @inheritParams optionsModuleUI
+#' @inheritParams reportingGrofwild-common-args
 #' @export
-countYearSchadeUI <- function(id, uiText) {
+countYearSchadeUI <- function(id, 
+  uiText, context = id, specie = NULL, type = NULL, doHide = TRUE,
+  regionLevels = NULL) {
+  
+  showType <- (is.null(type))
+  
+  title <- getOutputTitle(
+    output = "countYearSchadeUI", specie = specie, 
+    uiText = uiText, type = type)
+  description <- getOutputDescription(
+    output = "countYearSchadeUI", 
+    specie = specie, uiText = uiText, context = context,
+    type = type
+  )
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
-  
   tagList(
     
-    actionLink(inputId = ns("linkYearSchade"), 
-      label = h3(HTML(uiText$title))),
-    conditionalPanel("input.linkYearSchade % 2 == 1", ns = ns,
+    actionLink(inputId = ns("linkYearSchade"), label = h3(HTML(title))),
+    conditionalPanel(
+      condition = 
+        paste("input.linkYearSchade % 2 ==", as.numeric(doHide)), 
+      ns = ns,
       
       fixedRow(
         
-        column(4,
-          optionsModuleUI(id = ns("yearSchade"), 
-            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
-            showTime = TRUE, 
-            showType = TRUE, 
-            showDataSource = "schade",
-            exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
-        ),
         column(8, 
           plotModuleUI(id = ns("yearSchade"))
         ),
-        tags$hr()
-      )
+        column(4,
+          optionsModuleUI(
+            id = ns("yearSchade"), 
+            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
+            showTime = TRUE, 
+            showType = showType, 
+            showDataSource = "schade",
+            regionLevels = regionLevels,
+            exportData = TRUE
+          )
+        )
+      ),
+      tags$p(HTML(description))
     )
   )
 }

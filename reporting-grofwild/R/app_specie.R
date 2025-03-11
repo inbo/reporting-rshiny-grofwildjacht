@@ -36,7 +36,7 @@ specieUI <- function(id, speciesList, categories){
           mainPanel = mainPanel(
             width = 9,
             style = "overflow-y: hidden;", # single scrolling bar
-            getSpecieCards(id = id, categories = categories)
+            uiOutput(ns("specieCards"))
           )
   
        )
@@ -64,6 +64,14 @@ specieServer <- function(id, specie = reactiveVal()){
     ## Main panel
     
     observeEvent(input$cards, category(input$cards), ignoreInit = TRUE)
+    
+    output$specieCards <- renderUI({
+        
+        # Reset whenever specie is (re)selected
+        specie()
+        getSpecieCards(id = id, categories = categories)
+        
+      })
     
     return(category)
 

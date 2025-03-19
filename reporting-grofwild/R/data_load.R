@@ -110,7 +110,7 @@ loadOpeningstijdenData <- function(
   
   rawData$Type <- simpleCap(rawData$Type)
   
-  tmpInfo <- data.table::rbindlist(aws.s3::get_bucket(bucket = bucket))
+  tmpInfo <- as.data.frame(aws.s3::get_bucket(bucket = bucket))
   attr(rawData, "Date") <- as.Date(tmpInfo[tmpInfo$Key == pathFile, ]$LastModified[1])
   
   return(rawData)

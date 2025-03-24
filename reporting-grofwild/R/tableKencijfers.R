@@ -274,6 +274,14 @@ kencijferModuleUI <- function(id, uiText) {
           ),
           column(4,
             wellPanel(
+              selectInput(inputId = ns("regionLevel"), label = "Schaal",
+                  choices = c(
+                    "Vlaanderen" = "flanders",
+                    "Provincie" = "provinces", 
+                    "Gemeente" = "communes"
+                  ),
+                  selected = "provinces"),
+              uiOutput(ns("region")),
               uiOutput(ns("filterYear")),
               uiOutput(ns("filterPeriod")),
               selectInput(inputId = ns("unit"), label = "Eenheid",
@@ -313,7 +321,7 @@ kencijferModuleUI <- function(id, uiText) {
 #' @export
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, 
-  biotoopData, species){
+  biotoopData, spatialData, species){
   
   # For R CMD check
   afschotjaar <- aantal <- NULL
@@ -329,7 +337,52 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       ns <- session$ns
       
-      timeRange <- reactive(range(kencijfersData()$afschotjaar))
+      
+      output$region <- renderUI({
+          
+          req(input$regionLevel)
+          
+          if (input$regionLevel == "flanders")
+            return(NULL)
+          
+          currentSpatial <- filterSpatial(
+            allSpatialData = spatialData, 
+            species = species(), 
+            regionLevel = input$regionLevel, 
+            year = NULL
+          )
+          
+          regionChoices <- sort(unique(currentSpatial$NAAM))
+          
+          selectInput(inputId = ns("locaties"), label = "Regio('s)",
+            choices = regionChoices,
+            multiple = TRUE)
+          
+        })
+      
+      filterKencijfersData <- reactive({
+          
+          req(input$regionLevel)
+          
+          dataSingleEntry <- if (input$regionLevel != "flanders") {
+              
+              validate(need(input$locaties, "Gelieve regio('s) te selecteren"))
+              filterGeo(data = kencijfersData(), regionLevel = input$regionLevel, 
+                locaties = input$locaties, choseByID = FALSE)
+              
+            } else {     
+              
+              kencijfersData()
+              
+            }
+          
+          dataSingleEntry[ ,.(aantal= sum(aantal)), 
+            by = .(gemeente_afschot_locatie, provincie, dataSource, afschotjaar)]
+          
+        })
+      
+      timeRange <- reactive(range(filterKencijfersData()$afschotjaar))
+      
       
       output$filterYear <- renderUI({
           
@@ -360,9 +413,9 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       output$filterSource <- renderUI({
           
-          req(kencijfersData())
+          req(filterKencijfersData())
           
-          dataSource <- unique(kencijfersData()$dataSource)
+          dataSource <- unique(filterKencijfersData()$dataSource)
           names(dataSource) <- gsub("\\..+", "", dataSource)
           
           selectInput(inputId = ns("bron"),
@@ -375,9 +428,9 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       kencijferSummarized <- reactive({
           
-          req(kencijfersData())
+          req(filterKencijfersData())
           
-          summarizeKencijferData(geoData = kencijfersData(),
+          summarizeKencijferData(geoData = filterKencijfersData(),
             biotoopData = biotoopData(),
             unit = req(input$unit)
           )

@@ -95,17 +95,6 @@ verspreidingOutputServer <- function(id,
     
     results$specie <- reactive(specie())
     
-    # Create data upon user choices
-    results$spatialData <- reactive({
-      req(spatialData)
-      filterSpatial(
-        allSpatialData = spatialData, 
-        species = results$specie(), 
-#        regionLevel = req(input$dash_regionLevel), 
-        year = NULL
-      )
-    })
-
     # F17_1 plot
     results$geoData <- reactive({
       req(geoData)
@@ -228,6 +217,7 @@ verspreidingOutputServer <- function(id,
           id = outputName,
           kencijfersData = reactive(results$geoDataAll()[wildsoort == results$specie()]),
           biotoopData = reactive(biotoopData$communes),
+          spatialData = spatialData,
           species = results$specie
         )
       )

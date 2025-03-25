@@ -35,7 +35,8 @@ categoryUI <- function(
       position = "left", 
       sidebarPanel = specieSidebarUI(
         id = ns("sidebar"), 
-        speciesList = speciesList
+        speciesList = speciesList,
+        select = TRUE
       ),
       mainPanel = mainPanel(
         width = 9, 

@@ -344,3 +344,13 @@ body > .tabbable {
 .well-white {
   background-color: white;    
 }
+
+/*Custom search bar in navbar*/
+
+.bslib-nav-item .shiny-input-select {
+  min-width: 500px;
+}
+
+.bslib-nav-item .selectize-input::after {
+  border-style: hidden;    
+}

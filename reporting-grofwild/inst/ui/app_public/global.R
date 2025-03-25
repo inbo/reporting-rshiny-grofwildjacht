@@ -125,3 +125,6 @@ subcategories <- getInfo(infoOutput = infoOutput, variable = "subcategory")
 
 # output
 outputs <- getInfo(infoOutput = infoOutput, variable = "output")
+
+# Choices for navigation list
+infoOutputList <- getInfoList(infoOutput = infoOutput, uiText = uiText)

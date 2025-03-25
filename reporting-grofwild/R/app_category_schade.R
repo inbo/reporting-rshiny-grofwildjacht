@@ -153,15 +153,6 @@ schadeOutputServer <- function(id,
     
     schadeSidebarServer(id = "sidebar", specie = results$specie)
     
-    # specie is updated in this page
-    observe( 
-      updateSelectInput(session, inputId = "sidebar-specie", 
-        selected = specie())
-    )
-    
-    observeEvent(input$`sidebar-specie`, 
-      results$specie <- reactive(input$`sidebar-specie`))
-    
     ## Main panel
   
     ## Tab content with selected plot/table
@@ -431,7 +422,7 @@ schadeSidebarUI <- function(id,
   ns <- NS(namespace = id)
   
   specieSidebarUI(
-    id = id, 
+    id = ns("sidebar"), 
     # freeze input parameters choice (same id) for all sub-tabs
     bottomExtra = tagList(
       br(),
@@ -482,7 +473,7 @@ schadeSidebarServer <- function(id, specie = reactiveVal()){
   
   moduleServer(id, function(input, output, session){
         
-    specieSidebarServer(id = "sidebar", specie = specie)
+    specieSidebarServer(id = id, specie = specie)
         
     # show/hide filters
     observe(

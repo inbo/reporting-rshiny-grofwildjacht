@@ -24,3 +24,24 @@ createQueryString <- function(selection, page) {
   return(string)
   
 }
+
+
+
+#' Modify the query string with selected species
+#' @param query character, current query string
+#' @param specie character, selected species by the user
+#' @return character, updated \code{query} with selected species replaced
+#' 
+#' @author mvarewyck
+#' @export
+modifyQueryString <- function(query, specie) {
+  
+  if (specie == "")
+    specie <- "Diersoort"
+  
+  currentSelection <- strsplit(query, split = "/")[[1]]
+  currentSelection[1] <- paste0("#", specie)
+  
+  paste(currentSelection, collapse = "/")
+  
+}

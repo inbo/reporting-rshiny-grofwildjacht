@@ -37,7 +37,8 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
   args <- c(
     list(
       id = subcategory, category = category, 
-      speciesList = schadeWildsoorten
+      speciesList = schadeWildsoorten,
+      select = TRUE
     ),
     if(category == "schade")
       list(
@@ -142,6 +143,7 @@ shinyUI(
           outputTabs
         )
       ),
+      bslib::nav_item(selectizeInput(inputId = "search", label = NULL, choices = NULL)), 
       bslib::nav_spacer(), # right align next items
       bslib::nav_item(uiOutput("mailLink")),
       bslib::nav_item(

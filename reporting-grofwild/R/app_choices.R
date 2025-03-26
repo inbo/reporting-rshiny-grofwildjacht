@@ -290,12 +290,13 @@ getOutputInfo <- function(species, ...){
     subcategories <- sapply(outputs, getSubcategoryOutput)
     categories <- sapply(subcategories, getCategorySubcategory)
     
-    res <- data.frame(
-      specie = specie, 
-      category = categories, subcategory = subcategories, 
-      output = outputs,
-      stringsAsFactors = FALSE
-    )
+    if (!is.null(outputs))
+      data.frame(
+        specie = specie, 
+        category = categories, subcategory = subcategories, 
+        output = outputs,
+        stringsAsFactors = FALSE
+      )
   })
 
   info <- do.call(rbind, info)

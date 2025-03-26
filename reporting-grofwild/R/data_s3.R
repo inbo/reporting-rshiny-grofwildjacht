@@ -72,7 +72,7 @@ checkS3 <- function() {
   } else {
     credentials <- Sys.getenv(c("AWS_DEFAULT_REGION", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", 'AWS_SESSION_TOKEN'))
     if (any(credentials == ""))
-      stop("Please specify 'Sys.setenv()' for ", 
+      warning("Please specify 'Sys.setenv()' for ", 
         paste(names(credentials)[which(credentials == "")], collapse = ", "))
   }
   

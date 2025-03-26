@@ -1,0 +1,60 @@
+name: Test Website Reachability
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Run every hour
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  test_reachability:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check if faunabeheer.inbo.be is reachable
+        id: check_faunabeheer
+        run: |
+          if curl -sSf https://faunabeheer.inbo.be > /dev/null 2>&1; then
+            echo "faunabeheer.inbo.be is reachable"
+            echo "faunabeheer_reachable=true" >> $GITHUB_OUTPUT
+          else
+            echo "faunabeheer.inbo.be is not reachable"
+            echo "faunabeheer_reachable=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check if wbe.inbo.be is reachable
+        id: check_wbe
+        run: |
+          if curl -sSf https://wbe.inbo.be > /dev/null 2>&1; then
+            echo "wbe.inbo.be is reachable"
+            echo "wbe_reachable=true" >> $GITHUB_OUTPUT
+          else
+            echo "wbe.inbo.be is not reachable"
+            echo "wbe_reachable=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Determine unreachable websites
+        id: unreachable_sites
+        run: |
+          unreachable=""
+          if [ "${{ steps.check_faunabeheer.outputs.faunabeheer_reachable }}" == "false" ]; then
+            unreachable+="faunabeheer.inbo.be "
+          fi
+          if [ "${{ steps.check_wbe.outputs.wbe_reachable }}" == "false" ]; then
+            unreachable+="wbe.inbo.be "
+          fi
+          echo "unreachable_sites=$unreachable" >> $GITHUB_OUTPUT
+
+      - name: Send email notification
+        if: steps.unreachable_sites.outputs.unreachable_sites != ''
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{secrets.EMAIL_USER}}
+          password: ${{secrets.EMAIL_PASS}}
+          subject: Website(s) not reachable
+          body: |
+            The following website(s) are currently not reachable:
+            ${{ steps.unreachable_sites.outputs.unreachable_sites }}
+            Please check and resolve the issue.
+          to: faunabeheer@inbo.be
+          from: GitHub Actions

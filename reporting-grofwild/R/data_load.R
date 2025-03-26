@@ -143,7 +143,6 @@ loadGemeentes <- function(
 #' }
 #' and attribute 'Date', the date that this data file was created
 #' @importFrom utils read.csv
-#' @importFrom data.table rbindlist
 #' @importFrom aws.s3 get_bucket
 #' @export
 loadOpeningstijdenData <- function(
@@ -164,8 +163,8 @@ loadOpeningstijdenData <- function(
       FUN = read.csv, sep = ";", stringsAsFactors = FALSE,
       file = pathFile, bucket = bucket
     )
-    tmpInfo <- data.table::rbindlist(aws.s3::get_bucket(bucket = bucket))
-    modifTime <- tmpInfo[tmpInfo$Key == pathFile, ]$LastModified[1]
+    tmpInfo <- aws.s3::get_bucket(bucket = bucket)
+    modifTime <- tmpInfo[[which(sapply(tmp, function(x) x$Key == pathFile))]]$LastModified[1]
     
   }
   

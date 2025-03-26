@@ -164,8 +164,8 @@ loadOpeningstijdenData <- function(
       file = pathFile, bucket = bucket
     )
     tmpInfo <- aws.s3::get_bucket(bucket = bucket)
-    modifTime <- tmpInfo[[which(sapply(tmp, function(x) x$Key == pathFile))]]$LastModified[1]
-    
+    modifTime <- tmpInfo[[which(sapply(tmpInfo, function(x) x$Key == pathFile))]]$LastModified[1]
+        
   }
   
   rawData$Type <- simpleCap(rawData$Type)

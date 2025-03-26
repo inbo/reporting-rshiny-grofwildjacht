@@ -319,7 +319,13 @@ getOutputInfo <- function(species, ...){
     file = system.file("extdata", "output-info-blacklist.csv", 
       package = "reportingGrofwild")
   )
-  blacklist$blacklist <- rep(TRUE, nrow(blacklist))
+  blacklist <- do.call(rbind, lapply(1:nrow(blacklist), function(i) {
+      if (is.na(blacklist$specie[i]))
+        data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
+        info[i, ]
+    }))
+  blacklist$blacklist <- TRUE
+  
   info <- merge(
     x = info, y = blacklist,
     all.x = TRUE, by = c("specie", "output"), sort = FALSE

@@ -29,14 +29,14 @@ Geen_Everzwijngebied <- "orange"
 # Data
 ```{r}
 #Stakeholders
-SH_impacts <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Stakeholders/PCI/PCI_impacts.csv")
-SH_beleid <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Stakeholders/PCI/PCI_beleid.csv")
-SH_maatregelen <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Stakeholders/PCI/PCI_maatregelen.csv")
+SH_impacts <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Stakeholders/PCI/PCI_impacts_stakeholders.csv")
+SH_beleid <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Stakeholders/PCI/PCI_beleid_stakeholders.csv")
+SH_maatregelen <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Stakeholders/PCI/PCI_maatregelen_stakeholders.csv")
 
 #Breed pubiek
-BP_impacts <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Breed_publiek/PCI/PCI_impacts.csv")
-BP_maatregelen <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Breed_publiek/PCI/PCI_maatregelen.csv")
-BP_aanwezigheid <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Breed_publiek/PCI/PCI_aanwezigheid.csv")
+BP_impacts <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Breed_publiek/PCI/PCI_impacts_breed_publiek.csv")
+BP_maatregelen <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Breed_publiek/PCI/PCI_maatregelen_breed_publiek.csv")
+BP_aanwezigheid <- read.csv("../fis-grofwild/Projecten/Everzwijn-Survey/Interim/Breed_publiek/PCI/PCI_aanwezigheid_breed_publiek.csv")
 ```
 
 

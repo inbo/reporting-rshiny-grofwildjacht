@@ -311,10 +311,10 @@ kencijferModuleUI <- function(id, uiText) {
 #' kencijfer table module server
 #' @inheritParams optionsModuleServer 
 #' @param kencijfersData geo data for given region
-#' @param timeRange numeric vector of length 2 with time range (in year) for year filters
 #' @param species a reactive value of the name of the animal species
 #' @inheritParams summarizeKencijferData
 #' @inheritParams kencijferModuleUI
+#' @inheritParams reportingGrofwild-common-args
 #' @import shiny
 #' @importFrom DT JS formatStyle styleEqual
 #' @author yzhang
@@ -324,7 +324,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
   biotoopData, spatialData, species){
   
   # For R CMD check
-  afschotjaar <- aantal <- NULL
+  afschotjaar <- aantal <- gemeente_afschot_locatie <- provincie <- . <- NULL
   
   results <- reactiveValues(
     observeThreshold = 1, 

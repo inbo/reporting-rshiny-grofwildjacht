@@ -343,7 +343,6 @@ optionsModuleServer <- function(input, output, session,
 
 
 #' Interactive plot (ui-side)
-#' @param height character, plot height, default is "600px" 
 #' @param filter boolean, whether to display filters UI
 #' @inheritParams reportingGrofwild-common-args
 #' @return ui object
@@ -352,15 +351,14 @@ optionsModuleServer <- function(input, output, session,
 #' @importFrom plotly plotlyOutput
 #' @importFrom shiny NS
 #' @export
-plotModuleUI <- function(id, height = "600px", filter = FALSE) {
+plotModuleUI <- function(id, filter = FALSE) {
   
   ns <- NS(id)
   
   tagList(
-      tags$div(align = "center",
-          withSpinner(plotlyOutput(ns("plot"), height = height), hide.ui = FALSE)
-      ),
-      uiOutput(outputId = ns("warning"))
+    tags$div(align = "center",
+      withSpinner(uiOutput(outputId = ns("plot")), hide.ui = FALSE)),
+    uiOutput(outputId = ns("warning"))
   )
 }
 
@@ -441,6 +439,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @inheritParams barDraagkrachtServer
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
+#' @param height character, plot height, default is "600px" 
 #' 
 #' @return no return value; plot output object is created
 #' @author mvarewyck
@@ -458,7 +457,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     variable = NULL, combinatie = NULL, title = NULL,
     verticalGroups = NULL,
     fullNames = NULL, type = NULL,
-    typeMelding = NULL) {
+    typeMelding = NULL, 
+    height = "600px") {
   
   subData <- reactive({
         
@@ -620,16 +620,34 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
   
-  
-  output$plot <- renderPlotly({  
+    
+    output$plotly <- renderPlotly({  
+        
+        req("plotly" %in% class(resultFct()$plot))
         
         resultFct()$plot %>%
           config(toImageButtonOptions = list(width = 1300, height = 800))
         
       })
     
+    output$ggplot <- renderPlot({  
+        
+        req("ggplot" %in% class(resultFct()$plot))
+        
+        resultFct()$plot
+        
+      })  
+    
+    output$plot <- renderUI({
+        
+        if ("plotly" %in% class(resultFct()$plot))
+          plotlyOutput(session$ns("plotly"), height = height) else if ("ggplot" %in% class(resultFct()$plot))
+          plotOutput(session$ns("ggplot"), height = height)
+        
+      })
+    
   # Prevent that plotly images are squeezed
-  outputOptions(output, "plot", suspendWhenHidden = FALSE)
+  outputOptions(output, "plotly", suspendWhenHidden = FALSE)
     
   output$accuracy <- flexdashboard::renderGauge({
       

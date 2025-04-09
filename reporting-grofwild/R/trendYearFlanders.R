@@ -86,7 +86,8 @@ trendYearFlandersServer <- function(id,
             data = timeDataFlanders,
             timeRange = reactive(input$period),
             unit = reactive(input$unit),
-            isSchade = (type == "wildschade")
+            isSchade = (type == "wildschade"),
+            height = "400px"
         )
         
       })
@@ -126,7 +127,7 @@ trendYearFlandersUI <- function(id,
   tagList(
     h3(title),
     fluidRow(
-      column(8, plotModuleUI(id = ns("trendYearFlanders"), height = "400px")),
+      column(8, plotModuleUI(id = ns("trendYearFlanders"))),
       column(4,
         if(includeOptions)
           tagList(

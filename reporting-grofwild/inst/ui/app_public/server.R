@@ -121,7 +121,7 @@ shinyServer(function(input, output, session) {
         subcategory(defaultTabs$subcategory)
         plot(defaultTabs$plot)
         
-        specieServer(id = specie(), specie = specie)
+        specieServer(id = specie(), specie = specie, categories = categories)
       })
     }else reactiveVal()
    })
@@ -354,6 +354,9 @@ observeEvent(subcategory(), {
               waarnemingenData = waarnemingenData,
               biotoopData = biotoopData,
               defaultYear = defaultYear 
+            ),
+            draagvlak = list(
+              draagvlakData = draagvlakData
             )
           )
         )

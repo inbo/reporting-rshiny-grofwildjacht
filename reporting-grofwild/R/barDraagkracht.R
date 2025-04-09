@@ -210,6 +210,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @param data data.frame for the plot function
 #' @param title reactive, plot title to be displayed
 #' @param groupLabel character, label for the grouping variable choices
+#' @param height character, height of the plot
 #' @inheritParams barDraagkracht
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
@@ -217,7 +218,7 @@ barDraagkracht <- function(data, groupVariable = NULL,
 #' @import shiny
 #' @export
 barDraagkrachtServer <- function(id, data, groupVariable = NULL, 
-  xVar = "percentage", yVar,
+  xVar = "percentage", yVar, height = "600px",
   groupLabel = NULL, title = reactive(NULL)) {
   
   moduleServer(id,
@@ -291,7 +292,8 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL,
         groupVariable = groupVariable,
         xVar = xVar,
         yVar = yVar,
-        verticalGroups = reactive(is.null(input$groups))
+        verticalGroups = reactive(is.null(input$groups)),
+        height = height
       )
       
       return(reactive(c(
@@ -308,11 +310,10 @@ barDraagkrachtServer <- function(id, data, groupVariable = NULL,
 #' @inherit welcomeSectionUI
 #' @param sectorChoices named character vector, choices for sector
 #' @param selectGroups boolean, whether user should be able to select groups
-#' @param height character, height of the plot
 #'
 #' @export
 barDraagkrachtUI <- function(id, uiText, sectorChoices = NULL, 
-  selectGroups = FALSE, height = "600px") {
+  selectGroups = FALSE) {
   
   ns <- NS(id)
   
@@ -345,7 +346,7 @@ barDraagkrachtUI <- function(id, uiText, sectorChoices = NULL,
       
       tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
       
-      plotModuleUI(id = ns("barDraagkracht"), height = height),
+      plotModuleUI(id = ns("barDraagkracht")),
       optionsModuleUI(id = ns("barDraagkracht"), exportData = TRUE,
         doWellPanel = FALSE),
       tags$hr()

@@ -163,7 +163,7 @@ getOutputDescription <- function(output,
 #' @export
 getOutputSpecie <- function(specie,
   geoData, ecoData, openingstijdenData,
-  schadeData, waarnemingenData){
+  schadeData, waarnemingenData, draagvlakData){
  
   ## filter all datasets by specie
   
@@ -215,7 +215,6 @@ getOutputSpecie <- function(specie,
   )
   
   outputs <- c(
-    "draagvlakPlaceholder",
     "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
       c("trendYearRegionUI", "mapFlandersUI", "kencijferUI"),
@@ -261,7 +260,16 @@ getOutputSpecie <- function(specie,
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
     if(specie == "Wild zwijn") # TODO UPDATE!
-      "mapSpreadUI"
+      "mapSpreadUI",
+    # Maatschappelijk draagvlak
+    if (specie %in% draagvlakData$aanwezigheid$Soort)
+      "F14_1",
+    if (specie %in% draagvlakData$impacts$Soort)
+      "F14_3",
+    if (specie %in% draagvlakData$maatregelen$Soort)
+      "F14_4",
+    if (specie %in% draagvlakData$beleid$Soort)
+      "F14_5"
   )
     
   return(outputs)
@@ -379,7 +387,7 @@ getSubcategoryOutput <- function(output){
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak
-      `draagvlak-placeholder` = "draagvlakPlaceholder",
+      `draagvlak-surveys` = c("F14_1", "F14_3", "F14_4", "F14_5"),
       
       # woordenlijst
       `woordenlijst-placeholder` = "woordenlijstPlaceholder"

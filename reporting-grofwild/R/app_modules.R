@@ -221,7 +221,7 @@ optionsModuleServer <- function(input, output, session,
         
         div(class = "sliderBlank", 
             sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-                value = current$year,
+                value = if (is.null(current$year)) definedYear else current$year,
                 min = min(timeRange()),
                 max = max(timeRange()),
                 step = 1,

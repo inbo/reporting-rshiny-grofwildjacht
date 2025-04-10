@@ -8,19 +8,21 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-outputUI <- function(id, category, whiteWell = FALSE, ...){
+outputUI <- function(id, category, whiteWell = FALSE, uiText = NULL, ...){
   
   ns <- NS(namespace = id)
+  
+  description <- if (!is.null(uiText))
+      getOutputDescription(output = id, uiText = uiText,
+        context = "description") else
+      NULL
+  
+  imgFile <- file.path("www", paste("category", category, "header.png", sep = "-"))
   
   verticalLayout(
           
     # image
-    fluidRow(
-      column(width = 12, 
-       img(src = paste0("www/category-", category, "-header.png"), 
-       width = "100%")
-      )
-    ),
+    fluidRow(img(src = imgFile, width = "100%")),
            
     # Specie and options
     tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
@@ -36,7 +38,8 @@ outputUI <- function(id, category, whiteWell = FALSE, ...){
           style = "overflow-y: hidden", # avoid 2 scrolling bar
           if (whiteWell)
               wellPanel(class = "well-white", uiOutput(outputId = ns("output"))) else
-              uiOutput(outputId = ns("output"))
+              uiOutput(outputId = ns("output")),
+          tags$div(style = "margin-top: 25px;margin-bottom: 25px;", HTML(description))
         )
       )
     )

@@ -9,6 +9,7 @@
 #' 
 #' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous facet_wrap coord_fixed geom_vline scale_fill_manual scale_color_manual theme_bw
 #' @importFrom ggforce geom_circle
+#' @importFrom INBOtheme inbo_palette
 #' @export 
 pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
   
@@ -26,11 +27,11 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
   
   # Custom colors
   colorValues <- c(
-    Landbouwsector = "limegreen",
-    Jachtsector = "olivedrab1",
-    Natuursector = "darkgreen",
-    `Binnen everzwijngebied` = "royalblue",
-    `Buiten everzwijngebied` = "orange"
+    `Binnen everzwijngebied` = inbo_palette()[2],
+    `Buiten everzwijngebied` = inbo_palette()[4],
+    Landbouwsector = inbo_palette()[1],
+    Jachtsector = inbo_palette()[5],
+    Natuursector = inbo_palette()[8]    
   )
   
   # Plot
@@ -81,13 +82,12 @@ pciDraagvlakServer <- function(id, data, yVar) {
           
           validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
           req(input$year)
-          req(input$sector)
           
           toReturn <- data()
           
           # filter year
           toReturn <- toReturn[toReturn$Year %in% input$year &
-              toReturn$Sector %in% input$sector, ]
+              toReturn$Sector %in% c(input$sector1, input$sector2), ]
           
           if (!is.null(input$groups))
             toReturn <- toReturn[toReturn$vraag_label %in% input$groups, ]
@@ -115,7 +115,7 @@ pciDraagvlakServer <- function(id, data, yVar) {
 #' Shiny module for creating the plot \code{\link{pciDraagvlak}} - UI side
 #' @inherit welcomeSectionUI
 #' @param yearChoices character vector, choices for variable 'year'
-#' @param sectorChoices character vector, choices for variable 'sector'
+#' @param sectorChoices list with character vectors, choices for variable 'sector'
 #' @param groupChoices character vector, choices for variable 'group'; 
 #' default is NULL, then widget is hidden
 #' @param groupLabel character, label for the grouping variable choices
@@ -131,6 +131,7 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
   title <- getOutputTitle(output = outputFunction, uiText = uiText)
   description <- getOutputDescription(output = outputFunction, uiText = uiText,
     context = "description")
+  sectorNames <- names(sectorChoices)
   
   tagList(
     
@@ -141,9 +142,10 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
           column(3,
             checkboxGroupInput(inputId = ns("year"), label = "Jaartallen", 
               choices = yearChoices, selected = yearChoices, inline = TRUE),
-            selectInput(inputId = ns("sector"), label = NULL, 
-              choices = sectorChoices, selected = sectorChoices, 
-              multiple = TRUE)
+            lapply(seq_along(sectorNames), function(i)
+                selectInput(inputId = ns(paste0("sector", i)), label = sectorNames[i], 
+              choices = sectorChoices[[i]], selected = sectorChoices[[i]], 
+              multiple = TRUE))
           ),
           if (!is.null(groupChoices))
             column(9, tags$div(class = "columns-3", 

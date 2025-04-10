@@ -37,6 +37,7 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
   args <- c(
     list(
       id = subcategory, category = category, 
+      uiText = uiText,
       speciesList = schadeWildsoorten,
       select = TRUE
     ),

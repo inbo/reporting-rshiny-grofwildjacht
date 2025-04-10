@@ -118,12 +118,16 @@ draagvlakOutputServer <- function(id,
             outputName <- plot()
             
             # create the plot/table
-            ui <- pciDraagvlakUI(
+            ui <- if (nrow(draagvlakSubdata()) > 0) {
+              pciDraagvlakUI(
                   id = ns("pciDraagvlak"), 
                   uiText = uiText, 
                   outputFunction = outputName,
                   yearChoices = levels(draagvlakSubdata()$Year),
-                  sectorChoices = unique(draagvlakSubdata()$Sector),
+                  sectorChoices = list(
+                    "Breed publiek" = c("Binnen everzwijngebied", "Buiten everzwijngebied"),
+                    "Stakeholders" = c("Jachtsector", "Landbouwsector", "Natuursector")
+                  ),
                   groupChoices = if (outputName != "F14_1") levels(draagvlakSubdata()$vraag_label),
                   groupLabel = switch(outputName,
                     "F14_3" = "Impacts",
@@ -131,6 +135,7 @@ draagvlakOutputServer <- function(id,
                     "F14_5" = "Belang in beheer",
                     "")
                 )
+              } else helpText("Geen visualisatie beschikbaar voor deze diersoort")
             
             # include plot/table in UI
             output[["output"]] <- renderUI(ui)

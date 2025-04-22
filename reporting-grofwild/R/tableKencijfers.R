@@ -295,7 +295,7 @@ kencijferModuleUI <- function(id, uiText) {
                 uiOutput(ns("sliderObserve"))
               ),
               conditionalPanel(
-                condition = "input.bron && input.bron.includes('afschot')", ns = ns,
+                condition = "input.bron.indexOf('afschot')", ns = ns,
                 uiOutput(ns("sliderAfschot"))
               )
             )
@@ -381,7 +381,12 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
         })
       
-      timeRange <- reactive(range(filterKencijfersData()$afschotjaar))
+      timeRange <- reactive({
+          
+          req(kencijfersData())
+          c(min(kencijfersData()$afschotjaar), as.numeric(format(Sys.time(), "%Y")))
+          
+        })
       
       
       output$filterYear <- renderUI({
@@ -416,6 +421,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           req(filterKencijfersData())
           
           dataSource <- unique(filterKencijfersData()$dataSource)
+          req(length(dataSource) > 0)
           names(dataSource) <- gsub("\\..+", "", dataSource)
           
           selectInput(inputId = ns("bron"),
@@ -467,7 +473,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
           maxSchot <- max(if (input$unit == "absolute") 10 else 5, 
-            max(valueChoices, na.rm = TRUE))
+            suppressWarnings(max(valueChoices, na.rm = TRUE)))
           
           sliderInput(
             inputId = ns("thresholdAfschot"),
@@ -494,7 +500,6 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       results$res <- reactive({
           
-          req(input$bron)
           req(input$year)
           req(input$period)
           
@@ -502,7 +507,10 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
             data = req(kencijferSummarized()), 
             jaar = as.numeric(input$year),
             period = input$period,
-            bron = ifelse(length(input$bron) == 2, "both", input$bron),
+            bron = if (is.null(input$bron)) 
+                "both" else if (length(input$bron) == 2) 
+                "both" else 
+                input$bron,
             thresholdWaarnemingen = input$thresholdWaarnemingen,
             thresholdAfschot = input$thresholdAfschot,
             ns = ns

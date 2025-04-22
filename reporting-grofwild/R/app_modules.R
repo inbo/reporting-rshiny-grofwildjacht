@@ -14,6 +14,7 @@
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes, 4 = faunabeheerzones
 #' @param summarizeBy character, choices to be shown as summary statistics
 #' (expect count or percent)
+#' @param exportPlot boolean, whether a download button for the plot is shown
 #' @param exportData boolean, whether a download button for the data is shown
 #' @param showDataSource character vector, for which variables to show choices 
 #' of data source levels. 
@@ -32,7 +33,7 @@ optionsModuleUI <- function(id,
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     showCategorie = FALSE, showInterval = FALSE, 
     regionLevels = NULL, summarizeBy = NULL,
-    exportData = FALSE, 
+    exportPlot = FALSE, exportData = FALSE, 
     showDataSource = NULL,
     doWellPanel = TRUE, oneRow = FALSE
     ) {
@@ -105,6 +106,8 @@ optionsModuleUI <- function(id,
         uiOutput(ns("interval")),
       if(showCategorie)
         uiOutput(ns("categorie")),
+      if(exportPlot)
+        downloadButton(ns("plotDownload"), "Download plot", class = "downloadButton"),
       if(exportData) {
         downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
       }
@@ -443,6 +446,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' 
 #' @return no return value; plot output object is created
 #' @author mvarewyck
+#' @importFrom ggplot2 ggsave
 #' @importFrom utils write.table
 #' @importFrom DT datatable formatRound renderDataTable formatStyle styleEqual
 #' @importFrom flexdashboard renderGauge gauge gaugeSectors
@@ -671,7 +675,28 @@ plotModuleServer <- function(input, output, session, plotFunction,
       tags$em(resultFct()$warning)
         
       })
-  
+    
+  output$plotDownload <- downloadHandler(
+    filename = function() nameFile(species = wildNaam(),
+            year = if (!is.null(input$year)) 
+                  input$year else if (!is.null(input$time))
+                  unique(c(input$time[1], input$time[2])) else if (!is.null(timeRange))
+                  timeRange() else
+                  unique(data()$year), 
+            extraInfo = input$type,
+            content = paste0(plotFunction, "_data"), fileExt = "png"),
+        content = function(file) {
+          
+          resPlot <- resultFct()$plot
+          
+          validate(
+            need(resPlot, "Niet beschikbaar"),
+            need("ggplot" %in% class(resPlot), "Niet beschikbaar")
+          )
+          
+          ggsave(file, resPlot, width = 6, height = 6, dpi = 150)
+          
+        })
   
   output$dataDownload <- downloadHandler(
       filename = function() nameFile(species = wildNaam(),

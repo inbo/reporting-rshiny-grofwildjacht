@@ -160,8 +160,8 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
       tags$p(HTML(description)),
       
       plotModuleUI(id = ns("pciDraagvlak")),
-      optionsModuleUI(id = ns("pciDraagvlak"), exportData = TRUE,
-        doWellPanel = FALSE),
+      optionsModuleUI(id = ns("pciDraagvlak"), exportPlot = TRUE, 
+        exportData = TRUE, doWellPanel = FALSE),
       tags$hr()
     
   )

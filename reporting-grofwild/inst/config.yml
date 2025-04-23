@@ -6,7 +6,7 @@ default:
     secret: Sys.getenv('AWS_SECRET_ACCESS_KEY')
     token: Sys.getenv('AWS_SESSION_TOKEN')
   datacheck: false
-  defaultYear: as.numeric(format(Sys.time(), "%Y")) - 1 
+  defaultYear: !expr as.numeric(format(Sys.time(), "%Y")) - 1 
 
 uat:
   datacheck: false

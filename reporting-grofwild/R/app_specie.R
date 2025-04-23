@@ -5,7 +5,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id, speciesList, categories){
+specieUI <- function(id, speciesList){
   
   ns <- NS(namespace = id)
   

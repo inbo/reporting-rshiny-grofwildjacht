@@ -215,7 +215,7 @@ getOutputSpecie <- function(specie,
   )
   
   outputs <- c(
-    "woordenlijstPlaceholder",
+#    "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
       c("trendYearRegionUI", "mapFlandersUI", "kencijferUI"),
     if(nrow(ecoDataSpecie) > 0)
@@ -387,10 +387,10 @@ getSubcategoryOutput <- function(output){
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak
-      `draagvlak-surveys` = c("F14_1", "F14_3", "F14_4", "F14_5"),
+      `draagvlak-surveys` = c("F14_1", "F14_3", "F14_4", "F14_5")
       
-      # woordenlijst
-      `woordenlijst-placeholder` = "woordenlijstPlaceholder"
+#      # woordenlijst
+#      `woordenlijst-placeholder` = "woordenlijstPlaceholder"
     
   )
   
@@ -414,7 +414,7 @@ getCategorySubcategory <- function(subcategory){
   
   categories <- sapply(strsplit(as.character(subcategory), split = "-"), function(x) x[1])
   categories <- factor(categories, levels = c("beheer", "schade", "populatie", 
-    "verspreiding", "draagvlak", "woordenlijst"))
+    "verspreiding", "draagvlak"))
   
   return(categories)
   

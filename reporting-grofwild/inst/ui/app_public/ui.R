@@ -5,10 +5,7 @@ specieTabs <- lapply(species, function(specie){
     value = specie,
     specieUI(
       id = specie, 
-      speciesList = schadeWildsoorten,
-      categories = getInfo(specie = specie, variable = "category",
-        infoOutput = infoOutput
-      )
+      speciesList = schadeWildsoorten
     )
   )
 })

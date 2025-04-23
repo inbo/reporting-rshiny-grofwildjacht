@@ -121,7 +121,11 @@ shinyServer(function(input, output, session) {
         subcategory(defaultTabs$subcategory)
         plot(defaultTabs$plot)
         
-        specieServer(id = specie(), specie = specie, categories = categories)
+        specieServer(id = specie(), specie = specie, 
+          categories = getInfo(specie = specie(), variable = "category",
+            infoOutput = infoOutput)
+        )
+        
       })
     }else reactiveVal()
    })

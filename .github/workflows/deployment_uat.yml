@@ -3,6 +3,11 @@ on:
   push:
     branches:
       - uat
+
+concurrency:
+  group: deployment-uat-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Build and upload Docker image

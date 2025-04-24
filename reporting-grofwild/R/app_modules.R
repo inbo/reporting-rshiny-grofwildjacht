@@ -169,11 +169,10 @@ optionsModuleServer <- function(input, output, session,
   output$time <- renderUI({
       
       results$minTime <- min(timeRange())
-      if (is.null(current$time))
-        current$time <- c(min(timeRange()), definedYear)
       
       sliderInput(inputId = ns("time"), label = timeLabel, 
-        value = current$time,
+        value = if (is.null(current$time))
+          c(min(timeRange()), definedYear) else current$time,
         min = min(timeRange()),
         max = max(timeRange()),
         step = 1,
@@ -211,9 +210,8 @@ optionsModuleServer <- function(input, output, session,
           
           if (currentTime[2] < newMin) 
             currentTime[2] <- newMin
-          current$time <- c(max(newMin, currentTime[1]), currentTime[2])
           updateSliderInput(session, inputId = "time", 
-            value = current$time,
+            value = c(max(newMin, currentTime[1]), currentTime[2]),
             min = newMin)      
         }
         
@@ -263,13 +261,10 @@ optionsModuleServer <- function(input, output, session,
           
         }
         
-        
-        current$region <- if (input$regionLevel == "flanders")
-          choices[1] else
-          NULL
-        
         selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices, selected = current$region, multiple = TRUE)
+            choices = choices, 
+            selected = if (input$regionLevel == "flanders") choices[1] else NULL, 
+            multiple = TRUE)
         
       })
   observe(current$region <- input$region)
@@ -282,26 +277,20 @@ optionsModuleServer <- function(input, output, session,
   
   observe({
       
-      req(!is.null(input$type))
-      
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
         
         if (input$dataSource_leeftijd == "both") {
           
-          current$type <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
-          
           ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
           updateSelectInput(session, inputId = "type",
             choices = c("Frisling", "Overloper", "Volwassen", "Onbekend"),
-            selected = current$type)
+            selected = c("Frisling", "Overloper", "Volwassen", "Onbekend"))
           
         } else {
-          
-          current$type <- typesDefault()
-          
+         
           updateSelectInput(session, inputId = "type",
             choices = types(),
-            selected = current$type)
+            selected = typesDefault())
         }
       }
       
@@ -309,11 +298,14 @@ optionsModuleServer <- function(input, output, session,
   
   output$type <- renderUI({
       
-      current$type <- typesDefault()
-        
+      isolate({
+          
         selectInput(inputId = ns("type"), label = labelTypes,
             choices = types(), 
-            selected = current$type, multiple = multipleTypes)
+            selected = if (is.null(current$type)) typesDefault() else current$type, 
+            multiple = multipleTypes)
+          
+        })
         
       })
   observe(current$type <- input$type)

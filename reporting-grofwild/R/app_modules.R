@@ -425,14 +425,12 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
-#' @param verticalGroups reactive boolean; see also \link{barDraagkracht};
-#' default is NULL
 #' @param typeMelding reactive with type of notification ('melding')
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
-#' @inheritParams barDraagkrachtServer
+#' @inheritParams barCostServer
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' @param height character, plot height, default is "600px" 
@@ -447,12 +445,11 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL, groupVariable = NULL,
-    xVar = NULL, yVar = NULL,
+    yVar = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, title = NULL,
-    verticalGroups = NULL,
     fullNames = NULL, type = NULL,
     typeMelding = NULL, 
     height = "600px") {
@@ -549,12 +546,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
-            if(!is.null(xVar))
-              list(xVar = xVar),
             if(!is.null(yVar))
               list(yVar = yVar),
-            if(!is.null(verticalGroups))
-              list(verticalGroups = verticalGroups()),
             if(!is.null(fullNames))
               list(fullNames = fullNames),
             

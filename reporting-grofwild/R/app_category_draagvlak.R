@@ -102,6 +102,7 @@ draagvlakOutputServer <- function(id,
           
           subData <- switch(plot(), 
             "F14_1" = draagvlakData$aanwezigheid,
+            "F14_2" = draagvlakData$aantrekkingskracht,
             "F14_3" = draagvlakData$impacts,
             "F14_4" = draagvlakData$maatregelen,
             "F14_5" = draagvlakData$beleid
@@ -109,6 +110,11 @@ draagvlakOutputServer <- function(id,
           subData[subData$Soort == results$specie(), ]
           
         })
+      
+      allSectorChoices <- list(
+        "Breed publiek" = c("Binnen everzwijngebied", "Buiten everzwijngebied"),
+        "Stakeholders" = c("Jachtsector", "Landbouwsector", "Natuursector")
+      )
       
       # Create plot - UI side
       observe({
@@ -124,10 +130,7 @@ draagvlakOutputServer <- function(id,
                   uiText = uiText, 
                   outputFunction = outputName,
                   yearChoices = levels(draagvlakSubdata()$Year),
-                  sectorChoices = list(
-                    "Breed publiek" = c("Binnen everzwijngebied", "Buiten everzwijngebied"),
-                    "Stakeholders" = c("Jachtsector", "Landbouwsector", "Natuursector")
-                  ),
+                  sectorChoices = if (outputName == "F14_2") allSectorChoices[1] else allSectorChoices,
                   groupChoices = if (outputName != "F14_1") levels(draagvlakSubdata()$vraag_label),
                   groupLabel = switch(outputName,
                     "F14_3" = "Impacts",
@@ -153,9 +156,10 @@ draagvlakOutputServer <- function(id,
           outputName <- outputServer()
           
           pciDraagvlakServer(
-              id = "pciDraagvlak",
-              data = draagvlakSubdata,
-              yVar = if (outputName == "F14_1") "Year" else "vraag_label"
+            id = "pciDraagvlak",
+            data = draagvlakSubdata,
+            yVar = if (outputName == "F14_1") "Year" else "vraag_label",
+            plotFunction = if (outputName == "F14_2") "barDraagkracht" else "pciDraagvlak"
           )
           
           # re-set in case plot selected via tab after/before category card

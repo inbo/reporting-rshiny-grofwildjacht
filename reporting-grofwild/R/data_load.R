@@ -455,7 +455,8 @@ loadDraagvlakData <- function(
     "PCI_maatregelen_stakeholders.csv",
     "PCI_impacts_breed_publiek.csv",
     "PCI_maatregelen_breed_publiek.csv",
-    "PCI_aanwezigheid_breed_publiek.csv"
+    "PCI_aanwezigheid_breed_publiek.csv",
+    "Data_aantrekkingskracht_breed_publiek.csv"
   )
   
   dataSets <- sapply(dataFiles, function(iFile) {
@@ -471,9 +472,18 @@ loadDraagvlakData <- function(
   toReturn <- sapply(categories, function(iCategory) {
       tmp <- do.call(rbind, dataSets[grep(iCategory, names(dataSets))])
       rownames(tmp) <- NULL
+      # Summarize 'Antwoord_binair'
+      if ("Antwoord_binair" %in% colnames(tmp)) {
+        tmp <- array2DF(tapply(tmp, ~ Year + Sector + Soort + Antwoord + group, function(x)
+              list(Aantal_tot = sum(x == "Ja"), totaal = nrow(x))))
+        tmp$Aantal_tot <- as.numeric(tmp$Aantal_tot)
+        tmp$totaal <- as.numeric(tmp$totaal)
+      }
       tmp$X <- NULL
       tmp$Year <- as.factor(tmp$Year)
-      tmp$vraag_label <- droplevels(as.factor(tmp$vraag_label))
+      if ("vraag_label" %in% colnames(tmp))
+        tmp$vraag_label <- droplevels(as.factor(tmp$vraag_label))
+      
       tmp
     }, simplify = FALSE, USE.NAMES = TRUE)
   

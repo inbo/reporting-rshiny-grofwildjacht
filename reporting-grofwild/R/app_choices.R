@@ -264,6 +264,8 @@ getOutputSpecie <- function(specie,
     # Maatschappelijk draagvlak
     if (specie %in% draagvlakData$aanwezigheid$Soort)
       "F14_1",
+    if (specie %in% draagvlakData$aantrekkingskracht$Soort)
+      "F14_2",
     if (specie %in% draagvlakData$impacts$Soort)
       "F14_3",
     if (specie %in% draagvlakData$maatregelen$Soort)
@@ -387,7 +389,7 @@ getSubcategoryOutput <- function(output){
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak
-      `draagvlak-surveys` = c("F14_1", "F14_3", "F14_4", "F14_5")
+      `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
       
 #      # woordenlijst
 #      `woordenlijst-placeholder` = "woordenlijstPlaceholder"

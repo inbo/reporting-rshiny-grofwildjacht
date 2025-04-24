@@ -26,12 +26,13 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
   schaalfactor <- 1
   
   # Custom colors
+  inboColors <- inbo_palette()
   colorValues <- c(
-    `Binnen everzwijngebied` = inbo_palette()[2],
-    `Buiten everzwijngebied` = inbo_palette()[4],
-    Landbouwsector = inbo_palette()[1],
-    Jachtsector = inbo_palette()[5],
-    Natuursector = inbo_palette()[8]    
+    `Binnen everzwijngebied` = inboColors[1],
+    `Buiten everzwijngebied` = inboColors[2],
+    Landbouwsector = inboColors[3],
+    Jachtsector = inboColors[6],
+    Natuursector = inboColors[9]    
   )
   
   # Plot
@@ -63,15 +64,17 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
 
 
 
-#' Shiny module for creating the plot \code{\link{pciDraagvlak}} - server side
+#' Shiny module for creating the plot \code{\link{pciDraagvlak}} or
+#' \code{\link{barDraagkracht}} - server side
 #' @param data reactive data.frame for the plot function
+#' @param plotFunction character, function to be called to the data
 #' @inheritParams pciDraagvlak
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
 #' @export
-pciDraagvlakServer <- function(id, data, yVar) {
+pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -102,7 +105,7 @@ pciDraagvlakServer <- function(id, data, yVar) {
         data = subData
       )
       callModule(module = plotModuleServer, id = "pciDraagvlak",
-        plotFunction = "pciDraagvlak", 
+        plotFunction = plotFunction, 
         data = subData,
         yVar = yVar
       )
@@ -112,7 +115,8 @@ pciDraagvlakServer <- function(id, data, yVar) {
 }
 
 
-#' Shiny module for creating the plot \code{\link{pciDraagvlak}} - UI side
+#' Shiny module for creating the plot \code{\link{pciDraagvlak}} or
+#' \code{\link{barDraagkracht}} - UI side
 #' @inherit welcomeSectionUI
 #' @param yearChoices character vector, choices for variable 'year'
 #' @param sectorChoices list with character vectors, choices for variable 'sector'
@@ -160,7 +164,8 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
       tags$p(HTML(description)),
       
       plotModuleUI(id = ns("pciDraagvlak")),
-      optionsModuleUI(id = ns("pciDraagvlak"), exportPlot = TRUE, 
+      optionsModuleUI(id = ns("pciDraagvlak"), 
+        exportPlot = (outputFunction != "F14_2"), 
         exportData = TRUE, doWellPanel = FALSE),
       tags$hr()
     

@@ -86,6 +86,9 @@ verspreidingOutputServer <- function(id,
   defaultYear,
   uiText){
   
+  # For R CMD check
+  wildsoort <- NULL
+  
   moduleServer(id, function(input, output, session){  
         
     ns <- session$ns

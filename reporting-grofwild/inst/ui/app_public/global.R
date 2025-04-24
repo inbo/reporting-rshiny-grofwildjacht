@@ -78,6 +78,9 @@ if (!doDebug | !exists("biotoopData"))
 
 if (!doDebug | !exists("waarnemingenData"))
   waarnemingenData <- loadRawData(type = "waarnemingen")
+if (!doDebug | !exists("draagvlakData"))
+  draagvlakData <- loadDraagvlakData()
+
 
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))
@@ -114,7 +117,8 @@ infoOutput <- getOutputInfo(
   geoData = geoData, ecoData = ecoData, 
   openingstijdenData = openingstijdenData,
   schadeData = schadeData, 
-  waarnemingenData = waarnemingenData
+  waarnemingenData = waarnemingenData,
+  draagvlakData = draagvlakData
 )
 
 # extract all available categories

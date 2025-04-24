@@ -1,0 +1,182 @@
+# Libraries
+```{r}
+library(ggplot2)
+library(ggforce)  
+library(tidyverse)
+library(rstatix)
+library(yarrr)
+library(fistools)
+```
+# Default-instellingen voor PCI
+```{r}
+scalevals <- -2:2
+PCIm <- 1
+PCIp <- 1
+scale_size_pci <- c(1,5)
+schaalfactor <- 1
+```
+
+# Kleureninstellingen
+```{r}
+Landbouwers <- "limegreen"
+Jagers <- "olivedrab1"
+Natuurverenigingen <- "darkgreen"
+Everzwijngebied <- "royalblue"
+Geen_Everzwijngebied <- "orange"
+
+```
+
+# Data
+```{r}
+reportingGrofwild::setupS3()
+
+#Stakeholders
+SH_impacts <- readS3(file = "PCI_impacts_stakeholders.csv")
+SH_beleid <- readS3(file = "PCI_beleid_stakeholders.csv")
+SH_maatregelen <- readS3(file = "PCI_maatregelen_stakeholders.csv")
+
+#Breed pubiek
+BP_impacts <- readS3(file = "PCI_impacts_breed_publiek.csv")
+BP_maatregelen <- readS3(file = "PCI_maatregelen_breed_publiek.csv")
+BP_aanwezigheid <- readS3(file = "PCI_aanwezigheid_breed_publiek.csv")
+```
+
+
+#1. Figuur "Houding publiek"
+```{r}
+#Tekst website: Het betreft hier de resultaten van de bevraging aan breed publiek uitgevoerd door INBO. Deze bevraging werd opgestart in 2017 en wordt driejaarlijks herhaald. De vraag die werd gesteld was 'Hoe sta je tegenover de aanwezigheid van everzwijnen in het wild in Vlaanderen?'.
+
+BP_aanwezigheid$Year <- as.factor(BP_aanwezigheid$Year)
+
+plot_BP_aanwezigheid <- ggplot(BP_aanwezigheid) + 
+   geom_circle(aes(x0 = meanAnswer, 
+                  y0 = as.numeric(Year)/schaalfactor, 
+                  r = pci2,
+                  colour = Sector,
+                  fill = Sector),
+               alpha = 0.75) +
+  scale_x_continuous(name = BP_aanwezigheid$Antwoord,
+                     limits = c(-2,2)) + 
+  scale_y_continuous(name ="",
+                     breaks = unique(as.numeric(BP_aanwezigheid$Year)/schaalfactor),
+                     labels = unique(BP_aanwezigheid$Year)) + 
+  facet_wrap(~vraag_label,
+    ncol = 1) +
+  coord_fixed() +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
+  scale_fill_manual(name = "",
+                    values = c(Geen_Everzwijngebied, Everzwijngebied)) + 
+  scale_color_manual(name = "",
+                     values = c(Geen_Everzwijngebied, Everzwijngebied)) + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+
+plot_BP_aanwezigheid
+```
+
+#2. Figuur "Aantrekkingskracht"
+```{r}
+#Tekst website: Het betreft hier de resultaten van de bevraging aan breed publiek uitgevoerd door INBO. Deze bevraging werd opgestart in 2017 en wordt driejaarlijks herhaald. De vraag die werd gesteld was 'Stel je voor dat in een bos en/of natuurgebied everzwijnen in het wild aanwezig zijn. Zou deze aanwezigheid van everzwijnen in het wild je dan aantrekken om dat bos en/of natuurgebied zeker te bezoeken?'.
+
+#Geen PCI mogelijk --> nog bepalen wat we met deze figuur doen, voorlopig de originele versie behouden
+```
+
+#3. Figuur "Inschatting Impacts"
+```{r}
+#Tekst website: Het betreft hier de resultaten van de bevraging aan stakeholders (jagers, landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. De vraag die werd gesteld was 'Hoe groot schat u de actuele kans op volgende impacts?'.
+Impacts <- rbind(BP_impacts, SH_impacts)
+Impacts$vraag_label <- as.factor(Impacts$vraag_label)
+Impacts$vraag_label <- droplevels(Impacts$vraag_label)
+
+
+plot_Impacts <- ggplot(Impacts) + 
+   geom_circle(aes(x0 = meanAnswer, 
+                  y0 = as.numeric(vraag_label)/schaalfactor, 
+                  r = pci2,
+                  colour = Sector,
+                  fill = Sector),
+               alpha = 0.75) +
+  scale_x_continuous(name = Impacts$Antwoord,
+                     limits = c(-2,2)) + 
+  scale_y_continuous(name ="",
+                     breaks = unique(as.numeric(Impacts$vraag_label)/schaalfactor),
+                     labels = unique(Impacts$vraag_label)) + 
+  facet_wrap(~Year,
+    ncol = 4) +
+  coord_fixed() +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
+  scale_fill_manual(name = "",
+                    values = c(Natuurverenigingen, Landbouwers, Jagers,Everzwijngebied,Geen_Everzwijngebied)) + 
+  scale_color_manual(name = "",
+                     values = c(Natuurverenigingen, Landbouwers, Jagers,Everzwijngebied,Geen_Everzwijngebied)) + 
+  theme_bw()
+
+plot_Impacts
+```
+
+#4. Figuur "Draagkracht beheermaatregelen"
+```{r}
+#Tekst website: Het betreft hier de resultaten van de bevraging aan stakeholders (jagers, landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. Het betreft hier ook de resultaten van de bevraging aan breed publiek uitgevoerd door INBO, deze bevraging werd opgestart in 2017 er wordt driejaarlijks herhaald. De vraag die werd gesteld was 'Hoe aanvaardbaar vind je volgende maatregelen i.f.v. het beheer van everzwijnen?'.
+
+Maatregelen <- rbind(BP_maatregelen, SH_maatregelen)
+Maatregelen$vraag_label <- as.factor(Maatregelen$vraag_label)
+Maatregelen$vraag_label <- droplevels(Maatregelen$vraag_label)
+
+
+plot_Maatregelen <- ggplot(Maatregelen) + 
+   geom_circle(aes(x0 = meanAnswer, 
+                  y0 = as.numeric(vraag_label)/schaalfactor, 
+                  r = pci2,
+                  colour = Sector,
+                  fill = Sector),
+               alpha = 0.75) +
+  scale_x_continuous(name = Maatregelen$Antwoord,
+                     limits = c(-2,2)) + 
+  scale_y_continuous(name ="",
+                     breaks = unique(as.numeric(Maatregelen$vraag_label)/schaalfactor),
+                     labels = unique(Maatregelen$vraag_label)) + 
+  facet_wrap(~Year,
+    ncol = 4) +
+  coord_fixed() +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
+  scale_fill_manual(name = "",
+                    values = c(Natuurverenigingen, Landbouwers, Jagers,Everzwijngebied,Geen_Everzwijngebied)) + 
+  scale_color_manual(name = "",
+                     values = c(Natuurverenigingen, Landbouwers, Jagers,Everzwijngebied,Geen_Everzwijngebied)) + 
+  theme_bw()
+
+plot_Maatregelen
+```
+
+#5. Figuur "Beheer"
+```{r}
+#Tekst website: Het betreft hier de resultaten van de bevraging aan stakeholders (jagers, landbouwers en natuurvereniging Natuurpunt) uitgevoerd door INBO. Deze bevraging werd uitgevoerd in 2016. De vraag die werd gesteld was 'Hoe belangrijk vind u het dat in Vlaanderen het everzwijnenbeleid rekening houdt met volgende impacts?'.
+
+SH_beleid$vraag_label <- as.factor(SH_beleid$vraag_label)
+SH_beleid$vraag_label <- droplevels(SH_beleid$vraag_label)
+
+plot_SH_beleid <- ggplot(SH_beleid) + 
+   geom_circle(aes(x0 = meanAnswer, 
+                  y0 = as.numeric(vraag_label)/schaalfactor, 
+                  r = pci2,
+                  colour = Sector,
+                  fill = Sector),
+               alpha = 0.75) +
+  scale_x_continuous(name = SH_beleid$Antwoord,
+                     limits = c(-2,2)) + 
+  scale_y_continuous(name ="",
+                     breaks = unique(as.numeric(SH_beleid$vraag_label)/schaalfactor),
+                     labels = unique(SH_beleid$vraag_label)) + 
+  facet_wrap(~Year,
+    ncol = 4) +
+  coord_fixed() +
+  geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
+  scale_fill_manual(name = "",
+                    values = c(Natuurverenigingen, Landbouwers, Jagers)) + 
+  scale_color_manual(name = "",
+                     values = c(Natuurverenigingen, Landbouwers, Jagers)) + 
+  theme_bw() +
+   theme(legend.position = "bottom")
+
+plot_SH_beleid
+```

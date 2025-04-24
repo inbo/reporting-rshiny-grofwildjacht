@@ -5,7 +5,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id, speciesList, categories){
+specieUI <- function(id, speciesList){
   
   ns <- NS(namespace = id)
   
@@ -48,11 +48,12 @@ specieUI <- function(id, speciesList, categories){
 
 #' Server function for the 'specie' page
 #' @inheritParams reportingGrofwild-common-args
+#' @param categories character vector, all available main categories
 #' @return no returned value
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieServer <- function(id, specie = reactiveVal()){
+specieServer <- function(id, specie = reactiveVal(), categories){
   
   moduleServer(id, function(input, output, session){  
         

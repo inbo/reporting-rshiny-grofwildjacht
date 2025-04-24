@@ -633,6 +633,7 @@ mapSchadeServer <- function(
       timeRange = reactive(input$time_schade),
       isSchade = TRUE,
       combinatie = reactive(FALSE),
+      height = "400px"
     )
     
     
@@ -758,7 +759,7 @@ mapSchadeUI <- function(
         if ("region" %in% plotDetails)
           column(6, 
             h3("Evolutie schadegevallen WBE"),
-            plotModuleUI(id = ns("timePlotSchade"), height = "400px"),
+            plotModuleUI(id = ns("timePlotSchade")),
             optionsModuleUI(id = ns("timePlotSchade"), exportData = TRUE,
               doWellPanel = FALSE)
           )      

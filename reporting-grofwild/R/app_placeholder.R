@@ -4,7 +4,6 @@
 ###############################################################################
 
 
-
 #' Empty function - placeholder
 #' @param id character, unique identifier
 #' @return no return value

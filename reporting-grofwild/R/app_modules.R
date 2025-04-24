@@ -210,8 +210,9 @@ optionsModuleServer <- function(input, output, session,
           
           if (currentTime[2] < newMin) 
             currentTime[2] <- newMin
+          current$time <- c(max(newMin, currentTime[1]), currentTime[2])
           updateSliderInput(session, inputId = "time", 
-            value = c(max(newMin, currentTime[1]), currentTime[2]),
+            value = current$time,
             min = newMin)      
         }
         
@@ -287,7 +288,7 @@ optionsModuleServer <- function(input, output, session,
             selected = c("Frisling", "Overloper", "Volwassen", "Onbekend"))
           
         } else {
-         
+
           updateSelectInput(session, inputId = "type",
             choices = types(),
             selected = typesDefault())

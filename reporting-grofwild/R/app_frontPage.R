@@ -23,7 +23,7 @@ frontUI <- function(speciesList){
       column(width = 6, offset = 3, align = "center",
         tags$span(
           style = "font-weight: bold;text-align: center;color: white;font-size: 2.1em;",
-          "Welkom op de faunabeheer pagina van het",
+          "Welkom op de pagina faunabeheer van het",
           br(),
           "Instituut voor Natuur- en Bosonderzoek (INBO)"
         ),

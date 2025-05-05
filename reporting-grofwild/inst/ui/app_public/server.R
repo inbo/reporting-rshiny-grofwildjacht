@@ -397,6 +397,28 @@ observeEvent(subcategory(), {
       plot = plot()
     )
   )
+  
+  # Reset navbarID choices based on species
+  observeEvent(specie(), {
+      
+      # Reset choices navbar
+      ## category
+      resetNavbarChoices(allChoices = categories, 
+        currentChoices = getInfo(specie = specie(), variable = "category", 
+          infoOutput = infoOutput, defaults = defaultTabs
+        ))
+      ## subcategory
+      resetNavbarChoices(allChoices = subcategories, 
+        currentChoices = getInfo(specie = specie(), variable = "subcategory", 
+          infoOutput = infoOutput, defaults = defaultTabs
+        ))
+      ## outputs
+      resetNavbarChoices(allChoices = outputs, 
+        currentChoices = getInfo(specie = specie(), variable = "output", 
+          infoOutput = infoOutput, defaults = defaultTabs
+        ))
+      
+    })
 
   # Update the selected tabPanel based on the hash
   # (see https://stackoverflow.com/a/74874638)

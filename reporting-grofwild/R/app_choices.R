@@ -508,3 +508,22 @@ getInfoList <- function(infoOutput, uiText) {
   fullInfo
   
 }
+
+
+#' Restrict choices in navbar menu to currently relevant choices
+#' @param allChoices character vector, all available choices
+#' @param currentChoices character vector, all relevant choices. Only these should be shown
+#' @return no return value; manipulation of UI
+#' 
+#' @author mvarewyck
+#' @export
+resetNavbarChoices <- function(allChoices, currentChoices) {
+  
+  for (iChoice in allChoices)
+    if (iChoice %in% currentChoices)
+      # Show
+      bslib::nav_show(id = "navbarID", target = iChoice) else
+      # Hide
+      bslib::nav_hide(id = "navbarID", target = iChoice)
+  
+}

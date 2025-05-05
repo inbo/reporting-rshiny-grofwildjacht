@@ -8,8 +8,8 @@ getCategoryTitle <- function(category){
   category <- as.character(category)
   
   title <- switch(category,
-    draagvlak = "Maatschappelijk draagvlak",
-    populatie = "Populatie indicatoren",
+    draagvlak = "Draagvlak",
+    populatie = "Populatie",
     tools::toTitleCase(sub("-", " ", category))
   )
   

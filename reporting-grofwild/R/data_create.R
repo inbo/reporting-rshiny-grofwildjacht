@@ -603,7 +603,7 @@ createSpreadData <- function(
       # Most recent 2 files
       toReturn <- tail(spatialFile, n = 2)
       names(toReturn) <- paste0(spatialLevel, "_",
-        sapply(strsplit(tools::file_path_sans_ext(spatialFile), split = "_"), function(x)
+        sapply(strsplit(tools::file_path_sans_ext(toReturn), split = "_"), function(x)
                 tail(x, n = 1)))
       
       toReturn

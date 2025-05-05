@@ -104,7 +104,6 @@ verspreidingOutputServer <- function(id,
       geoData[which(geoData$wildsoort == results$specie()), ]
     })
         
-    #waarnemingenData <- loadRawData(type = "waarnemingen")
     # Restrict all to same date
     waarnemingenData <- waarnemingenData[
       waarnemingenData$afschotjaar <= 
@@ -159,12 +158,14 @@ verspreidingOutputServer <- function(id,
             )
           },
           "mapSpreadUI" = {
-            mapSpreadUI(
-              id = ns(outputName), 
-              uiText = uiText, context = "description",
-              specie = results$specie(),
-              doHide = FALSE
-            )
+            if (results$specie() == "Wild zwijn")
+              mapSpreadUI(
+                id = ns(outputName), 
+                uiText = uiText, context = "description",
+                specie = results$specie(),
+                doHide = FALSE
+              ) else 
+              helpText("Geen visualisatie beschikbaar voor deze diersoort")
           },
           "kencijferUI" = {
             kencijferModuleUI(

@@ -50,7 +50,7 @@
       <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
       <li>Deze gegevens komen uit het Meldpunt-schaderegistratie van het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>), het project Dieren onder de wielen (Natuurpunt), Wilder (Limburgse Jagervereniging vzw) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen.</li>
       <li><b>Opgelet:</b> de data en figuren geven de meldingen weer zoals ze ingevoerd werden. Er gebeurt op dit moment geen systematische terreincontrole van deze meldingen. Ook eventuele dubbele meldingen van hetzelfde schadegeval worden niet gecontroleerd.</li>
-      <li>Fotobron: Vildaphoto </li>
+      <li>De afbeeldingen zijn afkomstig van Vildaphoto. </li>
     </ul>
   </li><br>
   <li><b>Fouten melden</b>
@@ -59,10 +59,82 @@
     </ul>
   </li>
 </ul>";""
-"informatie-beheer";"";"";"<p><b><u>Gebruiksinfo:</u></b><p> <ul> <li>Tabellen en figuren zijn gebaseerd op de beschikbare gegevens op {{maxDate}}. Een deel van de data van het voorbije kwartaal zijn dus mogelijks nog niet opgenomen in de dataset. <li>De kaarten, figuren en tabellen zijn gebaseerd op gegevens uit het <a href=\https://www.natuurenbos.be/e-loket\ target=\_blank\>E-loket van het Agentschap voor Natuur en Bos</a>, aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).<li>U kunt de onderliggende data van de figuren en tabellen steeds downloaden als ruwe bestanden. De figuren zelf kunnen afzonderlijk worden gedownload in .png formaat. <li>Indien u fouten zou ontdekken of merkt dat er data ontbreken, gelieve dit dan te melden via een e-mail naar <a href=\mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie\ target=\_blank\>faunabeheer@inbo.be</a>. </ul>";""
-"informatie-draagvlak";"";"";"<p><b><u>Gebruiksinfo:</u></b><p> <ul> <li>Tabellen en figuren zijn gebaseerd op de beschikbare gegevens op {{maxDate}}. Een deel van de data van het voorbije kwartaal zijn dus mogelijks nog niet opgenomen in de dataset. <li><li>De kaarten, figuren en tabellen zijn gebaseerd op gegevens uit het <a href=\https://www.natuurenbos.be/e-loket\ target=\_blank\>E-loket van het Agentschap voor Natuur en Bos</a>, aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).<li>U kunt de onderliggende data van de figuren en tabellen steeds downloaden als ruwe bestanden. De figuren zelf kunnen afzonderlijk worden gedownload in .png formaat. <li>Indien u fouten zou ontdekken of merkt er dat data ontbreken, gelieve dit dan te melden via een e-mail naar <a href=\mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie\ target=\_blank\>faunabeheer@inbo.be</a>. </ul>";""
-"informatie-populatie";"";"";"<p><b><u>Gebruiksinfo:</u></b><p> <ul> <li>Tabellen en figuren zijn gebaseerd op de beschikbare gegevens op {{maxDate}}. Een deel van de data van het voorbije kwartaal zijn dus mogelijks nog niet opgenomen in de dataset. <li>De kaarten, figuren en tabellen zijn gebaseerd op gegevens uit het <a href=\https://www.natuurenbos.be/e-loket\ target=\_blank\>E-loket van het Agentschap voor Natuur en Bos</a>, aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).<li>U kunt de onderliggende data van de figuren en tabellen steeds downloaden als ruwe bestanden. De figuren zelf kunnen afzonderlijk worden gedownload in .png formaat. <li>Indien u fouten zou ontdekken of merkt dat er data ontbreken, gelieve dit dan te melden via een e-mail naar <a href=\mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie\ target=\_blank\>faunabeheer@inbo.be</a>. </ul>";""
-"informatie-verspreiding";"";"";"<p><b><u>Gebruiksinfo:</u></b></p><ul> <li>De tabellen en figuren zijn gebaseerd op gegevens die beschikbaar waren op {{maxDate}}. Een deel van de data van het voorbije kwartaal zijn daardoor mogelijks nog niet zichtbaar in de figuur of grafiek.<li>De bron voor de kaarten, figuren en tabellen wordt gevormd door het <a href=\https://www.natuurenbos.be/e-loket\ target=\_blank\>E-loket van het Agentschap voor Natuur en Bos</a>.<li>U kunt de onderliggende data van de figuren en tabellen steeds downloaden als ruwe bestanden. De figuren zelf kunnen afzonderlijk gedownload worden in .png formaat. <li>Indien u fouten zou ontdekken of merkt dat er data ontbreken, gelieve dit dan te melden via een e-mail naar <a href=\mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie\ target=\_blank\>faunabeheer@inbo.be</a>.</ul>";""
+"informatie-beheer";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
+<ul>
+  <li><b>Downloaden</b>
+    <ul>
+      <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
+      <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
+    </ul><br>
+  </li>
+  <li><b>Bronnen</b>
+    <ul>
+      <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
+      <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>) en zijn aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).</li>
+  </li><br>
+  <li><b>Fouten melden</b>
+    <ul>
+      <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
+    </ul>
+  </li>
+</ul>";""
+"informatie-draagvlak";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
+<ul>
+  <li><b>Downloaden</b>
+    <ul>
+      <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
+      <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
+    </ul><br>
+  </li>
+  <li><b>Bronnen</b>
+    <ul>
+      <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
+      <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>) en zijn aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).</li>
+  </li><br>
+  <li><b>Fouten melden</b>
+    <ul>
+      <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
+    </ul>
+  </li>
+</ul>";""
+"informatie-populatie";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
+<ul>
+  <li><b>Downloaden</b>
+    <ul>
+      <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
+      <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
+    </ul><br>
+  </li>
+  <li><b>Bronnen</b>
+    <ul>
+      <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
+      <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>) en zijn aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).</li>
+  </li><br>
+  <li><b>Fouten melden</b>
+    <ul>
+      <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
+    </ul>
+  </li>
+</ul>";""
+"informatie-verspreiding";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
+<ul>
+  <li><b>Downloaden</b>
+    <ul>
+      <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
+      <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
+    </ul><br>
+  </li>
+  <li><b>Bronnen</b>
+    <ul>
+      <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
+      <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>)</li>
+  </li><br>
+  <li><b>Fouten melden</b>
+    <ul>
+      <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
+    </ul>
+  </li>
+</ul>";""
 "informatie-wbe";"";"";"";"<p class=\lead\>Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.<p>"
 "informatie-woordenlijst";"";"";"";""
 "beheer-vlaanderen";"Afschot in Vlaanderen";"";"";""

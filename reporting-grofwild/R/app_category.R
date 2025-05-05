@@ -146,6 +146,9 @@ categoryCard <- function(id,
     package = "reportingGrofwild"
   )
   
+  if (!file.exists(file))
+    file <- system.file("ui", "www", "stripes.png", package = "reportingGrofwild")
+  
   card <- bslib::card(
     id = ns(paste0(idCard, "-card")),
     class = "category-card",

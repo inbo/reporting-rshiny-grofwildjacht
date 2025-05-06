@@ -30,115 +30,93 @@
 "trendYearRegionUI";"Jaarlijks gerapporteerd afschot van {wildsoort} in Vlaanderen";"Een lijngrafiek van het jaarlijks afschot van {wildsoort} in Vlaanderen.";"";""
 "yearlyShotAnimalsUI";"Percentage afschot van {wildsoort} in Vlaanderen t.o.v. een referentieperiode";"De procentuele verdeling van het afschot van {wildsoort} gedurende het geselecteerde jaar t.o.v de verdeling tijdens een referentieperiode.";"Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode.              Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.";""
 "informatie-schade";"";"";"<p><b><u>Informatie raadplegen en downloaden:</u></b></p>
-<ul>
-  <li><b>Keuzemenu</b>
+  <b>Keuzemenu</b>
     <ul>
       <li>Met het keuzemenu maakt u een keuze uit de types schade die een diersoort kan veroorzaken, zoals schade aan voertuigen, gewassen en/of andere types.</li>
       <li>Met het keuzemenu links op de pagina kunt u kiezen uit de types schade (voertuig, gewas en/of andere).</li>
       <li>Binnen elk type schade kunt u verder kiezen uit enkele subcategorieën.</li>
-      <li><b>Opgelet:</b> de filterkeuzes beïnvloeden alle figuren en tabellen die u vervolgens te zien krijgt.</li><br>
+      <li><u>Opgelet:</u> de filterkeuzes beïnvloeden alle figuren en tabellen die u vervolgens te zien krijgt.</li>
     </ul>
-  </li>
-  <li><b>Downloaden</b>
+  <b>Downloaden</b>
     <ul>
       <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
       <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
-    </ul><br>
-  </li>
-  <li><b>Bronnen</b>
+    </ul>
+    <b>Bronnen</b>
     <ul>
       <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
       <li>Deze gegevens komen uit het Meldpunt-schaderegistratie van het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>), het project Dieren onder de wielen (Natuurpunt), Wilder (Limburgse Jagervereniging vzw) en meldingen van verkeersongevallen met wilde dieren uit andere bronnen.</li>
-      <li><b>Opgelet:</b> de data en figuren geven de meldingen weer zoals ze ingevoerd werden. Er gebeurt op dit moment geen systematische terreincontrole van deze meldingen. Ook eventuele dubbele meldingen van hetzelfde schadegeval worden niet gecontroleerd.</li>
+      <li><u>Opgelet:</u> de data en figuren geven de meldingen weer zoals ze ingevoerd werden. Er gebeurt op dit moment geen systematische terreincontrole van deze meldingen. Ook eventuele dubbele meldingen van hetzelfde schadegeval worden niet gecontroleerd.</li>
       <li>De afbeeldingen zijn afkomstig van Vildaphoto. </li>
     </ul>
-  </li><br>
-  <li><b>Fouten melden</b>
+  <b>Fouten melden</b>
     <ul>
       <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
-    </ul>
-  </li>
-</ul>";""
+    </ul>";""
 "informatie-beheer";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
-<ul>
-  <li><b>Downloaden</b>
+  <b>Downloaden</b>
     <ul>
       <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
       <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
     </ul><br>
-  </li>
-  <li><b>Bronnen</b>
+  <b>Bronnen</b>
     <ul>
       <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
       <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>) en zijn aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).</li>
-     </ul>
-  </li><br>
-  <li><b>Fouten melden</b>
+      <li>De afbeeldingen zijn afkomstig van Vildaphoto. </li>
+    </ul>
+  <b>Fouten melden</b>
     <ul>
       <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
-    </ul>
-  </li>
-</ul>";""
+    </ul>";""
 "informatie-draagvlak";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
-<ul>
-  <li><b>Downloaden</b>
+  <b>Downloaden</b>
     <ul>
       <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
       <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
-    </ul><br>
-  </li>
-  <li><b>Bronnen</b>
+    </ul>
+  <b>Bronnen</b>
     <ul>
       <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
       <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>) en zijn aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).</li>
+      <li>De afbeeldingen zijn afkomstig van Vildaphoto. </li>
     </ul>
-  </li><br>
-  <li><b>Fouten melden</b>
+  <b>Fouten melden</b>
     <ul>
       <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
-    </ul>
-  </li>
-</ul>";""
+    </ul>";""
 "informatie-populatie";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
-<ul>
-  <li><b>Downloaden</b>
+  <b>Downloaden</b>
     <ul>
       <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
       <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
-    </ul><br>
-  </li>
-  <li><b>Bronnen</b>
+    </ul>
+  <b>Bronnen</b>
     <ul>
       <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
       <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>) en zijn aangevuld met metingen die het INBO heeft uitgevoerd op ingezamelde stalen (onderkaken en baarmoeders).</li>
+      <li>De afbeeldingen zijn afkomstig van Vildaphoto. </li>
     </ul>
-  </li><br>
-  <li><b>Fouten melden</b>
+  <b>Fouten melden</b>
     <ul>
       <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
-    </ul>
-  </li>
-</ul>";""
+    </ul>";""
 "informatie-verspreiding";"";"";"<p><b><u>Gebruiksinfo:</u></b></p>
-<ul>
-  <li><b>Downloaden</b>
+  <b>Downloaden</b>
     <ul>
       <li>De onderliggende data van de figuren en tabellen kan worden gedownload als ruwe bestanden.</li>
       <li>De figuren kunnen afzonderlijk worden gedownload in .png-formaat.</li>
-    </ul><br>
-  </li>
-  <li><b>Bronnen</b>
+    </ul>
+  <b>Bronnen</b>
     <ul>
       <li>Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van {{maxDate}}.</li>
       <li>Deze gegevens komen uit het e-loket fauna en flora (<a href="https://www.natuurenbos.be/e-loket" target="_blank">Agentschap voor Natuur en Bos</a>)</li>
+      <li>De afbeeldingen zijn afkomstig van Vildaphoto. </li>
     </ul>
-  </li><br>
-  <li><b>Fouten melden</b>
+  <b>Fouten melden</b>
     <ul>
       <li>Indien u fouten ontdekt of merkt dat er data ontbreken, dan kan u dat melden via <a href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie" target="_blank">faunabeheer@inbo.be</a>.</li>
-    </ul>
-  </li>
-</ul>";""
+    </ul>";""
 "informatie-wbe";"";"";"";"<p class=\lead\>Op deze pagina kunt u de afschotgegevens voor elk van de vier bejaagde grofwildsoorten binnen het Vlaams gewest van de laatste jaren raadplegen.<p>"
 "informatie-woordenlijst";"";"";"";""
 "beheer-vlaanderen";"Afschot in Vlaanderen";"";"";""

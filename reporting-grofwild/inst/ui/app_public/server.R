@@ -71,6 +71,11 @@ shinyServer(function(input, output, session) {
   })
 
   # list of current available categories, subcategories, outputs
+  categoriesCur <- reactive(
+    getInfo(specie = specie(), variable = "category",
+      infoOutput = infoOutput, defaults = defaultTabs
+    )
+  )
   subcategoriesCur <- reactive(
     getInfo(specie = specie(), category = category(), variable = "subcategory",
       infoOutput = infoOutput, defaults = defaultTabs
@@ -99,14 +104,12 @@ shinyServer(function(input, output, session) {
   output$specie <- renderUI(specie())
   
   # Change tab
-  observe({
-      # Re-trigger whenever input changes
-      req(input$specie)
-      req(specie() != defaultTabs$specie)
-      req(updateTab())
-      currentTab(specie())
-      if(doDebug)  
-        print(paste("Update current tab to:", specie(), "page"))
+  observeEvent(specie(), {
+      if(specie() != defaultTabs$specie && updateTab()){
+        if(doDebug)
+          print(paste("Update current tab to:", specie()))
+        currentTab(specie())
+      }
   })
 
   # Update page content
@@ -389,34 +392,62 @@ observeEvent(subcategory(), {
 
   ## Navigation
   
-  selection <- reactive(
-    c(
+  selection <- reactive({
+      # Check for relevant choices
+      categoryChoices <- getInfo(specie = specie(), variable = "category", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      subcategoryChoices <- getInfo(specie = specie(), variable = "subcategory", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      outputChoices <- getInfo(specie = specie(), variable = "output", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+    list(
       specie = specie(),
-      category = as.character(category()), 
-      subcategory = as.character(subcategory()),
-      plot = plot()
+      category = if (as.character(category()) %in% categoriesCur()) 
+          as.character(category()) else 
+          defaultTabs$category, 
+      subcategory = if (as.character(subcategory()) %in% subcategoriesCur()) 
+          as.character(subcategory()) else 
+          defaultTabs$subcategory,
+      plot = if (plot() %in% outputsCur()) 
+          plot() else 
+          defaultTabs$plot
     )
-  )
+  })
   
   # Reset navbarID choices based on species
   observeEvent(specie(), {
       
       # Reset choices navbar
       ## category
+      currentCat <- getInfo(specie = specie(), variable = "category", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
       resetNavbarChoices(allChoices = categories, 
-        currentChoices = getInfo(specie = specie(), variable = "category", 
-          infoOutput = infoOutput, defaults = defaultTabs
-        ))
+        currentChoices = currentCat)
       ## subcategory
+      currentSub <- getInfo(specie = specie(), variable = "subcategory", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
       resetNavbarChoices(allChoices = subcategories, 
-        currentChoices = getInfo(specie = specie(), variable = "subcategory", 
-          infoOutput = infoOutput, defaults = defaultTabs
-        ))
+        currentChoices = currentSub)
       ## outputs
+      currentPlots <- getInfo(specie = specie(), variable = "output", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
       resetNavbarChoices(allChoices = outputs, 
-        currentChoices = getInfo(specie = specie(), variable = "output", 
-          infoOutput = infoOutput, defaults = defaultTabs
-        ))
+        currentChoices = currentPlots)
+      
+      ## Reset selection based on available choices
+      category(selection()$category)
+      subcategory(selection()$subcategory)
+      plot(selection()$plot)
+      updateSelectInput(session, "specie", selected = specie())  
+      
+      if (doDebug)
+        print("Update choices navbar")
       
     })
 
@@ -427,7 +458,7 @@ observeEvent(subcategory(), {
     req(input$navbarID)
     
     currentHash <- utils::URLdecode(URL = session$clientData$url_hash)
-    query <- createQueryString(selection(), page = input$navbarID)
+    query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
       
     if (currentHash != query) {
       
@@ -461,7 +492,7 @@ observeEvent(subcategory(), {
     if(doDebug)
       print("Update hash")
     currentHash <- session$clientData$url_hash
-    query <- createQueryString(selection(), page = input$navbarID)
+    query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
     if (currentHash != query)
       updateQueryString(queryString = query, mode = "push", session)
   }, priority = 0)
@@ -474,7 +505,7 @@ observeEvent(subcategory(), {
       tags$a(
           id = "contact", 
           href = paste("mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie&body=Link:", 
-            paste0("faunabeheer.inbo.be/", createQueryString(selection(), page = input$navbarID))), 
+            paste0("faunabeheer.inbo.be/", createQueryString(selection(), page = input$navbarID, defaults = defaultTabs))), 
           target="_blank", "Contact"
         )
       

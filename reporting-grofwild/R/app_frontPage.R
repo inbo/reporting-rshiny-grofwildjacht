@@ -7,10 +7,8 @@
 #' @export
 frontUI <- function(speciesList){
 
-  img <- system.file(
-      "ui", "www", paste0("carousel-", 1:4, ".png"), 
-      package = "reportingGrofwild"
-  )
+  img <- list.files(system.file("ui", "www", package = "reportingGrofwild"), 
+    pattern = "carousel", full.names = TRUE)
   
   bootstrapPage(
     slickR::slickR(

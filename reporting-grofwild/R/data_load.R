@@ -436,3 +436,57 @@ loadTrafficData <- function(
   return(trafficData)
   
 }
+
+
+#' Read Draagvlak data
+#' @inheritParams loadRawData 
+#' @return list with for each draagvlak category (impacts, beleid, maatregelen, aanwezigheid)
+#' a data.frame
+#' 
+#' @author mvarewyck
+#' @export
+loadDraagvlakData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  dataFiles <- c(
+    "PCI_impacts_stakeholders.csv",
+    "PCI_beleid_stakeholders.csv",
+    "PCI_maatregelen_stakeholders.csv",
+    "PCI_impacts_breed_publiek.csv",
+    "PCI_maatregelen_breed_publiek.csv",
+    "PCI_aanwezigheid_breed_publiek.csv",
+    "Data_aantrekkingskracht_breed_publiek.csv"
+  )
+  
+  dataSets <- sapply(dataFiles, function(iFile) {
+      tmpData <- if (!identical(path, ""))
+          read.csv(file = file.path(path, iFile)) else
+          readS3(file = iFile, bucket = bucket)
+      tmpData$group <- paste(strsplit(gsub(".csv", "", iFile), split = "_", )[[1]][-(1:2)], collapse = "_")
+      tmpData
+    }, simplify = FALSE, USE.NAMES = TRUE)
+  
+  # Combine multiple files
+  categories <- unique(sapply(dataFiles, function(x) strsplit(x, "_")[[1]][2]))
+  toReturn <- sapply(categories, function(iCategory) {
+      tmp <- do.call(rbind, dataSets[grep(iCategory, names(dataSets))])
+      rownames(tmp) <- NULL
+      # Summarize 'Antwoord_binair'
+      if ("Antwoord_binair" %in% colnames(tmp)) {
+        tmp <- array2DF(tapply(tmp, ~ Year + Sector + Soort + Antwoord + group, function(x)
+              list(Aantal_tot = sum(x == "Ja"), totaal = nrow(x))))
+        tmp$Aantal_tot <- as.numeric(tmp$Aantal_tot)
+        tmp$totaal <- as.numeric(tmp$totaal)
+      }
+      tmp$X <- NULL
+      tmp$Year <- as.factor(tmp$Year)
+      if ("vraag_label" %in% colnames(tmp))
+        tmp$vraag_label <- droplevels(as.factor(tmp$vraag_label))
+      
+      tmp
+    }, simplify = FALSE, USE.NAMES = TRUE)
+  
+  return(toReturn)
+  
+}

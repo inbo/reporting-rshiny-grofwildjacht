@@ -5,9 +5,11 @@
 #' @export
 getCategoryTitle <- function(category){
   
+  category <- as.character(category)
+  
   title <- switch(category,
-    draagvlak = "Maatschappelijk draagvlak",
-    populatie = "Populatie indicatoren",
+    draagvlak = "Draagvlak",
+    populatie = "Populatie",
     tools::toTitleCase(sub("-", " ", category))
   )
   
@@ -25,9 +27,11 @@ getCategoryTitle <- function(category){
 #' @export
 getSubcategoryTitle <- function(subcategory, uiText){
   
-  title <- uiText[which(uiText$plotFunction == subcategory), "title"]
+  matchId <- which(uiText$plotFunction == subcategory)
 
-  return(title)
+  if (length(matchId) == 0)
+    subcategory else 
+    uiText[matchId, "title"]
   
 }
 
@@ -46,17 +50,19 @@ getOutputTitle <- function(output,
 
   # check if output name formatted as 'output-[type]'
   outputInfo <- strsplit(output, split = "-")[[1]]
-  if(
-    !is.null(type) && type == "schade" && 
-    length(outputInfo) == 2 && outputInfo[2] != type &&
-    type[1] != "countYearProvinceUI"){
-    outputFunction <- outputInfo[1]
-    type <- outputInfo[2]
-  }else{
-    outputFunction <- output
+  
+  # Try matching on whole string, otherwise take first part
+  matchId <- which(uiText$plotFunction == output)
+  if (length(matchId) == 0) {
+    
+    matchId <- which(uiText$plotFunction == outputInfo[1])
+    type <- if (length(outputInfo) > 1) outputInfo[2]
+      
   }
   
-  title <- uiText[which(uiText$plotFunction == outputFunction), "title"]
+  title <- if (length(matchId) == 0)
+    output else
+    uiText[matchId, "title"] 
   
   if(!is.null(specie)){
     title <- gsub("{wildsoort}", tolower(specie), title, fixed = TRUE)
@@ -157,7 +163,7 @@ getOutputDescription <- function(output,
 #' @export
 getOutputSpecie <- function(specie,
   geoData, ecoData, openingstijdenData,
-  schadeData, waarnemingenData){
+  schadeData, waarnemingenData, draagvlakData){
  
   ## filter all datasets by specie
   
@@ -209,8 +215,9 @@ getOutputSpecie <- function(specie,
   )
   
   outputs <- c(
+#    "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
-      c("trendYearRegionUI", "mapFlandersUI"),
+      c("trendYearRegionUI", "mapFlandersUI", "kencijferUI"),
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -252,8 +259,19 @@ getOutputSpecie <- function(specie,
       "countAgeGroupUI",
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
-    if(specie == "Wild zwijn") # TO UPDATE!
-      "mapSpreadUI"
+    if(specie == "Wild zwijn") # TODO UPDATE!
+      "mapSpreadUI",
+    # Maatschappelijk draagvlak
+    if (specie %in% draagvlakData$aanwezigheid$Soort)
+      "F14_1",
+    if (specie %in% draagvlakData$aantrekkingskracht$Soort)
+      "F14_2",
+    if (specie %in% draagvlakData$impacts$Soort)
+      "F14_3",
+    if (specie %in% draagvlakData$maatregelen$Soort)
+      "F14_4",
+    if (specie %in% draagvlakData$beleid$Soort)
+      "F14_5"
   )
     
   return(outputs)
@@ -288,7 +306,7 @@ getOutputInfo <- function(species, ...){
     
     outputs <- outputsBySpecie[[specie]]
     subcategories <- sapply(outputs, getSubcategoryOutput)
-    categories <- sapply(subcategories, getCategorySubcategory)
+    categories <- getCategorySubcategory(subcategories)
     
     if (!is.null(outputs))
       data.frame(
@@ -312,7 +330,13 @@ getOutputInfo <- function(species, ...){
     file = system.file("extdata", "output-info-blacklist.csv", 
       package = "reportingGrofwild")
   )
-  blacklist$blacklist <- rep(TRUE, nrow(blacklist))
+  blacklist <- do.call(rbind, lapply(1:nrow(blacklist), function(i) {
+      if (is.na(blacklist$specie[i]))
+        data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
+        info[i, ]
+    }))
+  blacklist$blacklist <- TRUE
+  
   info <- merge(
     x = info, y = blacklist,
     all.x = TRUE, by = c("specie", "output"), sort = FALSE
@@ -361,8 +385,15 @@ getSubcategoryOutput <- function(output){
       `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
       
       # verspreiding
-      `verspreiding-huidig` = "F17_1",
-      `verspreiding-toekomstig` = "mapSpreadUI"
+      `verspreiding-huidig` = c("F17_1", "kencijferUI"),
+      `verspreiding-toekomstig` = "mapSpreadUI",
+      
+      # draagvlak
+      `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
+      
+#      # woordenlijst
+#      `woordenlijst-placeholder` = "woordenlijstPlaceholder"
+    
   )
   
   isSubcat <- sapply(subcategoryOutput, function(outputs){
@@ -383,25 +414,9 @@ getSubcategoryOutput <- function(output){
 #' @export
 getCategorySubcategory <- function(subcategory){
   
-  categorySubcategory <- list(
-      beheer = c("beheer-vlaanderen", "beheer-regio",
-          "beheer-leeftijdcategorie", "beheer-jachtmethode"),
-      schade = c("schade-vlaanderen", "schade-regio", 
-          "schade-type", "schade-seizoen", "schade-kosten"
-      ),
-      populatie = c("populatie-leeggewicht", "populatie-onderkaak",
-          "populatie-geslacht", "populatie-voortplanting"
-      ),
-      verspreiding = c("verspreiding-huidig", "verspreiding-toekomstig")        
-  )
-  
-  isCat <- sapply(categorySubcategory, function(subcategories){
-        any(subcategory %in% subcategories)    
-      })
-  
-  categories <- names(which(isCat))
-  
-  categories <- factor(categories, levels = names(categorySubcategory))
+  categories <- sapply(strsplit(as.character(subcategory), split = "-"), function(x) x[1])
+  categories <- factor(categories, levels = c("beheer", "schade", "populatie", 
+    "verspreiding", "draagvlak"))
   
   return(categories)
   
@@ -445,10 +460,70 @@ getInfo <- function(
   
   results <- unique(as.character(infoOutput[, variable]))
   
-  # TODO: remove draagvlak when outputs will be available
-  if(variable == "category")
-    results <- c(results, "draagvlak", "woordenlijst")
-  
   return(results)
+  
+}
+
+
+
+#' Replacing ids by labels for the \code{\link{getInfo}}
+#' @param infoOutput data.frame as returned by \code{\link{getInfo}}
+#' @inheritParams getOutputTitle 
+#' @return data.frame
+#' 
+#' @author mvarewyck
+#' @export
+getInfoList <- function(infoOutput, uiText) {
+  
+  subInfo <- infoOutput
+  
+  # Ignore species choice
+  subInfo$specie <- NULL
+  subInfo <- subInfo[!duplicated(subInfo), ]
+  
+  # Category level 
+  categoryInfo <- subInfo[!duplicated(subInfo[, c("category")]), ]
+  categoryInfo$subcategory <- ""
+  categoryInfo$output <- ""
+  categoryInfo$id <- categoryInfo$category
+  
+  # Subcategory level 
+  subcategoryInfo <- subInfo[!duplicated(subInfo[, c("category", "subcategory")]), ]
+  subcategoryInfo$output <- ""
+  subcategoryInfo$id <- subcategoryInfo$subcategory
+  
+  # Output level
+  subInfo$id <- subInfo$output
+  fullInfo <- do.call(rbind, list(categoryInfo, subcategoryInfo, subInfo))
+  # Replace id by label
+  fullInfo$category <- sapply(fullInfo$category, getCategoryTitle)
+  fullInfo$subcategory <- sapply(as.character(fullInfo$subcategory), function(x)
+      getSubcategoryTitle(x, uiText = uiText))
+  fullInfo$output <- sapply(fullInfo$output, function(x) getOutputTitle(x, uiText = uiText))
+  
+  fullInfo$label <- ifelse(fullInfo$output == "", ifelse(fullInfo$subcategory == "", 
+      fullInfo$category, fullInfo$subcategory), fullInfo$output)
+  fullInfo$id <- as.character(fullInfo$id)
+  
+  fullInfo
+  
+}
+
+
+#' Restrict choices in navbar menu to currently relevant choices
+#' @param allChoices character vector, all available choices
+#' @param currentChoices character vector, all relevant choices. Only these should be shown
+#' @return no return value; manipulation of UI
+#' 
+#' @author mvarewyck
+#' @export
+resetNavbarChoices <- function(allChoices, currentChoices) {
+  
+  for (iChoice in allChoices)
+    if (iChoice %in% currentChoices)
+      # Show
+      bslib::nav_show(id = "navbarID", target = iChoice) else
+      # Hide
+      bslib::nav_hide(id = "navbarID", target = iChoice)
   
 }

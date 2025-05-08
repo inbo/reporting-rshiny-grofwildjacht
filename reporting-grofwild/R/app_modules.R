@@ -14,6 +14,7 @@
 #' region levels: 1 = flanders, 2 = provinces, 3 = communes, 4 = faunabeheerzones
 #' @param summarizeBy character, choices to be shown as summary statistics
 #' (expect count or percent)
+#' @param exportPlot boolean, whether a download button for the plot is shown
 #' @param exportData boolean, whether a download button for the data is shown
 #' @param showDataSource character vector, for which variables to show choices 
 #' of data source levels. 
@@ -32,7 +33,7 @@ optionsModuleUI <- function(id,
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     showCategorie = FALSE, showInterval = FALSE, 
     regionLevels = NULL, summarizeBy = NULL,
-    exportData = FALSE, 
+    exportPlot = FALSE, exportData = FALSE, 
     showDataSource = NULL,
     doWellPanel = TRUE, oneRow = FALSE
     ) {
@@ -105,6 +106,8 @@ optionsModuleUI <- function(id,
         uiOutput(ns("interval")),
       if(showCategorie)
         uiOutput(ns("categorie")),
+      if(exportPlot)
+        downloadButton(ns("plotDownload"), "Download plot", class = "downloadButton"),
       if(exportData) {
         downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
       }
@@ -159,6 +162,8 @@ optionsModuleServer <- function(input, output, session,
   ns <- session$ns
   
   results <- reactiveValues()
+  current <- reactiveValues(
+    year = definedYear)
   
   
   output$time <- renderUI({
@@ -166,14 +171,15 @@ optionsModuleServer <- function(input, output, session,
       results$minTime <- min(timeRange())
       
       sliderInput(inputId = ns("time"), label = timeLabel, 
-        value = c(min(timeRange()), definedYear),
+        value = if (is.null(current$time))
+          c(min(timeRange()), definedYear) else current$time,
         min = min(timeRange()),
         max = max(timeRange()),
         step = 1,
         sep = "")
       
     })
-  
+  observe(current$time <- input$time)
   
   
     observe({
@@ -204,8 +210,9 @@ optionsModuleServer <- function(input, output, session,
           
           if (currentTime[2] < newMin) 
             currentTime[2] <- newMin
+          current$time <- c(max(newMin, currentTime[1]), currentTime[2])
           updateSliderInput(session, inputId = "time", 
-            value = c(max(newMin, currentTime[1]), currentTime[2]),
+            value = current$time,
             min = newMin)      
         }
         
@@ -216,7 +223,7 @@ optionsModuleServer <- function(input, output, session,
         
         div(class = "sliderBlank", 
             sliderInput(inputId = ns("year"), label = "Geselecteerd Jaar", 
-                value = definedYear,
+                value = if (is.null(current$year)) definedYear else current$year,
                 min = min(timeRange()),
                 max = max(timeRange()),
                 step = 1,
@@ -225,6 +232,7 @@ optionsModuleServer <- function(input, output, session,
         
         
       })
+  observe(current$year <- input$year)
   
   
   output$region <- renderUI({
@@ -254,16 +262,13 @@ optionsModuleServer <- function(input, output, session,
           
         }
         
-        
-        if (input$regionLevel == "flanders")
-          selected <- choices[1] else
-          selected <- NULL
-        
         selectInput(inputId = ns("region"), label = "Regio('s)",
-            choices = choices, selected = selected, multiple = TRUE)
-        
+            choices = choices, 
+            selected = if (input$regionLevel == "flanders") choices[1] else NULL, 
+            multiple = TRUE)
         
       })
+  observe(current$region <- input$region)
   
   
   ## this is applicable for 
@@ -272,8 +277,6 @@ optionsModuleServer <- function(input, output, session,
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   
   observe({
-      
-      req(!is.null(input$type))
       
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
         
@@ -285,7 +288,7 @@ optionsModuleServer <- function(input, output, session,
             selected = c("Frisling", "Overloper", "Volwassen", "Onbekend"))
           
         } else {
-          
+
           updateSelectInput(session, inputId = "type",
             choices = types(),
             selected = typesDefault())
@@ -295,20 +298,26 @@ optionsModuleServer <- function(input, output, session,
     })
   
   output$type <- renderUI({
-        
+      
+      isolate({
+          
         selectInput(inputId = ns("type"), label = labelTypes,
             choices = types(), 
-            selected = typesDefault(), multiple = multipleTypes)
+            selected = if (is.null(current$type)) typesDefault() else current$type, 
+            multiple = multipleTypes)
+          
+        })
         
       })
+  observe(current$type <- input$type)
     
   output$categorie <- renderUI({
       
       selectInput(inputId = ns("categorie"), label = "Categorie",
-        choices = categories())
+        choices = categories(), selected = current$categorie)
       
     })  
-  
+  observe(current$categorie <- input$categorie)
    
   observe({
         
@@ -319,16 +328,17 @@ optionsModuleServer <- function(input, output, session,
   
   output$interval <- renderUI({
         
-        selectInput(inputId = ns("interval"), label = "Interval", choices = intervals)
+        selectInput(inputId = ns("interval"), label = "Interval", 
+          choices = intervals, selected = current$interval)
         
       })
+  observe(current$interval <- input$interval)
  
 }
 
 
 
 #' Interactive plot (ui-side)
-#' @param height character, plot height, default is "600px" 
 #' @param filter boolean, whether to display filters UI
 #' @inheritParams reportingGrofwild-common-args
 #' @return ui object
@@ -337,15 +347,14 @@ optionsModuleServer <- function(input, output, session,
 #' @importFrom plotly plotlyOutput
 #' @importFrom shiny NS
 #' @export
-plotModuleUI <- function(id, height = "600px", filter = FALSE) {
+plotModuleUI <- function(id, filter = FALSE) {
   
   ns <- NS(id)
   
   tagList(
-      tags$div(align = "center",
-          withSpinner(plotlyOutput(ns("plot"), height = height), hide.ui = FALSE)
-      ),
-      uiOutput(outputId = ns("warning"))
+    tags$div(align = "center",
+      withSpinner(uiOutput(outputId = ns("plot")), hide.ui = FALSE)),
+    uiOutput(outputId = ns("warning"))
   )
 }
 
@@ -416,19 +425,19 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
-#' @param verticalGroups reactive boolean; see also \link{barDraagkracht};
-#' default is NULL
 #' @param typeMelding reactive with type of notification ('melding')
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
 #' @inheritParams countYearShotAnimals
-#' @inheritParams barDraagkrachtServer
+#' @inheritParams barCostServer
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
+#' @param height character, plot height, default is "600px" 
 #' 
 #' @return no return value; plot output object is created
 #' @author mvarewyck
+#' @importFrom ggplot2 ggsave
 #' @importFrom utils write.table
 #' @importFrom DT datatable formatRound renderDataTable formatStyle styleEqual
 #' @importFrom flexdashboard renderGauge gauge gaugeSectors
@@ -436,14 +445,14 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL, groupVariable = NULL,
-    xVar = NULL, yVar = NULL,
+    yVar = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
     datatable = FALSE,  
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, title = NULL,
-    verticalGroups = NULL,
     fullNames = NULL, type = NULL,
-    typeMelding = NULL) {
+    typeMelding = NULL, 
+    height = "600px") {
   
   subData <- reactive({
         
@@ -537,12 +546,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
               list(groupVariable = groupVariable),
-            if(!is.null(xVar))
-              list(xVar = xVar),
             if(!is.null(yVar))
               list(yVar = yVar),
-            if(!is.null(verticalGroups))
-              list(verticalGroups = verticalGroups()),
             if(!is.null(fullNames))
               list(fullNames = fullNames),
             
@@ -605,16 +610,34 @@ plotModuleServer <- function(input, output, session, plotFunction,
         
       })
   
-  
-  output$plot <- renderPlotly({  
+    
+    output$plotly <- renderPlotly({  
+        
+        req("plotly" %in% class(resultFct()$plot))
         
         resultFct()$plot %>%
           config(toImageButtonOptions = list(width = 1300, height = 800))
         
       })
     
+    output$ggplot <- renderPlot({  
+        
+        req("ggplot" %in% class(resultFct()$plot))
+        
+        resultFct()$plot
+        
+      })  
+    
+    output$plot <- renderUI({
+        
+        if ("plotly" %in% class(resultFct()$plot))
+          plotlyOutput(session$ns("plotly"), height = height) else if ("ggplot" %in% class(resultFct()$plot))
+          plotOutput(session$ns("ggplot"), height = height)
+        
+      })
+    
   # Prevent that plotly images are squeezed
-  outputOptions(output, "plot", suspendWhenHidden = FALSE)
+  outputOptions(output, "plotly", suspendWhenHidden = FALSE)
     
   output$accuracy <- flexdashboard::renderGauge({
       
@@ -638,7 +661,28 @@ plotModuleServer <- function(input, output, session, plotFunction,
       tags$em(resultFct()$warning)
         
       })
-  
+    
+  output$plotDownload <- downloadHandler(
+    filename = function() nameFile(species = wildNaam(),
+            year = if (!is.null(input$year)) 
+                  input$year else if (!is.null(input$time))
+                  unique(c(input$time[1], input$time[2])) else if (!is.null(timeRange))
+                  timeRange() else
+                  unique(data()$year), 
+            extraInfo = input$type,
+            content = paste0(plotFunction, "_data"), fileExt = "png"),
+        content = function(file) {
+          
+          resPlot <- resultFct()$plot
+          
+          validate(
+            need(resPlot, "Niet beschikbaar"),
+            need("ggplot" %in% class(resPlot), "Niet beschikbaar")
+          )
+          
+          ggsave(file, resPlot, width = 6, height = 6, dpi = 150)
+          
+        })
   
   output$dataDownload <- downloadHandler(
       filename = function() nameFile(species = wildNaam(),

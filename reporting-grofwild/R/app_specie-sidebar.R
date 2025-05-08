@@ -61,6 +61,20 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
     output$`specie-latin-name` <- renderUI(
       tags$em(paste("Latijn:", getLatinName(specie = specie())))
     )
+    
+    observe(updateSelectInput(session, inputId = "specie", selected = specie()))
+    
+    observeEvent(input$specie, { 
+        req(input$specie != "")
+        req(session$clientData$url_hash)
+        
+        currentString <- utils::URLdecode(URL = session$clientData$url_hash)
+        newString <- modifyQueryString(query = currentString, specie = input$specie)
+        
+        if (currentString != newString)
+          updateQueryString(queryString = newString, mode = "push", session)
+          
+      }, priority = -2)
         
   })
 }

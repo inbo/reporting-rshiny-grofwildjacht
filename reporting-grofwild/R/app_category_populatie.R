@@ -123,15 +123,6 @@ populatieOutputServer <- function(id,
     
     specieSidebarServer(id = "sidebar", specie = results$specie)
     
-    # specie is updated in this page
-    observe( 
-      updateSelectInput(session, inputId = "sidebar-specie", 
-        selected = specie())
-    )
-    
-    observeEvent(input$`sidebar-specie`, 
-      results$specie <- reactive(input$`sidebar-specie`))
-    
     ## Main panel
 
     # Tab content with selected plot/table

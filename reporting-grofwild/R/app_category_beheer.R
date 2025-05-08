@@ -165,7 +165,7 @@ beheerOutputServer <- function(id,
       )
       drukjachtData <- merge(
         x = results$ecoData()[
-          results$ecoData()$jachtmethode_comp == "Drukjacht", 
+          results$ecoData()$jachtmethode_comp %in% "Drukjacht", 
           c("ID", "afschot_datum", "afschotjaar", "provincie", "wildsoort")
         ], 
         y = results$geoData()[, c("ID", colsGeo)], 
@@ -184,14 +184,6 @@ beheerOutputServer <- function(id,
     
     specieSidebarServer(id = "sidebar", specie = results$specie)
 
-    # specie is updated in this page
-    observe( 
-      updateSelectInput(session, inputId = "sidebar-specie", 
-        selected = specie())
-    )
-    observeEvent(input$`sidebar-specie`, 
-      results$specie <- reactive(input$`sidebar-specie`))
-    
     ## Main panel
 
     # Tab content with selected plot/table
@@ -346,7 +338,7 @@ beheerOutputServer <- function(id,
         "F04_3" = countYearProvinceServer(
           id = outputName, 
           data = results$drukjachtData,
-          timeRange = reactive(range(results$drukjachtData()$afschotjaar))
+          timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
         )
       )
       

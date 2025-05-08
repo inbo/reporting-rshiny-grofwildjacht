@@ -23,24 +23,25 @@ categoryUI <- function(
     split = TRUE
   )
   
-  img <- file.path("www", paste("category", category, "header.png", sep = "-"))
+  imgFile <- file.path("www", paste("category", category, "header.png", sep = "-"))
   
   verticalLayout(
       
     # image
-    fluidRow(img(src = img, width = "100%")),
+    fluidRow(img(src = imgFile, width = "100%")),
     
     # Specie
-    tags$div(style = "margin-left: 15px; margin-top: 15px", sidebarLayout(    
+    tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
+      sidebarLayout(    
       position = "left", 
       sidebarPanel = specieSidebarUI(
         id = ns("sidebar"), 
-        speciesList = speciesList
+        speciesList = speciesList,
+        select = TRUE
       ),
       mainPanel = mainPanel(
         width = 9, 
-        style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
-        
+        style = "overflow-y: hidden;", # single scrolling bar
         infoText[["title"]], infoText[["summary"]],
         uiOutput(outputId = ns("cards")),
         tags$div(style = "margin-top: 25px;", infoText[["description"]])
@@ -144,6 +145,9 @@ categoryCard <- function(id,
     paste0("category-", filename, ".png"), 
     package = "reportingGrofwild"
   )
+  
+  if (!file.exists(file))
+    file <- system.file("ui", "www", "stripes.png", package = "reportingGrofwild")
   
   card <- bslib::card(
     id = ns(paste0(idCard, "-card")),

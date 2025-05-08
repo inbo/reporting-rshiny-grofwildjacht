@@ -446,7 +446,6 @@ mapFlanders <- function(
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @param sourceChoices named character vector, choices for the source
-#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
@@ -1184,7 +1183,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         timeRange = reactive(input$period),
         unit = reactive(input$unit),
         combinatie = reactive(input$combinatie),
-        isSchade = (type == "wildschade")
+        isSchade = (type == "wildschade"),
+        height = "400px"
       )
       
       
@@ -1246,7 +1246,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       )
       callModule(module = plotModuleServer, id = "biotoopPlot",
         plotFunction = "barBiotoop", 
-        data = biotoopPlotData 
+        data = biotoopPlotData,
+        height = "400px"
       )
       
       # Table
@@ -1433,7 +1434,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
           if (showCombine)
             checkboxInput(inputId = ns("combinatieBiotoop"), 
               label = "Combineer alle geselecteerde regio's"),
-          plotModuleUI(id = ns("biotoopPlot"), height = "400px"),
+          plotModuleUI(id = ns("biotoopPlot")),
           optionsModuleUI(id = ns("biotoopPlot"), exportData = TRUE,
             doWellPanel = FALSE)
         ),
@@ -1465,7 +1466,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
         if ("region" %in% plotDetails)
           column(12/nRegios,
             uiOutput(ns("timeTitle")),
-            plotModuleUI(id = ns("timePlot"), height = "400px"),
+            plotModuleUI(id = ns("timePlot")),
             optionsModuleUI(id = ns("timePlot"), exportData = TRUE,
               doWellPanel = FALSE)
           )

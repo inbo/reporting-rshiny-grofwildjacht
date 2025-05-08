@@ -14,6 +14,8 @@
 #' \code{loadHabitats}
 #' @param schadeData data.frame, schade data as loaded by
 #' \code{loadRawData(type = "wildschade")}
+#' @param draagvlakData list with draagvlak survey results, each list element
+#' is a data.frame; object as returned by \code{\link{loadDraagvlakData}}
 #' @param schadeTypes character with type of damage, as 'types' 
 #' output from \code{loadMetaSchade}
 #' @param schadeCodes character with type of damage, as unlisted 'codes' 

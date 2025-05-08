@@ -251,41 +251,53 @@ kencijferModuleUI <- function(id, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste(strsplit(id, "_")[[1]][-1], collapse = "_"), ]
+  title <- getOutputTitle(output = "kencijferUI", uiText = uiText)
+  description <- getOutputDescription(output = "kencijferUI", uiText = uiText, 
+    context = "description")
   
   tagList(
     
     actionLink(inputId = ns("linkKencijferTabel"), 
-      label = paste("TABEL:", uiText$title), class = "action-h3"),
+      label = paste("TABEL:", title), class = "action-h3"),
     
     conditionalPanel(
       condition = "input.linkKencijferTabel % 2 == 0", ns = ns,
-      fixedRow(
-        tags$p(HTML(decodeText(text = uiText$dash))),
-        column(8,
-          tags$div(
-            style = "margin-bottom: 10px",
-            withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
-          ),
-          downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
-        ),
-        column(4,
-          wellPanel(
-            uiOutput(ns("filterYear")),
-            uiOutput(ns("filterPeriod")),
-            selectInput(inputId = ns("unit"), label = "Eenheid",
-              choices = c(
-                "Aantal" = "absolute", 
-                "Aantal/100ha" = "relative", 
-                "Aantal/100ha bos & natuur" = "relativeDekking")),
-            uiOutput(ns("filterSource")),
-            conditionalPanel(
-              condition = "input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
-              uiOutput(ns("sliderObserve"))
+      tagList(
+        tags$p(HTML(description)),
+        fixedRow(
+          column(8,
+            tags$div(
+              style = "margin-bottom: 10px",
+              withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
             ),
-            conditionalPanel(
-              condition = "input.bron && input.bron.includes('afschot')", ns = ns,
-              uiOutput(ns("sliderAfschot"))
+            downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
+          ),
+          column(4,
+            wellPanel(
+              selectInput(inputId = ns("regionLevel"), label = "Schaal",
+                  choices = c(
+                    "Vlaanderen" = "flanders",
+                    "Provincie" = "provinces", 
+                    "Gemeente" = "communes"
+                  ),
+                  selected = "provinces"),
+              uiOutput(ns("region")),
+              uiOutput(ns("filterYear")),
+              uiOutput(ns("filterPeriod")),
+              selectInput(inputId = ns("unit"), label = "Eenheid",
+                choices = c(
+                  "Aantal" = "absolute", 
+                  "Aantal/100ha" = "relative", 
+                  "Aantal/100ha bos & natuur" = "relativeDekking")),
+              uiOutput(ns("filterSource")),
+              conditionalPanel(
+                condition = "input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
+                uiOutput(ns("sliderObserve"))
+              ),
+              conditionalPanel(
+                condition = "input.bron.indexOf('afschot')", ns = ns,
+                uiOutput(ns("sliderAfschot"))
+              )
             )
           )
         )
@@ -299,20 +311,20 @@ kencijferModuleUI <- function(id, uiText) {
 #' kencijfer table module server
 #' @inheritParams optionsModuleServer 
 #' @param kencijfersData geo data for given region
-#' @param timeRange numeric vector of length 2 with time range (in year) for year filters
 #' @param species a reactive value of the name of the animal species
 #' @inheritParams summarizeKencijferData
 #' @inheritParams kencijferModuleUI
+#' @inheritParams reportingGrofwild-common-args
 #' @import shiny
 #' @importFrom DT JS formatStyle styleEqual
 #' @author yzhang
 #' @export
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, 
-  biotoopData, timeRange, species){
+  biotoopData, spatialData, species){
   
   # For R CMD check
-  afschotjaar <- aantal <- NULL
+  afschotjaar <- aantal <- gemeente_afschot_locatie <- provincie <- . <- NULL
   
   results <- reactiveValues(
     observeThreshold = 1, 
@@ -324,6 +336,58 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
     function(input, output, session) {
       
       ns <- session$ns
+      
+      
+      output$region <- renderUI({
+          
+          req(input$regionLevel)
+          
+          if (input$regionLevel == "flanders")
+            return(NULL)
+          
+          currentSpatial <- filterSpatial(
+            allSpatialData = spatialData, 
+            species = species(), 
+            regionLevel = input$regionLevel, 
+            year = NULL
+          )
+          
+          regionChoices <- sort(unique(currentSpatial$NAAM))
+          
+          selectInput(inputId = ns("locaties"), label = "Regio('s)",
+            choices = regionChoices,
+            multiple = TRUE)
+          
+        })
+      
+      filterKencijfersData <- reactive({
+          
+          req(input$regionLevel)
+          
+          dataSingleEntry <- if (input$regionLevel != "flanders") {
+              
+              validate(need(input$locaties, "Gelieve regio('s) te selecteren"))
+              filterGeo(data = kencijfersData(), regionLevel = input$regionLevel, 
+                locaties = input$locaties, choseByID = FALSE)
+              
+            } else {     
+              
+              kencijfersData()
+              
+            }
+          
+          dataSingleEntry[ ,.(aantal= sum(aantal)), 
+            by = .(gemeente_afschot_locatie, provincie, dataSource, afschotjaar)]
+          
+        })
+      
+      timeRange <- reactive({
+          
+          req(kencijfersData())
+          c(min(kencijfersData()$afschotjaar), as.numeric(format(Sys.time(), "%Y")))
+          
+        })
+      
       
       output$filterYear <- renderUI({
           
@@ -354,9 +418,10 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       output$filterSource <- renderUI({
           
-          req(kencijfersData())
+          req(filterKencijfersData())
           
-          dataSource <- unique(kencijfersData()$dataSource)
+          dataSource <- unique(filterKencijfersData()$dataSource)
+          req(length(dataSource) > 0)
           names(dataSource) <- gsub("\\..+", "", dataSource)
           
           selectInput(inputId = ns("bron"),
@@ -369,9 +434,9 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       kencijferSummarized <- reactive({
           
-          req(kencijfersData())
+          req(filterKencijfersData())
           
-          summarizeKencijferData(geoData = kencijfersData(),
+          summarizeKencijferData(geoData = filterKencijfersData(),
             biotoopData = biotoopData(),
             unit = req(input$unit)
           )
@@ -386,7 +451,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
           maxWaarnemingen <- max(if (input$unit == "absolute") 10 else 5, 
-            max(valueChoices, na.rm = TRUE))
+            suppressWarnings(max(valueChoices, na.rm = TRUE)))
           
           sliderInput(
             inputId = ns("thresholdWaarnemingen"),
@@ -408,7 +473,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
           maxSchot <- max(if (input$unit == "absolute") 10 else 5, 
-            max(valueChoices, na.rm = TRUE))
+            suppressWarnings(max(valueChoices, na.rm = TRUE)))
           
           sliderInput(
             inputId = ns("thresholdAfschot"),
@@ -435,14 +500,17 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       results$res <- reactive({
           
-          req(input$bron)
           req(input$year)
+          req(input$period)
           
           tableKencijfers(
             data = req(kencijferSummarized()), 
             jaar = as.numeric(input$year),
             period = input$period,
-            bron = ifelse(length(input$bron) == 2, "both", input$bron),
+            bron = if (is.null(input$bron)) 
+                "both" else if (length(input$bron) == 2) 
+                "both" else 
+                input$bron,
             thresholdWaarnemingen = input$thresholdWaarnemingen,
             thresholdAfschot = input$thresholdAfschot,
             ns = ns

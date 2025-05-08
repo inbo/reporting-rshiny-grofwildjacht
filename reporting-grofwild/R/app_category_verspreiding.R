@@ -82,9 +82,12 @@ verspreidingCardServer <- function(id,
 verspreidingOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
   outputs = character(),
-  ecoData, geoData, spatialData, waarnemingenData,
+  ecoData, geoData, spatialData, waarnemingenData, biotoopData,
   defaultYear,
   uiText){
+  
+  # For R CMD check
+  wildsoort <- NULL
   
   moduleServer(id, function(input, output, session){  
         
@@ -95,24 +98,12 @@ verspreidingOutputServer <- function(id,
     
     results$specie <- reactive(specie())
     
-    # Create data upon user choices
-    results$spatialData <- reactive({
-      req(spatialData)
-      filterSpatial(
-        allSpatialData = spatialData, 
-        species = results$specie(), 
-#        regionLevel = req(input$dash_regionLevel), 
-        year = NULL
-      )
-    })
-
     # F17_1 plot
     results$geoData <- reactive({
       req(geoData)
       geoData[which(geoData$wildsoort == results$specie()), ]
     })
         
-    #waarnemingenData <- loadRawData(type = "waarnemingen")
     # Restrict all to same date
     waarnemingenData <- waarnemingenData[
       waarnemingenData$afschotjaar <= 
@@ -133,15 +124,6 @@ verspreidingOutputServer <- function(id,
     ## Sidebar panel
     
     specieSidebarServer(id = "sidebar", specie = results$specie)
-    
-    # specie is updated in this page
-    observe( 
-      updateSelectInput(session, inputId = "sidebar-specie", 
-        selected = specie())
-    )
-    
-    observeEvent(input$`sidebar-specie`, 
-      results$specie <- reactive(input$`sidebar-specie`))
     
     ## Main panel
     
@@ -176,11 +158,19 @@ verspreidingOutputServer <- function(id,
             )
           },
           "mapSpreadUI" = {
-            mapSpreadUI(
+            if (results$specie() == "Wild zwijn")
+              mapSpreadUI(
+                id = ns(outputName), 
+                uiText = uiText, context = "description",
+                specie = results$specie(),
+                doHide = FALSE
+              ) else 
+              helpText("Geen visualisatie beschikbaar voor deze diersoort")
+          },
+          "kencijferUI" = {
+            kencijferModuleUI(
               id = ns(outputName), 
-              uiText = uiText, context = "description",
-              specie = results$specie(),
-              doHide = FALSE
+              uiText = uiText
             )
           }
         )
@@ -217,6 +207,13 @@ verspreidingOutputServer <- function(id,
           allSpatialData = spatialData,
           species = results$specie(),
           type = "F17_4"
+        ),
+        kencijferUI = kencijferModuleServer(
+          id = outputName,
+          kencijfersData = reactive(results$geoDataAll()[wildsoort == results$specie()]),
+          biotoopData = reactive(biotoopData$communes),
+          spatialData = spatialData,
+          species = results$specie
         )
       )
       

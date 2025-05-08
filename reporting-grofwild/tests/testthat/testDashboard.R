@@ -275,6 +275,8 @@ test_that("F07_3, F09_3, F11_3", {
     
   })
 
+draagvlakData <- loadDraagvlakData()
+
 # F12_1, F14_1, F14_2
 test_that("F12_1, F14_1, F14_2", {
     
@@ -294,6 +296,8 @@ test_that("F12_1, F14_1, F14_2", {
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
     
+    myPlot <- pciDraagvlak(data = draagvlakData$aanwezigheid, yVar = "Year")
+    expect_type(myPlot, "ggplot")
     
     # F14_2
     myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_2_data.csv"), 
@@ -302,6 +306,9 @@ test_that("F12_1, F14_1, F14_2", {
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
+    
+    myPlot <- pciDraagvlak(data = draagvlakData$impacts, yVar = "vraag_label")
+    expect_type(myPlot, "ggplot")
     
   })
 
@@ -316,7 +323,7 @@ test_that("F14_3, F14_4", {
     # Stakeholders
     subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
     myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", 
-      yVar = "Sector", verticalGroups = FALSE)
+      yVar = "Sector")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -330,6 +337,8 @@ test_that("F14_3, F14_4", {
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
     
+    myPlot <- pciDraagvlak(data = draagvlakData$maatregelen, yVar = "vraag_label")
+    expect_type(myPlot, "ggplot")
     
     # F14_4
     plotData <- readS3(FUN = data.table::fread, file = inputFiles[2])
@@ -354,6 +363,9 @@ test_that("F14_5", {
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
+    
+    myPlot <- pciDraagvlak(data = draagvlakData$beleid, yVar = "vraag_label")
+    expect_type(myPlot, "ggplot")
     
   })
 

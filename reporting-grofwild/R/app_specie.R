@@ -5,7 +5,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieUI <- function(id, speciesList, categories){
+specieUI <- function(id, speciesList){
   
   ns <- NS(namespace = id)
   
@@ -35,8 +35,8 @@ specieUI <- function(id, speciesList, categories){
           
           mainPanel = mainPanel(
             width = 9,
-            style = "overflow-y: auto;max-height: 100vh;", # scrolling bar
-            getSpecieCards(id = id, categories = categories)
+            style = "overflow-y: hidden;", # single scrolling bar
+            uiOutput(ns("specieCards"))
           )
   
        )
@@ -48,11 +48,12 @@ specieUI <- function(id, speciesList, categories){
 
 #' Server function for the 'specie' page
 #' @inheritParams reportingGrofwild-common-args
+#' @param categories character vector, all available main categories
 #' @return no returned value
 #' @author lcougnaud
 #' @import shiny
 #' @export
-specieServer <- function(id, specie = reactiveVal()){
+specieServer <- function(id, specie = reactiveVal(), categories){
   
   moduleServer(id, function(input, output, session){  
         
@@ -64,6 +65,14 @@ specieServer <- function(id, specie = reactiveVal()){
     ## Main panel
     
     observeEvent(input$cards, category(input$cards), ignoreInit = TRUE)
+    
+    output$specieCards <- renderUI({
+        
+        # Reset whenever specie is (re)selected
+        specie()
+        getSpecieCards(id = id, categories = categories)
+        
+      })
     
     return(category)
 

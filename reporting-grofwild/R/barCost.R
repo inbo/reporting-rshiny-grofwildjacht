@@ -110,7 +110,8 @@ barCost <- function(data,
 
 #' Shiny module for creating the plot \code{\link{barCost}} - server side
 #' @inheritParams countAgeGenderServer 
-#' @inheritParams barDraagkrachtServer
+#' @inheritParams barDraagkracht
+#' @param title reactive, title to be printed above plot
 #' @return no return value
 #' 
 #' @author mvarewyck

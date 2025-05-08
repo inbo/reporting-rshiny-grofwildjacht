@@ -201,9 +201,9 @@ p, li, label {
 
 /* carousel */
 
-/* slide */
-.slick-slide {
-  width: 100%
+/* slide image */
+.slick-slide img {
+    width: 100vw !important;
 }
 
 /* dots */
@@ -343,4 +343,14 @@ body > .tabbable {
 
 .well-white {
   background-color: white;    
+}
+
+/*Custom search bar in navbar*/
+
+.bslib-nav-item .shiny-input-select {
+  min-width: 500px;
+}
+
+.bslib-nav-item .selectize-input::after {
+  border-style: hidden;    
 }

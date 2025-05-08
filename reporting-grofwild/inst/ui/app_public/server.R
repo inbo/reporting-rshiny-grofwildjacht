@@ -105,11 +105,11 @@ shinyServer(function(input, output, session) {
   
   # Change tab
   observeEvent(specie(), {
-    if(specie() != defaultTabs$specie && updateTab()){
-      currentTab(specie())
-      if(doDebug)  
-        print(paste("Update current tab to:", specie(), "page"))
-    }
+      if(specie() != defaultTabs$specie && updateTab()){
+        if(doDebug)
+          print(paste("Update current tab to:", specie()))
+        currentTab(specie())
+      }
   })
 
   # Update page content
@@ -124,7 +124,11 @@ shinyServer(function(input, output, session) {
         subcategory(defaultTabs$subcategory)
         plot(defaultTabs$plot)
         
-        specieServer(id = specie(), specie = specie)
+        specieServer(id = specie(), specie = specie, 
+          categories = getInfo(specie = specie(), variable = "category",
+            infoOutput = infoOutput)
+        )
+        
       })
     }else reactiveVal()
    })
@@ -141,25 +145,6 @@ shinyServer(function(input, output, session) {
   
   ## Category
   
-  # Display available category tabs for a specie
-  observeEvent(categoriesCur(), {
-
-    categoriesToShow <- categoriesCur()
-    if(doDebug)
-      print(paste("Update category tabs to", categoriesToShow))
-        
-    categoriesToHide <- setdiff(categories, categoriesToShow)
-    for(category in categoriesToHide)
-      hideTab(inputId = "navbarID", target = category)
-        
-    for(category in categoriesToShow)
-      showTab(inputId = "navbarID", target = category)
-    
-    # reset selected output
-    if(resetNextTab())  category(defaultTabs$category)
-        
-  })
-
   # Update tab title
   output$category <- renderUI({
     ifelse(
@@ -223,26 +208,6 @@ shinyServer(function(input, output, session) {
   
   subcategorySpecie <- reactiveVal()
 
-  # Display available subcategory tabs
-  observeEvent(subcategoriesCur(), {
-    
-    if(doDebug)
-      print("Update subcategory tabs")
-    
-    subcategoriesToShow <- subcategoriesCur()
-        
-    subcategoriesToHide <- setdiff(subcategories, subcategoriesToShow)
-    for(subcategory in subcategoriesToHide)
-      hideTab(inputId = "navbarID", target = subcategory)
-       
-    for(subcategory in subcategoriesToShow)
-      showTab(inputId = "navbarID", target = subcategory)
-    
-    # reset selected subcategory
-    if(resetNextTab())  subcategory(defaultTabs$subcategory)
-      
-  })
-
   # Update tab title
   output$subcategory <- renderUI(
     ifelse(
@@ -286,29 +251,29 @@ shinyServer(function(input, output, session) {
       updateTab(TRUE)
     }
   })
+
+# reset category
+observeEvent(subcategory(), {
+    
+    # in case subcategory selected from navigation bar and ...
+    if(subcategory() != defaultTabs$subcategory){
+      
+      # ... respective category not selected
+      categoryOutput <- as.character(getCategorySubcategory(subcategory())) 
+      if(category() != categoryOutput){
+        if(doDebug)
+          print(paste("Reset category to", categoryOutput))
+        category(categoryOutput)
+        updateTab(FALSE);resetNextTab(FALSE) # only update shown nav
+      }
+      
+    }
+    
+  }, priority = 2)
+
   
   ## Outputs (table/plot)
   
-  # Display available output tabs
-  observeEvent(outputsCur(), {
-  
-    if(doDebug)
-      print("Update output tabs")
-      
-    outputsToShow <- outputsCur()
-        
-    outputsToHide <- setdiff(outputs, outputsToShow)
-    for(output in outputsToHide)
-      hideTab(inputId = "navbarID", target = output)
-      
-    for(output in outputsToShow)
-      showTab(inputId = "navbarID", target = output)
-        
-    # reset selected output
-    if(resetNextTab())  plot(defaultTabs$plot)
-        
-  })
-
   # Update tab title
   output$output <- renderUI(
     if(plot() %in% outputs){
@@ -394,7 +359,11 @@ shinyServer(function(input, output, session) {
               ecoData = ecoData, geoData = geoData, 
               spatialData = spatialData,
               waarnemingenData = waarnemingenData,
+              biotoopData = biotoopData,
               defaultYear = defaultYear 
+            ),
+            draagvlak = list(
+              draagvlakData = draagvlakData
             )
           )
         )
@@ -415,9 +384,6 @@ shinyServer(function(input, output, session) {
   })
 
   ## Change tabs
-  if(doDebug)
-    observe(print(paste("Current tab is:", currentTab())))
-  
   observeEvent(currentTab(), {
     if(doDebug)
       print(paste("Update tab to", currentTab()))
@@ -426,14 +392,64 @@ shinyServer(function(input, output, session) {
 
   ## Navigation
   
-  selection <- reactive(
-    c(
+  selection <- reactive({
+      # Check for relevant choices
+      categoryChoices <- getInfo(specie = specie(), variable = "category", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      subcategoryChoices <- getInfo(specie = specie(), variable = "subcategory", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      outputChoices <- getInfo(specie = specie(), variable = "output", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+    list(
       specie = specie(),
-      category = category(), 
-      subcategory = subcategory(),
-      plot = plot()
+      category = if (as.character(category()) %in% categoriesCur()) 
+          as.character(category()) else 
+          defaultTabs$category, 
+      subcategory = if (as.character(subcategory()) %in% subcategoriesCur()) 
+          as.character(subcategory()) else 
+          defaultTabs$subcategory,
+      plot = if (plot() %in% outputsCur()) 
+          plot() else 
+          defaultTabs$plot
     )
-  )
+  })
+  
+  # Reset navbarID choices based on species
+  observeEvent(specie(), {
+      
+      # Reset choices navbar
+      ## category
+      currentCat <- getInfo(specie = specie(), variable = "category", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      resetNavbarChoices(allChoices = categories, 
+        currentChoices = currentCat)
+      ## subcategory
+      currentSub <- getInfo(specie = specie(), variable = "subcategory", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      resetNavbarChoices(allChoices = subcategories, 
+        currentChoices = currentSub)
+      ## outputs
+      currentPlots <- getInfo(specie = specie(), variable = "output", 
+        infoOutput = infoOutput, defaults = defaultTabs
+      )
+      resetNavbarChoices(allChoices = outputs, 
+        currentChoices = currentPlots)
+      
+      ## Reset selection based on available choices
+      category(selection()$category)
+      subcategory(selection()$subcategory)
+      plot(selection()$plot)
+      updateSelectInput(session, "specie", selected = specie())  
+      
+      if (doDebug)
+        print("Update choices navbar")
+      
+    })
 
   # Update the selected tabPanel based on the hash
   # (see https://stackoverflow.com/a/74874638)
@@ -442,7 +458,7 @@ shinyServer(function(input, output, session) {
     req(input$navbarID)
     
     currentHash <- utils::URLdecode(URL = session$clientData$url_hash)
-    query <- createQueryString(selection(), page = input$navbarID)
+    query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
       
     if (currentHash != query) {
       
@@ -476,7 +492,7 @@ shinyServer(function(input, output, session) {
     if(doDebug)
       print("Update hash")
     currentHash <- session$clientData$url_hash
-    query <- createQueryString(selection(), page = input$navbarID)
+    query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
     if (currentHash != query)
       updateQueryString(queryString = query, mode = "push", session)
   }, priority = 0)
@@ -489,10 +505,74 @@ shinyServer(function(input, output, session) {
       tags$a(
           id = "contact", 
           href = paste("mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie&body=Link:", 
-            paste0("faunabeheer.inbo.be/", createQueryString(selection(), page = input$navbarID))), 
+            paste0("faunabeheer.inbo.be/", createQueryString(selection(), page = input$navbarID, defaults = defaultTabs))), 
           target="_blank", "Contact"
         )
       
     })
-
-})
+  
+  # List all choices in search navigation field
+  observe({
+      
+      navigationChoices <- data.frame(
+        value = c("", infoOutputList$id),
+        label = c("", infoOutputList$label),
+        html = c("", apply(infoOutputList[, c("category", "subcategory", "output")], 1, function(x) 
+              paste(x[x != ""], collapse = " > "))),
+        stringsAsFactors = FALSE
+      )
+      
+      updateSelectizeInput(session, inputId = "search", choices = navigationChoices,
+        server = TRUE,
+        options = list(
+          create = FALSE,
+          onDropdownOpen = I("function($dropdown) {if (!this.lastQuery.length) {this.close(); this.settings.openOnFocus = false;}}"),
+          onType = I("function (str) {if (str === \"\") {this.close();}}"),
+          onItemAdd = I("function() {this.close();}"),
+          placeholder = "Zoek in navigatie",
+          render = I(
+            "{
+              option: function(item, escape) {
+              return '<div class=\"long-selectize\">' + item.html + '</div>'; }
+              }"
+          ))
+      )
+      
+    })
+  
+  # Selected via 'Search' box
+  observeEvent(input$search, {
+      
+      req(input$search)
+      
+      if (input$search %in% categories) {
+        category(input$search)
+        subcategory(defaultTabs$subcategory)
+        plot(defaultTabs$plot)
+      } else if (input$search %in% subcategories) {
+        category(getCategorySubcategory(input$search))
+        subcategory(input$search)
+        plot(defaultTabs$plot)
+      } else {
+        selectedSubCategory <- getSubcategoryOutput(input$search)
+        subcategory(selectedSubCategory)
+        category(getCategorySubcategory(selectedSubCategory))
+        plot(input$search)
+      }
+      
+      if(doDebug)
+        print(paste("Search selection:", input$search))
+ 
+      # go to the selected page
+      currentTab(input$search)
+      
+      # no extra reset(s)
+      resetNextTab(FALSE) 
+      
+      # tabs should not be updated
+      updateTab(FALSE)
+      
+    })
+  
+  })
+  

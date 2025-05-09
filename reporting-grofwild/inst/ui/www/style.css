@@ -354,3 +354,23 @@ body > .tabbable {
 .bslib-nav-item .selectize-input::after {
   border-style: hidden;    
 }
+
+
+/* Frontpage box */
+
+.frontbox {
+    margin-top: 10vh;
+    background-color: #b24c82;
+    color: white;
+    border: 2px solid white;    /* White outline/border */
+    border-radius: 15px;        /* Rounded corners */
+    padding: 15px 20px;         /* Inner spacing */
+    text-align: center;         /* Center the text */
+    font-size: 16px;
+    line-height: 1.5;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+}
+
+.frontbox > a {
+    color: white;    
+}

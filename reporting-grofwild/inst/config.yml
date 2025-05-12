@@ -12,5 +12,5 @@ uat:
   datacheck: false
     
 production:
-  bucket: inbo-faunabeheer-prd-eu-west-1-default
+  bucket: inbo-faunabeheer-prod-eu-west-1-default
   datacheck: false

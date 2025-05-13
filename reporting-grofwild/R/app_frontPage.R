@@ -45,16 +45,16 @@ frontUI <- function(speciesList, uiText){
       # left
       column(5, offset = 1, 
         tags$a(href = "https://www.inbo.be", target = "_blank", 
-          tags$img(src = "www/logo-inbo.png", style = "height:40px;")),
+          tags$img(src = "www/logo-inbo.png", style = "height:50px;")),
         tags$a(href = "https://www.natuurenbos.be", target = "_blank", 
-          tags$img(src = "www/logo-anb.png", style = "height:40px;"))
+          tags$img(src = "www/logo-anb.png", style = "height:50px;"))
       ),
       # right
       column(6,
         tags$a(href = "https://www.inbo.be", target = "_blank", 
-          tags$img(src = "www/logo-inbo.png", style = "height:40px;")),
+          tags$img(src = "www/logo-inbo.png", style = "height:50px;")),
         tags$a(href = "https://www.natuurenbos.be", target = "_blank", 
-          tags$img(src = "www/logo-anb.png", style = "height:40px;")),
+          tags$img(src = "www/logo-anb.png", style = "height:50px;")),
         tags$a(href = "https://waarnemingen.be", target = "_blank", 
           tags$img(src = "www/logo-waarnemingen.png", style = "height:40px;")),
         tags$a(href = "https://hvv.be", target = "_blank", 

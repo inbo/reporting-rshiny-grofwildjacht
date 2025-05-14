@@ -293,13 +293,12 @@ mapSchadeServer <- function(
       # Metadata schade
       metaSchade <- loadMetaSchade()
       
-      schadeWildsoorten <- metaSchade$wildsoorten
       schadeTypes <- metaSchade$types
       schadeCodes <- metaSchade$codes
       names(schadeCodes) <- NULL
       schadeCodes <- unlist(schadeCodes)
       sourcesSchade <- metaSchade$sources
-      fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+      fullNames <- c(schadeTypes, schadeCodes)
       
       ## Region level
       results$regionLevelName <- reactive({

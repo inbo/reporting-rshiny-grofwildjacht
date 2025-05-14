@@ -347,6 +347,23 @@ loadMetaEco <- function(species = NA) {
   
 }
 
+
+#' List all wildsoorten and corresponding group
+#' @inheritParams loadMetaSchade 
+#' @return data.frame listing for all defined species
+#' \code{group} species group and \code{name} species name
+#' 
+#' @author mvarewyck
+#' @export
+loadWildsoorten <- function(dataDir = system.file("extdata", package = "reportingGrofwild")) {
+  
+  rawData <- read.csv(file = file.path(dataDir, "meta_schade.csv"), sep = ";")
+  
+  # Specify currently used wildsoorten
+  rawData[rawData$variable == "wildsoort", c("group", "name")]
+    
+}
+
 #' Specify currently used type schades
 #' 
 #' @param dataDir character, path to data files
@@ -361,8 +378,7 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
   
   # Specify currently used wildsoorten
   wildsoorten <- rawData[rawData$variable == "wildsoort", c("group", "name")]
-  schadeWildsoorten <- sapply(unique(wildsoorten$group), function(x)
-      wildsoorten$name[wildsoorten$group == x], simplify = FALSE)
+  schadeWildsoorten <- groupSpecies(allSpecies = wildsoorten)
   
   # Specify currently used SoortNaam (gewas)
   gewassen <- rawData[rawData$variable == "SoortNaam", c("group", "name")]

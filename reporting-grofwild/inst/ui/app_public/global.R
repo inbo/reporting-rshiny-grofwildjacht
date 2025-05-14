@@ -36,14 +36,14 @@ if (!exists("doDebug"))
 if (!doDebug | !exists("metaSchade"))
   metaSchade <- loadMetaSchade()
 
-schadeWildsoorten <- metaSchade$wildsoorten
+allWildsoorten <- loadWildsoorten()
 
 schadeTypes <- metaSchade$types
 schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
 sourcesSchade <- metaSchade$sources
-fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+fullNames <- c(schadeTypes, schadeCodes)
 
 gewasChoices <- metaSchade$codes[["GEWAS"]]
 voertuigChoices <- metaSchade$codes[["VRTG"]]
@@ -109,7 +109,7 @@ uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
 
 ## UI
 
-species <- unname(unlist(schadeWildsoorten))
+species <- unique(allWildsoorten$name)
 
 # extract available outputs (tables/visualisations) - based on the data
 infoOutput <- getOutputInfo(

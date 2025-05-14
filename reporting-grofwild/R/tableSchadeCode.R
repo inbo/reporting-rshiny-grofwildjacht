@@ -71,7 +71,8 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   }
      
   # Select data
-  tableData <- allData[allData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")]
+  tableData <- allData[allData$afschotjaar %in% jaartallen, 
+    c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")]
     
   if (nrow(tableData) == 0)
     stop("Niet beschikbaar: Geen data voor de gekozen periode")
@@ -99,7 +100,8 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   summaryData <- merge(summaryData, fullData, all = TRUE)
   
   # Long to wide table
-  summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq")
+  summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq",
+    fun.aggregate = sum)
   # Optimal displaying of the table
   summaryTable[is.na(summaryTable)] <- 0
   

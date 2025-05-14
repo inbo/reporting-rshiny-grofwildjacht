@@ -422,12 +422,13 @@ getCategorySubcategory <- function(subcategory){
   
 }
 
-#' Get available categories, subcategories or outputs
+#' Get available specie, categories, subcategories or outputs
 #' for a (optionally) specified specie, category, subcategory
 #' @param specie string with specie
-#' @param subcategory reactive with subcategory of interest
-#' @param variable string with variable of interest, either: 
-#' 'category', 'subcategory' or 'output'
+#' @param subcategory string, with subcategory of interest
+#' @param output string, with output of interest 
+#' @param variable string with variable of interest; should be one of  
+#' \code{c("specie", "category", "subcategory", "output")}
 #' @param infoOutput data.frame with information on available
 #' outputs, as returned by \code{\link{getOutputInfo}}
 #' @param defaults (optional) named character vector with defaults
@@ -437,9 +438,9 @@ getCategorySubcategory <- function(subcategory){
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 getInfo <- function(
-  specie = NULL, category = NULL, subcategory = NULL,
+  specie = NULL, category = NULL, subcategory = NULL, output = NULL,
   infoOutput, defaults = NULL, 
-  variable = c("category", "subcategory", "output")){
+  variable = c("specie", "category", "subcategory", "output")){
 
   variable <- match.arg(variable)
   
@@ -458,9 +459,32 @@ getInfo <- function(
   if(select(var = subcategory, name = "subcategory"))
     infoOutput <- infoOutput[which(infoOutput$subcategory == subcategory), ]
   
+  if(select(var = output, name = "output"))
+    infoOutput <- infoOutput[which(infoOutput$output == output), ]
+  
   results <- unique(as.character(infoOutput[, variable]))
   
   return(results)
+  
+}
+
+
+#' Group species for selectInput choices
+#' @param allSpecies data.frame as returned by \code{\link{loadWildsoorten}}
+#' @param selectedSpecies character vector, species to be retained;
+#' if NULL all species are retained
+#' @return named list with groups and selected species per group
+#' 
+#' @author mvarewyck
+#' @export
+groupSpecies <- function(allSpecies, selectedSpecies = NULL) {
+  
+  if (!is.null(selectedSpecies))
+    subSpecies <- allSpecies[allSpecies$name %in% selectedSpecies, ] else
+    subSpecies <- allSpecies
+  
+  sapply(unique(subSpecies$group), function(x)
+      subSpecies$name[subSpecies$group == x], simplify = FALSE)
   
 }
 

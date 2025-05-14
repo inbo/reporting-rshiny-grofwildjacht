@@ -15,16 +15,15 @@ wildSchadeData <- subset(sf::st_drop_geometry(schadeData),
 
 biotoopData <- loadHabitats()
 
-species <- sort(unique(schadeData$wildsoort))
+species <- sort(unique(loadWildsoorten()$name))
    
 
 metaSchade <- loadMetaSchade()
-schadeWildsoorten <- metaSchade$wildsoorten
 schadeTypes <- metaSchade$types
 schadeCodes <- metaSchade$codes
 names(schadeCodes) <- NULL
 schadeCodes <- unlist(schadeCodes)
-fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+fullNames <- c(schadeTypes, schadeCodes)
 
 
 ## THE MAP
@@ -205,9 +204,9 @@ test_that("Counts per type schade", {
 # generate all tables
     allSchadeTables <- lapply(species, function(iSpecies) {
         
-        choicesSchadecode <- c("GEWAS", "VRTG", "ANDERE")[1:3]
-        choicesSchadeGewas <- c("VRTSCHD", "WLSCHD", "GEWASANDR")[1:3]
-        choicesSchadeVrtg <- c("GNPERSLTSL", "PERSLTSL", "ONBEKEND")[1:3]
+        choicesSchadecode <- schadeTypes
+        choicesSchadeGewas <- metaSchade$codes$GEWAS
+        choicesSchadeVrtg <- metaSchade$codes$VRTG
         
         plotData <- subset(schadeData, wildsoort == iSpecies & afschotjaar >= 2018)
         

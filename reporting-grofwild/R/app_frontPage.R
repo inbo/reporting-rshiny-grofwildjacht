@@ -38,19 +38,19 @@ frontUI <- function(speciesList, uiText){
   ),
   tags$footer(class = "bottom-banner",
     fluidRow(
-      column(6, style = "text-align:center", tags$b("Aangeboden door:")),
-      column(6, style = "text-align:center", tags$b("Met data van:"))
+      column(4, tags$b("Aangeboden door:")),
+      column(8, tags$b("Met data van:"))
     ),
     fluidRow(
       # left
-      column(5, offset = 1, 
+      column(4, 
         tags$a(href = "https://www.inbo.be", target = "_blank", 
           tags$img(src = "www/logo-inbo.png", style = "height:50px;")),
         tags$a(href = "https://www.natuurenbos.be", target = "_blank", 
           tags$img(src = "www/logo-anb.png", style = "height:50px;"))
       ),
       # right
-      column(6,
+      column(8,
         tags$a(href = "https://www.inbo.be", target = "_blank", 
           tags$img(src = "www/logo-inbo.png", style = "height:50px;")),
         tags$a(href = "https://www.natuurenbos.be", target = "_blank", 

@@ -431,7 +431,7 @@ schadeSidebarUI <- function(id,
         inputId = ns("schade_code"), 
         label = "Selecteer type(s) schade:",
         choices = schadeTypes,
-        selected = NULL,
+        selected = schadeTypes,
         multiple = TRUE,
         width = "100%"
       ),

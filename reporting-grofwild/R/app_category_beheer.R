@@ -1,11 +1,11 @@
 #' Server function for the cards of the 'beheer' Category page
 #' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
+#' @return named list with plot, reactive with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
 beheerCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal(),
+  specie, subcategory = reactiveVal(),
   subcategories = character(), outputs = character(),
   uiText){
   
@@ -13,13 +13,9 @@ beheerCardServer <- function(id,
         
     ns <- session$ns
     
-    ## input
-    results <- reactiveValues(renderedTabs = "Grofwild")
-    results$specie <- reactive(specie())
-    
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Main panel
     
@@ -33,7 +29,7 @@ beheerCardServer <- function(id,
           	output = output,
           	 id = id, 
             uiText = uiText,
-            specie = results$specie(), 
+            specie = specie(), 
             category = "beheer"
           )
           
@@ -56,7 +52,7 @@ beheerCardServer <- function(id,
     })
 
     # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")
+    outputUI <- reactiveVal()
     lapply(outputs, function(output){
       btn <- paste0(output, "-button")
       # exception
@@ -69,7 +65,9 @@ beheerCardServer <- function(id,
       )
     })
 
-    return(outputUI)
+  return(list(
+      plot = reactive(outputUI())
+    ))
     
   })
 
@@ -93,21 +91,19 @@ beheerOutputServer <- function(id,
     ns <- session$ns
     
     ## input
-    results <- reactiveValues(renderedTabs = "Grofwild")
-    
-    results$specie <- reactive(specie())
+    results <- reactiveValues()
     
     results$ecoData <- reactive(
-      ecoData[which(ecoData$wildsoort == results$specie()), ]
+      ecoData[which(ecoData$wildsoort == specie()), ]
     )
     results$geoData <- reactive({
       req(geoData)
-      geoData[which(geoData$wildsoort == results$specie()), ]
+      geoData[which(geoData$wildsoort == specie()), ]
     })
     
     results$timeRange <- reactive(range(results$ecoData()$afschotjaar))
     results$openingstijdenData <- reactive(
-      openingstijdenData[openingstijdenData$Soort == results$specie(), ]
+      openingstijdenData[openingstijdenData$Soort == specie(), ]
     )
     results$openingstijd <- reactive({
       # for Ree: openingseason contains more year than in the data
@@ -116,7 +112,7 @@ beheerOutputServer <- function(id,
       # so retains the years when data and opening season specified
       # and doesn't retain the last year (because not full)
               
-      if (results$specie() %in% c("Ree", "Wild zwijn")) {
+      if (specie() %in% c("Ree", "Wild zwijn")) {
         openingstijd <- c(
           max(
             min(results$ecoData()$afschotjaar), 
@@ -142,14 +138,14 @@ beheerOutputServer <- function(id,
     # Plot: Percentage jaarlijkse afschot
     results$labeltypes <- reactive({
       req(results$openingstijdenData())
-      types <- loadMetaEco(species = results$specie())$labeltype
-      if (length(types) == 1 && results$specie() == types)
+      types <- loadMetaEco(species = specie())$labeltype
+      if (length(types) == 1 && specie() == types)
         return(c("alle" = "all")) else 
         return(types)
     })
     
     results$leeftijdtypes <- reactive(
-      c(loadMetaEco(species = results$specie())$leeftijd_comp_inbo, "Onbekend")
+      c(loadMetaEco(species = specie())$leeftijd_comp_inbo, "Onbekend")
     )
     
     results$jachttypes <- reactive({
@@ -182,7 +178,7 @@ beheerOutputServer <- function(id,
 
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
 
     ## Main panel
 
@@ -202,7 +198,7 @@ beheerOutputServer <- function(id,
           "trendYearRegionUI" = {
             trendYearRegionUI(
               id = ns(outputName),
-              uiText = uiText, context = "description", specie = results$specie(),
+              uiText = uiText, context = "description", specie = specie(),
               showCombinatie = TRUE,
               doHide = FALSE
             )
@@ -211,7 +207,7 @@ beheerOutputServer <- function(id,
             countYearProvinceUI(
               id = ns(outputName), 
               uiText = uiText, context = "description", type = "afschot",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE,
               plotFunction = "countYearProvinceUI-afschot"
             )
@@ -220,7 +216,7 @@ beheerOutputServer <- function(id,
             yearlyShotAnimalsUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
@@ -228,21 +224,21 @@ beheerOutputServer <- function(id,
             mapFlandersUI(
               id = ns(outputName), 
               type = "grofwild", plotDetails = "region",
-              uiText = uiText, specie = results$specie(), 
+              uiText = uiText, specie = specie(), 
               typeTitle = "afschot"
             )
           },
           "tableProvinceUI" = {
             tableProvinceUI(
               id = ns(outputName), doHide = FALSE,
-              uiText = uiText, context = "description", specie = results$specie()
+              uiText = uiText, context = "description", specie = specie()
             )
           },
           "countYearShotUI-leeftijd_comp" = {
             countYearShotUI(
               id = ns(outputName), groupVariable = "leeftijd_comp",
               regionLevels = c(1:2, 4), 
-              uiText = uiText, context = "description", specie = results$specie(),
+              uiText = uiText, context = "description", specie = specie(),
               doHide = FALSE
             )
           },
@@ -250,14 +246,14 @@ beheerOutputServer <- function(id,
             countYearShotUI(
               id = ns(outputName), groupVariable = "jachtmethode_comp",
               regionLevels = c(1:2, 4), 
-              uiText = uiText, context = "description", specie = results$specie(),
+              uiText = uiText, context = "description", specie = specie(),
               doHide = FALSE
             )
           },
           "F04_3" = {
             countYearProvinceUI(
               id = ns(outputName), 
-              uiText = uiText, context = "description", specie = results$specie(),
+              uiText = uiText, context = "description", specie = specie(),
               plotFunction = "F04_3", 
               doHide = FALSE,
               regionLevels = 1:4
@@ -283,7 +279,7 @@ beheerOutputServer <- function(id,
         "trendYearRegionUI" = trendYearRegionServer(
           id = outputName, 
           data = results$ecoData, 
-          species = results$specie,
+          species = specie,
           timeRange = results$timeRange,
           regionLevel = reactive("flanders"),
           locaties = reactive("Vlaams Gewest"),
@@ -309,7 +305,7 @@ beheerOutputServer <- function(id,
           id = outputName,
           uiText = uiText,
           defaultYear = defaultYear,
-          species = results$specie,
+          species = specie,
           type = "grofwild",
           geoData = results$geoData,
           biotoopData = biotoopData,
@@ -346,7 +342,9 @@ beheerOutputServer <- function(id,
       outputServer(NULL)
     })
     
-    return(reactive(results$specie()))
+    return(list(
+        specie = specie
+      ))
 
   })
   

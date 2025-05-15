@@ -1,7 +1,7 @@
 #' Server function for the cards of the 'populatie indicatoren' Category page
 #' @inheritParams categoryCard
 #' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
+#' @return named list with plot, reactive with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -14,13 +14,9 @@ populatieCardServer <- function(id,
         
     ns <- session$ns
     
-    ## input
-    results <- reactiveValues(renderedTabs = "Populatie")
-    results$specie <- reactive(specie())
-    
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     # Create tab
     observe({    
@@ -32,7 +28,7 @@ populatieCardServer <- function(id,
             output = output,
             id = id, 
             uiText = uiText,
-            specie = results$specie(), 
+            specie = specie(), 
             category = "populatie"
           )
         )
@@ -45,7 +41,7 @@ populatieCardServer <- function(id,
     })
 
     # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")
+    outputUI <- reactiveVal()
     lapply(outputs, function(output){
       observeEvent(
         input[[paste0(output, "-button")]], 
@@ -54,7 +50,9 @@ populatieCardServer <- function(id,
       )
     })
     
-    return(outputUI)
+  return(list(
+      plot = reactive(outputUI())
+    ))
 
   })  
 }
@@ -76,18 +74,16 @@ populatieOutputServer <- function(id,
     ns <- session$ns
         
     ## input
-    results <- reactiveValues(renderedTabs = "Grofwild")
-        
-    results$specie <- reactive(specie())
-  
+    results <- reactiveValues()
+    
     # Create data upon user choices
     results$ecoData <- reactive(
-      ecoData[which(ecoData$wildsoort == results$specie()), ]
+      ecoData[which(ecoData$wildsoort == specie()), ]
     )
     
     results$geoData <- reactive({
       req(geoData)
-      geoData[which(geoData$wildsoort == results$specie()), ]
+      geoData[which(geoData$wildsoort == specie()), ]
     })
     
     # Enrich data with FBZ
@@ -106,7 +102,7 @@ populatieOutputServer <- function(id,
     # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
     results$leeftijdtypes <- reactive(
       c(
-        loadMetaEco(species = results$specie())$leeftijd_comp_inbo, 
+        loadMetaEco(species = specie())$leeftijd_comp_inbo, 
         "Onbekend"
       )
     )
@@ -115,13 +111,13 @@ populatieOutputServer <- function(id,
     results$typesFemale <- reactive({
       getFemaleTypes(
         ecoData = results$ecoData(), 
-        specie = results$specie()
+        specie = specie()
       )
     })
     
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Main panel
 
@@ -142,7 +138,7 @@ populatieOutputServer <- function(id,
             boxAgeWeightUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
@@ -150,7 +146,7 @@ populatieOutputServer <- function(id,
             countAgeCheekUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
@@ -158,7 +154,7 @@ populatieOutputServer <- function(id,
             countAgeGenderUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
@@ -167,7 +163,7 @@ populatieOutputServer <- function(id,
               id = ns(outputName), 
               regionLevels = c(1:2, 4),
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
@@ -175,7 +171,7 @@ populatieOutputServer <- function(id,
             countAgeGroupUI(
               id = ns(outputName), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           }
@@ -200,14 +196,14 @@ populatieOutputServer <- function(id,
           id = outputName,
           data = results$combinedData,
           type = results$leeftijdtypes,
-          timeRange = reactive(if (results$specie() == "Ree")
+          timeRange = reactive(if (specie() == "Ree")
             c(2014, max(results$timeRange())) else 
               results$timeRange())
         ),
         "countAgeCheekUI" = countAgeCheekServer(
           id = outputName,
           data = results$ecoData,
-          timeRange = reactive(if (results$specie() == "Ree")
+          timeRange = reactive(if (specie() == "Ree")
             c(2005, max(results$timeRange())) else 
             results$timeRange())
         ),
@@ -246,7 +242,9 @@ populatieOutputServer <- function(id,
       
     })
     
-    return(reactive(results$specie()))
+    return(list(
+        specie = specie
+      ))
     
   })
   

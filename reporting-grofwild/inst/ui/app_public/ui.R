@@ -39,18 +39,11 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
     selectedSpecies = getInfo(subcategory = subcategory, variable = "specie", 
       infoOutput = infoOutput))
 
-  args <- c(
-    list(
-      id = subcategory, category = category, 
-      uiText = uiText,
-      speciesList = speciesList,
-      select = TRUE
-    ),
-    if(category == "schade")
-      list(
-        schadeTypes = schadeTypes, gewasChoices = gewasChoices, 
-        voertuigChoices = voertuigChoices
-      )
+  args <- list(
+    id = subcategory, category = category, 
+    uiText = uiText,
+    speciesList = speciesList,
+    select = TRUE
   )
   
   bslib::nav_panel(
@@ -72,18 +65,10 @@ outputTabs <- lapply(outputs, function(output){
     selectedSpecies = getInfo(output = output, variable = "specie", 
       infoOutput = infoOutput))
 
-  args <- c(
-    list(
-      id = output, category = category, select = TRUE,
-      speciesList = speciesList,
-      whiteWell = TRUE
-    ),
-    if(category == "schade")
-      list(
-        schadeTypes = schadeTypes, 
-        gewasChoices = gewasChoices, 
-        voertuigChoices = voertuigChoices
-      )
+  args <- list(
+    id = output, category = category, select = TRUE,
+    speciesList = speciesList,
+    whiteWell = TRUE
   )
 
   bslib::nav_panel(

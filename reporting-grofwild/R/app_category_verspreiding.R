@@ -1,6 +1,6 @@
 #' Server function for the cards of the 'verspreiding' Category page
 #' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
+#' @return named list with plot, reactive with name of output plot/table (if selected)
 #' @import shiny
 #' @author lcougnaud
 #' @export
@@ -12,14 +12,10 @@ verspreidingCardServer <- function(id,
   moduleServer(id, function(input, output, session){  
       
     ns <- session$ns
-      
-    ## input
-    results <- reactiveValues(renderedTabs = "Grofwild")
-    results$specie <- reactive(specie())
-      
+       
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
       
     ## Main panel
       
@@ -34,7 +30,7 @@ verspreidingCardServer <- function(id,
             output = output,
             id = id, 
             uiText = uiText,
-            specie = results$specie(), 
+            specie = specie(), 
             category = "verspreiding"
           )
           
@@ -55,7 +51,7 @@ verspreidingCardServer <- function(id,
     })
 
     # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")
+    outputUI <- reactiveVal()
     lapply(outputs, function(output){
       btn <- paste0(output, "-button")
       # exception
@@ -67,7 +63,9 @@ verspreidingCardServer <- function(id,
       )
     })
     
-    return(outputUI)
+  return(list(
+      plot = reactive(outputUI())
+    ))
 
   })
 }
@@ -94,14 +92,12 @@ verspreidingOutputServer <- function(id,
     ns <- session$ns
     
     ## input
-    results <- reactiveValues(renderedTabs = "Verspreiding")
-    
-    results$specie <- reactive(specie())
-    
+    results <- reactiveValues()
+        
     # F17_1 plot
     results$geoData <- reactive({
       req(geoData)
-      geoData[which(geoData$wildsoort == results$specie()), ]
+      geoData[which(geoData$wildsoort == specie()), ]
     })
         
     # Restrict all to same date
@@ -123,7 +119,7 @@ verspreidingOutputServer <- function(id,
     
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Main panel
     
@@ -144,7 +140,7 @@ verspreidingOutputServer <- function(id,
             mapFlandersUI(
               id = ns(outputName), 
               uiText = uiText, outputFunction = "F17_1", 
-              specie = results$specie(),
+              specie = specie(),
               showCombine = FALSE, type = "dash",
               mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
               regionChoices = c(
@@ -158,11 +154,11 @@ verspreidingOutputServer <- function(id,
             )
           },
           "mapSpreadUI" = {
-            if (results$specie() == "Wild zwijn")
+            if (specie() == "Wild zwijn")
               mapSpreadUI(
                 id = ns(outputName), 
                 uiText = uiText, context = "description",
-                specie = results$specie(),
+                specie = specie(),
                 doHide = FALSE
               ) else 
               helpText("Geen visualisatie beschikbaar voor deze diersoort")
@@ -193,7 +189,7 @@ verspreidingOutputServer <- function(id,
         `F17_1` = mapFlandersServer(
           id = outputName,
           defaultYear = defaultYear,
-          species = results$specie,
+          species = specie,
           type = "dash",
           geoData = results$geoDataAll,
           allSpatialData = spatialData,
@@ -205,15 +201,15 @@ verspreidingOutputServer <- function(id,
         mapSpreadUI = mapSpreadServer(
           id = outputName,
           allSpatialData = spatialData,
-          species = results$specie(),
+          species = specie(),
           type = "F17_4"
         ),
         kencijferUI = kencijferModuleServer(
           id = outputName,
-          kencijfersData = reactive(results$geoDataAll()[wildsoort == results$specie()]),
+          kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
           biotoopData = reactive(biotoopData$communes),
           spatialData = spatialData,
-          species = results$specie
+          species = specie
         )
       )
       
@@ -221,7 +217,9 @@ verspreidingOutputServer <- function(id,
       outputServer(NULL)
     })
 
-    return(reactive(results$specie()))
+  return(list(
+      specie = specie
+    ))
 
   })
   

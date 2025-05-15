@@ -2,7 +2,7 @@
 
 #' Server function for the cards of the 'verspreiding' Category page
 #' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
+#' @return named list with plot, reactive with name of output plot/table (if selected)
 #' @import shiny
 #' @author mvarewyck
 #' @export
@@ -15,13 +15,9 @@ draagvlakCardServer <- function(id,
       
       ns <- session$ns
       
-      ## input
-      results <- reactiveValues(renderedTabs = "Grofwild")
-      results$specie <- reactive(specie())
-      
       ## Sidebar panel
       
-      specieSidebarServer(id = "sidebar", specie = results$specie)
+      specieSidebarServer(id = "sidebar", specie = specie)
       
       ## Main panel
       
@@ -36,7 +32,7 @@ draagvlakCardServer <- function(id,
                   output = output,
                   id = id, 
                   uiText = uiText,
-                  specie = results$specie(), 
+                  specie = specie(), 
                   category = "draagvlak"
                 )
                                 
@@ -52,7 +48,7 @@ draagvlakCardServer <- function(id,
         })
       
       # if plot is selected based on the category cards
-      outputUI <- reactiveVal("Visualisatie/Tabel")
+      outputUI <- reactiveVal()
       lapply(outputs, function(output){
           btn <- paste0(output, "-button")
           observeEvent(
@@ -62,7 +58,9 @@ draagvlakCardServer <- function(id,
           )
         })
       
-      return(outputUI)
+      return(list(
+          plot = reactive(outputUI())
+        ))
       
     })
 }
@@ -83,14 +81,9 @@ draagvlakOutputServer <- function(id,
       
       ns <- session$ns
       
-      ## input
-      results <- reactiveValues(renderedTabs = "Draagvlak")
-      
-      results$specie <- reactive(specie())
-            
       ## Sidebar panel
       
-      specieSidebarServer(id = "sidebar", specie = results$specie)
+      specieSidebarServer(id = "sidebar", specie = specie)
       
       ## Main panel
       
@@ -107,7 +100,7 @@ draagvlakOutputServer <- function(id,
             "F14_4" = draagvlakData$maatregelen,
             "F14_5" = draagvlakData$beleid
           )
-          subData[subData$Soort == results$specie(), ]
+          subData[subData$Soort == specie(), ]
           
         })
       
@@ -166,7 +159,9 @@ draagvlakOutputServer <- function(id,
           outputServer(NULL)
         })
       
-      return(reactive(results$specie()))
+      return(list(
+          specie = specie
+        ))
       
     })
   

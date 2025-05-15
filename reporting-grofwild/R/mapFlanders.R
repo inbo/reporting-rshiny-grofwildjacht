@@ -510,9 +510,12 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             regionLevel = input$borderLevel, 
             year = req(input$year)
           )
+          choices <- sort(unique(tmpSpatial$NAAM))
           
           selectInput(inputId = ns("borderRegion"), label = "Regio('s)",
-              choices = sort(unique(tmpSpatial$NAAM)), multiple = TRUE)
+              choices = choices, 
+              selected = if (input$borderLevel == "flanders") choices[1] else NULL, 
+              multiple = TRUE)
           
         })
       locaties <- reactive(input$borderRegion)
@@ -642,11 +645,14 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       output$region <- renderUI({
           
-          if (is.null(locaties()))
+          if (is.null(locaties())) {
+            
+            choices <- sort(unique(spatialData()$NAAM))
             selectInput(inputId = ns("region"), label = "Regio('s)",
-              choices = sort(unique(spatialData()$NAAM)),
+              choices = choices,
               selected = results$region_value, multiple = TRUE)
-          
+            
+          }
         })
       
       
@@ -1359,7 +1365,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
           column(8, uiOutput(ns("region"))),
           column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
               choices = regionChoices,
-              selected = "communes"))
+              selected = regionChoices[1]))
         ),  
         
       if (type == "dash") {
@@ -1368,7 +1374,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
             column(8, uiOutput(ns("borderRegion"))),  
             column(4, selectInput(inputId = ns("borderLevel"), label = "Regio-schaal",
                 choices = regionChoices,
-                selected = "provinces")),
+                selected = regionChoices[1])),
             column(6, selectInput(inputId = ns("regionLevel"), label = "Map-schaal",
                 choices = mapScaleChoices,
                 selected = "communes")),

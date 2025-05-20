@@ -279,10 +279,14 @@ shinyServer(function(input, output, session) {
       if(doDebug)
         print(paste("Update schade settings on subcategory page", 
             paste(outputSubcategory()$schade_code(), collapse = ", ")))
-      schade_code(outputSubcategory()$schade_code())
-      schade_gewas(outputSubcategory()$schade_gewas())
-      schade_voertuig(outputSubcategory()$schade_voertuig())
       
+      if (!setequal(outputSubcategory()$schade_code(), schade_code()))
+        schade_code(outputSubcategory()$schade_code())
+      if (!setequal(outputSubcategory()$schade_gewas(), schade_gewas()))
+        schade_gewas(outputSubcategory()$schade_gewas())
+      if (!setequal(outputSubcategory()$schade_voertuig(), schade_voertuig()))
+        schade_voertuig(outputSubcategory()$schade_voertuig())
+        
   })
 
 # reset category
@@ -434,11 +438,14 @@ observeEvent(subcategory(), {
       if (doDebug)
         print(paste("Update schade settings on output page", 
             paste(outputSelection()$schade_code(), collapse = ", ")))
-      schade_code(outputSelection()$schade_code())
-      schade_gewas(outputSelection()$schade_gewas())
-      schade_voertuig(outputSelection()$schade_voertuig())
       
-      
+      if (!setequal(outputSelection()$schade_code(), schade_code()))
+        schade_code(outputSelection()$schade_code())
+      if (!setequal(outputSelection()$schade_gewas(), schade_gewas()))
+        schade_gewas(outputSelection()$schade_gewas())
+      if (!setequal(outputSelection()$schade_voertuig(), schade_voertuig()))
+        schade_voertuig(outputSelection()$schade_voertuig())
+            
   })
 
   ## Change tabs

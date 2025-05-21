@@ -123,7 +123,9 @@ draagvlakOutputServer <- function(id,
                   uiText = uiText, 
                   outputFunction = outputName,
                   yearChoices = levels(draagvlakSubdata()$Year),
-                  sectorChoices = if (outputName == "F14_2") allSectorChoices[1] else allSectorChoices,
+                  sectorChoices = if (outputName %in% c("F14_1", "F14_2")) 
+                      allSectorChoices[1] else 
+                      allSectorChoices,
                   groupChoices = if (outputName != "F14_1") levels(draagvlakSubdata()$vraag_label),
                   groupLabel = switch(outputName,
                     "F14_3" = "Impacts",

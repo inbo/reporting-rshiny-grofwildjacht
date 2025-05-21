@@ -102,7 +102,7 @@ trendYearFlandersServer <- function(id,
 #' @return UI object
 #' @export
 trendYearFlandersUI <- function(id,
-    type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
+    type = c("grofwild", "wildschade"),
     includeOptions = TRUE,
     unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
         "Aantal/100ha bos & natuur" = "relativeDekking"),
@@ -113,15 +113,11 @@ trendYearFlandersUI <- function(id,
   
   ns <- NS(id)
   
-  title <- if(!is.null(uiText)){
-        getOutputTitle(output = "trendYearFlandersUI", 
+  title <- if (!is.null(uiText)){
+        getOutputTitle(output = if (type == "wildschade") 
+              "trendYearFlandersUI-schade" else 
+              "trendYearFlandersUI", 
             specie = specie, uiText = uiText)
-      }else{
-        tagList("Evolutie", 
-            if (type == "wildschade") "schadegevallen" else 
-                  "gerapporteerd afschot", 
-            tags$br(), "Vlaanderen"
-        )
       }
   
   tagList(

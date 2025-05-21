@@ -217,7 +217,7 @@ getOutputSpecie <- function(specie,
   outputs <- c(
 #    "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
-      c("trendYearRegionUI", "mapFlandersUI", "kencijferUI"),
+      c("trendYearFlandersUI", "mapFlandersUI", "kencijferUI"),
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -235,7 +235,7 @@ getOutputSpecie <- function(specie,
       c("F04_3"),
     if(nrow(schadeDataSpecie) > 0)
       c(
-        "tableSchadeSummaryUI", "trendYearFlandersUI", 
+        "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
         "countYearProvinceUI-schade",
         "countYearSchadeUI-wildschade", "tableSchadeUI",
         "countYearSchadeUI-seizoen"
@@ -356,7 +356,7 @@ getSubcategoryOutput <- function(output){
   
   # Should be unique in the entire app!
   subcategoryOutput <- list( 
-      `beheer-vlaanderen` = c("trendYearRegionUI", 
+      `beheer-vlaanderen` = c("trendYearFlandersUI", 
           "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
       `beheer-regio` = "mapFlandersUI",
       `beheer-leeftijdcategorie` = 
@@ -366,7 +366,7 @@ getSubcategoryOutput <- function(output){
       
       # schade
       `schade-vlaanderen` = c(
-          "tableSchadeSummaryUI", "trendYearFlandersUI", 
+          "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
           "countYearProvinceUI-schade"
       ),
       `schade-regio` =  "mapFlandersUI-schade",

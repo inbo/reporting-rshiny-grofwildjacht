@@ -185,11 +185,10 @@ schadeOutputServer <- function(id,
               uiText = uiText, specie = specie()
             )
           },
-          "trendYearFlandersUI" = {
+          "trendYearFlandersUI-schade" = {
             trendYearFlandersUI(
               id = ns(outputName),
               type = "wildschade",
-              includeOptions = TRUE,
               uiText = uiText, specie = specie()
             )
           },
@@ -304,7 +303,7 @@ schadeOutputServer <- function(id,
           data = results$schade_data, 
           schadeTypes = schadeTypes, schadeCodes = schadeCodes
         ),
-        "trendYearFlandersUI" = trendYearFlandersServer(
+        "trendYearFlandersUI-schade" = trendYearFlandersServer(
           id = outputName, 
           geoData = results$schade_data, 
           allSpatialData = spatialData, 

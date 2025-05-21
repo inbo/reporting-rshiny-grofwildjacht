@@ -1130,18 +1130,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         })
       
       
-      
-      
-      
-      ## Time plot for Flanders (reference) ##
-      ## ---------------------------------- ##
-      
-      trendYearFlandersServer(
-        id = id, 
-        geoData = geoData, allSpatialData = allSpatialData, 
-        biotoopData = biotoopData, species = species,
-        type = type
-      )
+      ## ------------------ ##
+      ## Extra plot details ##
+      ## ------------------ ##     
       
       ## Time plot for selected region ##
       ## ----------------------------- ##
@@ -1152,7 +1143,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           validate(need(input$period, "Gelieve periode te selecteren"))
           
           createTrendData(
-            data = geoData(),
+            data = filterDataSource(plotData = geoData(), 
+                  sourceIndicator = input$bronMap,
+                  returnStop = "data"),
             allSpatialData = allSpatialData,
             biotoopData = biotoopData[[regionLevelLocal()]],
             timeRange = input$period,
@@ -1312,7 +1305,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @export
 mapFlandersUI <- function(id, showRegion = (type != "dash"),
   showCombine = TRUE, 
-  type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
+  type = c("grofwild", "wildschade", "wbe", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
     "Provincie" = "provinces", 
@@ -1323,7 +1316,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   ),
   mapScaleChoices = regionChoices,
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
-  plotDetails = c("flanders", "region"),
+  plotDetails = c("region", "biotoop"),
   showTitle = TRUE, 
   uiText = NULL, specie = NULL, typeTitle = type,
   outputFunction = "mapFlandersUI") {
@@ -1385,7 +1378,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
             column(6, uiOutput(ns("bronMap")))
           )
           
-        } else if (type != "empty") {
+        } else {
           
           tagList(            
             fixedRow(
@@ -1422,7 +1415,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
     ),
     
     fixedRow(
-      column(if ("biotoop" %in% plotDetails && type != "empty") 6 else 12,
+      column(if ("biotoop" %in% plotDetails) 6 else 12,
         uiOutput(ns("title")),
         withSpinner(leafletOutput(ns("spacePlot"))),
         tags$div(align = "center", uiOutput(ns("stats"))),
@@ -1455,22 +1448,10 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
     
     
     
-    if (type != "wbe") {
+    if ("region" %in% plotDetails) {
       
-      nRegios <- sum(c("flanders", "region") %in% plotDetails)
       fixedRow(
-        if ("flanders" %in% plotDetails) 
-          column(12/nRegios, 
-            trendYearFlandersUI(
-              id = ns(id), 
-              type = type,
-              unitChoices = unitChoices,
-              includeOptions = FALSE,
-              uiText = uiText, specie = specie
-            )
-          ),
-        if ("region" %in% plotDetails)
-          column(12/nRegios,
+          column(12,
             uiOutput(ns("timeTitle")),
             plotModuleUI(id = ns("timePlot")),
             optionsModuleUI(id = ns("timePlot"), exportData = TRUE,

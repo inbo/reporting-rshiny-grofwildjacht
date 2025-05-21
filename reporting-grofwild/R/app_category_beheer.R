@@ -195,12 +195,10 @@ beheerOutputServer <- function(id,
         
         # create the plot/table
         ui <- switch(outputName, 
-          "trendYearRegionUI" = {
-            trendYearRegionUI(
+          "trendYearFlandersUI" = {
+            trendYearFlandersUI(
               id = ns(outputName),
-              uiText = uiText, context = "description", specie = specie(),
-              showCombinatie = TRUE,
-              doHide = FALSE
+              uiText = uiText, specie = specie()
             )
            },
           "countYearProvinceUI-afschot" = {
@@ -276,16 +274,12 @@ beheerOutputServer <- function(id,
       outputName <- outputServer()
       
       switch(outputName,
-        "trendYearRegionUI" = trendYearRegionServer(
+        "trendYearFlandersUI" = trendYearFlandersServer(
           id = outputName, 
-          data = results$ecoData, 
-          species = specie,
-          timeRange = results$timeRange,
-          regionLevel = reactive("flanders"),
-          locaties = reactive("Vlaams Gewest"),
           geoData = results$geoData,
-          allSpatialData = spatialData,
-          biotoopData = reactive(biotoopData[["flanders"]])
+          allSpatialData = spatialData, 
+          biotoopData = biotoopData, 
+          species = specie
         ),
         "countYearProvinceUI-afschot" = countYearProvinceServer(
           id = outputName,

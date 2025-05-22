@@ -428,13 +428,16 @@ test_that("F17_4", {
 
 test_that("F04_3", {
     
+    colsGeo <- c("afschotplan_nummer", "postcode_afschot_locatie", 
+      "FaunabeheerZone", "gemeente_afschot_locatie"
+    )
     # Data voorbereiding
     drukjachtData <- merge(
       ecoData[ecoData$jachtmethode_comp == "Drukjacht", c("ID", "afschot_datum", "afschotjaar", "provincie")], 
-      geoData[, c("ID", "WBE_Naam_Toek")], 
-      by = "ID", all.x = TRUE)[, c("afschot_datum", "afschotjaar", "WBE_Naam_Toek", "provincie")]
+      geoData[, c("ID", colsGeo)], 
+      by = "ID", all.x = TRUE)
     # Keep unique records per WBE & date
-    drukjachtData <- drukjachtData[!duplicated(drukjachtData), ]
+    drukjachtData <- drukjachtData[!duplicated(drukjachtData[, c("afschotplan_nummer", "afschot_datum")]), ]
     
     myResult <- countYearProvince(data = drukjachtData)
     

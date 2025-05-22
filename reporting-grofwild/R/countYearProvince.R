@@ -197,7 +197,7 @@ countYearProvinceUI <- function(
   id, 
   uiText, context = id, plotFunction = "countYearProvinceUI", 
   specie = NULL, type = NULL,
-  showType = FALSE, showDataSource = NULL, regionLevels = NULL,
+  showType = FALSE, showDataSource = NULL,
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -229,8 +229,7 @@ countYearProvinceUI <- function(
             id = ns("yearProvince"), 
             showTime = TRUE, exportData = TRUE,
             showType = showType,
-            showDataSource = showDataSource,
-            regionLevels = regionLevels
+            showDataSource = showDataSource
           )
         )
       ),

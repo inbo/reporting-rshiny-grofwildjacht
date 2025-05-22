@@ -156,7 +156,7 @@ beheerOutputServer <- function(id,
     })
 
     results$drukjachtData <- reactive({
-      colsGeo <- c("WBE_Naam_Toek", "postcode_afschot_locatie", 
+      colsGeo <- c("afschotplan_nummer", "postcode_afschot_locatie", 
         "FaunabeheerZone", "gemeente_afschot_locatie"
       )
       drukjachtData <- merge(
@@ -167,11 +167,8 @@ beheerOutputServer <- function(id,
         y = results$geoData()[, c("ID", colsGeo)], 
         by = "ID", all.x = TRUE
       )
-      cols <- c("afschot_datum", "afschotjaar", colsGeo, 
-        "provincie", "wildsoort")
-      drukjachtData <- drukjachtData[, cols]
-      # Keep unique records per WBE & date
-      drukjachtData <- drukjachtData[!duplicated(drukjachtData), ]
+      # Keep unique records per afschotplan_nummer & date
+      drukjachtData <- drukjachtData[!duplicated(drukjachtData[, c("afschotplan_nummer", "afschot_datum")]), ]
       validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
       return(drukjachtData)
     })
@@ -254,7 +251,7 @@ beheerOutputServer <- function(id,
               uiText = uiText, context = "description", specie = specie(),
               plotFunction = "F04_3", 
               doHide = FALSE,
-              regionLevels = 1:4
+              showType = TRUE
             )
           }
         )
@@ -328,6 +325,14 @@ beheerOutputServer <- function(id,
         "F04_3" = countYearProvinceServer(
           id = outputName, 
           data = results$drukjachtData,
+          types = reactive(c(
+              "Vlaanderen" = "flanders",
+              "Provincie" = "provinces", 
+              "Faunabeheerzones" = "faunabeheerzones"
+            )), 
+          labelTypes = "Regio", 
+          typesDefault = reactive("provinces"), 
+          
           timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
         )
       )

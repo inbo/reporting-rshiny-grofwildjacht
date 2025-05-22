@@ -233,7 +233,8 @@ trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE,
       xaxis = list(title = "Jaar"), 
       yaxis = list(title = paste0("Aantal", unitName),
         range = c(0, ~max(freq)*1.05),
-        rangemode = "nonnegative"),
+        rangemode = "nonnegative", 
+        showexponent = "all", exponentformat = "power"),
       showlegend = TRUE,
       margin = list(b = 80, t = 100))     
   

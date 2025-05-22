@@ -107,6 +107,19 @@ populatieOutputServer <- function(id,
       )
     )
     
+    # Plot 8: Onderkaaklengte per jaar
+    results$typesGender <- reactive({
+        
+        loadMetaEco(species = specie())$type_comp
+        
+      })
+    
+    results$typesDefaultGender <- reactive({
+        
+        grep("kits", results$typesGender(), value = TRUE)
+        
+      })
+    
     # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
     results$typesFemale <- reactive({
       getFemaleTypes(
@@ -174,6 +187,22 @@ populatieOutputServer <- function(id,
               specie = specie(),
               doHide = FALSE
             )
+          },
+          "plotBioindicatorUI-onderkaaklengte" = {
+            plotBioindicatorUI(
+              id = ns(outputName),
+              bioindicator = "onderkaaklengte",
+              regionLevels = c(1:2, 4), showAccuracy = TRUE, 
+              uiText = uiText, context = "description"
+            )
+          },
+          "plotBioindicatorUI-ontweid_gewicht" = {
+            plotBioindicatorUI(
+              id = ns(outputName), 
+              bioindicator = "ontweid_gewicht", 
+              regionLevels = c(1:2, 4), 
+              uiText = uiText, context = "description"
+            )
           }
         )
         
@@ -234,6 +263,22 @@ populatieOutputServer <- function(id,
           }),
           timeRange = results$timeRange,
           groupVariable = "reproductiestatus"
+        ),
+        "plotBioindicatorUI-onderkaaklengte" = plotBioindicatorServer(
+          id = outputName,
+          data = results$combinedData,
+          timeRange = results$timeRange,
+          types = results$typesGender,
+          typesDefault = results$typesDefaultGender,
+          bioindicator = "onderkaaklengte"
+        ),
+        "plotBioindicatorUI-ontweid_gewicht" = plotBioindicatorServer(
+          id = outputName,
+          data = results$combinedData,
+          timeRange = results$timeRange,
+          types = results$typesGender,
+          typesDefault = results$typesDefaultGender,
+          bioindicator = "ontweid_gewicht"
         )
       )
       

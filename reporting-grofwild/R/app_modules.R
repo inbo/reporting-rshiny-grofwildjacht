@@ -299,6 +299,9 @@ optionsModuleServer <- function(input, output, session,
   
   output$type <- renderUI({
       
+      # Reset when types() change - switch species
+      types()
+      
       isolate({
           
         selectInput(inputId = ns("type"), label = labelTypes,

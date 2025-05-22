@@ -271,7 +271,11 @@ getOutputSpecie <- function(specie,
     if (specie %in% draagvlakData$maatregelen$Soort)
       "F14_4",
     if (specie %in% draagvlakData$beleid$Soort)
-      "F14_5"
+      "F14_5",
+    if (!all(is.na(combinedDataSpecie$onderkaaklengte_comp)))
+      "plotBioindicatorUI-onderkaaklengte",
+    if (!all(is.na(combinedDataSpecie$ontweid_gewicht)))
+      "plotBioindicatorUI-ontweid_gewicht"
   )
     
   return(outputs)
@@ -379,8 +383,8 @@ getSubcategoryOutput <- function(output){
       `schade-kosten` = "barCostUI",
       
       # populatie
-      `populatie-leeggewicht` = "boxAgeWeightUI",
-      `populatie-onderkaak` = "countAgeCheekUI",
+      `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),
+      `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
       `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
       
@@ -483,8 +487,18 @@ groupSpecies <- function(allSpecies, selectedSpecies = NULL) {
     subSpecies <- allSpecies[allSpecies$name %in% selectedSpecies, ] else
     subSpecies <- allSpecies
   
-  sapply(unique(subSpecies$group), function(x)
+  toReturn <- sapply(unique(subSpecies$group), function(x)
       subSpecies$name[subSpecies$group == x], simplify = FALSE)
+  
+  # For single species remove group names
+  if (length(toReturn) == 1) {
+    
+    names(toReturn) <- NULL
+    toReturn <- toReturn[[1]]
+    
+  }
+    
+  toReturn
   
 }
 

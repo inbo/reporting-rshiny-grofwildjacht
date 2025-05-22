@@ -222,6 +222,9 @@ shinyServer(function(input, output, session) {
   # Update page content
   outputSubcategory <- reactive({
     
+      # Update choices when switching species
+      specie()
+      
       if (currentTab() %in% subcategories) {
       
       isolate({

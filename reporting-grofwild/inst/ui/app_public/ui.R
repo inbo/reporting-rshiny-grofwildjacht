@@ -110,7 +110,7 @@ shinyUI(
       id = "navbarID",
       
       bslib::nav_panel(title = "Home", 
-        frontUI(speciesList = groupSpecies(allSpecies = allWildsoorten))
+        frontUI(speciesList = groupSpecies(allSpecies = allWildsoorten), uiText = uiText)
       ),
       
       do.call(bslib::nav_menu, 

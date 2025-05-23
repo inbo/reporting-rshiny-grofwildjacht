@@ -162,7 +162,8 @@ schadeOutputServer <- function(id,
     ## Selection schade
     
     schadeSelection <- schadeSelectionServer(id = "topbar", specie = specie,
-      schade_code = schade_code, schade_gewas = schade_gewas, schade_voertuig = schade_voertuig)
+      schade_code = schade_code, schade_gewas = schade_gewas, 
+      schade_voertuig = schade_voertuig, plot = plot)
     
     ## Main panel
   
@@ -453,7 +454,7 @@ schadeSelectionUI <- function(id){
 #' @author lcougnaud
 #' @export
 schadeSelectionServer <- function(id, specie = reactiveVal(), 
-  schade_code, schade_gewas, schade_voertuig){
+  schade_code, schade_gewas, schade_voertuig, plot){
   
   moduleServer(id, function(input, output, session){
   
@@ -468,7 +469,9 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
         selectInput(
           inputId = ns("schade_code"), 
           label = "Selecteer type(s) schade:",
-          choices = metaSchade$types,
+          choices = if (plot() == "countYearSchadeUI-gewas")
+              c("Gewas" = "GEWAS") else
+              metaSchade$types,
           selected = if (is.null(schade_code()))
               metaSchade$types else
               schade_code(),
@@ -480,7 +483,9 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
     
     output$schadeGewasSelection <- renderUI({
         
-        # Select gewas & voertuig
+        req("GEWAS" %in% input$schade_code)
+        
+        # Subselection gewas
         selectInput(
           inputId = ns("schade_gewas"), 
           label = "Filter Gewas Schade",
@@ -496,6 +501,9 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
     
     output$schadeVoertuigSelection <- renderUI({
         
+        req("VRTG" %in% input$schade_code)
+        
+        # Subselection voertuig
         selectInput(
           inputId = ns("schade_voertuig"), 
           label = "Filter Voertuig Schade",
@@ -507,21 +515,8 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
           width = "100%"
         )
         
-      })
-        
-    # show/hide filters
-    observe(
-      shinyjs::toggle(
-        id = "schade_gewas", 
-        condition = "GEWAS" %in% input$schade_code
-      )
-    )
-    observe(
-      shinyjs::toggle(
-        id = "schade_voertuig", 
-        condition = "VRTG" %in% input$schade_code
-      )
-    )
+    })
+
     
     observe({
       updateSelectInput(session, inputId = "schade_code", selected = schade_code())

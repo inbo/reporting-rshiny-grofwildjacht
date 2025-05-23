@@ -34,7 +34,7 @@ if (any(allParams %in% currentParams)) {
   if ("year" %in% currentParams)
     cat("- Geselecteerd Jaar:", params$year, "\n\n")
   if ("bronMap" %in% currentParams)
-    cat("- Data Bron:", paste(params$bronMap, collapse = ", "), "\n\n")
+    cat("- Databron(nen):", paste(params$bronMap, collapse = ", "), "\n\n")
   if ("trendUnit" %in% currentParams)
     cat("- Eenheid:", switch(params$trendUnit,
         "absolute" = "Aantal", 
@@ -52,7 +52,7 @@ if (any(allParams %in% currentParams)) {
         "season" = "Seizoen",
         params$unit), "\n\n")
   if ("bron" %in% currentParams)
-    cat("- Data bron:", paste(params$bron, collapse = ", "), "\n\n")
+    cat("- Databron(nen):", paste(params$bron, collapse = ", "), "\n\n")
   if ("sectorUsers" %in% currentParams)
     cat(if ("sectorMain" %in% currentParams) paste0("- ", switch(params$sectorMain,
               stakeholders = "Stakeholders",

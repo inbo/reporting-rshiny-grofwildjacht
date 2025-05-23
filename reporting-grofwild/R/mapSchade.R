@@ -422,7 +422,7 @@ mapSchadeServer <- function(
           
           
           selectInput(inputId = ns("bron"),
-            label = "Data Bron",
+            label = "Databron(nen)",
             choices = sourcesSchade[sourcesSchade %in% newChoices], 
             selected = previousChoice[previousChoice %in% newChoices],
             multiple = TRUE)
@@ -444,7 +444,7 @@ mapSchadeServer <- function(
             
             validate(need(results$schadeData(), "Geen data beschikbaar"),
               need(input$time_schade, "Gelieve periode te selecteren"),
-              need(input$bron, "Gelieve data bron te selecteren"))
+              need(input$bron, "Gelieve databron(nen) te selecteren"))
             
             if (nrow(results$schadeData()) == 0)
               return(results$schadeData())

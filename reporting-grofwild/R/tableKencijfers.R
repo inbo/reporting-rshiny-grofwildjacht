@@ -425,7 +425,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           names(dataSource) <- gsub("\\..+", "", dataSource)
           
           selectInput(inputId = ns("bron"),
-            label = "Data bron",
+            label = "Databron(nen)",
             selected = dataSource,
             choices =  dataSource,
             multiple = TRUE)

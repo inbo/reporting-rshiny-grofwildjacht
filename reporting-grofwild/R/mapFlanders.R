@@ -689,7 +689,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           isolate(previousChoice <- if (is.null(input$bronMap)) newChoices else input$bronMap)
           
           selectInput(inputId = ns("bronMap"),
-            label = "Data Bron",
+            label = "Databron(nen)",
             choices = sourceChoices[sourceChoices %in% newChoices], 
             selected = previousChoice[previousChoice %in% newChoices],
             multiple = TRUE)

@@ -57,6 +57,27 @@ trendYearFlandersServer <- function(id,
             )
           })
         
+        # Not via updateSelectInput: this is slower, multiple rendering of the plot
+        output$bronMap <- renderUI({
+            
+            req(input$period)
+            
+            newChoices <- unique(geoData()$dataSource[
+                geoData()$afschotjaar >= input$period[1] & 
+                  geoData()$afschotjaar <= input$period[2]])
+            isolate(previousChoice <- if (is.null(input$bronMap)) newChoices else input$bronMap)
+            
+            sourceChoices <- loadMetaSchade()$sources 
+            
+            selectInput(inputId = ns("bronMap"),
+              label = "Databron(nen)",
+              choices = sourceChoices[sourceChoices %in% newChoices], 
+              selected = previousChoice[previousChoice %in% newChoices],
+              multiple = TRUE)
+            
+          })
+        
+        
         
         timeDataFlanders <- reactive({
               
@@ -70,7 +91,8 @@ trendYearFlandersServer <- function(id,
                   timeRange = input$period,
                   species = species(),
                   regionLevel = "flanders",
-                  unit = input$unit
+                  unit = input$unit,
+                  sourceIndicator = input$bronMap
               )
               
             })
@@ -126,13 +148,15 @@ trendYearFlandersUI <- function(id,
       column(8, plotModuleUI(id = ns("trendYearFlanders"))),
       column(4,
         if(includeOptions)
-          tagList(
+          wellPanel(
             uiOutput(ns("period")),
             selectInput(
                 inputId = ns("unit"), 
                 label = "Eenheid",
                 choices = unitChoices
-            )
+            ),
+            if (type == "wildschade")
+              uiOutput(ns("bronMap"))
         ),
         optionsModuleUI(id = ns("trendYearFlanders"), exportData = TRUE,
             doWellPanel = FALSE)

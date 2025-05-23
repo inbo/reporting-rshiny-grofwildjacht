@@ -231,8 +231,6 @@ shinyServer(function(input, output, session) {
         if(doDebug)
           print(paste("Go to:", subcategory(), "page"))
       
-        currentCategory <- getCategorySubcategory(subcategory = currentTab())
-        
         # Reset all next tabs
         plot(defaultTabs$plot)
         
@@ -246,14 +244,6 @@ shinyServer(function(input, output, session) {
           uiText = uiText
         )
         
-        if (currentCategory == "schade")
-          args <- c(args,
-            list(
-              schade_code = schade_code,
-              schade_gewas = schade_gewas,
-              schade_voertuig = schade_voertuig
-              ))
-          
         fct <- paste0(category(), "CardServer")
         do.call(fct, args)
       })
@@ -276,20 +266,7 @@ shinyServer(function(input, output, session) {
         updateTab(TRUE)
         
       }
-      
-      # optional
-      req("schade_code" %in% names(outputSubcategory()))
-      if(doDebug)
-        print(paste("Update schade settings on subcategory page", 
-            paste(outputSubcategory()$schade_code(), collapse = ", ")))
-      
-      if (!setequal(outputSubcategory()$schade_code(), schade_code()))
-        schade_code(outputSubcategory()$schade_code())
-      if (!setequal(outputSubcategory()$schade_gewas(), schade_gewas()))
-        schade_gewas(outputSubcategory()$schade_gewas())
-      if (!setequal(outputSubcategory()$schade_voertuig(), schade_voertuig()))
-        schade_voertuig(outputSubcategory()$schade_voertuig())
-        
+              
   })
 
 # reset category

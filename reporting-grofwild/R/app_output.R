@@ -1,5 +1,7 @@
 #' UI for a category page
 #' @inheritParams reportingGrofwild-common-args
+#' @param schadeSelection boolean, whether to include selection options for 'schade';
+#' default is FALSE
 #' @param whiteWell boolean whether to draw a white well panel around the output;
 #' default is FALSE 
 #' @param ... any parameters passed to \code{\link{specieSidebarUI}}
@@ -8,7 +10,7 @@
 #' @author lcougnaud
 #' @import shiny
 #' @export
-outputUI <- function(id, category, whiteWell = FALSE, uiText = NULL, ...){
+outputUI <- function(id, category, schadeSelection = FALSE, whiteWell = FALSE, uiText = NULL, ...){
   
   ns <- NS(namespace = id)
   
@@ -28,14 +30,12 @@ outputUI <- function(id, category, whiteWell = FALSE, uiText = NULL, ...){
     tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
       sidebarLayout(    
         position = "left", 
-        sidebarPanel = if(category == "schade"){
-            schadeSidebarUI(id = ns("sidebar"), ...)
-          }else{
-            specieSidebarUI(id = ns("sidebar"), ...)
-          },
+        sidebarPanel = specieSidebarUI(id = ns("sidebar"), ...),
         mainPanel = mainPanel(
           width = 9, 
           style = "overflow-y: hidden", # avoid 2 scrolling bar
+          if (schadeSelection)
+            schadeSelectionUI(ns("topbar")),
           if (whiteWell)
               wellPanel(class = "well-white", uiOutput(outputId = ns("output"))) else
               uiOutput(outputId = ns("output")),

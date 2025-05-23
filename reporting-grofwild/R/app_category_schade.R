@@ -23,8 +23,7 @@ schadeCardServer <- function(id,
     
     ## Sidebar panel
     
-    schadeSelection <- schadeSidebarServer(id = "sidebar", specie = specie,
-      schade_code = schade_code, schade_gewas = schade_gewas, schade_voertuig = schade_voertuig)
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Main panel
         
@@ -94,12 +93,9 @@ schadeCardServer <- function(id,
     })
 
   
-    return(list(
-        plot = reactive(outputUI()),
-        schade_code = schadeSelection$schade_code,
-        schade_gewas = schadeSelection$schade_gewas,
-        schade_voertuig = schadeSelection$schade_voertuig
-      ))
+  return(list(
+      plot = reactive(outputUI())
+    ))
      
   })
      
@@ -159,9 +155,13 @@ schadeOutputServer <- function(id,
       range(results$schade_data()$afschotjaar)
     ) 
     
-    ## Sidebar panel
+    ## Selection species
     
-    schadeSelection <- schadeSidebarServer(id = "sidebar", specie = specie,
+    specieSidebarServer(id = "sidebar", specie = specie)
+    
+    ## Selection schade
+    
+    schadeSelection <- schadeSelectionServer(id = "topbar", specie = specie,
       schade_code = schade_code, schade_gewas = schade_gewas, schade_voertuig = schade_voertuig)
     
     ## Main panel
@@ -429,26 +429,21 @@ schadeOutputServer <- function(id,
 
 #' UI function for the sidebar of the 'schade' Category page
 #' @inheritParams reportingGrofwild-common-args
-#' @param ... any extra parameters for \code{\link{specieSidebarUI}}
-#' @inherit specieSidebarUI return
 #' @author lcougnaud
-schadeSidebarUI <- function(id, ...){
+schadeSelectionUI <- function(id){
   
   ns <- NS(namespace = id)
   
-  specieSidebarUI(
-    id = ns("sidebar"), 
-    # freeze input parameters choice (same id) for all sub-tabs
-    bottomExtra = tagList(
-      br(),
-      uiOutput(ns("schadeCodeSelection")),
-      uiOutput(ns("schadeGewasSelection")),
-      uiOutput(ns("schadeVoertuigSelection")),
-      uiOutput(outputId = ns("schade_warning"))
+  # freeze input parameters choice (same id) for all sub-tabs
+  wellPanel(class = "well-white", 
+    fluidRow(
+      column(4, uiOutput(ns("schadeCodeSelection"))),
+      column(4, uiOutput(ns("schadeGewasSelection"))),
+      column(4, uiOutput(ns("schadeVoertuigSelection")))
     ),
-    ...
+    uiOutput(outputId = ns("schade_warning"))
   )
-  
+
 }
 
 #' Server function for the sidebar of the 'schade' Category page
@@ -457,7 +452,7 @@ schadeSidebarUI <- function(id, ...){
 #' @import shiny
 #' @author lcougnaud
 #' @export
-schadeSidebarServer <- function(id, specie = reactiveVal(), 
+schadeSelectionServer <- function(id, specie = reactiveVal(), 
   schade_code, schade_gewas, schade_voertuig){
   
   moduleServer(id, function(input, output, session){

@@ -16,9 +16,7 @@ shinyServer(function(input, output, session) {
       
       
       output$print <- renderPrint({
-            
-                        results$labeltypes()
-            
+                        
           })
       
       
@@ -42,27 +40,22 @@ shinyServer(function(input, output, session) {
       # Tabpages
       # ----------
       
-      
-      
-      results <- reactiveValues()
-      
-      
-      # Load code for all tabpages
-      for (serverFile in list.files("serverFiles", full.names = TRUE))
-        source(serverFile, local = TRUE)
-      
-      
-      
-      # Tabpanel grofwild
-      output$wbe_content <- renderUI({
-            
-            source(file.path("uiFiles", "uiWbe.R"), local = TRUE)$value
-            
-          })
+      # Tabpanel WBE
+      wbeServer(id = NULL, 
+        currentKbo = currentKbo, 
+        ecoData = ecoData, 
+        geoData = geoData, 
+        schadeData = schadeData,
+        toekenningsData = toekenningsData, 
+        biotoopData = biotoopData,
+        spatialData = spatialData,
+        defaultYear = defaultYear, 
+        uiText = uiText
+      )
                 
-        observeEvent(input$tabs, {
-            if (input$tabs %in% c("Grofwild", "Wildschade", "Dashboard"))
-              js$browseURL("https://faunabeheer.inbo.be")
-          })
+      observeEvent(input$tabs, {
+          if (input$tabs %in% c("Grofwild", "Wildschade", "Dashboard"))
+            js$browseURL("https://faunabeheer.inbo.be")
+        })
       
     })

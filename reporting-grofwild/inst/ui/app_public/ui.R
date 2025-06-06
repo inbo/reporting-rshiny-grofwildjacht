@@ -42,7 +42,8 @@ subcategoryTabs <- lapply(subcategories, function(subcategory){
   args <- list(
     id = subcategory, category = category, 
     uiText = uiText,
-    speciesList = speciesList
+    speciesList = speciesList, 
+    select = TRUE
   )
   
   bslib::nav_panel(

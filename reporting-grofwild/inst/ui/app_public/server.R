@@ -374,9 +374,10 @@ observeEvent(subcategory(), {
                 biotoopData = biotoopData, 
                 defaultYear = defaultYear, 
                 schadeTypes = schadeTypes, schadeCodes = schadeCodes,
-                schade_code = schade_code,
-                schade_gewas = schade_gewas,
-                schade_voertuig = schade_voertuig
+                # isolate - prevent loop if changed too quickly in plot
+                schade_code = reactive(isolate(schade_code())),
+                schade_gewas = reactive(isolate(schade_gewas())),
+                schade_voertuig = reactive(isolate(schade_voertuig()))
               )
             },
             verspreiding = list(
@@ -420,11 +421,11 @@ observeEvent(subcategory(), {
         print(paste("Update schade settings on output page", 
             paste(outputSelection()$schade_code(), collapse = ", ")))
       
-      if (!setequal(outputSelection()$schade_code(), schade_code()))
+      if (!setequal(outputSelection()$schade_code(), isolate(schade_code())))
         schade_code(outputSelection()$schade_code())
-      if (!setequal(outputSelection()$schade_gewas(), schade_gewas()))
+      if (!setequal(outputSelection()$schade_gewas(), isolate(schade_gewas())))
         schade_gewas(outputSelection()$schade_gewas())
-      if (!setequal(outputSelection()$schade_voertuig(), schade_voertuig()))
+      if (!setequal(outputSelection()$schade_voertuig(), isolate(schade_voertuig())))
         schade_voertuig(outputSelection()$schade_voertuig())
             
   })

@@ -49,15 +49,11 @@ loadShapeData <- function(
   if (length(WBE_NR) > 1)
     for (wbe in WBE_NR[-1]) {
       envTmp <- new.env()
-      file <- paste0(wbe, ".RData")
+      file <- paste0("spatialDataWBE/", wbe, ".RData")
       if(!identical(path, "")){
         load(file.path(path, file), envir = envTmp)
       }else{
-        readS3(
-          file = paste0("spatialDataWBE/", file), 
-          bucket = bucket,
-          envir = envTmp
-        )
+        readS3(file = file, bucket = bucket, envir = envTmp)
       }
       spatialDataWBE <- sapply(names(spatialDataWBE), function(iLayer)
           rbind(spatialDataWBE[[iLayer]], envTmp$spatialDataWBE[[iLayer]]))

@@ -81,7 +81,7 @@ tagList(
       ),
       
       conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
-          countYearShotUI(id = "wbe_labeltype", groupVariable = "labeltype", uiText = uiText)          
+          countYearShotUI(id = "wbe_labeltype", groupVariable = "leeftijd_comp", uiText = uiText)          
         ),
       
       countYearShotUI(id = "wbe_jachtmethode", groupVariable = "jachtmethode_comp", uiText = uiText)
@@ -91,7 +91,7 @@ tagList(
       # When no afschot, might still be schadeData
       
         mapSchadeUI(id = "wbe",
-          uiText = uiText[uiText$plotFunction == "mapSchadeUI", ], 
+          uiText = uiText, specie = "",
           filterCode = TRUE, filterSubcode = TRUE, type = "",
           plotDetails = "region")
   

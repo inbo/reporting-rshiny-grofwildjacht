@@ -182,8 +182,8 @@ tableKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
   
   cityList <-  na.omit(resTable[,"gemeente"])
   
-  observedCities <- dataSubset[dataSource == "waarnemingen.be" & current >= thresholdWaarnemingen, "gemeente_afschot_locatie"]
-  afschotCities <- dataSubset[dataSource == "afschot" & current >= thresholdAfschot, "gemeente_afschot_locatie"]
+  observedCities <- dataSubset[dataSource == "waarnemingen.be" & current >= thresholdWaarnemingen, gemeente_afschot_locatie]
+  afschotCities <- dataSubset[dataSource == "afschot" & current >= thresholdAfschot, gemeente_afschot_locatie]
   
   colorList <- ifelse((cityList %in% observedCities) & (!cityList %in% afschotCities),
     "#ef8a62",
@@ -295,7 +295,7 @@ kencijferModuleUI <- function(id, uiText) {
                 uiOutput(ns("sliderObserve"))
               ),
               conditionalPanel(
-                condition = "input.bron.indexOf('afschot')", ns = ns,
+                condition = "input.bron.indexOf('afschot') > -1", ns = ns,
                 uiOutput(ns("sliderAfschot"))
               )
             )

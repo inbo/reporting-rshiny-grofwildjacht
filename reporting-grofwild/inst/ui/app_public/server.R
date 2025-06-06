@@ -72,7 +72,8 @@ shinyServer(function(input, output, session) {
       plot(input$navbarID)
     }
     currentTab(input$navbarID);updateTab(TRUE);resetNextTab(TRUE)
-  })
+    
+  }, ignoreInit = TRUE)
 
   # list of current available categories, subcategories, outputs
   categoriesCur <- reactive(
@@ -435,7 +436,7 @@ observeEvent(subcategory(), {
     if(doDebug)
       print(paste("Update tab to", currentTab()))
     updateTabsetPanel(session, "navbarID", selected = currentTab())    
-  }, ignoreInit = TRUE)
+  }, ignoreInit = TRUE, priority = 10)
 
   ## Navigation
   

@@ -204,7 +204,7 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' 
 #' @export
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
-  regionLevels, showAccuracy = FALSE, uiText, 
+  regionLevels, showAccuracy = FALSE, uiText, doHide = TRUE,
   context = strsplit(id, split = "_")[[1]][1]) {
   
   # For R CMD check
@@ -224,7 +224,9 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
     actionLink(inputId = ns("linkPlotBioindicator"), 
       label = h3(HTML(title))
     ),
-    conditionalPanel("input.linkPlotBioindicator % 2 == 0", ns = ns,
+    conditionalPanel(
+      paste("input.linkPlotBioindicator % 2 ==", as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
         

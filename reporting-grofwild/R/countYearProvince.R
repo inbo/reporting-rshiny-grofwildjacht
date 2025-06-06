@@ -194,19 +194,17 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @inheritParams getOutputDescription
 #' @export
 countYearProvinceUI <- function(
-  id, 
-  uiText, context = id, plotFunction = "countYearProvinceUI", 
-  specie = NULL, type = NULL,
+  id, uiText, specie = NULL, plotFunction = "countYearProvinceUI",
   showType = FALSE, showDataSource = NULL,
   doHide = TRUE) {
   
   ns <- NS(id)
   
   title <- getOutputTitle(output = plotFunction, specie = specie, 
-    uiText = uiText, type = type)
+    uiText = uiText,
+    type = strsplit(plotFunction, split = "-")[[1]][2])
   description <- getOutputDescription(output = plotFunction, 
-    specie = specie, uiText = uiText, context = context,
-    type = type)
+    specie = specie, uiText = uiText, context = "description")
   
   tagList(
     

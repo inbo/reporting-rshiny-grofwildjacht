@@ -82,7 +82,7 @@ getOutputTitle <- function(output,
     title <- sub(regex, "", title)
   }
   
-  if(!is.null(type)){
+  if(!is.null(type) && !is.na(type)){
     if(type == "schade")	type <- "schadegevallen"
     title <- gsub("{type}", type, title, fixed = TRUE)
   }

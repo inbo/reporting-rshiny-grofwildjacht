@@ -666,7 +666,7 @@ mapSchadeUI <- function(
     "Seizoen" = "season",
     "Jaar" = "afschotjaar",
     "Type schade" = "schadeCode"),
-  uiText, context = id, specie = NULL, type = NULL, plotDetails = NULL,
+  uiText, specie = NULL, type = NULL, plotDetails = NULL,
   doHide = TRUE, outputFunction = "mapSchadeUI") {
   
   ns <- NS(id)
@@ -678,7 +678,8 @@ mapSchadeUI <- function(
     uiText = uiText, type = type)
   description <- getOutputDescription(
     output = outputFunction, 
-    specie = specie, uiText = uiText, context = context,
+    specie = specie, uiText = uiText, 
+    context = if (type == "wbe") "wbe" else "description",
     type = type
   )
   

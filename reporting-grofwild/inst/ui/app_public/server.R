@@ -237,6 +237,7 @@ shinyServer(function(input, output, session) {
         args <- list(
           id = subcategory(), 
           specie = specie,
+          category = category,
           subcategory = subcategory,
           outputs = outputsCur(),
           # general
@@ -244,8 +245,8 @@ shinyServer(function(input, output, session) {
           uiText = uiText
         )
         
-        fct <- paste0(category(), "CardServer")
-        do.call(fct, args)
+        do.call("subcategoryServer", args)
+        
       })
     
   }

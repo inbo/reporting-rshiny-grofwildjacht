@@ -132,3 +132,12 @@ outputs <- getInfo(infoOutput = infoOutput, variable = "output")
 
 # Choices for navigation list
 infoOutputList <- getInfoList(infoOutput = infoOutput, uiText = uiText)
+
+
+## Check for missing images and text if in debug mode
+if (doDebug) {
+  
+  detectMissingImages(infoOutput = infoOutput)
+  detectMissingInfo(infoOutput = infoOutput, uiText = uiText)
+  
+}

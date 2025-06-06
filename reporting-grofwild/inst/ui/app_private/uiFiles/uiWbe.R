@@ -31,7 +31,7 @@ tagList(
     # Map
     
     mapFlandersUI(id = "wbe", showRegion = FALSE, showCombine = FALSE,
-      type = "wbe", plotDetails = "biotoop"),
+      uiText = uiText, type = "wbe", plotDetails = "biotoop"),
     
 
     # Choose species
@@ -76,6 +76,7 @@ tagList(
           "Seizoen" = "season",
           "Jaar" = "afschotjaar",
           "Jachtmethode" = "jachtmethode_comp"),
+        type = "wbe",
         outputFunction = "mapAfschotUI"
       ),
       

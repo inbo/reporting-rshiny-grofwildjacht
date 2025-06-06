@@ -1,75 +1,3 @@
-#' Server function for the cards of the 'verspreiding' Category page
-#' @inheritParams reportingGrofwild-common-args
-#' @return named list with plot, reactive with name of output plot/table (if selected)
-#' @import shiny
-#' @author lcougnaud
-#' @export
-verspreidingCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-      
-    ns <- session$ns
-       
-    ## Sidebar panel
-    
-    specieSidebarServer(id = "sidebar", specie = specie)
-      
-    ## Main panel
-      
-    # Create tab
-    observe({
-          
-      if(subcategory() %in% subcategories){
-        
-        categoryCards <- lapply(outputs, function(output){
-              
-          args <- list(
-            output = output,
-            id = id, 
-            uiText = uiText,
-            specie = specie(), 
-            category = "verspreiding"
-          )
-          
-          if(output == "F17_1"){
-            args[["output"]] <- "mapFlandersUI"
-            args[["outputFunction"]] <- "F17_1"
-          }
-          
-          do.call(categoryCard, args)
-        })
-    
-        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
-        cards <- do.call(bslib::layout_column_wrap, args)
-    
-        output[["output"]] <- renderUI(cards)
-        
-      }
-    })
-
-    # if plot is selected based on the category cards
-    outputUI <- reactiveVal()
-    lapply(outputs, function(output){
-      btn <- paste0(output, "-button")
-      # exception
-      if(output == "F17_1")  btn <- "mapFlandersUI-button"
-      observeEvent(
-        input[[btn]], 
-        outputUI(output), 
-        ignoreInit = TRUE
-      )
-    })
-    
-  return(list(
-      plot = reactive(outputUI())
-    ))
-
-  })
-}
-
 
 #' Server function for an output (plot/table) of the 'verspreiding' Category page
 #' @inheritParams reportingGrofwild-common-args
@@ -132,14 +60,12 @@ verspreidingOutputServer <- function(id,
       
       if(plot() %in% outputs){
         
-        outputName <- plot()
-        
         # create the plot/table
-        ui <- switch(outputName, 
+        ui <- switch(plot(), 
           "F17_1" = {
             mapFlandersUI(
-              id = ns(outputName), 
-              uiText = uiText, outputFunction = "F17_1", 
+              id = ns("plot"), 
+              uiText = uiText,
               specie = specie(),
               showCombine = FALSE, type = "dash",
               mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
@@ -156,7 +82,7 @@ verspreidingOutputServer <- function(id,
           "mapSpreadUI" = {
             if (specie() == "Wild zwijn")
               mapSpreadUI(
-                id = ns(outputName), 
+                id = ns("plot"), 
                 uiText = uiText, context = "description",
                 specie = specie(),
                 doHide = FALSE
@@ -165,7 +91,7 @@ verspreidingOutputServer <- function(id,
           },
           "kencijferUI" = {
             kencijferModuleUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText
             )
           }
@@ -175,7 +101,7 @@ verspreidingOutputServer <- function(id,
         output[["output"]] <- renderUI(ui)
         
         # activate server-side update
-        outputServer(outputName)
+        outputServer(plot())
       
       }
       
@@ -183,11 +109,10 @@ verspreidingOutputServer <- function(id,
 
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
-      outputName <- outputServer()
       
-      switch(outputName,
+      switch(outputServer(),
         `F17_1` = mapFlandersServer(
-          id = outputName,
+          id = "plot",
           defaultYear = defaultYear,
           species = specie,
           type = "dash",
@@ -196,16 +121,16 @@ verspreidingOutputServer <- function(id,
           hideGlobeDefault = FALSE,
           countVariable = "aantal",
           sourceChoices = c("waarnemingen.be", "afschot"),
-          uiText = uiText, outputFunction = "F17_1", context = "description"
+          uiText = uiText
         ),
         mapSpreadUI = mapSpreadServer(
-          id = outputName,
+          id = "plot",
           allSpatialData = spatialData,
           species = specie(),
           type = "F17_4"
         ),
         kencijferUI = kencijferModuleServer(
-          id = outputName,
+          id = "plot",
           kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
           biotoopData = reactive(biotoopData$communes),
           spatialData = spatialData,

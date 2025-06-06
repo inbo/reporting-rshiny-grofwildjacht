@@ -1,77 +1,3 @@
-#' Server function for the cards of the 'beheer' Category page
-#' @inheritParams reportingGrofwild-common-args
-#' @return named list with plot, reactive with name of output plot/table (if selected)
-#' @import shiny
-#' @author lcougnaud
-#' @export
-beheerCardServer <- function(id, 
-  specie, subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-        
-    ns <- session$ns
-    
-    ## Sidebar panel
-    
-    specieSidebarServer(id = "sidebar", specie = specie)
-    
-    ## Main panel
-    
-    observe({    
-          
-      if(subcategory() %in% subcategories){
-            
-        categoryCards <- lapply(outputs, function(output){
-        
-          args <- list(
-          	output = output,
-          	 id = id, 
-            uiText = uiText,
-            specie = specie(), 
-            category = "beheer"
-          )
-          
-          if(output == "countYearProvinceUI-afschot"){
-            args[["output"]] <- "countYearProvinceUI"
-            args[["outputFunction"]] <- output
-          }
-            
-          do.call(categoryCard, args)
-          
-        })
-    
-        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
-        cards <- do.call(bslib::layout_column_wrap, args)
-            
-        output[["output"]] <- renderUI(cards)
-            
-      }
-          
-    })
-
-    # if plot is selected based on the category cards
-    outputUI <- reactiveVal()
-    lapply(outputs, function(output){
-      btn <- paste0(output, "-button")
-      # exception
-      if(output == "countYearProvinceUI-afschot")
-        btn <- "countYearProvinceUI-button"
-      observeEvent(
-        input[[btn]], 
-        outputUI(output), 
-        ignoreInit = TRUE
-      )
-    })
-
-  return(list(
-      plot = reactive(outputUI())
-    ))
-    
-  })
-
-}
 
 #' Server function for an output (plot/table) of the 'beheer' Category page
 #' @inheritParams reportingGrofwild-common-args
@@ -188,28 +114,26 @@ beheerOutputServer <- function(id,
           
       if(plot() %in% outputs){
         
-        outputName <- plot()
-        
         # create the plot/table
-        ui <- switch(outputName, 
+        ui <- switch(plot(), 
           "trendYearFlandersUI" = {
             trendYearFlandersUI(
-              id = ns(outputName),
+              id = ns("plot"),
               uiText = uiText, specie = specie()
             )
            },
           "countYearProvinceUI-afschot" = {
             countYearProvinceUI(
-              id = ns(outputName), 
-              uiText = uiText, context = "description", type = "afschot",
+              id = ns("plot"), 
+              uiText = uiText, 
+              plotFunction = "countYearProvinceUI-afschot",
               specie = specie(),
-              doHide = FALSE,
-              plotFunction = "countYearProvinceUI-afschot"
+              doHide = FALSE
             )
           },
           "yearlyShotAnimalsUI" = {
             yearlyShotAnimalsUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
               specie = specie(),
               doHide = FALSE
@@ -217,21 +141,20 @@ beheerOutputServer <- function(id,
           },
           "mapFlandersUI" = {
             mapFlandersUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               type = "grofwild", plotDetails = "region",
-              uiText = uiText, specie = specie(), 
-              typeTitle = "afschot"
+              uiText = uiText, specie = specie()
             )
           },
           "tableProvinceUI" = {
             tableProvinceUI(
-              id = ns(outputName), doHide = FALSE,
+              id = ns("plot"), doHide = FALSE,
               uiText = uiText, context = "description", specie = specie()
             )
           },
           "countYearShotUI-leeftijd_comp" = {
             countYearShotUI(
-              id = ns(outputName), groupVariable = "leeftijd_comp",
+              id = ns("plot"), groupVariable = "leeftijd_comp",
               regionLevels = c(1:2, 4), 
               uiText = uiText, context = "description", specie = specie(),
               doHide = FALSE
@@ -239,7 +162,7 @@ beheerOutputServer <- function(id,
           },
           "countYearShotUI-jachtmethode_comp" = {
             countYearShotUI(
-              id = ns(outputName), groupVariable = "jachtmethode_comp",
+              id = ns("plot"), groupVariable = "jachtmethode_comp",
               regionLevels = c(1:2, 4), 
               uiText = uiText, context = "description", specie = specie(),
               doHide = FALSE
@@ -247,8 +170,8 @@ beheerOutputServer <- function(id,
           },
           "F04_3" = {
             countYearProvinceUI(
-              id = ns(outputName), 
-              uiText = uiText, context = "description", specie = specie(),
+              id = ns("plot"), 
+              uiText = uiText, specie = specie(),
               plotFunction = "F04_3", 
               doHide = FALSE,
               showType = TRUE
@@ -260,7 +183,7 @@ beheerOutputServer <- function(id,
         output[["output"]] <- renderUI(ui)
 
         # activate server-side update
-        outputServer(outputName)
+        outputServer(plot())
         
       }
       
@@ -268,32 +191,31 @@ beheerOutputServer <- function(id,
 
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
-      outputName <- outputServer()
       
-      switch(outputName,
+      switch(outputServer(),
         "trendYearFlandersUI" = trendYearFlandersServer(
-          id = outputName, 
+          id = "plot", 
           geoData = results$geoData,
           allSpatialData = spatialData, 
           biotoopData = biotoopData, 
           species = specie
         ),
         "countYearProvinceUI-afschot" = countYearProvinceServer(
-          id = outputName,
+          id = "plot",
           data = results$ecoData,
           timeRange = if (id == "Edelhert")
             reactive(c(2008, max(results$ecoData()$afschotjaar))) else 
             results$timeRange
          ),
         "yearlyShotAnimalsUI" = yearlyShotAnimalsServer(
-          id = outputName, 
+          id = "plot", 
           data = results$ecoData, 
           timeRange = results$openingstijd, 
           type = results$labeltypes, 
           openingstijdenData = results$openingstijdenData
         ),
         "mapFlandersUI" = mapFlandersServer(
-          id = outputName,
+          id = "plot",
           uiText = uiText,
           defaultYear = defaultYear,
           species = specie,
@@ -303,27 +225,27 @@ beheerOutputServer <- function(id,
           allSpatialData = spatialData
         ),
         "tableProvinceUI" = tableProvinceServer(
-          id = outputName,
+          id = "plot",
           data = results$ecoData,
           categorie = "leeftijd",
           timeRange = results$timeRange
         ),
         "countYearShotUI-leeftijd_comp" = countYearShotServer(
-          id = outputName,
+          id = "plot",
           data = results$combinedData,
           timeRange = results$timeRange,
           groupVariable = "leeftijd_comp",
           types = results$leeftijdtypes
         ),
         "countYearShotUI-jachtmethode_comp" = countYearShotServer(
-          id = outputName,
+          id = "plot",
           data = results$combinedData,
           timeRange = reactive(c(2014, results$timeRange()[2])),
           groupVariable = "jachtmethode_comp",
           types = results$jachttypes
         ),
         "F04_3" = countYearProvinceServer(
-          id = outputName, 
+          id = "plot", 
           data = results$drukjachtData,
           types = reactive(c(
               "Vlaanderen" = "flanders",
@@ -332,7 +254,6 @@ beheerOutputServer <- function(id,
             )), 
           labelTypes = "Regio", 
           typesDefault = reactive("provinces"), 
-          
           timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
         )
       )

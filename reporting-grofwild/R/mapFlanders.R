@@ -436,7 +436,7 @@ mapFlanders <- function(
 #' @param hideGlobeDefault boolean, whether the globe is shown by default 
 #' when the map is first created; default value is TRUE
 #' @param type character, defines the layout depending on which page it is shown;
-#' should be one of \code{c("grofwild", "wildschade", "wbe", "dash")}
+#' should be one of \code{c("grofwild", "schade", "wbe", "dash")}
 #' @param geoData data.frame with geographical data
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
@@ -455,11 +455,11 @@ mapFlanders <- function(
 #' @importFrom htmlwidgets saveWidget
 #' @export
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NULL),
-  hideGlobeDefault = TRUE, type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
+  hideGlobeDefault = TRUE, type = c("grofwild", "schade", "wbe", "empty", "dash"),
   geoData, biotoopData = NULL, allSpatialData,
   countVariable = NULL,
   sourceChoices = NULL,
-  uiText = NULL, outputFunction = "mapFlandersUI", context = id) {
+  uiText = NULL) {
 
   moduleServer(id,
     function(input, output, session) {
@@ -472,18 +472,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       results <- reactiveValues(
         year_value = defaultYear
       )
-      
-      output$descriptionMapFlanders <- renderUI({
-        if (!is.null(uiText)) {
-          description <- getOutputDescription(
-            output = outputFunction, 
-            uiText = uiText, specie = species(), 
-            context = context, statsMap = statsMap()
-          )
-          if (length(description) > 0)
-            tags$p(HTML(description))
-          }
-      })
       
       
       # Minimum year
@@ -665,7 +653,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       unitText <- reactive({
           
           paste0(
-            if (type == "wildschade") 
+            if (type == "schade") 
                 "aantal schadegevallen" else if (!is.null(countVariable)) 
                 countVariable else 
                 "afschot",
@@ -1161,7 +1149,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           h3(
             "Jaarlijks",
-            if (type == "wildschade") "schadegevallen" else "gerapporteerd afschot", 
+            if (type == "schade") "schadegevallen" else "gerapporteerd afschot", 
             "van", species(), "per geselecteerde",
             tolower(regionLevelName())
           )
@@ -1182,7 +1170,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         timeRange = reactive(input$period),
         unit = reactive(input$unit),
         combinatie = reactive(input$combinatie),
-        isSchade = (type == "wildschade"),
+        isSchade = (type == "schade"),
         height = "400px"
       )
       
@@ -1293,10 +1281,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @param showTitle boolean, whether to show title above the map
 #' @param mapScaleChoices named character vector, choices for the
 #' map scales
-#' @param outputFunction character, named of output function used
-#' to extract title, by default: 'mapFlandersUI'
-#' @param typeTitle character vector with type to be used 
-#' in the title
 #' @inheritParams getOutputTitle
 #' @inheritParams reportingGrofwild-common-args
 #' @return UI object
@@ -1305,7 +1289,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @export
 mapFlandersUI <- function(id, showRegion = (type != "dash"),
   showCombine = TRUE, 
-  type = c("grofwild", "wildschade", "wbe", "dash"),
+  type = c("grofwild", "schade", "wbe", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
     "Provincie" = "provinces", 
@@ -1318,8 +1302,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("region", "biotoop"),
   showTitle = TRUE, 
-  uiText = NULL, specie = NULL, typeTitle = type,
-  outputFunction = "mapFlandersUI") {
+  uiText = NULL, specie = NULL) {
   
   ns <- NS(id)
   type <- match.arg(type)
@@ -1336,15 +1319,20 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   
   
   # Map with according line plot
-  
-  title <- ifelse(
-    !is.null(uiText),
+  outputFunction <- if (type == "dash") 
+    "F17_1" else if (type != "schade")
+    "mapFlandersUI" else
+    paste0("mapFlandersUI-", type)
+  title <- if (type == "wbe") 
+      "Landkaart" else
     getOutputTitle(
       output = outputFunction, 
-      uiText = uiText, specie = specie, type = typeTitle
-    ),
-    "Landkaart"
-  )
+      uiText = uiText, specie = specie, type = type
+    )
+  description <- getOutputDescription(
+    output = outputFunction, 
+    uiText = uiText, 
+    context = if (type == "wbe") "wbe" else "description") 
   
   tagList(
     
@@ -1391,15 +1379,15 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
             
             if (!type %in% c("wbe"))
               fixedRow(
-                column(12/(2+(type=="wildschade")),
+                column(12/(2+(type=="schade")),
                   selectInput(inputId = ns("legend"), label = "Legende (kaart)",
                     choices = legendChoices)
                 ),
-                column(12/(2+(type=="wildschade")),
+                column(12/(2+(type=="schade")),
                   selectInput(inputId = ns("unit"), label = "Eenheid",
                     choices = unitChoices)
                 ),
-                if (type=="wildschade")
+                if (type=="schade")
                   column(4, uiOutput(ns("bronMap")))
               )
           )
@@ -1461,7 +1449,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       
     },
     br(),
-    uiOutput(ns("descriptionMapFlanders")),
+    tags$p(HTML(description)),
     tags$hr()
   
   )

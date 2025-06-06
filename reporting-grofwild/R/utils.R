@@ -377,3 +377,105 @@ plotlyReport <- function(myPlot) {
   
 }
 
+
+#' Automatically check for missing supporting image files in the UI 
+#' 
+#' checks for carousel, tiles and headers in public app
+#' @param infoOutput data.frame, object as returned by \code{getOutputInfo};
+#' lists all possible categories, subcategories and plots for which an image 
+#' should be available
+#' @return no return value; prints warnings for missing image files
+#' 
+#' @author mvarewyck
+#' @export
+detectMissingImages <- function(infoOutput) {
+  
+  ## uiText <- read.table(file = file.path(dataDir, "uiText.csv"), sep = ";", header = TRUE)
+  imageFolder <- system.file("ui", "www", package = "reportingGrofwild")
+  
+  # carrousel: "carousel-<integer>.png"
+  imgFiles <- list.files(path = imageFolder, pattern = "carousel-\\d.png")
+  if (length(imgFiles) == 0)
+    warning("Need at least one file for the carousel with pattern ", 
+      "carousel-<integer>.png",
+      " in folder ", imageFolder)
+  
+  # output cards: "category-<category>-<output>.png"
+  imgFiles <- sapply(unique(infoOutput$output), function(x)
+        paste0("category-", 
+          strsplit(as.character(getSubcategoryOutput(output = x)), split = "-")[[1]][1],
+          "-", x, ".png")
+    )
+  missingFiles <- imgFiles[!file.exists(file.path(imageFolder, imgFiles))]
+  if (length(missingFiles) > 0)
+    warning("Following image files for visualizations/tables are missing in folder ", imageFolder, ":\n ",
+      paste(missingFiles, collapse = "\n "))
+  
+  # subcategory cards: "category-<category>-<subcategory>.png"
+  subcategories <- unique(getSubcategoryOutput(output = infoOutput$output))
+  imgFiles <- paste0("category-", subcategories, ".png")
+  missingFiles <- imgFiles[!file.exists(file.path(imageFolder, imgFiles))]
+  if (length(missingFiles) > 0)
+    warning("Following image files for subcategories are missing in folder ", imageFolder, ":\n ",
+      paste(missingFiles, collapse = "\n "))
+  
+  # header: "category-<category>-header.png"
+  categories <- unique(getCategorySubcategory(subcategories))
+  imgFiles <- paste0("category-", categories, "-header.png")
+  missingFiles <- imgFiles[!file.exists(file.path(imageFolder, imgFiles))]
+  if (length(missingFiles) > 0)
+    warning("Following image files for category headers are missing in folder ", imageFolder, ":\n ",
+      paste(missingFiles, collapse = "\n "))
+  
+  # category cards: "specie-<category>.png"
+  imgFiles <- paste0("specie-", categories, ".png")
+  missingFiles <- imgFiles[!file.exists(file.path(imageFolder, imgFiles))]
+  if (length(missingFiles) > 0)
+    warning("Following image files for categories are missing in folder ", imageFolder, ":\n ",
+      paste(missingFiles, collapse = "\n "))
+  
+  # species: "specie-<specie>.png"
+  species <- unique(loadWildsoorten()$name)
+  imgFiles <- sapply(species, function(x) 
+      paste0("specie-", gsub(" ", "-", tolower(x)), ".png"))
+  missingFiles <- imgFiles[!file.exists(file.path(imageFolder, imgFiles))]
+  if (length(missingFiles) > 0)
+    warning("Following image files for species are missing in folder ", imageFolder, ":\n ",
+      paste(missingFiles, collapse = "\n "))
+  
+  return(invisible())
+  
+}
+
+
+#' Automatically check for missing supporting text info in the UI 
+#' @inheritParams detectMissingImages 
+#' @inheritParams categoryCard
+#' @return no return value; prints warnings for missing output texts
+#' 
+#' @author mvarewyck
+#' @export
+detectMissingInfo <- function(infoOutput, uiText) {
+  
+  allOutputs <- unique(infoOutput$output)
+  availableOutputs <- uiText$plotFunction
+  
+  missingOutputs <- allOutputs[!allOutputs %in% availableOutputs]
+  
+  if (length(missingOutputs) > 0) {
+    
+    # Exceptions - try on 1st part only
+    baseOutputs <- sapply(missingOutputs, function(x) strsplit(x, split = "-")[[1]][1])
+    missingOutputs <- missingOutputs[!baseOutputs %in% availableOutputs]
+    
+    if (length(missingOutputs) > 0)
+      warning("Following outputs are not listed in the description file 'uiText.csv':\n ",
+        paste(, collapse = "\n "))
+  
+  }
+    
+    
+  return(invisible())
+  
+}
+

@@ -146,8 +146,12 @@ categoryCard <- function(id,
     package = "reportingGrofwild"
   )
   
-  if (!file.exists(file))
+  if (!file.exists(file)) {
+    
+    warning("Missing image file: ", paste0("category-", filename, ".png"))
     file <- system.file("ui", "www", "stripes.png", package = "reportingGrofwild")
+  
+  }
   
   card <- bslib::card(
     id = ns(paste0(idCard, "-card")),
@@ -174,5 +178,81 @@ categoryCard <- function(id,
   )
   
   return(card)
+  
+}
+
+
+
+#' Server function for the Subcategory page
+#' @inheritParams reportingGrofwild-common-args
+#' @return named list with plot, reactive with name of output plot/table (if selected)
+#' @import shiny
+#' @author lcougnaud
+#' @export
+subcategoryServer <- function(id, 
+  specie, category, subcategory = reactiveVal(),
+  subcategories = character(), outputs = character(),
+  uiText){
+  
+  moduleServer(id, function(input, output, session){  
+      
+      ns <- session$ns
+      
+      ## Sidebar panel
+      
+      specieSidebarServer(id = "sidebar", specie = specie)
+      
+      ## Main panel
+      
+      observe({    
+          
+          if(subcategory() %in% subcategories){
+            
+            categoryCards <- lapply(outputs, function(output){
+                
+                args <- list(
+                  output = output,
+                  id = id, 
+                  uiText = uiText,
+                  specie = specie(), 
+                  category = category()
+                )
+                
+                # Plots that are sharing uiText with some params defined by type
+                if (grepl("countYearSchadeUI", output) | grepl("mapSchadeUI", output))
+                  args <- c(args, 
+                    list(outputFunction = strsplit(output, split = "-")[[1]][1],
+                      type = strsplit(output, split = "-")[[1]][2])
+                  )
+                
+                do.call(categoryCard, args)
+                
+              })
+            
+            args <- c(categoryCards, list(width = 1/3, gap = "2em"))
+            cards <- do.call(bslib::layout_column_wrap, args)
+            
+            output[["output"]] <- renderUI(cards)
+            
+          }
+          
+        })
+      
+      # if plot is selected based on the category cards
+      outputUI <- reactiveVal()
+      lapply(outputs, function(output){
+          btn <- paste0(output, "-button")
+          observeEvent(
+            input[[btn]], 
+            outputUI(output), 
+            ignoreInit = TRUE
+          )
+        })
+      
+      return(list(
+          plot = reactive(outputUI())
+        ))
+      
+    })
   
 }

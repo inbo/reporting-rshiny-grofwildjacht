@@ -81,20 +81,26 @@ beheerOutputServer <- function(id,
       sort(choices)
     })
 
-    results$drukjachtData <- reactive({
+  results$drukjachtData <- reactive({
       colsGeo <- c("afschotplan_nummer", "postcode_afschot_locatie", 
         "FaunabeheerZone", "gemeente_afschot_locatie"
       )
-      drukjachtData <- merge(
-        x = results$ecoData()[
-          results$ecoData()$jachtmethode_comp %in% "Drukjacht", 
-          c("ID", "afschot_datum", "afschotjaar", "provincie", "wildsoort")
-        ], 
-        y = results$geoData()[, c("ID", colsGeo)], 
-        by = "ID", all.x = TRUE
-      )
-      # Keep unique records per afschotplan_nummer & date
-      drukjachtData <- drukjachtData[!duplicated(drukjachtData[, c("afschotplan_nummer", "afschot_datum")]), ]
+      drukjachtData <- as.data.table(merge(
+          x = results$ecoData()[
+            results$ecoData()$jachtmethode_comp %in% "Drukjacht", 
+            c("ID", "afschot_datum", "afschotjaar", "provincie", "wildsoort")
+          ], 
+          y = results$geoData()[, c("ID", colsGeo)], 
+          by = "ID", all.x = TRUE
+        ))
+      # Keep most prevalent province/FBZ per afschotplan_nummer & date
+      ## overwrite with most prevalent province/FBZ
+      drukjachtData <- drukjachtData[,':='(provincie = which.max(table(provincie)), 
+          FaunabeheerZone = which.max(table(FaunabeheerZone))),
+        by = c("afschotplan_nummer", "afschot_datum")]
+      drukjachtData <- unique(drukjachtData, by = c("afschotplan_nummer", "afschot_datum"))
+      drukjachtData[, .(afschotplan_nummer, afschot_datum, provincie, FaunabeheerZone, wildsoort, afschotjaar)]
+      
       validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
       return(drukjachtData)
     })

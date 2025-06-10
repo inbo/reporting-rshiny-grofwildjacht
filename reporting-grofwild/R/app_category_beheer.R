@@ -3,6 +3,7 @@
 #' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
 #' @import shiny
+#' @import data.table
 #' @author lcougnaud
 #' @export
 beheerOutputServer <- function(id, 
@@ -11,6 +12,10 @@ beheerOutputServer <- function(id,
   ecoData, geoData, openingstijdenData, spatialData, biotoopData,
   defaultYear,
   uiText){
+  
+  # For R CMD check
+  afschotplan_nummer <- afschot_datum <- provincie <- FaunabeheerZone <- NULL
+  wildsoort <- afschotjaar <- . <- NULL  
   
   moduleServer(id, function(input, output, session){  
         

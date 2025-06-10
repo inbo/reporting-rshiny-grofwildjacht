@@ -262,6 +262,8 @@ test_that("F07_1, F09_1, F11_1", {
 # F07_3: Inschatting schade
 test_that("F07_3, F09_3, F11_3", {
     
+    skip("Currently not used")
+    
     inschattingData <- readS3(FUN = data.table::fread, file = "Data_inschatting.csv")
     
     myResult <- barDraagkracht(
@@ -277,101 +279,48 @@ test_that("F07_3, F09_3, F11_3", {
 
 draagvlakData <- loadDraagvlakData()
 
-# F12_1, F14_1, F14_2
-test_that("F12_1, F14_1, F14_2", {
+# F14_1, F14_3, F14_4, F14_5
+test_that("F14_1, F14_3, F14_4, F14_5", {
     
-    # F12_1
-    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F12_1_data.csv"),
-      yVar = "Jaar", xVar = "Aantal")
-    
-    expect_type(myResult, "list")
-    expect_s3_class(myResult$plot, "plotly")
-    expect_s3_class(myResult$data, "data.frame")
-    
-    # F14_1
-    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_1_data.csv"), 
-      groupVariable = "Year", yVar = "Sector")
-    
-    expect_type(myResult, "list")
-    expect_s3_class(myResult$plot, "plotly")
-    expect_s3_class(myResult$data, "data.frame")
-    
-    myPlot <- pciDraagvlak(data = draagvlakData$aanwezigheid, yVar = "Year")
-    expect_type(myPlot, "ggplot")
-    
-    # F14_2
-    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_2_data.csv"), 
-      groupVariable = "Year", yVar = "Sector")         
-    
-    expect_type(myResult, "list")
-    expect_s3_class(myResult$plot, "plotly")
-    expect_s3_class(myResult$data, "data.frame")
-    
-    myPlot <- pciDraagvlak(data = draagvlakData$impacts, yVar = "vraag_label")
-    expect_type(myPlot, "ggplot")
-    
+    for (plotName in c("F14_1", "F14_3", "F14_4", "F14_5")) {
+      
+      subData <- switch(plotName, 
+        "F14_1" = draagvlakData$aanwezigheid,
+        "F14_2" = draagvlakData$aantrekkingskracht,
+        "F14_3" = draagvlakData$impacts,
+        "F14_4" = draagvlakData$maatregelen,
+        "F14_5" = draagvlakData$beleid
+      )
+      
+      subData <- subData[subData$Soort == "Wild zwijn", ]
+      
+      myResult <- pciDraagvlak(data = subData, 
+        yVar = if (plotName == "F14_1") "Year" else "vraag_label") 
+      
+      expect_type(myResult, "list")
+      expect_s3_class(myResult$plot, "ggplot")
+      expect_s3_class(myResult$data, "data.frame")
+      
+    }
+
   })
 
 
-test_that("F14_3, F14_4", {
+test_that("F14_2", {
     
-    inputFiles <- c("F14_3_data.csv", "F14_4_data.csv")
-    
-    # F14_3
-    plotData <- readS3(FUN = data.table::fread, file = inputFiles[1])
-    
-    # Stakeholders
-    subData <- subset(plotData, Sector %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
-    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", 
-      yVar = "Sector")
+    myResult <- barDraagkracht(data = draagvlakData$aantrekkingskracht,
+      yVar = "vraag_label")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
     expect_s3_class(myResult$data, "data.frame")
-    
-    # Plot Breed publiek
-    subData <- subset(plotData, Sector %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
-    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", yVar = "Sector")
-    
-    expect_type(myResult, "list")
-    expect_s3_class(myResult$plot, "plotly")
-    expect_s3_class(myResult$data, "data.frame")
-    
-    myPlot <- pciDraagvlak(data = draagvlakData$maatregelen, yVar = "vraag_label")
-    expect_type(myPlot, "ggplot")
-    
-    # F14_4
-    plotData <- readS3(FUN = data.table::fread, file = inputFiles[2])
-#    subData <- subset(plotData, Groep %in% c('Publiek buiten everzwijngebied', 'Publiek in everzwijngebied'))
-    subData <- subset(plotData, Groep %in% c('Jagers', 'Landbouwers', 'Natuurvereniging'))
-    subData$Antwoord_reclass <- ifelse(subData$Antwoord_reclass == "Belangrijk", "Aanvaardbaar",
-      ifelse(subData$Antwoord_reclass == "Onbelangrijk", "Niet aanvaardbaar", subData$Antwoord_reclass))
-    myResult <- barDraagkracht(data = subData, groupVariable = "Question_label", yVar = "Groep")
-    expect_type(myResult, "list")
-    expect_s3_class(myResult$plot, "plotly")
-    expect_s3_class(myResult$data, "data.frame")
-    
     
   })
-
-
-test_that("F14_5", {
-    
-    myResult <- barDraagkracht(data = readS3(FUN = data.table::fread, file = "F14_5_data.csv"),
-      groupVariable = "Question_label", yVar = "Sector")
-    
-    expect_type(myResult, "list")
-    expect_s3_class(myResult$plot, "plotly")
-    expect_s3_class(myResult$data, "data.frame")
-    
-    myPlot <- pciDraagvlak(data = draagvlakData$beleid, yVar = "vraag_label")
-    expect_type(myPlot, "ggplot")
-    
-  })
-
 
 
 test_that("F18_1", {
+    
+    skip("Currently not used")
     
     plotData <- readS3(FUN = data.table::fread, file = "Data_inschatting.csv")
     

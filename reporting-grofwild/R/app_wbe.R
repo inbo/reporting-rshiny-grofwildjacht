@@ -123,7 +123,7 @@ output$wbe_empty <- renderUI({
         tags$a(href = "https://play.google.com/store/apps/details?id=com.wilderpg.wilder&hl=en&gl=US&pli=1", target = "_blank", "android"), 
         ") van HVV of", 
         tags$a(href = "https://waarnemingen.be/", target = "_blank", "waarnemingen.be"),
-        "van Natuurpunt. Bent u zeker dat er toch gegevens bij één van de partners ingevoerd werden die hier niet worden weergegeven, dan laat u best iets weten op",
+        "van Natuurpunt. Bent u zeker dat er toch gegevens bij \u00E9\u00E9n van de partners ingevoerd werden die hier niet worden weergegeven, dan laat u best iets weten op",
         tags$a(href="mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie", target="_blank", "faunabeheer@inbo.be")
       )
     
@@ -334,7 +334,7 @@ bioindicatorSectionServer(
   wildsoort = reactive(input$wbe_species)
 )
 
-# Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
+# Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeen per jaar
 results$typesFemale <- reactive({
     
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))

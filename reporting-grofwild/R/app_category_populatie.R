@@ -1,63 +1,3 @@
-#' Server function for the cards of the 'populatie indicatoren' Category page
-#' @inheritParams categoryCard
-#' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
-#' @import shiny
-#' @author lcougnaud
-#' @export
-populatieCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-        
-    ns <- session$ns
-    
-    ## input
-    results <- reactiveValues(renderedTabs = "Populatie")
-    results$specie <- reactive(specie())
-    
-    ## Sidebar panel
-    
-    specieSidebarServer(id = "sidebar", specie = results$specie)
-    
-    # Create tab
-    observe({    
-              
-      if(subcategory() %in% subcategories){
-            
-        categoryCards <- lapply(outputs, function(output)
-          categoryCard(
-            output = output,
-            id = id, 
-            uiText = uiText,
-            specie = results$specie(), 
-            category = "populatie"
-          )
-        )
-        
-        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
-        cards <- do.call(bslib::layout_column_wrap, args)
-        output[["output"]] <- renderUI(cards)
-        
-      }
-    })
-
-    # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")
-    lapply(outputs, function(output){
-      observeEvent(
-        input[[paste0(output, "-button")]], 
-        outputUI(output), 
-        ignoreInit = TRUE
-      )
-    })
-    
-    return(outputUI)
-
-  })  
-}
 
 #' Server function for an output (plot/table) of the 'populatie' Category page
 #' @inheritParams reportingGrofwild-common-args
@@ -76,18 +16,16 @@ populatieOutputServer <- function(id,
     ns <- session$ns
         
     ## input
-    results <- reactiveValues(renderedTabs = "Grofwild")
-        
-    results$specie <- reactive(specie())
-  
+    results <- reactiveValues()
+    
     # Create data upon user choices
     results$ecoData <- reactive(
-      ecoData[which(ecoData$wildsoort == results$specie()), ]
+      ecoData[which(ecoData$wildsoort == specie()), ]
     )
     
     results$geoData <- reactive({
       req(geoData)
-      geoData[which(geoData$wildsoort == results$specie()), ]
+      geoData[which(geoData$wildsoort == specie()), ]
     })
     
     # Enrich data with FBZ
@@ -106,22 +44,35 @@ populatieOutputServer <- function(id,
     # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
     results$leeftijdtypes <- reactive(
       c(
-        loadMetaEco(species = results$specie())$leeftijd_comp_inbo, 
+        loadMetaEco(species = specie())$leeftijd_comp_inbo, 
         "Onbekend"
       )
     )
+    
+    # Plot 8: Onderkaaklengte per jaar
+    results$typesGender <- reactive({
+        
+        loadMetaEco(species = specie())$type_comp
+        
+      })
+    
+    results$typesDefaultGender <- reactive({
+        
+        grep("kits", results$typesGender(), value = TRUE)
+        
+      })
     
     # Plot 10: Gerapporteerd aantal embryo's voor vrouwelijke reeën per jaar
     results$typesFemale <- reactive({
       getFemaleTypes(
         ecoData = results$ecoData(), 
-        specie = results$specie()
+        specie = specie()
       )
     })
     
     ## Sidebar panel
     
-    specieSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
     
     ## Main panel
 
@@ -134,48 +85,64 @@ populatieOutputServer <- function(id,
           
       if(plot() %in% outputs){   
         
-        outputName <- plot()
-        
         # create the plot/table
-        ui <- switch(outputName,  
+        ui <- switch(plot(),  
           "boxAgeWeightUI" = {
             boxAgeWeightUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
           "countAgeCheekUI" = {
             countAgeCheekUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
           "countAgeGenderUI" = {
             countAgeGenderUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
           "countEmbryosUI" = {
             countEmbryosUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               regionLevels = c(1:2, 4),
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
           "countAgeGroupUI" = {# dash plot F16_1
             countAgeGroupUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
+              doHide = FALSE
+            )
+          },
+          "plotBioindicatorUI-onderkaaklengte" = {
+            plotBioindicatorUI(
+              id = ns("plot"),
+              bioindicator = "onderkaaklengte",
+              regionLevels = c(1:2, 4), showAccuracy = TRUE, 
+              uiText = uiText, context = "description",
+              doHide = FALSE
+            )
+          },
+          "plotBioindicatorUI-ontweid_gewicht" = {
+            plotBioindicatorUI(
+              id = ns("plot"), 
+              bioindicator = "ontweid_gewicht", 
+              regionLevels = c(1:2, 4), 
+              uiText = uiText, context = "description",
               doHide = FALSE
             )
           }
@@ -185,7 +152,7 @@ populatieOutputServer <- function(id,
         output[["output"]] <- renderUI(ui)
         
         # activate server-side update
-        outputServer(outputName)
+        outputServer(plot())
       
       }
 
@@ -193,38 +160,37 @@ populatieOutputServer <- function(id,
 
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
-      outputName <- outputServer()
       
-      switch(outputName,
+      switch(outputServer(),
         "boxAgeWeightUI" = boxAgeWeightServer(
-          id = outputName,
+          id = "plot",
           data = results$combinedData,
           type = results$leeftijdtypes,
-          timeRange = reactive(if (results$specie() == "Ree")
+          timeRange = reactive(if (specie() == "Ree")
             c(2014, max(results$timeRange())) else 
               results$timeRange())
         ),
         "countAgeCheekUI" = countAgeCheekServer(
-          id = outputName,
+          id = "plot",
           data = results$ecoData,
-          timeRange = reactive(if (results$specie() == "Ree")
+          timeRange = reactive(if (specie() == "Ree")
             c(2005, max(results$timeRange())) else 
             results$timeRange())
         ),
         "countAgeGenderUI" = countAgeGenderServer(
-          id = outputName,
+          id = "plot",
           data = results$ecoData,
           timeRange = results$timeRange
         ),
         "countEmbryosUI" = countEmbryosServer(
-          id = outputName,
+          id = "plot",
           data = results$combinedData,
           timeRange = results$timeRange,
           types = results$typesFemale,
           uiText = uiText
         ),
         "countAgeGroupUI" = countAgeGroupServer(
-          id = outputName,
+          id = "plot",
           data = reactive({
             plotData <- results$ecoData()[
               results$ecoData()$geslacht_comp == "Vrouwelijk", 
@@ -238,6 +204,22 @@ populatieOutputServer <- function(id,
           }),
           timeRange = results$timeRange,
           groupVariable = "reproductiestatus"
+        ),
+        "plotBioindicatorUI-onderkaaklengte" = plotBioindicatorServer(
+          id = "plot",
+          data = results$combinedData,
+          timeRange = results$timeRange,
+          types = results$typesGender,
+          typesDefault = results$typesDefaultGender,
+          bioindicator = "onderkaaklengte"
+        ),
+        "plotBioindicatorUI-ontweid_gewicht" = plotBioindicatorServer(
+          id = "plot",
+          data = results$combinedData,
+          timeRange = results$timeRange,
+          types = results$typesGender,
+          typesDefault = results$typesDefaultGender,
+          bioindicator = "ontweid_gewicht"
         )
       )
       
@@ -246,7 +228,9 @@ populatieOutputServer <- function(id,
       
     })
     
-    return(reactive(results$specie()))
+    return(list(
+        specie = specie
+      ))
     
   })
   

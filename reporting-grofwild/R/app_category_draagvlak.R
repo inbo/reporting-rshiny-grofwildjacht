@@ -1,73 +1,4 @@
 
-
-#' Server function for the cards of the 'verspreiding' Category page
-#' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
-#' @import shiny
-#' @author mvarewyck
-#' @export
-draagvlakCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-      
-      ns <- session$ns
-      
-      ## input
-      results <- reactiveValues(renderedTabs = "Grofwild")
-      results$specie <- reactive(specie())
-      
-      ## Sidebar panel
-      
-      specieSidebarServer(id = "sidebar", specie = results$specie)
-      
-      ## Main panel
-      
-      # Create tab
-      observe({
-          
-          if(subcategory() %in% subcategories){
-            
-            categoryCards <- lapply(outputs, function(output){
-                
-                args <- list(
-                  output = output,
-                  id = id, 
-                  uiText = uiText,
-                  specie = results$specie(), 
-                  category = "draagvlak"
-                )
-                                
-                do.call(categoryCard, args)
-              })
-            
-            args <- c(categoryCards, list(width = 1/3, gap = "2em"))
-            cards <- do.call(bslib::layout_column_wrap, args)
-            
-            output[["output"]] <- renderUI(cards)
-            
-          }
-        })
-      
-      # if plot is selected based on the category cards
-      outputUI <- reactiveVal("Visualisatie/Tabel")
-      lapply(outputs, function(output){
-          btn <- paste0(output, "-button")
-          observeEvent(
-            input[[btn]], 
-            outputUI(output), 
-            ignoreInit = TRUE
-          )
-        })
-      
-      return(outputUI)
-      
-    })
-}
-
-
 #' Server function for an output (plot/table) of the 'verspreiding' Category page
 #' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
@@ -83,14 +14,9 @@ draagvlakOutputServer <- function(id,
       
       ns <- session$ns
       
-      ## input
-      results <- reactiveValues(renderedTabs = "Draagvlak")
-      
-      results$specie <- reactive(specie())
-            
       ## Sidebar panel
       
-      specieSidebarServer(id = "sidebar", specie = results$specie)
+      specieSidebarServer(id = "sidebar", specie = specie)
       
       ## Main panel
       
@@ -107,7 +33,7 @@ draagvlakOutputServer <- function(id,
             "F14_4" = draagvlakData$maatregelen,
             "F14_5" = draagvlakData$beleid
           )
-          subData[subData$Soort == results$specie(), ]
+          subData[subData$Soort == specie(), ]
           
         })
       
@@ -130,7 +56,9 @@ draagvlakOutputServer <- function(id,
                   uiText = uiText, 
                   outputFunction = outputName,
                   yearChoices = levels(draagvlakSubdata()$Year),
-                  sectorChoices = if (outputName == "F14_2") allSectorChoices[1] else allSectorChoices,
+                  sectorChoices = if (outputName %in% c("F14_1", "F14_2")) 
+                      allSectorChoices[1] else 
+                      allSectorChoices,
                   groupChoices = if (outputName != "F14_1") levels(draagvlakSubdata()$vraag_label),
                   groupLabel = switch(outputName,
                     "F14_3" = "Impacts",
@@ -166,7 +94,9 @@ draagvlakOutputServer <- function(id,
           outputServer(NULL)
         })
       
-      return(reactive(results$specie()))
+      return(list(
+          specie = specie
+        ))
       
     })
   

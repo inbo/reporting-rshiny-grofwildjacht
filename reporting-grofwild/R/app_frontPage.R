@@ -5,7 +5,7 @@
 #' @importFrom slickR slickROutput
 #' @import shiny
 #' @export
-frontUI <- function(speciesList){
+frontUI <- function(speciesList, uiText){
 
   img <- list.files(system.file("ui", "www", package = "reportingGrofwild"), 
     pattern = "carousel", full.names = TRUE)
@@ -21,10 +21,7 @@ frontUI <- function(speciesList){
       column(width = 6, offset = 3, align = "center",
         tags$span(
           style = "font-weight: bold;text-align: center;color: white;font-size: 2.1em;",
-          "Welkom op de faunabeheerpagina van het",
-          br(),
-          "Instituut voor Natuur- en Bosonderzoek (INBO)"
-        ),
+          HTML(getOutputTitle(output = "frontpage", uiText = uiText)),
         tags$div(style = "margin-top: 10vh;",
           selectInput(
             inputId = "specie", 
@@ -38,6 +35,13 @@ frontUI <- function(speciesList){
         )
       )
     )
+  ),
+  tags$footer(class = "bottom-banner",
+    tags$a(href = "https://www.inbo.be", target = "_blank", 
+      tags$img(src = "www/logo-inbo.png", style = "height:40px;")),
+    tags$a(href = "https://www.natuurenbos.be", target = "_blank", 
+      tags$img(src = "www/logo-anb.png", style = "height:30px;"))
   )
+)
 
 }

@@ -247,7 +247,7 @@ barCostUI <- function(id,
                 choices = typeMelding
               ),
             uiOutput(ns("unitChoices")),
-            selectInput(inputId = ns("bron"), label = "Data bron",
+            selectInput(inputId = ns("bron"), label = "Databron(nen)",
               choices = metaSchade$sources,
               selected = metaSchade$sources,
               multiple = TRUE),

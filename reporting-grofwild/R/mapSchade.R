@@ -293,13 +293,12 @@ mapSchadeServer <- function(
       # Metadata schade
       metaSchade <- loadMetaSchade()
       
-      schadeWildsoorten <- metaSchade$wildsoorten
       schadeTypes <- metaSchade$types
       schadeCodes <- metaSchade$codes
       names(schadeCodes) <- NULL
       schadeCodes <- unlist(schadeCodes)
       sourcesSchade <- metaSchade$sources
-      fullNames <- c(schadeTypes, schadeCodes, schadeWildsoorten)
+      fullNames <- c(schadeTypes, schadeCodes)
       
       ## Region level
       results$regionLevelName <- reactive({
@@ -423,7 +422,7 @@ mapSchadeServer <- function(
           
           
           selectInput(inputId = ns("bron"),
-            label = "Data Bron",
+            label = "Databron(nen)",
             choices = sourcesSchade[sourcesSchade %in% newChoices], 
             selected = previousChoice[previousChoice %in% newChoices],
             multiple = TRUE)
@@ -445,7 +444,7 @@ mapSchadeServer <- function(
             
             validate(need(results$schadeData(), "Geen data beschikbaar"),
               need(input$time_schade, "Gelieve periode te selecteren"),
-              need(input$bron, "Gelieve data bron te selecteren"))
+              need(input$bron, "Gelieve databron(nen) te selecteren"))
             
             if (nrow(results$schadeData()) == 0)
               return(results$schadeData())
@@ -667,7 +666,7 @@ mapSchadeUI <- function(
     "Seizoen" = "season",
     "Jaar" = "afschotjaar",
     "Type schade" = "schadeCode"),
-  uiText, context = id, specie = NULL, type = NULL, plotDetails = NULL,
+  uiText, specie = NULL, type = NULL, plotDetails = NULL,
   doHide = TRUE, outputFunction = "mapSchadeUI") {
   
   ns <- NS(id)
@@ -679,7 +678,8 @@ mapSchadeUI <- function(
     uiText = uiText, type = type)
   description <- getOutputDescription(
     output = outputFunction, 
-    specie = specie, uiText = uiText, context = context,
+    specie = specie, uiText = uiText, 
+    context = if (type == "wbe") "wbe" else "description",
     type = type
   )
   

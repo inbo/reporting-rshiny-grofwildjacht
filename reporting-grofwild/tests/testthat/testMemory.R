@@ -1,4 +1,4 @@
-# TODO: Add comment
+# Test memory usage and processing time for loading data
 # 
 # Author: mvarewyck
 ###############################################################################

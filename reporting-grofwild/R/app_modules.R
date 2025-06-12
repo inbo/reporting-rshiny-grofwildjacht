@@ -66,12 +66,12 @@ optionsModuleUI <- function(id,
         ),
       if ("schade" %in% showDataSource)
         selectInput(inputId = ns("dataSource_schade"), 
-          label = "Data bron",
+          label = "Databron(nen)",
           choices = sourcesSchade, selected = sourcesSchade,
           multiple = TRUE),
       if ("onderkaak" %in% showDataSource)
         selectInput(inputId = ns("dataSource_onderkaak"), 
-          label = "Data bron voor onderkaaklengte",
+          label = "Databron(nen) voor onderkaaklengte",
           choices = c("INBO" = "inbo", 
             "Meldingsformulier" = "meldingsformulier",  
             "INBO en meldingsformulier" = "both"),
@@ -80,7 +80,7 @@ optionsModuleUI <- function(id,
       if ("embryos" %in% showDataSource)
         list(
           selectInput(inputId = ns("dataSource_embryos"), 
-            label = "Data bron voor aantal embryo's", 
+            label = "Databron(nen) voor aantal embryo's", 
             choices = c("INBO" = "inbo", 
               "Meldingsformulier" = "meldingsformulier",  
               "INBO en meldingsformulier" = "both"),
@@ -92,13 +92,13 @@ optionsModuleUI <- function(id,
         ),
       if ("leeftijd" %in% showDataSource)
         selectInput(inputId = ns("dataSource_leeftijd"), 
-          label = "Data bron leeftijd", 
+          label = "Databron(nen) leeftijd", 
           choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
           selected = "both"
         ),
       if ("geslacht" %in% showDataSource)
         selectInput(inputId = ns("dataSource_geslacht"), 
-          label = "Data bron geslacht", 
+          label = "Databron(nen) geslacht", 
           choices = c("INBO" = "inbo", "INBO en meldingsformulier" = "both"),
           selected = "both"
         ),      
@@ -298,6 +298,9 @@ optionsModuleServer <- function(input, output, session,
     })
   
   output$type <- renderUI({
+      
+      # Reset when types() change - switch species
+      types()
       
       isolate({
           

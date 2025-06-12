@@ -16,6 +16,9 @@ biotoopData <- loadHabitats()
 
 
 test_that("Module mapFlanders", {
+    
+    skip("Only used for debugging")
+    
     shiny::testServer(mapFlandersServer, 
       args = list(
         

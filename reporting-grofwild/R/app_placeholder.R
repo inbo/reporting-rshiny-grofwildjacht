@@ -15,24 +15,6 @@ woordenlijstPlaceholderUI <- function(id) {
   
 }
   
-#' Empty function - placeholder
-#' @inheritParams beheerCardServer
-#' @return reactive specie
-#' 
-#' @author mvarewyck
-#' @export
-woordenlijstCardServer <- function(id, specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText) {
-  
-  moduleServer(id, function(input, output, session){
-      
-      return(specie)
-      
-    })
-  
-}  
-
 
 #' Empty function - placeholder
 #' @inheritParams reportingGrofwild-common-args

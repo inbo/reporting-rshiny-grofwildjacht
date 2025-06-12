@@ -53,5 +53,8 @@
 #' for the region levels
 #' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @param filterVariable boolean, whether to show filter option for variable
+#' @param schade_code reactive with selected schade code choices
+#' @param schade_gewas reactive with selected schade gewas choices
+#' @param schade_voertuig reactive with selected schade voertuig choices
 #' @name reportingGrofwild-common-args
 NULL

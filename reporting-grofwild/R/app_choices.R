@@ -82,7 +82,7 @@ getOutputTitle <- function(output,
     title <- sub(regex, "", title)
   }
   
-  if(!is.null(type)){
+  if(!is.null(type) && !is.na(type)){
     if(type == "schade")	type <- "schadegevallen"
     title <- gsub("{type}", type, title, fixed = TRUE)
   }
@@ -217,7 +217,7 @@ getOutputSpecie <- function(specie,
   outputs <- c(
 #    "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
-      c("trendYearRegionUI", "mapFlandersUI", "kencijferUI"),
+      c("trendYearFlandersUI", "mapFlandersUI", "kencijferUI"),
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -235,7 +235,7 @@ getOutputSpecie <- function(specie,
       c("F04_3"),
     if(nrow(schadeDataSpecie) > 0)
       c(
-        "tableSchadeSummaryUI", "trendYearFlandersUI", 
+        "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
         "countYearProvinceUI-schade",
         "countYearSchadeUI-wildschade", "tableSchadeUI",
         "countYearSchadeUI-seizoen"
@@ -271,7 +271,11 @@ getOutputSpecie <- function(specie,
     if (specie %in% draagvlakData$maatregelen$Soort)
       "F14_4",
     if (specie %in% draagvlakData$beleid$Soort)
-      "F14_5"
+      "F14_5",
+    if (!all(is.na(combinedDataSpecie$onderkaaklengte_comp)))
+      "plotBioindicatorUI-onderkaaklengte",
+    if (!all(is.na(combinedDataSpecie$ontweid_gewicht)))
+      "plotBioindicatorUI-ontweid_gewicht"
   )
     
   return(outputs)
@@ -356,7 +360,7 @@ getSubcategoryOutput <- function(output){
   
   # Should be unique in the entire app!
   subcategoryOutput <- list( 
-      `beheer-vlaanderen` = c("trendYearRegionUI", 
+      `beheer-vlaanderen` = c("trendYearFlandersUI", 
           "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
       `beheer-regio` = "mapFlandersUI",
       `beheer-leeftijdcategorie` = 
@@ -366,7 +370,7 @@ getSubcategoryOutput <- function(output){
       
       # schade
       `schade-vlaanderen` = c(
-          "tableSchadeSummaryUI", "trendYearFlandersUI", 
+          "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
           "countYearProvinceUI-schade"
       ),
       `schade-regio` =  "mapFlandersUI-schade",
@@ -379,8 +383,8 @@ getSubcategoryOutput <- function(output){
       `schade-kosten` = "barCostUI",
       
       # populatie
-      `populatie-leeggewicht` = "boxAgeWeightUI",
-      `populatie-onderkaak` = "countAgeCheekUI",
+      `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),
+      `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
       `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
       
@@ -422,12 +426,13 @@ getCategorySubcategory <- function(subcategory){
   
 }
 
-#' Get available categories, subcategories or outputs
+#' Get available specie, categories, subcategories or outputs
 #' for a (optionally) specified specie, category, subcategory
 #' @param specie string with specie
-#' @param subcategory reactive with subcategory of interest
-#' @param variable string with variable of interest, either: 
-#' 'category', 'subcategory' or 'output'
+#' @param subcategory string, with subcategory of interest
+#' @param output string, with output of interest 
+#' @param variable string with variable of interest; should be one of  
+#' \code{c("specie", "category", "subcategory", "output")}
 #' @param infoOutput data.frame with information on available
 #' outputs, as returned by \code{\link{getOutputInfo}}
 #' @param defaults (optional) named character vector with defaults
@@ -437,9 +442,9 @@ getCategorySubcategory <- function(subcategory){
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 getInfo <- function(
-  specie = NULL, category = NULL, subcategory = NULL,
+  specie = NULL, category = NULL, subcategory = NULL, output = NULL,
   infoOutput, defaults = NULL, 
-  variable = c("category", "subcategory", "output")){
+  variable = c("specie", "category", "subcategory", "output")){
 
   variable <- match.arg(variable)
   
@@ -458,9 +463,42 @@ getInfo <- function(
   if(select(var = subcategory, name = "subcategory"))
     infoOutput <- infoOutput[which(infoOutput$subcategory == subcategory), ]
   
+  if(select(var = output, name = "output"))
+    infoOutput <- infoOutput[which(infoOutput$output == output), ]
+  
   results <- unique(as.character(infoOutput[, variable]))
   
   return(results)
+  
+}
+
+
+#' Group species for selectInput choices
+#' @param allSpecies data.frame as returned by \code{\link{loadWildsoorten}}
+#' @param selectedSpecies character vector, species to be retained;
+#' if NULL all species are retained
+#' @return named list with groups and selected species per group
+#' 
+#' @author mvarewyck
+#' @export
+groupSpecies <- function(allSpecies, selectedSpecies = NULL) {
+  
+  if (!is.null(selectedSpecies))
+    subSpecies <- allSpecies[allSpecies$name %in% selectedSpecies, ] else
+    subSpecies <- allSpecies
+  
+  toReturn <- sapply(unique(subSpecies$group), function(x)
+      subSpecies$name[subSpecies$group == x], simplify = FALSE)
+  
+  # For single species remove group names
+  if (length(toReturn) == 1) {
+    
+    names(toReturn) <- NULL
+    toReturn <- toReturn[[1]]
+    
+  }
+    
+  toReturn
   
 }
 

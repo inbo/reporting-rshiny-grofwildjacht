@@ -153,7 +153,7 @@ beheerOutputServer <- function(id,
           "mapFlandersUI" = {
             mapFlandersUI(
               id = ns("plot"), 
-              type = "grofwild", plotDetails = "region",
+              type = "beheer", plotDetails = "region",
               uiText = uiText, specie = specie()
             )
           },
@@ -230,7 +230,7 @@ beheerOutputServer <- function(id,
           uiText = uiText,
           defaultYear = defaultYear,
           species = specie,
-          type = "grofwild",
+          type = "beheer",
           geoData = results$geoData,
           biotoopData = biotoopData,
           allSpatialData = spatialData

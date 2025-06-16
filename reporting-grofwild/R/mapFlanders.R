@@ -436,7 +436,7 @@ mapFlanders <- function(
 #' @param hideGlobeDefault boolean, whether the globe is shown by default 
 #' when the map is first created; default value is TRUE
 #' @param type character, defines the layout depending on which page it is shown;
-#' should be one of \code{c("grofwild", "schade", "wbe", "dash")}
+#' should be one of \code{c("beheer", "schade", "wbe", "dash")}
 #' @param geoData data.frame with geographical data
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
@@ -455,7 +455,7 @@ mapFlanders <- function(
 #' @importFrom htmlwidgets saveWidget
 #' @export
 mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NULL),
-  hideGlobeDefault = TRUE, type = c("grofwild", "schade", "wbe", "empty", "dash"),
+  hideGlobeDefault = TRUE, type = c("beheer", "schade", "wbe", "empty", "dash"),
   geoData, biotoopData = NULL, allSpatialData,
   countVariable = NULL,
   sourceChoices = NULL,
@@ -479,7 +479,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           req(nrow(geoData()) > 0)
           
-          if (type %in% c("grofwild", "dash") && req(input$regionLevel) %in% c("faunabeheerzones", "fbz_gemeentes", "utm5") | type == "wbe")
+          if (type %in% c("beheer", "dash") && req(input$regionLevel) %in% c("faunabeheerzones", "fbz_gemeentes", "utm5") | type == "wbe")
             2014 else 
             min(geoData()$afschotjaar)
         })
@@ -1289,7 +1289,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @export
 mapFlandersUI <- function(id, showRegion = (type != "dash"),
   showCombine = TRUE, 
-  type = c("grofwild", "schade", "wbe", "dash"),
+  type = c("beheer", "schade", "wbe", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
     "Provincie" = "provinces", 

@@ -153,8 +153,7 @@ beheerOutputServer <- function(id,
           "mapFlandersUI" = {
             mapFlandersUI(
               id = ns("plot"), 
-              type = "beheer", plotDetails = "region",
-              uiText = uiText, specie = specie()
+              type = "beheer", plotDetails = "region"
             )
           },
           "tableProvinceUI" = {

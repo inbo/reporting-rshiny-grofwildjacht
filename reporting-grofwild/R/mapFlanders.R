@@ -484,6 +484,39 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             min(geoData()$afschotjaar)
         })
       
+      outputFunction <- reactive({
+          
+          if (type == "dash") 
+            "F17_1" else if (type != "schade")
+            "mapFlandersUI" else
+            paste0("mapFlandersUI-", type)
+          
+        })
+      
+      output$title <- renderUI({
+    
+          title <- if (type == "wbe") 
+              "Landkaart" else
+              getOutputTitle(
+                output = outputFunction(), 
+                uiText = uiText, specie = species, type = type
+              )
+          
+          h2(title)
+          
+        })
+      
+      output$description <- renderUI({
+          
+          description <- getOutputDescription(
+            output = outputFunction(), 
+            uiText = uiText, 
+            context = if (type == "wbe") "wbe" else "description") 
+          
+          tags$p(HTML(description))
+          
+        })
+      
       
       # Data dependent input #
       # -------------------- #
@@ -606,7 +639,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       observe({
           
           results$region_value <- if (is.null(input$region)) {
-              if (regionLevelLocal() == "flanders")
+              if (req(regionLevelLocal()) == "flanders")
                 spatialData()$NAAM[1] else if (!is.null(currentWbe()))
                 currentWbe() else if (!is.null(locaties()))
                 locaties() else
@@ -634,6 +667,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       output$region <- renderUI({
           
           if (is.null(locaties())) {
+            
+            print(results$region_value)
             
             choices <- sort(unique(spatialData()$NAAM))
             selectInput(inputId = ns("region"), label = "Regio('s)",
@@ -1301,8 +1336,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   mapScaleChoices = regionChoices,
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("region", "biotoop"),
-  showTitle = TRUE, 
-  uiText = NULL, specie = NULL) {
+  showTitle = TRUE) {
   
   ns <- NS(id)
   type <- match.arg(type)
@@ -1319,25 +1353,11 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   
   
   # Map with according line plot
-  outputFunction <- if (type == "dash") 
-    "F17_1" else if (type != "schade")
-    "mapFlandersUI" else
-    paste0("mapFlandersUI-", type)
-  title <- if (type == "wbe") 
-      "Landkaart" else
-    getOutputTitle(
-      output = outputFunction, 
-      uiText = uiText, specie = specie, type = type
-    )
-  description <- getOutputDescription(
-    output = outputFunction, 
-    uiText = uiText, 
-    context = if (type == "wbe") "wbe" else "description") 
   
   tagList(
     
     if (showTitle)
-      h2(title),
+      uiOutput(ns("title")),
     
     ## countMap: all species
     wellPanel(
@@ -1449,7 +1469,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       
     },
     br(),
-    tags$p(HTML(description)),
+    uiOutput(ns("description")),
     tags$hr()
   
   )

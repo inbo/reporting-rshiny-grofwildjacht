@@ -103,9 +103,7 @@ schadeOutputServer <- function(id,
             mapFlandersUI(
               id = ns("plot"), 
               type = "schade", plotDetails = "region",
-              showCombine = FALSE,
-              uiText = uiText, 
-              specie = specie()
+              showCombine = FALSE
             )
           },
           "countYearSchadeUI-wildschade" = {

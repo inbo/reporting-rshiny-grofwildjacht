@@ -441,7 +441,7 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
       # Map
       
       mapFlandersUI(id = ns("wbe"), showRegion = FALSE, showCombine = FALSE,
-        uiText = uiText, type = "wbe", plotDetails = "biotoop"),
+        type = "wbe", plotDetails = "biotoop"),
       
       
       # Choose species

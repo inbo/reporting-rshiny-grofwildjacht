@@ -65,8 +65,6 @@ verspreidingOutputServer <- function(id,
           "F17_1" = {
             mapFlandersUI(
               id = ns("plot"), 
-              uiText = uiText,
-              specie = specie(),
               showCombine = FALSE, type = "dash",
               mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
               regionChoices = c(

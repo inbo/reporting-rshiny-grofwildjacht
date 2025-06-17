@@ -614,7 +614,8 @@ mapSchadeServer <- function(
           need(nrow(results$schadeData()) > 0, "Geen data beschikbaar"))
         
         createTrendData(
-          data = results$schadeData(),
+          data = filterDataSource(plotData = results$schadeData(),
+                sourceIndicator = input$bron, returnStop = "message"),
           allSpatialData = allSpatialData(),
           timeRange = input$time_schade,
           species = species(),
@@ -675,7 +676,8 @@ mapSchadeUI <- function(
   
   title <- getOutputTitle(
     output = outputFunction, specie = specie, 
-    uiText = uiText, type = type)
+    uiText = uiText, 
+    type = if (outputFunction == "mapSchadeUI" & type == "wbe") "schade" else type)
   description <- getOutputDescription(
     output = outputFunction, 
     specie = specie, uiText = uiText, 

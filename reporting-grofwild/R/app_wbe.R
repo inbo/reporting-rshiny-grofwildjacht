@@ -14,6 +14,8 @@ wbeServer <- function(id, currentKbo, ecoData, geoData, schadeData,
   moduleServer(
     id,
     function(input, output, session) {
+      
+      ns <- session$ns
 
       # For R CMD check
       wildsoort <- KboNummer_Toek <- NULL
@@ -136,12 +138,6 @@ output$wbe_emptyAfschot <- reactive({
     !input$wbe_species %in% results$wbe_geoDataKbo()$wildsoort
   })
 outputOptions(output, "wbe_emptyAfschot", suspendWhenHidden = FALSE)
-
-output$wbe_emptySchade <- reactive({
-    !input$wbe_species %in% results$wbe_schadeData()$wildsoort
-  })
-outputOptions(output, "wbe_emptySchade", suspendWhenHidden = FALSE)
-
 
 
 
@@ -280,6 +276,18 @@ mapSchadeServer(id = "wbe",
   species = reactive(input$wbe_species),
   borderRegion = "WBE_buitengrenzen"
 )
+
+
+output$wbe_mapSchade <- renderUI({
+    
+    req(input$wbe_species %in% results$wbe_schadeData()$wildsoort)
+    
+    mapSchadeUI(id = ns("wbe"),
+      uiText = uiText, specie = input$wbe_species,
+      filterCode = TRUE, filterSubcode = TRUE, type = "wbe",
+      plotDetails = "region")
+    
+  })
 
 
 # Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
@@ -497,15 +505,8 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         countYearShotUI(id = ns("wbe_jachtmethode"), groupVariable = "jachtmethode_comp", uiText = uiText)
       ),
       
-      conditionalPanel("output.wbe_emptySchade == false", ns = ns,
-        # When no afschot, might still be schadeData
-        
-        mapSchadeUI(id = ns("wbe"),
-          uiText = uiText, specie = "",
-          filterCode = TRUE, filterSubcode = TRUE, type = "",
-          plotDetails = "region")
-      
-      ),
+      # When no afschot, might still be schadeData
+      uiOutput(ns("wbe_mapSchade")),
       
       conditionalPanel("output.wbe_emptyAfschot == false", ns = ns,
         countAgeGenderUI(id = ns("wbe"), uiText = uiText),

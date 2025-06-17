@@ -83,7 +83,7 @@ getOutputTitle <- function(output,
   }
   
   if(!is.null(type) && !is.na(type)){
-    if(type == "schade")	type <- "schadegevallen"
+    if (type == "schade")	type <- "wildschade"
     title <- gsub("{type}", type, title, fixed = TRUE)
   }
   
@@ -325,20 +325,16 @@ getOutputInfo <- function(species, ...){
   rownames(info) <- NULL
   cols <- colnames(info)
   
-  # sort to have correct order in the UI
-  info[, "specie"] <- factor(info[, "specie"], levels = species)
-  info <- info[do.call(order, info), ]
-  
   # filter output(s) for a specific specie from the blacklist
   blacklist <- read.csv(
     file = system.file("extdata", "output-info-blacklist.csv", 
       package = "reportingGrofwild")
   )
   blacklist <- do.call(rbind, lapply(1:nrow(blacklist), function(i) {
-      if (is.na(blacklist$specie[i]))
-        data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
-        info[i, ]
-    }))
+        if (is.na(blacklist$specie[i]))
+          data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
+          info[i, ]
+      }))
   blacklist$blacklist <- TRUE
   
   info <- merge(
@@ -347,6 +343,11 @@ getOutputInfo <- function(species, ...){
   )
   info <- info[which(is.na(info$blacklist)), cols, drop = FALSE]
   
+  # sort to have correct order in the UI
+  info[, "specie"] <- factor(info[, "specie"], levels = species)
+  info <- info[do.call(order, info), ]
+  
+   
   return(info)
   
 }

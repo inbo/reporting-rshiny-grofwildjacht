@@ -209,12 +209,17 @@ mapSpreadServer <- function(id,
           
         })
       
-      # update region
-      observeEvent(input$regionLevel, 
-        updateSelectInput(session, inputId = "region", 
-          choices = sort(unique(spatialData()$NAAM))
-        ), priority = 1)
-      
+      output$region <- renderUI({
+          
+          selectInput(
+            inputId = ns("region"), label = "Regio('s)",
+            choices = sort(unique(spatialData()$NAAM)),
+            selected = if (req(input$regionLevel) == "flanders")
+              spatialData()$NAAM[1] else "",
+            multiple = TRUE
+          )
+          
+        })
       
       selectedPolygons <- reactive({
           
@@ -556,17 +561,11 @@ mapSpreadUI <- function(id,
           
         if(!is.null(regionChoices)){
           fixedRow(
-            column(8, 
-              selectInput(
-                inputId = ns("region"), label = "Regio('s)",
-                choices = "",
-                multiple = TRUE
-              )
-            ),
+            column(8, uiOutput(ns("region"))),
             column(4, 
               selectInput(
                 inputId = ns("regionLevel"), label = "Regio-schaal",
-                choices = regionChoices, selected = "communes"
+                choices = regionChoices, selected = "flanders"
               )
             )
           )

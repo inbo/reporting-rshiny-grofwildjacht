@@ -469,9 +469,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       ns <- session$ns
       
-      results <- reactiveValues(
-        year_value = defaultYear
-      )
+      results <- reactiveValues()
       
       
       # Minimum year
@@ -571,13 +569,14 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       
       ## Geselecteerd Jaar (kaart)
-      # freeze value - when input$regionLevel changes
-      observeEvent(input$regionLevel, {
+      # freeze value
+      observe({
           
-          req(input$year)
-          
-          if (results$year_value != input$year)
+          if (is.null(input$year)) {
+            results$year_value <- defaultYear
+          } else {
             results$year_value <- input$year
+          }
           
         })
       
@@ -592,15 +591,15 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                   "Geselecteerd Jaar (kaart)",
               min = minYear(),
               max = max(geoData()$afschotjaar),
-              value = results$year_value,
+              value = isolate(results$year_value),
               sep = "", step = 1))
           
         })
       
       
       ## Periode (grafiek)
-      # freeze value - when input$regionLevel changes
-      observeEvent(input$regionLevel, {
+      # freeze value
+      observe({
           
           if (is.null(input$period)) {
             results$period_value <- c(minYear(), defaultYear)
@@ -609,23 +608,14 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           }
           
         })
-      # Update period if species changes
-      observeEvent(species(), {
-          updateSliderInput(session = session, inputId = "period", 
-            value = c(minYear(), defaultYear))
-        })
-      
+            
       output$period <- renderUI({
           
           req(nrow(geoData()) > 0)
           
-          # initialize
-          if (is.null(results$period_value))
-            results$period_value <- c(minYear(), defaultYear)
-          
           sliderInput(inputId = ns("period"), 
             label = if (type == "wbe") "Periode" else "Periode (grafiek)", 
-            value = results$period_value,
+            value = isolate(results$period_value),
             min = minYear(),
             max = max(geoData()$afschotjaar),
             step = 1,
@@ -667,8 +657,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       output$region <- renderUI({
           
           if (is.null(locaties())) {
-            
-            print(results$region_value)
             
             choices <- sort(unique(spatialData()$NAAM))
             selectInput(inputId = ns("region"), label = "Regio('s)",

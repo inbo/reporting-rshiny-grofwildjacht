@@ -179,9 +179,9 @@ results$wbe_timeRange <- reactive({
     
   })  
 
-results$labeltypes <- reactive({
+results$leeftijdtypes <- reactive({
     
-    types <- loadMetaEco(species = input$wbe_species)$labeltype
+    types <- loadMetaEco(species = input$wbe_species)$leeftijd_comp
     
     if (length(types) == 1 && input$wbe_species == types)
       return(c("alle" = "all")) else 
@@ -250,8 +250,8 @@ tableSpeciesServer(id = "wbe",
 countYearShotServer(id = "wbe_labeltype",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
-  groupVariable = "labeltype",
-  types = results$labeltypes)
+  groupVariable = "leeftijd_comp",
+  types = results$leeftijdtypes)
 
 
 # Plot3: Afschot per jachtmethode

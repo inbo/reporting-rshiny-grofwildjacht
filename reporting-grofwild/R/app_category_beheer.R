@@ -100,8 +100,9 @@ beheerOutputServer <- function(id,
         ))
       # Keep most prevalent province/FBZ per afschotplan_nummer & date
       ## overwrite with most prevalent province/FBZ
-      drukjachtData <- drukjachtData[,':='(provincie = which.max(table(provincie)), 
-          FaunabeheerZone = which.max(table(FaunabeheerZone))),
+      drukjachtData <- drukjachtData[,':='(
+          provincie = names(which.max(table(provincie))), 
+          FaunabeheerZone = names(which.max(table(FaunabeheerZone)))),
         by = c("afschotplan_nummer", "afschot_datum")]
       drukjachtData <- unique(drukjachtData, by = c("afschotplan_nummer", "afschot_datum"))
       drukjachtData[, .(afschotplan_nummer, afschot_datum, provincie, FaunabeheerZone, wildsoort, afschotjaar)]

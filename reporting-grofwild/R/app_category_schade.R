@@ -33,8 +33,8 @@ schadeOutputServer <- function(id,
       # Filter gewas
       if ("GEWAS" %in% schadeSelection$schade_code()) {
         otherCodes <- schadeSelection$schade_code()[schadeSelection$schade_code() != "GEWAS"]
-          toRetain <- toRetain &
-            (schadeData$schadeBasisCode %in% otherCodes |
+        toRetain <- toRetain &
+          (schadeData$schadeBasisCode %in% otherCodes |
             schadeData$schadeCode %in% schadeSelection$schade_gewas())
       }
           
@@ -331,9 +331,9 @@ schadeSelectionUI <- function(id){
   # freeze input parameters choice (same id) for all sub-tabs
   wellPanel(class = "well-white", 
     fluidRow(
-      column(4, uiOutput(ns("schadeCodeSelection"))),
-      column(4, uiOutput(ns("schadeGewasSelection"))),
-      column(4, uiOutput(ns("schadeVoertuigSelection")))
+      uiOutput(ns("schadeCodeSelection")),
+      uiOutput(ns("schadeGewasSelection")),
+      uiOutput(ns("schadeVoertuigSelection"))
     ),
     uiOutput(outputId = ns("schade_warning"))
   )
@@ -356,30 +356,33 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
       
     specieSidebarServer(id = id, specie = specie)
     
+    gewasPlot <- "countYearSchadeUI-gewas"
+    
     output$schadeCodeSelection <- renderUI({
         
+        req(!plot() %in% gewasPlot)
+        
         # Select type schade
-        selectInput(
-          inputId = ns("schade_code"), 
-          label = "Selecteer type(s) schade:",
-          choices = if (plot() == "countYearSchadeUI-gewas")
-              c("Gewas" = "GEWAS") else
-              metaSchade$types,
-          selected = if (is.null(schade_code()))
-              metaSchade$types else
-              schade_code(),
-          multiple = TRUE,
-          width = "100%"
-        )
+        column(4, selectInput(
+            inputId = ns("schade_code"), 
+            label = "Selecteer type(s) schade:",
+            choices = metaSchade$types,
+            selected = if (is.null(schade_code()))
+                metaSchade$types else
+                schade_code(),
+            multiple = TRUE,
+            width = "100%"
+          ))
         
       })
     
     output$schadeGewasSelection <- renderUI({
         
-        req("GEWAS" %in% input$schade_code)
+        if (!plot() %in% gewasPlot)
+          req("GEWAS" %in% input$schade_code)
         
         # Subselection gewas
-        selectInput(
+        column(4, selectInput(
           inputId = ns("schade_gewas"), 
           label = "Filter Gewas Schade",
           choices = metaSchade$codes[["GEWAS"]],
@@ -388,16 +391,17 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
               schade_gewas(),
           multiple = TRUE,
           width = "100%"
-        )
+        ))
         
       })
     
     output$schadeVoertuigSelection <- renderUI({
         
+        req(!plot() %in% gewasPlot)
         req("VRTG" %in% input$schade_code)
         
         # Subselection voertuig
-        selectInput(
+        column(4, selectInput(
           inputId = ns("schade_voertuig"), 
           label = "Filter Voertuig Schade",
           choices = metaSchade$codes[["VRTG"]],
@@ -406,7 +410,7 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
               schade_voertuig(),
           multiple = TRUE,
           width = "100%"
-        )
+        ))
         
     })
 
@@ -422,11 +426,16 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
     )
     
     output$schade_warning <- renderUI({
-      validate(need(input$schade_code, "Gelieve type(s) schade te selecteren"))
+        if (!plot() %in% gewasPlot)
+          validate(need(input$schade_code, "Gelieve type(s) schade te selecteren"))
     })
-  
+    
   return(list(
-      schade_code = reactive(req(input$schade_code)),
+      schade_code = reactive({
+          if (plot() %in% gewasPlot)
+            "GEWAS" else 
+            req(input$schade_code)
+      }),
       schade_gewas = reactive(req(input$schade_gewas)),
       schade_voertuig = reactive(req(input$schade_voertuig))
       ))

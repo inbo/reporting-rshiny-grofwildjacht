@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 RUN R -q -e "install.packages('remotes')"
 
 RUN R -q -e "options(warn = 2); remotes::install_version('shiny', version = '1.8.1.1', repos = 'https://cloud.r-project.org', upgrade = 'never')"
-RUN R -q -e "options(warn = 2); remotes::install_version('glue', version = '1.8.0', repos = 'https://cloud.r-project.org', upgrade = 'never')"
+RUN R -q -e "options(warn = 2); remotes::install_version('glue', version = '1.7.0', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 RUN R -q -e "options(warn = 2); remotes::install_cran(c('sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'kableExtra', 'webshot2', 'slickR', 'ggplot2', 'ggforce'))"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 # NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work

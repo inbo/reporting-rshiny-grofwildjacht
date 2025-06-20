@@ -491,7 +491,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
         })
       
-      output$title <- renderUI({
+      output$mainTitle <- renderUI({
     
           title <- if (type == "wbe") 
               "Landkaart" else
@@ -709,7 +709,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       
       # Title for the map
-      output$title <- renderUI({
+      output$mapTitle <- renderUI({
           
           if (type == "empty")
             return(NULL)
@@ -1345,7 +1345,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   tagList(
     
     if (showTitle)
-      uiOutput(ns("title")),
+      uiOutput(ns("mainTitle")),
     
     ## countMap: all species
     wellPanel(
@@ -1412,7 +1412,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
     
     fixedRow(
       column(if ("biotoop" %in% plotDetails) 6 else 12,
-        uiOutput(ns("title")),
+        uiOutput(ns("mapTitle")),
         withSpinner(leafletOutput(ns("spacePlot"))),
         tags$div(align = "center", uiOutput(ns("stats"))),
         tags$br(),

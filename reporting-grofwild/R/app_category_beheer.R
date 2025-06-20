@@ -130,8 +130,7 @@ beheerOutputServer <- function(id,
         ui <- switch(plot(), 
           "trendYearFlandersUI" = {
             trendYearFlandersUI(
-              id = ns("plot"),
-              uiText = uiText, specie = specie()
+              id = ns("plot")
             )
            },
           "countYearProvinceUI-afschot" = {
@@ -209,7 +208,8 @@ beheerOutputServer <- function(id,
           geoData = results$geoData,
           allSpatialData = spatialData, 
           biotoopData = biotoopData, 
-          species = specie
+          species = specie,
+          uiText = uiText
         ),
         "countYearProvinceUI-afschot" = countYearProvinceServer(
           id = "plot",

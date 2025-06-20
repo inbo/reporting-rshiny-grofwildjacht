@@ -29,13 +29,25 @@ trendYearFlanders <- function(data, timeRange,
 trendYearFlandersServer <- function(id, 
     geoData, allSpatialData, biotoopData, species,
     type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
-    includeOptions = TRUE){
+    includeOptions = TRUE, uiText){
   
   type <- match.arg(type)
   
   moduleServer(id, function(input, output, session) {
         
         ns <- session$ns
+        
+        output$title <- renderUI({
+            
+            req(!is.null(uiText))
+            title <- getOutputTitle(output = if (type == "wildschade") 
+                    "trendYearFlandersUI-schade" else 
+                    "trendYearFlandersUI", 
+                specie = species(), uiText = uiText)
+            
+            h3(title)
+            
+          })
          
         output$period <- renderUI({
             
@@ -127,23 +139,16 @@ trendYearFlandersUI <- function(id,
     type = c("grofwild", "wildschade"),
     includeOptions = TRUE,
     unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
-        "Aantal/100ha bos & natuur" = "relativeDekking"),
-    uiText, specie = NULL
+        "Aantal/100ha bos & natuur" = "relativeDekking")
 ){
   
   type <- match.arg(type)
   
   ns <- NS(id)
   
-  title <- if (!is.null(uiText)){
-        getOutputTitle(output = if (type == "wildschade") 
-              "trendYearFlandersUI-schade" else 
-              "trendYearFlandersUI", 
-            specie = specie, uiText = uiText)
-      }
-  
+ 
   tagList(
-    h3(title),
+    uiOutput(ns("title")),
     fluidRow(
       column(8, plotModuleUI(id = ns("trendYearFlanders"))),
       column(4,

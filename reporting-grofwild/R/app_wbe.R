@@ -274,6 +274,8 @@ mapSchadeServer(id = "wbe",
     }), 
   defaultYear = defaultYear, 
   species = reactive(input$wbe_species),
+  uiText = uiText, 
+  type = "wbe",
   borderRegion = "WBE_buitengrenzen"
 )
 
@@ -283,8 +285,7 @@ output$wbe_mapSchade <- renderUI({
     req(input$wbe_species %in% results$wbe_schadeData()$wildsoort)
     
     mapSchadeUI(id = ns("wbe"),
-      uiText = uiText, specie = input$wbe_species,
-      filterCode = TRUE, filterSubcode = TRUE, type = "wbe",
+      filterCode = TRUE, filterSubcode = TRUE, 
       plotDetails = "region")
     
   })
@@ -392,10 +393,11 @@ percentageRealisedShotServer(id = "wbe",
 mapSchadeServer(id = "wbe_afschot",
   schadeData = results$wbe_combinedData, 
   allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())),
-  type = "afschot",
   timeRange = results$wbe_timeRange, 
   defaultYear = defaultYear, 
   species = reactive(input$wbe_species),
+  uiText = uiText,
+  type = "afschot",
   borderRegion = "WBE_buitengrenzen"
 )
 
@@ -434,7 +436,7 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
           choices = currentKbo, width = "100%"),
       
       tags$div(align = "center",
-        uiOutput("wbe_title")
+        uiOutput(ns("wbe_title"))
       ),
       
       welcomeSectionUI(id = ns("wbe"), uiText = uiText, category = "wbe", 
@@ -449,12 +451,12 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
       # Map
       
       mapFlandersUI(id = ns("wbe"), showRegion = FALSE, showCombine = FALSE,
-        type = "wbe", plotDetails = "biotoop"),
+        type = "wbe", plotDetails = "biotoop", showTitle = FALSE),
       
       
       # Choose species
       
-      uiOutput("wbe_empty"),
+      uiOutput(ns("wbe_empty")),
       
       h2("Grofwildsoort")),
     
@@ -488,14 +490,12 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
       conditionalPanel("output.wbe_emptyAfschot == false",
         
         mapSchadeUI(id = ns("wbe_afschot"),
-          uiText = uiText,
           filterSource = FALSE, filterAccuracy = TRUE,
           variableChoices = c(
             "Seizoen" = "season",
             "Jaar" = "afschotjaar",
             "Jachtmethode" = "jachtmethode_comp"),
-          type = "wbe",
-          outputFunction = "mapAfschotUI"
+          
         ),
         
         conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",

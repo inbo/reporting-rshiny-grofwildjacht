@@ -85,8 +85,7 @@ schadeOutputServer <- function(id,
           "trendYearFlandersUI-schade" = {
             trendYearFlandersUI(
               id = ns("plot"),
-              type = "wildschade",
-              uiText = uiText, specie = specie()
+              type = "wildschade"
             )
           },
           "countYearProvinceUI-schade" = {
@@ -117,8 +116,6 @@ schadeOutputServer <- function(id,
           "mapSchadeUI-wildschade" = {
             mapSchadeUI(
               id = ns("plot"), 
-              uiText = uiText,
-              type = "schade", specie = specie(),
               filterVariable = FALSE,
               doHide = FALSE
             )
@@ -159,8 +156,6 @@ schadeOutputServer <- function(id,
           "mapSchadeUI-seizoen" = {
             mapSchadeUI(
               id = ns("plot"), 
-              uiText = uiText,
-              type = "seizoen", specie = specie(),
               filterVariable = FALSE,
               doHide = FALSE
             )
@@ -203,7 +198,8 @@ schadeOutputServer <- function(id,
           allSpatialData = spatialData, 
           biotoopData = biotoopData, 
           species = specie,
-          type = "wildschade"
+          type = "wildschade",
+          uiText = uiText
         ),
         "countYearProvinceUI-schade" = countYearProvinceServer(
           id = "plot",
@@ -243,7 +239,9 @@ schadeOutputServer <- function(id,
           defaultYear = defaultYear,
           species = specie,
           borderRegion = "provinces",
-          variable = "schadeCode"
+          variable = "schadeCode",
+          uiText = uiText,
+          type = "schade"
         ),
         "tableSchadeUI" = tableSchadeServer(
           id = "plot",  
@@ -295,6 +293,8 @@ schadeOutputServer <- function(id,
           timeRange = results$schade_timeRange,
           defaultYear = defaultYear,
           species = specie,
+          uiText = uiText,
+          type = "seizoen",
           borderRegion = "provinces",
           variable = "season"
         ),
@@ -356,7 +356,7 @@ schadeSelectionServer <- function(id, specie = reactiveVal(),
       
     specieSidebarServer(id = id, specie = specie)
     
-    gewasPlot <- "countYearSchadeUI-gewas"
+    gewasPlot <- c("countYearSchadeUI-gewas", "tableGewasUI")
     
     output$schadeCodeSelection <- renderUI({
         

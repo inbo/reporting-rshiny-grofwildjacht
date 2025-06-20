@@ -268,6 +268,8 @@ mapSchade <- function(
 #' only \code{"schade"}. Later extended to also cover \code{"afschot"}, i.e. 
 #' "gerapporteerde afschot locaties", see also \code{mapAfschotUI}
 #' @param variable (optional) character with variable of interest
+#' @inheritParams getOutputTitle
+#' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' @author mvarewyck
@@ -278,7 +280,7 @@ mapSchade <- function(
 mapSchadeServer <- function(
   id, schadeData, allSpatialData, timeRange, 
   defaultYear, species, borderRegion = NULL, 
-  type = c("schade", "afschot"),
+  type = c("schade", "afschot", "wbe", "seizoen"), uiText, 
   variable = NULL) {
   
   type <- match.arg(type)
@@ -333,10 +335,24 @@ mapSchadeServer <- function(
           
         })
       
+      ## Periode (grafiek)
+      # freeze value
+      observe({
+          
+          req(timeRange())
+          
+          if (is.null(input$time_schade)) {
+            results$time_schade <- c(timeRange()[1], min(timeRange()[2], defaultYear))
+          } else {
+            results$time_schade <- input$time_schade
+          }
+          
+        })
+      
       output$time_schade <- renderUI({
           
           sliderInput(inputId = ns("time_schade"), label = "Periode", 
-            value = c(timeRange()[1], min(timeRange()[2], defaultYear)),
+            value = isolate(results$time_schade),
             min = timeRange()[1],
             max = timeRange()[2],
             step = 1,
@@ -348,12 +364,37 @@ mapSchadeServer <- function(
         ifelse(!is.null(variable), variable, input$variable)
       )
       
+      output$title <- renderUI({
+          
+          title <- getOutputTitle(
+            output = if (type == "afschot") "mapAfschotUI" else "mapSchadeUI", 
+            specie = species(), 
+            uiText = uiText, 
+            type = if (type == "wbe") "schade" else type)
+          
+          h3(HTML(title))
+            
+        })
+      
+      output$description <- renderUI({
+          
+          description <- getOutputDescription(
+            output = if (type == "afschot") "mapAfschotUI" else "mapSchadeUI", 
+            specie = species(), uiText = uiText, 
+            context = if (type == "wbe") "wbe" else "description",
+            type = type
+          )
+          
+          tags$p(HTML(description))
+          
+        })
+      
       output$titlePerceel <- renderUI({
           
           nSpecies <- length(species())      
           
           h3(paste(
-              if (type == "schade")
+              if (type != "afschot")
                 "Schadegevallen" else
                 "Gerapporteerde afschotlocaties", 
               "voor", if (nSpecies > 1) 
@@ -440,7 +481,7 @@ mapSchadeServer <- function(
       # Create data for map, summary of schade data, given year
       results$summaryPerceelData <- reactive({
           
-          if (type == "schade") {
+          if (type != "afschot") {
             
             validate(need(results$schadeData(), "Geen data beschikbaar"),
               need(input$time_schade, "Gelieve periode te selecteren"),
@@ -651,10 +692,6 @@ mapSchadeServer <- function(
 #' @param filterSource boolean, whether to show filter option for source
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
 #' @param variableChoices named character vector, choices for coloring 
-#' @param outputFunction character, named of output function used
-#' to extract title and description, by default: 'mapSchadeUI'
-#' @inheritParams getOutputTitle
-#' @inheritParams getOutputDescription
 #' @inherit welcomeSectionUI
 #' @inheritParams reportingGrofwild-common-args
 #' @author mvarewyck
@@ -667,28 +704,18 @@ mapSchadeUI <- function(
     "Seizoen" = "season",
     "Jaar" = "afschotjaar",
     "Type schade" = "schadeCode"),
-  uiText, specie = NULL, type = NULL, plotDetails = NULL,
-  doHide = TRUE, outputFunction = "mapSchadeUI") {
+  plotDetails = NULL,
+  doHide = TRUE) {
   
   ns <- NS(id)
   
   metaSchade <- loadMetaSchade()
   
-  title <- getOutputTitle(
-    output = outputFunction, specie = specie, 
-    uiText = uiText, 
-    type = if (outputFunction == "mapSchadeUI" & type == "wbe") "schade" else type)
-  description <- getOutputDescription(
-    output = outputFunction, 
-    specie = specie, uiText = uiText, 
-    context = if (type == "wbe") "wbe" else "description",
-    type = type
-  )
   
   tagList(  
     
     actionLink(inputId = ns("linkMapSchade"),
-      label = h3(HTML(title))),
+      label = uiOutput(ns("title"))),
     conditionalPanel(paste("input.linkMapSchade % 2  ==", as.numeric(doHide)), ns = ns,
     
       wellPanel(
@@ -767,7 +794,7 @@ mapSchadeUI <- function(
           )      
       ),
       
-      tags$p(HTML(description)),
+      uiOutput(ns("description")),
       
       tags$hr()
     

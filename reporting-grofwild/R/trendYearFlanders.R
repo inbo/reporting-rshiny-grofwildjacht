@@ -37,6 +37,8 @@ trendYearFlandersServer <- function(id,
         
         ns <- session$ns
         
+        results <- reactiveValues()
+        
         output$title <- renderUI({
             
             req(!is.null(uiText))
@@ -48,6 +50,23 @@ trendYearFlandersServer <- function(id,
             h3(title)
             
           })
+        
+        defaultYear <- config::get("defaultYear", 
+          file = system.file("config.yml", package = "reportingGrofwild"))
+        
+        # freeze value period
+        observe({
+            
+            req(nrow(geoData()) > 0)
+            
+            if (is.null(input$period)) {
+              results$period <- c(min(geoData()$afschotjaar), defaultYear)
+            } else {
+              results$period <- input$period
+            }
+            
+          })
+        
          
         output$period <- renderUI({
             
@@ -55,13 +74,11 @@ trendYearFlandersServer <- function(id,
             
             maxYear <- max(geoData()$afschotjaar)
             minYear <- min(geoData()$afschotjaar)
-            defaultYear <- config::get("defaultYear", 
-              file = system.file("config.yml", package = "reportingGrofwild"))
             
             sliderInput(
               inputId = ns("period"), 
               label = "Periode", 
-              value = c(minYear, defaultYear),
+              value = isolate(results$period),
               min = minYear,
               max = maxYear,
               step = 1,

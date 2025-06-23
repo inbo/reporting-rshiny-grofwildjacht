@@ -497,7 +497,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               "Landkaart" else
               getOutputTitle(
                 output = outputFunction(), 
-                uiText = uiText, specie = species, type = type
+                uiText = uiText, specie = species(), type = type
               )
           
           h2(title)

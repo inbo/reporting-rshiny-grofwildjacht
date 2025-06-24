@@ -1354,7 +1354,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
           column(8, uiOutput(ns("region"))),
           column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
               choices = regionChoices,
-              selected = regionChoices[1]))
+              selected = if (type == "dash") regionChoices[1] else "communes"))
         ),  
         
       if (type == "dash") {

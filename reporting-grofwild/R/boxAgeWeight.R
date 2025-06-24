@@ -75,12 +75,6 @@ boxAgeWeight <- function(data,
 	if (nrow(plotData) == 0)
 		stop("Geen data beschikbaar")
 	
-  if (wildNaam != "Wild zwijn") {		
-		# Exclude records with weight lower than 5 or more than 30 (unrealistic)
-		plotData <- subset(plotData, gewicht >= 5 & gewicht <= 30)
-		
-	}
-	
   # filters out "Onbekend" leeftijd if all leeftijdlevels are passed in 'type'
 	plotData <- subset(plotData, leeftijd %in% type)
   

@@ -1,99 +1,4 @@
-#' Server function for the cards of the 'schade' Category page
-#' @inheritParams reportingGrofwild-common-args
-#' @return reactive value with name of output plot/table (if selected)
-#' @import shiny
-#' @author lcougnaud
-#' @export
-schadeCardServer <- function(id, 
-  specie = reactiveVal(), subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-        
-    ns <- session$ns
-        
-    ## input
-    results <- reactiveValues(renderedTabs = "Grofwild")
-    results$specie <- reactive(specie())
-    
-    ## Sidebar panel
-    
-    schadeSidebarServer(id = "sidebar", specie = results$specie)
-    
-    ## Main panel
-        
-    observe({    
-              
-      if(subcategory() %in% subcategories){
-        
-        categoryCards <- lapply(outputs, function(output){
-              
-          args <- list(
-            output = output,
-            id = id, 
-            uiText = uiText,
-            specie = results$specie(), 
-            category = "schade"
-          )
-          
-          if(output == "countYearProvinceUI-schade"){
-          		args[["output"]] <- "countYearProvinceUI"
-          		args[["outputFunction"]] <- output
-          }else if(output == "mapFlandersUI-schade"){
-            args[["output"]] <- "mapFlandersUI"
-          }else if(output == "countYearSchadeUI-wildschade"){
-            args <- c(args, 
-              list(outputFunction = "countYearSchadeUI", type = "wildschade")
-            )
-          }else if(output == "mapSchadeUI-wildschade"){
-            args <- c(args, 
-              list(outputFunction = "mapSchadeUI", type = "wildschade")
-            )
-          }else if(output == "countYearSchadeUI-gewas"){
-            args <- c(args, 
-              list(outputFunction = "countYearSchadeUI", type = "gewas")
-            )
-          }else if(output == "countYearSchadeUI-seizoen"){
-            args <- c(args, 
-              list(outputFunction = "countYearSchadeUI", type = "seizoen")
-            )
-          }else if(output == "mapSchadeUI-seizoen"){
-            args <- c(args, 
-              list(outputFunction = "mapSchadeUI", type = "seizoen")
-            )
-          }
-          do.call(categoryCard, args)
-        })
-    
-        args <- c(categoryCards, list(width = 1/3, gap = "2em"))
-        cards <- do.call(bslib::layout_column_wrap, args)
-        
-        output[["output"]] <- renderUI(cards)
-        
-      } 
-   })
-   
-   # if plot is selected based on the category cards
-    outputUI <- reactiveVal("Visualisatie/Tabel")
-    lapply(outputs, function(output){
-      btn <- paste0(output, "-button")
-      # exceptions
-      if(output %in% c("countYearProvinceUI-schade", "mapFlandersUI-schade"))
-        btn <- paste0(sub("(.+)-.+", "\\1", output), "-button")
-      observeEvent(
-        input[[btn]], 
-        outputUI(output), 
-        ignoreInit = TRUE
-      )
-    })
-
-    return(outputUI)
-     
-  })
-     
-}
-                              
+                    
 #' Server function for an output (plot/table) of the 'schade' Category page
 #' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
@@ -102,6 +7,7 @@ schadeCardServer <- function(id,
 #' @export               
 schadeOutputServer <- function(id, 
   specie = reactiveVal(), plot = reactiveVal(),
+  schade_code, schade_gewas, schade_voertuig,
   outputs = character(),
   schadeData, spatialData, biotoopData, 
   defaultYear, 
@@ -115,31 +21,29 @@ schadeOutputServer <- function(id,
     ## input
     results <- reactiveValues(renderedTabs = "Schade")
     
-    results$specie <- reactive(specie())
-    
     # Filter data upon user choices
     results$schade_data <- reactive({
           
       # Select species & code & exclude data before 2014
       toRetain <- 
-        schadeData$wildsoort %in% req(results$specie()) &
-        schadeData$schadeBasisCode %in% req(input$`sidebar-schade_code`) &
+        schadeData$wildsoort %in% req(specie()) &
+        schadeData$schadeBasisCode %in% req(schadeSelection$schade_code()) &
         schadeData$afschotjaar >= 2014
           
       # Filter gewas
-      if ("GEWAS" %in% input$`sidebar-schade_code`) {
-        otherCodes <- input$`sidebar-schade_code`[input$`sidebar-schade_code` != "GEWAS"]
-          toRetain <- toRetain &
-            (schadeData$schadeBasisCode %in% otherCodes |
-            schadeData$schadeCode %in% input$`sidebar-schade_gewas`)
+      if ("GEWAS" %in% schadeSelection$schade_code()) {
+        otherCodes <- schadeSelection$schade_code()[schadeSelection$schade_code() != "GEWAS"]
+        toRetain <- toRetain &
+          (schadeData$schadeBasisCode %in% otherCodes |
+            schadeData$schadeCode %in% schadeSelection$schade_gewas())
       }
           
       # Filter voertuig
-      if ("VRTG" %in% input$`sidebar-schade_code`) {
-        otherCodes <- input$`sidebar-schade_code`[input$`sidebar-schade_code` != "VRTG"]
+      if ("VRTG" %in% schadeSelection$schade_code()) {
+        otherCodes <- schadeSelection$schade_code()[schadeSelection$schade_code() != "VRTG"]
         toRetain <- toRetain &
           (schadeData$schadeBasisCode %in% otherCodes |
-          schadeData$schadeCode %in% input$`sidebar-schade_voertuig`)
+          schadeData$schadeCode %in% schadeSelection$schade_voertuig())
       }
           
       return(schadeData[toRetain, ])
@@ -149,9 +53,15 @@ schadeOutputServer <- function(id,
       range(results$schade_data()$afschotjaar)
     ) 
     
-    ## Sidebar panel
+    ## Selection species
     
-    schadeSidebarServer(id = "sidebar", specie = results$specie)
+    specieSidebarServer(id = "sidebar", specie = specie)
+    
+    ## Selection schade
+    
+    schadeSelection <- schadeSelectionServer(id = "topbar", specie = specie,
+      schade_code = schade_code, schade_gewas = schade_gewas, 
+      schade_voertuig = schade_voertuig, plot = plot)
     
     ## Main panel
   
@@ -163,99 +73,89 @@ schadeOutputServer <- function(id,
     observe({
           
       if(plot() %in% outputs){
-          
-        outputName <- plot()
-          
+         
         # create the plot/table
-        ui <- switch(outputName, 
+        ui <- switch(plot(), 
           "tableSchadeSummaryUI" = {
             tableSchadeSummaryUI(
-              id = ns(outputName), 
-              uiText = uiText, specie = results$specie()
+              id = ns("plot"), 
+              uiText = uiText, specie = specie()
             )
           },
-          "trendYearFlandersUI" = {
+          "trendYearFlandersUI-schade" = {
             trendYearFlandersUI(
-              id = ns(outputName),
-              type = "wildschade",
-              includeOptions = TRUE,
-              uiText = uiText, specie = results$specie()
+              id = ns("plot"),
+              type = "wildschade"
             )
           },
           "countYearProvinceUI-schade" = {
             countYearProvinceUI(
-              id = ns(outputName), 
-              uiText = uiText, type = "schade",
-              specie = results$specie(),
+              id = ns("plot"), 
+              uiText = uiText, 
+              plotFunction = "countYearProvinceUI-schade",
+              specie = specie(),
               showType = TRUE, doHide = FALSE,
-              showDataSource = "schade",
-              plotFunction = "countYearProvinceUI-schade"
+              showDataSource = "schade"
             )
           },
           "mapFlandersUI-schade" = {
             mapFlandersUI(
-              id = ns(outputName), 
-              type = "wildschade", plotDetails = "region",
-              showCombine = FALSE,
-              uiText = uiText, outputFunction = "mapFlandersUI-schade",
-              specie = results$specie(), typeTitle = "schade"
+              id = ns("plot"), 
+              type = "schade", plotDetails = "region",
+              showCombine = FALSE
             )
           },
           "countYearSchadeUI-wildschade" = {
             countYearSchadeUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               doHide = FALSE,
               uiText = uiText, context = "description",
-              type = "schade", specie = results$specie()
+              type = "schade", specie = specie()
             )
           },
           "mapSchadeUI-wildschade" = {
             mapSchadeUI(
-              id = ns(outputName), 
-              uiText = uiText, context = "description",
-              type = "schade", specie = results$specie(),
+              id = ns("plot"), 
               filterVariable = FALSE,
               doHide = FALSE
             )
           },
           "tableSchadeUI" = {
             tableSchadeUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
           "countYearSchadeUI-gewas" = {
             countYearSchadeUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               doHide = FALSE,
               uiText = uiText, context = "description",
-              type = "gewas", specie = results$specie()
+              type = "gewas", specie = specie()
             )
           },
           "tableGewasUI" = {
             tableGewasUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               doHide = FALSE
             )
           },
           "countYearSchadeUI-seizoen" = {
             countYearSchadeUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               doHide = FALSE,
               uiText = uiText, context = "description",
-              type = "seizoen", specie = results$specie(),
+              type = "seizoen", specie = specie(),
               regionLevels = c(1:2, 4)
             )
           },
           "mapSchadeUI-seizoen" = {
             mapSchadeUI(
-              id = ns(outputName), 
-              uiText = uiText, context = "description",
-              type = "schade", specie = results$specie(),
+              id = ns("plot"), 
               filterVariable = FALSE,
               doHide = FALSE
             )
@@ -263,9 +163,9 @@ schadeOutputServer <- function(id,
           # dash plot F09_2
           "barCostUI" = {
             barCostUI(
-              id = ns(outputName), 
+              id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = results$specie(),
+              specie = specie(),
               typeMelding = c("Landbouw" = "landbouw"),
               regionLevels = c(1:2, 4),
               doHide = FALSE
@@ -277,7 +177,7 @@ schadeOutputServer <- function(id,
         output[["output"]] <- renderUI(ui)
         
         # activate server-side update
-        outputServer(outputName)
+        outputServer(plot())
         
       }
       
@@ -285,24 +185,24 @@ schadeOutputServer <- function(id,
 
     # Server
     observeEvent(outputServer(), ignoreNULL = TRUE, {
-      outputName <- outputServer()
       
-      switch(outputName,
+      switch(outputServer(),
         "tableSchadeSummaryUI" = tableSchadeSummaryServer(
-          id = outputName, 
+          id = "plot", 
           data = results$schade_data, 
           schadeTypes = schadeTypes, schadeCodes = schadeCodes
         ),
-        "trendYearFlandersUI" = trendYearFlandersServer(
-          id = outputName, 
+        "trendYearFlandersUI-schade" = trendYearFlandersServer(
+          id = "plot", 
           geoData = results$schade_data, 
           allSpatialData = spatialData, 
           biotoopData = biotoopData, 
-          species = results$specie,
-          type = "wildschade"
+          species = specie,
+          type = "wildschade",
+          uiText = uiText
         ),
         "countYearProvinceUI-schade" = countYearProvinceServer(
-          id = outputName,
+          id = "plot",
           data = results$schade_data,
           types = reactive(c(
             "Vlaanderen" = "flanders",
@@ -314,35 +214,37 @@ schadeOutputServer <- function(id,
           timeRange = results$schade_timeRange
         ),
         "mapFlandersUI-schade" = mapFlandersServer(
-          id = outputName,
-          uiText = uiText, outputFunction = "mapFlandersServer-schade",
+          id = "plot",
+          uiText = uiText,
           defaultYear = defaultYear,
-          species = results$specie,
-          type = "wildschade",
+          species = specie,
+          type = "schade",
           geoData = results$schade_data,
           biotoopData = biotoopData,
           allSpatialData = spatialData,
           sourceChoices = loadMetaSchade()$sources 
         ),
         "countYearSchadeUI-wildschade" = countYearSchadeServer(
-          id = outputName,
+          id = "plot",
           data = results$schade_data,
           type = "schadeCode", 
           timeRange = results$schade_timeRange,
           fullNames = schadeCodes
         ),
         "mapSchadeUI-wildschade" = mapSchadeServer(
-          id = outputName, 
+          id = "plot", 
           schadeData = results$schade_data,
           allSpatialData = reactive(spatialData),
           timeRange = results$schade_timeRange,
           defaultYear = defaultYear,
-          species = results$specie,
+          species = specie,
           borderRegion = "provinces",
-          variable = "schadeCode"
+          variable = "schadeCode",
+          uiText = uiText,
+          type = "schade"
         ),
         "tableSchadeUI" = tableSchadeServer(
-          id = outputName,  
+          id = "plot",  
           data = results$schade_data,
           types = reactive(c(
             "Vlaanderen" = "flanders",
@@ -352,21 +254,21 @@ schadeOutputServer <- function(id,
           labelTypes = "Regio", 
           typesDefault = reactive("provinces"), 
           timeRange = results$schade_timeRange,
-          schadeChoices = reactive(input$`sidebar-schade_code`),
-          schadeChoicesVrtg = reactive(input$`sidebar-schade_voertuig`),
-          schadeChoicesGewas = reactive(input$`sidebar-schade_gewas`),
+          schadeChoices = schadeSelection$schade_code,
+          schadeChoicesVrtg = schadeSelection$schade_voertuig,
+          schadeChoicesGewas = schadeSelection$schade_gewas,
           datatable = TRUE,
           fullNames = c(schadeTypes, schadeCodes)
         ),
         "countYearSchadeUI-gewas" = countYearSchadeServer(
-          id = outputName,
+          id = "plot",
           data = results$schade_data,
           type = "SoortNaam", 
           timeRange = results$schade_timeRange,
           fullNames = schadeCodes
         ),
         "tableGewasUI" = tableGewasServer(
-          id = outputName,
+          id = "plot",
           data = results$schade_data,
           types = reactive(c(
             "Vlaanderen" = "flanders",
@@ -379,23 +281,25 @@ schadeOutputServer <- function(id,
           variable = "SoortNaam"
         ),
         "countYearSchadeUI-seizoen" = countYearSchadeServer(
-          id = outputName,
+          id = "plot",
           data = results$schade_data,
           type = "season", 
           timeRange = results$schade_timeRange
         ),
         "mapSchadeUI-seizoen" = mapSchadeServer(
-          id = outputName, 
+          id = "plot", 
           schadeData = results$schade_data,
           allSpatialData = reactive(spatialData),
           timeRange = results$schade_timeRange,
           defaultYear = defaultYear,
-          species = results$specie,
+          species = specie,
+          uiText = uiText,
+          type = "seizoen",
           borderRegion = "provinces",
           variable = "season"
         ),
         "barCostUI" = barCostServer(
-          id = outputName,
+          id = "plot",
           data = results$schade_data,
           yVar = "schadeBedrag"
         )  
@@ -405,62 +309,35 @@ schadeOutputServer <- function(id,
       outputServer(NULL)
     })
     
-    return(reactive(results$specie()))
+    
+    return(list(
+        specie = reactive(specie()),
+        schade_code = schadeSelection$schade_code,
+        schade_gewas = schadeSelection$schade_gewas,
+        schade_voertuig = schadeSelection$schade_voertuig
+      ))
 
   })
   
 }
 
 #' UI function for the sidebar of the 'schade' Category page
-#' @param ... any extra parameters for \code{\link{specieSidebarUI}}
 #' @inheritParams reportingGrofwild-common-args
-#' @inherit specieSidebarUI return
 #' @author lcougnaud
-schadeSidebarUI <- function(id, 
-  schadeTypes, gewasChoices, voertuigChoices, ...){
+schadeSelectionUI <- function(id){
   
   ns <- NS(namespace = id)
   
-  specieSidebarUI(
-    id = ns("sidebar"), 
-    # freeze input parameters choice (same id) for all sub-tabs
-    bottomExtra = tagList(
-      br(),
-      # Select type schade
-      selectInput(
-        inputId = ns("schade_code"), 
-        label = "Selecteer type(s) schade:",
-        choices = schadeTypes,
-        selected = NULL,
-        multiple = TRUE,
-        width = "100%"
-      ),
-      # Select gewas & voertuig
-      shinyjs::hidden(
-        selectInput(
-          inputId = ns("schade_gewas"), 
-          label = "Filter Gewas Schade",
-          choices = gewasChoices,
-          selected = gewasChoices,
-          multiple = TRUE,
-          width = "100%"
-        )
-      ),
-      shinyjs::hidden(
-        selectInput(
-          inputId = ns("schade_voertuig"), 
-          label = "Filter Voertuig Schade",
-          choices = voertuigChoices,
-          selected = voertuigChoices,
-          multiple = TRUE,
-          width = "100%"
-        )
-      ),
-      uiOutput(outputId = ns("schade_warning"))
+  # freeze input parameters choice (same id) for all sub-tabs
+  wellPanel(class = "well-white", 
+    fluidRow(
+      uiOutput(ns("schadeCodeSelection")),
+      uiOutput(ns("schadeGewasSelection")),
+      uiOutput(ns("schadeVoertuigSelection"))
     ),
-    ...
+    uiOutput(outputId = ns("schade_warning"))
   )
-  
+
 }
 
 #' Server function for the sidebar of the 'schade' Category page
@@ -469,29 +346,99 @@ schadeSidebarUI <- function(id,
 #' @import shiny
 #' @author lcougnaud
 #' @export
-schadeSidebarServer <- function(id, specie = reactiveVal()){
+schadeSelectionServer <- function(id, specie = reactiveVal(), 
+  schade_code, schade_gewas, schade_voertuig, plot){
   
   moduleServer(id, function(input, output, session){
-        
+  
+    metaSchade <- loadMetaSchade()
+    ns <- session$ns
+      
     specieSidebarServer(id = id, specie = specie)
+    
+    gewasPlot <- c("countYearSchadeUI-gewas", "tableGewasUI")
+    
+    output$schadeCodeSelection <- renderUI({
         
-    # show/hide filters
+        req(!plot() %in% gewasPlot)
+        
+        # Select type schade
+        column(4, selectInput(
+            inputId = ns("schade_code"), 
+            label = "Selecteer type(s) schade:",
+            choices = metaSchade$types,
+            selected = if (is.null(schade_code()))
+                metaSchade$types else
+                schade_code(),
+            multiple = TRUE,
+            width = "100%"
+          ))
+        
+      })
+    
+    output$schadeGewasSelection <- renderUI({
+        
+        if (!plot() %in% gewasPlot)
+          req("GEWAS" %in% input$schade_code)
+        
+        # Subselection gewas
+        column(4, selectInput(
+          inputId = ns("schade_gewas"), 
+          label = "Filter Gewas Schade",
+          choices = metaSchade$codes[["GEWAS"]],
+          selected = if (is.null(schade_gewas()))
+              metaSchade$codes[["GEWAS"]] else
+              schade_gewas(),
+          multiple = TRUE,
+          width = "100%"
+        ))
+        
+      })
+    
+    output$schadeVoertuigSelection <- renderUI({
+        
+        req(!plot() %in% gewasPlot)
+        req("VRTG" %in% input$schade_code)
+        
+        # Subselection voertuig
+        column(4, selectInput(
+          inputId = ns("schade_voertuig"), 
+          label = "Filter Voertuig Schade",
+          choices = metaSchade$codes[["VRTG"]],
+          selected = if (is.null(schade_voertuig()))
+              metaSchade$codes[["VRTG"]] else
+              schade_voertuig(),
+          multiple = TRUE,
+          width = "100%"
+        ))
+        
+    })
+
+    
+    observe({
+      updateSelectInput(session, inputId = "schade_code", selected = schade_code())
+    })
     observe(
-      shinyjs::toggle(
-        id = "schade_gewas", 
-        condition = "GEWAS" %in% input$schade_code
-      )
+      updateSelectInput(session, inputId = "schade_gewas", selected = schade_gewas())
     )
     observe(
-      shinyjs::toggle(
-        id = "schade_voertuig", 
-        condition = "VRTG" %in% input$schade_code
-      )
+      updateSelectInput(session, inputId = "schade_voertuig", selected = schade_voertuig())
     )
     
     output$schade_warning <- renderUI({
-      validate(need(input$schade_code, "Gelieve type(s) schade te selecteren"))
+        if (!plot() %in% gewasPlot)
+          validate(need(input$schade_code, "Gelieve type(s) schade te selecteren"))
     })
+    
+  return(list(
+      schade_code = reactive({
+          if (plot() %in% gewasPlot)
+            "GEWAS" else 
+            req(input$schade_code)
+      }),
+      schade_gewas = reactive(req(input$schade_gewas)),
+      schade_voertuig = reactive(req(input$schade_voertuig))
+      ))
         
   })
 }

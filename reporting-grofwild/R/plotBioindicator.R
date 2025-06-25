@@ -87,8 +87,6 @@ plotBioindicator <- function(data,
 	
 	if (bioindicator == "ontweid_gewicht") {
 		
-		# remove weights < 5kg or > 25kg
-		plotData <- plotData[plotData$variable >= 5 & plotData$variable <= 25, ]    
 		accuracy <- NULL
     
 	} else {
@@ -103,7 +101,12 @@ plotBioindicator <- function(data,
 		stop("Geen data beschikbaar")
 	
 	# Summarize data per year
-	totalCounts <- table(plotData$afschotjaar)
+	totalCounts <- as.data.frame(table(plotData$afschotjaar), stringsAsFactors = FALSE)
+  names(totalCounts) <- c("afschotjaar", "aantal")
+  ## add years with 0 counts
+  allYears <- data.frame(afschotjaar = min(plotData$afschotjaar):max(plotData$afschotjaar))
+  fullCounts <- merge(totalCounts, allYears, all.y = TRUE)
+  fullCounts$aantal[is.na(fullCounts$aantal)] <- 0	
 	
 	
 	
@@ -124,13 +127,15 @@ plotBioindicator <- function(data,
   pl <- plot_ly(data = plotData, x = ~afschotjaar, y = ~variable,
       colors = inbo_lichtblauw, type = "box", width = width, height = height) %>%
     plotly::layout(title = title,
-      xaxis = list(title = "afschotjaar"), 
+      xaxis = list(title = "afschotjaar", showticklabels = FALSE), 
       yaxis = list(title = paste(bioindicatorName, bioindicatorUnit)),
       margin = list(b = 120, t = 100),
-      annotations = list(x = names(totalCounts), 
-        y = 0, textangle = if (length(totalCounts) > 10) -90,
-        xref = "x", text = paste0("(n = ", totalCounts, ")"), xanchor = 'center', 
-        yanchor = 'bottom', showarrow = FALSE)
+      annotations = list(x = fullCounts$afschotjaar, 
+        y = 0, yanchor = "top", text = fullCounts$afschotjaar, 
+        textangle = if (nrow(fullCounts) > 10) -45, 
+        xref = "x", xanchor = 'center', showarrow = FALSE, 
+        hovertext = paste0("(n = ", fullCounts$aantal, ")") 
+        )
     ) %>%
     add_annotations(text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
         text = paste("gekend afschotjaar, leeftijd, geslacht en", bioindicatorName)),
@@ -197,7 +202,8 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' 
 #' @export
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
-  regionLevels, showAccuracy = FALSE, uiText) {
+  regionLevels, showAccuracy = FALSE, uiText, doHide = TRUE,
+  context = strsplit(id, split = "_")[[1]][1]) {
   
   # For R CMD check
   variable <- NULL
@@ -206,14 +212,19 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == paste0(as.character(match.call())[1], "-", bioindicator), ]
+  plotFunction <- paste0("plotBioindicatorUI-", bioindicator)
+  title <- getOutputTitle(output = plotFunction, uiText = uiText)
+  description <- getOutputDescription(output = plotFunction, 
+    uiText = uiText, context = context)
   
   tagList(
     
     actionLink(inputId = ns("linkPlotBioindicator"), 
-      label = h3(HTML(uiText$title))
+      label = h3(HTML(title))
     ),
-    conditionalPanel("input.linkPlotBioindicator % 2 == 1", ns = ns,
+    conditionalPanel(
+      paste("input.linkPlotBioindicator % 2 ==", as.numeric(doHide)),
+      ns = ns,
       
       fixedRow(
         
@@ -228,12 +239,13 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
               ontweid_gewicht = c("leeftijd", "geslacht"),
               onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
             )),
-          tags$p(HTML(uiText[, strsplit(id, split = "_")[[1]][1]])),
           if (showAccuracy)
-            accuracyModuleUI(id = ns("plotBioindicator"), title = "Accuraatheid onderkaaklengte"),
-        ),
-        tags$hr()
-      )
+            accuracyModuleUI(id = ns("plotBioindicator"), 
+              title = "Accuraatheid onderkaaklengte"),
+        )
+      ),
+      tags$p(HTML(description)),
+      tags$hr()
     )
   )
 

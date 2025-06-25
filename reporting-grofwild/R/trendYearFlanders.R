@@ -29,13 +29,44 @@ trendYearFlanders <- function(data, timeRange,
 trendYearFlandersServer <- function(id, 
     geoData, allSpatialData, biotoopData, species,
     type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
-    includeOptions = TRUE){
+    includeOptions = TRUE, uiText){
   
   type <- match.arg(type)
   
   moduleServer(id, function(input, output, session) {
         
         ns <- session$ns
+        
+        results <- reactiveValues()
+        
+        output$title <- renderUI({
+            
+            req(!is.null(uiText))
+            title <- getOutputTitle(output = if (type == "wildschade") 
+                    "trendYearFlandersUI-schade" else 
+                    "trendYearFlandersUI", 
+                specie = species(), uiText = uiText)
+            
+            h3(title)
+            
+          })
+        
+        defaultYear <- config::get("defaultYear", 
+          file = system.file("config.yml", package = "reportingGrofwild"))
+        
+        # freeze value period
+        observe({
+            
+            req(nrow(geoData()) > 0)
+            
+            if (is.null(input$period)) {
+              results$period <- c(min(geoData()$afschotjaar), defaultYear)
+            } else {
+              results$period <- input$period
+            }
+            
+          })
+        
          
         output$period <- renderUI({
             
@@ -43,19 +74,38 @@ trendYearFlandersServer <- function(id,
             
             maxYear <- max(geoData()$afschotjaar)
             minYear <- min(geoData()$afschotjaar)
-            defaultYear <- config::get("defaultYear", 
-              file = system.file("config.yml", package = "reportingGrofwild"))
             
             sliderInput(
               inputId = ns("period"), 
               label = "Periode", 
-              value = c(minYear, defaultYear),
+              value = isolate(results$period),
               min = minYear,
               max = maxYear,
               step = 1,
               sep = ""
             )
           })
+        
+        # Not via updateSelectInput: this is slower, multiple rendering of the plot
+        output$bronMap <- renderUI({
+            
+            req(input$period)
+            
+            newChoices <- unique(geoData()$dataSource[
+                geoData()$afschotjaar >= input$period[1] & 
+                  geoData()$afschotjaar <= input$period[2]])
+            isolate(previousChoice <- if (is.null(input$bronMap)) newChoices else input$bronMap)
+            
+            sourceChoices <- loadMetaSchade()$sources 
+            
+            selectInput(inputId = ns("bronMap"),
+              label = "Databron(nen)",
+              choices = sourceChoices[sourceChoices %in% newChoices], 
+              selected = previousChoice[previousChoice %in% newChoices],
+              multiple = TRUE)
+            
+          })
+        
         
         
         timeDataFlanders <- reactive({
@@ -70,7 +120,8 @@ trendYearFlandersServer <- function(id,
                   timeRange = input$period,
                   species = species(),
                   regionLevel = "flanders",
-                  unit = input$unit
+                  unit = input$unit,
+                  sourceIndicator = input$bronMap
               )
               
             })
@@ -102,41 +153,32 @@ trendYearFlandersServer <- function(id,
 #' @return UI object
 #' @export
 trendYearFlandersUI <- function(id,
-    type = c("grofwild", "wildschade", "wbe", "empty", "dash"),
+    type = c("grofwild", "wildschade"),
     includeOptions = TRUE,
     unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
-        "Aantal/100ha bos & natuur" = "relativeDekking"),
-    uiText, specie = NULL
+        "Aantal/100ha bos & natuur" = "relativeDekking")
 ){
   
   type <- match.arg(type)
   
   ns <- NS(id)
   
-  title <- if(!is.null(uiText)){
-        getOutputTitle(output = "trendYearFlandersUI", 
-            specie = specie, uiText = uiText)
-      }else{
-        tagList("Evolutie", 
-            if (type == "wildschade") "schadegevallen" else 
-                  "gerapporteerd afschot", 
-            tags$br(), "Vlaanderen"
-        )
-      }
-  
+ 
   tagList(
-    h3(title),
+    uiOutput(ns("title")),
     fluidRow(
       column(8, plotModuleUI(id = ns("trendYearFlanders"))),
       column(4,
         if(includeOptions)
-          tagList(
+          wellPanel(
             uiOutput(ns("period")),
             selectInput(
                 inputId = ns("unit"), 
                 label = "Eenheid",
                 choices = unitChoices
-            )
+            ),
+            if (type == "wildschade")
+              uiOutput(ns("bronMap"))
         ),
         optionsModuleUI(id = ns("trendYearFlanders"), exportData = TRUE,
             doWellPanel = FALSE)

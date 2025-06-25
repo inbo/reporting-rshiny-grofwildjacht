@@ -33,6 +33,10 @@ shinyServer(function(input, output, session) {
   subcategory <- reactiveVal(defaultTabs$subcategory)
   plot <- reactiveVal(defaultTabs$plot)
   
+  schade_code <- reactiveVal(NULL)
+  schade_gewas <- reactiveVal(NULL)
+  schade_voertuig <- reactiveVal(NULL)
+  
   # Store current tab
   # use a generic 'current tab' (e.g. no specific 'category()')
   # because tab should also be updated even if e.g. category() does not change
@@ -68,7 +72,8 @@ shinyServer(function(input, output, session) {
       plot(input$navbarID)
     }
     currentTab(input$navbarID);updateTab(TRUE);resetNextTab(TRUE)
-  })
+    
+  }, ignoreInit = TRUE)
 
   # list of current available categories, subcategories, outputs
   categoriesCur <- reactive(
@@ -206,8 +211,6 @@ shinyServer(function(input, output, session) {
 
   ## Subcategory
   
-  subcategorySpecie <- reactiveVal()
-
   # Update tab title
   output$subcategory <- renderUI(
     ifelse(
@@ -219,37 +222,53 @@ shinyServer(function(input, output, session) {
   
   # Update page content
   outputSubcategory <- reactive({
-    if(currentTab() %in% subcategories){
+    
+      # Update choices when switching species
+      specie()
+      
+      if (currentTab() %in% subcategories) {
+      
       isolate({
         if(doDebug)
           print(paste("Go to:", subcategory(), "page"))
-        
+      
         # Reset all next tabs
         plot(defaultTabs$plot)
         
         args <- list(
           id = subcategory(), 
           specie = specie,
+          category = category,
           subcategory = subcategory,
           outputs = outputsCur(),
           # general
           subcategories = subcategoriesCur(),
           uiText = uiText
         )
-        fct <- paste0(category(), "CardServer")
-        do.call(fct, args)
+        
+        do.call("subcategoryServer", args)
+        
       })
-    }else reactiveVal()
+    
+  }
+    
   })
 
   # Go to 'output' page if respective output clicked on the subcategory page
-  observeEvent(outputSubcategory()(), {
-    if(isTruthy(outputSubcategory()()) && outputSubcategory()() != defaultTabs$plot){
-      if(doDebug)
-        print(paste("Update plot to:", outputSubcategory()()))
-      plot(outputSubcategory()())
-      updateTab(TRUE)
-    }
+  observe({
+      
+      req(outputSubcategory())
+      
+      if (!is.null(outputSubcategory()$plot()) && outputSubcategory()$plot() != plot()) {
+        
+        if(doDebug)
+          print(paste("Update plot to:", outputSubcategory()$plot()))
+        
+        plot(outputSubcategory()$plot())
+        updateTab(TRUE)
+        
+      }
+              
   })
 
 # reset category
@@ -323,10 +342,11 @@ observeEvent(subcategory(), {
   }, priority = 2)
 
   # Update page content
-  outputSpecie <- reactive({
-    if(currentTab() %in% outputs){
+  outputSelection <- reactive({
+    
+      if (currentTab() %in% outputs) {
       isolate({
-        categoryOutput <- unique(as.character(subset(infoOutput, output == plot())$category))
+        categoryOutput <- getInfo(output = plot(), infoOutput = infoOutput, variable = "category")
         if(doDebug)
           print(paste("Go to:", categoryOutput, plot(), "output page"))
         args <- c(
@@ -348,13 +368,19 @@ observeEvent(subcategory(), {
             populatie = list(
               ecoData = ecoData, geoData = geoData
             ),
-            schade = list(
-              schadeData = schadeData, 
-              spatialData = spatialData, 
-              biotoopData = biotoopData, 
-              defaultYear = defaultYear, 
-              schadeTypes = schadeTypes, schadeCodes = schadeCodes
-            ),
+            schade = {
+              list(
+                schadeData = schadeData, 
+                spatialData = spatialData, 
+                biotoopData = biotoopData, 
+                defaultYear = defaultYear, 
+                schadeTypes = schadeTypes, schadeCodes = schadeCodes,
+                # isolate - prevent loop if changed too quickly in plot
+                schade_code = reactive(isolate(schade_code())),
+                schade_gewas = reactive(isolate(schade_gewas())),
+                schade_voertuig = reactive(isolate(schade_voertuig()))
+              )
+            },
             verspreiding = list(
               ecoData = ecoData, geoData = geoData, 
               spatialData = spatialData,
@@ -370,17 +396,39 @@ observeEvent(subcategory(), {
         fct <- paste0(categoryOutput, "OutputServer")
         do.call(fct, args)
      })
-    }else reactiveVal()
+     
+     }
+    
   })
   # Update specie in top bar if changed in the 'output' page
-  observeEvent(outputSpecie()(), {
-    if(isTruthy(outputSpecie()()) && !identical(outputSpecie()(), specie())){
-      if(doDebug)
-        print(paste("Specie updated in the 'output' page:", outputSpecie()()))
-      specie(outputSpecie()())
-      updateTab(FALSE)
-      resetNextTab(FALSE)
-    }
+  observe({
+      
+      req(outputSelection())
+      
+      if (!is.null(outputSelection()$specie()) && !identical(outputSelection()$specie(), specie())) {
+      
+        if(doDebug)
+          print(paste("Specie updated in the 'output' page:", outputSelection()$specie()))
+        
+        specie(outputSelection()$specie())
+        updateTab(TRUE)
+        resetNextTab(FALSE)
+        
+      }
+      
+      # optional
+      req("schade_code" %in% names(outputSelection()))
+      if (doDebug)
+        print(paste("Update schade settings on output page", 
+            paste(outputSelection()$schade_code(), collapse = ", ")))
+      
+      if (!setequal(outputSelection()$schade_code(), isolate(schade_code())))
+        schade_code(outputSelection()$schade_code())
+      if (!setequal(outputSelection()$schade_gewas(), isolate(schade_gewas())))
+        schade_gewas(outputSelection()$schade_gewas())
+      if (!setequal(outputSelection()$schade_voertuig(), isolate(schade_voertuig())))
+        schade_voertuig(outputSelection()$schade_voertuig())
+            
   })
 
   ## Change tabs
@@ -388,7 +436,7 @@ observeEvent(subcategory(), {
     if(doDebug)
       print(paste("Update tab to", currentTab()))
     updateTabsetPanel(session, "navbarID", selected = currentTab())    
-  }, ignoreInit = TRUE)
+  }, ignoreInit = TRUE, priority = 10)
 
   ## Navigation
   

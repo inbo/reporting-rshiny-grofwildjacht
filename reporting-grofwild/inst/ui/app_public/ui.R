@@ -5,14 +5,18 @@ specieTabs <- lapply(species, function(specie){
     value = specie,
     specieUI(
       id = specie, 
-      speciesList = schadeWildsoorten
+      speciesList = groupSpecies(allSpecies = allWildsoorten)
     )
   )
 })
 
 # build all category tabs
 categoryTabs <- lapply(categories, function(category){
-
+    
+  speciesList <- groupSpecies(allSpecies = allWildsoorten,
+    selectedSpecies = getInfo(category = category, variable = "specie", 
+      infoOutput = infoOutput))
+    
   bslib::nav_panel(
     title = getCategoryTitle(category),
     value = category, 
@@ -20,7 +24,7 @@ categoryTabs <- lapply(categories, function(category){
       category = category, id = category,
       ecoData = ecoData, schadeData = schadeData,
       uiText = uiText,
-      speciesList = schadeWildsoorten
+      speciesList = speciesList
     )
   )
   
@@ -30,19 +34,16 @@ categoryTabs <- lapply(categories, function(category){
 subcategoryTabs <- lapply(subcategories, function(subcategory){
    
   category <- strsplit(subcategory, split = "-")[[1]][1]
+  
+  speciesList <- groupSpecies(allSpecies = allWildsoorten,
+    selectedSpecies = getInfo(subcategory = subcategory, variable = "specie", 
+      infoOutput = infoOutput))
 
-  args <- c(
-    list(
-      id = subcategory, category = category, 
-      uiText = uiText,
-      speciesList = schadeWildsoorten,
-      select = TRUE
-    ),
-    if(category == "schade")
-      list(
-        schadeTypes = schadeTypes, gewasChoices = gewasChoices, 
-        voertuigChoices = voertuigChoices
-      )
+  args <- list(
+    id = subcategory, category = category, 
+    uiText = uiText,
+    speciesList = speciesList, 
+    select = TRUE
   )
   
   bslib::nav_panel(
@@ -60,19 +61,15 @@ outputTabs <- lapply(outputs, function(output){
   category <- unique(infoOutput[which(infoOutput$output == output), "category"])
   title <- getOutputTitle(output = output, 
     uiText = uiText, n = 200, type = category)
+  speciesList <- groupSpecies(allSpecies = allWildsoorten,
+    selectedSpecies = getInfo(output = output, variable = "specie", 
+      infoOutput = infoOutput))
 
-  args <- c(
-    list(
-      id = output, category = category, select = TRUE,
-      speciesList = schadeWildsoorten,
-      whiteWell = TRUE
-    ),
-    if(category == "schade")
-      list(
-        schadeTypes = schadeTypes, 
-        gewasChoices = gewasChoices, 
-        voertuigChoices = voertuigChoices
-      )
+  args <- list(
+    id = output, category = category, select = TRUE,
+    speciesList = speciesList,
+    schadeSelection = category == "schade",
+    whiteWell = TRUE
   )
 
   bslib::nav_panel(
@@ -114,7 +111,7 @@ shinyUI(
       id = "navbarID",
       
       bslib::nav_panel(title = "Home", 
-        frontUI(speciesList = schadeWildsoorten)
+        frontUI(speciesList = groupSpecies(allSpecies = allWildsoorten), uiText = uiText)
       ),
       
       do.call(bslib::nav_menu, 

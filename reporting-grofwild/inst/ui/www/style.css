@@ -354,3 +354,21 @@ body > .tabbable {
 .bslib-nav-item .selectize-input::after {
   border-style: hidden;    
 }
+
+
+/* Frontpage footer */
+
+.bottom-banner {
+    padding: 7px;
+    position: fixed; 
+    background-color: #456394; 
+    width: 100%; 
+    bottom: 0px; 
+    height: auto;
+    text-align: center;
+}
+
+.bottom-banner > a {
+    padding: 15px;
+}
+

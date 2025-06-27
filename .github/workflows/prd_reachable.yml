@@ -2,48 +2,40 @@ name: Test Website Reachability
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Run every hour
-  workflow_dispatch:     # Allow manual triggering
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
   test_reachability:
     runs-on: ubuntu-latest
-    outputs:
-      unreachable_sites: ${{ steps.unreachable_sites.outputs.unreachable }}
     steps:
       - name: Check faunabeheer.inbo.be status
         id: check_faunabeheer
         uses: lakuapik/gh-actions-http-status@v1
-        continue-on-error: true  # Prevent job failure on non-200 status
+        continue-on-error: true
         with:
           site: https://faunabeheer.inbo.be
           expected: 200
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check wbe.inbo.be status
         id: check_wbe
         uses: lakuapik/gh-actions-http-status@v1
-        continue-on-error: true  # Prevent job failure on non-200 status
+        continue-on-error: true
         with:
           site: https://wbe.inbo.be
           expected: 200
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Compile unreachable sites
         id: unreachable_sites
         run: |
           unreachable=""
-          # Check faunabeheer status
           if [ "${{ steps.check_faunabeheer.outputs.status }}" != "200" ]; then
             unreachable+="faunabeheer.inbo.be (${{ steps.check_faunabeheer.outputs.status }}) "
           fi
-          # Check wbe status
           if [ "${{ steps.check_wbe.outputs.status }}" != "200" ]; then
             unreachable+="wbe.inbo.be (${{ steps.check_wbe.outputs.status }}) "
           fi
-          echo "unreachable_sites=$unreachable" >> $GITHUB_OUTPUT
+          echo "unreachable_sites=${unreachable}" >> $GITHUB_OUTPUT
 
       - name: Send email notification
         if: steps.unreachable_sites.outputs.unreachable_sites != ''
@@ -57,7 +49,6 @@ jobs:
           body: |
             The following website(s) returned non-200 status:
             ${{ steps.unreachable_sites.outputs.unreachable_sites }}
-            
             Please investigate the issues.
           to: faunabeheer@inbo.be
           from: GitHub Actions

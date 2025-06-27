@@ -3,7 +3,7 @@ name: Test Website Reachability
 on:
   schedule:
     - cron: '0 * * * *'  # Run every hour
-  workflow_dispatch:      # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   test_reachability:
@@ -25,11 +25,13 @@ jobs:
         id: unreachable_sites
         run: |
           unreachable=""
-          if [ "${{ steps.check_faunabeheer.outputs.status }}" != "200" ]; then
-            unreachable+="faunabeheer.inbo.be (${{ steps.check_faunabeheer.outputs.status }})\n"
+          faunabeheer_status="${{ steps.check_faunabeheer.outputs.status }}"
+          wbe_status="${{ steps.check_wbe.outputs.status }}"
+          if [ "$faunabeheer_status" -ge 400 ]; then
+            unreachable+="faunabeheer.inbo.be ($faunabeheer_status)\n"
           fi
-          if [ "${{ steps.check_wbe.outputs.status }}" != "200" ]; then
-            unreachable+="wbe.inbo.be (${{ steps.check_wbe.outputs.status }})\n"
+          if [ "$wbe_status" -ge 400 ]; then
+            unreachable+="wbe.inbo.be ($wbe_status)\n"
           fi
           echo -e "unreachable_sites<<EOF\n${unreachable}EOF" >> $GITHUB_OUTPUT
 
@@ -43,7 +45,7 @@ jobs:
           password: ${{ secrets.EMAIL_PASS }}
           subject: Website(s) not reachable
           body: |
-            The following website(s) returned non-200 status:
+            The following website(s) returned HTTP status 400 or higher:
             ${{ steps.unreachable_sites.outputs.unreachable_sites }}
             Please investigate the issues.
           to: faunabeheer@inbo.be

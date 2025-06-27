@@ -3,43 +3,45 @@ name: Test Website Reachability
 on:
   schedule:
     - cron: '0 * * * *'  # Run every hour
-  workflow_dispatch:  # Allow manual triggering
+  workflow_dispatch:     # Allow manual triggering
 
 jobs:
   test_reachability:
     runs-on: ubuntu-latest
+    outputs:
+      unreachable_sites: ${{ steps.unreachable_sites.outputs.unreachable }}
     steps:
-      - name: Check if faunabeheer.inbo.be is reachable
+      - name: Check faunabeheer.inbo.be status
         id: check_faunabeheer
-        run: |
-          if curl -sSf https://faunabeheer.inbo.be > /dev/null 2>&1; then
-            echo "faunabeheer.inbo.be is reachable"
-            echo "faunabeheer_reachable=true" >> $GITHUB_OUTPUT
-          else
-            echo "faunabeheer.inbo.be is not reachable"
-            echo "faunabeheer_reachable=false" >> $GITHUB_OUTPUT
-          fi
+        uses: lakuapik/gh-actions-http-status@v1
+        continue-on-error: true  # Prevent job failure on non-200 status
+        with:
+          site: https://faunabeheer.inbo.be
+          expected: 200
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check if wbe.inbo.be is reachable
+      - name: Check wbe.inbo.be status
         id: check_wbe
-        run: |
-          if curl -sSf https://wbe.inbo.be > /dev/null 2>&1; then
-            echo "wbe.inbo.be is reachable"
-            echo "wbe_reachable=true" >> $GITHUB_OUTPUT
-          else
-            echo "wbe.inbo.be is not reachable"
-            echo "wbe_reachable=false" >> $GITHUB_OUTPUT
-          fi
+        uses: lakuapik/gh-actions-http-status@v1
+        continue-on-error: true  # Prevent job failure on non-200 status
+        with:
+          site: https://wbe.inbo.be
+          expected: 200
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Determine unreachable websites
+      - name: Compile unreachable sites
         id: unreachable_sites
         run: |
           unreachable=""
-          if [ "${{ steps.check_faunabeheer.outputs.faunabeheer_reachable }}" == "false" ]; then
-            unreachable+="faunabeheer.inbo.be "
+          # Check faunabeheer status
+          if [ "${{ steps.check_faunabeheer.outputs.status }}" != "200" ]; then
+            unreachable+="faunabeheer.inbo.be (${{ steps.check_faunabeheer.outputs.status }}) "
           fi
-          if [ "${{ steps.check_wbe.outputs.wbe_reachable }}" == "false" ]; then
-            unreachable+="wbe.inbo.be "
+          # Check wbe status
+          if [ "${{ steps.check_wbe.outputs.status }}" != "200" ]; then
+            unreachable+="wbe.inbo.be (${{ steps.check_wbe.outputs.status }}) "
           fi
           echo "unreachable_sites=$unreachable" >> $GITHUB_OUTPUT
 
@@ -49,12 +51,13 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 465
-          username: ${{secrets.EMAIL_USER}}
-          password: ${{secrets.EMAIL_PASS}}
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
           subject: Website(s) not reachable
           body: |
-            The following website(s) are currently not reachable:
+            The following website(s) returned non-200 status:
             ${{ steps.unreachable_sites.outputs.unreachable_sites }}
-            Please check and resolve the issue.
+            
+            Please investigate the issues.
           to: faunabeheer@inbo.be
           from: GitHub Actions

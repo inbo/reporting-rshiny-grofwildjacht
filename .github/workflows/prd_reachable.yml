@@ -3,47 +3,37 @@ name: Test Website Reachability
 on:
   schedule:
     - cron: '0 * * * *'  # Run every hour
-  workflow_dispatch:     # Allow manual triggering
+  workflow_dispatch:
 
 jobs:
   test_reachability:
     runs-on: ubuntu-latest
-    outputs:
-      unreachable_sites: ${{ steps.unreachable_sites.outputs.unreachable }}
     steps:
       - name: Check faunabeheer.inbo.be status
         id: check_faunabeheer
-        uses: lakuapik/gh-actions-http-status@v1
-        continue-on-error: true  # Prevent job failure on non-200 status
-        with:
-          site: https://faunabeheer.inbo.be
-          expected: 200
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://faunabeheer.inbo.be)
+          echo "status=$status" >> $GITHUB_OUTPUT
 
       - name: Check wbe.inbo.be status
         id: check_wbe
-        uses: lakuapik/gh-actions-http-status@v1
-        continue-on-error: true  # Prevent job failure on non-200 status
-        with:
-          site: https://wbe.inbo.be
-          expected: 200
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          status=$(curl -s -o /dev/null -w "%{http_code}" https://wbe.inbo.be)
+          echo "status=$status" >> $GITHUB_OUTPUT
 
       - name: Compile unreachable sites
         id: unreachable_sites
         run: |
           unreachable=""
-          # Check faunabeheer status
-          if [ "${{ steps.check_faunabeheer.outputs.status }}" != "200" ]; then
-            unreachable+="faunabeheer.inbo.be (${{ steps.check_faunabeheer.outputs.status }}) "
+          faunabeheer_status="${{ steps.check_faunabeheer.outputs.status }}"
+          wbe_status="${{ steps.check_wbe.outputs.status }}"
+          if [ "$faunabeheer_status" -ge 400 ]; then
+            unreachable+="faunabeheer.inbo.be ($faunabeheer_status)\n"
           fi
-          # Check wbe status
-          if [ "${{ steps.check_wbe.outputs.status }}" != "200" ]; then
-            unreachable+="wbe.inbo.be (${{ steps.check_wbe.outputs.status }}) "
+          if [ "$wbe_status" -ge 400 ]; then
+            unreachable+="wbe.inbo.be ($wbe_status)\n"
           fi
-          echo "unreachable_sites=$unreachable" >> $GITHUB_OUTPUT
+          echo -e "unreachable_sites<<EOF\n${unreachable}EOF" >> $GITHUB_OUTPUT
 
       - name: Send email notification
         if: steps.unreachable_sites.outputs.unreachable_sites != ''
@@ -55,9 +45,8 @@ jobs:
           password: ${{ secrets.EMAIL_PASS }}
           subject: Website(s) not reachable
           body: |
-            The following website(s) returned non-200 status:
+            The following website(s) returned HTTP status 400 or higher:
             ${{ steps.unreachable_sites.outputs.unreachable_sites }}
-            
             Please investigate the issues.
           to: faunabeheer@inbo.be
           from: GitHub Actions

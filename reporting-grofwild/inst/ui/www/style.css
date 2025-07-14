@@ -230,8 +230,40 @@ p, li, label {
 
 /*navigation bar*/
 
+/* Prevent nav items from wrapping or overlapping */
+.navbar,
+.navbar > .container,
+.navbar > .container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.navbar-nav {
+ 	flex-wrap: nowrap !important;
+ 	overflow-x: auto !important;
+ 	white-space: nowrap !important;
+}
+ 
+.navbar-nav::-webkit-scrollbar {
+ 	height: 6px;
+}
+ 
+.navbar-nav::-webkit-scrollbar-thumb {
+ 	background-color: rgba(0,0,0,0.2);
+ 	border-radius: 3px;
+}
+ 
+/* Optional: allow nav items like selectizeInput to shrink */
+.navbar-nav .form-group {
+ 	min-width: 120px;
+ 	max-width: 200px;
+ 	width: 100%;
+}
+
 .nav-tabs {
-  background-color: #456394; 
+  background-color: #456394;
+	width: fit-content;
+	min-width: 100%;
 }
 
 /* text in navigation menu*/

@@ -276,7 +276,8 @@ optionsModuleServer <- function(input, output, session,
   ## FIGUUR: Verdeling afschot over de jaren
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   
-  observe({
+  observe({ 
+      req(!is.null(input$type))   # Make sure this only runs AFTER the initial values are filled in
       
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
         

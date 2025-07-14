@@ -574,7 +574,7 @@ observeEvent(subcategory(), {
         server = TRUE,
         options = list(
           create = FALSE,
-          onDropdownOpen = I("function($dropdown) {if (!this.lastQuery.length) {this.close(); this.settings.openOnFocus = false;}}"),
+#          onDropdownOpen = I("function($dropdown) {if (!this.lastQuery.length) {this.close(); this.settings.openOnFocus = false;}}"),
           onType = I("function (str) {if (str === \"\") {this.close();}}"),
           onItemAdd = I("function() {this.close();}"),
           placeholder = "Zoek in navigatie",

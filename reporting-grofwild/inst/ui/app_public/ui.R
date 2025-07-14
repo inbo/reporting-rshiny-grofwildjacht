@@ -94,6 +94,23 @@ shinyUI(
     ## ------
                 
     tags$head(
+      tags$style(HTML('
+            #search + .selectize-control .selectize-input.has-items:after,
+						#search + .selectize-control .selectize-input:after {
+            content: "\\f002" !important; /* Font Awesome search icon */
+            font-family: "Font Awesome 5 Free" !important;
+            font-weight: 900 !important;
+            border: none !important;
+            background: none !important;
+            width: auto !important;
+            height: auto !important;
+            right: 10px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            cursor: pointer !important;
+            }
+            ')),
+      tags$link(rel = "stylesheet", href = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"),
 #    tags$meta(charset = "utf-8"),
 #    tags$meta(name="viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no"),
       tags$link(rel = "stylesheet",

@@ -170,9 +170,18 @@ optionsModuleServer <- function(input, output, session,
       
       results$minTime <- min(timeRange())
       
+      value <- if (is.null(current$time)) {
+          if (grepl("referentieper", tolower(timeLabel))) {
+            c(min(timeRange()), definedYear - 1)
+          } else {
+            c(min(timeRange()), definedYear)
+          }
+        } else {
+          current$time
+        }
+      
       sliderInput(inputId = ns("time"), label = timeLabel, 
-        value = if (is.null(current$time))
-          c(min(timeRange()), definedYear) else current$time,
+        value = value,
         min = min(timeRange()),
         max = max(timeRange()),
         step = 1,

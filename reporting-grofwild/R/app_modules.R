@@ -41,8 +41,6 @@ optionsModuleUI <- function(id,
   
   ns <- NS(id)
   
-  sourcesSchade <- loadMetaSchade()$sources
-  
   toReturn <- tagList(
       
       if (!is.null(summarizeBy))
@@ -65,10 +63,7 @@ optionsModuleUI <- function(id,
             column(11, offset = 1, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
-        selectInput(inputId = ns("dataSource_schade"), 
-          label = "Databron(nen)",
-          choices = sourcesSchade, selected = sourcesSchade,
-          multiple = TRUE),
+        uiOutput(ns("source_schade")),
       if ("onderkaak" %in% showDataSource)
         selectInput(inputId = ns("dataSource_onderkaak"), 
           label = "Databron(nen) voor onderkaaklengte",
@@ -242,6 +237,20 @@ optionsModuleServer <- function(input, output, session,
         
       })
   observe(current$year <- input$year)
+  
+  
+  output$source_schade <- renderUI({
+      
+      sourcesSchade <- loadMetaSchade()$sources
+      
+      selectInput(inputId = ns("dataSource_schade"), 
+        label = "Databron(nen)",
+        choices = sourcesSchade, selected = if (is.null(current$sources_schade)) sourcesSchade else current$sources_schade,
+        multiple = TRUE)
+      
+      
+    })
+  observe(current$sources_schade <- input$dataSource_schade)
   
   
   output$region <- renderUI({

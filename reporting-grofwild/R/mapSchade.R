@@ -290,6 +290,7 @@ mapSchadeServer <- function(
       
       ns <- session$ns
       results <- reactiveValues()
+      current <- reactiveValues()
       
       
       # Metadata schade
@@ -459,7 +460,7 @@ mapSchadeServer <- function(
           req(input$time_schade)
           
           newChoices <- unique(results$schadeData()$dataSource[results$schadeData()$afschotjaar %in% input$time_schade])
-          isolate(previousChoice <- if (is.null(input$bronMap)) newChoices else input$bronMap)
+          isolate(previousChoice <- if (is.null(current$bron)) newChoices else current$bron)
           
           
           selectInput(inputId = ns("bron"),
@@ -469,6 +470,8 @@ mapSchadeServer <- function(
             multiple = TRUE)
           
         })
+      
+      observe(current$bron <- input$bron)
       
       
       output$nFilter <- renderUI({

@@ -7,9 +7,10 @@
 #' 
 #' @return ggplot object
 #' 
-#' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous facet_wrap coord_fixed geom_vline scale_fill_manual scale_color_manual theme_bw
+#' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous facet_wrap coord_fixed geom_vline scale_fill_manual scale_color_manual theme_bw theme element_text
 #' @importFrom ggforce geom_circle
 #' @importFrom INBOtheme inbo_palette
+#' @importFrom grid unit
 #' @export 
 pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
   

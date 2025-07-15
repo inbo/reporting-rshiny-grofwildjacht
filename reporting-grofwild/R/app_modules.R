@@ -438,6 +438,8 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param fullNames named character vector, values for the \code{variable} to be 
 #' displayed instead of original data values
 #' @param height character, plot height, default is "600px" 
+#' @param exportPlotWidth numeric width of the exported plot (.png)
+#' @param exportPlotHeight numeric height of the exported plot (.png)
 #' 
 #' @return no return value; plot output object is created
 #' @author mvarewyck
@@ -456,7 +458,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
     variable = NULL, combinatie = NULL, title = NULL,
     fullNames = NULL, type = NULL,
     typeMelding = NULL, 
-    height = "600px") {
+    height = "600px",
+    exportPlotWidth = 6, exportPlotHeight = 6) {
   
   subData <- reactive({
         
@@ -684,7 +687,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
             need("ggplot" %in% class(resPlot), "Niet beschikbaar")
           )
           
-          ggsave(file, resPlot, width = 6, height = 6, dpi = 150)
+          ggsave(file, resPlot, width = exportPlotWidth, height = exportPlotHeight, dpi = 150)
           
         })
   

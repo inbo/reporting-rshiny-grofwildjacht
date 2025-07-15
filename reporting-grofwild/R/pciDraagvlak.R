@@ -35,6 +35,9 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     Natuursector = inboColors[9]    
   )
   
+  # Drop levels so that unavailable levels do not take place within the graph 
+  data[, yVar] <- droplevels(data[, yVar])
+  
   # Plot
   myPlot <- ggplot(data) + 
     geom_circle(aes(x0 = meanAnswer, 
@@ -53,7 +56,12 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
     scale_fill_manual(name = "", values = colorValues) + 
     scale_color_manual(name = "", values = colorValues) + 
-    theme_bw()
+    theme_bw() + 
+    theme(
+      axis.text.y = element_text(size = 14),
+      legend.text = element_text(size = 12),
+      legend.key.size = unit(0.5, "cm")
+      )
   
   list(
     plot = myPlot,
@@ -107,7 +115,8 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
       callModule(module = plotModuleServer, id = "pciDraagvlak",
         plotFunction = plotFunction, 
         data = subData,
-        yVar = yVar
+        yVar = yVar,
+        exportPlotWidth = 12, exportPlotHeight = ifelse(length(input$year) > 1, 10, 12),
       )
     
     })

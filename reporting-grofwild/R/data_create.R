@@ -392,7 +392,7 @@ createRawData <- function(
         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
         "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
         "PolyLocatieWKT", "x", "y",
-        "geschat_schadebedrag", "type_melding")]
+        "SchadeBedragOmschrijving", "type_melding")]
     
     # format date
     rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")

@@ -280,8 +280,6 @@ optionsModuleServer <- function(input, output, session,
 
       req(!is.null(input$type))
       
-      req(!is.null(input$type))
-      
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
         
         if (input$dataSource_leeftijd == "both") {

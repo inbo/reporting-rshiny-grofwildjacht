@@ -130,6 +130,7 @@ shinyUI(
       bslib::nav_panel(title = "Home", 
         frontUI(speciesList = groupSpecies(allSpecies = allWildsoorten), uiText = uiText)
       ),
+      bslib::nav_item( tags$span(">", style = "color: #ffffff; font-size: 12; font-weight: bold; padding: 0 10px;")),
       
       do.call(bslib::nav_menu, 
         append(
@@ -137,18 +138,21 @@ shinyUI(
           specieTabs
         )
       ),
+      bslib::nav_item( tags$span(">", style = "color: #ffffff; font-size: 12; font-weight: bold; padding: 0 10px;")),
       do.call(bslib::nav_menu,
         append(
           list(title = htmlOutput("category", inline = TRUE)), 
           categoryTabs
         )
       ),
+      bslib::nav_item( tags$span(">", style = "color: #ffffff; font-size: 12; font-weight: bold; padding: 0 10px;")),
       do.call(bslib::nav_menu,
         append(
           list(title = htmlOutput("subcategory", inline = TRUE)), 
           subcategoryTabs
         )
       ),
+      bslib::nav_item( tags$span(">", style = "color: #ffffff; font-size: 12; font-weight: bold; padding: 0 10px;")),
       do.call(bslib::nav_menu,
         append(
           list(title = htmlOutput("output", inline = TRUE)), 

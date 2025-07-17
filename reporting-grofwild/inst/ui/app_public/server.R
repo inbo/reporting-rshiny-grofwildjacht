@@ -106,7 +106,21 @@ shinyServer(function(input, output, session) {
   )
   
   # Update tab title
-  output$specie <- renderUI(specie())
+    output$specie <- renderUI({
+        
+        if (isTruthy(specie()) && specie() != defaultTabs$specie) {
+          HTML(sprintf('
+                <span style="display: inline-block; line-height: 1;">
+                <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Diersoort:</span>
+                <span style="display: block; color: #ffffff;">%s</span>
+                </span>
+                ', specie()))
+        } else {
+          defaultTabs$specie
+        }
+        
+      })
+
   
   # Change tab
   observeEvent(specie(), {
@@ -152,11 +166,18 @@ shinyServer(function(input, output, session) {
   
   # Update tab title
   output$category <- renderUI({
-    ifelse(
-      isTruthy(category()),
-      getCategoryTitle(category()),
-      defaultTabs$category
-    )
+      
+      if (isTruthy(category()) && category() != defaultTabs$category) {
+        HTML(sprintf('
+              <span style="display: inline-block; line-height: 1;">
+              <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Categorie:</span>
+              <span style="display: block; color: #ffffff;">%s</span>
+              </span>
+              ', getCategoryTitle(category())))
+      } else {
+        defaultTabs$category
+      }
+      
   })
   
   # Change tab
@@ -212,13 +233,20 @@ shinyServer(function(input, output, session) {
   ## Subcategory
   
   # Update tab title
-  output$subcategory <- renderUI(
-    ifelse(
-      isTruthy(subcategory()) && subcategory() != defaultTabs$subcategory,
-      getSubcategoryTitle(subcategory = subcategory(), uiText = uiText),
-      defaultTabs$subcategory
-    )
-  )
+  output$subcategory <- renderUI({
+      
+      if (isTruthy(subcategory()) && subcategory() != defaultTabs$subcategory) {
+        HTML(sprintf('
+            <span style="display: inline-block; line-height: 1;">
+            <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Subcategorie:</span>
+            <span style="display: block; color: #ffffff;">%s</span>
+            </span>
+            ', getSubcategoryTitle(subcategory = subcategory(), uiText = uiText)))
+      } else {
+        defaultTabs$subcategory
+      }
+      
+    })
   
   # Update page content
   outputSubcategory <- reactive({
@@ -294,15 +322,29 @@ observeEvent(subcategory(), {
   ## Outputs (table/plot)
   
   # Update tab title
-  output$output <- renderUI(
-    if(plot() %in% outputs){
-      getOutputTitle(
-        output = plot(), 
-        uiText = uiText, n = 200, 
-        type = unique(subset(infoOutput, output == plot())$category)
-      )
-    }else plot()
-  )
+
+    output$output <- renderUI({
+        
+        plotName <- if(plot() %in% outputs){
+            getOutputTitle(
+              output = plot(), 
+              uiText = uiText, n = 200, 
+              type = unique(subset(infoOutput, output == plot())$category)
+            )
+          }else plot()
+        
+        if (isTruthy(plot()) && plot() != defaultTabs$plot) {
+          HTML(sprintf('
+                <span style="display: inline-block; line-height: 1;">
+                <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Visualisatie:</span>
+                <span style="display: block; color: #ffffff;">%s</span>
+                </span>
+                ', plotName))
+        } else {
+          defaultTabs$plot
+        }
+        
+      })
   
   # Change tab
   observeEvent(plot(), {

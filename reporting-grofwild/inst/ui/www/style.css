@@ -294,6 +294,16 @@ p, li, label {
   background-color: #bab9b9 !important;
 }
 
+#navbarID {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1050 !important;
+  width: fit-content !important;
+  min-width: 100% !important;
+	background-color: #456394;
+}
+
+
 /*navigation menu (nested within navigation bar) */
 
 .dropdown-menu {
@@ -370,7 +380,7 @@ p, li, label {
 /*Custom colors for backgrounds*/
 
 body > .tabbable {
-  background-color: #f5f5f5;    
+  background-color: #f5f5f5;  
 }
 
 .well-white {

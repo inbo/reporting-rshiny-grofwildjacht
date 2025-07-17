@@ -277,6 +277,8 @@ optionsModuleServer <- function(input, output, session,
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   
   observe({
+
+      req(!is.null(input$type))
       
       req(!is.null(input$type))
       

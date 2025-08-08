@@ -14,10 +14,10 @@ frontUI <- function(speciesList, uiText){
     slickR::slickR(
         obj = img, slideId = "carousel", 
         slideType = 'img',
-        width = "100vw", padding = 0
+        width = "100%", padding = 0
       ) + 
       slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE),
-    fluidRow(style = "margin-top: -50vh",
+    fluidRow(style = "margin-top: -50vh; width: 100%;",
       column(width = 6, offset = 3, align = "center",
         tags$span(
           style = "font-weight: bold;text-align: center;color: white;font-size: 2.1em;",

@@ -28,7 +28,7 @@ categoryUI <- function(
   verticalLayout(
       
     # image
-    fluidRow(img(src = imgFile, width = "100%")),
+    img(src = imgFile, width = "100%"),
     
     # Specie
     tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 

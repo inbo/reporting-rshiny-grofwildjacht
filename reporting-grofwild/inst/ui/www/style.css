@@ -32,7 +32,7 @@ div#shiny-disconnected-overlay:before {
 footer {
 	border-top: 1px solid #eee;
 	height: 150px;
-	padding: 20px 0;
+	padding: 0px 0;
 	margin-top: 20px;
 }
 
@@ -203,7 +203,7 @@ p, li, label {
 
 /* slide image */
 .slick-slide img {
-    width: 100vw !important;
+    width: 100% !important;
 }
 
 /* dots */
@@ -239,9 +239,9 @@ p, li, label {
 }
 
 .navbar-nav {
- 	flex-wrap: nowrap !important;
- 	overflow-x: auto !important;
- 	white-space: nowrap !important;
+ 	flex-wrap: wrap !important;
+ 	overflow-x: visible !important;
+ 	white-space: normal !important;
 }
  
 .navbar-nav::-webkit-scrollbar {
@@ -262,8 +262,8 @@ p, li, label {
 
 .nav-tabs {
   background-color: #456394;
-	width: fit-content;
-	min-width: 100%;
+	width: 100% !important;
+	flex-wrap: wrap !important;
 }
 
 /* text in navigation menu*/

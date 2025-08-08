@@ -14,11 +14,7 @@ specieUI <- function(id, speciesList){
     verticalLayout(
       
       # image
-      fluidRow(
-       column(width = 12, 
-          img(src = "www/specie-header.png", width = "100%")
-        )
-      ),
+      img(src = "www/specie-header.png", width = "100%"),
       
       # Choice of specie and options
       tags$div(

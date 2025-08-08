@@ -31,54 +31,97 @@ categoryTabs <- lapply(categories, function(category){
 })
 
 # build all subcategory tabs - contain placeholder for cards 
-subcategoryTabs <- lapply(subcategories, function(subcategory){
-   
-  category <- strsplit(subcategory, split = "-")[[1]][1]
-  
-  speciesList <- groupSpecies(allSpecies = allWildsoorten,
-    selectedSpecies = getInfo(subcategory = subcategory, variable = "specie", 
-      infoOutput = infoOutput))
+subcategoryTabs <- unlist(lapply(categories, function(category) {
+    
+    subcategoriesTmp <- subcategories[startsWith(subcategories, category)]
+    
+    # Create nav_panels for each subcategory in this category
+    subcategory_panels <- lapply(subcategoriesTmp, function(subcategory) {
 
-  args <- list(
-    id = subcategory, category = category, 
-    uiText = uiText,
-    speciesList = speciesList, 
-    select = TRUE
-  )
-  
-  bslib::nav_panel(
-    title = getSubcategoryTitle(subcategory = subcategory, 
-      uiText = uiText),   
-    value = subcategory,
-    do.call(outputUI, args)
-  )
-  
-})
+        speciesList <- groupSpecies(
+          allSpecies = allWildsoorten,
+          selectedSpecies = getInfo(subcategory = subcategory, variable = "specie",
+            infoOutput = infoOutput)
+        )
+        
+        args <- list(
+          id = subcategory, 
+          category = category,
+          uiText = uiText,
+          speciesList = speciesList,
+          select = TRUE
+        )
+        
+        bslib::nav_panel(
+          title = HTML(paste0("&nbsp;&nbsp;", getSubcategoryTitle(subcategory = subcategory, uiText = uiText))),
+          value = subcategory,
+          do.call(outputUI, args)
+        )
+      })
+    
+    subcategory_panels <- append(
+      list(bslib::nav_panel(
+        title = tags$span(
+          class = "custom-tab-title",
+          getCategoryTitle(category)
+        ),
+        value = category,
+        NULL
+      )),
+      subcategory_panels
+      )
+      
+      subcategory_panels
+    
+  }), recursive = FALSE)
+
+
 
 # build all output tabs - contain placeholder for plot/table and parameters
-outputTabs <- lapply(outputs, function(output){
-
-  category <- unique(infoOutput[which(infoOutput$output == output), "category"])
-  title <- getOutputTitle(output = output, 
-    uiText = uiText, n = 200, type = category)
-  speciesList <- groupSpecies(allSpecies = allWildsoorten,
-    selectedSpecies = getInfo(output = output, variable = "specie", 
-      infoOutput = infoOutput))
-
-  args <- list(
-    id = output, category = category, select = TRUE,
-    speciesList = speciesList,
-    schadeSelection = category == "schade",
-    whiteWell = TRUE
-  )
-
-  bslib::nav_panel(
-    title = title,   
-    value = output,
-    do.call(outputUI, args)
-  )
-
-})
+outputTabs <- unlist(lapply(subcategories, function(subcategory) {
+      
+      outputsTmp <- unique(infoOutput[which(infoOutput$subcategory == subcategory), "output"])
+      
+      # Create nav_panels for each subcategory in this category
+      output_panels <- lapply(outputsTmp, function(output) {
+          
+          category <- unique(infoOutput[which(infoOutput$output == output), "category"])
+          title <- getOutputTitle(output = output, 
+            uiText = uiText, n = 200, type = category)
+          speciesList <- groupSpecies(allSpecies = allWildsoorten,
+            selectedSpecies = getInfo(output = output, variable = "specie", 
+              infoOutput = infoOutput))
+          
+          args <- list(
+            id = output, category = category, select = TRUE,
+            speciesList = speciesList,
+            schadeSelection = category == "schade",
+            whiteWell = TRUE
+          )
+          
+          bslib::nav_panel(
+            title = HTML(paste0("&nbsp;&nbsp;", title)),   
+            value = output,
+            do.call(outputUI, args)
+          )
+        })
+      
+      output_panels <- append(
+        list(bslib::nav_panel(
+            title = tags$span(
+              class = "custom-tab-title",
+              getSubcategoryTitle(subcategory = subcategory, uiText = uiText)
+            ),
+            value = subcategory,
+            NULL
+          )),
+        output_panels
+      )
+      
+      output_panels
+      
+    }), recursive = FALSE)
+    
 
 shinyUI(
         

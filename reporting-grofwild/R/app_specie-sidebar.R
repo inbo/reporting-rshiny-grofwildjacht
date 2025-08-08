@@ -34,7 +34,8 @@ specieSidebarUI <- function(id,
         htmlOutput(outputId = ns("specie-name")),
       imageOutput(outputId = ns("specie-image"), height = "auto"),
       uiOutput(outputId = ns("specie-latin-name")),
-      bottomExtra
+      bottomExtra,
+      div(style = "text-align: right; margin-top: 10px;", actionButton(inputId=ns("return"), label = "Back", style = "background-color: #F5F5F5;", icon = icon("arrow-left")))
   )
   
 }
@@ -75,6 +76,23 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
           updateQueryString(queryString = newString, mode = "push", session)
           
       }, priority = -2)
+    
+    
+    observeEvent(input$return, {
+        
+        ## TODO don't forget to adapt this part of code once we refactor the url approach
+        # TODO check whether this also works when going from species page -> homepage and from category -> homepage in case no species selected
+        req(session$clientData$url_hash)
+        
+        currentString <- utils::URLdecode(URL = session$clientData$url_hash)
+        
+        currentSelection <- strsplit(currentString, split = "/")[[1]]
+        newString <- paste(head(currentSelection, -1), collapse = "/")
+        
+        if (currentString != newString)
+          updateQueryString(queryString = newString, mode = "push", session)
+      })
+    
         
   })
 }

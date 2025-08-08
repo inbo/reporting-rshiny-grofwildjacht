@@ -268,13 +268,14 @@ p, li, label {
 
 /* text in navigation menu*/
 .nav-tabs > li > a > span { 
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 /* navigation items */
 .nav-tabs > li > a {
   color: #ffffff !important;
 }
+
 .nav-tabs > li > div > a {
   color: #ffffff !important;
 }
@@ -294,6 +295,13 @@ p, li, label {
   background-color: #bab9b9 !important;
 }
 
+.nav-tabs .custom-tab-title {
+  font-weight: bold;
+  text-decoration: underline;
+	font-size: 18px;
+	color: inherit !important;
+}
+
 #navbarID {
   position: sticky !important;
   top: 0 !important;
@@ -302,7 +310,6 @@ p, li, label {
   min-width: 100% !important;
 	background-color: #456394;
 }
-
 
 /*navigation menu (nested within navigation bar) */
 

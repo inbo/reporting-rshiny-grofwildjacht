@@ -55,7 +55,7 @@ shinyServer(function(input, output, session) {
     observe(print(paste("Output:", plot())))
   
   # Save selection 
-  observeEvent(input$navbarID, {
+  observeEvent(input$navbarID, ignoreInit = TRUE, {
     if(doDebug)
       print(paste("Update of navbar ID to:", input$navbarID))
     if (input$navbarID %in% species) {
@@ -388,7 +388,7 @@ observeEvent(subcategory(), {
     if(doDebug)
       print(paste("Update tab to", currentTab()))
     updateTabsetPanel(session, "navbarID", selected = currentTab())    
-  }, ignoreInit = TRUE)
+  })
 
   ## Navigation
   
@@ -453,29 +453,46 @@ observeEvent(subcategory(), {
 
   # Update the selected tabPanel based on the hash
   # (see https://stackoverflow.com/a/74874638)
-  observeEvent(session$clientData$url_hash, {
+  observeEvent(session$clientData$url_search, {
       
     req(input$navbarID)
     
-    currentHash <- utils::URLdecode(URL = session$clientData$url_hash)
+    currentHash <- session$clientData$url_search
     query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
       
-    if (currentHash != query) {
+    if (!identical(parseQueryString(currentHash), parseQueryString(query))) {
       
       if(doDebug)
         print("Update selected tab panel based on hash")
       
-      newSelection <- strsplit(gsub("^#", "", currentHash), split = "/")[[1]]
+      newSelection <- parseQueryString(session$clientData$url_search)
       
       # update selection in navigation bar
-      specie(ifelse(!is.na(newSelection[1]), newSelection[1], defaultTabs$specie))
-      category(ifelse(!is.na(newSelection[2]), newSelection[2], defaultTabs$category))
-      subcategory(ifelse(!is.na(newSelection[3]), newSelection[3], defaultTabs$subcategory))
-      plot(ifelse(!is.na(newSelection[4]), newSelection[4], defaultTabs$plot))
+      specieTmp <- if (!is.null(newSelection[["gbifkey"]])) {
+          speciesInfo <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"), "species-info.csv"))
+          speciesInfo[match(newSelection[["gbifkey"]], speciesInfo$gbifkey), "species.name"]
+        } else if (!is.null(newSelection[["specie"]])) {
+          newSelection[["specie"]]
+        } else {
+          defaultTabs$specie
+        }
+      specie(specieTmp)
+      category(ifelse(!is.null(newSelection[["category"]]), newSelection[["category"]], defaultTabs$category))
+      subcategory(ifelse(!is.null(newSelection[["subcategory"]]), newSelection[["subcategory"]], defaultTabs$subcategory))
+      plot(ifelse(!is.null(newSelection[["plot"]]), newSelection[["plot"]], defaultTabs$plot))
       
       # go to the selected page
-      currentTab(tail(newSelection, 1))
-      
+      if (!is.null(plot()) && plot() != defaultTabs$plot) {
+        currentTab(plot())
+      } else if (!is.null(subcategory()) && subcategory() != defaultTabs$subcategory) {
+        currentTab(subcategory())
+      } else if (!is.null(category()) && category() != defaultTabs$category) {
+        currentTab(category())
+      } else if (!is.null(specie()) && specie() != defaultTabs$specie) {
+        currentTab(specie())
+      } else {
+        currentTab("Home")
+      }
       # no extra reset(s)
       resetNextTab(FALSE) 
       
@@ -491,9 +508,9 @@ observeEvent(subcategory(), {
     req(input$navbarID != "Home")
     if(doDebug)
       print("Update hash")
-    currentHash <- session$clientData$url_hash
+    currentHash <- session$clientData$url_search
     query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
-    if (currentHash != query)
+    if (!identical(parseQueryString(currentHash), parseQueryString(query)))
       updateQueryString(queryString = query, mode = "push", session)
   }, priority = 0)
 

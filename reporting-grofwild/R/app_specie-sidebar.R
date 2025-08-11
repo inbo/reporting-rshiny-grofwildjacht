@@ -86,16 +86,27 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
     
     observeEvent(input$return, {
         
-        ## TODO don't forget to adapt this part of code once we refactor the url approach
-        # TODO check whether this also works when going from species page -> homepage and from category -> homepage in case no species selected
-        req(session$clientData$url_hash)
+        req(session$clientData$url_search)
         
-        currentString <- utils::URLdecode(URL = session$clientData$url_hash)
+        currentString <- parseQueryString(session$clientData$url_search)
         
-        currentSelection <- strsplit(currentString, split = "/")[[1]]
-        newString <- paste(head(currentSelection, -1), collapse = "/")
+        newSelection <- currentString
+        if (!is.null(currentString$plot)) {
+          newSelection$plot <- NULL
+        } else if (!is.null(currentString$subcategory)) {
+          newSelection$subcategory <- NULL
+        } else if (!is.null(currentString$category)) {
+          newSelection$category <- NULL
+        } else if (!is.null(currentString$specie)) {
+          newSelection$specie <- NULL
+          newSelection$gbifkey <- NULL
+        } else {
+          newSelection <- list()
+        }
         
-        if (currentString != newString)
+        newString <- paste0("?", paste0(names(newSelection), "=", newSelection, collapse = "&"))
+        
+        if (!identical(currentString, newSelection))
           updateQueryString(queryString = newString, mode = "push", session)
       })
     

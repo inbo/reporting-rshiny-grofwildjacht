@@ -19,7 +19,7 @@ createQueryString <- function(selection, page, defaults) {
   stringElements <- selection[seq_len(iLevel)]
   
   # Add gbifkey of species
-  if ("specie" %in% names(stringElements)) {
+  if ("specie" %in% names(stringElements) && stringElements$specie != defaults[["specie"]]) {
     speciesInfo <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"), "species-info.csv"))
     stringElements$gbifkey <- speciesInfo[match(stringElements[["specie"]], speciesInfo$species.name), "gbifkey"]
   }

@@ -1,17 +1,17 @@
-species name,latin name
-Wild zwijn,Sus scrofa
-Edelhert,Cervus elaphus
-Ree,Capreolus capreolus
-Damhert,Dama dama
-Haas,Lepus europaeus
-Fazant,Phasianus colchicus
-Konijn,Oryctolagus cuniculus
-Patrijs,Perdix perdix
-Wilde eend,Anas platyrhynchos
-Smient,Mareca penelope
-Grauwe gans,Anser anser
-Canadese gans,Branta canadensis
-Kievit,Vanellus vanellus
-Houtduif,Columba palumbus
-Vos,Vulpes vulpes
-Verwilderde kat,Felis silvestris catus
+species name,latin name,gbifkey
+Wild zwijn,Sus scrofa,7705930
+Edelhert,Cervus elaphus,2440958
+Ree,Capreolus capreolus,5220126
+Damhert,Dama dama,5220136
+Haas,Lepus europaeus,7952072
+Fazant,Phasianus colchicus,9752149
+Konijn,Oryctolagus cuniculus,2436940
+Patrijs,Perdix perdix,2473958
+Wilde eend,Anas platyrhynchos,9761484
+Smient,Mareca penelope,8000602
+Grauwe gans,Anser anser,2498036
+Canadese gans,Branta canadensis,5232437
+Kievit,Vanellus vanellus,2480242
+Houtduif,Columba palumbus,2495455
+Vos,Vulpes vulpes,5219243
+Verwilderde kat,Felis silvestris catus,9533902

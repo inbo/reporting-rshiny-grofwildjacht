@@ -654,7 +654,7 @@ createSpreadData <- function(
         colnames(modelShape)[1] <- "NAAM"
       
       modelShape <- modelShape[, c(if (grepl("pixels", iFile)) "ID" else "NAAM", 
-          "outcome", "geometry",
+          "outcome", "geometry", "wildsrt",
           if (!is.null(startVariable)) "start")]
       
       # Add Voeren

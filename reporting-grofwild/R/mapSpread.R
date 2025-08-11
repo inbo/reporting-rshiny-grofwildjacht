@@ -18,8 +18,10 @@
 #' @export
 paletteMap <- function(variable, groupNames) {
   
-  myColors <- if (grepl("model", variable) && "Al aanwezig" %in% groupNames)
-      c(suppressWarnings(RColorBrewer::brewer.pal(n = length(groupNames) - 1, "YlOrBr")), "gray") else if (grepl("model", variable))
+  myColors <- if (grepl("model", variable) && "Al aanwezig" %in% groupNames && "0 %" %in% groupNames)
+      c("#FCFCED", suppressWarnings(RColorBrewer::brewer.pal(n = length(groupNames) - 2, "YlOrBr")), "gray") else if (grepl("model", variable) && "Al aanwezig" %in% groupNames)
+      c(suppressWarnings(RColorBrewer::brewer.pal(n = length(groupNames) - 1, "YlOrBr")), "gray") else if (grepl("model", variable) && "0 %" %in% groupNames)
+      c("#FCFCED", suppressWarnings(RColorBrewer::brewer.pal(n = length(groupNames) - 1, "YlOrBr"))) else if (grepl("model", variable))
       suppressWarnings(RColorBrewer::brewer.pal(n = length(groupNames), "YlOrBr")) else if (grepl("risk", variable))
       c('red', 'orange', 'green', 'white') else if (grepl("start", variable))
       "gray"
@@ -61,7 +63,7 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
       data = spreadShape,
       stroke = spatialLevel != "pixels",
       smoothFactor = 1,
-      fillOpacity = if (spatialLevel == "pixels") 1 else 0.8,
+      fillOpacity = 0.8,
       fillColor =  ~pal_model(outcome),
       weight = if (spatialLevel == "pixels") 0 else 0.75,
       color = "gray",
@@ -240,6 +242,7 @@ mapSpreadServer <- function(id,
             
             if (!exists("spreadData"))
               spreadData <- loadSpreadData()
+            
             spreadData[grep(req(input$mapScale), names(spreadData), value = TRUE)]
             
           } else if (type == "F06") {
@@ -265,15 +268,21 @@ mapSpreadServer <- function(id,
           
           req(shapeData())
           
-          if (type == "F06") 
-            shapeData() else
-            shapeData()[[grep(req(input$year), names(shapeData()), value = TRUE)]]
+          shapeData <- if (type == "F06") 
+              shapeData() else
+              shapeData()[[grep(req(input$year), names(shapeData()), value = TRUE)]]
           
+          if ("wildsrt" %in% colnames(shapeData)) 
+            shapeData <- shapeData[!is.na(shapeData$wildsrt) & shapeData$wildsrt == species, ]
+          
+          shapeData
         })
       
       spreadPlot <- reactive({
           
           baseMap <- if (type == "F17_4") {
+              
+              validate(need(nrow(selectedShape()) > 0, "Geen data beschikbaar"))
               
               mapSpread(
                 spreadShape = selectedShape(),

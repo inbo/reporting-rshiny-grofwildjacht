@@ -259,8 +259,7 @@ getOutputSpecie <- function(specie,
       "countAgeGroupUI",
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
-    if(specie == "Wild zwijn") # TODO UPDATE!
-      "mapSpreadUI",
+    "mapSpreadUI",
     # Maatschappelijk draagvlak
     if (specie %in% draagvlakData$aanwezigheid$Soort)
       "F14_1",

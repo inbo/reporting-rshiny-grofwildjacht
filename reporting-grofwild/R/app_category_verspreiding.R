@@ -78,14 +78,12 @@ verspreidingOutputServer <- function(id,
             )
           },
           "mapSpreadUI" = {
-            if (specie() == "Wild zwijn")
               mapSpreadUI(
                 id = ns("plot"), 
                 uiText = uiText, context = "description",
                 specie = specie(),
                 doHide = FALSE
-              ) else 
-              helpText("Geen visualisatie beschikbaar voor deze diersoort")
+              )
           },
           "kencijferUI" = {
             kencijferModuleUI(

@@ -22,7 +22,11 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     Year = "vraag_label",
     vraag_label = "Year")
   
-  
+  xTicks <- switch(data$Antwoord[[1]],
+    Wenselijkheid = c("Niet wenselijk", "Wel wenselijk"),
+    Impact_grootte = c("Lage impact", "Hoge impact"),
+    Belang = c("Niet belangrijk", "Wel belangrijk"))
+
   # Default params
   schaalfactor <- 1
   
@@ -45,7 +49,7 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
         y0 = as.numeric(data[,yVar])/schaalfactor, 
         r = pci2, colour = Sector, fill = Sector),
       alpha = 0.75) +
-    scale_x_continuous(name = data$Antwoord, limits = c(-2,2)) + 
+    scale_x_continuous(name = data$Antwoord, limits = c(-2,2), breaks = c(-2, 2), labels = c(xTicks[1], xTicks[2])) + 
     scale_y_continuous(name = "", 
       breaks = unique(as.numeric(data[,yVar])/schaalfactor),
       labels = unique(data[,yVar])) + 
@@ -59,6 +63,11 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     scale_color_manual(name = "", values = colorValues) + 
     theme_bw() + 
     theme(
+      axis.text.x = if (otherVar == "Year" && length(unique(data[,otherVar])) > 1) {
+          element_text(angle = 45, hjust = 1, vjust = 1)
+        } else {
+          element_text()
+        },
       axis.text.y = element_text(size = 14),
       legend.text = element_text(size = 12),
       legend.key.size = unit(0.5, "cm")

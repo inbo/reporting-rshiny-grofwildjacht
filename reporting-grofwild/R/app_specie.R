@@ -95,7 +95,7 @@ getLatinName <- function(specie){
   validate(
     need(
       expr = (length(latinName) == 1 && nchar(latinName) > 0), 
-      message = paste("No latin name available for:", specie)
+      message = paste("Geen Latijnse naam beschikbaar voor:", specie)
     )
   )
   
@@ -118,7 +118,7 @@ getSpecieImage <- function(specie, relative = FALSE){
   validate(
     need(
       expr = file.exists(imgFile), 
-      message = paste("No image available for:", specie)
+      message = paste("Geen afbeelding beschikbaar voor:", specie)
     )
   )
 

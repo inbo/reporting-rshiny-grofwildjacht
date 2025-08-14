@@ -35,7 +35,7 @@ specieSidebarUI <- function(id,
       imageOutput(outputId = ns("specie-image"), height = "auto"),
       uiOutput(outputId = ns("specie-latin-name")),
       bottomExtra,
-      div(style = "text-align: right; margin-top: 10px;", actionButton(inputId=ns("return"), label = "Back", style = "background-color: #F5F5F5;", icon = icon("arrow-left")))
+      div(style = "text-align: right; margin-top: 10px;", actionButton(inputId=ns("return"), label = "Vorige pagina", style = "background-color: #F5F5F5;", icon = icon("arrow-left")))
   )
   
 }

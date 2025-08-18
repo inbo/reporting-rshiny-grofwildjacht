@@ -246,7 +246,7 @@ getOutputSpecie <- function(specie,
     if(!all(is.na(schadeDataSpecie$schadeBedrag)))
       "barCostUI",
     if(nrow(geoDataSpecie) > 0 & nrow(schadeDataSpecie) > 0)
-      c("mapFlandersUI-schade", "mapSchadeUI-wildschade", "mapSchadeUI-seizoen"),
+      c("mapFlandersUI-schade", "mapSchadeUI"),
     if(specie == "Ree" & any(combinedDataSpecie$afschotjaar >= 2014)  ||
         nrow(combinedDataSpecie) > 0)
       c("boxAgeWeightUI"),
@@ -378,13 +378,11 @@ getSubcategoryOutput <- function(output){
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
           "countYearProvinceUI-schade"
       ),
-      `schade-regio` =  "mapFlandersUI-schade",
-      `schade-type` = c("countYearSchadeUI-wildschade",
-          "mapSchadeUI-wildschade", "tableSchadeUI",
+      `schade-regio` =  c("mapFlandersUI-schade", "mapSchadeUI"),
+      `schade-type` = c("countYearSchadeUI-wildschade", "tableSchadeUI",
           "countYearSchadeUI-gewas", "tableGewasUI"
       ),
-      `schade-seizoen` = c("countYearSchadeUI-seizoen",
-          "mapSchadeUI-seizoen"),
+      `schade-seizoen` = c("countYearSchadeUI-seizoen"),
       `schade-kosten` = "barCostUI",
       
       # populatie

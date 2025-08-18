@@ -219,7 +219,7 @@ subcategoryServer <- function(id,
                 )
                 
                 # Plots that are sharing uiText with some params defined by type
-                if (grepl("countYearSchadeUI", output) | grepl("mapSchadeUI", output))
+                if (grepl("countYearSchadeUI", output))
                   args <- c(args, 
                     list(outputFunction = strsplit(output, split = "-")[[1]][1],
                       type = strsplit(output, split = "-")[[1]][2])

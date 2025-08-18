@@ -113,10 +113,15 @@ schadeOutputServer <- function(id,
               type = "schade", specie = specie()
             )
           },
-          "mapSchadeUI-wildschade" = {
+          "mapSchadeUI" = {
             mapSchadeUI(
               id = ns("plot"), 
-              filterVariable = FALSE,
+              filterVariable = TRUE,
+              variableChoices = 
+                c("Type schade" = "schadeCode",
+                  "Seizoen" = "season",
+                  "Jaar" = "afschotjaar"
+                ),
               doHide = FALSE
             )
           },
@@ -151,13 +156,6 @@ schadeOutputServer <- function(id,
               uiText = uiText, context = "description",
               type = "seizoen", specie = specie(),
               regionLevels = c(1:2, 4)
-            )
-          },
-          "mapSchadeUI-seizoen" = {
-            mapSchadeUI(
-              id = ns("plot"), 
-              filterVariable = FALSE,
-              doHide = FALSE
             )
           },
           # dash plot F09_2
@@ -231,7 +229,7 @@ schadeOutputServer <- function(id,
           timeRange = results$schade_timeRange,
           fullNames = schadeCodes
         ),
-        "mapSchadeUI-wildschade" = mapSchadeServer(
+        "mapSchadeUI" = mapSchadeServer(
           id = "plot", 
           schadeData = results$schade_data,
           allSpatialData = reactive(spatialData),
@@ -239,7 +237,6 @@ schadeOutputServer <- function(id,
           defaultYear = defaultYear,
           species = specie,
           borderRegion = "provinces",
-          variable = "schadeCode",
           uiText = uiText,
           type = "schade"
         ),
@@ -285,18 +282,6 @@ schadeOutputServer <- function(id,
           data = results$schade_data,
           type = "season", 
           timeRange = results$schade_timeRange
-        ),
-        "mapSchadeUI-seizoen" = mapSchadeServer(
-          id = "plot", 
-          schadeData = results$schade_data,
-          allSpatialData = reactive(spatialData),
-          timeRange = results$schade_timeRange,
-          defaultYear = defaultYear,
-          species = specie,
-          uiText = uiText,
-          type = "seizoen",
-          borderRegion = "provinces",
-          variable = "season"
         ),
         "barCostUI" = barCostServer(
           id = "plot",

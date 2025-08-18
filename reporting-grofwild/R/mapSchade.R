@@ -379,11 +379,23 @@ mapSchadeServer <- function(
       
       output$description <- renderUI({
           
+          descrType <- if (type == "wbe") {
+            "wbe"
+          } else if (type == "schade") {
+            switch(variableCurrent(), 
+              season = "seizoen",
+              schadeCode = "schadetype",
+              afschotjaar = "jaar",
+              jachtmethode_comp = "jachtmethode")
+          } else {
+            type
+          }
+        
           description <- getOutputDescription(
             output = if (type == "afschot") "mapAfschotUI" else "mapSchadeUI", 
             specie = species(), uiText = uiText, 
             context = if (type == "wbe") "wbe" else "description",
-            type = type
+            type = descrType
           )
           
           tags$p(HTML(description))

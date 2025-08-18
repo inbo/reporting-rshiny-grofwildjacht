@@ -323,14 +323,20 @@ optionsModuleServer <- function(input, output, session,
       
       isolate({
           
-        selectInput(inputId = ns("type"), label = labelTypes,
-            choices = types(), 
-            selected = if (is.null(current$type)) typesDefault() else current$type, 
-            multiple = multipleTypes)
+          if (!is.null(current$type) && all(current$type %in% typesDefault())) { 
+            selected <- current$type
+          } else {
+            selected <- typesDefault()
+          }
           
-        })
+          selectInput(inputId = ns("type"), label = labelTypes,
+            choices = types(), 
+            selected = selected, 
+            multiple = multipleTypes)
         
-      })
+        })
+      
+    })
   observe(current$type <- input$type)
     
   output$categorie <- renderUI({

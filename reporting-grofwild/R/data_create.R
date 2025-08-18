@@ -391,7 +391,7 @@ createRawData <- function(
         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
         "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
-        "PolyLocatieWKT", "x", "y",
+        "PolyLocatieWKT", "verbatimCentroidLongitude", "verbatimCentroidLatitude",
         "geschat_schadebedrag", "type_melding")]
     
     # format date

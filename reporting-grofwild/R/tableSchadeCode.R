@@ -122,10 +122,6 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   }))
 
   allSchadeCode <- unique(comb$Var2)
-  
-  # number of schadeCodes by schadeBasisCode - correct sorting!
-  columsPerSchadeBasisCode <- table(comb$Var1)
-  columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(comb$Var1)]
 
   # group columns together from same schadeBasisCode
   codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
@@ -144,10 +140,19 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     summaryTable <- rbind(summaryTable, 
       c(locatie = "Vlaanderen", newRow))
   }
-
+  
+  # Remove columns with only 0 values
+  summaryTable <- summaryTable[, !sapply(summaryTable, function(x) is.numeric(x) && all(x == 0))]
+  
+  # Add "Totaal" column
   summaryTable <- cbind(summaryTable, 
       Totaal = apply(as.matrix(summaryTable[, setdiff(names(summaryTable), "locatie")]), 1, sum))
-  
+    
+  # number of schadeCodes by schadeBasisCode - correct sorting!
+  relSchadeBasisCode <- comb[comb$Var2 %in% names(summaryTable),]
+  columsPerSchadeBasisCode <- table(relSchadeBasisCode$Var1)
+  columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(relSchadeBasisCode$Var1)]
+
   # Rename locatie
   names(summaryTable)[names(summaryTable) == "locatie"] <- "Locatie"
   

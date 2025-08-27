@@ -357,6 +357,11 @@ observeEvent(subcategory(), {
   # reset category/subcategory
   observeEvent(plot(), {
         
+    # Reset schade defaults when plot changes
+    schade_code(NULL)
+    schade_gewas(NULL)
+    schade_voertuig(NULL)
+    
     # in case plot selected from navigation bar and ...
     if(plot() != defaultTabs$plot){
       

@@ -23,7 +23,7 @@
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
     regio = "",
-    sourceIndicator = NULL, width = 800, height = 600) {
+    sourceIndicator = NULL, width = NULL, height = 600) {
   
   # For R CMD check
   freq <- NULL

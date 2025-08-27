@@ -421,7 +421,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
   ns <- NS(id)
   
   tags$div(
-#      style = "margin-top: -400px",
+      style = "overflow-x: auto;",
       DT::dataTableOutput(ns("table")),
       if (includeTotal)
         uiOutput(ns("total"))

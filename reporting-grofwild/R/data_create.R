@@ -392,7 +392,7 @@ createRawData <- function(
         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
         "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
         "PolyLocatieWKT", "verbatimCentroidLongitude", "verbatimCentroidLatitude",
-        "geschat_schadebedrag", "type_melding")]
+        "SchadeBedragOmschrijving", "type_melding")]
     
     # format date
     rawData$DatumVeroorzaakt <- as.Date(rawData$DatumVeroorzaakt, format = "%Y-%m-%d")
@@ -431,9 +431,6 @@ createRawData <- function(
     
     # fix for ANDERE within GEWAS
     rawData$schadeCode[rawData$schadeBasisCode == "GEWAS" & rawData$schadeCode == "ANDERE"] <- "GEWASANDR"
-    
-    # format schade bedrag
-    rawData$schadeBedrag <- suppressWarnings(as.numeric(gsub("BEDRAG", "", rawData$schadeBedrag)))
     
     # If x/y coordinates missing -> exclude
     toExclude <- is.na(rawData$x) | is.na(rawData$y)

@@ -29,11 +29,11 @@ requestAfschotReewildServer <- function(
           data <- data %>% mutate(
             type = dplyr::case_when(
               type_comp %in% c("Geitkits", "Bokkits") ~ "Kits",
-              type_comp %in% c("Reebok", "Jaarlingbok") ~ "Bok",
-              type_comp %in% c("Smalree", "Reegeit") ~ "Geit",
+              type_comp %in% c("Reebok", "Jaarlingbok") ~ "Reebok",
+              type_comp %in% c("Smalree", "Reegeit") ~ "Reegeit",
               TRUE ~ "Onbekend"
               ))
-          data$type <- factor(data$type, levels = c("Bok", "Geit", "Kits"))
+          data$type <- factor(data$type, levels = c("Reebok", "Reegeit", "Kits"))
           
           df <- data %>% filter(!is.na(type), afschotjaar %in% pastYears) %>% 
             group_by(type, afschotjaar) %>% 
@@ -169,7 +169,7 @@ requestAfschotReewildServer <- function(
               column(4, 
                 wellPanel(
                   tagList(
-                    tags$label("Bok"),
+                    tags$label("Reebok"),
                     tags$p("Ondergrens: ", ceiling(0.2*maxNbLabels())),
                     tags$p("Bovengrens: ", floor(0.35*maxNbLabels())),
                     tags$br(),
@@ -181,7 +181,7 @@ requestAfschotReewildServer <- function(
               column(4, 
                 wellPanel(
                   tagList(
-                    tags$label("Geit"),
+                    tags$label("Reegeit"),
                     tags$p("Ondergrens: ", ceiling(0.2*maxNbLabels())),
                     tags$p("Bovengrens: ", floor(0.3*maxNbLabels())),
                     tags$br(),

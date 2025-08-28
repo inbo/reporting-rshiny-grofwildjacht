@@ -139,6 +139,19 @@ getOutputDescription <- function(output,
       x = text
     )
   
+  # Fill in hover text if required
+  if (grepl("\\{\\{\\{hover_", text)) {
+    matches <- stringr::str_extract_all(text, "\\{\\{\\{hover_.*?\\}\\}\\}")[[1]]
+    keys <- stringr::str_match(matches, "\\{\\{\\{(.*?)\\}\\}\\}")[,2]
+    for (i in seq_along(keys)) {
+      text <- gsub(
+        pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
+        replacement = uiText[which(uiText$plotFunction == keys[i]), "description"], 
+        x = text
+      )
+    }
+  }
+  
   # Replace last date
   if (!is.null(maxDate))
     text <- gsub("\\{\\{maxDate\\}\\}", 

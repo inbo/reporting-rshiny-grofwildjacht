@@ -425,3 +425,34 @@ body > .tabbable {
     padding: 15px;
 }
 
+
+/*Tooltip styling*/
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  color: #03a150;
+  text-decoration: underline;
+  cursor: help;
+}
+.tooltip-box {
+  display: none;   /* hidden by default */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff8c6;
+  color: black;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  white-space: normal;
+	max-width: 700px;
+  text-align: left;
+  z-index: 9999;
+}
+/* Show tooltip when hovering the wrapper OR the tooltip itself */
+.tooltip-wrapper:hover .tooltip-box,
+.tooltip-box:hover {
+  display: block;
+}

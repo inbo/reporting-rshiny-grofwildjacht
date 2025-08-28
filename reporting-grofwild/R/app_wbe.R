@@ -407,6 +407,10 @@ output$wbe_embryos <- renderUI({
     
   })
 
+# Afschot aanvraag Reewild
+requestAfschotReewildServer(id = "wbe_afschotAanvraag", 
+  data = results$wbe_combinedData)
+
 })
 
 }
@@ -531,8 +535,11 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
               regionLevels = NULL, uiText = uiText)
           )
         ),
-        uiOutput("wbe_embryos")
-      
+        uiOutput("wbe_embryos"),
+        
+        conditionalPanel("input.wbe_species == 'Ree'", ns = ns,
+          requestAfschotReewildUI(id = ns("wbe_afschotAanvraag"), uiText = uiText)
+        )
       )
     )
   

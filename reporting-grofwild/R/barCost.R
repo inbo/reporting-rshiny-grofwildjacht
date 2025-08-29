@@ -28,7 +28,7 @@ barCost <- function(data,
   yVar <- match.arg(yVar)  
   
   yLabel <- switch(yVar,
-    schadeBedrag = "Bedrag",
+    schadeBedrag = "Aantal",
     count = "Aantal"
   )
   groupLabel <- if (!is.null(interval))
@@ -138,10 +138,12 @@ barCost <- function(data,
   }
   
   title <- paste0(
-    yLabel, " kosten voor schadegevallen",
+    yLabel, " schademeldingen",
     if(!is.null(typeMelding)) paste(" over", toString(typeMelding)),
-    paste(" van", tolower(wildNaam)),
-    if(!is.null(groupLabel)) paste(" per", tolower(groupLabel)),
+    paste(" door", tolower(wildNaam)),
+    ",",
+    if(!is.null(groupLabel)) paste(" per", tolower(groupLabel), "en "),
+    "per categorie van geschatte kosten",
     if (!all(regio == "")) paste0("\n(", toString(regio), ")")
   )
   

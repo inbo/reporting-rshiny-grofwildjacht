@@ -28,7 +28,7 @@ barCost <- function(data,
   yVar <- match.arg(yVar)  
   
   yLabel <- switch(yVar,
-    schadeBedrag = "Bedrag (x 1000 EUR)",
+    schadeBedrag = "Bedrag",
     count = "Aantal"
   )
   groupLabel <- if (!is.null(interval))

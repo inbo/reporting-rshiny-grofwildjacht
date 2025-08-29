@@ -104,7 +104,9 @@ barCost <- function(data,
     summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
   
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
-  summaryData[[yVar]] <- as.factor(summaryData[[yVar]])
+  summaryData[[yVar]] <- factor(summaryData[[yVar]], 
+    levels = c("meer dan 3000 euro", "van 1000 tot 3000 euro", "van 300 tot 1000 euro",
+      "minder dan 300 euro", "het schadebedrag is niet bekend"))
   
   selectedGroups <- unique(summaryData[[yVar]])
   colors <- replicateColors(values = selectedGroups)$colors

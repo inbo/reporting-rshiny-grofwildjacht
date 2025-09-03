@@ -79,31 +79,45 @@ countYearProvince <- function(data, jaartallen = NULL,
 	
 	summaryData <- melt(table(plotData), id.vars = "afschotjaar")
 	
-	# Summarize data per year
-	totalCount <- as.data.frame(table(plotData$afschotjaar))
-	
 	# For optimal displaying in the plot
   newLevels <- unique(as.character(summaryData$locatie))
   summaryData$locatie <- factor(summaryData$locatie, 
     levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
   # summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
-	
+
+  # Calculate percentages
+  tmpPercent <- ddply(summaryData, "afschotjaar", transform, 
+    percent = value / sum(value) * 100)
+  summaryData <- merge(tmpPercent, summaryData, all.y = TRUE)
+  summaryData$afschotjaar <- as.numeric(as.character(summaryData$afschotjaar))
+  
+  # Summarize data per year
+  totalCount <- as.data.frame(summaryData %>% group_by(afschotjaar) %>% dplyr::summarize(freq = sum(value, na.rm = TRUE)))
+  
+  # Hover text
+  summaryData$text <- paste0(
+    "n = ", summaryData$value,
+    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
+    "<br><em>Totaal</em> ", merge(totalCount, summaryData)$freq
+  )
+  
   colorList <- replicateColors(values = levels(summaryData$locatie))
   title <- paste0(
     if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
-			 ifelse(length(jaartallen) > 1, 
+    ifelse(length(jaartallen) > 1, 
       paste(min(jaartallen), "tot", max(jaartallen)),
-					 jaartallen
+      jaartallen
     ),
     if (!all(regio == "")) paste0("\n(", toString(regio), ")")
-	)
+  )
   
   singleYear <- length(unique(summaryData$afschotjaar)) == 1
 	
 	
 	# Create plot
 	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, 
-      color = ~locatie, colors = colorList$colors,
+      color = ~locatie, colors = colorList$colors, text = ~text, textposition = "none",
+      hoverinfo = "x+text+name",
       type = "bar",  width = width, height = height) %>%
         plotly::layout(title = title,
 					xaxis = list(title = "Jaar",
@@ -113,11 +127,6 @@ countYearProvince <- function(data, jaartallen = NULL,
 					yaxis = list(title = "Aantal"),
 					margin = list(b = 80, t = 100), 
 					barmode = if (singleYear) "group" else "stack",
-					annotations = list(x = totalCount$Var1, 
-							y = if (singleYear) max(summaryData$value) else totalCount$Freq, 
-							text = paste(if (singleYear) "totaal:", totalCount$Freq),
-							xanchor = 'center', yanchor = 'bottom',
-							showarrow = FALSE),
           showlegend = TRUE)  
 	
 	# To prevent warnings in UI

@@ -316,6 +316,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @param legend character, legend placement; default is "none", no legend
 #' @param legendText character, legend title; default is 'Legende'
 #' @param addGlobe boolean, whether to add world map to background; default is FALSE
+#' @param statsMap character, statistical info to add to map
 #' @inheritParams filterSpatial
 #' @return leaflet map
 #' @author mvarewyck
@@ -327,7 +328,7 @@ mapFlanders <- function(
   borderRegion = NULL, borderLocaties = NULL,
   species, year = NA,
   allSpatialData, summaryData, colorScheme = NULL,
-  legend = "none", legendText = "Legende", addGlobe = FALSE) {
+  legend = "none", legendText = "Legende", addGlobe = FALSE, statsMap = NULL) {
   
   
   spatialData <- filterSpatial(allSpatialData = allSpatialData, 
@@ -422,6 +423,11 @@ mapFlanders <- function(
     myMap <- addProviderTiles(myMap, "OpenStreetMap.HOT")
     
   }
+  
+  if (!is.null(statsMap)) {
+    myMap <- addControl(myMap, statsMap, position = "bottomleft")
+  }
+  
   
   
   myMap
@@ -845,7 +851,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                 ),
             borderLocaties = locaties(),
             legend = "topright",
-            legendText = isolate(simpleCap(unitText(), keepNames = FALSE))
+            legendText = isolate(simpleCap(unitText(), keepNames = FALSE)),
+            statsMap = statsMap()
           )  
         })
       
@@ -859,13 +866,15 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Statistics with map
       statsMap <- reactive({
           
+          if (type %in% c("wbe", "empty"))
+            return(NULL)
+          
           if (is.null(input$regionLevel) || input$regionLevel == "flanders")
             return(NULL)
           
           percentage <- round(with(summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
           
-          paste0("Info beschikbaar en weergegeven voor ", percentage, 
-            "% van de totale gegevens (", summarySpaceData()$stats$nAvailable, "/", 
+          paste0(percentage, "% van data met nodige info (", summarySpaceData()$stats$nAvailable, "/", 
             summarySpaceData()$stats$nTotal, ")" )
           
         })

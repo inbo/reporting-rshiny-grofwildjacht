@@ -247,7 +247,7 @@ countYearSchadeUI <- function(id,
   
   tagList(
     
-    actionLink(inputId = ns("linkYearSchade"), label = h3(HTML(title))),
+    actionLink(inputId = ns("linkYearSchade"), label = tags$h3(HTML(title))),
     conditionalPanel(
       condition = 
         paste("input.linkYearSchade % 2 ==", as.numeric(doHide)), 

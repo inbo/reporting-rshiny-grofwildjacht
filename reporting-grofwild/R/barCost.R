@@ -177,14 +177,6 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       
       ns <- session$ns
       
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkBarCost",
-            label = paste("FIGUUR:", title()))
-          
-        })
-      
       output$disclaimerBarCost <- renderUI({
           
           req(title())
@@ -262,7 +254,7 @@ barCostUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkBarCost"), 
-      label = title, class = "action-h3"),
+      label = tags$h3(title)),
     conditionalPanel(
       condition = 
         paste("input.linkBarCost % 2 ==", as.numeric(doHide)), 

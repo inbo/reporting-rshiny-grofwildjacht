@@ -7,8 +7,9 @@
 #' @author lcougnaud
 #' @export
 beheerOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal(),
-  outputs = character(),
+  specie = reactiveVal(), subcategory = reactiveVal(), plot = reactiveVal(),
+  subcategories = character(),
+  outputs = character(), defaultTabs = NULL,
   ecoData, geoData, openingstijdenData, spatialData, biotoopData,
   defaultYear,
   uiText){
@@ -122,78 +123,92 @@ beheerOutputServer <- function(id,
     outputServer <- reactiveVal(NULL)
 
     # Create plot - UI side
-    observe({
+      observe({
+          req(subcategory())
+          req(plot())
           
-      if(plot() %in% outputs){
-        
-        # create the plot/table
-        ui <- switch(plot(), 
-          "trendYearFlandersUI" = {
-            trendYearFlandersUI(
-              id = ns("plot")
+          if(subcategory() %in% subcategories){
+            # create the plot/table
+            ui <- switch(subcategory(), 
+              "beheer-vlaanderen" = {
+                tagList(
+                  if ("countYearProvinceUI-afschot" %in% outputs)
+                    wellPanel(class = "well-white", countYearProvinceUI(
+                        id = ns("plot"), 
+                        uiText = uiText, 
+                        plotFunction = "countYearProvinceUI-afschot",
+                        specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "countYearProvinceUI-afschot" %in% plot())
+                      )),
+                  if ("trendYearFlandersUI" %in% outputs)
+                    wellPanel(class = "well-white", trendYearFlandersUI(
+                        id = ns("plot"),
+                        uiText = uiText,
+                        specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "trendYearFlandersUI" %in% plot())
+                      )),
+                  if ("yearlyShotAnimalsUI" %in% outputs)
+                    wellPanel(class = "well-white", yearlyShotAnimalsUI(
+                        id = ns("plot"), 
+                        uiText = uiText, context = "description",
+                        specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "yearlyShotAnimalsUI" %in% plot())
+                      ))
+                )
+              },
+              "beheer-regio" = {
+                tagList(
+                  if ("mapFlandersUI" %in% outputs)
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot"), 
+                        type = "beheer", plotDetails = "region", uiText = uiText, 
+                        specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI" %in% plot())
+                      ))
+                )
+              },
+              "beheer-leeftijdcategorie" = {
+                tagList(
+                  if ("countYearShotUI-leeftijd_comp" %in% outputs)
+                    wellPanel(class = "well-white", countYearShotUI(
+                        id = ns("plot"), groupVariable = "leeftijd_comp",
+                        regionLevels = c(1:2, 4), 
+                        uiText = uiText, context = "description", specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "countYearShotUI-leeftijd_comp" %in% plot())
+                      )),
+                  if ("tableProvinceUI" %in% outputs)
+                    wellPanel(class = "well-white", tableProvinceUI(
+                        id = ns("plot"), doHide = !(plot() == defaultTabs$plot || "tableProvinceUI" %in% plot()),
+                        uiText = uiText, context = "description", specie = specie()
+                      )) 
+                )
+              },
+              "beheer-jachtmethode" = {
+                tagList(
+                  if ("countYearShotUI-jachtmethode_comp" %in% outputs)
+                    wellPanel(class = "well-white", countYearShotUI(
+                        id = ns("plot"), groupVariable = "jachtmethode_comp",
+                        regionLevels = c(1:2, 4), 
+                        uiText = uiText, context = "description", specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "countYearShotUI-jachtmethode_comp" %in% plot())
+                      )),
+                  if ("F04_3" %in% outputs)
+                    wellPanel(class = "well-white", countYearProvinceUI(
+                        id = ns("plot"), 
+                        uiText = uiText, specie = specie(),
+                        plotFunction = "F04_3", 
+                        doHide = !(plot() == defaultTabs$plot || "F04_3" %in% plot()),
+                        showType = TRUE
+                      ))
+                )
+              }
             )
-           },
-          "countYearProvinceUI-afschot" = {
-            countYearProvinceUI(
-              id = ns("plot"), 
-              uiText = uiText, 
-              plotFunction = "countYearProvinceUI-afschot",
-              specie = specie(),
-              doHide = FALSE
-            )
-          },
-          "yearlyShotAnimalsUI" = {
-            yearlyShotAnimalsUI(
-              id = ns("plot"), 
-              uiText = uiText, context = "description",
-              specie = specie(),
-              doHide = FALSE
-            )
-          },
-          "mapFlandersUI" = {
-            mapFlandersUI(
-              id = ns("plot"), 
-              type = "beheer", plotDetails = "region"
-            )
-          },
-          "tableProvinceUI" = {
-            tableProvinceUI(
-              id = ns("plot"), doHide = FALSE,
-              uiText = uiText, context = "description", specie = specie()
-            )
-          },
-          "countYearShotUI-leeftijd_comp" = {
-            countYearShotUI(
-              id = ns("plot"), groupVariable = "leeftijd_comp",
-              regionLevels = c(1:2, 4), 
-              uiText = uiText, context = "description", specie = specie(),
-              doHide = FALSE
-            )
-          },
-          "countYearShotUI-jachtmethode_comp" = {
-            countYearShotUI(
-              id = ns("plot"), groupVariable = "jachtmethode_comp",
-              regionLevels = c(1:2, 4), 
-              uiText = uiText, context = "description", specie = specie(),
-              doHide = FALSE
-            )
-          },
-          "F04_3" = {
-            countYearProvinceUI(
-              id = ns("plot"), 
-              uiText = uiText, specie = specie(),
-              plotFunction = "F04_3", 
-              doHide = FALSE,
-              showType = TRUE
-            )
-          }
-        )
   
         # include plot/table in UI
         output[["output"]] <- renderUI(ui)
 
         # activate server-side update
-        outputServer(plot())
+        outputServer(subcategory())
         
       }
       
@@ -202,72 +217,96 @@ beheerOutputServer <- function(id,
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-      switch(outputServer(),
-        "trendYearFlandersUI" = trendYearFlandersServer(
-          id = "plot", 
-          geoData = results$geoData,
-          allSpatialData = spatialData, 
-          biotoopData = biotoopData, 
-          species = specie,
-          uiText = uiText
-        ),
-        "countYearProvinceUI-afschot" = countYearProvinceServer(
-          id = "plot",
-          data = results$ecoData,
-          timeRange = if (id == "Edelhert")
-            reactive(c(2008, max(results$ecoData()$afschotjaar))) else 
-            results$timeRange
-         ),
-        "yearlyShotAnimalsUI" = yearlyShotAnimalsServer(
-          id = "plot", 
-          data = results$ecoData, 
-          timeRange = results$openingstijd, 
-          type = results$labeltypes, 
-          openingstijdenData = results$openingstijdenData
-        ),
-        "mapFlandersUI" = mapFlandersServer(
-          id = "plot",
-          uiText = uiText,
-          defaultYear = defaultYear,
-          species = specie,
-          type = "beheer",
-          geoData = results$geoData,
-          biotoopData = biotoopData,
-          allSpatialData = spatialData
-        ),
-        "tableProvinceUI" = tableProvinceServer(
-          id = "plot",
-          data = results$ecoData,
-          categorie = "leeftijd",
-          timeRange = results$timeRange
-        ),
-        "countYearShotUI-leeftijd_comp" = countYearShotServer(
-          id = "plot",
-          data = results$combinedData,
-          timeRange = results$timeRange,
-          groupVariable = "leeftijd_comp",
-          types = results$leeftijdtypes
-        ),
-        "countYearShotUI-jachtmethode_comp" = countYearShotServer(
-          id = "plot",
-          data = results$combinedData,
-          timeRange = reactive(c(2014, results$timeRange()[2])),
-          groupVariable = "jachtmethode_comp",
-          types = results$jachttypes
-        ),
-        "F04_3" = countYearProvinceServer(
-          id = "plot", 
-          data = results$drukjachtData,
-          types = reactive(c(
-              "Vlaanderen" = "flanders",
-              "Provincie" = "provinces", 
-              "Faunabeheerzones" = "faunabeheerzones"
-            )), 
-          labelTypes = "Regio", 
-          typesDefault = reactive("provinces"), 
-          timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
+        switch(outputServer(), 
+          "beheer-vlaanderen" = {
+            c(
+              if ("countYearProvinceUI-afschot" %in% outputs)
+                countYearProvinceServer(
+                  id = "plot",
+                  data = results$ecoData,
+                  timeRange = if (id == "Edelhert")
+                      reactive(c(2008, max(results$ecoData()$afschotjaar))) else 
+                      results$timeRange
+                ),
+              if ("trendYearFlandersUI" %in% outputs)
+                trendYearFlandersServer(
+                  id = "plot", 
+                  geoData = results$geoData,
+                  allSpatialData = spatialData, 
+                  biotoopData = biotoopData, 
+                  species = specie,
+                  uiText = uiText
+                ),
+              if ("yearlyShotAnimalsUI" %in% outputs)
+                yearlyShotAnimalsServer(
+                  id = "plot", 
+                  data = results$ecoData, 
+                  timeRange = results$openingstijd, 
+                  type = results$labeltypes, 
+                  openingstijdenData = results$openingstijdenData
+                )
+            )
+          },
+          "beheer-regio" = {
+            c(
+              if ("mapFlandersUI" %in% outputs)
+                mapFlandersServer(
+                  id = "plot",
+                  uiText = uiText,
+                  defaultYear = defaultYear,
+                  species = specie,
+                  type = "beheer",
+                  geoData = results$geoData,
+                  biotoopData = biotoopData,
+                  allSpatialData = spatialData
+                )
+            )
+          },
+          "beheer-leeftijdcategorie" = {
+            c(
+              if ("countYearShotUI-leeftijd_comp" %in% outputs)
+                countYearShotServer(
+                  id = "plot",
+                  data = results$combinedData,
+                  timeRange = results$timeRange,
+                  groupVariable = "leeftijd_comp",
+                  types = results$leeftijdtypes
+                ),
+              if ("tableProvinceUI" %in% outputs)
+                tableProvinceServer(
+                  id = "plot",
+                  data = results$ecoData,
+                  categorie = "leeftijd",
+                  timeRange = results$timeRange
+                )
+            )
+          },
+          "beheer-jachtmethode" = {
+            c(
+              if ("countYearShotUI-jachtmethode_comp" %in% outputs)
+                countYearShotServer(
+                  id = "plot",
+                  data = results$combinedData,
+                  timeRange = reactive(c(2014, results$timeRange()[2])),
+                  groupVariable = "jachtmethode_comp",
+                  types = results$jachttypes
+                ),
+              if ("F04_3" %in% outputs)
+                countYearProvinceServer(
+                  id = "plot", 
+                  data = results$drukjachtData,
+                  types = reactive(c(
+                      "Vlaanderen" = "flanders",
+                      "Provincie" = "provinces", 
+                      "Faunabeheerzones" = "faunabeheerzones"
+                    )), 
+                  labelTypes = "Regio", 
+                  typesDefault = reactive("provinces"), 
+                  timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
+                )
+            )
+          }
         )
-      )
       
       # re-set in case plot selected via tab after/before category card
       outputServer(NULL)

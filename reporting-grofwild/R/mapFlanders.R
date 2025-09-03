@@ -493,19 +493,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
         })
       
-      output$mainTitle <- renderUI({
-    
-          title <- if (type == "wbe") 
-              "Landkaart" else
-              getOutputTitle(
-                output = outputFunction(), 
-                uiText = uiText, specie = species(), type = type
-              )
-          
-          h2(title)
-          
-        })
-      
       output$description <- renderUI({
           
           description <- getOutputDescription(
@@ -1315,7 +1302,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
 #' @import shiny
 #' @export
 mapFlandersUI <- function(id, showRegion = (type != "dash"),
-  showCombine = TRUE, 
+  showCombine = TRUE, uiText, specie = NULL, doHide = TRUE,
   type = c("beheer", "schade", "wbe", "dash"),
   regionChoices = c(
     "Vlaanderen" = "flanders",
@@ -1344,13 +1331,29 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       loadMetaSchade()$sources
   
   
+  outputFunction <- if (type == "dash") 
+      "F17_1" else if (type != "schade")
+      "mapFlandersUI" else
+      paste0("mapFlandersUI-", type)
+  
+  mainTitle <- if (type == "wbe") 
+          "Landkaart" else
+          getOutputTitle(
+            output = outputFunction, 
+            uiText = uiText, specie = specie, type = type
+          )
+  
+  
   # Map with according line plot
   
   tagList(
     
     if (showTitle)
-      uiOutput(ns("mainTitle")),
+      actionLink(inputId = ns("linkMapFlandersUI"),
+        label = h3(HTML(mainTitle))),
     
+    conditionalPanel(paste("(", tolower(!showTitle), ") || input.linkMapFlandersUI % 2  ==", as.numeric(doHide)), ns = ns,
+      
     ## countMap: all species
     wellPanel(
       if (showRegion)
@@ -1474,7 +1477,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
     br(),
     uiOutput(ns("description")),
     tags$hr()
-  
+    )
   )
   
 }

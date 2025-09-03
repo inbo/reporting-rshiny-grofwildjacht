@@ -6,8 +6,9 @@
 #' @author lcougnaud
 #' @export
 verspreidingOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal(),
-  outputs = character(),
+  specie = reactiveVal(), subcategory = reactiveVal(), plot = reactiveVal(),
+  subcategories = character(),
+  outputs = character(), defaultTabs = NULL,
   ecoData, geoData, spatialData, waarnemingenData, biotoopData,
   defaultYear,
   uiText){
@@ -57,38 +58,47 @@ verspreidingOutputServer <- function(id,
 
     # Create plot - UI side
     observe({
-      
-      if(plot() %in% outputs){
+        req(subcategory())
+        req(plot())
         
-        # create the plot/table
-        ui <- switch(plot(), 
-          "F17_1" = {
-            mapFlandersUI(
-              id = ns("plot"), 
-              showCombine = FALSE, type = "dash",
-              mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
-              regionChoices = c(
-                "Vlaanderen" = "flanders",
-                "Provincie" = "provinces", 
-                "Faunabeheerzones" = "faunabeheerzones",
-                "Gemeente" = "communes"
-              ),
-              unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
-              plotDetails = ""#, showTitle = FALSE
+      if(subcategory() %in% subcategories){
+        
+        ui <- switch(subcategory(), 
+          "verspreiding-huidig" = {
+            tagList(
+              if ("F17_1" %in% outputs)
+                wellPanel(class = "well-white", mapFlandersUI(
+                    id = ns("plot"), 
+                    showCombine = FALSE, type = "dash",
+                    mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
+                    regionChoices = c(
+                      "Vlaanderen" = "flanders",
+                      "Provincie" = "provinces", 
+                      "Faunabeheerzones" = "faunabeheerzones",
+                      "Gemeente" = "communes"
+                    ),
+                    unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
+                    plotDetails = "", uiText = uiText, 
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "F17_1" %in% plot())
+                  )),
+              if ("kencijferUI" %in% outputs)
+                wellPanel(class = "well-white", kencijferModuleUI(
+                    id = ns("plot"), 
+                    uiText = uiText, 
+                    doHide = !(plot() == defaultTabs$plot || "kencijferUI" %in% plot())
+                  ))
             )
           },
-          "mapSpreadUI" = {
-              mapSpreadUI(
-                id = ns("plot"), 
-                uiText = uiText, context = "description",
-                specie = specie(),
-                doHide = FALSE
-              )
-          },
-          "kencijferUI" = {
-            kencijferModuleUI(
-              id = ns("plot"), 
-              uiText = uiText
+          "verspreiding-toekomstig" = {
+            tagList(
+              if ("mapSpreadUI" %in% outputs)
+                wellPanel(class = "well-white", mapSpreadUI(
+                    id = ns("plot"), 
+                    uiText = uiText, context = "description",
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "mapSpreadUI" %in% plot())
+                  ))
             )
           }
         )
@@ -97,7 +107,7 @@ verspreidingOutputServer <- function(id,
         output[["output"]] <- renderUI(ui)
         
         # activate server-side update
-        outputServer(plot())
+        outputServer(subcategory())
       
       }
       
@@ -106,33 +116,44 @@ verspreidingOutputServer <- function(id,
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-      switch(outputServer(),
-        `F17_1` = mapFlandersServer(
-          id = "plot",
-          defaultYear = defaultYear,
-          species = specie,
-          type = "dash",
-          geoData = results$geoDataAll,
-          allSpatialData = spatialData,
-          hideGlobeDefault = FALSE,
-          countVariable = "aantal",
-          sourceChoices = c("waarnemingen.be", "afschot"),
-          uiText = uiText
-        ),
-        mapSpreadUI = mapSpreadServer(
-          id = "plot",
-          allSpatialData = spatialData,
-          species = specie(),
-          type = "F17_4"
-        ),
-        kencijferUI = kencijferModuleServer(
-          id = "plot",
-          kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
-          biotoopData = reactive(biotoopData$communes),
-          spatialData = spatialData,
-          species = specie
+        switch(outputServer(), 
+          "verspreiding-huidig" = {
+            c(
+              if ("F17_1" %in% outputs)
+                mapFlandersServer(
+                  id = "plot",
+                  defaultYear = defaultYear,
+                  species = specie,
+                  type = "dash",
+                  geoData = results$geoDataAll,
+                  allSpatialData = spatialData,
+                  hideGlobeDefault = FALSE,
+                  countVariable = "aantal",
+                  sourceChoices = c("waarnemingen.be", "afschot"),
+                  uiText = uiText
+                ),
+              if ("kencijferUI" %in% outputs)
+                kencijferModuleServer(
+                  id = "plot",
+                  kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
+                  biotoopData = reactive(biotoopData$communes),
+                  spatialData = spatialData,
+                  species = specie
+                )
+            )
+          },
+          "verspreiding-toekomstig" = {
+            c(
+              if ("mapSpreadUI" %in% outputs)
+                mapSpreadUI = mapSpreadServer(
+                  id = "plot",
+                  allSpatialData = spatialData,
+                  species = specie(),
+                  type = "F17_4"
+                )
+            )
+          }
         )
-      )
       
       # re-set in case plot selected via tab after/before category card
       outputServer(NULL)

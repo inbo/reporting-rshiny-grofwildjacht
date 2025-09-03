@@ -147,7 +147,7 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
 #'
 #' @export
 pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices, 
-  groupChoices = NULL, groupLabel = "", outputFunction) {
+  groupChoices = NULL, groupLabel = "", outputFunction, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -158,8 +158,12 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
   
   tagList(
     
-    h3(HTML(title)),
-      
+    actionLink(inputId = ns("linkPciDraagvlak"), 
+      label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkPciDraagvlak % 2 ==", 
+        as.numeric(doHide)),
+      ns = ns,
       wellPanel(
         fluidRow(
           column(3,
@@ -167,8 +171,8 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
               choices = yearChoices, selected = yearChoices, inline = TRUE),
             lapply(seq_along(sectorNames), function(i)
                 selectInput(inputId = ns(paste0("sector", i)), label = sectorNames[i], 
-              choices = sectorChoices[[i]], selected = sectorChoices[[i]], 
-              multiple = TRUE))
+                  choices = sectorChoices[[i]], selected = sectorChoices[[i]], 
+                  multiple = TRUE))
           ),
           if (!is.null(groupChoices))
             column(9, tags$div(class = "columns-3", 
@@ -188,6 +192,7 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
         exportData = TRUE, doWellPanel = FALSE),
       tags$hr()
     
+    )
   )
   
 }

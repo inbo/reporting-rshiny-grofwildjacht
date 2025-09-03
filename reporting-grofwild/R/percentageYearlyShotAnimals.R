@@ -364,12 +364,11 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
   
   tagList(
     
-    actionLink(inputId = ns("linkYearlyShotAnimals"), 
-      label = h3(HTML(title))),
-    conditionalPanel(paste("input.linkYearlyShotAnimals % 2 ==", as.numeric(doHide)), ns = ns,
+    actionLink(inputId = ns("linkYearlyShotAnimals"), label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkYearlyShotAnimals % 2 ==", as.numeric(doHide)), 
+      ns = ns,
       
       fixedRow(
-          
         column(8, 
           plotModuleUI(id = ns("yearlyShotAnimals"))
         ), 

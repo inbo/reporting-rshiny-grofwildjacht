@@ -154,10 +154,9 @@ tableGewasUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkTableGewas"), 
-      label = h3(HTML(title))),
+      label = tags$h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkTableGewas % 2",
-        as.numeric(doHide)),
+      condition = paste("input.linkTableGewas % 2 ==", as.numeric(doHide)),
       ns = ns,
       optionsModuleUI(
         id = ns("tableGewas"), 

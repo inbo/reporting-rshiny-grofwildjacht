@@ -49,6 +49,7 @@ subcategoryTabs <- unlist(lapply(categories, function(category) {
           category = category,
           uiText = uiText,
           speciesList = speciesList,
+          schadeSelection = category == "schade",
           select = TRUE
         )
         

@@ -245,9 +245,10 @@ tableKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
 
 #' Kencijfer table module UI
 #' @inherit welcomeSectionUI
+#' @param doHide boolean, whether to initially hide the plot; default TRUE
 #' @author yzhang
 #' @export
-kencijferModuleUI <- function(id, uiText) {
+kencijferModuleUI <- function(id, uiText, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -257,11 +258,9 @@ kencijferModuleUI <- function(id, uiText) {
   
   tagList(
     
-    actionLink(inputId = ns("linkKencijferTabel"), 
-      label = paste("TABEL:", title), class = "action-h3"),
-    
+    actionLink(inputId = ns("linkKencijferTabel"), label = tags$h3("TABEL:", title)),
     conditionalPanel(
-      condition = "input.linkKencijferTabel % 2 == 0", ns = ns,
+      condition = paste("input.linkKencijferTabel % 2 ==", as.numeric(doHide)), ns = ns,
       tagList(
         tags$p(HTML(description)),
         fixedRow(
@@ -291,11 +290,11 @@ kencijferModuleUI <- function(id, uiText) {
                   "Aantal/100ha bos & natuur" = "relativeDekking")),
               uiOutput(ns("filterSource")),
               conditionalPanel(
-                condition = "input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
+                condition = "input.bron && input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
                 uiOutput(ns("sliderObserve"))
               ),
               conditionalPanel(
-                condition = "input.bron.indexOf('afschot') > -1", ns = ns,
+                condition = "input.bron && input.bron.indexOf('afschot') > -1", ns = ns,
                 uiOutput(ns("sliderAfschot"))
               )
             )
@@ -493,6 +492,13 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
           if (results$shotThreshold != input$thresholdAfschot)
             results$shotThreshold <- input$thresholdAfschot
+          
+        })
+      
+      observeEvent(input$year, {
+          
+          req(input$observeThreshold)
+          
           if (results$observeThreshold != input$thresholdWaarnemingen) 
             results$observeThreshold <- input$thresholdWaarnemingen
           

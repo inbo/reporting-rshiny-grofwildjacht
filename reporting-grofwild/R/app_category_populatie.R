@@ -6,8 +6,9 @@
 #' @author lcougnaud
 #' @export
 populatieOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal(),
-  outputs = character(),
+  specie = reactiveVal(), subcategory = reactiveVal(), plot = reactiveVal(),
+  subcategories = character(),
+  outputs = character(), defaultTabs = NULL,
   ecoData, geoData,
   uiText){
   
@@ -82,68 +83,78 @@ populatieOutputServer <- function(id,
   
     # Create plot - UI side
     observe({
-          
-      if(plot() %in% outputs){   
+        req(subcategory())
+        req(plot())
         
-        # create the plot/table
-        ui <- switch(plot(),  
-          "boxAgeWeightUI" = {
-            boxAgeWeightUI(
-              id = ns("plot"), 
-              uiText = uiText, context = "description",
-              specie = specie(),
-              doHide = FALSE
+      if(subcategory() %in% subcategories){   
+        
+        ui <- switch(subcategory(), 
+          "populatie-leeggewicht" = {
+            tagList(
+              if ("boxAgeWeightUI" %in% outputs)
+                wellPanel(class = "well-white", boxAgeWeightUI(
+                    id = ns("plot"), 
+                    uiText = uiText, context = "description",
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "boxAgeWeightUI" %in% plot())
+                  )),
+              if ("plotBioindicatorUI-ontweid_gewicht" %in% outputs)
+                wellPanel(class = "well-white", plotBioindicatorUI(
+                    id = ns("plot"), 
+                    bioindicator = "ontweid_gewicht", 
+                    regionLevels = c(1:2, 4), 
+                    uiText = uiText, context = "description",
+                    doHide = !(plot() == defaultTabs$plot || "plotBioindicatorUI-ontweid_gewicht" %in% plot())
+                  ))
             )
           },
-          "countAgeCheekUI" = {
-            countAgeCheekUI(
-              id = ns("plot"), 
-              uiText = uiText, context = "description",
-              specie = specie(),
-              doHide = FALSE
+          "populatie-onderkaak" = {
+            tagList(
+              if ("countAgeCheekUI" %in% outputs)
+                wellPanel(class = "well-white", countAgeCheekUI(
+                    id = ns("plot"), 
+                    uiText = uiText, context = "description",
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "countAgeCheekUI" %in% plot())
+                  )),
+              if ("plotBioindicatorUI-onderkaaklengte" %in% outputs)
+                wellPanel(class = "well-white", plotBioindicatorUI(
+                    id = ns("plot"),
+                    bioindicator = "onderkaaklengte",
+                    regionLevels = c(1:2, 4), showAccuracy = TRUE, 
+                    uiText = uiText, context = "description",
+                    doHide = !(plot() == defaultTabs$plot || "plotBioindicatorUI-onderkaaklengte" %in% plot())
+                  ))
             )
           },
-          "countAgeGenderUI" = {
-            countAgeGenderUI(
-              id = ns("plot"), 
-              uiText = uiText, context = "description",
-              specie = specie(),
-              doHide = FALSE
+          "populatie-geslacht" = {
+            tagList(
+              if ("countAgeGenderUI" %in% outputs)
+                wellPanel(class = "well-white", countAgeGenderUI(
+                    id = ns("plot"), 
+                    uiText = uiText, context = "description",
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "countAgeGenderUI" %in% plot())
+                  ))
             )
           },
-          "countEmbryosUI" = {
-            countEmbryosUI(
-              id = ns("plot"), 
-              regionLevels = c(1:2, 4),
-              uiText = uiText, context = "description",
-              specie = specie(),
-              doHide = FALSE
-            )
-          },
-          "countAgeGroupUI" = {# dash plot F16_1
-            countAgeGroupUI(
-              id = ns("plot"), 
-              uiText = uiText, context = "description",
-              specie = specie(),
-              doHide = FALSE
-            )
-          },
-          "plotBioindicatorUI-onderkaaklengte" = {
-            plotBioindicatorUI(
-              id = ns("plot"),
-              bioindicator = "onderkaaklengte",
-              regionLevels = c(1:2, 4), showAccuracy = TRUE, 
-              uiText = uiText, context = "description",
-              doHide = FALSE
-            )
-          },
-          "plotBioindicatorUI-ontweid_gewicht" = {
-            plotBioindicatorUI(
-              id = ns("plot"), 
-              bioindicator = "ontweid_gewicht", 
-              regionLevels = c(1:2, 4), 
-              uiText = uiText, context = "description",
-              doHide = FALSE
+          "populatie-voortplanting" = {
+            tagList(
+              if ("countAgeGroupUI" %in% outputs)
+                wellPanel(class = "well-white", countAgeGroupUI(
+                    id = ns("plot"), 
+                    uiText = uiText, context = "description",
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "countAgeGroupUI" %in% plot())
+                  )),
+              if ("countEmbryosUI" %in% outputs)
+                wellPanel(class = "well-white", countEmbryosUI(
+                    id = ns("plot"), 
+                    regionLevels = c(1:2, 4),
+                    uiText = uiText, context = "description",
+                    specie = specie(),
+                    doHide = !(plot() == defaultTabs$plot || "countEmbryosUI" %in% plot())
+                  ))
             )
           }
         )
@@ -152,76 +163,100 @@ populatieOutputServer <- function(id,
         output[["output"]] <- renderUI(ui)
         
         # activate server-side update
-        outputServer(plot())
+        outputServer(subcategory())
       
       }
 
     })
 
-    # Create plot - server side
-    observeEvent(outputServer(), ignoreNULL = TRUE, {
+  # Create plot - server side
+  observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-      switch(outputServer(),
-        "boxAgeWeightUI" = boxAgeWeightServer(
-          id = "plot",
-          data = results$combinedData,
-          type = results$leeftijdtypes,
-          timeRange = reactive(if (specie() == "Ree")
-            c(2014, max(results$timeRange())) else 
-              results$timeRange())
-        ),
-        "countAgeCheekUI" = countAgeCheekServer(
-          id = "plot",
-          data = results$ecoData,
-          timeRange = reactive(if (specie() == "Ree")
-            c(2005, max(results$timeRange())) else 
-            results$timeRange())
-        ),
-        "countAgeGenderUI" = countAgeGenderServer(
-          id = "plot",
-          data = results$ecoData,
-          timeRange = results$timeRange
-        ),
-        "countEmbryosUI" = countEmbryosServer(
-          id = "plot",
-          data = results$combinedData,
-          timeRange = results$timeRange,
-          types = results$typesFemale,
-          uiText = uiText
-        ),
-        "countAgeGroupUI" = countAgeGroupServer(
-          id = "plot",
-          data = reactive({
-            plotData <- results$ecoData()[
-              results$ecoData()$geslacht_comp == "Vrouwelijk", 
-            ]
-            validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
-            plotData$reproductiestatus <- ifelse(
-              is.na(plotData$aantal_embryos), "Onbekend",
-              ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
-            )
-            plotData
-          }),
-          timeRange = results$timeRange,
-          groupVariable = "reproductiestatus"
-        ),
-        "plotBioindicatorUI-onderkaaklengte" = plotBioindicatorServer(
-          id = "plot",
-          data = results$combinedData,
-          timeRange = results$timeRange,
-          types = results$typesGender,
-          typesDefault = results$typesDefaultGender,
-          bioindicator = "onderkaaklengte"
-        ),
-        "plotBioindicatorUI-ontweid_gewicht" = plotBioindicatorServer(
-          id = "plot",
-          data = results$combinedData,
-          timeRange = results$timeRange,
-          types = results$typesGender,
-          typesDefault = results$typesDefaultGender,
-          bioindicator = "ontweid_gewicht"
-        )
+      switch(outputServer(), 
+        "populatie-leeggewicht" = {
+          c(
+            if ("boxAgeWeightUI" %in% outputs)
+              boxAgeWeightServer(
+                id = "plot",
+                data = results$combinedData,
+                type = results$leeftijdtypes,
+                timeRange = reactive(if (specie() == "Ree")
+                      c(2014, max(results$timeRange())) else 
+                      results$timeRange())
+              ),
+            if ("plotBioindicatorUI-ontweid_gewicht" %in% outputs)
+              plotBioindicatorServer(
+                id = "plot",
+                data = results$combinedData,
+                timeRange = results$timeRange,
+                types = results$typesGender,
+                typesDefault = results$typesDefaultGender,
+                bioindicator = "ontweid_gewicht"
+              )
+          )
+        },
+        "populatie-onderkaak" = {
+          c(
+            if ("countAgeCheekUI" %in% outputs)
+              countAgeCheekServer(
+                id = "plot",
+                data = results$ecoData,
+                timeRange = reactive(if (specie() == "Ree")
+                      c(2005, max(results$timeRange())) else 
+                      results$timeRange())
+              ),
+            if ("plotBioindicatorUI-onderkaaklengte" %in% outputs)
+              plotBioindicatorServer(
+                id = "plot",
+                data = results$combinedData,
+                timeRange = results$timeRange,
+                types = results$typesGender,
+                typesDefault = results$typesDefaultGender,
+                bioindicator = "onderkaaklengte"
+              )
+          )
+        },
+        "populatie-geslacht" = {
+          c(
+            if ("countAgeGenderUI" %in% outputs)
+              countAgeGenderServer(
+                id = "plot",
+                data = results$ecoData,
+                timeRange = results$timeRange
+              )
+          )
+        },
+        "populatie-voortplanting" = {
+          c(
+            if ("countEmbryosUI" %in% outputs)
+              countEmbryosServer(
+                id = "plot",
+                data = results$combinedData,
+                timeRange = results$timeRange,
+                types = results$typesFemale,
+                uiText = uiText
+              ),
+            if ("countAgeGroupUI" %in% outputs)
+              countAgeGroupServer(
+                id = "plot",
+                data = reactive({
+                    plotData <- results$ecoData()[
+                      results$ecoData()$geslacht_comp == "Vrouwelijk", 
+                    ]
+                    validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
+                    plotData$reproductiestatus <- ifelse(
+                      is.na(plotData$aantal_embryos), "Onbekend",
+                      ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
+                    )
+                    plotData
+                  }),
+                timeRange = results$timeRange,
+                groupVariable = "reproductiestatus"
+              )
+          )
+        }
       )
+      
       
       # re-set in case plot selected via tab after/before category card
       outputServer(NULL)

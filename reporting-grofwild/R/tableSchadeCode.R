@@ -249,11 +249,9 @@ tableSchadeUI <- function(id,
     specie = specie, uiText = uiText, context = context
   )  
   tagList(
-    actionLink(inputId = ns("linkTableSchade"), 
-      label = h3(HTML(title))),
+    actionLink(inputId = ns("linkTableSchade"), label = tags$h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkTableSchade % 2 ==", 
-        as.numeric(doHide)), 
+      condition = paste("input.linkTableSchade % 2 ==", as.numeric(doHide)), 
       ns = ns,
       optionsModuleUI(id = ns("tableSchade"), 
         showTime = TRUE, 

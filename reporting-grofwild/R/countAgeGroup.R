@@ -120,14 +120,6 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
     function(input, output, session) {
       
       ns <- session$ns
-     
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkAgeGroup",
-            label = paste("FIGUUR:", title()))
-          
-        })
       
       output$disclaimerAgeGroup <- renderUI({
           
@@ -174,8 +166,7 @@ countAgeGroupUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkAgeGroup"),
-      label = h3(HTML(title)),
-      class = "action-h3"),
+      label = tags$h3(HTML(title))),
     conditionalPanel(
       condition = paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), 
       ns = ns,

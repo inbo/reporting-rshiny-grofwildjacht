@@ -46,7 +46,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   }
   
   # Create spatial object
-  plotData <- sf::st_as_sf(plotData, coords = c("x", "y"), crs = 31370)
+  plotData <- sf::st_as_sf(plotData, coords = c("x", "y"), crs = 4326)
   plotData <- sf::st_transform(plotData, crs = "+proj=longlat +datum=WGS84")        
     
   

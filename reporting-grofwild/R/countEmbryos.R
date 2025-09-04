@@ -45,6 +45,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   jaartallen = NULL, regio = "", 
   sourceIndicator = c("inbo", "meldingsformulier", "both"),
   sourceIndicator_leeftijd = NULL,
+  summarizeBy = c("count", "percent"),
   sourceIndicator_geslacht = NULL,
   width = NULL, height = NULL) {
     
@@ -58,9 +59,21 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
     
     wildNaam <- unique(data$wildsoort)
     
-    bioindicator <- c("aantal_embryos", "aantal_embryos_labo", "aantal_embryos_MF")
-    bioindicatorName <- "aantal embryo's"
+    summarizeBy <- match.arg(summarizeBy)
     
+    bioindicator <- c("aantal_embryos", "aantal_embryos_labo", "aantal_embryos_MF")
+    bioindicatorName <- switch(summarizeBy,
+      count = paste("Aantal embryo's van vrouwelijke", switch(wildNaam,
+          Ree = "ree\u00EBn",
+          'Wild zwijn' = "wilde zwijnen", 
+          Edelhert = "edelherten",
+          Damhert = "damherten")),
+      percent = paste("Percentage van vrouwelijke", switch(wildNaam,
+          Ree = "ree\u00EBn",
+          'Wild zwijn' = "wilde zwijnen", 
+          Edelhert = "edelherten",
+          Damhert = "damherten"), "met gedefinieerd aantal embryo's")
+    )
  
  if (is.null(jaartallen))
    jaartallen <- unique(data$afschotjaar)
@@ -122,12 +135,20 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   totalCounts <- as.data.frame(table(plotData$afschotjaar))
   colnames(totalCounts) <- c("afschotjaar", "value")
   
-	# Hover text
-	summaryData$text <- paste0(
-    "n = ", summaryData$Freq,
-    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
-    "<br><em>Totaal</em> ", merge(totalCounts, summaryData)$value
-  )
+  # Hover text
+  if (summarizeBy == "count") {
+    
+    summaryData$text <- paste0(
+      "n = ", summaryData$Freq,
+      ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
+      "<br><em>Totaal</em> ", merge(totalCounts, summaryData)$value
+    )
+    
+  } else {
+    
+    summaryData$text <- paste0(round(summaryData$percent), "%")
+    
+  }
 	
 	
 	if (sum(summaryData$Freq) == 0)
@@ -135,7 +156,7 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
 	
 	
 	
-  title <- paste0(wildNaam, " ", bioindicatorName, " ",
+  title <- paste0(bioindicatorName, " ",
     paste0("(", 
       switch(sourceIndicator,
         inbo = "INBO",
@@ -148,32 +169,72 @@ countEmbryos <- function(data, type = c("Smalree", "Reegeit"),
   
   colors <- replicateColors(values = newLevels)$colors
   
-  yTitle <- paste("Aantal vrouwelijke", switch(wildNaam,
-    Ree = "ree\u00EBn",
-    'Wild zwijn' = "wilde zwijnen"))
-	
-	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
-					text = ~text, textposition = "none", hoverinfo = "x+text+name",
-					colors = colors, type = "bar", width = width, height = height) %>%
-			
-			plotly::layout(title = title,
-					xaxis = list(title = "afschotjaar",
-            tickvals = unique(summaryData$afschotjaar),
-            ticktext = unique(summaryData$afschotjaar)), 
-					yaxis = list(title = yTitle),
-					margin = list(b = 120, t = 100, r = 200),
-					legend = list(y = 0.8, yanchor = "top"),
-					barmode = if(nrow(totalCounts) == 1) "group" else "stack") %>%
-			
-			add_annotations(text = "Aantal embryo's", 
-					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
-					y = 0.8, yanchor = "bottom",    # Same y as legend below
-					legendtitle = TRUE, showarrow = FALSE) %>%
-            add_annotations(text = percentCollected(nAvailable = nCollected,
-                nTotal = nRecords, text = "gekend aantal embryo's, leeftijd en geslacht van totaal"),
-                    xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-                    y = -0.2, yanchor = "bottom", showarrow = FALSE)
-	
+  yTitle <- switch(summarizeBy,
+    count = paste("Aantal vrouwelijke", switch(wildNaam,
+        Ree = "ree\u00EBn",
+        'Wild zwijn' = "wilde zwijnen", 
+        Edelhert = "edelherten",
+        Damhert = "damherten")),
+    percent = paste("Percentage vrouwelijke", switch(wildNaam,
+        Ree = "ree\u00EBn",
+        'Wild zwijn' = "wilde zwijnen", 
+        Edelhert = "edelherten",
+        Damhert = "damherten"))
+  )
+  
+  
+
+if (summarizeBy == "count") {
+  
+  
+  pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~Freq, color = ~embryos,
+      text = ~text, textposition = "none", hoverinfo = "x+text+name",
+      colors = colors, type = "bar", width = width, height = height) %>%
+    
+    plotly::layout(title = title,
+      xaxis = list(title = "afschotjaar",
+        tickvals = unique(summaryData$afschotjaar),
+        ticktext = unique(summaryData$afschotjaar)), 
+      yaxis = list(title = yTitle),
+      margin = list(b = 120, t = 100, r = 200),
+      legend = list(y = 0.8, yanchor = "top"),
+      barmode = if(nrow(totalCounts) == 1) "group" else "stack") %>%
+    
+    add_annotations(text = "Aantal embryo's", 
+      xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
+      y = 0.8, yanchor = "bottom",    # Same y as legend below
+      legendtitle = TRUE, showarrow = FALSE) %>%
+    add_annotations(text = percentCollected(nAvailable = nCollected,
+        nTotal = nRecords, text = "gekend aantal embryo's, leeftijd en geslacht van totaal"),
+      xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+      y = -0.2, yanchor = "bottom", showarrow = FALSE)
+  
+  
+} else {
+  pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~percent, color = ~embryos,
+      text = ~text, textposition = "none", hoverinfo = "x+text+name",
+      colors = colors, type = "scatter", mode = "lines+markers", width = width, height = height) %>%
+    
+    plotly::layout(title = title,
+      xaxis = list(title = "afschotjaar",
+        tickvals = unique(summaryData$afschotjaar),
+        ticktext = unique(summaryData$afschotjaar)), 
+      yaxis = list(title = yTitle),
+      margin = list(b = 120, t = 100, r = 200),
+      legend = list(y = 0.8, yanchor = "top"),
+      barmode = if(nrow(totalCounts) == 1) "group" else "stack") %>%
+    
+    add_annotations(text = "Aantal embryo's", 
+      xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
+      y = 0.8, yanchor = "bottom",    # Same y as legend below
+      legendtitle = TRUE, showarrow = FALSE) %>%
+    add_annotations(text = percentCollected(nAvailable = nCollected,
+        nTotal = nRecords, text = "gekend aantal embryo's, leeftijd en geslacht van totaal"),
+      xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+      y = -0.2, yanchor = "bottom", showarrow = FALSE)
+  
+}
+
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
@@ -290,6 +351,7 @@ countEmbryosUI <- function(id, regionLevels,
         column(4,
           optionsModuleUI(id = ns("countEmbryos"), 
             showTime = TRUE, showType = TRUE,
+            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("embryos", "leeftijd", "geslacht")),
           if(is.null(specie))  uiOutput(ns("descriptionEmbryos"))

@@ -207,7 +207,7 @@ schadeOutputServer <- function(id,
             "Provincie" = "provinces", 
             "Faunabeheerzones" = "faunabeheerzones"
           )), 
-          labelTypes = "Regio", 
+          labelTypes = "Regio-schaal", 
           typesDefault = reactive("provinces"), 
           timeRange = results$schade_timeRange
         ),
@@ -248,7 +248,7 @@ schadeOutputServer <- function(id,
             "Provincie" = "provinces", 
             "Faunabeheerzones" = "faunabeheerzones"
           )), 
-          labelTypes = "Regio", 
+          labelTypes = "Regio-schaal", 
           typesDefault = reactive("provinces"), 
           timeRange = results$schade_timeRange,
           schadeChoices = schadeSelection$schade_code,
@@ -272,7 +272,7 @@ schadeOutputServer <- function(id,
             "Provincie" = "provinces", 
             "Faunabeheerzones" = "faunabeheerzones"
           )), 
-          labelTypes = "Regio", 
+          labelTypes = "Regio-schaal", 
           typesDefault = reactive("provinces"),
           timeRange = results$schade_timeRange,
           variable = "SoortNaam"

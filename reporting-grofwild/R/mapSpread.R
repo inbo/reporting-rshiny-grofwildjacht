@@ -594,7 +594,7 @@ mapSpreadUI <- function(id,
               column(4, 
                 selectInput(
                   inputId = ns("mapScale"), 
-                  label = "Map-schaal",
+                  label = "Kaartweergave",
                   choices = c(
                     "Gemeente" = "municipalities",
                     "2x2 UTM" = "pixels"

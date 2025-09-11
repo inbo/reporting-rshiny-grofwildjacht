@@ -263,7 +263,7 @@ beheerOutputServer <- function(id,
               "Provincie" = "provinces", 
               "Faunabeheerzones" = "faunabeheerzones"
             )), 
-          labelTypes = "Regio", 
+          labelTypes = "Regio-schaal", 
           typesDefault = reactive("provinces"), 
           timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
         )

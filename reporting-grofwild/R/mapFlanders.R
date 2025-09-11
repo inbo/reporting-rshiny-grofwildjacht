@@ -1365,7 +1365,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       if (showRegion)
         fixedRow(
           column(8, uiOutput(ns("region"))),
-          column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+          column(4, selectInput(inputId = ns("regionLevel"), label = "Kaartweergave",
               choices = regionChoices,
               selected = if (type == "dash") regionChoices[1] else "communes"))
         ),  
@@ -1377,7 +1377,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
             column(4, selectInput(inputId = ns("borderLevel"), label = "Regio-schaal",
                 choices = regionChoices,
                 selected = regionChoices[1])),
-            column(6, selectInput(inputId = ns("regionLevel"), label = "Map-schaal",
+            column(6, selectInput(inputId = ns("regionLevel"), label = "Kaartweergave",
                 choices = mapScaleChoices,
                 selected = "communes")),
             column(6, selectInput(inputId = ns("legend"), label = "Legende",

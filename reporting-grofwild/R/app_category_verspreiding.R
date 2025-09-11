@@ -63,7 +63,7 @@ verspreidingOutputServer <- function(id,
         
       if(subcategory() %in% subcategories){
         
-        ui <- switch(subcategory(), 
+        ui <- switch(as.character(subcategory()), 
           "verspreiding-huidig" = {
             tagList(
               if ("F17_1" %in% outputs)
@@ -116,7 +116,7 @@ verspreidingOutputServer <- function(id,
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-        switch(outputServer(), 
+        switch(as.character(outputServer()), 
           "verspreiding-huidig" = {
             c(
               if ("F17_1" %in% outputs)

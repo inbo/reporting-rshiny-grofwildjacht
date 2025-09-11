@@ -129,7 +129,7 @@ beheerOutputServer <- function(id,
           
           if(subcategory() %in% subcategories){
             # create the plot/table
-            ui <- switch(subcategory(), 
+            ui <- switch(as.character(subcategory()), 
               "beheer-vlaanderen" = {
                 tagList(
                   if ("countYearProvinceUI-afschot" %in% outputs)
@@ -217,7 +217,7 @@ beheerOutputServer <- function(id,
     # Create plot - server side
     observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-        switch(outputServer(), 
+        switch(as.character(outputServer()), 
           "beheer-vlaanderen" = {
             c(
               if ("countYearProvinceUI-afschot" %in% outputs)

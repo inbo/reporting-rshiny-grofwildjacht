@@ -88,7 +88,7 @@ populatieOutputServer <- function(id,
         
       if(subcategory() %in% subcategories){   
         
-        ui <- switch(subcategory(), 
+        ui <- switch(as.character(subcategory()), 
           "populatie-leeggewicht" = {
             tagList(
               if ("boxAgeWeightUI" %in% outputs)
@@ -172,7 +172,7 @@ populatieOutputServer <- function(id,
   # Create plot - server side
   observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-      switch(outputServer(), 
+      switch(as.character(outputServer()), 
         "populatie-leeggewicht" = {
           c(
             if ("boxAgeWeightUI" %in% outputs)

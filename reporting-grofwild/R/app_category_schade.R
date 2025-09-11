@@ -77,7 +77,7 @@ schadeOutputServer <- function(id,
         
       if(subcategory() %in% subcategories){
          
-        ui <- switch(subcategory(), 
+        ui <- switch(as.character(subcategory()), 
           "schade-vlaanderen" = {
             tagList(
               if ("countYearProvinceUI-schade" %in% outputs)
@@ -201,7 +201,7 @@ schadeOutputServer <- function(id,
     # Server
     observeEvent(outputServer(), ignoreNULL = TRUE, {
       
-        switch(outputServer(), 
+        switch(as.character(outputServer()), 
           "schade-vlaanderen" = {
             c(
               if ("tableSchadeSummaryUI" %in% outputs)

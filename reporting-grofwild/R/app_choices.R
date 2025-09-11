@@ -10,6 +10,7 @@ getCategoryTitle <- function(category){
   title <- switch(category,
     draagvlak = "Draagvlak",
     populatie = "Populatie",
+    links = "Links",
     tools::toTitleCase(sub("-", " ", category))
   )
   
@@ -287,7 +288,9 @@ getOutputSpecie <- function(specie,
     if (!all(is.na(combinedDataSpecie$onderkaaklengte_comp)))
       "plotBioindicatorUI-onderkaaklengte",
     if (!all(is.na(combinedDataSpecie$ontweid_gewicht)))
-      "plotBioindicatorUI-ontweid_gewicht"
+      "plotBioindicatorUI-ontweid_gewicht",
+    "biodiversiteitsportaal",
+    "exotenportaal"
   )
     
   return(outputs)
@@ -409,8 +412,11 @@ getSubcategoryOutput <- function(output){
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak
-      `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
+      `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5"),
       
+      #interne links
+      `links-internelinks` = c("biodiversiteitsportaal", "exotenportaal")
+  
 #      # woordenlijst
 #      `woordenlijst-placeholder` = "woordenlijstPlaceholder"
     
@@ -436,7 +442,7 @@ getCategorySubcategory <- function(subcategory){
   
   categories <- sapply(strsplit(as.character(subcategory), split = "-"), function(x) x[1])
   categories <- factor(categories, levels = c("beheer", "schade", "populatie", 
-    "verspreiding", "draagvlak"))
+    "verspreiding", "draagvlak", "links"))
   
   return(categories)
   

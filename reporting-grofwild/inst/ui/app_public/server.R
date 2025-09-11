@@ -436,7 +436,8 @@ observeEvent(subcategory(), {
             ),
             draagvlak = list(
               draagvlakData = draagvlakData
-            )
+            ),
+            links = list()
           )
         )
         fct <- paste0(categoryOutput, "OutputServer")

@@ -29,7 +29,7 @@
 #' @author mvarewyck
 #' @export
 countAgeCheek <- function(data, jaartallen = NULL, 
-  currentYear = as.numeric(format(Sys.Date(), "%Y")),
+  currentYear = as.numeric(format(Sys.Date(), "%Y")), regio = "", 
   width = NULL, height = NULL) {
 	
 	
@@ -97,7 +97,8 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	colors <- rev(inbo_palette(n = nlevels(summaryData$jager)))
 	title <- paste(wildNaam, paste0("(", 
 					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-							jaartallen), ")"))
+							jaartallen), ")"), 
+          if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
 	
 	
 	# Create plot
@@ -168,7 +169,7 @@ countAgeCheekServer <- function(id, data, timeRange) {
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeCheekUI <- function(id, showAccuracy = FALSE, 
+countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels,
   uiText, context = id, specie = NULL,
   doHide = TRUE) {
   
@@ -194,7 +195,7 @@ countAgeCheekUI <- function(id, showAccuracy = FALSE,
           plotModuleUI(id = ns("ageCheek"))
         ),
         column(4,
-          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, exportData = TRUE),
+          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, regionLevels = regionLevels, exportData = TRUE),
           if (showAccuracy)
             accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
         )

@@ -94,15 +94,15 @@ schadeOutputServer <- function(id,
               uiText = uiText, 
               plotFunction = "countYearProvinceUI-schade",
               specie = specie(),
-              showType = TRUE, doHide = FALSE,
+              regionLevels = c(1:2, 4), 
+              regionLevelSelected = "provinces", doHide = FALSE,
               showDataSource = "schade"
             )
           },
           "mapFlandersUI-schade" = {
             mapFlandersUI(
               id = ns("plot"), 
-              type = "schade", plotDetails = "region",
-              showCombine = FALSE
+              type = "schade", plotDetails = "region"
             )
           },
           "countYearSchadeUI-wildschade" = {
@@ -110,7 +110,8 @@ schadeOutputServer <- function(id,
               id = ns("plot"), 
               doHide = FALSE,
               uiText = uiText, context = "description",
-              type = "schade", specie = specie()
+              type = "schade", specie = specie(),
+              regionLevels = c(1:2, 4)
             )
           },
           "mapSchadeUI" = {
@@ -129,7 +130,8 @@ schadeOutputServer <- function(id,
             tableSchadeUI(
               id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = specie(),
+              specie = specie(), regionLevels = c(1:2, 4),
+              regionLevelSelected = "provinces",
               doHide = FALSE
             )
           },
@@ -138,14 +140,16 @@ schadeOutputServer <- function(id,
               id = ns("plot"), 
               doHide = FALSE,
               uiText = uiText, context = "description",
-              type = "gewas", specie = specie()
+              type = "gewas", specie = specie(),
+              regionLevels = c(1:2, 4)
             )
           },
           "tableGewasUI" = {
             tableGewasUI(
               id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = specie(),
+              specie = specie(), regionLevels = c(1:2, 4),
+              regionLevelSelected = "provinces",
               doHide = FALSE
             )
           },
@@ -202,13 +206,7 @@ schadeOutputServer <- function(id,
         "countYearProvinceUI-schade" = countYearProvinceServer(
           id = "plot",
           data = results$schade_data,
-          types = reactive(c(
-            "Vlaanderen" = "flanders",
-            "Provincie" = "provinces", 
-            "Faunabeheerzones" = "faunabeheerzones"
-          )), 
-          labelTypes = "Regio-schaal", 
-          typesDefault = reactive("provinces"), 
+          allRegionsSelected = TRUE,
           timeRange = results$schade_timeRange
         ),
         "mapFlandersUI-schade" = mapFlandersServer(
@@ -243,19 +241,13 @@ schadeOutputServer <- function(id,
         "tableSchadeUI" = tableSchadeServer(
           id = "plot",  
           data = results$schade_data,
-          types = reactive(c(
-            "Vlaanderen" = "flanders",
-            "Provincie" = "provinces", 
-            "Faunabeheerzones" = "faunabeheerzones"
-          )), 
-          labelTypes = "Regio-schaal", 
-          typesDefault = reactive("provinces"), 
           timeRange = results$schade_timeRange,
           schadeChoices = schadeSelection$schade_code,
           schadeChoicesVrtg = schadeSelection$schade_voertuig,
           schadeChoicesGewas = schadeSelection$schade_gewas,
           datatable = TRUE,
-          fullNames = c(schadeTypes, schadeCodes)
+          fullNames = c(schadeTypes, schadeCodes),
+          allRegionsSelected = TRUE
         ),
         "countYearSchadeUI-gewas" = countYearSchadeServer(
           id = "plot",
@@ -267,15 +259,9 @@ schadeOutputServer <- function(id,
         "tableGewasUI" = tableGewasServer(
           id = "plot",
           data = results$schade_data,
-          types = reactive(c(
-            "Vlaanderen" = "flanders",
-            "Provincie" = "provinces", 
-            "Faunabeheerzones" = "faunabeheerzones"
-          )), 
-          labelTypes = "Regio-schaal", 
-          typesDefault = reactive("provinces"),
           timeRange = results$schade_timeRange,
-          variable = "SoortNaam"
+          variable = "SoortNaam",
+          allRegionsSelected = TRUE
         ),
         "countYearSchadeUI-seizoen" = countYearSchadeServer(
           id = "plot",

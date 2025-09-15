@@ -106,7 +106,6 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       
     }
   
-  
   # Bind area bos&natuur
   if (unit %in% c("relative", "relativeDekking")) {
     areaVariable <- if (unit == "relative")
@@ -566,14 +565,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             getRegionLevel(regionLevelLocal())
           
         })
-      
-      observeEvent(input$regionLevel, {
-          
-          updateCheckboxInput(session = session, inputId = "combinatie",
-            label = paste0("Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot ", 
-              regionLevelName(), ")"))
-          
-        })  
       
       
       ## Geselecteerd Jaar (kaart)
@@ -1365,7 +1356,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       if (showRegion)
         fixedRow(
           column(8, uiOutput(ns("region"))),
-          column(4, selectInput(inputId = ns("regionLevel"), label = "Kaartweergave",
+          column(4, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
               choices = regionChoices,
               selected = if (type == "dash") regionChoices[1] else "communes"))
         ),  
@@ -1383,8 +1374,10 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
             column(6, selectInput(inputId = ns("legend"), label = "Legende",
                 choices = legendChoices)
             ),
-            column(6, uiOutput(ns("year"))),
-            column(6, uiOutput(ns("bronMap")))
+            column(6, uiOutput(ns("bronMap"))),
+            column(6, selectInput(inputId = ns("unit"), label = "Eenheid",
+                choices = unitChoices)),
+            column(6, uiOutput(ns("year")))
           )
           
         } else {
@@ -1418,7 +1411,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
         },
       
       if (showCombine & "region" %in% plotDetails)
-        if (!type %in% c("beheer")) checkboxInput(inputId = ns("combinatie"), 
+        if (!type %in% c("beheer", "schade")) checkboxInput(inputId = ns("combinatie"), 
           label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)"),
       actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
         icon = icon("globe"))
@@ -1464,13 +1457,13 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       fixedRow(
         column(12,
           uiOutput(ns("timeTitle")),
-          if (type %in% c("beheer")) 
+          if (type %in% c("beheer", "schade")) 
               tagList(
                 column(8, withSpinner(plotModuleUI(id = ns("timePlot")))),
                 column(4, wellPanel(
                     uiOutput(ns("period")),
                     checkboxInput(inputId = ns("combinatie"), 
-                      label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)")
+                      label = "Combineer alle geselecteerde regio's")
                   ))) else plotModuleUI(id = ns("timePlot")),
           column(12, 
             tags$br(), 

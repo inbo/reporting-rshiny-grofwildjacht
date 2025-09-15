@@ -27,16 +27,15 @@
 #' @importFrom sf st_drop_geometry
 #' @export
 tableSchadeCode <- function(data, jaartallen = NULL,
-        type = c("provinces", "flanders", "faunabeheerzones"), 
         sourceIndicator = NULL, 
         schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL,
-        fullNames = NULL) {
+        fullNames = NULL, summarizeBy = c("count", "percent"), regio = "") {
   
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
     stop("Niet beschikbaar")
   }
   
-  type <- match.arg(type)
+  summarizeBy <- match.arg(summarizeBy)
   
   if (!"GEWAS" %in% schadeChoices)
     schadeChoicesGewas <- NULL
@@ -56,18 +55,15 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   if (inherits(allData, "sf"))
     allData <- sf::st_drop_geometry(allData)  
   
-  allData$locatie <- switch(type,
-          flanders = "Vlaams Gewest",
-          provinces = allData$provincie,
-          faunabeheerzones = allData$FaunabeheerZone)
-  
-  # Force all fbz's in the summary table even if never occured    
-  if (type == "faunabeheerzones") {
-    allData$locatie <- factor(allData$locatie, levels = as.character(c(1:10, "Onbekend")))
-    levelsLocatie <- levels(allData$locatie)
+  # Force all fbz's in the summary table even if never occured  
+  if (all(regio == "Vlaams Gewest")) {
+    allData$locatie <- as.factor("Vlaams Gewest")
+  } else if (all(regio %in% levels(allData$provincie))) {
+    allData$locatie <- factor(allData$provincie)
   } else {
-    allData$locatie <- as.factor(allData$locatie)    
-    levelsLocatie <- levels(allData$locatie)
+    allData$locatie <- allData$FaunabeheerZone
+    allData$locatie <- factor(allData$locatie, levels = levels(droplevels(factor(unique(allData$locatie), 
+            levels = c(1:10)))))
   }
      
   # Select data
@@ -87,7 +83,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   
   # Include all possible locations and selected schadeCodes
   fullData <- expand.grid(
-    locatie = levelsLocatie,
+    locatie = levels(allData$locatie),
     schadeCode = if ("ANDERE" %in% schadeChoices) {
         unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
         
@@ -132,7 +128,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   # Add row and column sum
   levels(summaryTable[,"locatie"]) <- c(levels(summaryTable[,"locatie"]),"Vlaanderen")
   
-  if (type != "flanders") {
+  if (all(regio != "Vlaams Gewest")) {
     newRow <- as.list(apply(as.matrix(summaryTable[, allSchadeCode]), 2, sum)) # causes error
     # assign names manually; needed in case of allSchadeCode
     if (is.null(names(newRow)) & length(allSchadeCode) == 1L)
@@ -153,6 +149,17 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   columsPerSchadeBasisCode <- table(relSchadeBasisCode$Var1)
   columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(relSchadeBasisCode$Var1)]
 
+  if (summarizeBy == "percent") {
+    last_col <- names(summaryTable)[ncol(summaryTable)]
+    
+    summaryTable <- summaryTable %>%
+      mutate(across(-locatie, ~ as.numeric(.x))) %>%
+      mutate(across(
+          -locatie,
+          ~ paste0(round(.x / .data[[last_col]] * 100, 2), "%")
+        ))
+  }
+  
   # Rename locatie
   names(summaryTable)[names(summaryTable) == "locatie"] <- "Locatie"
   
@@ -177,7 +184,6 @@ tableSchadeCode <- function(data, jaartallen = NULL,
       )
    )
 
-
   return(list(data = summaryTable, header = tableHeader))
   
 	
@@ -197,7 +203,8 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
-  schadeChoices, schadeChoicesVrtg, schadeChoicesGewas, datatable, fullNames) {
+  schadeChoices, schadeChoicesVrtg, schadeChoicesGewas, datatable, fullNames, 
+  allRegionsSelected = FALSE) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -206,10 +213,8 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
       
       callModule(module = optionsModuleServer, id = "tableSchade", 
         data = data,
-        types = types,
-        labelTypes = labelTypes,
-        typesDefault = typesDefault, 
-        timeRange = timeRange
+        timeRange = timeRange,
+        allRegionsSelected = allRegionsSelected
       )
       
       callModule(
@@ -236,6 +241,7 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 #' @export
 tableSchadeUI <- function(id, 
   uiText, context = id, specie = NULL, 
+  regionLevels = NULL, regionLevelSelected = NULL,
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -257,9 +263,11 @@ tableSchadeUI <- function(id,
       ns = ns,
       optionsModuleUI(id = ns("tableSchade"), 
         showTime = TRUE, 
-        showType = TRUE,
+        regionLevels = regionLevels, 
+        regionLevelSelected = regionLevelSelected,
+        summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
         showDataSource = "schade",
-        exportData = TRUE, oneRow = TRUE
+        exportData = TRUE
       ),
       tableModuleUI(id = ns("tableSchade")),
       tags$p(HTML(description)),

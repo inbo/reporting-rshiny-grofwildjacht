@@ -33,7 +33,7 @@ optionsModuleUI <- function(id,
     showLegend = FALSE, showTime = FALSE, showYear = FALSE, showType = FALSE,
     showCategorie = FALSE, showInterval = FALSE, 
     regionLevels = NULL, summarizeBy = NULL,
-    exportPlot = FALSE, exportData = FALSE, 
+    exportPlot = FALSE, regionLevelSelected = NULL, exportData = FALSE, 
     showDataSource = NULL,
     doWellPanel = TRUE, oneRow = FALSE
     ) {
@@ -54,12 +54,13 @@ optionsModuleUI <- function(id,
         uiOutput(ns("type")),
       if (!is.null(regionLevels))
         fluidRow(
-            column(12, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                    choices = c(
-                      "Vlaanderen" = "flanders", 
-                      "Provincie" = "provinces", 
-                      "Fusiegemeenten" = "communes", 
-                      "Faunabeheerzones" = "faunabeheerzones")[regionLevels])),
+          column(12, selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
+              choices = c(
+                "Vlaanderen" = "flanders", 
+                "Provincie" = "provinces", 
+                "Fusiegemeenten" = "communes", 
+                "Faunabeheerzones" = "faunabeheerzones")[regionLevels],
+              selected = regionLevelSelected)),
             column(11, offset = 1, uiOutput(ns("region")))
         ),
       if ("schade" %in% showDataSource)
@@ -150,7 +151,7 @@ optionsModuleUI <- function(id,
 optionsModuleServer <- function(input, output, session, 
     data, types = NULL, labelTypes = "Type", typesDefault = types, 
     timeRange = NULL, timeLabel = "Periode", 
-    multipleTypes = FALSE, 
+    multipleTypes = FALSE, allRegionsSelected = FALSE,
     definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
     categories = NULL, intervals = NULL) {
   
@@ -259,18 +260,19 @@ optionsModuleServer <- function(input, output, session,
         
         if (input$regionLevel == "flanders") {
           
-          choices <- "Vlaams Gewest"
+          choices <- c("Vlaams Gewest")
           
         } else if (input$regionLevel == "provinces") {
           
           choices <- levels(droplevels(factor(unique(data()$provincie), 
-                      levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
-                          "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")))) 
+                levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
+                  "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend")))) 
+          
           
         } else if (input$regionLevel == "faunabeheerzones") {
           
           choices <- levels(droplevels(factor(unique(data()$FaunabeheerZone), 
-                      levels = c(1:10))))
+                levels = c(as.character(1:10), "Onbekend"))))
           
         } else {
           
@@ -282,7 +284,7 @@ optionsModuleServer <- function(input, output, session,
         
         selectInput(inputId = ns("region"), label = "Regio('s)",
             choices = choices, 
-            selected = if (input$regionLevel == "flanders") choices[1] else NULL, 
+            selected = if (allRegionsSelected) choices else if (input$regionLevel == "flanders") choices[1] else NULL, 
             multiple = TRUE)
         
       })
@@ -293,12 +295,19 @@ optionsModuleServer <- function(input, output, session,
   ## FIGUUR: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
   ## FIGUUR: Verdeling afschot over de jaren
   ## grofwild - they will have no effects on types and typesDefault in the other cases
+  updateSwineDatasource <- reactiveVal(FALSE)
+  
+  observeEvent(input$dataSource_leeftijd, {
+      updateSwineDatasource(TRUE)
+    })
   
   observe({ 
       req(!is.null(input$type))   # Make sure this only runs AFTER the initial values are filled in
       
+      req(updateSwineDatasource())
+      
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
-        
+        updateSwineDatasource(FALSE)
         if (input$dataSource_leeftijd == "both") {
           
           ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
@@ -328,6 +337,8 @@ optionsModuleServer <- function(input, output, session,
           } else {
             selected <- typesDefault()
           }
+          
+          updateSwineDatasource(TRUE)
           
           selectInput(inputId = ns("type"), label = labelTypes,
             choices = types(), 
@@ -473,7 +484,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @importFrom flexdashboard renderGauge gauge gaugeSectors
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
-    data, openingstijdenData, toekenningsData = NULL,
+    data, openingstijdenData = NULL, toekenningsData = NULL,
     categorie = NULL, bioindicator = NULL, groupVariable = NULL,
     yVar = NULL,
     locaties = NULL, timeRange = NULL, unit = NULL, isSchade = NULL, 
@@ -498,7 +509,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
           if (input$regionLevel == "provinces") {
             subData <- subset(subData, provincie %in% input$region)
           } else if (input$regionLevel == "faunabeheerzones") {   
-            subData <- subData[subData$FaunabeheerZone %in% as.numeric(input$region), ]
+            subData <- subData[as.character(subData$FaunabeheerZone) %in% input$region, ]
           }else if(input$regionLevel == "communes") {   
             subData <- subData[subData$gemeente_afschot_locatie %in% input$region, ]
           }
@@ -564,7 +575,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = input$type),
             if (!is.null(type))
               list(type = type),
-            if (!is.null(input$type) & !is.null(input$year) & is.null(input$dataSource_schade))
+            if (!is.null(openingstijdenData) && !is.null(input$type) & !is.null(input$year) & is.null(input$dataSource_schade))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))
               list(assignedData = subToekenningsData()),
@@ -763,7 +774,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
         DT::datatable(resultFct()$data, rownames = FALSE, container = resultFct()$header,
             selection = "single",
             options = list(dom = 't', pageLength = -1)) %>%
-          formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
+#          formatRound(colnames(resultFct()$data)[-1], digits = 0, mark = "") %>%
           formatStyle(
             colnames(resultFct()$data)[1],
             target = "row",

@@ -19,7 +19,7 @@
 #' @export 
 countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
-  groupVariable, 
+  groupVariable,
   sourceIndicator_leeftijd = c("both", "inbo"),
   type = NULL) {
   
@@ -66,7 +66,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   title <- paste0("Afschot van ",
     ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-      jaartallen))
+      jaartallen), if (!all(regio == "")) paste0("\n(", toString(regio), ")"))
   
   # Summarize data per year
   plotData$afschotjaar <- droplevels(plotData$afschotjaar)

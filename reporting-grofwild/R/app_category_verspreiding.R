@@ -73,7 +73,6 @@ verspreidingOutputServer <- function(id,
                 "Faunabeheerzones" = "faunabeheerzones",
                 "Gemeente" = "communes"
               ),
-              unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative"),
               plotDetails = ""#, showTitle = FALSE
             )
           },
@@ -114,6 +113,7 @@ verspreidingOutputServer <- function(id,
           type = "dash",
           geoData = results$geoDataAll,
           allSpatialData = spatialData,
+          biotoopData = biotoopData,
           hideGlobeDefault = FALSE,
           countVariable = "aantal",
           sourceChoices = c("waarnemingen.be", "afschot"),

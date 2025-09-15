@@ -137,14 +137,17 @@ beheerOutputServer <- function(id,
             countYearProvinceUI(
               id = ns("plot"), 
               uiText = uiText, 
+              regionLevels = c(1:2), 
               plotFunction = "countYearProvinceUI-afschot",
               specie = specie(),
+              regionLevelSelected = "provinces",
               doHide = FALSE
             )
           },
           "yearlyShotAnimalsUI" = {
             yearlyShotAnimalsUI(
               id = ns("plot"), 
+              regionLevels = c(1:2),
               uiText = uiText, context = "description",
               specie = specie(),
               doHide = FALSE
@@ -158,8 +161,9 @@ beheerOutputServer <- function(id,
           },
           "tableProvinceUI" = {
             tableProvinceUI(
-              id = ns("plot"), doHide = FALSE,
-              uiText = uiText, context = "description", specie = specie()
+              id = ns("plot"), doHide = FALSE, regionLevels = c(1:2),
+              uiText = uiText, context = "description", specie = specie(),
+              showType = TRUE, showDataSource = "leeftijd"
             )
           },
           "countYearShotUI-leeftijd_comp" = {
@@ -182,9 +186,11 @@ beheerOutputServer <- function(id,
             countYearProvinceUI(
               id = ns("plot"), 
               uiText = uiText, specie = specie(),
+              regionLevels = c(1:2, 4), 
               plotFunction = "F04_3", 
-              doHide = FALSE,
-              showType = TRUE
+              showInterval = TRUE,
+              regionLevelSelected = "provinces",
+              doHide = FALSE
             )
           }
         )
@@ -214,6 +220,7 @@ beheerOutputServer <- function(id,
         "countYearProvinceUI-afschot" = countYearProvinceServer(
           id = "plot",
           data = results$ecoData,
+          allRegionsSelected = TRUE,
           timeRange = if (id == "Edelhert")
             reactive(c(2008, max(results$ecoData()$afschotjaar))) else 
             results$timeRange
@@ -239,7 +246,9 @@ beheerOutputServer <- function(id,
           id = "plot",
           data = results$ecoData,
           categorie = "leeftijd",
-          timeRange = results$timeRange
+          timeRange = results$timeRange,
+          types = results$leeftijdtypes,
+          labelTypes = "Leeftijdscategorie"
         ),
         "countYearShotUI-leeftijd_comp" = countYearShotServer(
           id = "plot",
@@ -258,13 +267,7 @@ beheerOutputServer <- function(id,
         "F04_3" = countYearProvinceServer(
           id = "plot", 
           data = results$drukjachtData,
-          types = reactive(c(
-              "Vlaanderen" = "flanders",
-              "Provincie" = "provinces", 
-              "Faunabeheerzones" = "faunabeheerzones"
-            )), 
-          labelTypes = "Regio-schaal", 
-          typesDefault = reactive("provinces"), 
+          allRegionsSelected = TRUE,
           timeRange = reactive(range(results$drukjachtData()$afschotjaar, na.rm = TRUE))
         )
       )

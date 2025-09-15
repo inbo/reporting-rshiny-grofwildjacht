@@ -99,7 +99,7 @@ populatieOutputServer <- function(id,
             countAgeCheekUI(
               id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = specie(),
+              specie = specie(), regionLevels = c(1:2), 
               doHide = FALSE
             )
           },
@@ -123,6 +123,7 @@ populatieOutputServer <- function(id,
           "countAgeGroupUI" = {# dash plot F16_1
             countAgeGroupUI(
               id = ns("plot"), 
+              regionLevels = c(1:2, 4),
               uiText = uiText, context = "description",
               specie = specie(),
               doHide = FALSE

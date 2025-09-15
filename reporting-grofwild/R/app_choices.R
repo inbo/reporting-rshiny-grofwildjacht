@@ -381,9 +381,9 @@ getSubcategoryOutput <- function(output){
   
   # Should be unique in the entire app!
   subcategoryOutput <- list( 
-      `beheer-vlaanderen` = c("trendYearFlandersUI", 
-          "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
-      `beheer-regio` = "mapFlandersUI",
+      `beheer-vlaanderen` = c("trendYearFlandersUI"),
+      `beheer-regio` = c("mapFlandersUI", 
+        "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
       `beheer-leeftijdcategorie` = 
           c("tableProvinceUI", "countYearShotUI-leeftijd_comp"),
       `beheer-jachtmethode` = 
@@ -391,13 +391,12 @@ getSubcategoryOutput <- function(output){
       
       # schade
       `schade-vlaanderen` = c(
-          "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
-          "countYearProvinceUI-schade"
+          "tableSchadeSummaryUI", "trendYearFlandersUI-schade"
       ),
-      `schade-regio` =  c("mapFlandersUI-schade", "mapSchadeUI"),
-      `schade-type` = c("countYearSchadeUI-wildschade", "tableSchadeUI",
-          "countYearSchadeUI-gewas", "tableGewasUI"
-      ),
+      `schade-regio` =  c("mapFlandersUI-schade", "mapSchadeUI", 
+        "countYearProvinceUI-schade"),
+      `schade-type-gewas` = c("countYearSchadeUI-gewas", "tableGewasUI"),
+      `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
       `schade-seizoen` = c("countYearSchadeUI-seizoen"),
       `schade-kosten` = "barCostUI",
       

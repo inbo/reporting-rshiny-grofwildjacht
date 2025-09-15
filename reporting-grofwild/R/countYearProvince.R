@@ -281,14 +281,7 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
     function(input, output, session) {
       
       ns <- session$ns
-      
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkYearProvince", label = title())
-          
-        })
-      
+    
       output$disclaimerYearProvince <- renderUI({
           
           req(title())
@@ -341,11 +334,9 @@ countYearProvinceUI <- function(
   
   tagList(
     
-    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(title)), 
-      class = "action-h3"),
+    actionLink(inputId = ns("linkYearProvince"), label = tags$h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkYearProvince % 2 ==", 
-        as.numeric(doHide)), 
+      condition = paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), 
       ns = ns,
       
       uiOutput(ns("disclaimerYearProvince")),

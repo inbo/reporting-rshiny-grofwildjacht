@@ -26,7 +26,7 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     Wenselijkheid = c("Niet wenselijk", "Wel wenselijk"),
     Impact_grootte = c("Lage impact", "Hoge impact"),
     Belang = c("Niet belangrijk", "Wel belangrijk"))
-
+  
   # Default params
   schaalfactor <- 1
   
@@ -71,7 +71,7 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
       axis.text.y = element_text(size = 14),
       legend.text = element_text(size = 12),
       legend.key.size = unit(0.5, "cm")
-      )
+    )
   
   list(
     plot = myPlot,
@@ -128,7 +128,7 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
         yVar = yVar,
         exportPlotWidth = 12, exportPlotHeight = ifelse(length(input$year) > 1, 10, 12),
       )
-    
+      
     })
   
 }
@@ -147,7 +147,7 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
 #'
 #' @export
 pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices, 
-  groupChoices = NULL, groupLabel = "", outputFunction) {
+  groupChoices = NULL, groupLabel = "", outputFunction, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -158,8 +158,11 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
   
   tagList(
     
-    h3(HTML(title)),
-      
+    actionLink(inputId = ns("linkPciDraagvlak"), label = h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkPciDraagvlak % 2 ==", 
+        as.numeric(doHide)),
+      ns = ns,
       wellPanel(
         fluidRow(
           column(3,
@@ -167,8 +170,8 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
               choices = yearChoices, selected = yearChoices, inline = TRUE),
             lapply(seq_along(sectorNames), function(i)
                 selectInput(inputId = ns(paste0("sector", i)), label = sectorNames[i], 
-              choices = sectorChoices[[i]], selected = sectorChoices[[i]], 
-              multiple = TRUE))
+                  choices = sectorChoices[[i]], selected = sectorChoices[[i]], 
+                  multiple = TRUE))
           ),
           if (!is.null(groupChoices))
             column(9, tags$div(class = "columns-3", 
@@ -188,6 +191,7 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
         exportData = TRUE, doWellPanel = FALSE),
       tags$hr()
     
+    )
   )
   
 }

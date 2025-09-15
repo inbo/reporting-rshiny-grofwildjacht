@@ -21,7 +21,7 @@
 barCost <- function(data, 
   unit = NULL, yVar = c("schadeBedrag", "count"), 
   typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"), 
-  regio = "") {
+  regio = "", sourceIndicator = NULL) {
   
   wildNaam <- unique(data$wildsoort)
   interval <- match.arg(interval)
@@ -40,6 +40,8 @@ barCost <- function(data,
       ) else 
       NULL
   
+  data <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
+    returnStop = "message")
   subData <- data[, c(if (yVar != "count") yVar, "season", "afschotjaar", "afschot_datum")] %>%
     mutate(season_num = dplyr::case_when(
         season == "winter" ~ 1,
@@ -181,14 +183,6 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       
       ns <- session$ns
       
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkBarCost",
-            label = paste("FIGUUR:", title()))
-          
-        })
-      
       output$disclaimerBarCost <- renderUI({
           
           req(title())
@@ -206,10 +200,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
             data()[data()$typeMelding %in% input$typeMelding, ] else 
             data()
           
-          # Bron
-          filterDataSource(plotData = plotData,
-            sourceIndicator = input$bron, returnStop = "message")
-          
+         plotData
         })
       
       
@@ -266,7 +257,7 @@ barCostUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkBarCost"), 
-      label = title, class = "action-h3"),
+      label = tags$h3(title)),
     conditionalPanel(
       condition = 
         paste("input.linkBarCost % 2 ==", as.numeric(doHide)), 
@@ -291,13 +282,10 @@ barCostUI <- function(id,
                 label = "Type schade",
                 choices = typeMelding
               ),
-            selectInput(inputId = ns("bron"), label = "Databron(nen)",
-              choices = metaSchade$sources,
-              selected = metaSchade$sources,
-              multiple = TRUE),
             optionsModuleUI(
               id = ns("barCost"),
               showInterval = TRUE,
+              showDataSource = "schade",
               exportData = TRUE, 
               doWellPanel = FALSE
             )

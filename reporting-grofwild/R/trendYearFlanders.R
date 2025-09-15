@@ -39,18 +39,6 @@ trendYearFlandersServer <- function(id,
         
         results <- reactiveValues()
         
-        output$title <- renderUI({
-            
-            req(!is.null(uiText))
-            title <- getOutputTitle(output = if (type == "wildschade") 
-                    "trendYearFlandersUI-schade" else 
-                    "trendYearFlandersUI", 
-                specie = species(), uiText = uiText)
-            
-            h3(title)
-            
-          })
-        
         defaultYear <- config::get("defaultYear", 
           file = system.file("config.yml", package = "reportingGrofwild"))
         
@@ -153,35 +141,45 @@ trendYearFlandersServer <- function(id,
 #' @return UI object
 #' @export
 trendYearFlandersUI <- function(id,
-    type = c("grofwild", "wildschade"),
-    includeOptions = TRUE,
-    unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
-        "Aantal/100ha bos & natuur" = "relativeDekking")
+  type = c("grofwild", "wildschade"),
+  includeOptions = TRUE,
+  unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
+    "Aantal/100ha bos & natuur" = "relativeDekking"),
+  uiText, specie = NULL, doHide = TRUE
 ){
   
   type <- match.arg(type)
   
   ns <- NS(id)
   
- 
+  title <- getOutputTitle(output = if (type == "wildschade") 
+        "trendYearFlandersUI-schade" else 
+        "trendYearFlandersUI", specie = specie, 
+    uiText = uiText)
+  
+  
   tagList(
-    uiOutput(ns("title")),
-    fluidRow(
-      column(8, plotModuleUI(id = ns("trendYearFlanders"))),
-      column(4,
-        if(includeOptions)
-          wellPanel(
-            uiOutput(ns("period")),
-            selectInput(
+    actionLink(inputId = ns("linkTrendYearFlanders"), label = tags$h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkTrendYearFlanders % 2 ==", as.numeric(doHide)), 
+      ns = ns,
+      fixedRow(
+        column(8, plotModuleUI(id = ns("trendYearFlanders"))),
+        column(4,
+          if(includeOptions)
+            wellPanel(
+              uiOutput(ns("period")),
+              selectInput(
                 inputId = ns("unit"), 
                 label = "Eenheid",
                 choices = unitChoices
-            ),
-            if (type == "wildschade")
-              uiOutput(ns("bronMap"))
+              ),
+              if (type == "wildschade")
+                uiOutput(ns("bronMap"))
+            )
         ),
         optionsModuleUI(id = ns("trendYearFlanders"), exportData = TRUE,
-            doWellPanel = FALSE)
+          doWellPanel = FALSE)
       )
     )
   )

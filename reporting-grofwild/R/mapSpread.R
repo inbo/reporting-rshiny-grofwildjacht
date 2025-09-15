@@ -325,16 +325,7 @@ mapSpreadServer <- function(id,
               lat1 = centerValues[3], lat2 = centerValues[4])
           
         })
-      
-      
-      # Title
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkSpread",
-            label = paste("FIGUUR:", title()))
-          
-        })
+     
       
       output$disclaimerMapSpread <- renderUI({
           
@@ -559,7 +550,7 @@ mapSpreadUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkSpread"),
-      label = title, class = "action-h3"),
+      label = tags$h3(title)),
     conditionalPanel(
       condition = paste("input.linkSpread % 2 ==", as.numeric(doHide)),
       ns = ns,

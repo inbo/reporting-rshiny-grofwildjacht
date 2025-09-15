@@ -324,14 +324,6 @@ trendYearRegionServer <- function(
           
         })
       
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkYearRegion",
-            label = paste("FIGUUR:", title()))
-          
-        })
-      
       output$disclaimerTrendRegion <- renderUI({
           
           req(title())
@@ -419,7 +411,7 @@ trendYearRegionUI <- function(
       toShow
     ) else
     tagList(
-      actionLink(inputId = ns("linkYearRegion"), label = title, class = "action-h3"),
+      actionLink(inputId = ns("linkYearRegion"), label = tags$h3(title)),
       conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
         toShow
       )

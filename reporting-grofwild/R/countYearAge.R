@@ -192,14 +192,6 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
       
       ns <- session$ns
       
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkYearAge",
-            label = paste("FIGUUR:", title()))
-          
-        })
-      
       output$disclaimerYearAge <- renderUI({
           
           req(title())
@@ -242,8 +234,7 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   
   tagList(
     
-    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(uiText$title)),
-      class = "action-h3"),
+    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(uiText$title))),
     conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
       
       uiOutput(ns("disclaimerYearAge")),

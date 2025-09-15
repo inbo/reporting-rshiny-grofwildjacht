@@ -2,7 +2,7 @@
 #' @inheritParams reportingGrofwild-common-args
 #' @inheritParams getOutputTitle
 #' @export
-tableSchadeSummaryUI <- function(id, uiText, specie = NULL) {
+tableSchadeSummaryUI <- function(id, uiText, specie = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -12,21 +12,21 @@ tableSchadeSummaryUI <- function(id, uiText, specie = NULL) {
   
   tagList(
     
-    h3(HTML(title)),
-    
-    wellPanel(
-      uiOutput(ns("time")),
-      uiOutput(ns("source_schade"))
+    actionLink(inputId = ns("linkTableSummary"), label = tags$h3(HTML(title))),
+    conditionalPanel(
+      condition = paste("input.linkTableSummary % 2 ==", as.numeric(doHide)),
+      ns = ns,
+      wellPanel(
+        uiOutput(ns("time")),
+        uiOutput(ns("source_schade"))
       ),
-
-    fixedRow(
-      column(4, tableModuleUI(id = ns("wildsoort"), includeTotal = TRUE)),
-      column(4, tableModuleUI(id = ns("schade"), includeTotal = TRUE)),
-      conditionalPanel("input.schade_code.includes('GEWAS') || input.schade_code.includes('VRTG')", 
+      fixedRow(
+        column(4, tableModuleUI(id = ns("wildsoort"), includeTotal = TRUE)),
+        column(4, tableModuleUI(id = ns("schade"), includeTotal = TRUE)),
         column(4, tableModuleUI(id = ns("subschade"), includeTotal = TRUE))
       )
+    
     )
-
   )
   
 }

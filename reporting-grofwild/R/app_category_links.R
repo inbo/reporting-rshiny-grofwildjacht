@@ -6,8 +6,9 @@
 #' @author sjunius
 #' @export
 linksOutputServer <- function(id, 
-  specie = reactiveVal(), plot = reactiveVal(),
-  outputs = character(), uiText){
+  specie = reactiveVal(), subcategory = reactiveVal(), plot = reactiveVal(),
+  subcategories = character(),
+  outputs = character(), defaultTabs = NULL, uiText){
   
   moduleServer(id, function(input, output, session){  
       
@@ -25,20 +26,34 @@ linksOutputServer <- function(id,
       # Create plot - UI side
       observe({
           
-          if (plot() %in% outputs) {
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {
             
-            outputName <- plot()
-         
+            ui <- switch(as.character(subcategory()), 
+              "links-internelinks" = {
+                
+                links <- lapply(outputs, function(output) {
+                    
+                      wellPanel(class = "well-white", externalLinksUI(
+                          id = ns(paste0("links_", output)), 
+                          uiText = uiText,
+                          portal = output,
+                          doHide = !(plot() == defaultTabs$plot || output %in% plot())
+                        ))
+                    
+                  })
+                do.call(tagList, links)
+              }
+            
+            )
+            
             # include plot/table in UI
-            output[["output"]] <- renderUI(externalLinksUI(
-                id = ns("links"), 
-                uiText = uiText,
-                portal = outputName,
-                doHide = FALSE
-              ))
+            output[["output"]] <- renderUI(ui)
             
             # activate server-side update
-            outputServer(outputName)
+            outputServer(subcategory())
             
           }
           
@@ -47,13 +62,20 @@ linksOutputServer <- function(id,
       # Create plot - server side
       observeEvent(outputServer(), ignoreNULL = TRUE, {
           
-          outputName <- outputServer()
-          
-          externalLinksServer(
-            id = "links",
-            specie = specie,
-            portal = outputName,
-            uiText = uiText
+          switch(as.character(outputServer()), 
+            "links-internelinks" = {
+              sapply(outputs, function(output) {
+                  
+                  externalLinksServer(
+                    id = paste0("links_", output),
+                    specie = specie,
+                    portal = output,
+                    uiText = uiText
+                  )
+                  
+                }
+              )
+            }
           )
           
           # re-set in case plot selected via tab after/before category card

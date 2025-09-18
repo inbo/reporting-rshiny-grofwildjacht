@@ -188,7 +188,7 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 #' @export
 mapSpreadServer <- function(id, 
   allSpatialData, species,
-  type = c("F06", "F17_4"), title = reactive(NULL)) {
+  type = c("F06", "F17_4"), title = reactive(NULL), preSelected = reactive(NULL)) {
   moduleServer(id,
     function(input, output, session) {
       
@@ -476,6 +476,8 @@ mapSpreadServer <- function(id,
             content = "kaart", fileExt = "png"),
         content = function(file) {
           
+          idNote <- showNotification("Aanvraag wordt verwerkt... Even geduld.", type = "message", duration = NULL)
+          
           tmpFile <- tempfile(fileext = ".html")
           
           # write map to temp .html file
@@ -484,6 +486,8 @@ mapSpreadServer <- function(id,
           # convert temp .html file into .png for download
           webshot2::webshot(url = tmpFile, file = file,
             vwidth = 1000, vheight = 500, cliprect = "viewport")
+          
+          removeNotification(id = idNote)
           
         }
       )

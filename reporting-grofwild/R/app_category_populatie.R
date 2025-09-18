@@ -43,18 +43,19 @@ populatieOutputServer <- function(id,
       ) 
       
       # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
-      results$leeftijdtypes <- reactive(
-        c(
-          loadMetaEco(species = specie())$leeftijd_comp_inbo, 
-          "Onbekend"
-        )
-      )
+      results$leeftijdtypes <- reactive({
+        types <- c(loadMetaEco(species = specie())$leeftijd_comp_inbo, "Onbekend")
+        
+        if (!is.null(populatieSelection()$dataSource_leeftijd()) && any(grepl("6m", types, ignore.case = TRUE)) && (populatieSelection()$dataSource_leeftijd() == "both")) {
+          types <- c("Frisling", "Overloper", "Volwassen", "Onbekend")
+        }
+        
+        types
+      })
       
       # Plot 8: Onderkaaklengte per jaar
       results$typesGender <- reactive({
-          
           loadMetaEco(species = specie())$type_comp
-          
         })
       
       results$typesDefaultGender <- reactive({
@@ -74,6 +75,86 @@ populatieOutputServer <- function(id,
       ## Sidebar panel
       
       specieSidebarServer(id = "sidebar", specie = specie)
+      
+      ## General selection - Populatie
+      
+      observe({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = ns("topbar")
+              ),
+              switch(as.character(subcategory()), 
+                "populatie-leeggewicht" = list(
+                  showTime = TRUE, 
+                  showRegion = TRUE,
+                  showDataSource = c("leeftijd", "geslacht")
+                ),
+                "populatie-onderkaak" = list(
+                  showTime = TRUE,
+                  showRegion = TRUE
+                ),
+                "populatie-geslacht" = list(
+                    hideGeneralFilters = TRUE
+                  ),
+                "populatie-voortplanting" = list(
+                  showTime = TRUE, 
+                  showRegion = TRUE,
+                  showDataSource = c("embryos", "leeftijd", "geslacht")
+                )
+              )
+            )
+            
+            # include plot/table in UI
+            output[["topbar_filtering"]] <- renderUI(do.call(generalSelectionUI, args))
+            
+          }
+          
+        })
+      
+      populatieSelection <- reactive({
+            
+            req(subcategory())
+            req(plot())
+            
+            if (subcategory() %in% subcategories) {   
+              
+              args <- c(
+                list(
+                  id = "topbar"
+                ),
+                switch(as.character(subcategory()), 
+                  "populatie-leeggewicht" = list(
+                    regionLevels = c(1:2, 4),
+                    timeRange = reactive(if (specie() == "Ree")
+                          c(2014, max(results$timeRange())) else 
+                          results$timeRange())
+                  ),
+                  "populatie-onderkaak" = list(
+                    regionLevels = c(1:2, 4),
+                    timeRange = reactive(if (specie() == "Ree")
+                          c(2005, max(results$timeRange())) else 
+                          results$timeRange())
+                  ),
+                  "populatie-geslacht" = list(),
+                  "populatie-voortplanting" = list(
+                    regionLevels = c(1:2, 4),
+                    timeRange = results$timeRange
+                  )
+                )
+              )
+              
+              do.call(generalSelectionServer, args)
+              
+            }
+            
+          })
+        
       
       ## Main panel
       
@@ -95,16 +176,15 @@ populatieOutputServer <- function(id,
                 tagList(
                   if ("boxAgeWeightUI" %in% outputs)
                     wellPanel(class = "well-white", boxAgeWeightUI(
-                        id = ns("plot"), 
+                        id = ns("plot"), showType = TRUE,
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "boxAgeWeightUI" %in% plot())
                       )),
                   if ("plotBioindicatorUI-ontweid_gewicht" %in% outputs)
                     wellPanel(class = "well-white", plotBioindicatorUI(
-                        id = ns("plot"), 
+                        id = ns("plot"), showType = TRUE,
                         bioindicator = "ontweid_gewicht", 
-                        regionLevels = c(1:2, 4), 
                         uiText = uiText, context = "description",
                         doHide = !(plot() == defaultTabs$plot || "plotBioindicatorUI-ontweid_gewicht" %in% plot())
                       ))
@@ -116,15 +196,15 @@ populatieOutputServer <- function(id,
                     wellPanel(class = "well-white", countAgeCheekUI(
                         id = ns("plot"), 
                         uiText = uiText, context = "description",
-                        specie = specie(), regionLevels = c(1:2), 
+                        specie = specie(), 
                         doHide = !(plot() == defaultTabs$plot || "countAgeCheekUI" %in% plot())
                       )),
                   if ("plotBioindicatorUI-onderkaaklengte" %in% outputs)
                     wellPanel(class = "well-white", plotBioindicatorUI(
-                        id = ns("plot"),
-                        bioindicator = "onderkaaklengte",
-                        regionLevels = c(1:2, 4), showAccuracy = TRUE, 
+                        id = ns("plot"), showType = TRUE,
+                        bioindicator = "onderkaaklengte", showAccuracy = TRUE, 
                         uiText = uiText, context = "description",
+                        showDataSource = c("onderkaak", "leeftijd", "geslacht"),
                         doHide = !(plot() == defaultTabs$plot || "plotBioindicatorUI-onderkaaklengte" %in% plot())
                       ))
                 )
@@ -145,15 +225,13 @@ populatieOutputServer <- function(id,
                   if ("countAgeGroupUI" %in% outputs)
                     wellPanel(class = "well-white", countAgeGroupUI(
                         id = ns("plot"), 
-                        regionLevels = c(1:2, 4),
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countAgeGroupUI" %in% plot())
                       )),
                   if ("countEmbryosUI" %in% outputs)
                     wellPanel(class = "well-white", countEmbryosUI(
-                        id = ns("plot"), 
-                        regionLevels = c(1:2, 4),
+                        id = ns("plot"), showType = TRUE,
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countEmbryosUI" %in% plot())
@@ -175,6 +253,8 @@ populatieOutputServer <- function(id,
       # Create plot - server side
       observeEvent(outputServer(), ignoreNULL = TRUE, {
           
+          req(populatieSelection())
+          
           switch(as.character(outputServer()), 
             "populatie-leeggewicht" = {
               c(
@@ -183,18 +263,16 @@ populatieOutputServer <- function(id,
                     id = "plot",
                     data = results$combinedData,
                     type = results$leeftijdtypes,
-                    timeRange = reactive(if (specie() == "Ree")
-                          c(2014, max(results$timeRange())) else 
-                          results$timeRange())
+                    preSelected = populatieSelection
                   ),
                 if ("plotBioindicatorUI-ontweid_gewicht" %in% outputs)
                   plotBioindicatorServer(
                     id = "plot",
                     data = results$combinedData,
-                    timeRange = results$timeRange,
                     types = results$typesGender,
                     typesDefault = results$typesDefaultGender,
-                    bioindicator = "ontweid_gewicht"
+                    bioindicator = "ontweid_gewicht",
+                    preSelected = populatieSelection
                   )
               )
             },
@@ -204,18 +282,16 @@ populatieOutputServer <- function(id,
                   countAgeCheekServer(
                     id = "plot",
                     data = results$ecoData,
-                    timeRange = reactive(if (specie() == "Ree")
-                          c(2005, max(results$timeRange())) else 
-                          results$timeRange())
+                    preSelected = populatieSelection
                   ),
                 if ("plotBioindicatorUI-onderkaaklengte" %in% outputs)
                   plotBioindicatorServer(
                     id = "plot",
                     data = results$combinedData,
-                    timeRange = results$timeRange,
                     types = results$typesGender,
                     typesDefault = results$typesDefaultGender,
-                    bioindicator = "onderkaaklengte"
+                    bioindicator = "onderkaaklengte",
+                    preSelected = populatieSelection
                   )
               )
             },
@@ -225,7 +301,8 @@ populatieOutputServer <- function(id,
                   countAgeGenderServer(
                     id = "plot",
                     data = results$ecoData,
-                    timeRange = results$timeRange
+                    timeRange = results$timeRange,
+                    preSelected = populatieSelection
                   )
               )
             },
@@ -235,9 +312,9 @@ populatieOutputServer <- function(id,
                   countEmbryosServer(
                     id = "plot",
                     data = results$combinedData,
-                    timeRange = results$timeRange,
                     types = results$typesFemale,
-                    uiText = uiText
+                    uiText = uiText,
+                    preSelected = populatieSelection
                   ),
                 if ("countAgeGroupUI" %in% outputs)
                   countAgeGroupServer(
@@ -253,8 +330,8 @@ populatieOutputServer <- function(id,
                         )
                         plotData
                       }),
-                    timeRange = results$timeRange,
-                    groupVariable = "reproductiestatus"
+                    groupVariable = "reproductiestatus",
+                    preSelected = populatieSelection
                   )
               )
             }

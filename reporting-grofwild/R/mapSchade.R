@@ -276,12 +276,13 @@ mapSchade <- function(
 #' @import shiny
 #' @importFrom webshot2 webshot
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
+#' @importFrom dplyr coalesce
 #' @export
 mapSchadeServer <- function(
   id, schadeData, allSpatialData, timeRange, 
   defaultYear, species, borderRegion = NULL, 
   type = c("schade", "afschot", "wbe", "seizoen"), uiText, 
-  variable = NULL) {
+  variable = NULL, preSelected = reactive(NULL)) {
   
   type <- match.arg(type)
   
@@ -469,9 +470,10 @@ mapSchadeServer <- function(
       # Not via updateSelectInput: this is slower, multiple rendering of the plot
       output$bron <- renderUI({
           
-          req(input$time_schade)
+          time_schade <- coalesce(input$time_schade, preSelected()$time(), NA)
+          req(!is.na(time_schade))
           
-          newChoices <- unique(results$schadeData()$dataSource[results$schadeData()$afschotjaar %in% input$time_schade])
+          newChoices <- unique(results$schadeData()$dataSource[results$schadeData()$afschotjaar %in% time_schade])
           isolate(previousChoice <- if (is.null(current$bron)) newChoices else current$bron)
           
           
@@ -496,30 +498,33 @@ mapSchadeServer <- function(
       # Create data for map, summary of schade data, given year
       results$summaryPerceelData <- reactive({
           
+          time_schade <- coalesce(input$time_schade, preSelected()$time(), NA)
+          bron <- coalesce(input$bron, preSelected()$dataSource_schade(), NA)
+          
           if (type != "afschot") {
             
             validate(need(results$schadeData(), "Geen data beschikbaar"),
-              need(input$time_schade, "Gelieve periode te selecteren"),
-              need(input$bron, "Gelieve databron(nen) te selecteren"))
+              need(!is.na(time_schade), "Gelieve periode te selecteren"),
+              need(!is.na(bron), "Gelieve databron(nen) te selecteren"))
             
             if (nrow(results$schadeData()) == 0)
               return(results$schadeData())
             
             createSchadeSummaryData(
               schadeData = results$schadeData(),
-              timeRange = input$time_schade,
-              sourceIndicator = input$bron,
+              timeRange = time_schade,
+              sourceIndicator = bron,
               fullNames = fullNames)
             
           } else {
             
             validate(need(schadeData(), "Geen data beschikbaar"),
-              need(input$time_schade, "Gelieve periode te selecteren"),
+              need(!is.na(time_schade), "Gelieve periode te selecteren"),
               need(input$accuracy, "Gelieve nauwkeurigheid te selecteren"))
             
             toReturn <- createAfschotLocationsData(data = schadeData(),
               accuracy = input$accuracy,
-              timeRange = input$time_schade)            
+              timeRange = time_schade)            
             
             # Check after filtering
             validate(need(!is.null(toReturn), "Geen data beschikbaar"))
@@ -531,16 +536,17 @@ mapSchadeServer <- function(
       
       # Map for UI
       output$perceelPlot <- renderLeaflet({
+          time_schade <- coalesce(input$time_schade, preSelected()$time(), NA)
           
           validate(need(allSpatialData(), "Geen data beschikbaar"),
             # Also show map if 0 observations
             need(ncol(results$summaryPerceelData()) > 0, "Geen data beschikbaar"),
-            need(input$time_schade, "Gelieve periode te selecteren"))
+            need(!is.na(time_schade), "Gelieve periode te selecteren"))
           
           mapSchade(
             schadeData = results$summaryPerceelData(),
             regionLevel = if (grepl("WBE", borderRegion)) 
-                paste0(borderRegion, "_", input$time_schade[2]) else
+                paste0(borderRegion, "_", time_schade[2]) else
                 borderRegion,
             variable = variableCurrent(),
             allSpatialData = allSpatialData(),
@@ -551,13 +557,13 @@ mapSchadeServer <- function(
       
       # Create final perceelplot map (for download)
       results$perceelMap <- reactive({
-          
+          time_schade <- coalesce(input$time_schade, preSelected()$time(), NA)
           validate(need(results$summaryPerceelData(), "Geen data beschikbaar"))
           
           newPerceelMap <- mapSchade(
             schadeData = results$summaryPerceelData(),
             regionLevel = if (grepl("WBE", borderRegion)) 
-                paste0(borderRegion, "_", input$time_schade[2]) else
+                paste0(borderRegion, "_", time_schade[2]) else
                 borderRegion, 
             variable = variableCurrent(),
             allSpatialData = allSpatialData(),
@@ -666,14 +672,18 @@ mapSchadeServer <- function(
     # Create data for map, time plot
     results$timeData <- reactive({
         
-        validate(need(input$time_schade, "Gelieve periode te selecteren"),
+        time_schade <- coalesce(input$time_schade, preSelected()$time(), NA)
+        bron <- coalesce(input$bron, preSelected()$dataSource_schade(), NA)
+        
+        validate(need(!is.na(time_schade), "Gelieve periode te selecteren"),
+          need(!is.na(bron), "Gelieve databronnen te selecteren"),
           need(nrow(results$schadeData()) > 0, "Geen data beschikbaar"))
         
         createTrendData(
           data = filterDataSource(plotData = results$schadeData(),
-                sourceIndicator = input$bron, returnStop = "message"),
+                sourceIndicator = bron, returnStop = "message"),
           allSpatialData = allSpatialData(),
-          timeRange = input$time_schade,
+          timeRange = time_schade,
           species = species(),
           regionLevel = "WBE_buitengrenzen"
         )
@@ -686,10 +696,11 @@ mapSchadeServer <- function(
       plotFunction = "trendYearRegion", 
       data = results$timeData,
       locaties = results$regionLevelName,
-      timeRange = reactive(input$time_schade),
+      timeRange = reactive(coalesce(input$time_schade, preSelected()$time(), NA)),
       isSchade = TRUE,
       combinatie = reactive(FALSE),
-      height = "400px"
+      height = "400px",
+      preSelected = preSelected
     )
     
     
@@ -714,7 +725,7 @@ mapSchadeServer <- function(
 #' @export
 mapSchadeUI <- function(
   id, filterCode = FALSE, filterSubcode = FALSE,  
-  filterSource = TRUE, filterAccuracy = FALSE,
+  filterSource = TRUE, filterTime = TRUE, filterAccuracy = FALSE,
   filterVariable = TRUE, variableChoices = c(
     "Seizoen" = "season",
     "Jaar" = "afschotjaar",
@@ -753,13 +764,12 @@ mapSchadeUI <- function(
         
         
         fixedRow(
-          column(6, uiOutput(ns("time_schade"))),
-            if(filterVariable)
+          if (filterTime)
+            column(6, uiOutput(ns("time_schade"))),
+          if(filterVariable)
             column(6, selectInput(inputId = ns("variable"), label = "Variabele",
                 choices = variableChoices)
-            )
-        ),
-        fixedRow(
+            ),
           column(6,
             if (filterSource)
               uiOutput(ns("bron")),

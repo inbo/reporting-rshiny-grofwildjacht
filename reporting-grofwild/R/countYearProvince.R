@@ -38,7 +38,6 @@ countYearProvince <- function(data, jaartallen = NULL,
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
         regio = "") {
   
-  
   type <- match.arg(type)
 	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
   
@@ -52,15 +51,16 @@ countYearProvince <- function(data, jaartallen = NULL,
   plotData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
+  isFbz <- FALSE
   if (all(regio == "Vlaams Gewest")) {
     plotData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% levels(plotData$provincie))) {
+  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
     plotData$locatie <- plotData$provincie
   } else {
     plotData$locatie <- plotData$FaunabeheerZone
+    isFbz <- TRUE
   }
   
-  fbz_s <- unique(plotData$FaunabeheerZone)
   if(nrow(plotData) == 0) {
     stop(paste0("Geen data beschikbaar voor de geselecteerde locatie: ", paste(regio, collapse = ", "), ". "))
   }
@@ -174,15 +174,16 @@ countYearProvince <- function(data, jaartallen = NULL,
     summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
   
   # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
-  if (all(regio %in% fbz_s)) {
+  if (isFbz) {
     summaryData$locatie <- factor(summaryData$locatie, 
       levels = levels(droplevels(factor(unique(summaryData$locatie), 
             levels = c(as.character(1:10), "Onbekend")))))
+  } else {
+    newLevels <- levels(summaryData$locatie)
+    summaryData$locatie <- factor(summaryData$locatie, 
+      levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
   }
-  newLevels <- levels(summaryData$locatie)
-  summaryData$locatie <- factor(summaryData$locatie, 
-    levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
-  
+ 
   # Hover text
   totalCount <- setNames(totalCount$value, totalCount$year)
   summaryData$text <- paste0(
@@ -275,7 +276,8 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
-  typesDefault = types, timeRange, title = reactive(NULL), allRegionsSelected = FALSE) {
+  typesDefault = types, timeRange, title = reactive(NULL), allRegionsSelected = FALSE,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -305,7 +307,8 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
       callModule(module = plotModuleServer, id = "yearProvince",
         plotFunction = "countYearProvince", 
         title = if (id == "dash") "Aantal drukjachten" else NULL,
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   
@@ -321,8 +324,8 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @export
 countYearProvinceUI <- function(
   id, uiText, specie = NULL, plotFunction = "countYearProvinceUI",
-  showType = FALSE, showDataSource = NULL, showInterval = FALSE, regionLevels = NULL,
-  regionLevelSelected = NULL, doHide = TRUE) {
+  showType = FALSE, showTime = FALSE, showDataSource = NULL, showInterval = FALSE, 
+  regionLevels = NULL, regionLevelSelected = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -351,7 +354,7 @@ countYearProvinceUI <- function(
             id = ns("yearProvince"), 
             regionLevels = regionLevels, 
             regionLevelSelected = regionLevelSelected,
-            showTime = TRUE, exportData = TRUE,
+            showTime = showTime, exportData = TRUE,
             showType = showType, showInterval = showInterval,
             showDataSource = showDataSource
           )

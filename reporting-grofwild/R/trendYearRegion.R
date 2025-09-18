@@ -9,7 +9,7 @@
 #' @importFrom sf st_drop_geometry
 #' @export
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
-  timeRange, species, regionLevel, 
+  timeRange, species, regionLevel,
   unit = c("absolute", "relative", "relativeDekking"),
   sourceIndicator = NULL) {
   
@@ -161,6 +161,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @export
 trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, 
   timeRange = NULL, unit = c("absolute", "relative", "relativeDekking"), 
+  jaartallen = NULL, regio = "", sourceIndicator = NULL,
   isFlanders = FALSE, isSchade = FALSE, width = NULL, height = NULL) {
   
   

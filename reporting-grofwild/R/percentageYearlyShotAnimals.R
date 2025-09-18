@@ -54,7 +54,7 @@ percentageYearlyShotAnimals <- function(
   # check if specified year/year range are in the data
   # and in the opening season
   if(! all(jaartallen %in% openingstijdenData$Jaar)) 
-    stop("Niet voor alle jaartallen zijn er observaties in de openingstijden data.")
+    jaartallen <- jaartallen[jaartallen %in% openingstijdenData$Jaar]
   if(! jaar %in% data$afschotjaar) 
     stop("Geen data voor het gekozen jaar.")
   if(! jaar %in% openingstijdenData$Jaar) 
@@ -320,7 +320,8 @@ percentageYearlyShotAnimals <- function(
 #' @author mvarewyck
 #' @import shiny
 #' @export
-yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenData) {
+yearlyShotAnimalsServer <- function(id, data, timeRange = reactive(NULL), type = reactive(NULL), openingstijdenData,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -338,7 +339,8 @@ yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenDat
       callModule(module = plotModuleServer, id = "yearlyShotAnimals",
         plotFunction = "percentageYearlyShotAnimals", 
         data = data,
-        openingstijdenData = openingstijdenData)
+        openingstijdenData = openingstijdenData,
+        preSelected = preSelected)
       
     })
   
@@ -352,7 +354,8 @@ yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenDat
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 yearlyShotAnimalsUI <- function(id, uiText, specie = NULL, 
-  context = id, regionLevels = NULL, doHide = TRUE) {
+  context = id, regionLevels = NULL, doHide = TRUE, showTime = FALSE, showYear = FALSE,
+  showType = FALSE) {
   
   ns <- NS(id)
   
@@ -376,7 +379,7 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
         column(4,
           optionsModuleUI(id = ns("yearlyShotAnimals"), 
             regionLevels = regionLevels, 
-            showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE)
+            showTime = showTime, showYear = showYear, showType = showType, exportData = TRUE)
         )
       
       ),

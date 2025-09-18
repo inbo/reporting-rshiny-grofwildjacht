@@ -16,10 +16,6 @@ tableSchadeSummaryUI <- function(id, uiText, specie = NULL, doHide = TRUE) {
     conditionalPanel(
       condition = paste("input.linkTableSummary % 2 ==", as.numeric(doHide)),
       ns = ns,
-      wellPanel(
-        uiOutput(ns("time")),
-        uiOutput(ns("source_schade"))
-      ),
       fixedRow(
         column(4, tableModuleUI(id = ns("wildsoort"), includeTotal = TRUE)),
         column(4, tableModuleUI(id = ns("schade"), includeTotal = TRUE)),
@@ -38,7 +34,8 @@ tableSchadeSummaryUI <- function(id, uiText, specie = NULL, doHide = TRUE) {
 #' @import shiny
 #' @export
 tableSchadeSummaryServer <- function(id, data, schadeTypes, schadeCodes,
-  definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -48,51 +45,18 @@ tableSchadeSummaryServer <- function(id, data, schadeTypes, schadeCodes,
       current <- reactiveValues(
         time = NULL)
       
-      output$time <- renderUI({
-          req(data())
-          
-          value <- if (is.null(current$time)) {
-              c(min(data()$afschotjaar), definedYear)
-            } else {
-              current$time
-            }
-          
-          sliderInput(inputId = ns("time"), label = "Periode", 
-            value = value,
-            min = min(data()$afschotjaar),
-            max = max(definedYear, max(data()$afschotjaar), na.rm = TRUE),
-            step = 1,
-            sep = "")
-          
-        })
-      observe(current$time <- input$time)
-      
-      output$source_schade <- renderUI({
-          
-          sourcesSchade <- loadMetaSchade()$sources
-          
-          selectInput(inputId = ns("dataSource_schade"), 
-            label = "Databron(nen)",
-            choices = sourcesSchade, selected = if (is.null(current$sources_schade)) sourcesSchade else current$sources_schade,
-            multiple = TRUE)
-          
-          
-        })
-      observe(current$sources_schade <- input$dataSource_schade)
-      
       
       filteredData <- reactive({
           
-          req(input$time)
-          req(input$dataSource_schade)
+          req(preSelected())
           
           subData <- data()
           
-          if (!is.null(input$time))
-            subData <- subset(subData, afschotjaar >= input$time[1] & afschotjaar <= input$time[2])
+          if (!is.null(preSelected()$time()))
+            subData <- subset(subData, afschotjaar >= preSelected()$time()[1] & afschotjaar <= preSelected()$time()[2])
           
-          if (!is.null(input$dataSource_schade))
-            subData <- filterDataSource(plotData = subData, sourceIndicator = input$dataSource_schade,
+          if (!is.null(preSelected()$dataSource_schade()))
+            subData <- filterDataSource(plotData = subData, sourceIndicator = preSelected()$dataSource_schade(),
               returnStop = "message")
           
           return(subData)

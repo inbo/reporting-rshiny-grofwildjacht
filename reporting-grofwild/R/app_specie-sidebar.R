@@ -91,9 +91,8 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
         currentString <- parseQueryString(session$clientData$url_search)
         
         newSelection <- currentString
-        if (!is.null(currentString$plot)) {
+        if (!is.null(currentString$plot) || !is.null(currentString$subcategory)) {
           newSelection$plot <- NULL
-        } else if (!is.null(currentString$subcategory)) {
           newSelection$subcategory <- NULL
         } else if (!is.null(currentString$category)) {
           newSelection$category <- NULL

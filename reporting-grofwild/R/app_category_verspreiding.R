@@ -46,9 +46,93 @@ verspreidingOutputServer <- function(id,
           )
         })
       
+      # Fetch all datasources of kencijfer data
+      results$databronnen <- reactive({
+          req(results$geoDataAll())
+          
+          dataSource <- unique(results$geoDataAll()$dataSource)
+          req(length(dataSource) > 0)
+          names(dataSource) <- gsub("\\..+", "", dataSource)
+          
+        })
+      
+      results$timeRange <- reactive({
+          
+          req(results$geoDataAll())
+          
+          kencijferData <- results$geoDataAll()[wildsoort == specie()]
+          c(min(kencijferData$afschotjaar), as.numeric(format(Sys.time(), "%Y")))
+          
+        })
+      
       ## Sidebar panel
       
       specieSidebarServer(id = "sidebar", specie = specie)
+      
+      ## General selection - Verspreiding
+      
+      observe({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = ns("topbar")
+              ),
+              switch(as.character(subcategory()), 
+                "verspreiding-huidig" = list(
+                  showYear = TRUE,
+                  showRegion = TRUE,
+                  showType = TRUE,
+                  showUnit = TRUE
+                ),
+                "verspreiding-toekomstig" = list(
+                  hideGeneralFilters = TRUE
+                )
+              )
+            )
+            
+            # include plot/table in UI
+            output[["topbar_filtering"]] <- renderUI(do.call(generalSelectionUI, args))
+            
+          }
+          
+        })
+      
+      verspreidingSelection <- reactive({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = "topbar"
+              ),
+              switch(as.character(subcategory()), 
+                "verspreiding-huidig" = list(
+                  regionLevels = c(1:4),
+                  regionLevelSelected = "provinces",
+                  types = results$databronnen,
+                  labelTypes = "Databron(nen)",
+                  multipleTypes = TRUE,
+                  units = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
+                    "Aantal/100ha bos & natuur" = "relativeDekking"),
+                  timeRange = results$timeRange,
+                  data = reactive(results$geoDataAll()[wildsoort == specie()])),
+                "verspreiding-toekomstig" = list()
+              )
+            )
+            
+            do.call(generalSelectionServer, args)
+            
+          }
+          
+        })
       
       ## Main panel
       
@@ -71,6 +155,7 @@ verspreidingOutputServer <- function(id,
                   if ("F17_1" %in% outputs)
                     wellPanel(class = "well-white", mapFlandersUI(
                         id = ns("plot"), 
+                        showRegion = FALSE,
                         showCombine = FALSE, type = "dash",
                         mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
                         regionChoices = c(
@@ -85,7 +170,7 @@ verspreidingOutputServer <- function(id,
                   if ("kencijferUI" %in% outputs)
                     wellPanel(class = "well-white", kencijferModuleUI(
                         id = ns("plot"), 
-                        uiText = uiText, 
+                        uiText = uiText,
                         doHide = !(plot() == defaultTabs$plot || "kencijferUI" %in% plot())
                       ))
                 )
@@ -116,6 +201,8 @@ verspreidingOutputServer <- function(id,
       # Create plot - server side
       observeEvent(outputServer(), ignoreNULL = TRUE, {
           
+          req(verspreidingSelection())
+          
           switch(as.character(outputServer()), 
             "verspreiding-huidig" = {
               c(
@@ -131,7 +218,8 @@ verspreidingOutputServer <- function(id,
                     hideGlobeDefault = FALSE,
                     countVariable = "aantal",
                     sourceChoices = c("waarnemingen.be", "afschot"),
-                    uiText = uiText
+                    uiText = uiText,
+                    preSelected = verspreidingSelection
                   ),
                 if ("kencijferUI" %in% outputs)
                   kencijferModuleServer(
@@ -139,7 +227,8 @@ verspreidingOutputServer <- function(id,
                     kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
                     biotoopData = reactive(biotoopData$communes),
                     spatialData = spatialData,
-                    species = specie
+                    species = specie,
+                    preSelected = verspreidingSelection
                   )
               )
             },
@@ -150,7 +239,8 @@ verspreidingOutputServer <- function(id,
                     id = "plot",
                     allSpatialData = spatialData,
                     species = specie(),
-                    type = "F17_4"
+                    type = "F17_4",
+                    preSelected = verspreidingSelection
                   )
               )
             }

@@ -58,7 +58,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   # Force all fbz's in the summary table even if never occured  
   if (all(regio == "Vlaams Gewest")) {
     allData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% levels(allData$provincie))) {
+  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
     allData$locatie <- factor(allData$provincie)
   } else {
     allData$locatie <- allData$FaunabeheerZone
@@ -204,7 +204,7 @@ tableSchadeCode <- function(data, jaartallen = NULL,
 #' @export
 tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
   schadeChoices, schadeChoicesVrtg, schadeChoicesGewas, datatable, fullNames, 
-  allRegionsSelected = FALSE) {
+  allRegionsSelected = FALSE, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -225,7 +225,8 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
         schadeChoicesVrtg = schadeChoicesVrtg,
         schadeChoicesGewas = schadeChoicesGewas,
         datatable = datatable,
-        fullNames = fullNames
+        fullNames = fullNames,
+        preSelected = preSelected
       )
       
     })
@@ -241,8 +242,8 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 #' @export
 tableSchadeUI <- function(id, 
   uiText, context = id, specie = NULL, 
-  regionLevels = NULL, regionLevelSelected = NULL,
-  doHide = TRUE) {
+  regionLevels = NULL, regionLevelSelected = NULL, showDataSource = c(),
+  showTime = FALSE, doHide = TRUE, summarizeBy = NULL) {
   
   ns <- NS(id)
   
@@ -260,11 +261,11 @@ tableSchadeUI <- function(id,
       condition = paste("input.linkTableSchade % 2 ==", as.numeric(doHide)), 
       ns = ns,
       optionsModuleUI(id = ns("tableSchade"), 
-        showTime = TRUE, 
+        showTime = showTime, 
         regionLevels = regionLevels, 
         regionLevelSelected = regionLevelSelected,
-        summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
-        showDataSource = "schade",
+        summarizeBy = summarizeBy,
+        showDataSource = showDataSource,
         exportData = TRUE
       ),
       tableModuleUI(id = ns("tableSchade")),

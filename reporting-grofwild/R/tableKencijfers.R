@@ -72,7 +72,6 @@ tableKencijfers <- function(data, jaar = 2023, period = c(jaar-1, jaar-5),
   thresholdWaarnemingen = 0,
   thresholdAfschot = 0){
   
-  
   bron <- match.arg(bron)
   
   # For R CMD check
@@ -255,7 +254,7 @@ kencijferModuleUI <- function(id, uiText, doHide = TRUE) {
   title <- getOutputTitle(output = "kencijferUI", uiText = uiText)
   description <- getOutputDescription(output = "kencijferUI", uiText = uiText, 
     context = "description")
-  
+
   tagList(
     
     actionLink(inputId = ns("linkKencijferTabel"), label = tags$h3("TABEL:", title)),
@@ -274,30 +273,8 @@ kencijferModuleUI <- function(id, uiText, doHide = TRUE) {
           ),
           column(4,
             wellPanel(
-              selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
-                  choices = c(
-                    "Vlaanderen" = "flanders",
-                    "Provincie" = "provinces", 
-                    "Gemeente" = "communes"
-                  ),
-                  selected = "provinces"),
-              uiOutput(ns("region")),
-              uiOutput(ns("filterYear")),
               uiOutput(ns("filterPeriod")),
-              selectInput(inputId = ns("unit"), label = "Eenheid",
-                choices = c(
-                  "Aantal" = "absolute", 
-                  "Aantal/100ha" = "relative", 
-                  "Aantal/100ha bos & natuur" = "relativeDekking")),
-              uiOutput(ns("filterSource")),
-              conditionalPanel(
-                condition = "input.bron && input.bron.indexOf('waarnemingen.be') > -1", ns = ns,
-                uiOutput(ns("sliderObserve"))
-              ),
-              conditionalPanel(
-                condition = "input.bron && input.bron.indexOf('afschot') > -1", ns = ns,
-                uiOutput(ns("sliderAfschot"))
-              )
+              uiOutput(ns("sliderDrempel"))
             )
           )
         )
@@ -321,7 +298,7 @@ kencijferModuleUI <- function(id, uiText, doHide = TRUE) {
 #' @export
 
 kencijferModuleServer <- function(id, input, output, session, kencijfersData, 
-  biotoopData, spatialData, species){
+  biotoopData, spatialData, species, preSelected = reactive(NULL)){
   
   # For R CMD check
   afschotjaar <- aantal <- gemeente_afschot_locatie <- provincie <- . <- NULL
@@ -338,37 +315,15 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       ns <- session$ns
       
       
-      output$region <- renderUI({
-          
-          req(input$regionLevel)
-          
-          if (input$regionLevel == "flanders")
-            return(NULL)
-          
-          currentSpatial <- filterSpatial(
-            allSpatialData = spatialData, 
-            species = species(), 
-            regionLevel = input$regionLevel, 
-            year = NULL
-          )
-          
-          regionChoices <- sort(unique(currentSpatial$NAAM))
-          
-          selectInput(inputId = ns("locaties"), label = "Regio('s)",
-            choices = regionChoices,
-            multiple = TRUE)
-          
-        })
-      
       filterKencijfersData <- reactive({
           
-          req(input$regionLevel)
+          req(preSelected()$regionLevel())
           
-          dataSingleEntry <- if (input$regionLevel != "flanders") {
+          dataSingleEntry <- if (preSelected()$regionLevel() != "flanders") {
               
-              validate(need(input$locaties, "Gelieve regio('s) te selecteren"))
-              filterGeo(data = kencijfersData(), regionLevel = input$regionLevel, 
-                locaties = input$locaties, choseByID = FALSE)
+              validate(need(preSelected()$region(), "Gelieve regio('s) te selecteren"))
+              filterGeo(data = kencijfersData(), regionLevel = preSelected()$regionLevel(), 
+                locaties = preSelected()$region(), choseByID = FALSE)
               
             } else {     
               
@@ -389,25 +344,13 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
         })
       
       
-      output$filterYear <- renderUI({
-          
-          div(class = "sliderBlank",
-            sliderInput(inputId = ns("year"), label = "Geselecteerd jaar",
-              value = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
-              min = min(timeRange()),
-              max = max(timeRange()),
-              step = 1,
-              sep = ""))
-          
-        })
-      
       output$filterPeriod <- renderUI({
           
-          req(input$year)
+          req(preSelected()$year())
           
           suppressWarnings(sliderInput(inputId = ns("period"), 
             label = "Referentieperiode", 
-            value = c(input$year-5, input$year-1),
+            value = c(preSelected()$year()-5, preSelected()$year()-1),
             min = min(timeRange()),
             max = max(timeRange()),
             step = 1,
@@ -416,21 +359,17 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
         })
       
       
-      output$filterSource <- renderUI({
+      output$sliderDrempel <- renderUI({
           
-          req(filterKencijfersData())
-          
-          dataSource <- unique(filterKencijfersData()$dataSource)
-          req(length(dataSource) > 0)
-          names(dataSource) <- gsub("\\..+", "", dataSource)
-          
-          selectInput(inputId = ns("bron"),
-            label = "Databron(nen)",
-            selected = dataSource,
-            choices =  dataSource,
-            multiple = TRUE)
+          tagList(
+            if ("waarnemingen" %in% preSelected()$type())
+              uiOutput(ns("sliderObserve")),
+            if ("afschot" %in% preSelected()$type())
+              uiOutput(ns("sliderAfschot"))
+            )
           
         })
+      
       
       kencijferSummarized <- reactive({
           
@@ -438,7 +377,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
           summarizeKencijferData(geoData = filterKencijfersData(),
             biotoopData = biotoopData(),
-            unit = req(input$unit)
+            unit = req(preSelected()$unit())
           )
           
         })
@@ -446,20 +385,21 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$sliderObserve <- renderUI({
           
           req(kencijferSummarized())
-          req(input$year)
-          valueChoices <- kencijferSummarized()[(dataSource == "waarnemingen.be") & (afschotjaar == input$year), aantal]
+          req(preSelected()$year())
+          
+          valueChoices <- kencijferSummarized()[(dataSource == "waarnemingen.be") & (afschotjaar == preSelected()$year()), aantal]
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
-          maxWaarnemingen <- max(if (input$unit == "absolute") 10 else 5, 
+          maxWaarnemingen <- max(if (preSelected()$unit() == "absolute") 10 else 5, 
             suppressWarnings(max(valueChoices, na.rm = TRUE)))
           
           sliderInput(
             inputId = ns("thresholdWaarnemingen"),
             label = "Waarnemingen drempel",
             value = min(results$observeThreshold, maxWaarnemingen),
-            min = if (input$unit == "absolute") 1 else 0,
+            min = if (preSelected()$unit() == "absolute") 1 else 0,
             max = maxWaarnemingen,
-            step = if (input$unit == "absolute") 1 else 0.1,
+            step = if (preSelected()$unit() == "absolute") 1 else 0.1,
             sep = ""
           )
         })
@@ -468,20 +408,21 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$sliderAfschot <- renderUI({
           
           req(kencijferSummarized())
-          req(input$year)
-          valueChoices <- kencijferSummarized()[(dataSource == "afschot") & (afschotjaar == input$year), aantal]
+          req(preSelected()$year())
+          
+          valueChoices <- kencijferSummarized()[(dataSource == "afschot") & (afschotjaar == preSelected()$year()), aantal]
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
-          maxSchot <- max(if (input$unit == "absolute") 10 else 5, 
+          maxSchot <- max(if (preSelected()$unit() == "absolute") 10 else 5, 
             suppressWarnings(max(valueChoices, na.rm = TRUE)))
           
           sliderInput(
             inputId = ns("thresholdAfschot"),
             label = "Afschot drempel",
             value = min(results$shotThreshold, maxSchot),
-            min = if (input$unit == "absolute") 1 else 0,
+            min = if (preSelected()$unit() == "absolute") 1 else 0,
             max =  maxSchot,
-            step = if (input$unit == "absolute") 1 else 0.1,
+            step = if (preSelected()$unit() == "absolute") 1 else 0.1,
             sep = ""
           )
         })
@@ -497,7 +438,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
         })
       
-      observeEvent(input$year, {
+      observeEvent(preSelected()$year(), {
           
           req(input$observeThreshold)
           
@@ -508,17 +449,17 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       results$res <- reactive({
           
-          req(input$year)
+          req(preSelected()$year())
           req(input$period)
           
           tableKencijfers(
             data = req(kencijferSummarized()), 
-            jaar = as.numeric(input$year),
+            jaar = as.numeric(preSelected()$year()),
             period = input$period,
-            bron = if (is.null(input$bron)) 
-                "both" else if (length(input$bron) == 2) 
+            bron = if (is.null(preSelected()$type())) 
+                "both" else if (length(preSelected()$type()) == 2) 
                 "both" else 
-                input$bron,
+                preSelected()$type(),
             thresholdWaarnemingen = input$thresholdWaarnemingen,
             thresholdAfschot = input$thresholdAfschot,
             ns = ns
@@ -536,7 +477,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
         
         filename = function()
           nameFile(content = "kencijfer", species = species(), 
-            year = input$year, fileExt = "csv"),
+            year = preSelected()$year(), fileExt = "csv"),
         content = function(file)
           write.csv(results$res()$data, file, row.names = FALSE)
       )

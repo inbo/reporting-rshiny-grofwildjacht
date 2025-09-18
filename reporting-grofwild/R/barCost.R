@@ -176,7 +176,8 @@ barCost <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
+barCostServer <- function(id, yVar, data, title = reactive(NULL), allRegionsSelected = FALSE, 
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -207,6 +208,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "barCost", 
         data = subData,
+        allRegionsSelected = allRegionsSelected,
         intervals = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")
       )
       
@@ -214,7 +216,8 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
-        typeMelding = reactive(input$typeMelding)
+        typeMelding = reactive(input$typeMelding),
+        preSelected = preSelected
       )
       
       

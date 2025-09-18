@@ -92,7 +92,7 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
 #' @author mvarewyck
 #' @import shiny
 #' @export
-pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
+pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -127,6 +127,7 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
         data = subData,
         yVar = yVar,
         exportPlotWidth = 12, exportPlotHeight = ifelse(length(input$year) > 1, 10, 12),
+        preSelected = preSelected
       )
       
     })

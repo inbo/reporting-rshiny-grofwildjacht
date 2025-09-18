@@ -41,9 +41,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 	wildNaam <- unique(data$wildsoort)
 	
 	if (is.null(jaartallen))
-		stop("Gelieve jaartallen te selecteren")
-	
-	
+		jaartallen <- unique(data$afschotjaar)
 	
 	# Select data
 	plotData <- data[data$afschotjaar %in% jaartallen, 
@@ -141,7 +139,7 @@ countAgeCheek <- function(data, jaartallen = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countAgeCheekServer <- function(id, data, timeRange) {
+countAgeCheekServer <- function(id, data, timeRange = NULL, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -155,7 +153,8 @@ countAgeCheekServer <- function(id, data, timeRange) {
       )
       callModule(module = plotModuleServer, id = "ageCheek",
         plotFunction = "countAgeCheek", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   
@@ -169,7 +168,7 @@ countAgeCheekServer <- function(id, data, timeRange) {
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels,
+countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels = NULL,
   uiText, context = id, specie = NULL,
   doHide = TRUE) {
   
@@ -195,7 +194,7 @@ countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels,
           plotModuleUI(id = ns("ageCheek"))
         ),
         column(4,
-          optionsModuleUI(id = ns("ageCheek"), showTime = TRUE, regionLevels = regionLevels, exportData = TRUE),
+          optionsModuleUI(id = ns("ageCheek"), regionLevels = regionLevels, exportData = TRUE),
           if (showAccuracy)
             accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
         )

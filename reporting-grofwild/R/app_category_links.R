@@ -18,6 +18,55 @@ linksOutputServer <- function(id,
       
       specieSidebarServer(id = "sidebar", specie = specie)
       
+      ## General selection - Links
+      observe({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = ns("topbar")
+              ),
+              switch(as.character(subcategory()), 
+                "links-internelinks" =list(
+                    hideGeneralFilters = TRUE
+                 )
+              )
+            )
+            
+            # include plot/table in UI
+            output[["topbar_filtering"]] <- renderUI(do.call(generalSelectionUI, args))
+            
+          }
+          
+        })
+      
+      linksSelection <- reactive({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = "topbar"
+              ),
+              switch(as.character(subcategory()), 
+                "links-internelinks" = list(),
+              )
+            )
+            
+            do.call(generalSelectionServer, args)
+            
+          }
+          
+        })
+      
+      
       ## Main panel
       
       # Tab content with selected plot/table

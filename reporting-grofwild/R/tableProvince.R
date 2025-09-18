@@ -23,7 +23,6 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 		categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50,
     sourceIndicator_leeftijd = NULL, regio = "") {
 	
-	
 	wildNaam <- unique(data$wildsoort)  
 	categorie <- match.arg(categorie)
 	
@@ -280,7 +279,8 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, labelTypes = "Type", typesDefault = types) {
+tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, labelTypes = "Type", typesDefault = types,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -299,7 +299,8 @@ tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, la
       callModule(module = plotModuleServer, id = "tableProvince",
         plotFunction = "tableProvince", 
         data = data, 
-        categorie = categorie)
+        categorie = categorie,
+        preSelected = preSelected)
       
     })
   

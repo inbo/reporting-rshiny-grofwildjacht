@@ -19,6 +19,54 @@ draagvlakOutputServer <- function(id,
       
       specieSidebarServer(id = "sidebar", specie = specie)
       
+      ## General selection - Draagvlak
+      observe({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = ns("topbar")
+              ),
+              switch(as.character(subcategory()), 
+                "draagvlak-surveys" =list(
+                  hideGeneralFilters = TRUE
+                )
+              )
+            )
+            
+            # include plot/table in UI
+            output[["topbar_filtering"]] <- renderUI(do.call(generalSelectionUI, args))
+            
+          }
+          
+        })
+      
+      draagvlakSelection <- reactive({
+          
+          req(subcategory())
+          req(plot())
+          
+          if (subcategory() %in% subcategories) {   
+            
+            args <- c(
+              list(
+                id = "topbar"
+              ),
+              switch(as.character(subcategory()), 
+                "draagvlak-surveys" = list(),
+              )
+            )
+            
+            do.call(generalSelectionServer, args)
+            
+          }
+          
+        })
+      
       ## Main panel
       
       # Tab content with selected plot/table
@@ -106,7 +154,8 @@ draagvlakOutputServer <- function(id,
                     id = paste0("pciDraagvlak_", output),
                     data = reactive(subData),
                     yVar = if (output == "F14_1") "Year" else "vraag_label",
-                    plotFunction = if (output == "F14_2") "barDraagkracht" else "pciDraagvlak"
+                    plotFunction = if (output == "F14_2") "barDraagkracht" else "pciDraagvlak",
+                    preSelected = draagvlakSelection
                   )
                   
                 }

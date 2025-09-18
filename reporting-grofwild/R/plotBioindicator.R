@@ -167,8 +167,8 @@ plotBioindicator <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht")) {
+plotBioindicatorServer <- function(id, data, timeRange = reactive(NULL), types, typesDefault,
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht"), preSelected = reactive(NULL)) {
   
   bioindicator <- match.arg(bioindicator)
   
@@ -187,10 +187,12 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
           'onderkaaklengte' = "Type", 
           "ontweid_gewicht" = "Leeftijdscategorie"),
         multipleTypes = TRUE)
+      
       callModule(module = plotModuleServer, id = "plotBioindicator",
         plotFunction = "plotBioindicator", 
         bioindicator = bioindicator,
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   
@@ -205,7 +207,8 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' 
 #' @export
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
-  regionLevels, showAccuracy = FALSE, uiText, doHide = TRUE,
+  regionLevels = NULL, showType = FALSE, showTime = FALSE,
+  showAccuracy = FALSE, uiText, doHide = TRUE, showDataSource = c(),
   context = strsplit(id, split = "_")[[1]][1]) {
   
   # For R CMD check
@@ -236,12 +239,10 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
         ),
         column(4,
           optionsModuleUI(id = ns("plotBioindicator"),
-            showTime = TRUE, showType = TRUE,
+            showTime = showTime, showType = showType,
             regionLevels = regionLevels, exportData = TRUE,
-            showDataSource = switch(bioindicator,
-              ontweid_gewicht = c("leeftijd", "geslacht"),
-              onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
-            )),
+            showDataSource = showDataSource
+          ),
           if (showAccuracy)
             accuracyModuleUI(id = ns("plotBioindicator"), 
               title = "Accuraatheid onderkaaklengte"),

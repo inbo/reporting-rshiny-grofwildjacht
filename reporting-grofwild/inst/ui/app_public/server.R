@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
     } else if (input$navbarID %in% subcategories) {
       subcategory(input$navbarID)
       currentTab(input$navbarID)
-    }else if (input$navbarID %in% outputs) {
+    } else if (input$navbarID %in% outputs) {
       plot(input$navbarID)
       currentTab(getSubcategoryOutput(input$navbarID))
     }
@@ -256,8 +256,26 @@ shinyServer(function(input, output, session) {
 # reset category
 observeEvent(subcategory(), {
     
+    
+    # Reset schade defaults when subcategory changes
+    schade_code(NULL)
+    schade_gewas(NULL)
+    schade_voertuig(NULL)
+    
+    
     # in case subcategory selected from navigation bar and ...
     if(subcategory() != defaultTabs$subcategory){
+      
+      # ... selected plot is not from this subcategory
+      if (plot() != defaultTabs$plot) {
+        subcategoryOutput <- getSubcategoryOutput(plot())
+        if(subcategory() != subcategoryOutput){
+          if(doDebug)
+            print("Reset plot to default")
+          plot(defaultTabs$plot)
+          updateTab(FALSE);resetNextTab(FALSE)# only update shown nav
+        }
+      }
       
       # ... respective category not selected
       categoryOutput <- as.character(getCategorySubcategory(subcategory())) 
@@ -555,7 +573,7 @@ observeEvent(subcategory(), {
       updateTab(FALSE)
 
     }
-  }, priority = 1)
+  }, priority = -1)
   
   # Update the hash based on the selected tabPanel
   updateHash <- reactive(list(selection(), input$navbarID))

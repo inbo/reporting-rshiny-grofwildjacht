@@ -20,7 +20,7 @@
 #' @importFrom INBOtheme inbo_palette
 #' @export
 countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
-  sourceIndicator = c("inbo", "meldingsformulier", "both"), regio = "", 
+  sourceIndicator = NULL, regio = "", 
   sourceIndicator_leeftijd = NULL, sourceIndicator_geslacht = NULL,
   width = NULL, height = NULL) {
   
@@ -124,7 +124,7 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
 #' @import shiny
 #' @export
 countAgeGroupServer <- function(id, data, timeRange, groupVariable, 
-  title = reactive(NULL)) {
+  title = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -147,7 +147,8 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
       toReturn <- callModule(module = plotModuleServer, id = "ageGroup",
         plotFunction = "countAgeGroup", 
         data = data,
-        groupVariable = groupVariable
+        groupVariable = groupVariable,
+        preSelected = preSelected
       )
       
       return(reactive(toReturn()))
@@ -162,8 +163,8 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeGroupUI <- function(id, regionLevels,
-  uiText, context = id, specie = NULL,
+countAgeGroupUI <- function(id, regionLevels = NULL,
+  uiText, context = id, specie = NULL, showTime = FALSE, showDataSource = c(),
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -187,9 +188,9 @@ countAgeGroupUI <- function(id, regionLevels,
         column(8, plotModuleUI(id = ns("ageGroup"))),
         column(4,
           optionsModuleUI(id = ns("ageGroup"), 
-            showTime = TRUE,
+            showTime = showTime,
             regionLevels = regionLevels, exportData = TRUE,
-            showDataSource = c("embryos", "leeftijd", "geslacht"))
+            showDataSource = showDataSource)
         )
       ),
       tags$p(HTML(description))

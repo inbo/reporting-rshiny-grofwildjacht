@@ -182,7 +182,7 @@ beheerOutputServer <- function(id,
                   ),
                   regionLevelSelected = "provinces",
                   data = reactive(spatialData),
-                  timeRange = reactive(if (id == "Edelhert")
+                  timeRange = reactive(if (specie() == "Edelhert")
                       c(2008, max(results$ecoData()$afschotjaar)) else 
                       c(min(results$openingstijd()[1], results$timeRange()[1]), max(results$openingstijd()[2], results$timeRange()[2])))
                 ),
@@ -197,7 +197,10 @@ beheerOutputServer <- function(id,
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
                   intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
-                  timeRange = reactive(c(min(2014, min(results$drukjachtData()$afschotjaar)), max(results$timeRange()[2], max(results$drukjachtData()$afschotjaar))))
+                  timeRange = reactive(if (specie() == "Wild zwijn")
+                        c(min(2014, min(results$drukjachtData()$afschotjaar)), max(results$timeRange()[2], max(results$drukjachtData()$afschotjaar))) else 
+                        c(2014, results$timeRange()[2])
+                  )
                 )
               )
             )

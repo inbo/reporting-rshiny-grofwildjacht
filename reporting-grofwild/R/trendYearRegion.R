@@ -271,7 +271,7 @@ trendYearRegionServer <- function(
   data, timeRange = reactive(NULL), 
   species, regionLevel = reactive("WBE_buitengrenzen"), locaties,
   geoData, allSpatialData, biotoopData = reactive(NULL), title = reactive(NULL),
-  type = "wbe") {
+  type = "wbe", preSelected = reactive(NULL)) {
   
   type <- match.arg(type)
   
@@ -344,7 +344,8 @@ trendYearRegionServer <- function(
         combinatie = reactive(if (is.null(input$combinatie)) FALSE else input$combinatie),
         timeRange = reactive(input$trendPeriod),
         unit = reactive(input$trendUnit),
-        isSchade = (type == "wildschade")
+        isSchade = (type == "wildschade"),
+        preSelected = preSelected
       )
       
       return(reactive(c(

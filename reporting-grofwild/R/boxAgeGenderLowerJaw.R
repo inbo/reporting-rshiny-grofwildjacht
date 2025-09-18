@@ -125,7 +125,7 @@ boxAgeGenderLowerJaw <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-ageGenderLowerJawServer <- function(id, data, types, timeRange) {
+ageGenderLowerJawServer <- function(id, data, types, timeRange, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -142,7 +142,8 @@ ageGenderLowerJawServer <- function(id, data, types, timeRange) {
       )
       callModule(module = plotModuleServer, id = "ageGenderLowerJaw",
         plotFunction = "boxAgeGenderLowerJaw", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   

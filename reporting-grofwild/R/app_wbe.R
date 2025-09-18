@@ -59,6 +59,31 @@ results$wbe_schadeData <- reactive({
     
   })
 
+results$preSelected <- reactive({
+  list(
+    schade_code = reactive({
+        if (subcategory() %in% gewasSubCat)
+          "GEWAS" else 
+          req(input$schade_code)
+      }),
+    schade_gewas = reactive(req(input$schade_gewas)),
+    schade_voertuig = reactive(req(input$schade_voertuig)),
+    time = reactive(input$time),
+    year = reactive(input$year),
+    interval = reactive(input$interval),
+    type = reactive(input$type),
+    regionLevel = reactive(input$regionLevel),
+    region = reactive(input$region),
+    unit = reactive(input$unit),
+    summarizeBy = reactive(input$summarizeBy),
+    dataSource_schade = reactive(input$dataSource_schade),
+    dataSource_onderkaak = reactive(input$dataSource_onderkaak),
+    dataSource_embryos = reactive(input$dataSource_embryos),
+    dataSource_leeftijd = reactive(input$dataSource_leeftijd),
+    dataSource_geslacht = reactive(input$dataSource_geslacht)
+  )
+})
+
 
 ## Disable species without data
 # https://stackoverflow.com/a/58310568
@@ -216,7 +241,8 @@ mapFlandersServer(id = "wbe",
   hideGlobeDefault = FALSE,
   geoData = results$wbe_geoDataKbo,  # independent of species
   biotoopData = biotoopData,
-  allSpatialData = spatialData
+  allSpatialData = spatialData,
+  preSelected = results$preSelected
 )
 
 
@@ -234,7 +260,8 @@ trendYearRegionServer(id = "wbe",
   biotoopData = reactive(biotoopData),
   geoData = results$wbe_geoData, 
   locaties = reactive(unique(results$wbe_geoData()$WBE_Naam_Toek[
-        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())]))
+        match(results$wbe_geoData()$PartijNummer, results$wbe_currentPartij())])),
+  preSelected = results$preSelected
 )
 
 ## User input for controlling the plots and create plotly
@@ -243,7 +270,8 @@ tableSpeciesServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
   species = reactive(input$wbe_species),
-  uiText = uiText)
+  uiText = uiText,
+  preSelected = results$preSelected)
 
 
 # Plot2: Verdeling afschot over de jaren
@@ -251,7 +279,8 @@ countYearShotServer(id = "wbe_labeltype",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
   groupVariable = "leeftijd_comp",
-  types = results$leeftijdtypes)
+  types = results$leeftijdtypes,
+  preSelected = results$preSelected)
 
 
 # Plot3: Afschot per jachtmethode
@@ -259,7 +288,8 @@ countYearShotServer(id = "wbe_jachtmethode",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
   groupVariable = "jachtmethode_comp",
-  types = results$jachttypes)
+  types = results$jachttypes,
+  preSelected = results$preSelected)
 
 
 # Plot4: Schademeldingen
@@ -276,7 +306,8 @@ mapSchadeServer(id = "wbe",
   species = reactive(input$wbe_species),
   uiText = uiText, 
   type = "wbe",
-  borderRegion = "WBE_buitengrenzen"
+  borderRegion = "WBE_buitengrenzen",
+  preSelected = results$preSelected
 )
 
 
@@ -294,17 +325,20 @@ output$wbe_mapSchade <- renderUI({
 # Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
 countAgeGenderServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange)
+  timeRange = results$wbe_timeRange,
+  preSelected = results$preSelected)
 
 # Plot 6: Leeftijdscategorie op basis van onderkaak & meldingsformulier
 countAgeCheekServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange
+  timeRange = results$wbe_timeRange,
+  preSelected = results$preSelected
 )
 
 countYearAgeServer(id = "wbe",
   data = results$wbe_combinedData,
-  timeRange = results$wbe_timeRange)
+  timeRange = results$wbe_timeRange,
+  preSelected = results$preSelected)
 
 
 # Plot 7: Onderkaaklengte per jaar
@@ -324,7 +358,8 @@ plotBioindicatorServer(id = "wbe_onderkaak",
   timeRange = results$wbe_timeRange,
   types = results$wbe_typesGender,
   typesDefault = results$wbe_typesDefaultGender,
-  bioindicator = "onderkaaklengte")
+  bioindicator = "onderkaaklengte",
+  preSelected = results$preSelected)
 
 # Plot 8: Gewicht per jaar
 plotBioindicatorServer(id = "wbe_gewicht",
@@ -332,7 +367,8 @@ plotBioindicatorServer(id = "wbe_gewicht",
   timeRange = results$wbe_timeRange,
   types = results$wbe_typesGender,
   typesDefault = results$wbe_typesDefaultGender,
-  bioindicator = "ontweid_gewicht")
+  bioindicator = "ontweid_gewicht",
+  preSelected = results$preSelected)
 
 
 ## Bio indicatoren ##
@@ -365,7 +401,8 @@ countEmbryosServer(id = "wbe",
   timeRange = reactive(range(results$wbe_combinedData()$afschotjaar[results$wbe_combinedData()$geslacht_comp %in% "Vrouwelijk"])),
   types = results$typesFemale,
   uiText = uiText,
-  wildsoort = reactive(input$wbe_species)
+  wildsoort = reactive(input$wbe_species),
+  preSelected = results$preSelected
 )
 
 # Plot 10: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
@@ -377,7 +414,8 @@ ageGenderLowerJawServer(id = "wbe",
     )),
   timeRange = reactive(if (input$wbe_species == "Ree")
         c(2014, max(results$wbe_timeRange())) else 
-        results$wbe_timeRange())
+        results$wbe_timeRange()),
+  preSelected = results$preSelected
 )
 
 
@@ -385,7 +423,8 @@ ageGenderLowerJawServer(id = "wbe",
 percentageRealisedShotServer(id = "wbe",
   data = results$wbe_toekenningsData,
   types = reactive(unique(results$wbe_toekenningsData()$labeltype)),
-  timeRange = reactive(range(results$wbe_toekenningsData()$labeljaar))
+  timeRange = reactive(range(results$wbe_toekenningsData()$labeljaar)),
+  preSelected = results$preSelected
 )
 
 
@@ -398,12 +437,14 @@ mapSchadeServer(id = "wbe_afschot",
   species = reactive(input$wbe_species),
   uiText = uiText,
   type = "afschot",
-  borderRegion = "WBE_buitengrenzen"
+  borderRegion = "WBE_buitengrenzen",
+  preSelected = results$preSelected
 )
 
 output$wbe_embryos <- renderUI({
     
-    countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText, specie = input$wbe_species)
+    countEmbryosUI("wbe", regionLevels = NULL, uiText = uiText, specie = input$wbe_species,
+      showTime = TRUE, showType = TRUE, showDataSource = c("embryos", "leeftijd", "geslacht"))
     
   })
 
@@ -503,10 +544,12 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         ),
         
         conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
-          countYearShotUI(id = ns("wbe_labeltype"), groupVariable = "leeftijd_comp", uiText = uiText)          
+          countYearShotUI(id = ns("wbe_labeltype"), groupVariable = "leeftijd_comp", uiText = uiText,
+            showDataSource = c("leeftijd"), showInterval = TRUE, showType = TRUE, showTime = TRUE)          
         ),
         
-        countYearShotUI(id = ns("wbe_jachtmethode"), groupVariable = "jachtmethode_comp", uiText = uiText)
+        countYearShotUI(id = ns("wbe_jachtmethode"), groupVariable = "jachtmethode_comp", uiText = uiText,
+          showInterval = TRUE, showType = TRUE, showTime = TRUE)
       ),
       
       # When no afschot, might still be schadeData
@@ -514,7 +557,7 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
       
       conditionalPanel("output.wbe_emptyAfschot == false", ns = ns,
         countAgeGenderUI(id = ns("wbe"), uiText = uiText),
-        countAgeCheekUI(id = ns("wbe"), showAccuracy = TRUE, uiText = uiText),
+        countAgeCheekUI(id = ns("wbe"), showAccuracy = TRUE, showTime = TRUE, uiText = uiText),
         
         conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", ns = ns,
           countYearAgeUI(id = ns("wbe"), uiText = uiText, showRegion = FALSE)
@@ -530,9 +573,11 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         conditionalPanel("input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'", ns = ns,
           conditionalPanel("input.wbe_species == 'Ree'", ns = ns,
             plotBioindicatorUI(id = ns("wbe_onderkaak"), bioindicator = "onderkaaklengte", 
-              regionLevels = NULL, showAccuracy = TRUE, uiText = uiText),
+              regionLevels = NULL, showAccuracy = TRUE, uiText = uiText, showTime = TRUE,
+              showType = TRUE, showDataSource = c("leeftijd", "geslacht", "onderkaak")),
             plotBioindicatorUI(id = ns("wbe_gewicht"), bioindicator = "ontweid_gewicht", 
-              regionLevels = NULL, uiText = uiText)
+              regionLevels = NULL, uiText = uiText, showTime = TRUE,
+              showType = TRUE, showDataSource = c("leeftijd", "geslacht"))
           )
         ),
         uiOutput("wbe_embryos"),

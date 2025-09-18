@@ -17,7 +17,7 @@
 #' 
 #' @author dbemelmans
 #' @export 
-countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
+countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NULL, height = NULL, 
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
   groupVariable,
   sourceIndicator_leeftijd = c("both", "inbo"),

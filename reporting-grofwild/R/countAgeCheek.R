@@ -169,7 +169,7 @@ countAgeCheekServer <- function(id, data, timeRange = NULL, preSelected = reacti
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels = NULL,
-  uiText, context = id, specie = NULL,
+  uiText, context = id, specie = NULL, showTime = FALSE,
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -194,7 +194,8 @@ countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels = NULL,
           plotModuleUI(id = ns("ageCheek"))
         ),
         column(4,
-          optionsModuleUI(id = ns("ageCheek"), regionLevels = regionLevels, exportData = TRUE),
+          optionsModuleUI(id = ns("ageCheek"), regionLevels = regionLevels, exportData = TRUE,
+            showTime = showTime),
           if (showAccuracy)
             accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
         )

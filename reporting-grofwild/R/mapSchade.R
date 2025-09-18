@@ -701,7 +701,7 @@ mapSchadeServer <- function(
       plotFunction = "trendYearRegion", 
       data = results$timeData,
       locaties = results$regionLevelName,
-      timeRange = time_schade(),
+      timeRange = reactive(time_schade()),
       isSchade = TRUE,
       combinatie = reactive(FALSE),
       height = "400px",

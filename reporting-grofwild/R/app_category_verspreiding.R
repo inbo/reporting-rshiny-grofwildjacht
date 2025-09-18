@@ -80,7 +80,7 @@ verspreidingOutputServer <- function(id,
             
             args <- c(
               list(
-                id = ns("topbar")
+                id = ns("verspreiding_topbar")
               ),
               switch(as.character(subcategory()), 
                 "verspreiding-huidig" = list(
@@ -111,7 +111,7 @@ verspreidingOutputServer <- function(id,
             
             args <- c(
               list(
-                id = "topbar"
+                id = "verspreiding_topbar"
               ),
               switch(as.character(subcategory()), 
                 "verspreiding-huidig" = list(

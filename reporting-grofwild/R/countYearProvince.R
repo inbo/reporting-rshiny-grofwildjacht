@@ -33,7 +33,7 @@
 #' @importFrom stringr str_sort
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
-        type = c("provinces", "flanders", "faunabeheerzones"),
+        type = c("provinces", "flanders", "faunabeheerzones", "communes"),
         interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
         regio = "") {
@@ -56,9 +56,11 @@ countYearProvince <- function(data, jaartallen = NULL,
     plotData$locatie <- as.factor("Vlaams Gewest")
   } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
     plotData$locatie <- plotData$provincie
-  } else {
+  } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
     plotData$locatie <- plotData$FaunabeheerZone
     isFbz <- TRUE
+  } else {
+    plotData$locatie <- plotData$gemeente_afschot_locatie
   }
   
   if(nrow(plotData) == 0) {

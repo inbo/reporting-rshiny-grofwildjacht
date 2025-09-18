@@ -540,8 +540,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       ## For verspreiding
       regionLevel <- reactive({
           req(preSelected())
-          regionLevel <- coalesce(input$borderLevel, preSelected()$regionLevel(), NA)
-          if (all(is.na(regionLevel))) NULL else regionLevel
+          if (type == "dash")
+            preSelected()$regionLevel()
+          else NULL
         })
       output$borderRegion <- renderUI({
           
@@ -561,9 +562,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
         })
         locaties <- reactive({
-          req(preSelected())
-          locaties <- coalesce(input$borderRegion, preSelected()$region(), NA)
-          if (all(is.na(locaties))) NULL else locaties
+            req(preSelected())
+            if (type == "dash")
+              preSelected()$region()
+            else NULL
         })
       
       ## Region level
@@ -650,14 +652,17 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # freeze value - when species() changes
       observe({
           
-          results$region_value <- if (is.null(input$region)) {
+          req(preSelected())
+          region <- coalesce(input$region, preSelected()$region(), NA)
+          
+          results$region_value <- if (all(is.na(region))) {
               if (req(regionLevelLocal()) == "flanders")
                 spatialData()$NAAM[1] else if (!is.null(currentWbe()))
                 currentWbe() else if (!is.null(locaties()))
                 locaties() else
                 NULL
             } else {
-              input$region
+              region
             }
           
         })
@@ -954,7 +959,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       selectedPolygons <- reactive({
           
 #          req(!type %in% c("empty", "dash"))
-          
+
           tmpSpatial <- filterSpatial(
             allSpatialData = allSpatialData, 
             species = req(species()), 
@@ -1221,6 +1226,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               regionLevelName() else
               results$region_value
           }),
+        filterDataOnRegion = FALSE,
         timeRange = reactive(period()),
         unit = reactive(unit()),
         combinatie = reactive(input$combinatie),

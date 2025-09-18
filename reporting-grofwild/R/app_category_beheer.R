@@ -127,7 +127,7 @@ beheerOutputServer <- function(id,
             
             args <- c(
               list(
-                id = ns("topbar")
+                id = ns("beheer_topbar")
               ),
               switch(as.character(subcategory()), 
                 "beheer-vlaanderen" = list(
@@ -166,7 +166,7 @@ beheerOutputServer <- function(id,
             
             args <- c(
               list(
-                id = "topbar",
+                id = "beheer_topbar",
                 subcategory = subcategory
               ),
               switch(as.character(subcategory()), 

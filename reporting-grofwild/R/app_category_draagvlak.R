@@ -29,7 +29,7 @@ draagvlakOutputServer <- function(id,
             
             args <- c(
               list(
-                id = ns("topbar")
+                id = ns("draagvlak_topbar")
               ),
               switch(as.character(subcategory()), 
                 "draagvlak-surveys" =list(
@@ -54,7 +54,7 @@ draagvlakOutputServer <- function(id,
             
             args <- c(
               list(
-                id = "topbar"
+                id = "draagvlak_topbar"
               ),
               switch(as.character(subcategory()), 
                 "draagvlak-surveys" = list(),

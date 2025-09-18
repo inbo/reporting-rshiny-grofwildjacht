@@ -28,7 +28,7 @@ linksOutputServer <- function(id,
             
             args <- c(
               list(
-                id = ns("topbar")
+                id = ns("links_topbar")
               ),
               switch(as.character(subcategory()), 
                 "links-internelinks" =list(
@@ -53,7 +53,7 @@ linksOutputServer <- function(id,
             
             args <- c(
               list(
-                id = "topbar"
+                id = "links_topbar"
               ),
               switch(as.character(subcategory()), 
                 "links-internelinks" = list(),

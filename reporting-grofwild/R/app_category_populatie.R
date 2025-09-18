@@ -87,7 +87,7 @@ populatieOutputServer <- function(id,
             
             args <- c(
               list(
-                id = ns("topbar")
+                id = ns("populatie_topbar")
               ),
               switch(as.character(subcategory()), 
                 "populatie-leeggewicht" = list(
@@ -126,7 +126,7 @@ populatieOutputServer <- function(id,
               
               args <- c(
                 list(
-                  id = "topbar"
+                  id = "populatie_topbar"
                 ),
                 switch(as.character(subcategory()), 
                   "populatie-leeggewicht" = list(

@@ -70,7 +70,7 @@ schadeOutputServer <- function(id,
             
             args <- c(
               list(
-                id = ns("topbar")
+                id = ns("schade_topbar")
               ),
               switch(as.character(subcategory()), 
                 "schade-vlaanderen" = list(
@@ -119,7 +119,7 @@ schadeOutputServer <- function(id,
             
             args <- c(
               list(
-                id = "topbar",
+                id = "schade_topbar",
                 subcategory = subcategory,
                 includeSchadeFilters = TRUE,
                 schade_code = schade_code, 

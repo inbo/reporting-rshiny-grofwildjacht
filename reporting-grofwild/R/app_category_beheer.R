@@ -195,7 +195,7 @@ beheerOutputServer <- function(id,
                 "beheer-jachtmethode" = list(
                   regionLevels = c(1:2, 4),
                   regionLevelSelected = "provinces",
-                  allRegionsSelected = TRUE,
+#                  allRegionsSelected = TRUE,
                   intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
                   timeRange = reactive(if (specie() == "Wild zwijn")
                         c(min(2014, min(results$drukjachtData()$afschotjaar)), max(results$timeRange()[2], max(results$drukjachtData()$afschotjaar))) else 
@@ -337,7 +337,7 @@ beheerOutputServer <- function(id,
                   countYearProvinceServer(
                     id = "plot",
                     data = results$ecoData,
-                    allRegionsSelected = TRUE,
+#                    allRegionsSelected = TRUE,
                     preSelected = beheerSelection
                   ),
                 if ("mapFlandersUI" %in% outputs)

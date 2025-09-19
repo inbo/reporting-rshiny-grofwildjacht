@@ -266,8 +266,8 @@ kencijferModuleUI <- function(id, uiText, doHide = TRUE) {
         fixedRow(
           column(8,
             tags$div(
-              style = "margin-bottom: 10px",
-              withSpinner(DT::dataTableOutput(ns("kencijfer_table")))
+              style = "margin-bottom: 40px",
+              withSpinner(uiOutput(ns("kencijfer_tableUI")))
             ),
             downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
           ),
@@ -343,14 +343,20 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
         })
       
+      year <- reactive({
+          req(preSelected())
+          year <- coalesce(input$year, preSelected()$year(), NA)
+          if (all(is.na(year))) NULL else year
+        })
+      
       
       output$filterPeriod <- renderUI({
           
-          req(preSelected()$year())
+          req(year())
           
           suppressWarnings(sliderInput(inputId = ns("period"), 
             label = "Referentieperiode", 
-            value = c(preSelected()$year()-5, preSelected()$year()-1),
+            value = c(year()-5, year()-1),
             min = min(timeRange()),
             max = max(timeRange()),
             step = 1,
@@ -385,9 +391,9 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$sliderObserve <- renderUI({
           
           req(kencijferSummarized())
-          req(preSelected()$year())
+          req(year())
           
-          valueChoices <- kencijferSummarized()[(dataSource == "waarnemingen.be") & (afschotjaar == preSelected()$year()), aantal]
+          valueChoices <- kencijferSummarized()[(dataSource == "waarnemingen.be") & (afschotjaar == year()), aantal]
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
           maxWaarnemingen <- max(if (preSelected()$unit() == "absolute") 10 else 5, 
@@ -408,9 +414,9 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$sliderAfschot <- renderUI({
           
           req(kencijferSummarized())
-          req(preSelected()$year())
+          req(year())
           
-          valueChoices <- kencijferSummarized()[(dataSource == "afschot") & (afschotjaar == preSelected()$year()), aantal]
+          valueChoices <- kencijferSummarized()[(dataSource == "afschot") & (afschotjaar == year()), aantal]
           if (Inf %in% valueChoices)
             valueChoices <- valueChoices[valueChoices != Inf]
           maxSchot <- max(if (preSelected()$unit() == "absolute") 10 else 5, 
@@ -428,7 +434,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
         })
       
       
-      observeEvent(input$year, {
+      observeEvent(year(), {
           
           req(input$thresholdAfschot)
           
@@ -438,7 +444,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
         })
       
-      observeEvent(preSelected()$year(), {
+      observeEvent(year(), {
           
           req(input$observeThreshold)
           
@@ -449,12 +455,12 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       
       results$res <- reactive({
           
-          req(preSelected()$year())
+          req(year())
           req(input$period)
           
           tableKencijfers(
             data = req(kencijferSummarized()), 
-            jaar = as.numeric(preSelected()$year()),
+            jaar = as.numeric(year()),
             period = input$period,
             bron = if (is.null(preSelected()$type())) 
                 "both" else if (length(preSelected()$type()) == 2) 
@@ -467,9 +473,20 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
           
         })
       
+      
       output$kencijfer_table <- DT::renderDataTable(
         results$res()$htmlTable
       )
+      
+      output$kencijfer_tableUI <- renderUI({
+          tryCatch({
+              DT::dataTableOutput(ns("kencijfer_table"))
+            },
+            error = function(e) {
+              return(NULL) 
+            })
+          
+        })
       
       
       ## download button 

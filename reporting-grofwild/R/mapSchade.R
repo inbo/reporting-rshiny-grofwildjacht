@@ -563,6 +563,18 @@ mapSchadeServer <- function(
           
         })
       
+      output$perceelPlotUI <- renderUI({
+          
+          tryCatch({
+              leafletOutput(ns("perceelPlot"))
+            },
+            error = function(e) {
+              return(NULL) 
+            })
+          
+          
+        })
+      
       # Create final perceelplot map (for download)
       results$perceelMap <- reactive({
           
@@ -803,7 +815,7 @@ mapSchadeUI <- function(
         column(if (length(plotDetails) == 1) 6 else 12,
           
           uiOutput(ns("titlePerceel")),        
-          withSpinner(leafletOutput(ns("perceelPlot"))),
+          withSpinner(uiOutput(ns("perceelPlotUI"))),
           uiOutput(ns("footerPerceel")),
           tags$br(),
           actionButton(ns("genereerMap"), "Download figuur", icon = icon("download"), class = "downloadButton"),

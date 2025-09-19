@@ -94,7 +94,7 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
 #' @author sjunius
 #' @export
 generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE,
-  schade_code = NULL, schade_gewas = NULL, schade_voertuig = NULL, types = reactive(NULL), labelTypes = "Type", typesDefault = types, 
+  schade_code = NULL, schade_gewas = NULL, schade_voertuig = NULL, schadeSources = NULL, types = reactive(NULL), labelTypes = "Type", typesDefault = types, 
   timeRange = NULL, timeLabel = "Periode", summarizeBy = NULL, data = reactive(NULL),
   multipleTypes = FALSE, allRegionsSelected = FALSE, 
   definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
@@ -219,7 +219,8 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
             sep = "")
           
         })
-      observe(current$time <- input$time)
+      time_released <- debounce(reactive(input$time), 500)   # waits 500ms after the last change before updating
+      observe(current$time <- time_released())
       
       output$year <- renderUI({
           
@@ -232,7 +233,8 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
               sep = "")
           )
         })
-      observe(current$year <- input$year)
+      year_released <- debounce(reactive(input$year), 500)  # waits 500ms after the last change before updating
+      observe(current$year <- year_released())
       
       
       ## Type filters
@@ -349,37 +351,39 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
           req(regionLevels)
           validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
           
-         
-          if (input$regionLevel == "flanders") {
-            
-            choices <- c("Vlaams Gewest")
-            
-          } else if (input$regionLevel == "provinces") {
-            
-            choices <- c("West-Vlaanderen", "Oost-Vlaanderen", 
-              "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend")
-            
-            
-          } else if (input$regionLevel == "faunabeheerzones") {
-            
-            choices <- c(as.character(1:10), "Onbekend")
-            
-          } else {
-            
-            if (all(regionLevels %in% 1:4)) {
-              choices <- unique(data()$gemeente_afschot_locatie)
-              choices <- choices[!is.na(choices)]
-              choices <- choices[order(choices)]
-            } else {
-              choices <- sort(unique(data()[[input$regionLevel]]$NAAM))
-            }
-            
-          }
+          isolate(
+            if (input$regionLevel == "flanders") {
+                
+                choices <- c("Vlaams Gewest")
+                
+              } else if (input$regionLevel == "provinces") {
+                
+                choices <- c("West-Vlaanderen", "Oost-Vlaanderen", 
+                  "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend")
+                
+                
+              } else if (input$regionLevel == "faunabeheerzones") {
+                
+                choices <- c(as.character(1:10), "Onbekend")
+                
+              } else {
+                
+                if (all(regionLevels %in% 1:4)) {
+                  choices <- unique(data()$gemeente_afschot_locatie)
+                  choices <- choices[!is.na(choices)]
+                  choices <- choices[order(choices)]
+                } else {
+                  choices <- sort(unique(data()[[input$regionLevel]]$NAAM))
+                }
+                
+              }
+          )
           
           selectizeInput(inputId = ns("region"), label = "Regio('s)",
             choices = choices, 
-            selected = if (!is.null(current$region)) current$region else if (allRegionsSelected) choices else if (input$regionLevel == "flanders") choices[1] else NULL, 
+            selected = if (!is.null(isolate(current$region))) isolate(current$region) else if (allRegionsSelected) choices else if (isolate(input$regionLevel) == "flanders") choices[1] else NULL, 
             multiple = TRUE)
+       
           
         })
       observe(current$region <- input$region)
@@ -387,11 +391,9 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
       ## Sources Filter
       output$source_schade <- renderUI({
           
-          sourcesSchade <- loadMetaSchade()$sources
-          
           selectizeInput(inputId = ns("dataSource_schade"), 
             label = "Databron(nen)",
-            choices = sourcesSchade, selected = if (is.null(current$sources_schade)) sourcesSchade else current$sources_schade,
+            choices = schadeSources, selected = if (is.null(current$sources_schade)) schadeSources else current$sources_schade,
             multiple = TRUE)
         })
       observe(current$sources_schade <- input$dataSource_schade)
@@ -455,8 +457,8 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
             }),
           schade_gewas = reactive(req(input$schade_gewas)),
           schade_voertuig = reactive(req(input$schade_voertuig)),
-          time = reactive(input$time),
-          year = reactive(input$year),
+          time = reactive(time_released()),
+          year = reactive(year_released()),
           interval = reactive(input$interval),
           type = reactive(input$type),
           regionLevel = reactive(input$regionLevel),

@@ -698,9 +698,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
     
     output$plot <- renderUI({
         
-        if ("plotly" %in% class(resultFct()$plot))
-          plotlyOutput(session$ns("plotly"), height = height) else if ("ggplot" %in% class(resultFct()$plot))
-          plotOutput(session$ns("ggplot"), height = height)
+        tryCatch({
+            if ("plotly" %in% class(resultFct()$plot))
+              plotlyOutput(session$ns("plotly"), height = height) else if ("ggplot" %in% class(resultFct()$plot))
+              plotOutput(session$ns("ggplot"), height = height)
+          },
+          error = function(e) {
+            return(NULL) 
+          })
+        
         
       })
     
@@ -726,7 +732,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$warning <- renderUI({
         
-      tags$em(resultFct()$warning)
+      tryCatch({
+          tags$em(resultFct()$warning)
+        },
+        error = function(e) {
+          return(e) 
+        })
         
       })
     

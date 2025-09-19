@@ -310,6 +310,17 @@ mapSpreadServer <- function(id,
           
         })
       
+      output$spreadPlotUI <- renderUI({
+          
+          tryCatch({
+              leafletOutput(ns("spreadPlot"))
+            },
+            error = function(e) {
+              return(NULL) 
+            })
+          
+        })
+      
       
       # Center view
       observe({
@@ -621,7 +632,7 @@ mapSpreadUI <- function(id,
       
       fixedRow(
         column(12,
-          withSpinner(leafletOutput(ns("spreadPlot"))),
+          withSpinner(uiOutput(ns("spreadPlotUI"))),
           tags$br(),
           downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
           if (!showLayer)

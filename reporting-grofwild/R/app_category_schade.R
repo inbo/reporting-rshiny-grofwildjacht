@@ -124,7 +124,8 @@ schadeOutputServer <- function(id,
                 includeSchadeFilters = TRUE,
                 schade_code = schade_code, 
                 schade_gewas = schade_gewas, 
-                schade_voertuig = schade_voertuig
+                schade_voertuig = schade_voertuig, 
+                schadeSources = loadMetaSchade()$sources
               ),
               switch(as.character(subcategory()), 
                 "schade-vlaanderen" = list(
@@ -146,14 +147,14 @@ schadeOutputServer <- function(id,
                 "schade-type-gewas" = list(
                   regionLevels = c(1:2, 4),
                   regionLevelSelected = "provinces",
-                  allRegionsSelected = TRUE,
+#                  allRegionsSelected = TRUE,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-schade" = list(
                   regionLevels = c(1:2, 4),
                   regionLevelSelected = "provinces",
-                  allRegionsSelected = TRUE,
+#                  allRegionsSelected = TRUE,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
@@ -189,13 +190,13 @@ schadeOutputServer <- function(id,
                 tagList(
                   if ("tableSchadeSummaryUI" %in% outputs)
                     wellPanel(class = "well-white", tableSchadeSummaryUI(
-                        id = ns("plot"), 
+                        id = ns("plot1"), 
                         uiText = uiText, specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "tableSchadeSummaryUI" %in% plot())
                       )),
                   if ("trendYearFlandersUI-schade" %in% outputs)
                     wellPanel(class = "well-white", trendYearFlandersUI(
-                        id = ns("plot"),
+                        id = ns("plot2"),
                         type = "wildschade",
                         includeOptions = FALSE,
                         uiText = uiText,
@@ -208,7 +209,7 @@ schadeOutputServer <- function(id,
                 tagList(
                   if ("countYearProvinceUI-schade" %in% outputs)
                     wellPanel(class = "well-white", countYearProvinceUI(
-                        id = ns("plot"), 
+                        id = ns("plot3"), 
                         uiText = uiText, 
                         plotFunction = "countYearProvinceUI-schade",
                         specie = specie(),
@@ -216,14 +217,14 @@ schadeOutputServer <- function(id,
                       )),
                   if ("mapFlandersUI-schade" %in% outputs)
                     wellPanel(class = "well-white", mapFlandersUI(
-                        id = ns("plot"), showRegion = FALSE,
+                        id = ns("plot4"), showRegion = FALSE,
                         type = "schade", plotDetails = "region",
                         uiText = uiText,
                         doHide = !(plot() == defaultTabs$plot || "mapFlandersUI-schade" %in% plot())
                       )),
                   if ("mapSchadeUI" %in% outputs)
                     wellPanel(class = "well-white", mapSchadeUI(
-                        id = ns("plot"), 
+                        id = ns("plot5"), 
                         filterSource = FALSE, filterTime = FALSE,
                         filterVariable = TRUE,
                         variableChoices = 
@@ -239,14 +240,14 @@ schadeOutputServer <- function(id,
                 tagList(
                   if ("countYearSchadeUI-gewas" %in% outputs)
                     wellPanel(class = "well-white", countYearSchadeUI(
-                        id = ns("plot"),
+                        id = ns("plot6"),
                         uiText = uiText, context = "description",
                         type = "gewas", specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearSchadeUI-gewas" %in% plot())
                       )),
                   if ("tableGewasUI" %in% outputs)
                     wellPanel(class = "well-white", tableGewasUI(
-                        id = ns("plot"), 
+                        id = ns("plot7"), 
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "tableGewasUI" %in% plot())
@@ -257,14 +258,14 @@ schadeOutputServer <- function(id,
                 tagList(
                   if ("countYearSchadeUI-wildschade" %in% outputs)
                     wellPanel(class = "well-white", countYearSchadeUI(
-                        id = ns("plot"), 
+                        id = ns("plot8"), 
                         uiText = uiText, context = "description",
                         type = "schade", specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearSchadeUI-wildschade" %in% plot())
                       )),
                   if ("tableSchadeUI" %in% outputs)
                     wellPanel(class = "well-white", tableSchadeUI(
-                        id = ns("plot"), 
+                        id = ns("plot9"), 
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "tableSchadeUI" %in% plot())
@@ -275,7 +276,7 @@ schadeOutputServer <- function(id,
                 tagList(
                   if ("countYearSchadeUI-seizoen" %in% outputs)
                     wellPanel(class = "well-white", countYearSchadeUI(
-                        id = ns("plot"), 
+                        id = ns("plot10"), 
                         uiText = uiText, context = "description",
                         type = "seizoen", specie = specie(),
                         summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
@@ -289,7 +290,7 @@ schadeOutputServer <- function(id,
                 tagList(
                   if ("barCostUI" %in% outputs)
                     wellPanel(class = "well-white", barCostUI(
-                        id = ns("plot"), 
+                        id = ns("plot11"), 
                         uiText = uiText, context = "description",
                         specie = specie(),
                         typeMelding = c("Landbouw" = "landbouw"),
@@ -320,14 +321,14 @@ schadeOutputServer <- function(id,
               c(
                 if ("tableSchadeSummaryUI" %in% outputs)
                   tableSchadeSummaryServer(
-                    id = "plot", 
+                    id = "plot1", 
                     data = results$schade_data, 
                     schadeTypes = schadeTypes, schadeCodes = schadeCodes,
                     preSelected = schadeSelection
                   ),
                 if ("trendYearFlandersUI-schade" %in% outputs)
                   trendYearFlandersServer(
-                    id = "plot", 
+                    id = "plot2", 
                     geoData = results$schade_data, 
                     allSpatialData = spatialData, 
                     biotoopData = biotoopData, 
@@ -340,9 +341,17 @@ schadeOutputServer <- function(id,
             },
             "schade-regio" = {
               c(
+                if ("countYearProvinceUI-schade" %in% outputs)
+                  countYearProvinceServer(
+                    id = "plot3",
+                    data = results$schade_data,
+#                    allRegionsSelected = TRUE,
+                    timeRange = results$schade_timeRange,
+                    preSelected = schadeSelection
+                  ),
                 if ("mapFlandersUI-schade" %in% outputs)
                   mapFlandersServer(
-                    id = "plot", 
+                    id = "plot4", 
                     uiText = uiText,
                     defaultYear = defaultYear,
                     species = specie,
@@ -355,7 +364,7 @@ schadeOutputServer <- function(id,
                   ),
                 if ("mapSchadeUI" %in% outputs)
                   mapSchadeServer(
-                    id = "plot", 
+                    id = "plot5", 
                     schadeData = results$schade_data,
                     allSpatialData = reactive(spatialData),
                     timeRange = results$schade_timeRange,
@@ -365,14 +374,6 @@ schadeOutputServer <- function(id,
                     uiText = uiText,
                     type = "schade",
                     preSelected = schadeSelection
-                  ),
-                if ("countYearProvinceUI-schade" %in% outputs)
-                  countYearProvinceServer(
-                    id = "plot",
-                    data = results$schade_data,
-                    allRegionsSelected = TRUE,
-                    timeRange = results$schade_timeRange,
-                    preSelected = schadeSelection
                   )
               )
             },
@@ -380,7 +381,7 @@ schadeOutputServer <- function(id,
               c(
                 if ("countYearSchadeUI-gewas" %in% outputs)
                   countYearSchadeServer(
-                    id = "plot",
+                    id = "plot6",
                     data = results$schade_data,
                     type = "SoortNaam", 
                     timeRange = results$schade_timeRange,
@@ -389,11 +390,11 @@ schadeOutputServer <- function(id,
                   ),
                 if ("tableGewasUI" %in% outputs)
                   tableGewasServer(
-                    id = "plot",
+                    id = "plot7",
                     data = results$schade_data,
                     timeRange = results$schade_timeRange,
                     variable = "SoortNaam",
-                    allRegionsSelected = TRUE,
+#                    allRegionsSelected = TRUE,
                     preSelected = schadeSelection
                   ) 
               )
@@ -402,7 +403,7 @@ schadeOutputServer <- function(id,
               c(
                 if ("countYearSchadeUI-wildschade" %in% outputs)
                   countYearSchadeServer(
-                    id = "plot",
+                    id = "plot8",
                     data = results$schade_data,
                     type = "schadeCode", 
                     timeRange = results$schade_timeRange,
@@ -411,7 +412,7 @@ schadeOutputServer <- function(id,
                   ),
                 if ("tableSchadeUI" %in% outputs)
                   tableSchadeServer(
-                    id = "plot",  
+                    id = "plot9",  
                     data = results$schade_data,
                     timeRange = results$schade_timeRange,
                     schadeChoices = schadeSelection()$schade_code,
@@ -419,7 +420,7 @@ schadeOutputServer <- function(id,
                     schadeChoicesGewas = schadeSelection()$schade_gewas,
                     datatable = TRUE,
                     fullNames = c(schadeTypes, schadeCodes),
-                    allRegionsSelected = TRUE,
+#                    allRegionsSelected = TRUE,
                     preSelected = schadeSelection
                   )
               )
@@ -428,10 +429,10 @@ schadeOutputServer <- function(id,
               c(
                 if ("countYearSchadeUI-seizoen" %in% outputs)
                   countYearSchadeServer(
-                    id = "plot",
+                    id = "plot10",
                     data = results$schade_data,
                     type = "season", 
-                    allRegionsSelected = TRUE,
+#                    allRegionsSelected = TRUE,
                     timeRange = results$schade_timeRange,
                     preSelected = schadeSelection
                   )
@@ -441,7 +442,7 @@ schadeOutputServer <- function(id,
               c(
                 if ("barCostUI" %in% outputs)
                   barCostServer(
-                    id = "plot",
+                    id = "plot11",
                     data = results$schade_data,
                     allRegionsSelected = TRUE,
                     yVar = "schadeBedrag",

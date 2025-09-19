@@ -881,6 +881,17 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
         })
       
+      output$spacePlotUI <- renderUI({
+          
+          tryCatch({
+              leafletOutput(ns("spacePlot"))
+            },
+            error = function(e) {
+              return(NULL) 
+            })
+          
+          
+        })
       
       # Statistics with map
       statsMap <- reactive({
@@ -1468,7 +1479,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       fixedRow(
         column(if ("biotoop" %in% plotDetails) 6 else 12,
           uiOutput(ns("mapTitle")),
-          withSpinner(leafletOutput(ns("spacePlot"))),
+          withSpinner(uiOutput(ns("spacePlotUI"))),
           tags$div(align = "center", uiOutput(ns("stats"))),
           tags$br(),
           downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),

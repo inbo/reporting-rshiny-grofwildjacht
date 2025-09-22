@@ -969,7 +969,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Pre-selected polygons to highlight
       selectedPolygons <- reactive({
           
-#          req(!type %in% c("empty", "dash"))
+          req(!type %in% c("dash"))
 
           tmpSpatial <- filterSpatial(
             allSpatialData = allSpatialData, 

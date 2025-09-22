@@ -20,12 +20,8 @@
 #' @export 
 barCost <- function(data, 
   yVar = c("schadeBedrag", "count"), 
-  typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"), 
-<<<<<<< HEAD
+  typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"),
   regio = "", sourceIndicator = NULL) {
-=======
-  regio = "", unit = NULL) {
->>>>>>> refs/heads/v0.3.9
   
   wildNaam <- unique(data$wildsoort)
   interval <- match.arg(interval)

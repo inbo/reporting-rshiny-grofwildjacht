@@ -26,12 +26,9 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 		categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50,
     sourceIndicator_leeftijd = NULL, regio = "") {
 	
-<<<<<<< HEAD
-=======
   # For R CMD check
   leeftijd_comp_inbo <- NULL
   
->>>>>>> refs/heads/v0.3.9
 	wildNaam <- unique(data$wildsoort)  
 	categorie <- match.arg(categorie)
 	

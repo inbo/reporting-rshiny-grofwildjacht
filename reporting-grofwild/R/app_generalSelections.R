@@ -386,7 +386,8 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
        
           
         })
-      observe(current$region <- input$region)
+      region_released <- debounce(reactive(input$region), 1000)   # waits 1000ms after the last change before updating
+      observe(current$region <- region_released())
       
       ## Sources Filter
       output$source_schade <- renderUI({
@@ -462,7 +463,7 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
           interval = reactive(input$interval),
           type = reactive(input$type),
           regionLevel = reactive(input$regionLevel),
-          region = reactive(input$region),
+          region = reactive(region_released()), #reactive(input$region),
           unit = reactive(input$unit),
           summarizeBy = reactive(input$summarizeBy),
           dataSource_schade = reactive(input$dataSource_schade),

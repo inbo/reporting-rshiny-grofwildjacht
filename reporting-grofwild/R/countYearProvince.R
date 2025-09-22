@@ -39,12 +39,9 @@ countYearProvince <- function(data, jaartallen = NULL,
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
         regio = "") {
   
-<<<<<<< HEAD
-=======
   # For R CMD check
   value <- NULL
   
->>>>>>> refs/heads/v0.3.9
   type <- match.arg(type)
 	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
   

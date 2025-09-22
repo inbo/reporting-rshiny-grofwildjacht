@@ -117,13 +117,13 @@ verspreidingOutputServer <- function(id,
                 "verspreiding-huidig" = list(
                   regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
-                  types = results$databronnen,
+                  types = isolate(results$databronnen),
                   labelTypes = "Databron(nen)",
                   multipleTypes = TRUE,
                   units = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
                     "Aantal/100ha bos & natuur" = "relativeDekking"),
-                  timeRange = results$timeRange,
-                  data = reactive(results$geoDataAll()[wildsoort == specie()])),
+                  timeRange = isolate(results$timeRange),
+                  data = reactive(isolate(results$geoDataAll()[wildsoort == specie()]))),
                 "verspreiding-toekomstig" = list()
               )
             )
@@ -154,7 +154,7 @@ verspreidingOutputServer <- function(id,
                 tagList(
                   if ("F17_1" %in% outputs)
                     wellPanel(class = "well-white", mapFlandersUI(
-                        id = ns("plot"), 
+                        id = ns("plot1"), 
                         showRegion = FALSE,
                         showCombine = FALSE, type = "dash",
                         mapScaleChoices = c("Gemeente" = "communes", "5x5 UTM" = "utm5"),
@@ -169,7 +169,7 @@ verspreidingOutputServer <- function(id,
                       )),
                   if ("kencijferUI" %in% outputs)
                     wellPanel(class = "well-white", kencijferModuleUI(
-                        id = ns("plot"), 
+                        id = ns("plot2"), 
                         uiText = uiText,
                         doHide = !(plot() == defaultTabs$plot || "kencijferUI" %in% plot())
                       ))
@@ -179,7 +179,7 @@ verspreidingOutputServer <- function(id,
                 tagList(
                   if ("mapSpreadUI" %in% outputs)
                     wellPanel(class = "well-white", mapSpreadUI(
-                        id = ns("plot"), 
+                        id = ns("plot3"), 
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "mapSpreadUI" %in% plot())
@@ -208,7 +208,7 @@ verspreidingOutputServer <- function(id,
               c(
                 if ("F17_1" %in% outputs)
                   mapFlandersServer(
-                    id = "plot",
+                    id = "plot1",
                     defaultYear = defaultYear,
                     species = specie,
                     type = "dash",
@@ -223,7 +223,7 @@ verspreidingOutputServer <- function(id,
                   ),
                 if ("kencijferUI" %in% outputs)
                   kencijferModuleServer(
-                    id = "plot",
+                    id = "plot2",
                     kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
                     biotoopData = reactive(biotoopData$communes),
                     spatialData = spatialData,
@@ -236,7 +236,7 @@ verspreidingOutputServer <- function(id,
               c(
                 if ("mapSpreadUI" %in% outputs)
                   mapSpreadUI = mapSpreadServer(
-                    id = "plot",
+                    id = "plot3",
                     allSpatialData = spatialData,
                     species = specie(),
                     type = "F17_4",

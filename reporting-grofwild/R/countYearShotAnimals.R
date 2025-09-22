@@ -15,6 +15,7 @@
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @param type character, used to filter the data
 #' 
+#' @importFrom stats setNames
 #' @author dbemelmans
 #' @export 
 countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NULL, height = NULL, 

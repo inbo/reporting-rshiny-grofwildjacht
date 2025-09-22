@@ -13,6 +13,9 @@
 #' besides "provinces" 
 #' @param minForTrend numeric, the minimum number of records needed before
 #' a trend is being reported
+#' @param sourceIndicator_leeftijd character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+#' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+#' i.e. no filtering. Defaults to \code{"both"}
 #' @return data.frame, number or percentage of observations 
 #' per province and per \code{categorie}
 #' @author mvarewyck
@@ -23,6 +26,12 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 		categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50,
     sourceIndicator_leeftijd = NULL, regio = "") {
 	
+<<<<<<< HEAD
+=======
+  # For R CMD check
+  leeftijd_comp_inbo <- NULL
+  
+>>>>>>> refs/heads/v0.3.9
 	wildNaam <- unique(data$wildsoort)  
 	categorie <- match.arg(categorie)
 	
@@ -274,6 +283,7 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 #' Shiny module for creating the plot \code{\link{tableProvince}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams tableProvince
+#' @inheritParams optionsModuleServer
 #' @return no return value
 #' 
 #' @author mvarewyck
@@ -312,6 +322,7 @@ tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, la
 #' @inherit welcomeSectionUI
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
+#' 
 #' @export
 tableProvinceUI <- function(id, doHide = TRUE,
   uiText, context = id, specie = NULL, showDataSource = NULL, regionLevels = NULL,

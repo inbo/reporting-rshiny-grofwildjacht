@@ -144,6 +144,8 @@ optionsModuleUI <- function(id,
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
 #' @param intervals character vector, defines the choices for interval
 #' @param categories character vector, defines the choices for categorie 
+#' @param allRegionsSelected boolean, whether to automatically select all 
+#' options from the region selectizeInput
 #' 
 #' @return no return value; some output objects are created
 #' @importFrom shinyjs toggle
@@ -297,6 +299,7 @@ optionsModuleServer <- function(input, output, session,
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   updateSwineDatasource <- reactiveVal(FALSE)
   
+<<<<<<< HEAD
   observeEvent(input$dataSource_leeftijd, {
       updateSwineDatasource(TRUE)
     })
@@ -305,6 +308,11 @@ optionsModuleServer <- function(input, output, session,
       req(!is.null(input$type))   # Make sure this only runs AFTER the initial values are filled in
       
       req(updateSwineDatasource())
+=======
+  observe({
+
+      req(!is.null(input$type))
+>>>>>>> refs/remotes/origin/uat
       
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
         updateSwineDatasource(FALSE)

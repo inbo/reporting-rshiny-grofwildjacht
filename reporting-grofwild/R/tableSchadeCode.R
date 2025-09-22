@@ -7,11 +7,11 @@
 
 #' Create summary table for schadeCode by region.
 #' 
-#' @param type character, defines the region variable of interest in the table
 #' @param schadeChoices character, chosen schade types (basisCode) to filter on
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
 #' @inheritParams tableProvince
+#' @inheritParams countYearAge
 #' @inheritParams countYearProvince
 #' @inheritParams filterDataSource
 #' @param fullNames named character vector, values for the \code{variable} to be 
@@ -31,6 +31,9 @@ tableSchadeCode <- function(data, jaartallen = NULL,
         schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL,
         fullNames = NULL, summarizeBy = c("count", "percent"), regio = "") {
   
+  # For R CMD check
+  locatie <- NULL
+        
   if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
     stop("Niet beschikbaar")
   }
@@ -153,8 +156,8 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     last_col <- names(summaryTable)[ncol(summaryTable)]
     
     summaryTable <- summaryTable %>%
-      mutate(across(-locatie, ~ as.numeric(.x))) %>%
-      mutate(across(
+      mutate(dplyr::across(-locatie, ~ as.numeric(.x))) %>%
+      mutate(dplyr::across(
           -locatie,
           ~ paste0(round(.x / .data[[last_col]] * 100, 2), "%")
         ))

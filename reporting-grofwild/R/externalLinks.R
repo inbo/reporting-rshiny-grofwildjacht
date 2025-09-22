@@ -6,14 +6,13 @@
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - server side
 #' @inheritParams mapFlandersServer
-#' @param data data.frame for the plot function
-#' @param timeRange numeric vector of length 2, min and max year to subset data
+#' @param portal character portal to visualize
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
 #' @export
-externalLinksServer <- function(id, species, portal = c("biodiversiteitsportaal", "exotenportaal"), uiText) {
+externalLinksServer <- function(id, specie, portal = c("biodiversiteitsportaal", "exotenportaal"), uiText) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -25,7 +24,7 @@ externalLinksServer <- function(id, species, portal = c("biodiversiteitsportaal"
           title <- getOutputTitle(output = portal, uiText = uiText)
           
           speciesInfo <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"), "species-info.csv"))
-          gbifkey <- speciesInfo[match(species(), speciesInfo$species.name), "gbifkey"]
+          gbifkey <- speciesInfo[match(specie(), speciesInfo$species.name), "gbifkey"]
           url <- switch(portal,
             "biodiversiteitsportaal" = paste0("https://natuurdata.inbo.be/bie-hub/species/", gbifkey),
             "exotenportaal" = paste0("https://alienspecies.inbo.be/app/01_exotenportaal/?tab=species_observations&language=nl&page=species_information&taxonkey=", gbifkey)
@@ -40,7 +39,10 @@ externalLinksServer <- function(id, species, portal = c("biodiversiteitsportaal"
 
 
 #' Shiny module for creating the plot \code{\link{countAgeGender}} - UI side
-#' @inherit welcomeSectionUI
+#' 
+#' @param portal character portal to visualize
+#' @inherit mapFlandersUI
+#' @inheritParams reportingGrofwild-common-args
 #' 
 #' @export
 externalLinksUI <- function(id, uiText, portal, doHide = TRUE) {

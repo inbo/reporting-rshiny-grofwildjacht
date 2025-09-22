@@ -11,12 +11,16 @@
 #' 
 #' @author sjunius
 #' @import shiny
+#' @importFrom tidyselect where
 #' @export
 requestAfschotReewildServer <- function(
   id, data) {
   
   moduleServer(id,
     function(input, output, session) {
+      
+      # For R CMD check
+      type <- afschotjaar <- n <- gemiddeld <- NULL
       
       ns <- session$ns
       
@@ -235,8 +239,8 @@ requestAfschotReewildServer <- function(
                 "De toekenningsfactor wordt automatisch bepaald 
                   door het totaal afschot van de voorbije 3 jaar maar kan worden 
                   aangepast naar keuze tussen 0,1 en 2. Deze toekenningsfactor bedraagt 
-                  standaard 1,15 voor afschot van >100 reeën, 1,20 voor afschot tussen 
-                  50 en 100 reeën en 1,25 voor afschot tussen 12 en 50 reeën."))
+                  standaard 1,15 voor afschot van >100 ree\u00EBn, 1,20 voor afschot tussen 
+                  50 en 100 ree\u00EBn en 1,25 voor afschot tussen 12 en 50 ree\u00EBn."))
           ),
           tags$br(),
           uiOutput(ns("NbLabelsPerType")),
@@ -246,9 +250,9 @@ requestAfschotReewildServer <- function(
                   geiten en 50% kitsen wordt toegepast. Deze verdeling kan aangepast 
                   worden binnen onder- en bovengrenzen. Door het vastleggen van specifieke 
                   onder- en bovengrenzen wordt ervoor gezorgd dat de verhoudingen tussen de 
-                  verschillende geslachten en leeftijdscategorieën gerespecteerd blijven. 
+                  verschillende geslachten en leeftijdscategorie\u00EBn gerespecteerd blijven. 
                   Het niet realiseren van een afschot in een bepaalde categorie vertaald zich immers 
-                  in een daling van het toegekend afschot in alle categorieën in de volgende periode. 
+                  in een daling van het toegekend afschot in alle categorie\u00EBn in de volgende periode. 
                   Voor reegeit ligt de ondergrens op 20% en de bovengrens op 30%, voor bokken ligt 
                   deze tussen 20 en 35% en voor kitsen tussen 40 en 55%."))
           )

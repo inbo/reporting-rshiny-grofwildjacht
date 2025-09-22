@@ -169,7 +169,11 @@ countAgeCheekServer <- function(id, data, timeRange = NULL, preSelected = reacti
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels = NULL,
+<<<<<<< HEAD
   uiText, context = id, specie = NULL, showTime = FALSE,
+=======
+  uiText, context = id, specie = NULL,
+>>>>>>> refs/heads/v0.3.9
   doHide = TRUE) {
   
   ns <- NS(id)

@@ -7,7 +7,9 @@
 
 #' Create summary table for gewas by region and year.
 #' @inheritParams tableSchadeCode
+#' @inheritParams reportingGrofwild-common-args
 #' @param variable character, defines the dependent variable in the table besides \code{type}
+#' @param jaartallen integer vector, defines the year(s) that should be considered
 #' @return data.frame, number of opbservations per region and per \code{variable}
 #' @author Eva Adriaensen
 #' @importFrom plyr count
@@ -16,6 +18,9 @@
 #' @export
 tableGewas <- function(data, jaartallen = NULL, variable, 
   sourceIndicator = NULL, summarizeBy = c("count", "percent"), regio = "") {
+  
+  # For R CMD check
+  varOfInterest <- leeftijd_comp_inbo <- NULL
   
   summarizeBy <- match.arg(summarizeBy)
   
@@ -79,8 +84,8 @@ tableGewas <- function(data, jaartallen = NULL, variable,
     last_row <- nrow(summaryTable)
     
     summaryTable <- summaryTable %>%
-      mutate(across(-varOfInterest, ~ as.numeric(as.character(.x)))) %>%
-      mutate(across(
+      mutate(dplyr::across(-varOfInterest, ~ as.numeric(as.character(.x)))) %>%
+      mutate(dplyr::across(
           -varOfInterest,
           ~ dplyr::if_else(dplyr::row_number() < last_row, paste0(round(.x / summaryTable[last_row, dplyr::cur_column()] * 100, 2), "%"), "100%")
         ))
@@ -106,6 +111,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
 #' @inheritParams plotModuleServer
 #' @inheritParams tableSchadeCode
 #' @inheritParams welcomeSectionUI 
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' 
 #' @author mvarewyck

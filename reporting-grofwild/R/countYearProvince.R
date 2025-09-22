@@ -31,6 +31,7 @@
 #' @import plotly
 #' @importFrom reshape2 melt
 #' @importFrom stringr str_sort
+#' @importFrom stats setNames
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
@@ -38,6 +39,8 @@ countYearProvince <- function(data, jaartallen = NULL,
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
         regio = "") {
   
+  # For R CMD check
+  value <- NULL
   
   type <- match.arg(type)
 	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")

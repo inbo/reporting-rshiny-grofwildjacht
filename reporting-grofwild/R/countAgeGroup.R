@@ -2,6 +2,9 @@
 #' 
 #' @inheritParams countYearAge 
 #' @param groupVariable character, variable in \code{data}
+#' @param sourceIndicator character, source to filter embryo data on
+#' @param sourceIndicator_leeftijd character, source to filter leeftijd data on
+#' @param sourceIndicator_geslacht character, source to filter geslacht data on
 #' @return list with:
 #' \itemize{
 #' \item 'plot':  plotly object, for a given species the percentage per age category

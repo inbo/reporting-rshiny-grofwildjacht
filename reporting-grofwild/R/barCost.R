@@ -8,8 +8,8 @@
 #' 
 #' @param data data.frame with schadeData
 #' @param typeMelding character vector, choices for filtering on `typeMelding` in data
-#' @param interval character, data shown in intervals
 #' should be one of \code{c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")}
+#' @param unit character, data shown in unit
 #' @inheritParams barDraagkracht
 #' @inheritParams reportingGrofwild-common-args
 #' @return list with plotly object and data.frame 
@@ -19,9 +19,9 @@
 #' @importFrom stats aggregate
 #' @export 
 barCost <- function(data, 
-  unit = NULL, yVar = c("schadeBedrag", "count"), 
+  yVar = c("schadeBedrag", "count"), 
   typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"), 
-  regio = "") {
+  regio = "", unit = NULL) {
   
   wildNaam <- unique(data$wildsoort)
   interval <- match.arg(interval)

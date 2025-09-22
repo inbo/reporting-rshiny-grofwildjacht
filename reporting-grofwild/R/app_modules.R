@@ -144,6 +144,8 @@ optionsModuleUI <- function(id,
 #' \code{defaultYear} which is globally defined as \code{currentYear - 1}
 #' @param intervals character vector, defines the choices for interval
 #' @param categories character vector, defines the choices for categorie 
+#' @param allRegionsSelected boolean, whether to automatically select all 
+#' options from the region selectizeInput
 #' 
 #' @return no return value; some output objects are created
 #' @importFrom shinyjs toggle

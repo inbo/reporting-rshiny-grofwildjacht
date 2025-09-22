@@ -150,10 +150,11 @@ test_that("Counts per year and province", {
           wildsoort == iSpecies & afschotjaar >= 2018)
         timeRange <- min(plotData$afschotjaar):max(plotData$afschotjaar)
         
-        res <- countYearProvince(data = plotData, jaartallen = timeRange)
+        res <- countYearProvince(data = plotData, jaartallen = timeRange, type = "flanders",
+          interval = "Per jaar", regio = "Vlaams Gewest", sourceIndicator = NULL)
         
         expect_equal(names(res), c("plot", "data", "warning"))
-        expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
+        expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal", "timeGroup", "percent", "timeChar", "text"))
         
         res
         
@@ -161,11 +162,13 @@ test_that("Counts per year and province", {
     
     
 # Some special cases
-    countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones")
-    countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders")
+    countYearProvince(data = wildSchadeData, jaartallen = 2018, type = "faunabeheerzones",
+      interval = "Per jaar", regio = c("1", "2", "3", "4", "10"))
+    countYearProvince(data = wildSchadeData, jaartallen = 2018:2019, type = "flanders",
+      interval = "Per jaar", regio = "Vlaams Gewest", )
     
     myResult <- countYearProvince(data = wildSchadeData, jaartallen = 2018:2020, type = "provinces",
-      sourceIndicator = "E_Loket")
+      regio = c("Limburg", "Oost-Vlaanderen"), sourceIndicator = "E_Loket")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -212,7 +215,6 @@ test_that("Counts per type schade", {
         
         schadeTables <- lapply(c("provinces", "flanders", "faunabeheerzones"), function(type)
             tableSchadeCode(data = plotData,
-              type = type,
               schadeChoices = choicesSchadecode,
               schadeChoicesVrtg = choicesSchadeVrtg, 
               schadeChoicesGewas = choicesSchadeGewas,
@@ -228,10 +230,12 @@ test_that("Counts per type schade", {
         expect_equal(names(schadeTable), c("data", "header"))
         expect_equal(names(schadeTable$data)[1], "Locatie")
         expect_equal(tail(names(schadeTable$data), n = 1), "Totaal")
-        if ("ANDERE" %in% choicesSchadecode)
-          expect_true(any(c("Valwild", "Andere") %in% names(schadeTable$data)), "columns do not match user choices")
-        if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
-          expect("Verkeersongeluk onbekend" %in% names(schadeTable$data), "columns do not match user choices")
+        
+        ## NOT APPLICABLE anymore as all-zero columns get removed
+#        if ("ANDERE" %in% choicesSchadecode)
+#          expect_true(any(c("Valwild", "Andere") %in% names(schadeTable$data)), "columns do not match user choices")
+#        if ("VRTG" %in% choicesSchadecode & "ONBEKEND" %in% choicesSchadeVrtg)
+#          expect("Verkeersongeluk onbekend" %in% names(schadeTable$data), "columns do not match user choices")
         
         DT::datatable(schadeTable$data, rownames = FALSE, container = schadeTable$header,
           selection = "single", options = list(dom = 't', pageLength = -1))
@@ -275,7 +279,6 @@ test_that("Counts per type gewas", {
             timeRange <- min(subData$afschotjaar):max(subData$afschotjaar)
             
             res <- tableGewas(data = subData, jaartallen = timeRange,
-              type = iType,
               variable = "SoortNaam")$data
             
             if (!is.null(res)) {

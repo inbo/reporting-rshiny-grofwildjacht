@@ -34,6 +34,8 @@ tableSchadeSummaryUI <- function(id, uiText, specie = NULL) {
 #' Shiny module for creating the schade summary tables- server side
 #' @inheritParams dataModuleServer
 #' @inheritParams reportingGrofwild-common-args
+#' @param definedYear numeric, single numeric value specifying the year value 
+#' 
 #' @return no return value
 #' @import shiny
 #' @export
@@ -43,6 +45,9 @@ tableSchadeSummaryServer <- function(id, data, schadeTypes, schadeCodes,
   moduleServer(id,
     function(input, output, session) {
         
+      # For R CMD check
+      afschotjaar <- NULL
+      
       ns <- session$ns
       
       current <- reactiveValues(

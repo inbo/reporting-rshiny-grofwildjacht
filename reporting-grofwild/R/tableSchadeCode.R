@@ -272,6 +272,7 @@ tableSchadeUI <- function(id,
         exportData = TRUE
       ),
       tableModuleUI(id = ns("tableSchade")),
+      tags$br(),
       tags$p(HTML(description)),
       tags$hr()
     ) 

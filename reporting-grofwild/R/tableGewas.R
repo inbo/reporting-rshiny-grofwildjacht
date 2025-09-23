@@ -183,6 +183,7 @@ tableGewasUI <- function(id,
         exportData = TRUE
       ),
       tableModuleUI(id = ns("tableGewas")),
+      tags$br(),
       tags$p(HTML(description)),
       tags$hr()
     )

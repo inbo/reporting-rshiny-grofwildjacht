@@ -882,15 +882,20 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         })
       
       output$spacePlotUI <- renderUI({
-          
-          tryCatch({
-              leafletOutput(ns("spacePlot"))
-            },
-            error = function(e) {
-              return(NULL) 
+          msg <- tryCatch({
+              spacePlot()
+              NULL   # no error → msg stays NULL
+            }, shiny.silent.error = function(e) {
+              conditionMessage(e)
             })
           
-          
+          if (is.null(msg)) {
+            shinycssloaders::withSpinner(
+              leafletOutput(ns("spacePlot"))
+            )
+          } else {
+            div(style = "color:#595959;", msg)
+          }
         })
       
       # Statistics with map
@@ -1479,7 +1484,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       fixedRow(
         column(if ("biotoop" %in% plotDetails) 6 else 12,
           uiOutput(ns("mapTitle")),
-          withSpinner(uiOutput(ns("spacePlotUI"))),
+          uiOutput(ns("spacePlotUI")), #withSpinner(uiOutput(ns("spacePlotUI"))),
           tags$div(align = "center", uiOutput(ns("stats"))),
           tags$br(),
           downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),

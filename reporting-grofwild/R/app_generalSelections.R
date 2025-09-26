@@ -12,75 +12,128 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
   summarizeBy = NULL, hideGeneralFilters = FALSE){
   
   ns <- NS(namespace = id)
-  
+
   if (hideGeneralFilters) {
     NULL
   } else {
-    wellPanel(class = "well-white", 
-      tags$script(HTML("  
-            // When Shiny creates or updates any selectize input
-            $(document).on('shiny:bound', function(e) {
-            var el = e.target;
-            // Check that the element is a selectize input
-            if (el && el.selectize && $(el).attr('multiple')) {
-            var s = el.selectize;
-            
-            // Remove Shiny's default immediate change trigger
-            s.off('change');
-            
-            // On blur, send the value back to Shiny
-            s.on('blur', function() {
-            Shiny.setInputValue(el.id, s.getValue(), {priority: 'event'});
-            });
-            }
-            });
-            ")),   ## Only trigger selectizeInputs on blur
-      fluidRow(
-        uiOutput(ns("schadeCodeSelection")),
-        uiOutput(ns("schadeGewasSelection")),
-        uiOutput(ns("schadeVoertuigSelection"))
-      ),
-      uiOutput(outputId = ns("schade_warning")),
-      fluidRow(
-        if(showYear)
-          column(6, uiOutput(ns("year"))),
-        if (showTime)
-          column(6, uiOutput(ns("time"))),
-        if(showType)
-          column(6, uiOutput(ns("type"))),
-        if(showInterval)
-          column(6, uiOutput(ns("interval"))),
-      ),
-      fluidRow(
-        column(6, 
-          if(showRegion)
-            tagList(
-              fluidRow(
-                column(12, uiOutput(ns("regionLevels")))
-              ),
-              fluidRow(
-                column(11, offset = 1, uiOutput(ns("region")))
-              ))
+    tagList(
+      useShinyjs(),
+      div(class = "collapsible-well",
+        wellPanel(class = "well-white", 
+          div(class = "well-header",
+            tags$button("—", 
+              id = ns("toggleBtn1"), 
+              class = "collapse-btn",
+              `data-target` = ns("content"))
+          ),
+          
+          div(id = ns("content"), class = "well-content",
+            tags$script(HTML("  
+                  // When Shiny creates or updates any selectize input
+                  $(document).on('shiny:bound', function(e) {
+                  var el = e.target;
+                  // Check that the element is a selectize input
+                  if (el && el.selectize && $(el).attr('multiple')) {
+                  var s = el.selectize;
+                  
+                  // Remove Shiny's default immediate change trigger
+                  s.off('change');
+                  
+                  // On blur, send the value back to Shiny
+                  s.on('blur', function() {
+                  Shiny.setInputValue(el.id, s.getValue(), {priority: 'event'});
+                  });
+                  }
+                  });
+                  ")),   ## Only trigger selectizeInputs on blur
+            fluidRow(column(11, 
+                fluidRow(
+                  uiOutput(ns("schadeCodeSelection")),
+                  uiOutput(ns("schadeGewasSelection")),
+                  uiOutput(ns("schadeVoertuigSelection"))
+                ),
+                uiOutput(outputId = ns("schade_warning")),
+                fluidRow(
+                  if(showYear)
+                    column(6, uiOutput(ns("year"))),
+                  if (showTime)
+                    column(6, uiOutput(ns("time"))),
+                  if(showType)
+                    column(6, uiOutput(ns("type"))),
+                  if(showInterval)
+                    column(6, uiOutput(ns("interval"))),
+                ),
+                fluidRow(
+                  column(6, 
+                    if(showRegion)
+                      tagList(
+                        fluidRow(
+                          column(12, uiOutput(ns("regionLevels")))
+                        ),
+                        fluidRow(
+                          column(11, offset = 1, uiOutput(ns("region")))
+                        ))
+                  ),
+                  column(6, 
+                    if (!is.null(summarizeBy))
+                      uiOutput(ns("summarizeBy"))),
+                  column(6, 
+                    if (showUnit)
+                      uiOutput(ns("unit")))
+                ),
+                fluidRow(
+                  if ("schade" %in% showDataSource)
+                    column(4, uiOutput(ns("source_schade"))),
+                  if ("onderkaak" %in% showDataSource)
+                    column(4, uiOutput(ns("source_onderkaak"))),
+                  if ("embryos" %in% showDataSource)
+                    column(4, uiOutput(ns("source_embryos"))),
+                  if ("leeftijd" %in% showDataSource)
+                    column(4, uiOutput(ns("source_leeftijd"))),
+                  if ("geslacht" %in% showDataSource)
+                    column(4, uiOutput(ns("source_geslacht")))
+                )
+              )))
         ),
-        column(6, 
-          if (!is.null(summarizeBy))
-            uiOutput(ns("summarizeBy"))),
-        column(6, 
-          if (showUnit)
-            uiOutput(ns("unit")))
-      ),
-      fluidRow(
-        if ("schade" %in% showDataSource)
-          column(4, uiOutput(ns("source_schade"))),
-        if ("onderkaak" %in% showDataSource)
-          column(4, uiOutput(ns("source_onderkaak"))),
-        if ("embryos" %in% showDataSource)
-          column(4, uiOutput(ns("source_embryos"))),
-        if ("leeftijd" %in% showDataSource)
-          column(4, uiOutput(ns("source_leeftijd"))),
-        if ("geslacht" %in% showDataSource)
-          column(4, uiOutput(ns("source_geslacht")))
-        )
+        tags$script(HTML("
+              // Function to initialize collapse functionality
+              function initializeCollapse() {
+              // Remove any existing event listeners to prevent duplicates
+              $(document).off('click.collapse', '.collapse-btn');
+              
+              // Add event listener with namespace
+              $(document).on('click.collapse', '.collapse-btn', function() {
+              var btn = $(this);
+              var targetId = btn.attr('data-target');
+              var content = $('#' + targetId);
+              
+              if (content.hasClass('collapsed')) {
+              content.removeClass('collapsed');
+              btn.html('—');
+              } else {
+              content.addClass('collapsed');
+              btn.html('+');
+              }
+              });
+              }
+              
+              $(document).ready(function() {
+              initializeCollapse();
+              
+              // Re-initialize when tab is shown (for tabPanel/navbarPage)
+              $(document).on('shown.bs.tab', 'a[data-toggle=\"tab\"]', function() {
+              setTimeout(initializeCollapse, 100);
+              });
+              
+              // Alternative for Shiny's tabsetPanel
+              $(document).on('shiny:value', function(event) {
+              if (event.target.classList && event.target.classList.contains('tabbable')) {
+              setTimeout(initializeCollapse, 100);
+              }
+              });
+              });
+              "))
+      )
     )
   }
 }

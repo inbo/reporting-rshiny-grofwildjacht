@@ -460,3 +460,48 @@ body > .tabbable {
 .tooltip-box:hover {
   display: block;
 }
+
+/*Collapsable general selection parts*/
+.collapsible-well {
+  position: relative;
+}
+    
+.collapse-btn {
+  position: absolute;
+  top: 0px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 40px;
+  color: #356196;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+    
+.collapse-btn:hover {
+  color: #23527c;
+}
+    
+.well-header {
+  min-height: 35px;
+  background-color: #ffffff;
+  color: #356196;
+  margin: 0px -15px 0px -15px;
+  padding: 1px 10px;
+  font-weight: bold;
+  position: relative;
+}
+    
+.well-content {
+  margin-top: -30px;
+  transition: all 0.3s ease;
+}
+    
+.well-content.collapsed {
+  display: none;
+}

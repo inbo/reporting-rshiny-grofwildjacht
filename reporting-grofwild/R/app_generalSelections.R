@@ -45,9 +45,7 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
         if(showYear)
           column(6, uiOutput(ns("year"))),
         if (showTime)
-          column(6, uiOutput(ns("time")))
-      ),
-      fluidRow(
+          column(6, uiOutput(ns("time"))),
         if(showType)
           column(6, uiOutput(ns("type"))),
         if(showInterval)

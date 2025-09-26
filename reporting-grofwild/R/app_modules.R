@@ -515,13 +515,13 @@ plotModuleServer <- function(input, output, session, plotFunction,
           if (regionLevel == "provinces" && "provincie" %in% colnames(subData)) {
             subData <- subset(subData, provincie %in% region)
           } else if (regionLevel == "faunabeheerzones") {  
-            validate(need("FaunabeheerZone" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op faunabeheerzones-level. Gelieve een andere Regio-schaal te selecteren."))
+            validate(need("FaunabeheerZone" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op faunabeheerzone-level. Gelieve een andere Regio-schaal te selecteren."))
             subData <- subData[as.character(subData$FaunabeheerZone) %in% region, ]
           } else if(regionLevel == "communes") { 
             validate(need("gemeente_afschot_locatie" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op gemeente-level. Gelieve een andere Regio-schaal te selecteren."))
             subData <- subData[subData$gemeente_afschot_locatie %in% region, ]
           } else if(regionLevel == "fbz_gemeentes") {   
-            validate(need("fbz_gemeentes" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op Gemeente per faunabeheer-level. Gelieve een andere Regio-schaal te selecteren."))
+            validate(need("fbz_gemeentes" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op Gemeente per faunabeheerzone-level. Gelieve een andere Regio-schaal te selecteren."))
             subData <- subData[subData$fbz_gemeentes %in% region, ]
           } else if(regionLevel == "utm5") {   
             validate(need("utm5" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op 5x5 UTM-level. Gelieve een andere Regio-schaal te selecteren."))

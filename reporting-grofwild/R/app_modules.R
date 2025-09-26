@@ -299,7 +299,6 @@ optionsModuleServer <- function(input, output, session,
   ## grofwild - they will have no effects on types and typesDefault in the other cases
   updateSwineDatasource <- reactiveVal(FALSE)
   
-<<<<<<< HEAD
   observeEvent(input$dataSource_leeftijd, {
       updateSwineDatasource(TRUE)
     })
@@ -308,11 +307,6 @@ optionsModuleServer <- function(input, output, session,
       req(!is.null(input$type))   # Make sure this only runs AFTER the initial values are filled in
       
       req(updateSwineDatasource())
-=======
-  observe({
-
-      req(!is.null(input$type))
->>>>>>> refs/remotes/origin/uat
       
       if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
         updateSwineDatasource(FALSE)

@@ -577,11 +577,18 @@ plotModuleServer <- function(input, output, session, plotFunction,
   argList <- reactive({
       
         validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
+#        if (plotFunction == "plotBioindicator") browser()
         
         year <- coalesce(input$year, preSelected()$year(), NA)
         time <- coalesce(input$time, preSelected()$time(), NA)
         interval <- coalesce(input$interval, preSelected()$interval(), NA)
-        typeReact <- coalesce(input$type, preSelected()$type(), NA)
+        if (!is.null(input$type) && !is.null(preSelected()$type())) {   # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
+          typeReact <- input$type
+          typeLeeftijd <- preSelected()$type()
+        } else {
+          typeReact <- coalesce(input$type, preSelected()$type(), NA)
+          typeLeeftijd <- NULL
+        }
         regionLevel <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
         region <- coalesce(input$region, preSelected()$region(), NA)
         summarizeBy <- coalesce(input$summarizeBy, preSelected()$summarizeBy(), NA)
@@ -603,6 +610,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = typeReact),
             if (!is.null(type))
               list(type = type),
+            if (!is.null(typeLeeftijd))  # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
+              list(type_leeftijd = typeLeeftijd),
             if (!is.null(openingstijdenData) && !all(is.na(typeReact)) & !is.na(year) & all(is.na(dataSource_schade)))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))

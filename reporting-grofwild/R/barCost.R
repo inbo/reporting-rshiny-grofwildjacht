@@ -108,8 +108,8 @@ barCost <- function(data,
     levels = c("meer dan 3000 euro", "van 1000 tot 3000 euro", "van 300 tot 1000 euro",
       "minder dan 300 euro", "het schadebedrag is niet bekend"))
   
-  selectedGroups <- unique(summaryData[[yVar]])
-  colors <- replicateColors(values = selectedGroups)$colors
+  colors <- setNames( c("#E87837", "#E4E517", "#BDDDD7", "#729BB7", "#bac4cd"), levels(summaryData[[yVar]]))
+  colors <- colors[names(colors) %in% unique(summaryData[[yVar]])]
   
   # Create plot per year
   if (interval == "Per jaar") {

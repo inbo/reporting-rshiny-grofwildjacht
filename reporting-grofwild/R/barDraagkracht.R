@@ -22,6 +22,8 @@ barDraagkracht <- function(data, yVar = NULL) {
   data$noPercentage <- 1 - data$yesPercentage
   data$noPercentageLabel <- paste0(round(data$noPercentage * 100, 2), "%")
   
+  data[, "Year"] <- droplevels(data[, "Year"])
+  data <- data[order(data$Year), ]
 
   myColors <- inbo_palette()[1:2]
   

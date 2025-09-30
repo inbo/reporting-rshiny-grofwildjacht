@@ -24,8 +24,19 @@ requestAfschotReewildServer <- function(
       
       ns <- session$ns
       
+ 
+      today <- Sys.Date()
+      cutoff_date <- as.Date(paste0(format(today, "%Y"), "-10-15"))
+      
+      # If today is after this year's cutoff, make aanvraag for other period
       currentYear <- year(Sys.Date())
-      pastYears <- c(currentYear-3, currentYear-2, currentYear-1)
+      if (today <= cutoff_date) {
+        pastYears <- c(currentYear - 3, currentYear - 2, currentYear - 1)
+        nextYears <- c(currentYear, currentYear + 1, currentYear + 2)
+      } else {
+        pastYears <- c(currentYear - 2, currentYear - 1, currentYear)
+        nextYears <- c(currentYear + 1, currentYear + 2, currentYear + 3)
+      }
       
       aanvraagTable <- reactive({
           
@@ -74,7 +85,7 @@ requestAfschotReewildServer <- function(
           colnames(df) <- c("JAAR", pastYears, "GEMIDDELD GEREALISEERD", "PERCENTAGE")
           
           tagList(
-            h3(paste0("Aanvraag ", currentYear + 1, "-", currentYear + 3)),
+            h3(paste0("Aanvraag ", nextYears[1], "-", nextYears[3])),
             renderTable({df}, width = "95%", sanitize.text.function = function(x) x)
             )
         })
@@ -121,7 +132,7 @@ requestAfschotReewildServer <- function(
           req(AssignedNbLabels())
           req(input$nbLabelBok, input$nbLabelGeit, input$nbLabelKits)
           
-          if (input$nbLabelBok < ceiling(0.2*maxNbLabels()) | input$nbLabelBok > floor(0.35*maxNbLabels())) {
+          if (input$nbLabelBok < round(0.2*maxNbLabels()) | input$nbLabelBok > round(0.35*maxNbLabels())) {
             output$infoMessageBok <- renderUI( 
               tagList(
                 tags$p(style = "color: red;", "Aantal labels moet binnen de grenzen liggen."),
@@ -134,7 +145,7 @@ requestAfschotReewildServer <- function(
             )
           }
           
-          if (input$nbLabelGeit < ceiling(0.2*maxNbLabels()) | input$nbLabelGeit > floor(0.3*maxNbLabels())) {
+          if (input$nbLabelGeit < round(0.2*maxNbLabels()) | input$nbLabelGeit > round(0.3*maxNbLabels())) {
             output$infoMessageGeit <- renderUI( 
               tagList(
                 tags$p(style = "color: red;", "Aantal labels moet binnen de grenzen liggen."),
@@ -147,7 +158,7 @@ requestAfschotReewildServer <- function(
             )
           }
           
-          if (input$nbLabelKits < ceiling(0.4*maxNbLabels()) | input$nbLabelKits > floor(0.55*maxNbLabels())) {
+          if (input$nbLabelKits < round(0.4*maxNbLabels()) | input$nbLabelKits > round(0.55*maxNbLabels())) {
             output$infoMessageKits <- renderUI( 
               tagList(
                 tags$p(style = "color: red;", "Aantal labels moet binnen de grenzen liggen."),
@@ -174,8 +185,8 @@ requestAfschotReewildServer <- function(
                 wellPanel(
                   tagList(
                     tags$label("Reebok"),
-                    tags$p("Ondergrens: ", ceiling(0.2*maxNbLabels())),
-                    tags$p("Bovengrens: ", floor(0.35*maxNbLabels())),
+                    tags$p("Ondergrens: ", round(0.2*maxNbLabels())),
+                    tags$p("Bovengrens: ", round(0.35*maxNbLabels())),
                     tags$br(),
                     numericInput(ns("nbLabelBok"), label = "Aantal labels", value = round(0.25*maxNbLabels()), step = 1),
                     uiOutput(ns("infoMessageBok"))
@@ -186,8 +197,8 @@ requestAfschotReewildServer <- function(
                 wellPanel(
                   tagList(
                     tags$label("Reegeit"),
-                    tags$p("Ondergrens: ", ceiling(0.2*maxNbLabels())),
-                    tags$p("Bovengrens: ", floor(0.3*maxNbLabels())),
+                    tags$p("Ondergrens: ", round(0.2*maxNbLabels())),
+                    tags$p("Bovengrens: ", round(0.3*maxNbLabels())),
                     tags$br(),
                     numericInput(ns("nbLabelGeit"), label = "Aantal labels", value = round(0.25*maxNbLabels()), step = 1),
                     uiOutput(ns("infoMessageGeit"))
@@ -198,8 +209,8 @@ requestAfschotReewildServer <- function(
                 wellPanel(
                   tagList(
                     tags$label("Kits"),
-                    tags$p("Ondergrens: ", ceiling(0.4*maxNbLabels())),
-                    tags$p("Bovengrens: ", floor(0.55*maxNbLabels())),
+                    tags$p("Ondergrens: ", round(0.4*maxNbLabels())),
+                    tags$p("Bovengrens: ", round(0.55*maxNbLabels())),
                     tags$br(),
                     numericInput(ns("nbLabelKits"), label = "Aantal labels", value = round(0.5*maxNbLabels()), step = 1),
                     uiOutput(ns("infoMessageKits"))

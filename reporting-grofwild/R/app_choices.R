@@ -228,6 +228,10 @@ getOutputSpecie <- function(specie,
     type = typesFemale
   )
   
+  # Toekomstige Verspreiding
+  spreadData <- loadSpreadData()
+  spreadDataNbRows <- lapply(spreadData, function(df) nrow(df[!is.na(df$wildsrt) & df$wildsrt == specie,]))
+
   outputs <- c(
 #    "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
@@ -273,7 +277,8 @@ getOutputSpecie <- function(specie,
       "countAgeGroupUI",
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
-    "mapSpreadUI",
+    if (any(spreadDataNbRows > 0))
+      "mapSpreadUI",
     # Maatschappelijk draagvlak
     if (specie %in% draagvlakData$aanwezigheid$Soort)
       "F14_1",

@@ -124,7 +124,7 @@ categoryCard <- function(id,
     
     title <- getSubcategoryTitle(subcategory, uiText = uiText)
     description <- NULL
-    filename <- subcategory
+    filename <- "icons"  # subcategory     ## Temporary general image for all cards
     idCard <- subcategory; btnLabel <- "Lijst grafieken"
     
   }else if(!missing(output)){
@@ -142,7 +142,7 @@ categoryCard <- function(id,
   }else stop("'output' or 'subcategory' should be specified.")
   
   file <- system.file("ui", "www", 
-    paste0("category-", filename, ".png"), 
+    paste0("category-", filename, ".png"),
     package = "reportingGrofwild"
   )
   

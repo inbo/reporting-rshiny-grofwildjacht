@@ -141,7 +141,7 @@ plotBioindicator <- function(data,
           both = "INBO en meldingsformulier"),
         ")\n"),
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-    if (!all(regio == "")) paste0(" (", toString(regio), ")"))
+    if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
   
   colorList <- NULL
   

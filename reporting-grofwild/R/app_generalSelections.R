@@ -430,9 +430,17 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
               }
           )
           
+          if (!is.null(isolate(current$region)) & all(isolate(current$region) %in% choices)) {
+            selected <- isolate(current$region)
+          } else if (allRegionsSelected && input$regionLevel %in% c("flanders", "provinces", "faunabeheerzones")) {
+            selected <- choices
+          } else if (input$regionLevel == "flanders") {
+            selected <- choices[1]
+          } else selected <- NULL
+          
           selectizeInput(inputId = ns("region"), label = "Regio('s)",
             choices = choices, 
-            selected = if (!is.null(isolate(current$region))) isolate(current$region) else if (allRegionsSelected) choices else if (isolate(input$regionLevel) == "flanders") choices[1] else NULL, 
+            selected = selected, 
             multiple = TRUE)
        
           

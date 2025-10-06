@@ -137,6 +137,7 @@ populatieOutputServer <- function(id,
                 switch(as.character(subcategory()), 
                   "populatie-leeggewicht" = list(
                     regionLevels = c(1:2, 4),
+                    allRegionsSelected = TRUE,
                     timeRange = reactive(if (specie() == "Ree")
                           c(2014, max(results$timeRange())) else 
                           results$timeRange()),
@@ -146,6 +147,7 @@ populatieOutputServer <- function(id,
                   ),
                   "populatie-onderkaak" = list(
                     regionLevels = c(1:2, 4),
+                    allRegionsSelected = TRUE,
                     timeRange = reactive(if (specie() == "Ree")
                           c(2005, max(results$timeRange())) else 
                           results$timeRange())
@@ -153,6 +155,7 @@ populatieOutputServer <- function(id,
                   "populatie-geslacht" = list(),
                   "populatie-voortplanting" = list(
                     regionLevels = c(1:2, 4),
+                    allRegionsSelected = TRUE,
                     timeRange = results$timeRange
                   )
                 )

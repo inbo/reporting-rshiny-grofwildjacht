@@ -90,7 +90,7 @@ boxAgeWeight <- function(data,
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
 					paste("in", jaartallen)),
 			if (!all(regio == "")) 
-				paste0(" (", toString(regio), ")"))
+				paste0("\n (", toString(regio), ")"))
 	
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
 	plotData$leeftijd <- droplevels(plotData$leeftijd)

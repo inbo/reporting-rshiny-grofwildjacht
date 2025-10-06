@@ -117,6 +117,7 @@ verspreidingOutputServer <- function(id,
                 "verspreiding-huidig" = list(
                   regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
+                  allRegionsSelected = TRUE,
                   types = isolate(results$databronnen),
                   labelTypes = "Databron(nen)",
                   multipleTypes = TRUE,

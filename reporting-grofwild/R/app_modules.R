@@ -284,9 +284,17 @@ optionsModuleServer <- function(input, output, session,
           
         }
         
+        if (!is.null(isolate(current$region)) & all(isolate(current$region) %in% choices)) {
+          selected <- isolate(current$region)
+        } else if (allRegionsSelected && input$regionLevel %in% c("flanders", "provinces", "faunabeheerzones")) {
+          selected <- choices
+        } else if (input$regionLevel == "flanders") {
+          selected <- choices[1]
+        } else selected <- NULL
+        
         selectInput(inputId = ns("region"), label = "Regio('s)",
             choices = choices, 
-            selected = if (allRegionsSelected) choices else if (input$regionLevel == "flanders") choices[1] else NULL, 
+            selected = selected, 
             multiple = TRUE)
         
       })

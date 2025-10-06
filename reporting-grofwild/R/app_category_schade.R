@@ -147,14 +147,14 @@ schadeOutputServer <- function(id,
                 "schade-type-gewas" = list(
                   regionLevels = c(1:2, 4),
                   regionLevelSelected = "provinces",
-#                  allRegionsSelected = TRUE,
+                  allRegionsSelected = TRUE,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-schade" = list(
                   regionLevels = c(1:2, 4),
                   regionLevelSelected = "provinces",
-#                  allRegionsSelected = TRUE,
+                  allRegionsSelected = TRUE,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
@@ -345,7 +345,7 @@ schadeOutputServer <- function(id,
                   countYearProvinceServer(
                     id = "plot3",
                     data = results$schade_data,
-#                    allRegionsSelected = TRUE,
+                    allRegionsSelected = TRUE,
                     timeRange = results$schade_timeRange,
                     preSelected = schadeSelection
                   ),
@@ -394,7 +394,7 @@ schadeOutputServer <- function(id,
                     data = results$schade_data,
                     timeRange = results$schade_timeRange,
                     variable = "SoortNaam",
-#                    allRegionsSelected = TRUE,
+                    allRegionsSelected = TRUE,
                     preSelected = schadeSelection
                   ) 
               )
@@ -420,7 +420,7 @@ schadeOutputServer <- function(id,
                     schadeChoicesGewas = schadeSelection()$schade_gewas,
                     datatable = TRUE,
                     fullNames = c(schadeTypes, schadeCodes),
-#                    allRegionsSelected = TRUE,
+                    allRegionsSelected = TRUE,
                     preSelected = schadeSelection
                   )
               )
@@ -432,7 +432,7 @@ schadeOutputServer <- function(id,
                     id = "plot10",
                     data = results$schade_data,
                     type = "season", 
-#                    allRegionsSelected = TRUE,
+                    allRegionsSelected = TRUE,
                     timeRange = results$schade_timeRange,
                     preSelected = schadeSelection
                   )

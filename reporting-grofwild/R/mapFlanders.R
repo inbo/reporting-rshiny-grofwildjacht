@@ -876,25 +876,29 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
         })
       
       output$spacePlot <- renderLeaflet({
+          result <- tryCatch({
+              spacePlot()
+              
+            }, error = function(e) {
+              print(e)
+              NULL
+            })
           
-          spacePlot()
+          return(result)
           
         })
       
-      output$spacePlotUI <- renderUI({
+      output$spacePlotMessage <- renderUI({
           msg <- tryCatch({
               spacePlot()
-              NULL   # no error → msg stays NULL
-            }, shiny.silent.error = function(e) {
-              conditionMessage(e)
-            })
+              NULL
+            }, error = function(e) conditionMessage(e))
           
           if (is.null(msg)) {
-            shinycssloaders::withSpinner(
-              leafletOutput(ns("spacePlot"))
-            )
+            return(NULL)
           } else {
-            div(style = "color:#595959;", msg)
+            div(style = "color:#595959; margin: 1em 0;",
+              msg)
           }
         })
       
@@ -904,7 +908,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           if (type %in% c("wbe", "empty"))
             return(NULL)
           
-          if (is.null(input$regionLevel) || input$regionLevel == "flanders")
+          regionLev <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
+          if (is.na(regionLev) || regionLev == "flanders")
             return(NULL)
           
           percentage <- round(with(summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
@@ -1484,7 +1489,8 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       fixedRow(
         column(if ("biotoop" %in% plotDetails) 6 else 12,
           uiOutput(ns("mapTitle")),
-          uiOutput(ns("spacePlotUI")), #withSpinner(uiOutput(ns("spacePlotUI"))),
+          uiOutput(ns("spacePlotMessage")),
+          withSpinner(leafletOutput(ns("spacePlot"))),
           tags$div(align = "center", uiOutput(ns("stats"))),
           tags$br(),
           downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),

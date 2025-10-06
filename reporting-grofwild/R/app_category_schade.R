@@ -141,6 +141,7 @@ schadeOutputServer <- function(id,
                     "5x5 UTM" = "utm5"
                   ), 
                   regionLevelSelected = "provinces",
+                  allRegionsSelected = TRUE,
                   data = reactive(spatialData),
                   timeRange = results$schade_timeRange
                 ),

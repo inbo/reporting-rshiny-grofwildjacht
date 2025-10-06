@@ -127,7 +127,29 @@ outputTabs <- unlist(lapply(subcategories, function(subcategory) {
 shinyUI(
         
   bootstrapPage(
-      
+    tags$head(
+      tags$script(HTML("
+            $(document).on('shiny:connected', function() {
+            // Function to update all leaflet attribution links
+            function updateLeafletLinks() {
+            $('.leaflet-control-attribution a').attr('target', '_blank');
+            }
+            
+            setTimeout(updateLeafletLinks, 100);
+            
+            // Create observer for all future leaflet maps
+            var observer = new MutationObserver(function(mutations) {
+            updateLeafletLinks();
+            });
+            
+            // Observe the entire body for new leaflet maps
+            observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+            });
+            });
+            "))
+    ),
     shinyjs::useShinyjs(),
     shinyjs::extendShinyjs(text = js_code, functions = 'browseURL'),
                 

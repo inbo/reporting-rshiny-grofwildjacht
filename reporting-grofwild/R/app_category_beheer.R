@@ -181,6 +181,7 @@ beheerOutputServer <- function(id,
                     "5x5 UTM" = "utm5"
                   ),
                   regionLevelSelected = "provinces",
+                  allRegionsSelected = TRUE,
                   data = reactive(spatialData),
                   timeRange = reactive(if (specie() == "Edelhert")
                       c(2008, max(results$ecoData()$afschotjaar)) else 
@@ -188,6 +189,7 @@ beheerOutputServer <- function(id,
                 ),
                 "beheer-leeftijdcategorie" = list(
                   regionLevels = c(1:2, 4),
+                  allRegionsSelected = TRUE,
                   types = results$leeftijdtypes,
                   labelTypes = "Leeftijdscategorie",
                   multipleTypes = TRUE

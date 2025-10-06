@@ -217,7 +217,8 @@ mapSpreadServer <- function(id,
             inputId = ns("region"), label = "Regio('s)",
             choices = sort(unique(spatialData()$NAAM)),
             selected = if (req(input$regionLevel) == "flanders")
-              spatialData()$NAAM[1] else "",
+              spatialData()$NAAM[1] else if (req(input$regionLevel) %in% c("provinces", "faunabeheerzones")) 
+              unique(spatialData()$NAAM) else "",
             multiple = TRUE
           )
           

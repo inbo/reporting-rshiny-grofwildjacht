@@ -44,6 +44,7 @@ populatieOutputServer <- function(id,
       
       # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
       results$leeftijdtypes <- reactive({
+        req(populatieSelection())
         types <- c(loadMetaEco(species = specie())$leeftijd_comp_inbo, "Onbekend")
         
         if (!is.null(populatieSelection()$dataSource_leeftijd()) && any(grepl("6m", types, ignore.case = TRUE)) && (populatieSelection()$dataSource_leeftijd() == "both")) {

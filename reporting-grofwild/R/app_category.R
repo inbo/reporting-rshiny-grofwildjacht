@@ -124,7 +124,7 @@ categoryCard <- function(id,
     
     title <- getSubcategoryTitle(subcategory, uiText = uiText)
     description <- NULL
-    filename <- "icons"  # subcategory     ## Temporary general image for all cards
+    filename <- subcategory
     idCard <- subcategory; btnLabel <- "Lijst grafieken"
     
   }else if(!missing(output)){

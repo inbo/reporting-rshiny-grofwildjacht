@@ -669,7 +669,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(schadeChoicesGewas = schadeChoicesGewas()),
             if (!is.null(variable))
               list(variable = variable),
-            if (plotFunction == "trendYearRegion") {
+            if (plotFunction %in% c("trendYearRegion", "countYearProvince")) {
               if (!is.null(combinatie()))
                 list(combinatie = combinatie())
             },

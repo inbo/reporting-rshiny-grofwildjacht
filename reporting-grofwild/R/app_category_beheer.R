@@ -295,7 +295,7 @@ beheerOutputServer <- function(id,
                     wellPanel(class = "well-white", countYearProvinceUI(
                         id = ns("plot"), 
                         uiText = uiText, specie = specie(),
-                        plotFunction = "F04_3",
+                        plotFunction = "F04_3", showCombinatie = TRUE,
                         doHide = !(plot() == defaultTabs$plot || "F04_3" %in% plot())
                       ))
                 )

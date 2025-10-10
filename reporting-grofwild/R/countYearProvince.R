@@ -37,7 +37,7 @@ countYearProvince <- function(data, jaartallen = NULL,
         type = c("provinces", "flanders", "faunabeheerzones", "communes"),
         interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
-        regio = "") {
+        regio = "", combinatie = FALSE) {
   
   # For R CMD check
   value <- NULL
@@ -190,6 +190,13 @@ countYearProvince <- function(data, jaartallen = NULL,
       levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
   }
  
+  ### ADD Combination of regions
+  if (combinatie) {
+    summaryData <- summaryData[, c("timeChar", "afschotjaar", "value")]
+    summaryData <- aggregate(value ~ timeChar + afschotjaar, summaryData, sum)
+    summaryData$locatie <- factor("Totaal", levels = c("Totaal"))
+  }
+
   # Hover text
   totalCount <- setNames(totalCount$value, totalCount$year)
   summaryData$text <- paste0(
@@ -314,6 +321,7 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
         plotFunction = "countYearProvince", 
         title = if (id == "dash") "Aantal drukjachten" else NULL,
         data = data,
+        combinatie = reactive(if (is.null(input$combinatie)) FALSE else input$combinatie),
         preSelected = preSelected)
       
     })
@@ -331,7 +339,7 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 countYearProvinceUI <- function(
   id, uiText, specie = NULL, plotFunction = "countYearProvinceUI",
   showType = FALSE, showTime = FALSE, showDataSource = NULL, showInterval = FALSE, 
-  regionLevels = NULL, regionLevelSelected = NULL, doHide = TRUE) {
+  regionLevels = NULL, regionLevelSelected = NULL, doHide = TRUE, showCombinatie = FALSE) {
   
   ns <- NS(id)
   
@@ -356,13 +364,18 @@ countYearProvinceUI <- function(
           plotModuleUI(id = ns("yearProvince"))
         ),
         column(4,
-          optionsModuleUI(
-            id = ns("yearProvince"), 
-            regionLevels = regionLevels, 
-            regionLevelSelected = regionLevelSelected,
-            showTime = showTime, exportData = TRUE,
-            showType = showType, showInterval = showInterval,
-            showDataSource = showDataSource
+          wellPanel(
+            if (showCombinatie)
+              checkboxInput(inputId = ns("combinatie"), 
+                label = "Combineer alle geselecteerde regio's"),
+            optionsModuleUI(
+              id = ns("yearProvince"), 
+              regionLevels = regionLevels, 
+              regionLevelSelected = regionLevelSelected,
+              showTime = showTime, exportData = TRUE,
+              showType = showType, showInterval = showInterval,
+              showDataSource = showDataSource, doWellPanel = FALSE
+            )
           )
         )
       ),

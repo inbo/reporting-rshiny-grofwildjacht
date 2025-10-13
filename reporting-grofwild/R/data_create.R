@@ -658,6 +658,8 @@ createSpreadData <- function(
       if (grepl("municipalities", iFile)) {
         voerenShape <- spatialData$communes[spatialData$communes$NAAM == "Voeren", c("NAAM", "geometry")]
         voerenShape$outcome <- "Al aanwezig"
+        species_df <- data.frame(wildsrt = unique(modelShape$wildsrt))    # Duplicate Voeren information for each specie
+        voerenShape <- merge(voerenShape, unique(species_df), by = NULL)
         modelShape <- rbind(modelShape, voerenShape)
       }
       

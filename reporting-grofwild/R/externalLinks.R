@@ -50,7 +50,7 @@ externalLinksUI <- function(id, uiText, portal, doHide = TRUE) {
   ns <- NS(id)
   
   title <- getOutputTitle(output = portal, uiText = uiText)
-  description <- getOutputDescription(output = portal, uiText = uiText, context = "summary")
+  description <- getOutputDescription(output = portal, uiText = uiText, context = "description")
   
   
   tagList(

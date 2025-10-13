@@ -28,7 +28,7 @@ paletteMap <- function(variable, groupNames) {
   
   list(
     colors = myColors,
-    levels = groupNames
+    levels = sort(groupNames)
   )
   
 }

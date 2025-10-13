@@ -168,7 +168,7 @@ optionsModuleServer <- function(input, output, session,
       
       results$minTime <- min(timeRange())
       
-      value <- if (is.null(current$time)) {
+      value <- if (is.null(isolate(current$time))) {
           if (grepl("referentieper", tolower(timeLabel))) {
             c(min(timeRange()), definedYear - 1)
           } else {
@@ -210,7 +210,7 @@ optionsModuleServer <- function(input, output, session,
         
         newMin <- min(subData$afschotjaar)
         
-        if (req(results$minTime) != newMin) {
+        if (!is.na(newMin) && !is.infinite(newMin) && req(results$minTime) != newMin) {
           
           results$minTime <- newMin
           currentTime <- req(input$time)

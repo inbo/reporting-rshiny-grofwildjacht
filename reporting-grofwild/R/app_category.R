@@ -142,7 +142,7 @@ categoryCard <- function(id,
   }else stop("'output' or 'subcategory' should be specified.")
   
   file <- system.file("ui", "www", 
-    paste0("category-", filename, ".png"), 
+    paste0("category-", filename, ".png"),
     package = "reportingGrofwild"
   )
   

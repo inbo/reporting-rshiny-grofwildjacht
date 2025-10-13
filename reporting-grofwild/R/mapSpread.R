@@ -174,6 +174,56 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 }
 
 
+#' Create leaflet map for toekomstig verspreidingsgebied of Bevers
+#' 
+#' @param beverData list, with sf data.frame 
+#' @inheritParams mapSpread 
+#' @return leaflet map
+#' 
+#' @author mvarewyck
+#' @import leaflet
+#' @export
+mapBevers <- function(beverData, 
+  addGlobe = FALSE, legend = "none") {
+  
+  myMap <- leaflet() 
+  
+  factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), beverData$Vestigingskans)
+
+  myMap <- myMap %>%
+    clearShapes() %>%
+    addPolygons(data = beverData,
+      color = ~factpal(beverData$Vestigingskans),
+      opacity=0,
+      fillOpacity=0.75,
+      popup = ~label)
+  
+  if (legend != "none") { 
+    
+    myMap <- addLegend(
+      map = myMap, 
+      position = legend,
+      pal = factpal, 
+      values = beverData$Vestigingskans,
+      title = "Kans op vestiging",
+      opacity = 0.75,
+      layerId = "legend")
+  }
+  
+  # Add background map
+  if (addGlobe)
+    myMap <- myMap %>% addProviderTiles("OpenStreetMap.HOT")
+  
+  # For compliance with mapSpread()
+  attr(myMap, "modelColors") <- NULL
+  
+  
+  myMap
+  
+}
+
+
+
 #' Shiny module for creating the plot \code{\link{mapFlanders}} - server side
 #' @inheritParams mapFlandersServer
 #' @param title reactive object, title with asterisk to show in the \code{actionLink}
@@ -307,7 +357,14 @@ mapSpreadServer <- function(id,
       
       output$spreadPlot <- renderLeaflet({
           
-          spreadPlot()
+          spreadPlot() %>%
+            leaflet.extras2::addEasyprint(   # use leaflets personal functionality to download maps
+              options = leaflet.extras2::easyprintOptions(
+                exportOnly = TRUE,
+                hideControlContainer = FALSE,  # Keep controls visible
+                hideClasses = c("leaflet-control-zoom", "leaflet-control-easyPrint")
+              )
+            )
           
         })
       
@@ -482,27 +539,19 @@ mapSpreadServer <- function(id,
       
       
       # Download the map
-      output$download <- downloadHandler(
-        filename = function()
-          nameFile(species = species,
-            content = "kaart", fileExt = "png"),
-        content = function(file) {
+      observeEvent(input$download, {
           
           idNote <- showNotification("Aanvraag wordt verwerkt... Even geduld.", type = "message", duration = NULL)
           
-          tmpFile <- tempfile(fileext = ".html")
-          
-          # write map to temp .html file
-          htmlwidgets::saveWidget(finalMap(), file = tmpFile, selfcontained = FALSE)
-          
-          # convert temp .html file into .png for download
-          webshot2::webshot(url = tmpFile, file = file,
-            vwidth = 1000, vheight = 500, cliprect = "viewport")
+          leafletProxy("spreadPlot") %>% leaflet.extras2::easyprintMap(
+            sizeModes = "CurrentSize",
+            filename = nameFile(species = species,
+              content = "kaart", fileExt = "png")
+          )
           
           removeNotification(id = idNote)
           
-        }
-      )
+        })
       
       # Download data
       output$downloadData <- downloadHandler(
@@ -519,6 +568,182 @@ mapSpreadServer <- function(id,
           
         })
       
+      
+      
+      ## Application for Bever
+      
+      beverData <- reactive({
+          req(species == "Bever")
+          loadBeverData()
+          
+        })
+      
+      output$beverFiltersUI <- renderUI({
+          req(beverData())
+          
+          tagList(
+            checkboxGroupInput(ns("rb"), "Kans op vestiging in 2026:",
+              levels(beverData()$Vestigingskans),
+              selected = character(0)),
+            fluidRow(
+              column(4, sliderInput(ns("overst"), "Percentage overstromingsgevoelig gebied:",
+                  min(beverData()$Overstromingsrisico), max(beverData()$Overstromingsrisico),
+                  value = range(beverData()$Ovrstrm), step = 5)),
+              column(4, sliderInput(ns("rust"), "Percentage potentieel rustgebied:",
+                  min(beverData()$Rustzones), max(ceiling(beverData()$Rustzones)),
+                  value = range(beverData()$Rustzones), step = 1)),
+              column(4, sliderInput(ns("habitat"), "Percentage kwestbaar habitat:",
+                  min(beverData()$Habitats), max(ceiling(beverData()$Habitats)),
+                  value = range(beverData()$Habitats), step = 5))
+            ),
+            fluidRow(
+              column(4, sliderInput(ns("soorten"), "Aantal soorten met mogelijk positief effect:",
+                  min(beverData()$HRLsoorten), max(beverData()$HRLsoorten),
+                  value = range(beverData()$HRLsoorten), step = 1)),
+              column(4, sliderInput(ns("vissen"), "Aantal vissen met mogelijk negatief effect:",
+                  min(beverData()$HRLvissen), max(beverData()$HRLvissen),
+                  value = range(beverData()$HRLvissen), step = 1))
+            )
+          )
+        })
+      
+      filteredBeverData <- reactive({
+          req(beverData())
+          req(input$rb)
+          req(input$overst)
+          req(input$rust)
+          req(input$habitat)
+          req(input$soorten)
+          req(input$vissen)
+          
+          beverData() %>% filter(
+            !is.na(Vestigingskans),
+            Vestigingskans %in% input$rb,
+            Overstromingsrisico >= input$overst[1], Overstromingsrisico <= input$overst[2],
+            Rustzones >= input$rust[1], Rustzones <= input$rust[2],
+            Habitats >= input$habitat[1], Habitats <= input$habitat[2],
+            HRLsoorten >= input$soorten[1], HRLsoorten <= input$soorten[2],
+            HRLvissen >= input$vissen[1], HRLvissen <= input$vissen[2]
+          )
+        })
+      
+        spreadPlotBever <- reactive({
+            validate(need(length(input$rb) > 0, "Gelieve een kans op vestiging te selecteren"))
+            mapBevers(
+              filteredBeverData(), 
+              addGlobe = isolate(input$globeBever) %% 2 == 0, 
+              legend = isolate(input$legendBever))
+          })
+        
+        
+        output$spreadPlotBever <- renderLeaflet({
+            spreadPlotBever() %>%
+              leaflet.extras2::addEasyprint(   # use leaflets personal functionality to download maps
+                options = leaflet.extras2::easyprintOptions(
+                  exportOnly = TRUE,
+                  hideControlContainer = FALSE,  # Keep controls visible
+                  hideClasses = c("leaflet-control-zoom", "leaflet-control-easyPrint")
+                )
+              )
+          })
+      
+      output$spreadPlotBeverUI <- renderUI({
+          tryCatch({
+              leafletOutput(ns("spreadPlotBever"))
+            },
+            error = function(e) {
+              return(NULL) 
+            })
+          
+        })
+      
+      # Add world map
+      observe({
+          
+          proxy <- leafletProxy("spreadPlotBever", data = spatialData())
+          
+          if (!is.null(input$globeBever) & !is.null(proxy)){
+            
+            if (input$globeBever %% 2 == 0){
+              
+              updateActionLink(session, inputId = "globeBever", 
+                label = "Verberg landkaart")
+              
+              proxy %>% addProviderTiles("OpenStreetMap.HOT")
+              
+            } else {
+              
+              updateActionLink(session, inputId = "globeBever", 
+                label = "Voeg landkaart toe")
+              
+              proxy %>% clearTiles()
+              
+            }
+            
+          }
+          
+        })
+      
+      
+      # Add legend
+      observe({
+          
+          req(input$legendBever)
+          
+          proxy <- leafletProxy("spreadPlotBever")
+          req(!is.null(proxy))
+          
+          proxy %>% removeControl(layerId = "legend")
+          
+          if (input$legendBever != "none") {
+            
+            factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), filteredBeverData()$Vestigingskans)
+            
+            proxy %>% addLegend(
+              position = input$legendBever,
+              pal = factpal, 
+              values = filteredBeverData()$Vestigingskans,
+              title = "Kans op vestiging",
+              opacity = 0.75,
+              layerId = "legend")
+            
+          }
+          
+        })
+      
+      finalMapBever <- reactive({
+          
+          newMap <- mapBevers(
+            filteredBeverData(), 
+            addGlobe = input$globeBever %% 2 == 0, 
+            legend = input$legendBever)
+          
+          # save the zoom level and centering to the map object
+          newMap <- newMap %>% setView(
+            lng = input$spreadPlotBever_center$lng,
+            lat = input$spreadPlotBever_center$lat,
+            zoom = input$spreadPlotBever_zoom
+          )
+          
+          return(newMap)
+          
+        }) 
+      
+      
+      # Download the map
+      observeEvent(input$downloadBever, {
+          
+          idNote <- showNotification("Aanvraag wordt verwerkt... Even geduld.", type = "message", duration = NULL)
+          
+          leafletProxy("spreadPlotBever") %>% leaflet.extras2::easyprintMap(
+            sizeModes = "CurrentSize",
+            filename = nameFile(species = species,
+              content = "kaart", fileExt = "png")
+          )
+          
+          removeNotification(id = idNote)
+          
+        })
         
     return(reactive({
           # Update when any of these change
@@ -556,10 +781,18 @@ mapSpreadUI <- function(id,
   
   ns <- NS(id)
   
-  title <- getOutputTitle(output = "mapSpreadUI", specie = specie, 
-    uiText = uiText)
-  description <- getOutputDescription(output = "mapSpreadUI", 
-    specie = specie, uiText = uiText, context = context)
+  
+  if (specie == "Bever") {
+    title <- getOutputTitle(output = "mapSpreadUI", specie = specie, 
+      uiText = uiText)
+    description <- getOutputDescription(output = paste0("mapSpreadUI_", specie), 
+      specie = specie, uiText = uiText, context = context)
+  } else {
+    title <- getOutputTitle(output = "mapSpreadUI", specie = specie, 
+      uiText = uiText)
+    description <- getOutputDescription(output = "mapSpreadUI", 
+      specie = specie, uiText = uiText, context = context)
+  }
   
   # Map spread
   
@@ -573,80 +806,111 @@ mapSpreadUI <- function(id,
       
       uiOutput(ns("disclaimerMapSpread")),
   
-      wellPanel(
-          
-        if(!is.null(regionChoices)){
-          fixedRow(
-            column(8, uiOutput(ns("region"))),
-            column(4, 
-              selectInput(
-                inputId = ns("regionLevel"), label = "Regio-schaal",
-                choices = regionChoices, selected = "flanders"
-              )
-            )
-          )
-        },
-        
-        if (showLayer) {
-            checkboxGroupInput(inputId = ns("layers"), label = "Toon",
-              choices = c(
-                "Preventieve rasters" = "ecorasters",
-                "Preventieve signalisatie/snelheidsbeperkingen" = "oversteek"),
-              selected = c("ecorasters", "oversteek"),
-              inline = TRUE)
-            
-          } else {
-            
+      if (specie == "Bever") {   # Custom app for Toekomstig verspreidingsgebied Bever
+          tagList(
+            wellPanel(
+              uiOutput(ns("beverFiltersUI")),
+              fluidRow(
+                column(4, selectInput(inputId = ns("legendBever"), label = "Legende",
+                    choices = c(
+                      "Bovenaan rechts" = "topright",
+                      "Onderaan rechts" = "bottomright",
+                      "Bovenaan links" = "topleft",
+                      "Onderaan links" = "bottomleft",
+                      "<geen>" = "none")) 
+                )),
+              fluidRow(column(12, actionLink(inputId = ns("globeBever"), label = "Voeg landkaart toe",
+                  icon = icon("globe"))))
+            ),
             fixedRow(
-              column(4, 
-                selectInput(
-                  inputId = ns("mapScale"), 
-                  label = "Kaartweergave",
-                  choices = c(
-                    "Gemeente" = "municipalities",
-                    "2x2 UTM" = "pixels"
+              column(12,
+                withSpinner(uiOutput(ns("spreadPlotBeverUI"))),
+                tags$br(),
+                actionButton(ns("downloadBever"), label = "Download figuur", class = "downloadButton")
+              )
+            ),
+            tags$p(HTML(description)),
+            
+            tags$hr()
+          )
+        
+      } else {
+        tagList(
+          wellPanel(
+            
+            if(!is.null(regionChoices)){
+              fixedRow(
+                column(8, uiOutput(ns("region"))),
+                column(4, 
+                  selectInput(
+                    inputId = ns("regionLevel"), label = "Regio-schaal",
+                    choices = regionChoices, selected = "flanders"
                   )
                 )
-              ),
-              column(4, uiOutput(ns("year"))),
-              column(4, selectInput(inputId = ns("legend"), label = "Legende",
+              )
+            },
+            
+            if (showLayer) {
+                checkboxGroupInput(inputId = ns("layers"), label = "Toon",
                   choices = c(
-                    "Bovenaan rechts" = "topright",
-                    "Onderaan rechts" = "bottomright",
-                    "Bovenaan links" = "topleft",
-                    "Onderaan links" = "bottomleft",
-                    "<geen>" = "none")) 
+                    "Preventieve rasters" = "ecorasters",
+                    "Preventieve signalisatie/snelheidsbeperkingen" = "oversteek"),
+                  selected = c("ecorasters", "oversteek"),
+                  inline = TRUE)
+                
+              } else {
+                
+                fixedRow(
+                  column(4, 
+                    selectInput(
+                      inputId = ns("mapScale"), 
+                      label = "Kaartweergave",
+                      choices = c(
+                        "Gemeente" = "municipalities",
+                        "2x2 UTM" = "pixels"
+                      )
+                    )
+                  ),
+                  column(4, uiOutput(ns("year"))),
+                  column(4, selectInput(inputId = ns("legend"), label = "Legende",
+                      choices = c(
+                        "Bovenaan rechts" = "topright",
+                        "Onderaan rechts" = "bottomright",
+                        "Bovenaan links" = "topleft",
+                        "Onderaan links" = "bottomleft",
+                        "<geen>" = "none")) 
 #              ),
 #              column(4, selectInput(inputId = ns("unit"), label = "Startpopulatie",
 #                  choices = c("Exacte pixels" = "model_EP") 
-##                    "Optimaal habitat" = "model_OH")
+                  ##                    "Optimaal habitat" = "model_OH")
 #                )
-              )
-            )
+                  )
+                )
+                
+              }
             
-          }
-        
-        , actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
-          icon = icon("globe"))
-      
-      ),
-      
-      fixedRow(
-        column(12,
-          withSpinner(uiOutput(ns("spreadPlotUI"))),
-          tags$br(),
-          downloadButton(ns("download"), label = "Download figuur", class = "downloadButton"),
-          if (!showLayer)
-            downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
+            , actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
+              icon = icon("globe"))
+          
+          ),
+          
+          fixedRow(
+            column(12,
+              withSpinner(uiOutput(ns("spreadPlotUI"))),
+              tags$br(),
+              actionButton(ns("download"), label = "Download figuur", class = "downloadButton"),
+              if (!showLayer)
+                downloadButton(ns("downloadData"), label = "Download data", class = "downloadButton")
+            )
+          ),
+          
+          tags$p(HTML(description)),
+          
+          tags$hr()
         )
-      ),
-      
-      tags$p(HTML(description)),
-      
-      tags$hr()
-    
+      }
     )
+    
   )
-  
   
 }

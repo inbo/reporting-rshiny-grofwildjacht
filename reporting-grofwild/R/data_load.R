@@ -508,3 +508,34 @@ loadDraagvlakData <- function(
   return(toReturn)
   
 }
+
+
+#' Load Bever data
+#' @inheritParams loadRawData
+#' @export
+loadBeverData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  # For R CMD check
+  beverData <- NULL
+  
+  pathFile <- "Beverkaart.geojson"
+  
+  obj <- aws.s3::get_object(pathFile, bucket = bucket)
+  geojson_text <- rawToChar(obj)
+  
+  beverData <- geojsonsf::geojson_sf(geojson_text)
+  
+  beverData$Vestigingskans <- factor(beverData$Vestigingskans, levels = c("Laag", "Gemiddeld", "Hoog"))
+  beverData$label <- with(beverData, paste(
+      "<p>", "% overstroming:", round(beverData$Overstromingsrisico,0), "</br>",
+      "% rust:", round(beverData$Rustzones,0),"</br>",
+      "# HRL-soorten:", round(beverData$HRLsoorten,0),"</br>",
+      "# vissen:", round(beverData$HRLvissen,0),"</br>",
+      "% habitat:", round(beverData$Habitats,0),"</br>",
+      "</p>"))
+  
+  return(beverData)
+  
+}

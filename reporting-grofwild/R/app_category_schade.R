@@ -167,7 +167,7 @@ schadeOutputServer <- function(id,
             barCostUI(
               id = ns("plot"), 
               uiText = uiText, context = "description",
-              specie = specie(),
+              specie = specie(), showTime = TRUE,
               typeMelding = c("Landbouw" = "landbouw"),
               regionLevels = c(1:2, 4),
               doHide = FALSE
@@ -271,6 +271,7 @@ schadeOutputServer <- function(id,
         ),
         "barCostUI" = barCostServer(
           id = "plot",
+          timeRange = reactive(c(min(results$schade_data()$afschotjaar, na.rm = TRUE), max(results$schade_data()$afschotjaar, na.rm = TRUE))),
           data = results$schade_data,
           yVar = "schadeBedrag"
         )  

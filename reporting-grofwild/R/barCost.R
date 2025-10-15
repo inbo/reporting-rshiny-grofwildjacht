@@ -19,7 +19,7 @@
 #' @importFrom stats aggregate
 #' @export 
 barCost <- function(data, 
-  yVar = c("schadeBedrag", "count"), 
+  yVar = c("schadeBedrag", "count"), jaartallen = NULL, 
   typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"), 
   regio = "", unit = NULL) {
   
@@ -31,6 +31,7 @@ barCost <- function(data,
     schadeBedrag = "Aantal",
     count = "Aantal"
   )
+  
   groupLabel <- if (!is.null(interval))
       switch(interval,
         "Per jaar" = "Jaar",
@@ -40,7 +41,10 @@ barCost <- function(data,
       ) else 
       NULL
   
-  subData <- data[, c(if (yVar != "count") yVar, "season", "afschotjaar", "afschot_datum")] %>%
+  if (is.null(jaartallen))
+    stop("Gelieve jaartallen te selecteren")
+  
+  subData <- data[data$afschotjaar %in% jaartallen, c(if (yVar != "count") yVar, "season", "afschotjaar", "afschot_datum")] %>%
     mutate(season_num = dplyr::case_when(
         season == "winter" ~ 1,
         season == "lente"  ~ 2,
@@ -174,7 +178,7 @@ barCost <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
+barCostServer <- function(id, yVar, data, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -216,6 +220,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "barCost", 
         data = subData,
+        timeRange = timeRange,
         intervals = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")
       )
       
@@ -247,7 +252,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 #' @export
 barCostUI <- function(id, 
   uiText, context = strsplit(id, split = "_")[[1]][1], 
-  specie = NULL,
+  specie = NULL, showTime = FALSE,
   typeMelding = NULL, doHide = TRUE,
   regionLevels = NULL) {
   
@@ -281,7 +286,7 @@ barCostUI <- function(id,
         column(4,
           wellPanel(
             optionsModuleUI(
-              id = ns("barCost"), 
+              id = ns("barCost"), showTime = showTime,
               regionLevels = regionLevels, 
               doWellPanel = FALSE
             ),
@@ -297,7 +302,7 @@ barCostUI <- function(id,
               multiple = TRUE),
             optionsModuleUI(
               id = ns("barCost"),
-              showInterval = TRUE,
+              showInterval = TRUE, 
               exportData = TRUE, 
               doWellPanel = FALSE
             )

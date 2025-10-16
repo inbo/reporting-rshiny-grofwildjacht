@@ -14,11 +14,7 @@ specieUI <- function(id, speciesList){
     verticalLayout(
       
       # image
-      fluidRow(
-       column(width = 12, 
-          img(src = "www/specie-header.png", width = "100%")
-        )
-      ),
+      img(src = "www/specie-header.png", width = "100%"),
       
       # Choice of specie and options
       tags$div(
@@ -99,7 +95,7 @@ getLatinName <- function(specie){
   validate(
     need(
       expr = (length(latinName) == 1 && nchar(latinName) > 0), 
-      message = paste("No latin name available for:", specie)
+      message = paste("Geen Latijnse naam beschikbaar voor:", specie)
     )
   )
   
@@ -122,7 +118,7 @@ getSpecieImage <- function(specie, relative = FALSE){
   validate(
     need(
       expr = file.exists(imgFile), 
-      message = paste("No image available for:", specie)
+      message = paste("Geen afbeelding beschikbaar voor:", specie)
     )
   )
 

@@ -35,6 +35,12 @@
 #' as unlisted 'wildsoorten' output from \code{loadMetaSchade}
 #' @param regio character vector, names of the selected regions in \code{data}
 #' to be shown in the plot title
+#' @param regionLevels numeric vector, index of region levels of which to 
+#' show the regions
+#' @param regionLevelSelected character vector, name of the regionLevel to be 
+#' automatically selected
+#' @param allRegionsSelected boolean, whether to automatically select all 
+#' options from the region selectizeInput
 #' @param id character, unique identified for the Shiny module
 #' @param specie reactive with specie as character
 #' @param category character vector with category/ies,
@@ -56,5 +62,10 @@
 #' @param schade_code reactive with selected schade code choices
 #' @param schade_gewas reactive with selected schade gewas choices
 #' @param schade_voertuig reactive with selected schade voertuig choices
+#' @param summarizeBy character, how to summarize counts over groups
+#' @param interval character, data shown in intervals
+#' @param showDataSource character vector, for which variables to show choices 
+#' of data source levels. 
+#' @param showType, boolean, whether to select a select input field with type
 #' @name reportingGrofwild-common-args
 NULL

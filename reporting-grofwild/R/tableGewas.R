@@ -7,7 +7,9 @@
 
 #' Create summary table for gewas by region and year.
 #' @inheritParams tableSchadeCode
+#' @inheritParams reportingGrofwild-common-args
 #' @param variable character, defines the dependent variable in the table besides \code{type}
+#' @param jaartallen integer vector, defines the year(s) that should be considered
 #' @return data.frame, number of opbservations per region and per \code{variable}
 #' @author Eva Adriaensen
 #' @importFrom plyr count
@@ -15,10 +17,12 @@
 #' @importFrom sf st_drop_geometry
 #' @export
 tableGewas <- function(data, jaartallen = NULL, variable, 
-  sourceIndicator = NULL, 
-    type = c("provinces", "flanders", "faunabeheerzones")) {
+  sourceIndicator = NULL, summarizeBy = c("count", "percent"), regio = "") {
   
-  type = match.arg(type)
+  # For R CMD check
+  varOfInterest <- leeftijd_comp_inbo <- NULL
+  
+  summarizeBy <- match.arg(summarizeBy)
   
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
@@ -32,34 +36,31 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   if (inherits(allData, "sf"))
     allData <- sf::st_drop_geometry(allData)  
   
-  allData$locatie <- switch(type,
-      flanders = as.factor("Vlaams Gewest"),
-      provinces = allData$provincie,
-      faunabeheerzones = allData$FaunabeheerZone)
-
-  # Define all provinces/fbz's in the summary table even if never occured     
-  levelsLocatie <- switch(type,
-      flanders = levels(allData$locatie),
-      provinces = levels(allData$locatie),
-      faunabeheerzones = c(1:10)) #levels fbz's are hardcoded
-  
-  # redefine location levels
-  allData$locatie <- factor(allData$locatie, levels = levelsLocatie)
+  if (all(regio == "Vlaams Gewest")) {
+    allData$locatie <- as.factor("Vlaams Gewest")
+  } else if (all(regio %in% levels(allData$provincie))) {
+    allData$locatie <- factor(allData$provincie)
+  } else {
+    allData$locatie <- allData$FaunabeheerZone
+    allData$locatie <- factor(allData$locatie, levels = levels(droplevels(factor(unique(allData$locatie), 
+            levels = c(1:10)))))
+  }
     
   # select relevant columns
   tableData <- allData[allData$afschotjaar %in% jaartallen, c(variable, c("afschotjaar", "locatie"))] #nrow(tableData) [1] 1525
   # exclude logs with unknown location or NA for variable of interest
   tableData <- tableData[!is.na(tableData[, variable]) & !is.na(tableData$locatie), ] #nrow(tableData) [1] 1255
+  
   # generate counts
   summaryData <- count(tableData, vars = setdiff(names(tableData), "afschotjaar"))
   
   if (nrow(summaryData) == 0)
     return(NULL)
-  
+
   # include all provinces/fbz
   fullData <- expand.grid(
       unique(tableData[[variable]]),
-      locatie = levelsLocatie
+      locatie = levels(allData$locatie)
           )
   names(fullData)[1] <- variable
   fullSummaryData <- merge(summaryData, fullData, all = TRUE)
@@ -72,25 +73,36 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   summaryTable[is.na(summaryTable)] <- 0
   
   # add col and row sum 
-  if (type != "flanders") {
+  if (all(regio != "Vlaams Gewest")) {
     summaryTable <- cbind(summaryTable, 
         Vlaanderen = apply(subset(summaryTable, select = -1), 1, sum))
   }
   summaryTable <- rbind(summaryTable,
-      c(varOfInterest = "Alle", as.list(apply(subset(summaryTable, select = -1), 2, sum))))   
+    c(varOfInterest = "Alle", as.list(apply(subset(summaryTable, select = -1), 2, sum))))   
   
-  variableLabel <- switch(variable,
+  if (summarizeBy == "percent") {
+    last_row <- nrow(summaryTable)
+    
+    summaryTable <- summaryTable %>%
+      mutate(dplyr::across(-varOfInterest, ~ as.numeric(as.character(.x)))) %>%
+      mutate(dplyr::across(
+          -varOfInterest,
+          ~ dplyr::if_else(dplyr::row_number() < last_row, paste0(round(.x / summaryTable[last_row, dplyr::cur_column()] * 100, 2), "%"), "100%")
+        ))
+  }
+    
+    variableLabel <- switch(variable,
 #        wildsoort = "Wildsoort",
 #        schadeBasisCode = "Type Schade",
 #        schadeCode = "Type Subschade",
       SoortNaam = "Gewas")
-  
-  colnames(summaryTable)[colnames(summaryTable) == "varOfInterest"] <- variableLabel
-  
-  return(list(data = summaryTable))
     
-}
-
+    colnames(summaryTable)[colnames(summaryTable) == "varOfInterest"] <- variableLabel
+    
+    return(list(data = summaryTable))
+    
+  }
+  
 
 
 
@@ -99,13 +111,14 @@ tableGewas <- function(data, jaartallen = NULL, variable,
 #' @inheritParams plotModuleServer
 #' @inheritParams tableSchadeCode
 #' @inheritParams welcomeSectionUI 
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
 tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
-  variable) {
+  variable, allRegionsSelected = FALSE) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -117,7 +130,8 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
         types = types, 
         labelTypes = labelTypes, 
         typesDefault = typesDefault,
-        timeRange = timeRange
+        timeRange = timeRange,
+        allRegionsSelected = allRegionsSelected
       )
       
       callModule(plotModuleServer, id = "tableGewas",
@@ -137,7 +151,7 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 tableGewasUI <- function(id, 
-  uiText, context = id, specie = NULL, 
+  uiText, context = id, specie = NULL, regionLevels = NULL, regionLevelSelected = NULL,
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -162,9 +176,11 @@ tableGewasUI <- function(id,
       optionsModuleUI(
         id = ns("tableGewas"), 
         showTime = TRUE, 
-        showType = TRUE,
+        regionLevels = regionLevels, 
+        regionLevelSelected = regionLevelSelected,
+        summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
         showDataSource = "schade",
-        exportData = TRUE, oneRow = TRUE
+        exportData = TRUE
       ),
       tableModuleUI(id = ns("tableGewas")),
       tags$p(HTML(description)),

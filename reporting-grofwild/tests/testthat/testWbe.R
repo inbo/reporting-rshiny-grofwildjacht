@@ -240,7 +240,7 @@ test_that("Trend schade", {
 test_that("Additional plots", {
     
     myResult <- countYearShotAnimals(data = combinedRee,
-      jaartallen = 2019:2020,
+      jaartallen = 2019:2020, regio = "Vlaams Gewest",
       groupVariable = c("labeltype", "jachtmethode_comp")[1],
       interval = c("Per maand", "Per seizoen", "Per twee weken")[1]
     )

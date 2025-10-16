@@ -391,7 +391,7 @@ createRawData <- function(
         "SoortNaam", "DiersoortNaam", "DatumVeroorzaakt",
         "provincie", "fbz", "fbdz", "NisCode_Georef", "GemNaam_Georef", 
         "UTM5", "KboNummer", "WBE_Naam_Georef", "PartijNummer", 
-        "PolyLocatieWKT", "x", "y",
+        "PolyLocatieWKT", "verbatimCentroidLongitude", "verbatimCentroidLatitude",
         "SchadeBedragOmschrijving", "type_melding")]
     
     # format date
@@ -431,9 +431,6 @@ createRawData <- function(
     
     # fix for ANDERE within GEWAS
     rawData$schadeCode[rawData$schadeBasisCode == "GEWAS" & rawData$schadeCode == "ANDERE"] <- "GEWASANDR"
-    
-    # format schade bedrag
-    rawData$schadeBedrag <- suppressWarnings(as.numeric(gsub("BEDRAG", "", rawData$schadeBedrag)))
     
     # If x/y coordinates missing -> exclude
     toExclude <- is.na(rawData$x) | is.na(rawData$y)
@@ -654,13 +651,15 @@ createSpreadData <- function(
         colnames(modelShape)[1] <- "NAAM"
       
       modelShape <- modelShape[, c(if (grepl("pixels", iFile)) "ID" else "NAAM", 
-          "outcome", "geometry",
+          "outcome", "geometry", "wildsrt",
           if (!is.null(startVariable)) "start")]
       
       # Add Voeren
       if (grepl("municipalities", iFile)) {
         voerenShape <- spatialData$communes[spatialData$communes$NAAM == "Voeren", c("NAAM", "geometry")]
         voerenShape$outcome <- "Al aanwezig"
+        species_df <- data.frame(wildsrt = unique(modelShape$wildsrt))    # Duplicate Voeren information for each specie
+        voerenShape <- merge(voerenShape, unique(species_df), by = NULL)
         modelShape <- rbind(modelShape, voerenShape)
       }
       

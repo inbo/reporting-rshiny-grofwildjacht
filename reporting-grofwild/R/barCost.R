@@ -7,8 +7,9 @@
 #' Function to generate stacked bar plot for kost landbouwschade (F09_2)
 #' 
 #' @param data data.frame with schadeData
-#' @param unit character, variable in \code{data} to summarize on
 #' @param typeMelding character vector, choices for filtering on `typeMelding` in data
+#' should be one of \code{c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")}
+#' @param unit character, data shown in unit
 #' @inheritParams barDraagkracht
 #' @inheritParams reportingGrofwild-common-args
 #' @return list with plotly object and data.frame 
@@ -18,90 +19,150 @@
 #' @importFrom stats aggregate
 #' @export 
 barCost <- function(data, 
-  unit = NULL, yVar = c("schadeBedrag", "count"), 
-  typeMelding = NULL, regio = "") {
+  yVar = c("schadeBedrag", "count"), jaartallen = NULL, 
+  typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"), 
+  regio = "", unit = NULL) {
   
   wildNaam <- unique(data$wildsoort)
-  
+  interval <- match.arg(interval)
   yVar <- match.arg(yVar)  
   
   yLabel <- switch(yVar,
-    schadeBedrag = "Bedrag (x 1000 EUR)",
+    schadeBedrag = "Aantal",
     count = "Aantal"
   )
-  groupLabel <- if (!is.null(unit))
-      switch(unit,
-        SoortNaam = "Gewas",
-        season = "Seizoen",
-        typeMelding = "Type schade"
+  
+  groupLabel <- if (!is.null(interval))
+      switch(interval,
+        "Per jaar" = "Jaar",
+        "Per seizoen" = "Seizoen",
+        "Per kwartaal" = "Kwartaal",
+        "Per twee weken" = "Twee weken"
       ) else 
       NULL
   
+  if (is.null(jaartallen))
+    stop("Gelieve jaartallen te selecteren")
   
-  subData <- data[, c(if (yVar != "count") yVar, unit, "afschotjaar")] 
+  subData <- data[data$afschotjaar %in% jaartallen, c(if (yVar != "count") yVar, "season", "afschotjaar", "afschot_datum")] %>%
+    mutate(season_num = dplyr::case_when(
+        season == "winter" ~ 1,
+        season == "lente"  ~ 2,
+        season == "zomer"  ~ 3,
+        season == "herfst"  ~ 4
+      ))
   
-  # Replace by group name
-  if (unit == "SoortNaam") {
-    fullNames <- loadMetaSchade()$gewassen
-    newNames <- unlist(sapply(names(fullNames), function(x) rep(x, length(fullNames[[x]]))))
-    subData[[unit]] <- newNames[match(subData[[unit]], unlist(fullNames))]
+  # Extract month/day
+  subData$maand <- as.numeric(format(subData$afschot_datum, "%m"))
+  subData$dag <- as.numeric(format(subData$afschot_datum, "%d"))
+  
+  if (interval == "Per jaar") {
+    newLevels <- sort(unique(subData$afschotjaar))
+  } else if (interval == "Per seizoen") {
+    newLevels <- c("winter", "lente", "zomer", "herfst")
+    subData$timeGroup <- subData$season_num
+  } else if (interval == "Per kwartaal") {
+    newLevels <- c("Kwartaal 1 (jan-mrt)", "Kwartaal 2 (apr-jun)", "Kwartaal 3 (jul-sept)", "Kwartaal 4 (okt-dec)")
+    subData$timeGroup <- ceiling(subData$maand/3)
+  } else if(interval == "Per twee weken") {
+    subData$timeGroup <- (subData$maand-1)*2 + (subData$dag > 15) + 1 
+    newLevels <- c(
+      "01/01-15/01",
+      "16/01-31/01",
+      "01/02-15/02",
+      "16/02-28/02 of 29/02",
+      "01/03-15/03",
+      "16/03-31/03",
+      "01/04-15/04",
+      "16/04-30/04",
+      "01/05-15/05",
+      "16/05-31/05",
+      "01/06-15/06",
+      "16/06-30/06",
+      "01/07-15/07",
+      "16/07-31/07",
+      "01/08-15/08",
+      "16/08-31/08",
+      "01/09-15/09",
+      "16/09-30/09",
+      "01/10-15/10",
+      "16/10-31/10",
+      "01/11-15/11",
+      "16/11-30/11",
+      "01/12-15/12",
+      "16/12-31/12")
   }
-  if (yVar == "schadeBedrag")
-    subData[, yVar] <- subData[, yVar]/1000
   
-  summaryData <- count(df = subData, vars = names(subData))
-  if (yVar %in% names(summaryData))
-    summaryData$yVar <- summaryData[, yVar] * summaryData$freq else
-    summaryData$yVar <- summaryData$freq
-  summaryData$freq <- NULL
+  if (interval == "Per jaar") {
+    summaryData <- melt(table(subData[, c("afschotjaar", yVar)]), 
+      id.vars = c("afschotjaar", yVar))
+    summaryData$timeGroup <- as.numeric(as.factor(summaryData$afschotjaar))
+  } else 
+    summaryData <- melt(table(subData[, c("afschotjaar", "timeGroup", yVar)]), 
+      id.vars = c("afschotjaar", "timeGroup", yVar))
   
-  if (ncol(summaryData) > 2) {
-    plotData <- aggregate(summaryData$yVar, by = summaryData[, c(unit, "afschotjaar")], 
-      FUN = sum, na.rm = TRUE) 
+  
+  # For optimal displaying in the plot
+  summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
+  if (interval == "Per jaar")
+    summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
+  
+  summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+  summaryData[[yVar]] <- factor(summaryData[[yVar]], 
+    levels = c("meer dan 3000 euro", "van 1000 tot 3000 euro", "van 300 tot 1000 euro",
+      "minder dan 300 euro", "het schadebedrag is niet bekend"))
+  
+  colors <- setNames( c("#E87837", "#E4E517", "#BDDDD7", "#729BB7", "#bac4cd"), levels(summaryData[[yVar]]))
+  colors <- colors[names(colors) %in% unique(summaryData[[yVar]])]
+  
+  # Create plot per year
+  if (interval == "Per jaar") {
+    allPlots <- plot_ly(data = summaryData,
+        x = ~timeChar, y = ~value, type = "bar", 
+        color = ~base::get(yVar), colors = colors) %>%
+      plotly::layout(
+        xaxis = list(title = '',
+          tickvals = unique(summaryData$timeChar),
+          ticktext = unique(summaryData$timeChar))
+    )
   } else {
-    plotData <- summaryData
-    plotData$x <- plotData$yVar
+    allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
+        iYear <- levels(summaryData$afschotjaar)[i]
+        plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
+            x = ~timeChar, y = ~value,
+            type = "bar", hoverinfo = 'x+y+text+name', 
+            color = ~base::get(yVar), colors = colors,
+            showlegend = i == 1) %>%
+          plotly::layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
+          add_annotations(
+            text = iYear,
+            x = newLevels[round(length(newLevels)/2)], y = 0, xref = paste0("x", if (i != 1) i), yref = "paper", 
+            yanchor = "top", textangle = 90, showarrow = FALSE)
+      })
   }
-  plotData <- plotData[plotData$x != 0, ]
-  
-  selectedGroups <- if (is.null(unit)) "group" else unique(summaryData[[unit]])
-  colors <- replicateColors(values = selectedGroups)$colors
-  
-  totalCount <- table(subData$afschotjaar)
   
   title <- paste0(
-    yLabel, " kosten voor schadegevallen",
+    yLabel, " schademeldingen",
     if(!is.null(typeMelding)) paste(" over", toString(typeMelding)),
-    paste(" van", tolower(wildNaam)),
-    if(!is.null(groupLabel)) paste(" per", tolower(groupLabel)),
+    paste(" door", tolower(wildNaam)),
+    ",",
+    if(!is.null(groupLabel)) paste(" per", tolower(groupLabel), "en "),
+    "per categorie van geschatte kosten",
     if (!all(regio == "")) paste0("\n(", toString(regio), ")")
   )
   
-  myPlot <- plot_ly(plotData, 
-      x = as.character(plotData$afschotjaar), 
-      y = ~x , type = 'bar', name = if (!is.null(unit)) ~base::get(unit),
-      color = if (!is.null(unit)) ~as.factor(base::get(unit)) else "group", 
-      colors = colors,
-      hovertemplate = paste0(
-        '<b>', yLabel, '</b>: ', if (yVar == "schadeBedrag") '%{y:.2f}' else '%{y:.0f}', '<br>',
-        if (!is.null(groupLabel)) paste0('<b>', groupLabel, '</b>: %{text}'), '<extra></extra>'), 
-      text = if (!is.null(unit)) ~base::get(unit),
-      textposition = "none") %>%
-    plotly::layout(
+  # Combine all plots
+  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE, 
+      margin = c(0.01, 0, 0, 0)) %>%
+    plotly::layout(barmode = 'stack', showlegend = TRUE,
       title = title,
-      margin = list(t = 100),
-      legend = list(title = list(text = paste0("<b>", groupLabel, "</b>"))),
-      yaxis = if (max(totalCount) < 5)
-        list(title = yLabel, dtick = 1) else
-        list(title = yLabel),
-      xaxis = list(title = "Jaar"),
-      barmode = "stack"
-    )
+      yaxis = list(title = "Aantal"),
+      margin = list(b = if (interval == "Per jaar") 120 else 150, t = 100))
   
-  colnames(plotData)[colnames(plotData) == "x"] <- yLabel
-  colnames(plotData)[colnames(plotData) == "afschotjaar"] <- "jaar"
+  colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
+  colnames(summaryData)[colnames(summaryData) == "value"] <- "Aantal"
   
-  return(list(plot = myPlot, data = plotData[, c("jaar", unit, yLabel)]))
+  return(list(plot = pl, data = summaryData[, c(if (interval != "Per jaar") "afschotjaar", gsub("Per ", "", interval) , yVar, "Aantal")]))
   
 }
 
@@ -117,7 +178,7 @@ barCost <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
+barCostServer <- function(id, yVar, data, timeRange, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -155,29 +216,18 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
           
         })
       
-      output$unitChoices <- renderUI({
-          
-          choices <- c("Seizoen" = "season", "Soortnaam" = "SoortNaam")
-          if (input$typeMelding == "all") 
-            choices <- c(choices[1], "Type schade" = "typeMelding") else if (input$typeMelding != "landbouw") 
-            choices <- choices[1]
-          
-          selectInput(inputId = ns("unit"), label = "Groep per",
-            choices = choices)
-        
-        })
-      
       
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "barCost", 
-        data = subData
+        data = subData,
+        timeRange = timeRange,
+        intervals = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")
       )
       
       toReturn <- callModule(module = plotModuleServer, id = "barCost",
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
-        unit = reactive(input$unit),
         typeMelding = reactive(input$typeMelding)
       )
       
@@ -202,7 +252,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL)) {
 #' @export
 barCostUI <- function(id, 
   uiText, context = strsplit(id, split = "_")[[1]][1], 
-  specie = NULL,
+  specie = NULL, showTime = FALSE,
   typeMelding = NULL, doHide = TRUE,
   regionLevels = NULL) {
   
@@ -236,7 +286,7 @@ barCostUI <- function(id,
         column(4,
           wellPanel(
             optionsModuleUI(
-              id = ns("barCost"), 
+              id = ns("barCost"), showTime = showTime,
               regionLevels = regionLevels, 
               doWellPanel = FALSE
             ),
@@ -246,13 +296,13 @@ barCostUI <- function(id,
                 label = "Type schade",
                 choices = typeMelding
               ),
-            uiOutput(ns("unitChoices")),
             selectInput(inputId = ns("bron"), label = "Databron(nen)",
               choices = metaSchade$sources,
               selected = metaSchade$sources,
               multiple = TRUE),
             optionsModuleUI(
-              id = ns("barCost"), 
+              id = ns("barCost"),
+              showInterval = TRUE, 
               exportData = TRUE, 
               doWellPanel = FALSE
             )

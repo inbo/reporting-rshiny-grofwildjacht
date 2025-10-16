@@ -13,23 +13,36 @@
 #' besides "provinces" 
 #' @param minForTrend numeric, the minimum number of records needed before
 #' a trend is being reported
+#' @param sourceIndicator_leeftijd character, source used to filter \code{data} ('leeftijd_comp_bron' column)
+#' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
+#' i.e. no filtering. Defaults to \code{"both"}
 #' @return data.frame, number or percentage of observations 
 #' per province and per \code{categorie}
 #' @author mvarewyck
 #' @importFrom reshape2 dcast
 #' @importFrom plyr count join
 #' @export
-tableProvince <- function(data, assignedData, jaar = NULL, 
-		categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50) {
+tableProvince <- function(data, assignedData, jaar = NULL, type,
+		categorie = c("leeftijd", "typeAantal", "typePercent"), minForTrend = 50,
+    sourceIndicator_leeftijd = NULL, regio = "") {
 	
-	
+  # For R CMD check
+  leeftijd_comp_inbo <- NULL
+  
 	wildNaam <- unique(data$wildsoort)  
 	categorie <- match.arg(categorie)
 	
 	if (is.null(jaar))
 		stop("Gelieve jaartal te selecteren")
 	
-	
+  
+  
+  if (categorie == "leeftijd") {
+    data <- filterGrofwild(plotData = data, 
+      sourceIndicator_leeftijd = sourceIndicator_leeftijd)
+    data <- subset(data, leeftijd_comp_inbo %in% type)
+  }
+  
 	## General Modification of Data
 	
 	if (categorie == "leeftijd") {
@@ -97,7 +110,7 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 	# Define names and ordering of factor levels
 	if (categorie == "leeftijd") {  # wild zwijn for leeftijd
 		
-		levelsCategorie <- c(loadMetaEco(species = wildNaam)$leeftijd_comp, "Onbekend")
+		levelsCategorie <- type
 		
 	} else if (grepl("type", categorie) & wildNaam == "Ree") {  # ree for type
 		
@@ -267,12 +280,13 @@ tableProvince <- function(data, assignedData, jaar = NULL,
 #' Shiny module for creating the plot \code{\link{tableProvince}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams tableProvince
+#' @inheritParams optionsModuleServer
 #' @return no return value
 #' 
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableProvinceServer <- function(id, data, categorie, timeRange) {
+tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, labelTypes = "Type", typesDefault = types) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -282,6 +296,10 @@ tableProvinceServer <- function(id, data, categorie, timeRange) {
       # Table 1: Gerapporteerd afschot per regio en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "tableProvince", 
         data = data,
+        types = types,
+        labelTypes = labelTypes,
+        typesDefault = typesDefault,
+        multipleTypes = TRUE, 
         timeRange = timeRange
       )
       callModule(module = plotModuleServer, id = "tableProvince",
@@ -299,9 +317,11 @@ tableProvinceServer <- function(id, data, categorie, timeRange) {
 #' @inherit welcomeSectionUI
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
+#' 
 #' @export
 tableProvinceUI <- function(id, doHide = TRUE,
-  uiText, context = id, specie = NULL) {
+  uiText, context = id, specie = NULL, showDataSource = NULL, regionLevels = NULL,
+  showType = FALSE) {
   
   ns <- NS(id)
   
@@ -317,7 +337,8 @@ tableProvinceUI <- function(id, doHide = TRUE,
     conditionalPanel(paste("input.linkTableProvince % 2 ==", as.numeric(doHide)), ns = ns,
     
       optionsModuleUI(id = ns("tableProvince"), 
-        showYear = TRUE, exportData = TRUE),
+        showYear = TRUE, exportData = TRUE, regionLevels = regionLevels,
+        showType = showType, showDataSource = showDataSource),
       tableModuleUI(id = ns("tableProvince")),
       tags$p(HTML(description))
     )

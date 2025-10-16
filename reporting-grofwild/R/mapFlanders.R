@@ -106,7 +106,6 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       
     }
   
-  
   # Bind area bos&natuur
   if (unit %in% c("relative", "relativeDekking")) {
     areaVariable <- if (unit == "relative")
@@ -316,6 +315,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @param legend character, legend placement; default is "none", no legend
 #' @param legendText character, legend title; default is 'Legende'
 #' @param addGlobe boolean, whether to add world map to background; default is FALSE
+#' @param statsMap character, statistical info to add to map
 #' @inheritParams filterSpatial
 #' @return leaflet map
 #' @author mvarewyck
@@ -327,7 +327,7 @@ mapFlanders <- function(
   borderRegion = NULL, borderLocaties = NULL,
   species, year = NA,
   allSpatialData, summaryData, colorScheme = NULL,
-  legend = "none", legendText = "Legende", addGlobe = FALSE) {
+  legend = "none", legendText = "Legende", addGlobe = FALSE, statsMap = NULL) {
   
   
   spatialData <- filterSpatial(allSpatialData = allSpatialData, 
@@ -423,6 +423,11 @@ mapFlanders <- function(
     
   }
   
+  if (!is.null(statsMap)) {
+    myMap <- addControl(myMap, statsMap, position = "bottomleft")
+  }
+  
+  
   
   myMap
   
@@ -469,7 +474,9 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       ns <- session$ns
       
-      results <- reactiveValues()
+      results <- reactiveValues(
+        legend = "topright")
+     
       
       
       # Minimum year
@@ -558,14 +565,6 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             getRegionLevel(regionLevelLocal())
           
         })
-      
-      observeEvent(input$regionLevel, {
-          
-          updateCheckboxInput(session = session, inputId = "combinatie",
-            label = paste0("Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot ", 
-              regionLevelName(), ")"))
-          
-        })  
       
       
       ## Geselecteerd Jaar (kaart)
@@ -843,7 +842,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
                 ),
             borderLocaties = locaties(),
             legend = "topright",
-            legendText = isolate(simpleCap(unitText(), keepNames = FALSE))
+            legendText = isolate(simpleCap(unitText(), keepNames = FALSE)),
+            statsMap = statsMap()
           )  
         })
       
@@ -857,13 +857,15 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Statistics with map
       statsMap <- reactive({
           
+          if (type %in% c("wbe", "empty"))
+            return(NULL)
+          
           if (is.null(input$regionLevel) || input$regionLevel == "flanders")
             return(NULL)
           
           percentage <- round(with(summarySpaceData()$stats, nAvailable / nTotal) * 100, 1) 
           
-          paste0("Info beschikbaar en weergegeven voor ", percentage, 
-            "% van de totale gegevens (", summarySpaceData()$stats$nAvailable, "/", 
+          paste0(percentage, "% van data met nodige info (", summarySpaceData()$stats$nAvailable, "/", 
             summarySpaceData()$stats$nTotal, ")" )
           
         })
@@ -1000,6 +1002,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       # Add legend
       observeEvent(input$legend, {
           
+          results$legend <- input$legend
+          
           proxy <- leafletProxy("spacePlot", data = spatialData())
           proxy %>% removeControl(layerId = "legend")
           
@@ -1070,7 +1074,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               allSpatialData = allSpatialData,
               summaryData = summarySpaceData()$data,
               colorScheme = colorScheme(),
-              legend = input$legend,
+              legend = results$legend,
               legendText = simpleCap(unitText(), keepNames = FALSE),
               addGlobe = input$globe %% 2 == as.numeric(hideGlobeDefault),
               borderRegion = if (!is.null(locaties()))
@@ -1364,14 +1368,16 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
             column(4, selectInput(inputId = ns("borderLevel"), label = "Regio-schaal",
                 choices = regionChoices,
                 selected = regionChoices[1])),
-            column(6, selectInput(inputId = ns("regionLevel"), label = "Map-schaal",
+            column(6, selectInput(inputId = ns("regionLevel"), label = "Kaartweergave",
                 choices = mapScaleChoices,
                 selected = "communes")),
             column(6, selectInput(inputId = ns("legend"), label = "Legende",
                 choices = legendChoices)
             ),
-            column(6, uiOutput(ns("year"))),
-            column(6, uiOutput(ns("bronMap")))
+            column(6, uiOutput(ns("bronMap"))),
+            column(6, selectInput(inputId = ns("unit"), label = "Eenheid",
+                choices = unitChoices)),
+            column(6, uiOutput(ns("year")))
           )
           
         } else {
@@ -1381,11 +1387,13 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
               column(6, uiOutput(ns("year"))),
               column(6, if (type %in% c("wbe")) 
                     selectInput(inputId = ns("legend"), label = "Legende",
-                      choices = legendChoices) else 
+                      choices = legendChoices) else if (type %in% c("beheer"))
+                    selectInput(inputId = ns("unit"), label = "Eenheid",
+                      choices = unitChoices) else
                     uiOutput(ns("period")))
             ),
             
-            if (!type %in% c("wbe"))
+            if (!type %in% c("wbe", "beheer"))
               fixedRow(
                 column(12/(2+(type=="schade")),
                   selectInput(inputId = ns("legend"), label = "Legende (kaart)",
@@ -1403,7 +1411,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
         },
       
       if (showCombine & "region" %in% plotDetails)
-        checkboxInput(inputId = ns("combinatie"), 
+        if (!type %in% c("beheer", "schade")) checkboxInput(inputId = ns("combinatie"), 
           label = "Combineer alle geselecteerde regio's (grafiek: Evolutie gerapporteerd afschot Gemeente)"),
       actionLink(inputId = ns("globe"), label = "Voeg landkaart toe",
         icon = icon("globe"))
@@ -1447,12 +1455,21 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
     if ("region" %in% plotDetails) {
       
       fixedRow(
-          column(12,
-            uiOutput(ns("timeTitle")),
-            plotModuleUI(id = ns("timePlot")),
+        column(12,
+          uiOutput(ns("timeTitle")),
+          if (type %in% c("beheer", "schade")) 
+              tagList(
+                column(8, withSpinner(plotModuleUI(id = ns("timePlot")))),
+                column(4, wellPanel(
+                    uiOutput(ns("period")),
+                    checkboxInput(inputId = ns("combinatie"), 
+                      label = "Combineer alle geselecteerde regio's")
+                  ))) else plotModuleUI(id = ns("timePlot")),
+          column(12, 
+            tags$br(), 
             optionsModuleUI(id = ns("timePlot"), exportData = TRUE,
-              doWellPanel = FALSE)
-          )
+              doWellPanel = FALSE))
+        )
       )
       
     },

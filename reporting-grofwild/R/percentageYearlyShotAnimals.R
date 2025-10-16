@@ -32,7 +32,7 @@
 percentageYearlyShotAnimals <- function(
 		data, openingstijdenData = NULL,
 		type = NULL,
-		jaartallen = NULL, jaar = NULL,
+		jaartallen = NULL, jaar = NULL, regio = "",
 		width = NULL, height = NULL) {
 	
 	
@@ -276,7 +276,7 @@ percentageYearlyShotAnimals <- function(
         plotly::layout(
             title = paste0(wildNaam, 
                 if (specifiedType)	paste0(" (", paste(type, collapse = ", "), ")"),
-                " percentage jaarlijks afschot in ", jaar),
+                " percentage jaarlijks afschot in ", jaar, if (!all(regio == "")) paste0("\n(", toString(regio), ")")),
             xaxis = list(title = "openingstijd (half-maand resolutie)", tickangle = -90,
                 titlefont = list(size = 18)), 
             yaxis = list(title = "Percentage jaarlijks afschot", 
@@ -285,7 +285,7 @@ percentageYearlyShotAnimals <- function(
                 overlaying = "y2"),
             yaxis2 = list(title = "",
                 range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
-            margin = list(b = 70, t = 90),
+            margin = list(b = 70, t = 120),
             legend = list(orientation = "h", y = 100, x = 0.1),
             showlegend = TRUE
         )
@@ -352,7 +352,7 @@ yearlyShotAnimalsServer <- function(id, data, timeRange, type, openingstijdenDat
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 yearlyShotAnimalsUI <- function(id, uiText, specie = NULL, 
-  context = id, doHide = TRUE) {
+  context = id, regionLevels = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -375,6 +375,7 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
         ), 
         column(4,
           optionsModuleUI(id = ns("yearlyShotAnimals"), 
+            regionLevels = regionLevels, 
             showTime = TRUE, showYear = TRUE, showType = TRUE, exportData = TRUE)
         )
 

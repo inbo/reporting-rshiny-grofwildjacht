@@ -7,9 +7,10 @@
 #' 
 #' @return ggplot object
 #' 
-#' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous facet_wrap coord_fixed geom_vline scale_fill_manual scale_color_manual theme_bw
+#' @importFrom ggplot2 ggplot aes scale_x_continuous scale_y_continuous facet_wrap coord_fixed geom_vline scale_fill_manual scale_color_manual theme_bw theme element_text
 #' @importFrom ggforce geom_circle
 #' @importFrom INBOtheme inbo_palette
+#' @importFrom grid unit
 #' @export 
 pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
   
@@ -21,7 +22,11 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     Year = "vraag_label",
     vraag_label = "Year")
   
-  
+  xTicks <- switch(data$Antwoord[[1]],
+    Wenselijkheid = c("Niet wenselijk", "Wel wenselijk"),
+    Impact_grootte = c("Lage impact", "Hoge impact"),
+    Belang = c("Niet belangrijk", "Wel belangrijk"))
+
   # Default params
   schaalfactor <- 1
   
@@ -35,13 +40,16 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     Natuursector = inboColors[9]    
   )
   
+  # Drop levels so that unavailable levels do not take place within the graph 
+  data[, yVar] <- droplevels(data[, yVar])
+  
   # Plot
   myPlot <- ggplot(data) + 
     geom_circle(aes(x0 = meanAnswer, 
         y0 = as.numeric(data[,yVar])/schaalfactor, 
         r = pci2, colour = Sector, fill = Sector),
       alpha = 0.75) +
-    scale_x_continuous(name = data$Antwoord, limits = c(-2,2)) + 
+    scale_x_continuous(name = data$Antwoord, limits = c(-2,2), breaks = c(-2, 2), labels = c(xTicks[1], xTicks[2])) + 
     scale_y_continuous(name = "", 
       breaks = unique(as.numeric(data[,yVar])/schaalfactor),
       labels = unique(data[,yVar])) + 
@@ -53,7 +61,17 @@ pciDraagvlak <- function(data, yVar = c("Year", "vraag_label")) {
     geom_vline(xintercept = 0, color = "black", linetype = "dashed") +
     scale_fill_manual(name = "", values = colorValues) + 
     scale_color_manual(name = "", values = colorValues) + 
-    theme_bw()
+    theme_bw() + 
+    theme(
+      axis.text.x = if (otherVar == "Year" && length(unique(data[,otherVar])) > 1) {
+          element_text(angle = 45, hjust = 1, vjust = 1)
+        } else {
+          element_text()
+        },
+      axis.text.y = element_text(size = 14),
+      legend.text = element_text(size = 12),
+      legend.key.size = unit(0.5, "cm")
+      )
   
   list(
     plot = myPlot,
@@ -107,7 +125,8 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction) {
       callModule(module = plotModuleServer, id = "pciDraagvlak",
         plotFunction = plotFunction, 
         data = subData,
-        yVar = yVar
+        yVar = yVar,
+        exportPlotWidth = 12, exportPlotHeight = ifelse(length(input$year) > 1, 10, 12),
       )
     
     })

@@ -78,7 +78,8 @@ test_that("F16_1", {
     plotData$reproductiestatus <- ifelse(is.na(plotData$aantal_embryos), "Onbekend",
       ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig"))
     
-    myResult <- countAgeGroup(data = plotData, groupVariable = "reproductiestatus")
+    myResult <- countAgeGroup(data = plotData, groupVariable = "reproductiestatus",
+      sourceIndicator = "both", regio = "Vlaams Gewest")
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")
@@ -248,8 +249,9 @@ test_that("F07_1, F09_1, F11_1", {
     
     myResult <- barCost(
       data = subset(subData, typeMelding %in% sources[4]), 
-      yVar = "count",
-      unit = "season" # c("SoortNaam", "season")[1]
+      yVar = "schadeBedrag",
+      interval = "Per jaar",
+      regio = "Vlaams gewest"
     )
     
     expect_type(myResult, "list")
@@ -388,7 +390,8 @@ test_that("F04_3", {
     # Keep unique records per WBE & date
     drukjachtData <- drukjachtData[!duplicated(drukjachtData[, c("afschotplan_nummer", "afschot_datum")]), ]
     
-    myResult <- countYearProvince(data = drukjachtData)
+    myResult <- countYearProvince(data = drukjachtData, jaartallen = 2016:2020, type = "flanders",
+      interval = "Per jaar", regio = "Vlaams Gewest", sourceIndicator = NULL )
     
     expect_type(myResult, "list")
     expect_s3_class(myResult$plot, "plotly")

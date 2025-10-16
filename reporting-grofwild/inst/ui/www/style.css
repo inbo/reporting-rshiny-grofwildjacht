@@ -32,7 +32,7 @@ div#shiny-disconnected-overlay:before {
 footer {
 	border-top: 1px solid #eee;
 	height: 150px;
-	padding: 20px 0;
+	padding: 0px 0;
 	margin-top: 20px;
 }
 
@@ -203,7 +203,7 @@ p, li, label {
 
 /* slide image */
 .slick-slide img {
-    width: 100vw !important;
+    width: 100% !important;
 }
 
 /* dots */
@@ -230,19 +230,52 @@ p, li, label {
 
 /*navigation bar*/
 
+/* Prevent nav items from wrapping or overlapping */
+.navbar,
+.navbar > .container,
+.navbar > .container-fluid {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.navbar-nav {
+ 	flex-wrap: wrap !important;
+ 	overflow-x: visible !important;
+ 	white-space: normal !important;
+}
+ 
+.navbar-nav::-webkit-scrollbar {
+ 	height: 6px;
+}
+ 
+.navbar-nav::-webkit-scrollbar-thumb {
+ 	background-color: rgba(0,0,0,0.2);
+ 	border-radius: 3px;
+}
+ 
+/* Optional: allow nav items like selectizeInput to shrink */
+.navbar-nav .form-group {
+ 	min-width: 120px;
+ 	max-width: 200px;
+ 	width: 100%;
+}
+
 .nav-tabs {
-  background-color: #456394; 
+  background-color: #456394;
+	width: 100% !important;
+	flex-wrap: wrap !important;
 }
 
 /* text in navigation menu*/
 .nav-tabs > li > a > span { 
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 /* navigation items */
 .nav-tabs > li > a {
   color: #ffffff !important;
 }
+
 .nav-tabs > li > div > a {
   color: #ffffff !important;
 }
@@ -262,13 +295,33 @@ p, li, label {
   background-color: #bab9b9 !important;
 }
 
+.nav-tabs .custom-tab-title {
+  font-weight: bold;
+  text-decoration: underline;
+	font-size: 18px;
+	color: inherit !important;
+}
+
+#navbarID {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1050 !important;
+  width: fit-content !important;
+  min-width: 100% !important;
+	background-color: #456394;
+}
+
 /*navigation menu (nested within navigation bar) */
 
 .dropdown-menu {
   background-color: #456394; 
+	max-height: 800px;
+	overflow-y: auto;
 }
 .dropdown-menu > li > a {
   color: #ffffff;
+	max-height: 800px;
+	overflow-y: auto;
 }
 .dropdown-menu > li.active > a, .dropdown-menu > li.hover > a {
   background-color: #b24c82; 
@@ -338,7 +391,7 @@ p, li, label {
 /*Custom colors for backgrounds*/
 
 body > .tabbable {
-  background-color: #f5f5f5;    
+  background-color: #f5f5f5;  
 }
 
 .well-white {
@@ -372,3 +425,34 @@ body > .tabbable {
     padding: 15px;
 }
 
+
+/*Tooltip styling*/
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+  color: #03a150;
+  text-decoration: underline;
+  cursor: help;
+}
+.tooltip-box {
+  display: none;   /* hidden by default */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff8c6;
+  color: black;
+  border: 1px solid #ccc;
+  padding: 8px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  white-space: normal;
+	max-width: 700px;
+  text-align: left;
+  z-index: 9999;
+}
+/* Show tooltip when hovering the wrapper OR the tooltip itself */
+.tooltip-wrapper:hover .tooltip-box,
+.tooltip-box:hover {
+  display: block;
+}

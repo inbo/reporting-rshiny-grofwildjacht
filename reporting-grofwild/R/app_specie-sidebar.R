@@ -34,7 +34,8 @@ specieSidebarUI <- function(id,
         htmlOutput(outputId = ns("specie-name")),
       imageOutput(outputId = ns("specie-image"), height = "auto"),
       uiOutput(outputId = ns("specie-latin-name")),
-      bottomExtra
+      bottomExtra,
+      div(style = "text-align: right; margin-top: 10px;", actionButton(inputId=ns("return"), label = "Vorige pagina", style = "background-color: #F5F5F5;", icon = icon("arrow-left")))
   )
   
 }
@@ -66,15 +67,49 @@ specieSidebarServer <- function(id, specie = reactiveVal()){
     
     observeEvent(input$specie, { 
         req(input$specie != "")
-        req(session$clientData$url_hash)
+        req(session$clientData$url_search)
         
-        currentString <- utils::URLdecode(URL = session$clientData$url_hash)
-        newString <- modifyQueryString(query = currentString, specie = input$specie)
+        currentString <- session$clientData$url_search
         
-        if (currentString != newString)
+        query <- parseQueryString(session$clientData$url_search)
+        query[["specie"]] <- input$specie
+        speciesInfo <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"), "species-info.csv"))
+        query[["gbifkey"]] <- speciesInfo[match(input$specie, speciesInfo$species.name), "gbifkey"]
+
+        newString <- paste0("?", paste0(names(query), "=", query, collapse = "&"))
+        
+        if (!identical(parseQueryString(currentString), parseQueryString(newString)))
           updateQueryString(queryString = newString, mode = "push", session)
           
       }, priority = -2)
+    
+    
+    observeEvent(input$return, {
+        
+        req(session$clientData$url_search)
+        
+        currentString <- parseQueryString(session$clientData$url_search)
+        
+        newSelection <- currentString
+        if (!is.null(currentString$plot)) {
+          newSelection$plot <- NULL
+        } else if (!is.null(currentString$subcategory)) {
+          newSelection$subcategory <- NULL
+        } else if (!is.null(currentString$category)) {
+          newSelection$category <- NULL
+        } else if (!is.null(currentString$specie)) {
+          newSelection$specie <- NULL
+          newSelection$gbifkey <- NULL
+        } else {
+          newSelection <- list()
+        }
+        
+        newString <- paste0("?", paste0(names(newSelection), "=", newSelection, collapse = "&"))
+        
+        if (!identical(currentString, newSelection))
+          updateQueryString(queryString = newString, mode = "push", session)
+      })
+    
         
   })
 }

@@ -15,11 +15,12 @@
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @param type character, used to filter the data
 #' 
+#' @importFrom stats setNames
 #' @author dbemelmans
 #' @export 
-countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, height = NULL, 
+countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NULL, height = NULL, 
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
-  groupVariable, 
+  groupVariable,
   sourceIndicator_leeftijd = c("both", "inbo"),
   type = NULL) {
   
@@ -66,7 +67,7 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   
   title <- paste0("Afschot van ",
     ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-      jaartallen))
+      jaartallen), if (!all(regio == "")) paste0("\n(", toString(regio), ")"))
   
   # Summarize data per year
   plotData$afschotjaar <- droplevels(plotData$afschotjaar)
@@ -152,32 +153,36 @@ countYearShotAnimals <- function(data, regio, jaartallen = NULL, width = NULL, h
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
   if (interval == "Per jaar")
     summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
-    
+
+  # Hover text
+  totalCount <- setNames(totalCount$value, totalCount$year)
+  summaryData$text <- paste0(
+    "n = ", summaryData$value,
+    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
+    paste0("<br><em>Totaal in ", summaryData$afschotjaar, "</em> ", totalCount[match(summaryData$afschotjaar, names(totalCount))])
+  )
+  
   summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
   
   # Create plot per year
   if (interval == "Per jaar") {
     allPlots <- plot_ly(data = summaryData,
             x = ~timeChar, y = ~value, type = "bar", 
+            text = ~text, textposition = "none",
+            hoverinfo = "x+text+name",
             color = ~base::get(groupVariable), colors = colors,
             width = width, height = height) %>%
           plotly::layout(
             xaxis = list(title = '',
               tickvals = unique(summaryData$timeChar),
-              ticktext = unique(summaryData$timeChar)),            
-            annotations = list(x = totalCount$year,
-              y = totalCount$value,
-              text = totalCount$value,
-              xanchor = 'center', yanchor = 'bottom',
-              showarrow = FALSE))
+              ticktext = unique(summaryData$timeChar)))
   } else {
     allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
         iYear <- levels(summaryData$afschotjaar)[i]
         plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
             x = ~timeChar, y = ~value, 
-            text = paste0("Totaal in ", iYear, ": ", totalCount$value[totalCount$year == iYear]),
-            textposition = "none",
-            type = "bar", hoverinfo = 'x+y+text+name', 
+            text = ~text, textposition = "none",
+            hoverinfo = "x+text+name", type = "bar",
             color = ~base::get(groupVariable), colors = colors,
             showlegend = i == 1,
             width = width, height = height) %>%

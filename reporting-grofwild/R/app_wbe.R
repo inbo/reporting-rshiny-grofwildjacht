@@ -181,11 +181,7 @@ results$wbe_timeRange <- reactive({
 
 results$leeftijdtypes <- reactive({
     
-    types <- loadMetaEco(species = input$wbe_species)$leeftijd_comp
-    
-    if (length(types) == 1 && input$wbe_species == types)
-      return(c("alle" = "all")) else 
-      return(types)
+    c(loadMetaEco(species = input$wbe_species)$leeftijd_comp_inbo, "Onbekend")
     
   })
 
@@ -407,6 +403,10 @@ output$wbe_embryos <- renderUI({
     
   })
 
+# Afschot aanvraag Reewild
+requestAfschotReewildServer(id = "wbe_afschotAanvraag", 
+  data = results$wbe_combinedData)
+
 })
 
 }
@@ -531,8 +531,11 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
               regionLevels = NULL, uiText = uiText)
           )
         ),
-        uiOutput("wbe_embryos")
-      
+        uiOutput("wbe_embryos"),
+        
+        conditionalPanel("input.wbe_species == 'Ree'", ns = ns,
+          requestAfschotReewildUI(id = ns("wbe_afschotAanvraag"), uiText = uiText)
+        )
       )
     )
   

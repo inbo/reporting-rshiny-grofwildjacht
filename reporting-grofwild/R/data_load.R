@@ -418,6 +418,9 @@ loadSpreadData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
   path = Sys.getenv("reportingGrofwild-data-path")) {
   
+  # For R CMD check
+  spreadData <- NULL
+  
   pathFile <- "spreadData_sf.RData"
   
   if(!identical(path, "")){
@@ -436,6 +439,9 @@ loadSpreadData <- function(
 loadTrafficData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
   path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  # For R CMD check
+  trafficData <- NULL
   
   pathFile <- "trafficData.RData"
   

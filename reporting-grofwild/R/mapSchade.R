@@ -46,7 +46,7 @@ createSchadeSummaryData <- function(schadeData, timeRange,
   }
   
   # Create spatial object
-  plotData <- sf::st_as_sf(plotData, coords = c("x", "y"), crs = 31370)
+  plotData <- sf::st_as_sf(plotData, coords = c("x", "y"), crs = 4326)
   plotData <- sf::st_transform(plotData, crs = "+proj=longlat +datum=WGS84")        
     
   
@@ -290,6 +290,7 @@ mapSchadeServer <- function(
       
       ns <- session$ns
       results <- reactiveValues()
+      current <- reactiveValues()
       
       
       # Metadata schade
@@ -378,11 +379,23 @@ mapSchadeServer <- function(
       
       output$description <- renderUI({
           
+          descrType <- if (type == "wbe") {
+            "wbe"
+          } else if (type == "schade") {
+            switch(variableCurrent(), 
+              season = "seizoen",
+              schadeCode = "schadetype",
+              afschotjaar = "jaar",
+              jachtmethode_comp = "jachtmethode")
+          } else {
+            type
+          }
+        
           description <- getOutputDescription(
             output = if (type == "afschot") "mapAfschotUI" else "mapSchadeUI", 
             specie = species(), uiText = uiText, 
             context = if (type == "wbe") "wbe" else "description",
-            type = type
+            type = descrType
           )
           
           tags$p(HTML(description))
@@ -459,7 +472,7 @@ mapSchadeServer <- function(
           req(input$time_schade)
           
           newChoices <- unique(results$schadeData()$dataSource[results$schadeData()$afschotjaar %in% input$time_schade])
-          isolate(previousChoice <- if (is.null(input$bronMap)) newChoices else input$bronMap)
+          isolate(previousChoice <- if (is.null(current$bron)) newChoices else current$bron)
           
           
           selectInput(inputId = ns("bron"),
@@ -469,6 +482,8 @@ mapSchadeServer <- function(
             multiple = TRUE)
           
         })
+      
+      observe(current$bron <- input$bron)
       
       
       output$nFilter <- renderUI({

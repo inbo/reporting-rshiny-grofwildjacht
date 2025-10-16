@@ -28,7 +28,7 @@ categoryUI <- function(
   verticalLayout(
       
     # image
-    fluidRow(img(src = imgFile, width = "100%")),
+    img(src = imgFile, width = "100%"),
     
     # Specie
     tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
@@ -142,7 +142,7 @@ categoryCard <- function(id,
   }else stop("'output' or 'subcategory' should be specified.")
   
   file <- system.file("ui", "www", 
-    paste0("category-", filename, ".png"), 
+    paste0("category-", filename, ".png"),
     package = "reportingGrofwild"
   )
   
@@ -219,7 +219,7 @@ subcategoryServer <- function(id,
                 )
                 
                 # Plots that are sharing uiText with some params defined by type
-                if (grepl("countYearSchadeUI", output) | grepl("mapSchadeUI", output))
+                if (grepl("countYearSchadeUI", output))
                   args <- c(args, 
                     list(outputFunction = strsplit(output, split = "-")[[1]][1],
                       type = strsplit(output, split = "-")[[1]][2])

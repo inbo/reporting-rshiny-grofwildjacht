@@ -31,15 +31,22 @@
 #' @import plotly
 #' @importFrom reshape2 melt
 #' @importFrom stringr str_sort
+#' @importFrom stats setNames
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
         type = c("provinces", "flanders", "faunabeheerzones"),
+        interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
         regio = "") {
   
+  # For R CMD check
+  value <- NULL
   
   type <- match.arg(type)
 	wildNaam <- paste(unique(data$wildsoort), collapse = ", ")
+  
+  if (length(interval) > 1)
+    interval <- "Per jaar"
 	
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$afschotjaar)
@@ -48,77 +55,204 @@ countYearProvince <- function(data, jaartallen = NULL,
   plotData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
-  plotData$locatie <- switch(type,
-          flanders = "Vlaams Gewest",
-          provinces = plotData$provincie,
-          faunabeheerzones = plotData$FaunabeheerZone
-  )
+  if (all(regio == "Vlaams Gewest")) {
+    plotData$locatie <- as.factor("Vlaams Gewest")
+  } else if (all(regio %in% levels(plotData$provincie))) {
+    plotData$locatie <- plotData$provincie
+  } else {
+    plotData$locatie <- plotData$FaunabeheerZone
+  }
+  
+  fbz_s <- unique(plotData$FaunabeheerZone)
   if(nrow(plotData) == 0) {
-    stop(paste0("Geen data beschikbaar voor de geselecteerde locatie: ", type, ". "))
+    stop(paste0("Geen data beschikbaar voor de geselecteerde locatie: ", paste(regio, collapse = ", "), ". "))
   }
     
 	# Select data
-	plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "locatie")]
+	plotData <- plotData[plotData$afschotjaar %in% jaartallen, c("afschotjaar", "afschot_datum", "locatie")]
 	plotData <- plotData[!is.na(plotData$afschotjaar), ]
   if(nrow(plotData) == 0) {
     stop(paste0("Geen data beschikbaar voor de geselecteerde afschotjaren: ", jaartallen, "."))
   }
+  nRecords <- nrow(plotData)
   
   
 	# Exclude unused provinces/fbz's
   plotData$locatie <- droplevels(as.factor(plotData$locatie))
   
-  # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
-  if (type == "faunabeheerzones")
-    plotData$locatie <- factor(plotData$locatie, 
-      levels = stringr::str_sort(levels(plotData$locatie), numeric = TRUE))
-	
 	# Summarize data per province and year
 	plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
 							min(jaartallen):max(jaartallen)))
-	
-	summaryData <- melt(table(plotData), id.vars = "afschotjaar")
-	
-	# Summarize data per year
-	totalCount <- as.data.frame(table(plotData$afschotjaar))
-	
-	# For optimal displaying in the plot
-  newLevels <- unique(as.character(summaryData$locatie))
+  
+  # Summarize data per year
+  totalCount <- as.data.frame(table(plotData$afschotjaar))
+  colnames(totalCount) <- c("year", "value")
+  
+  # Extract month/day
+  plotData$maand <- as.numeric(format(plotData$afschot_datum, "%m"))
+  plotData$dag <- as.numeric(format(plotData$afschot_datum, "%d"))
+  
+  
+  if (interval == "Per jaar") {
+    
+    newLevels <- sort(unique(plotData$afschotjaar))
+    
+  } else if (interval == "Per maand") {
+    
+    newLevels <- c(
+      "januari",
+      "februari",
+      "maart",
+      "april",
+      "mei",
+      "juni", 
+      "juli",
+      "augustus",
+      "september",
+      "oktober",
+      "november",
+      "december")
+    
+    plotData$timeGroup <- plotData$maand
+    
+    
+  } else if (interval == "Per kwartaal") {
+    
+    newLevels <- c("Kwartaal 1 (jan-mrt)", "Kwartaal 2 (apr-jun)", "Kwartaal 3 (jul-sept)", "Kwartaal 4 (okt-dec)")
+    
+    plotData$timeGroup <- ceiling(plotData$maand/3)
+    
+    
+  } else if(interval == "Per twee weken") {
+    
+    plotData$timeGroup <- (plotData$maand-1)*2 + (plotData$dag > 15) + 1 
+    
+    newLevels <- c(
+      "01/01-15/01",
+      "16/01-31/01",
+      "01/02-15/02",
+      "16/02-28/02 of 29/02",
+      "01/03-15/03",
+      "16/03-31/03",
+      "01/04-15/04",
+      "16/04-30/04",
+      "01/05-15/05",
+      "16/05-31/05",
+      "01/06-15/06",
+      "16/06-30/06",
+      "01/07-15/07",
+      "16/07-31/07",
+      "01/08-15/08",
+      "16/08-31/08",
+      "01/09-15/09",
+      "16/09-30/09",
+      "01/10-15/10",
+      "16/10-31/10",
+      "01/11-15/11",
+      "16/11-30/11",
+      "01/12-15/12",
+      "16/12-31/12")
+    
+  }
+  
+  if (interval == "Per jaar") {
+    summaryData <- melt(table(plotData[, c("afschotjaar", "locatie")]), 
+      id.vars = c("afschotjaar", "locatie"))
+    summaryData$timeGroup <- as.numeric(as.factor(summaryData$afschotjaar))
+  } else {
+    summaryData <- melt(table(plotData[, c("afschotjaar", "timeGroup", "locatie")]), 
+      id.vars = c("afschotjaar", "timeGroup", "locatie"))
+  }
+  
+  # Calculate percentages
+  tmpPercent <- ddply(summaryData, "afschotjaar", transform, 
+    percent = value / sum(value) * 100)
+  summaryData <- merge(tmpPercent, summaryData, all.y = TRUE)
+  summaryData$afschotjaar <- as.numeric(as.character(summaryData$afschotjaar))
+  
+  # For optimal displaying in the plot
+  summaryData$afschotjaar <- as.factor(summaryData$afschotjaar)
+  summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
+  if (interval == "Per jaar")
+    summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
+  
+  # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
+  if (all(regio %in% fbz_s)) {
+    summaryData$locatie <- factor(summaryData$locatie, 
+      levels = levels(droplevels(factor(unique(summaryData$locatie), 
+            levels = c(as.character(1:10), "Onbekend")))))
+  }
+  newLevels <- levels(summaryData$locatie)
   summaryData$locatie <- factor(summaryData$locatie, 
     levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
-  # summaryData$locatie <- factor(summaryData$locatie, levels = rev(levels(summaryData$locatie)))
-	
+  
+  # Hover text
+  totalCount <- setNames(totalCount$value, totalCount$year)
+  summaryData$text <- paste0(
+    "n = ", summaryData$value,
+    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
+    paste0("<br><em>Totaal in ", summaryData$afschotjaar, "</em> ", totalCount[match(summaryData$afschotjaar, names(totalCount))])
+  )
+  
   colorList <- replicateColors(values = levels(summaryData$locatie))
   title <- paste0(
     if (!is.null(title)) paste0(title, "\n"), wildNaam, " ",
-			 ifelse(length(jaartallen) > 1, 
+    ifelse(length(jaartallen) > 1, 
       paste(min(jaartallen), "tot", max(jaartallen)),
-					 jaartallen
-    ),
-    if (!all(regio == "")) paste0("\n(", toString(regio), ")")
-	)
+      jaartallen
+    )
+  )
   
   singleYear <- length(unique(summaryData$afschotjaar)) == 1
 	
-	
-	# Create plot
-	pl <- plot_ly(data = summaryData, x = ~afschotjaar, y = ~value, 
-      color = ~locatie, colors = colorList$colors,
-      type = "bar",  width = width, height = height) %>%
-        plotly::layout(title = title,
-					xaxis = list(title = "Jaar",
-            tickvals = unique(summaryData$afschotjaar), 
-            ticktext = unique(summaryData$afschotjaar)
-          ), 
-					yaxis = list(title = "Aantal"),
-					margin = list(b = 80, t = 100), 
-					barmode = if (singleYear) "group" else "stack",
-					annotations = list(x = totalCount$Var1, 
-							y = if (singleYear) max(summaryData$value) else totalCount$Freq, 
-							text = paste(if (singleYear) "totaal:", totalCount$Freq),
-							xanchor = 'center', yanchor = 'bottom',
-							showarrow = FALSE),
-          showlegend = TRUE)  
+  # Create plot per year
+  if (interval == "Per jaar") {
+    
+    allPlots <- plot_ly(data = summaryData, x = ~timeChar, y = ~value, 
+        color = ~locatie, colors = colorList$colors, text = ~text, textposition = "none",
+        hoverinfo = "x+text+name",
+        type = "bar",  width = width, height = height) %>%
+      plotly::layout(title = title,
+        xaxis = list(title = "Jaar",
+          tickvals = unique(summaryData$afschotjaar), 
+          ticktext = unique(summaryData$afschotjaar)
+        ), 
+        yaxis = list(title = "Aantal"),
+        margin = list(b = 80, t = 100), 
+#        barmode = if (singleYear) "group" else "stack",
+        showlegend = TRUE)  
+  } else {
+    allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
+        iYear <- levels(summaryData$afschotjaar)[i]
+        plot_ly(data = summaryData[summaryData$afschotjaar %in% iYear, ],
+            x = ~timeChar, y = ~value, 
+            text = ~text, textposition = "none",
+            hoverinfo = "x+text+name", type = "bar",
+            color = ~locatie, colors = colorList$colors,
+            showlegend = i == 1,
+            width = width, height = height) %>%
+          plotly::layout(xaxis = list(title = "", showticklabels = FALSE)) %>%
+          add_annotations(
+            text = iYear,
+            x = newLevels[round(length(newLevels)/2)], y = 0, xref = paste0("x", if (i != 1) i), yref = "paper", 
+            yanchor = "top", textangle = 90, showarrow = FALSE)
+      })
+  }
+  
+  # Combine all plots
+  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE, 
+      margin = c(0.01, 0, 0, 0)) %>%
+    plotly::layout(barmode = if (singleYear) "group" else "stack", showlegend = TRUE,
+      title = title,
+      yaxis = list(title = "Aantal"),
+      margin = list(b = if (interval == "Per jaar") 120 else 150, t = 100)) %>% 
+    add_annotations(text = percentCollected(
+        nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, "locatie"] != "Onbekend"), 
+        nTotal = nRecords,
+        text = paste("gekende afschotdatum en", strsplit("locatie", split = "_")[[1]][1])),
+      xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
+      y = if (interval == "Per jaar") -0.25 else -0.3, yanchor = "bottom", showarrow = FALSE)
+  
 	
 	# To prevent warnings in UI
 	pl$elementId <- NULL
@@ -144,7 +278,7 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
-  typesDefault = types, timeRange, title = reactive(NULL)) {
+  typesDefault = types, timeRange, title = reactive(NULL), allRegionsSelected = FALSE) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -172,9 +306,11 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
       callModule(module = optionsModuleServer, id = "yearProvince", 
         data = data,
         types = types,
+        intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
         labelTypes = labelTypes,
         typesDefault = typesDefault,
-        timeRange = timeRange
+        timeRange = timeRange,
+        allRegionsSelected = allRegionsSelected
       )
       callModule(module = plotModuleServer, id = "yearProvince",
         plotFunction = "countYearProvince", 
@@ -195,8 +331,8 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @export
 countYearProvinceUI <- function(
   id, uiText, specie = NULL, plotFunction = "countYearProvinceUI",
-  showType = FALSE, showDataSource = NULL,
-  doHide = TRUE) {
+  showType = FALSE, showDataSource = NULL, showInterval = FALSE, regionLevels = NULL,
+  regionLevelSelected = NULL, doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -225,8 +361,10 @@ countYearProvinceUI <- function(
         column(4,
           optionsModuleUI(
             id = ns("yearProvince"), 
+            regionLevels = regionLevels, 
+            regionLevelSelected = regionLevelSelected,
             showTime = TRUE, exportData = TRUE,
-            showType = showType,
+            showType = showType, showInterval = showInterval,
             showDataSource = showDataSource
           )
         )

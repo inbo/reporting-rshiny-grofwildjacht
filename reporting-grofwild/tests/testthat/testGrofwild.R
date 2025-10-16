@@ -74,12 +74,15 @@ test_that("Summary table for age", {
         
         plotData <- subset(ecoData, wildsoort == iSoort)
         
-        expectedNames <- c("Provincie", loadMetaEco(species = iSoort)$leeftijd_comp, "Onbekend")
+        expectedNames <- c("Provincie", loadMetaEco(species = iSoort)$leeftijd_comp_inbo, "Onbekend")
         timeRange <- range(plotData$afschotjaar)
+        
+        types <- levels(plotData$leeftijd_comp_inbo)
         
         wildTables <- lapply(timeRange[1]:timeRange[2], function(jaar) {
             
-            myTable <- tableProvince(data = plotData, jaar = jaar, categorie = "leeftijd")$data
+            myTable <- tableProvince(data = plotData, jaar = jaar, categorie = "leeftijd", 
+              type = types, sourceIndicator_leeftijd = NULL, regio = "Vlaams Gewest")$data
             
             expect_true(all(expectedNames %in% colnames(myTable)))
             
@@ -105,10 +108,11 @@ test_that("Counts per year and province", {
           timeRange <- 2008:max(plotData$afschotjaar) else
           timeRange <- min(plotData$afschotjaar):max(plotData$afschotjaar)
         
-        res <- countYearProvince(data = plotData, jaartallen = timeRange)
+        res <- countYearProvince(data = plotData, jaartallen = timeRange, type = "flanders",
+          interval = "Per jaar", regio = "Vlaams Gewest", sourceIndicator = NULL)
         
         expect_equal(names(res), c("plot", "data", "warning"))
-        expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal"))
+        expect_equal(names(res$data), c("afschotjaar", "locatie", "aantal", "timeGroup", "percent", "timeChar", "text"))
         
         res
         
@@ -116,8 +120,10 @@ test_that("Counts per year and province", {
     
     
     # Some special cases
-    countYearProvince(data = wildEcoData, jaartallen = 2016)
-    countYearProvince(data = wildEcoData, jaartallen = 2016:2017)
+    countYearProvince(data = wildEcoData, jaartallen = 2016, type = "flanders",
+      interval = "Per kwartaal", regio = "Vlaams Gewest", sourceIndicator = NULL)
+    countYearProvince(data = wildEcoData, jaartallen = 2016:2017, type = "flanders",
+      interval = "Per jaar", regio = "Vlaams Gewest", sourceIndicator = NULL)
     
   })
 
@@ -143,7 +149,7 @@ test_that("Map with counts and corresponding line plot", {
 
     # Interactive map
     myMap <- leaflet(spatialData$provinces) %>% 
-      addProviderTiles("Hydda.Full") %>%
+      addProviderTiles("OpenStreetMap.HOT") %>%
       addPolygons(
         weight = 1, 
         color = "gray",
@@ -326,7 +332,7 @@ test_that("Afschot per jachtmethode", {
     
     myResult <- countYearShotAnimals(data = wildEcoData,
 #      jaartallen = 2014:2020,
-      groupVariable = "jachtmethode_comp",
+      groupVariable = "jachtmethode_comp", regio = "Vlaams Gewest",
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[1]
     )
     
@@ -336,13 +342,13 @@ test_that("Afschot per jachtmethode", {
     
     countYearShotAnimals(data = reeEcoData,
       jaartallen = 2019:2020,
-      groupVariable = "jachtmethode_comp",
+      groupVariable = "jachtmethode_comp", regio = "Vlaams Gewest",
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[2]
     )$plot
     
     countYearShotAnimals(data = wildEcoData,
 #      jaartallen = 2014:2020,
-      groupVariable = "leeftijd_comp",
+      groupVariable = "leeftijd_comp", regio = "Vlaams Gewest",
       interval = c("Per jaar", "Per maand", "Per seizoen", "Per twee weken")[4]
     )$plot
     

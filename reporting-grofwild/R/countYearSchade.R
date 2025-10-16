@@ -23,7 +23,7 @@
 countYearSchade <- function(data, jaartallen = NULL, type = NULL,
     summarizeBy = c("count", "percent"), fullNames = NULL,
     regio = "",
-    sourceIndicator = NULL, width = 800, height = 600) {
+    sourceIndicator = NULL, width = NULL, height = 600) {
   
   # For R CMD check
   freq <- NULL
@@ -102,7 +102,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
   if (summarizeBy == "count") {
     
     summaryData$text <- paste0("<b>", summaryData$variabele, " in ", summaryData$jaar, "</b>",
-        "<br>Aantal: ", summaryData$freq, 
+        "<br>Aantal: ", summaryData$freq, " (", round(summaryData$percent), "%)", 
         "<br>Totaal: ", summaryData$totaal)
     
   } else {
@@ -140,17 +140,6 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
           autosize = FALSE,
           margin = list(b = 120, t = 100),
           legend = list(y = 0.1),
-          annotations = list(
-              x = totalCount$jaar, 
-              y = if (summarizeBy == "count") {
-                    if (singleYear) 
-                      max(summaryData$freq) else 
-                      totalCount$totaal 
-                  } else 100, 
-              text = paste(if (singleYear) "totaal:" else "", 
-                  totalCount$totaal),
-              xanchor = 'center', yanchor = 'bottom',
-              showarrow = FALSE),
           showlegend = TRUE
       )
   

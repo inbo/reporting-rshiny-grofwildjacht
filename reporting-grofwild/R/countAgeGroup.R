@@ -2,6 +2,9 @@
 #' 
 #' @inheritParams countYearAge 
 #' @param groupVariable character, variable in \code{data}
+#' @param sourceIndicator character, source to filter embryo data on
+#' @param sourceIndicator_leeftijd character, source to filter leeftijd data on
+#' @param sourceIndicator_geslacht character, source to filter geslacht data on
 #' @return list with:
 #' \itemize{
 #' \item 'plot':  plotly object, for a given species the percentage per age category
@@ -19,7 +22,10 @@
 #' @importFrom plyr count ddply
 #' @importFrom INBOtheme inbo_palette
 #' @export
-countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
+countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
+  sourceIndicator = c("inbo", "meldingsformulier", "both"), regio = "", 
+  sourceIndicator_leeftijd = NULL, sourceIndicator_geslacht = NULL,
+  width = NULL, height = NULL) {
   
   
   wildNaam <- unique(data$wildsoort)
@@ -28,7 +34,13 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
     jaartallen <- unique(data$afschotjaar)
   
   
-  plotData <- data[data$afschotjaar %in% jaartallen, c(groupVariable, "leeftijd_comp")]
+  # Filter on source & rename to embryos
+  plotData <- filterGrofwild(plotData = data, 
+    sourceIndicator_embryos = sourceIndicator,
+    sourceIndicator_leeftijd = sourceIndicator_leeftijd,
+    sourceIndicator_geslacht = sourceIndicator_geslacht)
+  
+  plotData <- plotData[plotData$afschotjaar %in% jaartallen, c(groupVariable, "leeftijd_comp")]
   names(plotData)[names(plotData) == "leeftijd_comp"] <- "leeftijd"
 
   
@@ -59,7 +71,8 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL) {
   
   title <- paste(wildNaam, paste0("(", 
       ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-        jaartallen), ")"))
+        jaartallen), ")"), 
+    if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
   groupLabel <- simpleCap(groupVariable)
   names(groupLabel) <- NULL
   
@@ -160,7 +173,7 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeGroupUI <- function(id, 
+countAgeGroupUI <- function(id, regionLevels,
   uiText, context = id, specie = NULL,
   doHide = TRUE) {
   
@@ -186,7 +199,9 @@ countAgeGroupUI <- function(id,
         column(8, plotModuleUI(id = ns("ageGroup"))),
         column(4,
           optionsModuleUI(id = ns("ageGroup"), 
-            showTime = TRUE, exportData = TRUE)
+            showTime = TRUE,
+            regionLevels = regionLevels, exportData = TRUE,
+            showDataSource = c("embryos", "leeftijd", "geslacht"))
         )
       ),
       tags$p(HTML(description))

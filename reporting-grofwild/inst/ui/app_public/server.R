@@ -59,7 +59,7 @@ shinyServer(function(input, output, session) {
     observe(print(paste("Output:", plot())))
   
   # Save selection 
-  observeEvent(input$navbarID, {
+  observeEvent(input$navbarID, ignoreInit = TRUE, {
     if(doDebug)
       print(paste("Update of navbar ID to:", input$navbarID))
     if (input$navbarID %in% species) {
@@ -72,8 +72,7 @@ shinyServer(function(input, output, session) {
       plot(input$navbarID)
     }
     currentTab(input$navbarID);updateTab(TRUE);resetNextTab(TRUE)
-    
-  }, ignoreInit = TRUE)
+  })
 
   # list of current available categories, subcategories, outputs
   categoriesCur <- reactive(
@@ -106,7 +105,21 @@ shinyServer(function(input, output, session) {
   )
   
   # Update tab title
-  output$specie <- renderUI(specie())
+    output$specie <- renderUI({
+        
+        if (isTruthy(specie()) && specie() != defaultTabs$specie) {
+          HTML(sprintf('
+                <span style="display: inline-block; line-height: 1;">
+                <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Diersoort:</span>
+                <span style="display: block; color: #ffffff;">%s</span>
+                </span>
+                ', specie()))
+        } else {
+          defaultTabs$specie
+        }
+        
+      })
+
   
   # Change tab
   observeEvent(specie(), {
@@ -152,11 +165,18 @@ shinyServer(function(input, output, session) {
   
   # Update tab title
   output$category <- renderUI({
-    ifelse(
-      isTruthy(category()),
-      getCategoryTitle(category()),
-      defaultTabs$category
-    )
+      
+      if (isTruthy(category()) && category() != defaultTabs$category) {
+        HTML(sprintf('
+              <span style="display: inline-block; line-height: 1;">
+              <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Categorie:</span>
+              <span style="display: block; color: #ffffff;">%s</span>
+              </span>
+              ', getCategoryTitle(category())))
+      } else {
+        defaultTabs$category
+      }
+      
   })
   
   # Change tab
@@ -212,13 +232,20 @@ shinyServer(function(input, output, session) {
   ## Subcategory
   
   # Update tab title
-  output$subcategory <- renderUI(
-    ifelse(
-      isTruthy(subcategory()) && subcategory() != defaultTabs$subcategory,
-      getSubcategoryTitle(subcategory = subcategory(), uiText = uiText),
-      defaultTabs$subcategory
-    )
-  )
+  output$subcategory <- renderUI({
+      
+      if (isTruthy(subcategory()) && subcategory() != defaultTabs$subcategory) {
+        HTML(sprintf('
+            <span style="display: inline-block; line-height: 1;">
+            <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Subcategorie:</span>
+            <span style="display: block; color: #ffffff;">%s</span>
+            </span>
+            ', getSubcategoryTitle(subcategory = subcategory(), uiText = uiText)))
+      } else {
+        defaultTabs$subcategory
+      }
+      
+    })
   
   # Update page content
   outputSubcategory <- reactive({
@@ -294,15 +321,29 @@ observeEvent(subcategory(), {
   ## Outputs (table/plot)
   
   # Update tab title
-  output$output <- renderUI(
-    if(plot() %in% outputs){
-      getOutputTitle(
-        output = plot(), 
-        uiText = uiText, n = 200, 
-        type = unique(subset(infoOutput, output == plot())$category)
-      )
-    }else plot()
-  )
+
+    output$output <- renderUI({
+        
+        plotName <- if(plot() %in% outputs){
+            getOutputTitle(
+              output = plot(), 
+              uiText = uiText, n = 200, 
+              type = unique(subset(infoOutput, output == plot())$category)
+            )
+          }else plot()
+        
+        if (isTruthy(plot()) && plot() != defaultTabs$plot) {
+          HTML(sprintf('
+                <span style="display: inline-block; line-height: 1;">
+                <span style="font-size: smaller; font-style: italic; display: block; color: #ffffff;">Visualisatie:</span>
+                <span style="display: block; color: #ffffff;">%s</span>
+                </span>
+                ', plotName))
+        } else {
+          defaultTabs$plot
+        }
+        
+      })
   
   # Change tab
   observeEvent(plot(), {
@@ -316,6 +357,11 @@ observeEvent(subcategory(), {
   # reset category/subcategory
   observeEvent(plot(), {
         
+    # Reset schade defaults when plot changes
+    schade_code(NULL)
+    schade_gewas(NULL)
+    schade_voertuig(NULL)
+    
     # in case plot selected from navigation bar and ...
     if(plot() != defaultTabs$plot){
       
@@ -390,7 +436,8 @@ observeEvent(subcategory(), {
             ),
             draagvlak = list(
               draagvlakData = draagvlakData
-            )
+            ),
+            links = list()
           )
         )
         fct <- paste0(categoryOutput, "OutputServer")
@@ -501,29 +548,46 @@ observeEvent(subcategory(), {
 
   # Update the selected tabPanel based on the hash
   # (see https://stackoverflow.com/a/74874638)
-  observeEvent(session$clientData$url_hash, {
+  observeEvent(session$clientData$url_search, {
       
     req(input$navbarID)
     
-    currentHash <- utils::URLdecode(URL = session$clientData$url_hash)
+    currentHash <- session$clientData$url_search
     query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
       
-    if (currentHash != query) {
+    if (!identical(parseQueryString(currentHash), parseQueryString(query))) {
       
       if(doDebug)
         print("Update selected tab panel based on hash")
       
-      newSelection <- strsplit(gsub("^#", "", currentHash), split = "/")[[1]]
+      newSelection <- parseQueryString(session$clientData$url_search)
       
       # update selection in navigation bar
-      specie(ifelse(!is.na(newSelection[1]), newSelection[1], defaultTabs$specie))
-      category(ifelse(!is.na(newSelection[2]), newSelection[2], defaultTabs$category))
-      subcategory(ifelse(!is.na(newSelection[3]), newSelection[3], defaultTabs$subcategory))
-      plot(ifelse(!is.na(newSelection[4]), newSelection[4], defaultTabs$plot))
+      specieTmp <- if (!is.null(newSelection[["gbifkey"]])) {
+          speciesInfo <- read.csv(file.path(system.file("extdata", package = "reportingGrofwild"), "species-info.csv"))
+          speciesInfo[match(newSelection[["gbifkey"]], speciesInfo$gbifkey), "species.name"]
+        } else if (!is.null(newSelection[["specie"]])) {
+          newSelection[["specie"]]
+        } else {
+          defaultTabs$specie
+        }
+      specie(specieTmp)
+      category(ifelse(!is.null(newSelection[["category"]]), newSelection[["category"]], defaultTabs$category))
+      subcategory(ifelse(!is.null(newSelection[["subcategory"]]), newSelection[["subcategory"]], defaultTabs$subcategory))
+      plot(ifelse(!is.null(newSelection[["plot"]]), newSelection[["plot"]], defaultTabs$plot))
       
       # go to the selected page
-      currentTab(tail(newSelection, 1))
-      
+      if (!is.null(plot()) && plot() != defaultTabs$plot) {
+        currentTab(plot())
+      } else if (!is.null(subcategory()) && subcategory() != defaultTabs$subcategory) {
+        currentTab(subcategory())
+      } else if (!is.null(category()) && category() != defaultTabs$category) {
+        currentTab(category())
+      } else if (!is.null(specie()) && specie() != defaultTabs$specie) {
+        currentTab(specie())
+      } else {
+        currentTab("Home")
+      }
       # no extra reset(s)
       resetNextTab(FALSE) 
       
@@ -539,9 +603,9 @@ observeEvent(subcategory(), {
     req(input$navbarID != "Home")
     if(doDebug)
       print("Update hash")
-    currentHash <- session$clientData$url_hash
+    currentHash <- session$clientData$url_search
     query <- createQueryString(selection(), page = input$navbarID, defaults = defaultTabs)
-    if (currentHash != query)
+    if (!identical(parseQueryString(currentHash), parseQueryString(query)))
       updateQueryString(queryString = query, mode = "push", session)
   }, priority = 0)
 
@@ -574,7 +638,7 @@ observeEvent(subcategory(), {
         server = TRUE,
         options = list(
           create = FALSE,
-          onDropdownOpen = I("function($dropdown) {if (!this.lastQuery.length) {this.close(); this.settings.openOnFocus = false;}}"),
+#          onDropdownOpen = I("function($dropdown) {if (!this.lastQuery.length) {this.close(); this.settings.openOnFocus = false;}}"),
           onType = I("function (str) {if (str === \"\") {this.close();}}"),
           onItemAdd = I("function() {this.close();}"),
           placeholder = "Zoek in navigatie",

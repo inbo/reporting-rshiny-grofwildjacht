@@ -274,7 +274,7 @@ kencijferModuleUI <- function(id, uiText) {
           ),
           column(4,
             wellPanel(
-              selectInput(inputId = ns("regionLevel"), label = "Schaal",
+              selectInput(inputId = ns("regionLevel"), label = "Regio-schaal",
                   choices = c(
                     "Vlaanderen" = "flanders",
                     "Provincie" = "provinces", 
@@ -392,7 +392,7 @@ kencijferModuleServer <- function(id, input, output, session, kencijfersData,
       output$filterYear <- renderUI({
           
           div(class = "sliderBlank",
-            sliderInput(inputId = ns("year"), label = "Jaar",
+            sliderInput(inputId = ns("year"), label = "Geselecteerd jaar",
               value = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
               min = min(timeRange()),
               max = max(timeRange()),

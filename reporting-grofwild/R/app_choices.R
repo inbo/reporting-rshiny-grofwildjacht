@@ -10,6 +10,7 @@ getCategoryTitle <- function(category){
   title <- switch(category,
     draagvlak = "Draagvlak",
     populatie = "Populatie",
+    links = "Links",
     tools::toTitleCase(sub("-", " ", category))
   )
   
@@ -139,6 +140,19 @@ getOutputDescription <- function(output,
       x = text
     )
   
+  # Fill in hover text if required
+  if (grepl("\\{\\{\\{hover_", text)) {
+    matches <- stringr::str_extract_all(text, "\\{\\{\\{hover_.*?\\}\\}\\}")[[1]]
+    keys <- stringr::str_match(matches, "\\{\\{\\{(.*?)\\}\\}\\}")[,2]
+    for (i in seq_along(keys)) {
+      text <- gsub(
+        pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
+        replacement = uiText[which(uiText$plotFunction == keys[i]), "description"], 
+        x = text
+      )
+    }
+  }
+  
   # Replace last date
   if (!is.null(maxDate))
     text <- gsub("\\{\\{maxDate\\}\\}", 
@@ -214,6 +228,10 @@ getOutputSpecie <- function(specie,
     type = typesFemale
   )
   
+  # Toekomstige Verspreiding
+  spreadData <- loadSpreadData()
+  spreadDataNbRows <- lapply(spreadData, function(df) nrow(df[!is.na(df$wildsrt) & df$wildsrt == specie,]))
+
   outputs <- c(
 #    "woordenlijstPlaceholder",
     if(nrow(geoDataSpecie) > 0)
@@ -246,7 +264,7 @@ getOutputSpecie <- function(specie,
     if(!all(is.na(schadeDataSpecie$schadeBedrag)))
       "barCostUI",
     if(nrow(geoDataSpecie) > 0 & nrow(schadeDataSpecie) > 0)
-      c("mapFlandersUI-schade", "mapSchadeUI-wildschade", "mapSchadeUI-seizoen"),
+      c("mapFlandersUI-schade", "mapSchadeUI"),
     if(specie == "Ree" & any(combinedDataSpecie$afschotjaar >= 2014)  ||
         nrow(combinedDataSpecie) > 0)
       c("boxAgeWeightUI"),
@@ -259,7 +277,7 @@ getOutputSpecie <- function(specie,
       "countAgeGroupUI",
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
-    if(specie == "Wild zwijn") # TODO UPDATE!
+    if (any(spreadDataNbRows > 0))
       "mapSpreadUI",
     # Maatschappelijk draagvlak
     if (specie %in% draagvlakData$aanwezigheid$Soort)
@@ -275,7 +293,9 @@ getOutputSpecie <- function(specie,
     if (!all(is.na(combinedDataSpecie$onderkaaklengte_comp)))
       "plotBioindicatorUI-onderkaaklengte",
     if (!all(is.na(combinedDataSpecie$ontweid_gewicht)))
-      "plotBioindicatorUI-ontweid_gewicht"
+      "plotBioindicatorUI-ontweid_gewicht",
+    "biodiversiteitsportaal",
+    "exotenportaal"
   )
     
   return(outputs)
@@ -330,17 +350,22 @@ getOutputInfo <- function(species, ...){
     file = system.file("extdata", "output-info-blacklist.csv", 
       package = "reportingGrofwild")
   )
-  blacklist <- do.call(rbind, lapply(1:nrow(blacklist), function(i) {
-        if (is.na(blacklist$specie[i]))
-          data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
-          info[i, ]
-      }))
-  blacklist$blacklist <- TRUE
   
-  info <- merge(
-    x = info, y = blacklist,
-    all.x = TRUE, by = c("specie", "output"), sort = FALSE
-  )
+  if (nrow(blacklist) > 0 ) {
+    blacklist <- do.call(rbind, lapply(1:nrow(blacklist), function(i) {
+          if (is.na(blacklist$specie[i]))
+            data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
+            data.frame(specie = blacklist$specie[i], output = blacklist$output[i])
+        }))
+    blacklist$blacklist <- TRUE
+    info <- merge(
+      x = info, y = blacklist,
+      all.x = TRUE, by = c("specie", "output"), sort = FALSE
+    )
+  } else {
+    info$blacklist <- NA
+  }
+  
   info <- info[which(is.na(info$blacklist)), cols, drop = FALSE]
   
   # sort to have correct order in the UI
@@ -361,9 +386,9 @@ getSubcategoryOutput <- function(output){
   
   # Should be unique in the entire app!
   subcategoryOutput <- list( 
-      `beheer-vlaanderen` = c("trendYearFlandersUI", 
-          "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
-      `beheer-regio` = "mapFlandersUI",
+      `beheer-vlaanderen` = c("trendYearFlandersUI"),
+      `beheer-regio` = c("mapFlandersUI", 
+        "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
       `beheer-leeftijdcategorie` = 
           c("tableProvinceUI", "countYearShotUI-leeftijd_comp"),
       `beheer-jachtmethode` = 
@@ -371,16 +396,13 @@ getSubcategoryOutput <- function(output){
       
       # schade
       `schade-vlaanderen` = c(
-          "tableSchadeSummaryUI", "trendYearFlandersUI-schade", 
-          "countYearProvinceUI-schade"
+          "tableSchadeSummaryUI", "trendYearFlandersUI-schade"
       ),
-      `schade-regio` =  "mapFlandersUI-schade",
-      `schade-type` = c("countYearSchadeUI-wildschade",
-          "mapSchadeUI-wildschade", "tableSchadeUI",
-          "countYearSchadeUI-gewas", "tableGewasUI"
-      ),
-      `schade-seizoen` = c("countYearSchadeUI-seizoen",
-          "mapSchadeUI-seizoen"),
+      `schade-regio` =  c("mapFlandersUI-schade", "mapSchadeUI", 
+        "countYearProvinceUI-schade"),
+      `schade-type-gewas` = c("countYearSchadeUI-gewas", "tableGewasUI"),
+      `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
+      `schade-seizoen` = c("countYearSchadeUI-seizoen"),
       `schade-kosten` = "barCostUI",
       
       # populatie
@@ -394,8 +416,11 @@ getSubcategoryOutput <- function(output){
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak
-      `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5")
+      `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5"),
       
+      #interne links
+      `links-internelinks` = c("biodiversiteitsportaal", "exotenportaal")
+  
 #      # woordenlijst
 #      `woordenlijst-placeholder` = "woordenlijstPlaceholder"
     
@@ -421,7 +446,7 @@ getCategorySubcategory <- function(subcategory){
   
   categories <- sapply(strsplit(as.character(subcategory), split = "-"), function(x) x[1])
   categories <- factor(categories, levels = c("beheer", "schade", "populatie", 
-    "verspreiding", "draagvlak"))
+    "verspreiding", "draagvlak", "links"))
   
   return(categories)
   

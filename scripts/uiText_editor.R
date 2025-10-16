@@ -3,12 +3,10 @@ library(dplyr)
 library(readr)
 library(htmltools)
 
-# Load data function
 load_data <- function() {
   read_csv2("../reporting-grofwild/inst/extdata/uiText.csv", show_col_types = FALSE)
 }
 
-# UI definition
 ui <- fluidPage(
   titlePanel("Translation Editor"),
   sidebarLayout(
@@ -30,20 +28,21 @@ ui <- fluidPage(
   )
 )
 
-# Server logic
 server <- function(input, output, session) {
   translations <- reactiveVal(load_data())
+  original_row <- reactiveVal(NULL)
   
-  # Update translation fields based on item and type
   observeEvent({ list(input$Item, input$Type) }, {
     req(input$Item != "")
     data <- translations()
     current_row <- data %>% filter(plotFunction == input$Item)
     if (nrow(current_row) > 0) {
+      original_row(current_row)
       updateTextAreaInput(session, "title_unformatted",
                           value = current_row$title)
       desc_val <- switch(
-        input$Type, "Public" = current_row$description,
+        input$Type,
+        "Public" = current_row$description,
         "Private" = current_row$wbe,
         "Summary" = current_row$summary,
         ""
@@ -51,12 +50,12 @@ server <- function(input, output, session) {
       updateTextAreaInput(session, "description_unformatted",
                           value = ifelse(!is.na(desc_val), desc_val, ""))
     } else {
+      original_row(NULL)
       updateTextAreaInput(session, "title_unformatted", value = "")
       updateTextAreaInput(session, "description_unformatted", value = "")
     }
   })
   
-  # Add new plotFunction
   observeEvent(input$add_plotFunction, {
     new_name <- trimws(input$new_plotFunction)
     req(new_name != "")
@@ -79,38 +78,52 @@ server <- function(input, output, session) {
     }
   })
   
-  # Render preview for title
   output$title_rendered <- renderUI({
     req(input$title_unformatted)
     HTML(input$title_unformatted)
   })
   
-  # Render preview for text
   output$description_rendered <- renderUI({
     req(input$description_unformatted)
     HTML(input$description_unformatted)
   })
   
-  # Save data to CSV
   observeEvent(input$save_csv, {
-    data <- translations()
     req(input$Item != "")
-    data[data$plotFunction == input$Item, "title"] <- input$title_unformatted
-    target_col <- switch(
-      input$Type, "Public" = "description",
-      "Private" = "wbe",
-      "Summary" = "summary"
-    )
-    data[data$plotFunction == input$Item, target_col] <- input$description_unformatted
-    write_csv2(data, "../reporting-grofwild/inst/extdata/uiText.csv")
-    showModal(modalDialog(
-      title = "CSV Saved",
-      paste("Changes for", input$Item, "saved to uiText.csv"),
-      easyClose = TRUE
-    ))
-    translations(data)
+    data <- translations()
+    orig <- original_row()
+    updated_title <- input$title_unformatted
+    updated_desc <- input$description_unformatted
+    target_col <- switch(input$Type,
+                         "Public" = "description",
+                         "Private" = "wbe",
+                         "Summary" = "summary")
+    
+    changed <- FALSE
+    if (is.null(orig)) {
+      changed <- TRUE
+    } else {
+      if (orig$title != updated_title) changed <- TRUE
+      if (orig[[target_col]] != updated_desc) changed <- TRUE
+    }
+    
+    if (changed) {
+      data[data$plotFunction == input$Item, "title"] <- updated_title
+      data[data$plotFunction == input$Item, target_col] <- updated_desc
+      write_csv2(data, "../reporting-grofwild/inst/extdata/uiText.csv")
+      
+      showModal(modalDialog(
+        title = "CSV Saved",
+        paste("Changes for", input$Item, "saved to uiText.csv"),
+        easyClose = TRUE
+      ))
+      
+      translations(data)
+      original_row(data %>% filter(plotFunction == input$Item))
+    } else {
+      showNotification("No changes detected; file not saved.", type = "message")
+    }
   })
 }
 
-# Run app
 shinyApp(ui, server)

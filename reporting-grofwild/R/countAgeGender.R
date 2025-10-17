@@ -148,7 +148,7 @@ countAgeGender <- function(data, jaartallen = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countAgeGenderServer <- function(id, data, timeRange) {
+countAgeGenderServer <- function(id, data, timeRange, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -163,7 +163,8 @@ countAgeGenderServer <- function(id, data, timeRange) {
       )
       callModule(module = plotModuleServer, id = "ageGender",
         plotFunction = "countAgeGender", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   

@@ -64,14 +64,18 @@ shinyServer(function(input, output, session) {
       print(paste("Update of navbar ID to:", input$navbarID))
     if (input$navbarID %in% species) {
       specie(input$navbarID)
+      currentTab(input$navbarID)
     } else if (input$navbarID %in% categories) {
-      category(input$navbarID)       
+      category(input$navbarID)  
+      currentTab(input$navbarID)
     } else if (input$navbarID %in% subcategories) {
       subcategory(input$navbarID)
-    }else if (input$navbarID %in% outputs) {
+      currentTab(input$navbarID)
+    } else if (input$navbarID %in% outputs) {
       plot(input$navbarID)
+      currentTab(getSubcategoryOutput(input$navbarID))
     }
-    currentTab(input$navbarID);updateTab(TRUE);resetNextTab(TRUE)
+    updateTab(TRUE);resetNextTab(TRUE)
   })
 
   # list of current available categories, subcategories, outputs
@@ -216,6 +220,7 @@ shinyServer(function(input, output, session) {
       if(doDebug)
         print(paste("Update subcategory to:", outputCategory()()))
       subcategory(outputCategory()())
+      plot(defaultTabs$plot)
       updateTab(TRUE)
     }
   })
@@ -247,62 +252,30 @@ shinyServer(function(input, output, session) {
       
     })
   
-  # Update page content
-  outputSubcategory <- reactive({
-    
-      # Update choices when switching species
-      specie()
-      
-      if (currentTab() %in% subcategories) {
-      
-      isolate({
-        if(doDebug)
-          print(paste("Go to:", subcategory(), "page"))
-      
-        # Reset all next tabs
-        plot(defaultTabs$plot)
-        
-        args <- list(
-          id = subcategory(), 
-          specie = specie,
-          category = category,
-          subcategory = subcategory,
-          outputs = outputsCur(),
-          # general
-          subcategories = subcategoriesCur(),
-          uiText = uiText
-        )
-        
-        do.call("subcategoryServer", args)
-        
-      })
-    
-  }
-    
-  })
-
-  # Go to 'output' page if respective output clicked on the subcategory page
-  observe({
-      
-      req(outputSubcategory())
-      
-      if (!is.null(outputSubcategory()$plot()) && outputSubcategory()$plot() != plot()) {
-        
-        if(doDebug)
-          print(paste("Update plot to:", outputSubcategory()$plot()))
-        
-        plot(outputSubcategory()$plot())
-        updateTab(TRUE)
-        
-      }
-              
-  })
 
 # reset category
 observeEvent(subcategory(), {
     
+    
+    # Reset schade defaults when subcategory changes
+    schade_code(NULL)
+    schade_gewas(NULL)
+    schade_voertuig(NULL)
+    
+    
     # in case subcategory selected from navigation bar and ...
     if(subcategory() != defaultTabs$subcategory){
+      
+      # ... selected plot is not from this subcategory
+      if (plot() != defaultTabs$plot) {
+        subcategoryOutput <- getSubcategoryOutput(plot())
+        if(subcategory() != subcategoryOutput){
+          if(doDebug)
+            print("Reset plot to default")
+          plot(defaultTabs$plot)
+          updateTab(FALSE);resetNextTab(FALSE)# only update shown nav
+        }
+      }
       
       # ... respective category not selected
       categoryOutput <- as.character(getCategorySubcategory(subcategory())) 
@@ -310,6 +283,7 @@ observeEvent(subcategory(), {
         if(doDebug)
           print(paste("Reset category to", categoryOutput))
         category(categoryOutput)
+        plot(defaultTabs$plot)
         updateTab(FALSE);resetNextTab(FALSE) # only update shown nav
       }
       
@@ -390,18 +364,22 @@ observeEvent(subcategory(), {
   # Update page content
   outputSelection <- reactive({
     
-      if (currentTab() %in% outputs) {
+      specie()
+      if (currentTab() %in% subcategories) {
       isolate({
-        categoryOutput <- getInfo(output = plot(), infoOutput = infoOutput, variable = "category")
+          categoryOutput <- getInfo(subcategory = subcategory(), infoOutput = infoOutput, variable = "category")
         if(doDebug)
-          print(paste("Go to:", categoryOutput, plot(), "output page"))
+          print(paste("Go to:", categoryOutput, subcategory(), "output page"))
         args <- c(
           list(
-            id = plot(), 
+            id = subcategory(), 
             specie = specie,
-            plot = plot,
             uiText = uiText,
-            outputs = outputsCur()
+            subcategory = subcategory,
+            subcategories = subcategoriesCur(),
+            outputs = outputsCur(),
+            plot = plot,
+            defaultTabs = defaultTabs
           ),
           switch(categoryOutput, 
             beheer = list(
@@ -595,7 +573,7 @@ observeEvent(subcategory(), {
       updateTab(FALSE)
 
     }
-  }, priority = 1)
+  }, priority = -1)
   
   # Update the hash based on the selected tabPanel
   updateHash <- reactive(list(selection(), input$navbarID))

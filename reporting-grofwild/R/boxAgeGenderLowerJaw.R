@@ -77,7 +77,7 @@ boxAgeGenderLowerJaw <- function(data,
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), 
 					paste("in", jaartallen)), 
 			if (!all(regio == "")) 
-				paste0(" (", toString(regio), ")")) 
+				paste0("\n (", toString(regio), ")")) 
 			
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
   plotData$leeftijd <- droplevels(plotData$leeftijd)
@@ -125,7 +125,7 @@ boxAgeGenderLowerJaw <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-ageGenderLowerJawServer <- function(id, data, types, timeRange) {
+ageGenderLowerJawServer <- function(id, data, types, timeRange, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -142,7 +142,8 @@ ageGenderLowerJawServer <- function(id, data, types, timeRange) {
       )
       callModule(module = plotModuleServer, id = "ageGenderLowerJaw",
         plotFunction = "boxAgeGenderLowerJaw", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   

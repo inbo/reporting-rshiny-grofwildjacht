@@ -284,9 +284,17 @@ optionsModuleServer <- function(input, output, session,
           
         }
         
+        if (!is.null(isolate(current$region)) & all(isolate(current$region) %in% choices)) {
+          selected <- isolate(current$region)
+        } else if (allRegionsSelected && input$regionLevel %in% c("flanders", "provinces", "faunabeheerzones")) {
+          selected <- choices
+        } else if (input$regionLevel == "flanders") {
+          selected <- choices[1]
+        } else selected <- NULL
+        
         selectInput(inputId = ns("region"), label = "Regio('s)",
             choices = choices, 
-            selected = if (allRegionsSelected) choices else if (input$regionLevel == "flanders") choices[1] else NULL, 
+            selected = selected, 
             multiple = TRUE)
         
       })
@@ -484,6 +492,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @importFrom utils write.table
 #' @importFrom DT datatable formatRound renderDataTable formatStyle styleEqual
 #' @importFrom flexdashboard renderGauge gauge gaugeSectors
+#' @importFrom dplyr coalesce
 #' @export
 plotModuleServer <- function(input, output, session, plotFunction, 
     data, openingstijdenData = NULL, toekenningsData = NULL,
@@ -494,26 +503,37 @@ plotModuleServer <- function(input, output, session, plotFunction,
     schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL, 
     variable = NULL, combinatie = NULL, title = NULL,
     fullNames = NULL, type = NULL,
-    typeMelding = NULL, 
+    typeMelding = NULL, preSelected = reactive(NULL), filterDataOnRegion = TRUE,
     height = "600px",
     exportPlotWidth = 6, exportPlotHeight = 6) {
   
   subData <- reactive({
-        
+      
         provincie <- NULL  # to prevent warnings with R CMD check
         subData <- data()
         
-        if (!is.null(input$regionLevel)) {
+        regionLevel <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
+        region <- coalesce(input$region, preSelected()$region(), NA)
+       
+        if (filterDataOnRegion && !is.na(regionLevel)) {
           
-          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          validate(need(!is.na(region), "Gelieve regio('s) te selecteren"))
           
           # filtering regions
-          if (input$regionLevel == "provinces") {
-            subData <- subset(subData, provincie %in% input$region)
-          } else if (input$regionLevel == "faunabeheerzones") {   
-            subData <- subData[as.character(subData$FaunabeheerZone) %in% input$region, ]
-          }else if(input$regionLevel == "communes") {   
-            subData <- subData[subData$gemeente_afschot_locatie %in% input$region, ]
+          if (regionLevel == "provinces" && "provincie" %in% colnames(subData)) {
+            subData <- subset(subData, provincie %in% region)
+          } else if (regionLevel == "faunabeheerzones") {  
+            validate(need("FaunabeheerZone" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op faunabeheerzone-level. Gelieve een andere Regio-schaal te selecteren."))
+            subData <- subData[as.character(subData$FaunabeheerZone) %in% region, ]
+          } else if(regionLevel == "communes") { 
+            validate(need("gemeente_afschot_locatie" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op gemeente-level. Gelieve een andere Regio-schaal te selecteren."))
+            subData <- subData[subData$gemeente_afschot_locatie %in% region, ]
+          } else if(regionLevel == "fbz_gemeentes") {   
+            validate(need("fbz_gemeentes" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op Gemeente per faunabeheerzone-level. Gelieve een andere Regio-schaal te selecteren."))
+            subData <- subData[subData$fbz_gemeentes %in% region, ]
+          } else if(regionLevel == "utm5") {   
+            validate(need("utm5" %in% colnames(subData), "Het is niet mogelijk deze data te visualiseren op 5x5 UTM-level. Gelieve een andere Regio-schaal te selecteren."))
+            subData <- subData[subData$utm5 %in% region, ]
           }
         }
         
@@ -542,50 +562,73 @@ plotModuleServer <- function(input, output, session, plotFunction,
         labeljaar <- NULL  # to prevent warnings with R CMD check
         subData <- toekenningsData()
         
-        if (!is.null(input$regionLevel)) {
+        regionLevel <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
+        region <- coalesce(input$region, preSelected()$region(), NA)
+        
+        if (!is.na(regionLevel)) {
           
-          validate(need(input$region, "Gelieve regio('s) te selecteren"))
+          validate(need(!is.na(region), "Gelieve regio('s) te selecteren"))
           
-          if (input$regionLevel == "provinces")
-            subData <- subset(subData, provincie_toek %in% input$region)
+          if (regionLevel == "provinces")
+            subData <- subset(subData, provincie_toek %in% region)
           
         }
         
-        if (!is.null(input$time))
-          subData <- subset(subData, labeljaar >= input$time[1] & labeljaar <= input$time[2])
-        
+        time <- coalesce(input$time, preSelected()$time(), NA)
+        if (!is.na(time))
+          subData <- subset(subData, labeljaar >= time[1] & labeljaar <= time[2])
         
         return(subData)
         
       })
   
-  
   argList <- reactive({
+      
+        validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
+#        if (plotFunction == "plotBioindicator") browser()
         
-        req(nrow(subData()) > 0)
-        
+        year <- coalesce(input$year, preSelected()$year(), NA)
+        time <- coalesce(input$time, preSelected()$time(), NA)
+        interval <- coalesce(input$interval, preSelected()$interval(), NA)
+        if (!is.null(input$type) && !is.null(preSelected()$type())) {   # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
+          typeReact <- input$type
+          typeLeeftijd <- preSelected()$type()
+        } else {
+          typeReact <- coalesce(input$type, preSelected()$type(), NA)
+          typeLeeftijd <- NULL
+        }
+        regionLevel <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
+        region <- coalesce(input$region, preSelected()$region(), NA)
+        summarizeBy <- coalesce(input$summarizeBy, preSelected()$summarizeBy(), NA)
+        dataSource_schade <- coalesce(input$dataSource_schade, preSelected()$dataSource_schade(), NA)
+        dataSource_onderkaak <- coalesce(input$dataSource_onderkaak, preSelected()$dataSource_onderkaak(), NA)
+        dataSource_embryos <- coalesce(input$dataSource_embryos, preSelected()$dataSource_embryos(), NA)
+        dataSource_leeftijd <- coalesce(input$dataSource_leeftijd, preSelected()$dataSource_leeftijd(), NA)
+        dataSource_geslacht <- coalesce(input$dataSource_geslacht, preSelected()$dataSource_geslacht(), NA)
         
         argList <- c(
             list(data = subData()),
-            if (!is.null(input$year))
-              list(jaar = input$year),
-            if (!is.null(input$time))
-              list(jaartallen = input$time[1]:input$time[2]),
-            if (!is.null(input$regionLevel))
-              list(regio = input$region),
-            if (!is.null(input$type))
-              list(type = input$type),
+            if (!is.na(year))
+              list(jaar = year),
+            if (!any(is.na(time)))
+              list(jaartallen = time[1]:time[2]),
+            if (!is.na(regionLevel))
+              list(regio = region),
+            if (!all(is.na(typeReact)))
+              list(type = typeReact),
             if (!is.null(type))
               list(type = type),
-            if (!is.null(openingstijdenData) && !is.null(input$type) & !is.null(input$year) & is.null(input$dataSource_schade))
+            if (!is.null(typeLeeftijd))  # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
+              list(type_leeftijd = typeLeeftijd),
+            if (!is.null(openingstijdenData) && !all(is.na(typeReact)) & !is.na(year) & all(is.na(dataSource_schade)))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))
               list(assignedData = subToekenningsData()),
             if (!is.null(categorie))          
               list(categorie = categorie) else if (!is.null(input$categorie))          
               list(categorie = input$categorie),
-            if (!is.null(input$summarizeBy))
-              list(summarizeBy = input$summarizeBy),
+            if (!all(is.na(summarizeBy)))
+              list(summarizeBy = summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
             if(!is.null(groupVariable))
@@ -599,16 +642,16 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(isSchade = isSchade),
             
             # Sources
-            if(!is.null(input$dataSource_schade))
-              list(sourceIndicator = input$dataSource_schade),            
-            if(!is.null(input$dataSource_leeftijd))
-              list(sourceIndicator_leeftijd = input$dataSource_leeftijd),
-            if(!is.null(input$dataSource_geslacht))
-              list(sourceIndicator_geslacht = input$dataSource_geslacht),
-            if(!is.null(input$dataSource_onderkaak))
-              list(sourceIndicator = input$dataSource_onderkaak),
-            if(!is.null(input$dataSource_embryos))
-              list(sourceIndicator = input$dataSource_embryos),
+            if(!all(is.na(dataSource_schade)))
+              list(sourceIndicator = dataSource_schade),            
+            if(!all(is.na(dataSource_leeftijd)))
+              list(sourceIndicator_leeftijd = dataSource_leeftijd),
+            if(!all(is.na(dataSource_geslacht)))
+              list(sourceIndicator_geslacht = dataSource_geslacht),
+            if(!all(is.na(dataSource_onderkaak)))
+              list(sourceIndicator = dataSource_onderkaak),
+            if(!all(is.na(dataSource_embryos)))
+              list(sourceIndicator = dataSource_embryos),
             
             if (!is.null(locaties))
               list(locaties = locaties()),
@@ -626,14 +669,14 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(schadeChoicesGewas = schadeChoicesGewas()),
             if (!is.null(variable))
               list(variable = variable),
-            if (plotFunction == "trendYearRegion") {
+            if (plotFunction %in% c("trendYearRegion", "countYearProvince")) {
               if (!is.null(combinatie()))
                 list(combinatie = combinatie())
             },
             if (!is.null(title))
               list(title = title),
-            if (!is.null(input$interval))
-              list(interval = input$interval)
+            if (!is.na(interval))
+              list(interval = interval)
         
         )
         
@@ -674,9 +717,15 @@ plotModuleServer <- function(input, output, session, plotFunction,
     
     output$plot <- renderUI({
         
-        if ("plotly" %in% class(resultFct()$plot))
-          plotlyOutput(session$ns("plotly"), height = height) else if ("ggplot" %in% class(resultFct()$plot))
-          plotOutput(session$ns("ggplot"), height = height)
+        tryCatch({
+            if ("plotly" %in% class(resultFct()$plot))
+              plotlyOutput(session$ns("plotly"), height = height) else if ("ggplot" %in% class(resultFct()$plot))
+              plotOutput(session$ns("ggplot"), height = height)
+          },
+          error = function(e) {
+            return(NULL) 
+          })
+        
         
       })
     
@@ -702,7 +751,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
   
   output$warning <- renderUI({
         
-      tags$em(resultFct()$warning)
+      tryCatch({
+          tags$em(resultFct()$warning)
+        },
+        error = function(e) {
+          return(e) 
+        })
         
       })
     

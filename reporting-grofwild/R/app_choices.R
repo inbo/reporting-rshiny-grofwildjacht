@@ -277,7 +277,7 @@ getOutputSpecie <- function(specie,
       "countAgeGroupUI",
     if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
       "F17_1",
-    if (any(spreadDataNbRows > 0))
+    if (any(spreadDataNbRows > 0) | specie == "Bever")
       "mapSpreadUI",
     # Maatschappelijk draagvlak
     if (specie %in% draagvlakData$aanwezigheid$Soort)

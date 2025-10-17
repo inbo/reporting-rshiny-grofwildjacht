@@ -136,7 +136,8 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
+tableSpeciesServer <- function(id, data, timeRange, species, uiText,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -163,7 +164,8 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
       )
       callModule(module = plotModuleServer, id = "tableSpecies",
         plotFunction = "tableSpecies", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
            
     })
   

@@ -230,7 +230,8 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
+countYearShotServer <- function(id, data, timeRange, types, groupVariable,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -250,7 +251,8 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
         groupVariable = groupVariable,
-        data = data)
+        data = data,
+        preSelected = preSelected)
            
     })
   
@@ -266,7 +268,8 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 #' @export
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
   uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
-  doHide = TRUE) {
+  doHide = TRUE, showDataSource = FALSE, showType = FALSE, showInterval = FALSE,
+  showTime = FALSE) {
   
   ns <- NS(id)
   
@@ -289,10 +292,10 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
         
         column(8, plotModuleUI(id = ns("countYearShot"))),
         column(4,
-          optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
+          optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
             regionLevels = regionLevels, exportData = TRUE,
-            showType = TRUE, showInterval = TRUE,
-            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd")
+            showType = showType, showInterval = showInterval,
+            showDataSource = showDataSource)
         )
         
       ),

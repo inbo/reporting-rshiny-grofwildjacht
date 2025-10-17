@@ -24,6 +24,8 @@ Imports:
     htmlwidgets,
     INBOtheme, 
     leaflet, 
+    leaflet.extras,
+    leaflet.extras2,
     methods,
     mgcv, 
     plotly,

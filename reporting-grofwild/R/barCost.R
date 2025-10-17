@@ -41,8 +41,6 @@ barCost <- function(data,
       ) else 
       NULL
   
-  data <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
-    returnStop = "message")
   if (is.null(jaartallen))
     stop("Gelieve jaartallen te selecteren")
   
@@ -180,7 +178,8 @@ barCost <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data, timeRange, allRegionsSelected = FALSE, title = reactive(NULL)) {
+barCostServer <- function(id, yVar, data, timeRange, allRegionsSelected = FALSE, 
+  title = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -204,7 +203,10 @@ barCostServer <- function(id, yVar, data, timeRange, allRegionsSelected = FALSE,
             data()[data()$typeMelding %in% input$typeMelding, ] else 
             data()
           
-         plotData
+          # Bron
+          filterDataSource(plotData = plotData,
+            sourceIndicator = input$bron, returnStop = "message")
+          
         })
       
       
@@ -289,10 +291,13 @@ barCostUI <- function(id,
                 label = "Type schade",
                 choices = typeMelding
               ),
+            selectInput(inputId = ns("bron"), label = "Databron(nen)",
+              choices = metaSchade$sources,
+              selected = metaSchade$sources,
+              multiple = TRUE),
             optionsModuleUI(
               id = ns("barCost"),
-              showInterval = TRUE,
-              showDataSource = "schade",
+              showInterval = TRUE, 
               exportData = TRUE, 
               doWellPanel = FALSE
             )

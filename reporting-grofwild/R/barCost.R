@@ -19,9 +19,9 @@
 #' @importFrom stats aggregate
 #' @export 
 barCost <- function(data, 
-  yVar = c("schadeBedrag", "count"), 
-  typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"),
-  regio = "", sourceIndicator = NULL) {
+  yVar = c("schadeBedrag", "count"), jaartallen = NULL, 
+  typeMelding = NULL, interval = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken"), 
+  regio = "", unit = NULL) {
   
   wildNaam <- unique(data$wildsoort)
   interval <- match.arg(interval)
@@ -31,6 +31,7 @@ barCost <- function(data,
     schadeBedrag = "Aantal",
     count = "Aantal"
   )
+  
   groupLabel <- if (!is.null(interval))
       switch(interval,
         "Per jaar" = "Jaar",
@@ -42,7 +43,10 @@ barCost <- function(data,
   
   data <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
-  subData <- data[, c(if (yVar != "count") yVar, "season", "afschotjaar", "afschot_datum")] %>%
+  if (is.null(jaartallen))
+    stop("Gelieve jaartallen te selecteren")
+  
+  subData <- data[data$afschotjaar %in% jaartallen, c(if (yVar != "count") yVar, "season", "afschotjaar", "afschot_datum")] %>%
     mutate(season_num = dplyr::case_when(
         season == "winter" ~ 1,
         season == "lente"  ~ 2,
@@ -176,8 +180,7 @@ barCost <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data, title = reactive(NULL), allRegionsSelected = FALSE, 
-  preSelected = reactive(NULL)) {
+barCostServer <- function(id, yVar, data, timeRange, allRegionsSelected = FALSE, title = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -209,6 +212,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL), allRegionsSele
       callModule(module = optionsModuleServer, id = "barCost", 
         data = subData,
         allRegionsSelected = allRegionsSelected,
+        timeRange = timeRange,
         intervals = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")
       )
       
@@ -241,7 +245,7 @@ barCostServer <- function(id, yVar, data, title = reactive(NULL), allRegionsSele
 #' @export
 barCostUI <- function(id, 
   uiText, context = strsplit(id, split = "_")[[1]][1], 
-  specie = NULL,
+  specie = NULL, showTime = FALSE,
   typeMelding = NULL, doHide = TRUE,
   regionLevels = NULL) {
   
@@ -275,7 +279,7 @@ barCostUI <- function(id,
         column(4,
           wellPanel(
             optionsModuleUI(
-              id = ns("barCost"), 
+              id = ns("barCost"), showTime = showTime,
               regionLevels = regionLevels, 
               doWellPanel = FALSE
             ),

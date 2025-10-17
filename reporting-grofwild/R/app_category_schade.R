@@ -293,7 +293,7 @@ schadeOutputServer <- function(id,
                     wellPanel(class = "well-white", barCostUI(
                         id = ns("plot11"), 
                         uiText = uiText, context = "description",
-                        specie = specie(),
+                        specie = specie(), showTime = TRUE,
                         typeMelding = c("Landbouw" = "landbouw"),
                         regionLevels = c(1:2, 4),
                         doHide = !(plot() == defaultTabs$plot || "barCostUI" %in% plot())
@@ -447,6 +447,7 @@ schadeOutputServer <- function(id,
                     data = results$schade_data,
                     allRegionsSelected = TRUE,
                     yVar = "schadeBedrag",
+                    timeRange = reactive(c(min(results$schade_data()$afschotjaar, na.rm = TRUE), max(results$schade_data()$afschotjaar, na.rm = TRUE))),
                     preSelected = schadeSelection
                   )  
               )
@@ -465,6 +466,111 @@ schadeOutputServer <- function(id,
           schade_voertuig = schadeSelection()$schade_voertuig
         ))
       
+
+    # Server
+    observeEvent(outputServer(), ignoreNULL = TRUE, {
+      
+      switch(outputServer(),
+        "tableSchadeSummaryUI" = tableSchadeSummaryServer(
+          id = "plot", 
+          data = results$schade_data, 
+          schadeTypes = schadeTypes, schadeCodes = schadeCodes
+        ),
+        "trendYearFlandersUI-schade" = trendYearFlandersServer(
+          id = "plot", 
+          geoData = results$schade_data, 
+          allSpatialData = spatialData, 
+          biotoopData = biotoopData, 
+          species = specie,
+          type = "wildschade",
+          uiText = uiText
+        ),
+        "countYearProvinceUI-schade" = countYearProvinceServer(
+          id = "plot",
+          data = results$schade_data,
+          allRegionsSelected = TRUE,
+          timeRange = results$schade_timeRange
+        ),
+        "mapFlandersUI-schade" = mapFlandersServer(
+          id = "plot",
+          uiText = uiText,
+          defaultYear = defaultYear,
+          species = specie,
+          type = "schade",
+          geoData = results$schade_data,
+          biotoopData = biotoopData,
+          allSpatialData = spatialData,
+          sourceChoices = loadMetaSchade()$sources 
+        ),
+        "countYearSchadeUI-wildschade" = countYearSchadeServer(
+          id = "plot",
+          data = results$schade_data,
+          type = "schadeCode", 
+          timeRange = results$schade_timeRange,
+          fullNames = schadeCodes
+        ),
+        "mapSchadeUI" = mapSchadeServer(
+          id = "plot", 
+          schadeData = results$schade_data,
+          allSpatialData = reactive(spatialData),
+          timeRange = results$schade_timeRange,
+          defaultYear = defaultYear,
+          species = specie,
+          borderRegion = "provinces",
+          uiText = uiText,
+          type = "schade"
+        ),
+        "tableSchadeUI" = tableSchadeServer(
+          id = "plot",  
+          data = results$schade_data,
+          timeRange = results$schade_timeRange,
+          schadeChoices = schadeSelection$schade_code,
+          schadeChoicesVrtg = schadeSelection$schade_voertuig,
+          schadeChoicesGewas = schadeSelection$schade_gewas,
+          datatable = TRUE,
+          fullNames = c(schadeTypes, schadeCodes),
+          allRegionsSelected = TRUE
+        ),
+        "countYearSchadeUI-gewas" = countYearSchadeServer(
+          id = "plot",
+          data = results$schade_data,
+          type = "SoortNaam", 
+          timeRange = results$schade_timeRange,
+          fullNames = schadeCodes
+        ),
+        "tableGewasUI" = tableGewasServer(
+          id = "plot",
+          data = results$schade_data,
+          timeRange = results$schade_timeRange,
+          variable = "SoortNaam",
+          allRegionsSelected = TRUE
+        ),
+        "countYearSchadeUI-seizoen" = countYearSchadeServer(
+          id = "plot",
+          data = results$schade_data,
+          type = "season", 
+          timeRange = results$schade_timeRange
+        ),
+        "barCostUI" = barCostServer(
+          id = "plot",
+          timeRange = reactive(c(min(results$schade_data()$afschotjaar, na.rm = TRUE), max(results$schade_data()$afschotjaar, na.rm = TRUE))),
+          data = results$schade_data,
+          yVar = "schadeBedrag"
+        )  
+      )
+      
+      # re-set in case plot selected via tab after/before category card
+      outputServer(NULL)
     })
+    
+    
+    return(list(
+        specie = reactive(specie()),
+        schade_code = schadeSelection$schade_code,
+        schade_gewas = schadeSelection$schade_gewas,
+        schade_voertuig = schadeSelection$schade_voertuig
+      ))
+
+  })
   
 }

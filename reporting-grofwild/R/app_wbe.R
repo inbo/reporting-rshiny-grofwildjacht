@@ -206,11 +206,7 @@ results$wbe_timeRange <- reactive({
 
 results$leeftijdtypes <- reactive({
     
-    types <- loadMetaEco(species = input$wbe_species)$leeftijd_comp
-    
-    if (length(types) == 1 && input$wbe_species == types)
-      return(c("alle" = "all")) else 
-      return(types)
+    c(loadMetaEco(species = input$wbe_species)$leeftijd_comp_inbo, "Onbekend")
     
   })
 

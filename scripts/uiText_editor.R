@@ -68,24 +68,34 @@ ui <- fluidPage(
 
 # SERVER ####
 server <- function(input, output, session) {
+  ## Initial data load ####
   translations <- reactiveVal(load_data())
+  
+  ## Initiate edited_data ####
+  # Buffered edits stored here; initially a copy of original data 
+  edited_data <- reactiveVal(load_data())
+  
+  ## Initiate original_row ####
+  # Track current selected row snapshot for change detection
   original_row <- reactiveVal(NULL)
+  
   ## Filter Current Row & Set desc_val ####
-  observeEvent({ list(input$Item, input$Type) }, {
+  observeEvent(list(input$Item, input$Type), {
     req(input$Item != "")
-    data <- translations()
+    data <- edited_data()
     current_row <- data %>% filter(plotFunction == input$Item)
+    
     if (nrow(current_row) > 0) {
       original_row(current_row)
-      updateTextAreaInput(session, "title_unformatted",
+      updateTextAreaInput(session, "title_unformatted", 
                           value = current_row$title)
-      desc_val <- switch(
-        input$Type,
-        "Public" = current_row$description,
-        "Private" = current_row$wbe,
-        "Summary" = current_row$summary,
-        ""
-      )
+      
+      desc_val <- switch(input$Type,
+                         "Public" = current_row$description,
+                         "Private" = current_row$wbe,
+                         "Summary" = current_row$summary,
+                         "")
+      
       updateTextAreaInput(session, "description_unformatted",
                           value = ifelse(!is.na(desc_val), desc_val, ""))
     } else {
@@ -94,6 +104,34 @@ server <- function(input, output, session) {
       updateTextAreaInput(session, "description_unformatted", value = "")
     }
   })
+  
+  ## Update buffered edits reactiveVal ####
+  # immediately on user typing
+  observeEvent(input$title_unformatted, {
+    req(input$Item != "")
+    data <- edited_data()
+    
+    # Find row index
+    idx <- which(data$plotFunction == input$Item)
+    if (length(idx) == 1) {
+      data[idx, "title"] <- input$title_unformatted
+      edited_data(data)
+    }
+  }, ignoreInit = TRUE)
+  
+  observeEvent(input$description_unformatted, {
+    req(input$Item != "")
+    data <- edited_data()
+    idx <- which(data$plotFunction == input$Item)
+    if (length(idx) == 1) {
+      target_col <- switch(input$Type,
+                           "Public" = "description",
+                           "Private" = "wbe",
+                           "Summary" = "summary")
+      data[idx, target_col] <- input$description_unformatted
+      edited_data(data)
+    }
+  }, ignoreInit = TRUE)
   
   ## Add New PlotFunction ####
   observeEvent(input$add_plotFunction, {
@@ -112,9 +150,11 @@ server <- function(input, output, session) {
       )
       updated_data <- bind_rows(data, new_row)
       translations(updated_data)
+      original_row(new_row)
       updateSelectInput(session, "Item", choices = c("", updated_data$plotFunction), selected = new_name)
       updateTextInput(session, "new_plotFunction", value = "")
       showNotification(paste("Added new plotFunction:", new_name), type = "message")
+      
     }
   })
   
@@ -131,46 +171,28 @@ server <- function(input, output, session) {
   })
   
   ## Save to CSV ####
+  # Save buffered edits to CSV
   observeEvent(input$save_csv, {
-    
     req(input$Item != "")
-    data <- translations()
-    orig <- original_row()
-    updated_title <- input$title_unformatted
-    updated_desc <- input$description_unformatted
-    target_col <- switch(input$Type,
-                         "Public" = "description",
-                         "Private" = "wbe",
-                         "Summary" = "summary")
+    data <- edited_data()
     
-    #browser()
-    changed <- FALSE
-    if (is.null(orig)) {
-      changed <- TRUE
-    } else {
-      if (orig$title != updated_title) changed <- TRUE
-      if ((orig[[target_col]] != updated_desc)|(is.na(orig[[target_col]]) & !is.na(updated_desc))) changed <- TRUE
-    }
+    # Write the entire buffered data frame to CSV at once
+    write_delim(data, "../reporting-grofwild/inst/extdata/uiText.csv", 
+                delim = ";", 
+                quote = "all", 
+                na = "\"\"")
     
-    if (changed) {
-      data[data$plotFunction == input$Item, "title"] <- updated_title
-      data[data$plotFunction == input$Item, target_col] <- updated_desc
-      write_delim(data, "../reporting-grofwild/inst/extdata/uiText.csv", 
-                  delim = ";", 
-                  quote = "all", 
-                  na = "\"\"")
-      
-      showModal(modalDialog(
-        title = "CSV Saved",
-        paste("Changes for", input$Item, "saved to uiText.csv"),
-        easyClose = TRUE
-      ))
-      
-      translations(data)
-      original_row(data %>% filter(plotFunction == input$Item))
-    } else {
-      showNotification("No changes detected; file not saved.", type = "message")
-    }
+    showModal(modalDialog(
+      title = "CSV Saved",
+      paste("All current changes saved to uiText.csv"),
+      easyClose = TRUE
+    ))
+    
+    # Reset original_row to current saved row for detecting further changes
+    original_row(data %>% filter(plotFunction == input$Item))
+    
+    # Also update translations reactiveVal so it's in sync
+    translations(data)
   })
 }
 

@@ -46,7 +46,7 @@ ui <- fluidPage(
       <i>When using styling make sure you close the styling element by adding the &lt;/&gt; element</i>
       <i>When you want to add a text hover:
         <ol start=1>
-          <li>If the text you want to explain is missing a plotFunction, create a new plotFunction using 'Add New plotFunction'. Make sure the title has the following format: hover_&lt;text to explain&gt;</li>
+          <li>If the text you want to explain is missing a plotFunction, create a new plotFunction using 'Add New plotFunction'. Make sure the plotFunction has the following format: hover_&lt;text to explain&gt;</li>
           <li>Next add &lt;span class='tooltip-wrapper'&gt;text to explain&lt;span class='tooltip-box'&gt;{{{hover_text to explain}}}&lt;/span&gt;&lt;/span&gt; instead of the text you want to explain</li>
 
         </ol>

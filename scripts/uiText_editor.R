@@ -121,7 +121,10 @@ server <- function(input, output, session) {
     if (changed) {
       data[data$plotFunction == input$Item, "title"] <- updated_title
       data[data$plotFunction == input$Item, target_col] <- updated_desc
-      write_csv2(data, "../reporting-grofwild/inst/extdata/uiText.csv")
+      write_delim(data, "../reporting-grofwild/inst/extdata/uiText.csv", 
+                  delim = ";", 
+                  quote = "all", 
+                  na = "")
       
       showModal(modalDialog(
         title = "CSV Saved",

@@ -139,10 +139,14 @@ server <- function(input, output, session) {
   observeEvent(input$add_plotFunction, {
     new_name <- trimws(input$new_plotFunction)
     req(new_name != "")
-    data <- translations()
-    if (new_name %in% data$plotFunction) {
-      showNotification("This plotFunction already exists.", type = "error")
-    } else {
+    
+    # Update both translations and edited_data reactiveVals
+    for (buffer_name in c("translations", "edited_data")) {
+      data <- get(buffer_name)()
+      if (new_name %in% data$plotFunction) {
+        showNotification("This plotFunction already exists.", type = "error")
+        return()
+      }
       new_row <- tibble(
         plotFunction = new_name,
         title = "",
@@ -151,13 +155,15 @@ server <- function(input, output, session) {
         summary = ""
       )
       updated_data <- bind_rows(data, new_row)
-      translations(updated_data)
-      original_row(new_row)
-      updateSelectInput(session, "Item", choices = c("", updated_data$plotFunction), selected = new_name)
-      updateTextInput(session, "new_plotFunction", value = "")
-      showNotification(paste("Added new plotFunction:", new_name), type = "message")
-      
+      # Assign back to the corresponding reactiveVal
+      if (buffer_name == "translations") translations(updated_data)
+      if (buffer_name == "edited_data") edited_data(updated_data)
     }
+    
+    original_row(new_row)
+    updateSelectInput(session, "Item", choices = c("", translations()$plotFunction), selected = new_name)
+    updateTextInput(session, "new_plotFunction", value = "")
+    showNotification(paste("Added new plotFunction:", new_name), type = "message")
   })
   
   ## Render Title ####

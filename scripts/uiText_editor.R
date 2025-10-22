@@ -2,6 +2,7 @@ library(shiny)
 library(dplyr)
 library(readr)
 library(htmltools)
+library(shinyWidgets)
 
 load_data <- function() {
   read_csv2("../reporting-grofwild/inst/extdata/uiText.csv", show_col_types = FALSE)
@@ -21,6 +22,7 @@ ui <- fluidPage(
       textInput("new_plotFunction", "New plotFunction name:"),
       actionButton("add_plotFunction", "Add New plotFunction"),
       actionButton("save_csv", "Save to CSV"),
+      actionButton("reset_buffer", "Reset Changes"),
       HTML("<br>
       <br><h3>Instructions</h3>
       <ol start=1> 
@@ -193,6 +195,43 @@ server <- function(input, output, session) {
     
     # Also update translations reactiveVal so it's in sync
     translations(data)
+  })
+  
+  ## reset buffer confirmation ####
+  observeEvent(input$reset_buffer, {
+    ask_confirmation(
+      inputId = "confirm_reset",
+      title = "Are you sure?",
+      text = "This will discard all unsaved changes and reload the last saved data.",
+      type = "warning",
+      btn_labels = c("Cancel", "Yes, reset"),
+      btn_colors = c("#AAAAAA", "#FF0000"),
+      closeOnClickOutside = FALSE
+    )
+  })
+  
+  ## reset buffer ####
+  observeEvent(input$confirm_reset, {
+    if (isTRUE(input$confirm_reset)) {
+      updated_data <- load_data()  # reload original data from CSV
+      edited_data(updated_data)    # reset reactive buffer
+      
+      # If an item is selected, update inputs accordingly
+      if (input$Item != "") {
+        current_row <- updated_data %>% filter(plotFunction == input$Item)
+        if (nrow(current_row) > 0) {
+          updateTextAreaInput(session, "title_unformatted", value = current_row$title)
+          desc_val <- switch(input$Type,
+                             "Public" = current_row$description,
+                             "Private" = current_row$wbe,
+                             "Summary" = current_row$summary,
+                             "")
+          updateTextAreaInput(session, "description_unformatted", value = ifelse(!is.na(desc_val), desc_val, ""))
+          original_row(current_row)
+        }
+      }
+      showNotification("Buffered changes reset from CSV file", type = "message")
+    }
   })
 }
 

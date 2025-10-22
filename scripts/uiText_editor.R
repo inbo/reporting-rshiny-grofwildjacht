@@ -115,7 +115,7 @@ server <- function(input, output, session) {
       changed <- TRUE
     } else {
       if (orig$title != updated_title) changed <- TRUE
-      if (orig[[target_col]] != updated_desc) changed <- TRUE
+      if ((orig[[target_col]] != updated_desc)|(is.na(orig[[target_col]]) & !is.na(updated_desc))) changed <- TRUE
     }
     
     if (changed) {

@@ -14,19 +14,53 @@ ui <- fluidPage(
   ## SideBar ####
   sidebarLayout(
     sidebarPanel(
-      selectInput("Item", "Select Item:",
+      selectInput("Item", "Select plotFunction:",
                   choices = c("", unique(load_data()$plotFunction))),
       selectInput("Type", "Select Type:",
                   choices = c("Public", "Private", "Summary")),
       textInput("new_plotFunction", "New plotFunction name:"),
       actionButton("add_plotFunction", "Add New plotFunction"),
-      actionButton("save_csv", "Save to CSV")
+      actionButton("save_csv", "Save to CSV"),
+      HTML("<br>
+      <br><h3>Instructions</h3>
+      <ol start=1> 
+      <li><b>Select a plotFunction</b>, this is the name of the function used to create a visualisation or the name of an element</li>
+      <li><b>Select a type</b>, each plotfunction has 3 types, namely: 
+          <ul>
+          <li><i>Public</i>: The description under the graph or the translation of an element on <a href='https://faunabeheer.inbo.be' target='_blank'>the public page (faunabeheer.inbo.be)</a></li>
+          <li><i>Private</i>: The description under the graph or the translation of an element on <a href='https://wbe.inbo.be' target='_blank'>the private page (wbe.inbo.be)</a></li>
+          <li><i>Summary</i>: The short description on the relevant tile on <a href='https://faunabeheer.inbo.be' target='_blank'>the public page (faunabeheer.inbo.be)</a></li>
+          </ul>
+      </li>
+      <li>If needed use <a href='https://web.stanford.edu/group/csp/cs21/htmlcheatsheet.pdf' target='_blank'>HTML styling</a> to change the Title and/or Description</li>
+      <li>Alternatively a New plotFunction can be added by:
+        <ol start=1> 
+          <li>Adding the new title in 'New plotFunction name:'</li>
+          <li>Clicking 'Add New plotFunction'</li>
+          <li>Populating the description fields</li>
+        </ol>
+      <li>Click 'Save to CSV' to save any changes to the <a href='https://github.com/inbo/reporting-rshiny-grofwildjacht/blob/uat/reporting-grofwild/inst/extdata/uiText.csv' target='_blank'>uiText.csv</a> file</li>
+      </ol>
+      <h4>Some advise</h4>
+      <i>When adding urls make sure both the URL (href='https://url.be') and the target (target='_blank') are quoted with single quotes ( ' instead of \" )</i><br>
+      <i>When using styling make sure you close the styling element by adding the &lt;/&gt; element</i>
+      <i>When you want to add a text hover:
+        <ol start=1>
+          <li>If the text you want to explain is missing a plotFunction, create a new plotFunction using 'Add New plotFunction'. Make sure the title has the following format: hover_&lt;text to explain&gt;</li>
+          <li>Next add &lt;span class='tooltip-wrapper'&gt;text to explain&lt;span class='tooltip-box'&gt;{{{hover_text to explain}}}&lt;/span&gt;&lt;/span&gt; instead of the text you want to explain</li>
+
+        </ol>
+      </i>
+           ")
     ),
-  ## Main ####
+    ## Main ####
     mainPanel(
       textAreaInput("title_unformatted", "Title (Unformatted):", width = "100%", height = "100px"),
+      HTML("<b>Title (formatted):</b><br><br>"),
       htmlOutput("title_rendered"),
-      textAreaInput("description_unformatted", "Text (Unformatted):", width = "100%", height = "200px"),
+      HTML("<br>"),
+      textAreaInput("description_unformatted", "Description (Unformatted):", width = "100%", height = "200px"),
+      HTML("<b>Description (formatted):</b><br><br>"),
       htmlOutput("description_rendered")
     )
   )

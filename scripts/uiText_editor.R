@@ -124,7 +124,7 @@ server <- function(input, output, session) {
       write_delim(data, "../reporting-grofwild/inst/extdata/uiText.csv", 
                   delim = ";", 
                   quote = "all", 
-                  na = "")
+                  na = "\"\"")
       
       showModal(modalDialog(
         title = "CSV Saved",

@@ -7,8 +7,11 @@ load_data <- function() {
   read_csv2("../reporting-grofwild/inst/extdata/uiText.csv", show_col_types = FALSE)
 }
 
+# UI ####
 ui <- fluidPage(
+  ## TitlePanel ####
   titlePanel("Translation Editor"),
+  ## SideBar ####
   sidebarLayout(
     sidebarPanel(
       selectInput("Item", "Select Item:",
@@ -19,6 +22,7 @@ ui <- fluidPage(
       actionButton("add_plotFunction", "Add New plotFunction"),
       actionButton("save_csv", "Save to CSV")
     ),
+  ## Main ####
     mainPanel(
       textAreaInput("title_unformatted", "Title (Unformatted):", width = "100%", height = "100px"),
       htmlOutput("title_rendered"),
@@ -28,10 +32,11 @@ ui <- fluidPage(
   )
 )
 
+# SERVER ####
 server <- function(input, output, session) {
   translations <- reactiveVal(load_data())
   original_row <- reactiveVal(NULL)
-  
+  ## Filter Current Row & Set desc_val ####
   observeEvent({ list(input$Item, input$Type) }, {
     req(input$Item != "")
     data <- translations()
@@ -56,6 +61,7 @@ server <- function(input, output, session) {
     }
   })
   
+  ## Add New PlotFunction ####
   observeEvent(input$add_plotFunction, {
     new_name <- trimws(input$new_plotFunction)
     req(new_name != "")
@@ -78,17 +84,21 @@ server <- function(input, output, session) {
     }
   })
   
+  ## Render Title ####
   output$title_rendered <- renderUI({
     req(input$title_unformatted)
     HTML(input$title_unformatted)
   })
   
+  ## Render Description ####
   output$description_rendered <- renderUI({
     req(input$description_unformatted)
     HTML(input$description_unformatted)
   })
   
+  ## Save to CSV ####
   observeEvent(input$save_csv, {
+    
     req(input$Item != "")
     data <- translations()
     orig <- original_row()
@@ -99,6 +109,7 @@ server <- function(input, output, session) {
                          "Private" = "wbe",
                          "Summary" = "summary")
     
+    #browser()
     changed <- FALSE
     if (is.null(orig)) {
       changed <- TRUE

@@ -43,7 +43,7 @@ ui <- fluidPage(
         </ol>
       <li>Click 'Save to CSV' to save any changes to the <a href='https://github.com/inbo/reporting-rshiny-grofwildjacht/blob/uat/reporting-grofwild/inst/extdata/uiText.csv' target='_blank'>uiText.csv</a> file</li>
       </ol>
-      <h4>Some advise</h4>
+      <h4>Some advice</h4>
       <i>When adding urls make sure both the URL (href='https://url.be') and the target (target='_blank') are quoted with single quotes ( ' instead of \" )</i><br>
       <i>When using styling make sure you close the styling element by adding the &lt;/&gt; element</i>
       <i>When you want to add a text hover:

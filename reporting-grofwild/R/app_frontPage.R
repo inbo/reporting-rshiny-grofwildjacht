@@ -18,7 +18,7 @@ frontUI <- function(speciesList, uiText){
       ) + 
       slickR::settings(dots = TRUE, arrows = FALSE, autoplay = TRUE),
     fluidRow(style = "margin-top: -50vh; width: 100%;",
-      column(width = 6, offset = 3, align = "center",
+      column(width = 6, offset = 3, align = "center", style = "margin-top: 100px;",
         tags$span(
           style = "font-weight: bold;text-align: center;color: white;font-size: 2.1em;",
           HTML(getOutputTitle(output = "frontpage", uiText = uiText)),

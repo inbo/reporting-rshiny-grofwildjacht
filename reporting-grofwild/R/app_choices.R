@@ -28,11 +28,11 @@ getCategoryTitle <- function(category){
 #' @export
 getSubcategoryTitle <- function(subcategory, uiText){
   
-  title <- getOutputTitle(output = subcategory, uiText = uiText)
+  matchId <- which(uiText$plotFunction == subcategory)
 
-  if (length(title) == 0)
+  if (length(matchId) == 0)
     subcategory else 
-    title
+    uiText[matchId, "title"]
   
 }
 

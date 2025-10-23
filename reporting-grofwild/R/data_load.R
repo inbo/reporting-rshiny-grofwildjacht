@@ -522,10 +522,14 @@ loadBeverData <- function(
   
   pathFile <- "Beverkaart.geojson"
   
-  obj <- aws.s3::get_object(pathFile, bucket = bucket)
-  geojson_text <- rawToChar(obj)
-  
-  beverData <- geojsonsf::geojson_sf(geojson_text)
+  if(!identical(path, "")){
+    beverData <- sf::read_sf(file.path(path, pathFile))
+  }else{
+    obj <- aws.s3::get_object(pathFile, bucket = bucket)
+    geojson_text <- rawToChar(obj)
+    
+    beverData <- geojsonsf::geojson_sf(geojson_text)
+  }
   
   beverData$Vestigingskans <- factor(beverData$Vestigingskans, levels = c("Laag", "Gemiddeld", "Hoog"))
   beverData$label <- with(beverData, paste(

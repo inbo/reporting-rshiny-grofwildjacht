@@ -46,9 +46,7 @@ shinyUI(
                                 
                                 selected = "WBE",
                                 # Main content
-                                tabPanel(title = "Grofwild", id = "tab-grofwild"),
-                                tabPanel(title = "Wildschade", id = "tab-wildschade"),
-                                tabPanel(title = "Dashboard", id = "tab-dashboard"),
+                                tabPanel(title = "Publiek", id = "tab-publiek"),
                                 tabPanel(title = "WBE", id = "tab-wbe", 
                                   wbeUI(id = NULL, 
                                     uiText = uiText, 

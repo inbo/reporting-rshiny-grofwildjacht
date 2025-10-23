@@ -448,7 +448,12 @@ output$wbe_embryos <- renderUI({
 requestAfschotReewildServer(id = "wbe_afschotAanvraag", 
   data = results$wbe_combinedData)
 
+return(
+  list(specie = reactive(input$wbe_species))
+)
+
 })
+
 
 }
 

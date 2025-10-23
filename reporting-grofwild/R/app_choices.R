@@ -28,11 +28,11 @@ getCategoryTitle <- function(category){
 #' @export
 getSubcategoryTitle <- function(subcategory, uiText){
   
-  matchId <- which(uiText$plotFunction == subcategory)
+  title <- getOutputTitle(output = subcategory, uiText = uiText)
 
-  if (length(matchId) == 0)
+  if (length(title) == 0)
     subcategory else 
-    uiText[matchId, "title"]
+    title
   
 }
 
@@ -147,7 +147,7 @@ getOutputDescription <- function(output,
     for (i in seq_along(keys)) {
       text <- gsub(
         pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
-        replacement = uiText[which(uiText$plotFunction == keys[i]), "description"], 
+        replacement = uiText[which(uiText$plotFunction == keys[i]), context], 
         x = text
       )
     }

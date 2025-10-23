@@ -266,35 +266,24 @@ countEmbryosServer <- function(id, data, timeRange, types,
       
       ns <- session$ns
       
-      uiText <- uiText[uiText$plotFunction == "countEmbryosUI", ]
-      
       output$titleEmbryos <- renderUI({
           
-          req(wildsoort())
-          
-          oldTitle <- uiText$title
-          newTitle <- gsub("\\{wildsoort\\}", switch(wildsoort(), 
-              "Ree" = "ree\u00EBn",
-              "Wild zwijn" = "wilde zwijnen",
-              "Damhert" = "damherten",
-              "Edelhert" = "edelherten",
-              wildsoort()),
-            oldTitle
-          )
-          
-          h3(HTML(newTitle))
+          title <- getOutputTitle(output = "countEmbryosUI", uiText = uiText)
+          h3(HTML(title))
           
         })
       
       output$descriptionEmbryos <- renderUI({
           
           req(wildsoort())   
-            
-          oldText <- uiText[, context]
-          if (wildsoort() != "Ree")
-            oldText <- strsplit(oldText, split = "Opmerking")[[1]][1]
           
-          tags$p(HTML(oldText))
+          description <- getOutputDescription(output = "countEmbryosUI", 
+            uiText = uiText, context = context)
+            
+          if (wildsoort() != "Ree")
+            description <- strsplit(description, split = "Opmerking")[[1]][1]
+          
+          tags$p(HTML(description))
           
         })
       

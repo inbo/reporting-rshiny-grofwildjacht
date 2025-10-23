@@ -15,6 +15,17 @@ wildsoort;Waterwild;;Kievit;
 wildsoort;Overig;;Houtduif;
 wildsoort;Overig;;Vos;
 wildsoort;Overig;;Verwilderde kat;
+wildsoort;Beschermde soort;;Brandgans;
+wildsoort;Beschermde soort;;Das;
+wildsoort;Beschermde soort;;Ekster;
+wildsoort;Beschermde soort;;Gaai;
+wildsoort;Beschermde soort;;Kauw;
+wildsoort;Beschermde soort;;Kleine zwaan;
+wildsoort;Beschermde soort;;Knobbelzwaan;
+wildsoort;Beschermde soort;;Koolmees;
+wildsoort;Beschermde soort;;Pimpelmees;
+wildsoort;Beschermde soort;;Turkse tortel;
+wildsoort;Beschermde soort;;Zwarte kraai;
 type;GEWAS;Gewas;WLSCHD;Woelschade
 type;GEWAS;Gewas;VRTSCHD;Vraatschade
 type;GEWAS;Gewas;GEWASANDR;Gewas - andere

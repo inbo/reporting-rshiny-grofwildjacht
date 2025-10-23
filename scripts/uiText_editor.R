@@ -45,7 +45,7 @@ ui <- fluidPage(
       </ol>
       <h4>Some advice</h4>
       <i>When adding urls make sure both the URL (href='https://url.be') and the target (target='_blank') are quoted with single quotes ( ' instead of \" )</i><br>
-      <i>When using styling make sure you close the styling element by adding the &lt;/&gt; element</i>
+      <i>When using styling make sure you close the styling element by adding the &lt;/&gt; element</i><br>
       <i>When you want to add a text hover:
         <ol start=1>
           <li>If the text you want to explain is missing a plotFunction, create a new plotFunction using 'Add New plotFunction'. Make sure the plotFunction has the following format: hover_&lt;text to explain&gt;</li>

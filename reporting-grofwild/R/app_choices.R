@@ -513,8 +513,11 @@ groupSpecies <- function(allSpecies, selectedSpecies = NULL) {
     subSpecies <- allSpecies[allSpecies$name %in% selectedSpecies, ] else
     subSpecies <- allSpecies
   
-  toReturn <- sapply(unique(subSpecies$group), function(x)
-      subSpecies$name[subSpecies$group == x], simplify = FALSE)
+  toReturn <- sapply(unique(subSpecies$group), function(x) {
+      temp <- subSpecies$name[subSpecies$group == x]
+      if (length(temp) == 1) temp <- c("", temp)
+      temp
+    }, simplify = FALSE)
   
   # For single species remove group names
   if (length(toReturn) == 1) {

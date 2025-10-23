@@ -147,7 +147,7 @@ getOutputDescription <- function(output,
     for (i in seq_along(keys)) {
       text <- gsub(
         pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
-        replacement = uiText[which(uiText$plotFunction == keys[i]), context], 
+        replacement = paste0("<b>", stringr::str_to_title(gsub("hover_", "", keys[i])), "</b>: ", uiText[which(uiText$plotFunction == keys[i]), context]), 
         x = text
       )
     }
@@ -157,6 +157,22 @@ getOutputDescription <- function(output,
   if (!is.null(maxDate))
     text <- gsub("\\{\\{maxDate\\}\\}", 
       format(maxDate, "%d/%m/%Y"), text)
+  
+  if(!is.null(specie)){
+    splitText <- strsplit(text, split = "\\{")[[1]]
+    text <- sapply(splitText, function(x)
+        if (grepl("\\}", x)) {
+          doInvert <- grepl("\\!", strsplit(x, "\\}")[[1]][1])
+          doSpecies <- grepl(specie, strsplit(x, "\\}")[[1]][1])
+          if (!doInvert & doSpecies)
+            strsplit(x, "\\}")[[1]][2] else if (doInvert & !doSpecies)
+            strsplit(x, "\\}")[[1]][2] else 
+            ""
+        } else {
+          x
+        } 
+    )
+  }
   
   # Handling embedded quoting
   text <- gsub("\\\\", "\"", text)

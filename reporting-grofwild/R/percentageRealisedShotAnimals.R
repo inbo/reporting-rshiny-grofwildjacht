@@ -182,12 +182,14 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1], uiText = uiText)
+  description <- getOutputDescription(output = as.character(match.call())[1], 
+    uiText = uiText, context = id)
   
   tagList(
     
     actionLink(inputId = ns("linkPlotRealisedShot"), 
-      label = h3(HTML(uiText$title))
+      label = h3(HTML(title))
     ),
     conditionalPanel("input.linkPlotRealisedShot % 2 == 1", ns = ns,
       
@@ -205,7 +207,7 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
               exportData = TRUE,
               doWellPanel = FALSE)
           ),
-          tags$p(HTML(uiText[, id])),
+          tags$p(HTML(description)),
           if (showAccuracy)
             accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
         ),

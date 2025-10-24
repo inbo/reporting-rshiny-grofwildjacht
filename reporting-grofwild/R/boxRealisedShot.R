@@ -114,12 +114,14 @@ boxRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiT
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1], uiText = uiText)
+  description <- getOutputDescription(output = as.character(match.call())[1], 
+    uiText = uiText, context = id)
   
   tagList(
     
     actionLink(inputId = ns("linkBoxRealisedShot"), 
-      label = h3(HTML(uiText$title))
+      label = h3(HTML(title))
     ),
     conditionalPanel("input.linkBoxRealisedShot % 2 == 1", ns = ns,
       
@@ -132,7 +134,7 @@ boxRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiT
           optionsModuleUI(id = ns("boxRealisedShot"),
             showTime = TRUE, showType = TRUE, regionLevels = regionLevels,
             exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
+          tags$p(HTML(description))
         ),
         tags$hr()
       )

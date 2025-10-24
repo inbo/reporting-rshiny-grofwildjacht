@@ -158,11 +158,13 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1], uiText = uiText)
+  description <- getOutputDescription(output = as.character(match.call())[1], 
+    uiText = uiText, context = id)
   
   tagList(
     actionLink(inputId = ns("linkAgeGenderLowerJaw"),
-      label = h3(HTML(uiText$title))),
+      label = h3(HTML(title))),
     conditionalPanel("input.linkAgeGenderLowerJaw % 2 == 1", ns = ns,
       
       fixedRow(
@@ -174,7 +176,7 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
           optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(uiText[, id]))
+          tags$p(HTML(description))
         )     
       ),
       tags$hr()

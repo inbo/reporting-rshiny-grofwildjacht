@@ -451,6 +451,7 @@ body > .tabbable {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
   white-space: normal;
+	min-width: max-content;
 	max-width: 700px;
   text-align: left;
   z-index: 9999;

@@ -226,11 +226,13 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == plotFunction, ]
+  title <- getOutputTitle(output = plotFunction, uiText = uiText)
+  description <- getOutputDescription(output = plotFunction, 
+    uiText = uiText, context = id)
   
   tagList(
     
-    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(uiText$title))),
+    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(title))),
     conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
       
       uiOutput(ns("disclaimerYearAge")),
@@ -245,7 +247,7 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
             summarizeBy = c("Aantal (alle data)" = "count",
               "Percentage (enkel ingezamelde onderkaken)" = "percent"),
             showTime = TRUE, regionLevels = if (showRegion) c(1:2, 4), exportData = TRUE),
-          tags$p(HTML(uiText[, id]))
+          tags$p(HTML(description))
         )
       ),
       tags$hr()

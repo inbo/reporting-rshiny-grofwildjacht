@@ -145,7 +145,10 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
       
       output$tableSpeciesText <- renderUI({
           
-          tags$p(HTML(decodeText(uiText[uiText$plotFunction == "tableSpeciesUI", id], species = species())))
+          description <- getOutputDescription(output = "tableSpeciesUI", 
+            uiText = uiText, specie = species(), context = id)
+          
+          tags$p(HTML(description))
         
         })
       
@@ -178,11 +181,11 @@ tableSpeciesUI <- function(id, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1], uiText = uiText)
   
   tagList(
     
-    h3(HTML(uiText$title)),
+    h3(HTML(title)),
     
     fixedRow(
       

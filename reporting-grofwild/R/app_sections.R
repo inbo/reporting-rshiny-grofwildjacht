@@ -94,11 +94,12 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
   moduleServer(id,
     function(input, output, session) {
       
-      oldText <- uiText[uiText$plotFunction == "bioindicatorSection", id]
-      
       output$textBioindicator <- renderUI({
           
-          HTML(decodeText(text = oldText, species = wildsoort()))
+          description <- getOutputDescription(output = "bioindicatorSection", 
+            specie = wildsoort(), uiText = uiText, context = id)
+          
+          HTML(description)
           
         })
       
@@ -114,10 +115,12 @@ bioindicatorSection <- function(id, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1],
+    uiText = uiText)
+  
   
   tagList(
-    h2(HTML(uiText$title)),
+    h2(HTML(title)),
     tags$p(uiOutput(ns("textBioindicator")))
   )
 

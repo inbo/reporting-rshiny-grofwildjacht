@@ -147,7 +147,7 @@ getOutputDescription <- function(output,
     for (i in seq_along(keys)) {
       text <- gsub(
         pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
-        replacement = uiText[which(uiText$plotFunction == keys[i]), "description"], 
+        replacement = uiText[which(uiText$plotFunction == keys[i]), context], 
         x = text
       )
     }

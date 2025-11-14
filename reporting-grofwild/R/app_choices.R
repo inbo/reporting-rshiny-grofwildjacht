@@ -234,8 +234,14 @@ getOutputSpecie <- function(specie,
 
   outputs <- c(
 #    "woordenlijstPlaceholder",
+    if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
+      "F17_1",
     if(nrow(geoDataSpecie) > 0)
       c("trendYearFlandersUI", "mapFlandersUI", "kencijferUI"),
+    if(nrow(combinedDataSpecie) > 0)
+      c("countYearShotUI-leeftijd_comp"),
+    if(any(combinedDataSpecie$afschotjaar >= 2014))
+      c("countYearShotUI-jachtmethode_comp"),
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -245,10 +251,6 @@ getOutputSpecie <- function(specie,
       ),
     if(nrow(ecoDataSpecie) > 0 & nrow(openingstijdenDataSpecie) > 0)
       c("yearlyShotAnimalsUI"),
-    if(nrow(combinedDataSpecie) > 0)
-      c("countYearShotUI-leeftijd_comp"),
-    if(any(combinedDataSpecie$afschotjaar >= 2014))
-      c("countYearShotUI-jachtmethode_comp"),
     if(length(drukjachtDataID) > 0)
       c("F04_3"),
     if(nrow(schadeDataSpecie) > 0)
@@ -259,24 +261,22 @@ getOutputSpecie <- function(specie,
         "countYearSchadeUI-seizoen"
       ),
     if(!all(is.na(schadeDataSpecie$SoortNaam))) {
-      c("tableGewasUI", "countYearSchadeUI-gewas")
+      c("countYearSchadeUI-gewas", "tableGewasUI")
     },
     if(!all(is.na(schadeDataSpecie$schadeBedrag)))
       "barCostUI",
     if(nrow(geoDataSpecie) > 0 & nrow(schadeDataSpecie) > 0)
       c("mapFlandersUI-schade", "mapSchadeUI"),
     if(specie == "Ree" & any(combinedDataSpecie$afschotjaar >= 2014)  ||
-        nrow(combinedDataSpecie) > 0)
+      nrow(combinedDataSpecie) > 0)
       c("boxAgeWeightUI"),
     if(specie == "Ree" & any(ecoDataSpecie$afschotjaar >= 2005)  ||
-        nrow(ecoDataSpecie) > 0)
+      nrow(ecoDataSpecie) > 0)
       c("countAgeCheekUI"),
-    if(nrow(combinedDataEmbryo) > 0)
-      "countEmbryosUI",
     if(any(ecoDataSpecie$geslacht_comp == "Vrouwelijk"))
       "countAgeGroupUI",
-    if(nrow(waarnemingenDataSpecie) > 0 | nrow(geoDataSpecie) > 0)
-      "F17_1",
+    if(nrow(combinedDataEmbryo) > 0)
+      "countEmbryosUI",
     if (any(spreadDataNbRows > 0) | specie == "Bever")
       "mapSpreadUI",
     # Maatschappelijk draagvlak
@@ -370,7 +370,7 @@ getOutputInfo <- function(species, ...){
   
   # sort to have correct order in the UI
   info[, "specie"] <- factor(info[, "specie"], levels = species)
-  info <- info[do.call(order, info), ]
+  info <- info[do.call(order, info[ , 1:3]), ]
   
    
   return(info)
@@ -387,10 +387,10 @@ getSubcategoryOutput <- function(output){
   # Should be unique in the entire app!
   subcategoryOutput <- list( 
       `beheer-vlaanderen` = c("trendYearFlandersUI"),
-      `beheer-regio` = c("mapFlandersUI", 
-        "countYearProvinceUI-afschot", "yearlyShotAnimalsUI"),
+      `beheer-regio` = c("mapFlandersUI", "yearlyShotAnimalsUI", 
+        "countYearProvinceUI-afschot"),
       `beheer-leeftijdcategorie` = 
-          c("tableProvinceUI", "countYearShotUI-leeftijd_comp"),
+          c("countYearShotUI-leeftijd_comp", "tableProvinceUI"),
       `beheer-jachtmethode` = 
           c("countYearShotUI-jachtmethode_comp", "F04_3"),
       
@@ -398,8 +398,8 @@ getSubcategoryOutput <- function(output){
       `schade-vlaanderen` = c(
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade"
       ),
-      `schade-regio` =  c("mapFlandersUI-schade", "mapSchadeUI", 
-        "countYearProvinceUI-schade"),
+      `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
+        "mapSchadeUI"),
       `schade-type-gewas` = c("countYearSchadeUI-gewas", "tableGewasUI"),
       `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
       `schade-seizoen` = c("countYearSchadeUI-seizoen"),
@@ -409,7 +409,7 @@ getSubcategoryOutput <- function(output){
       `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),
       `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
-      `populatie-voortplanting` = c("countEmbryosUI", "countAgeGroupUI"),
+      `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI"),
       
       # verspreiding
       `verspreiding-huidig` = c("F17_1", "kencijferUI"),

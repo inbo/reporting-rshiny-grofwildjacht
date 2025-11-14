@@ -244,6 +244,13 @@ beheerOutputServer <- function(id,
               },
               "beheer-regio" = {
                 tagList(
+                  if ("mapFlandersUI" %in% outputs)
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot"), showRegion = FALSE,
+                        type = "beheer", plotDetails = "region", uiText = uiText, 
+                        specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI" %in% plot())
+                      )),
                   if ("countYearProvinceUI-afschot" %in% outputs)
                     wellPanel(class = "well-white", countYearProvinceUI(
                         id = ns("plot"), 
@@ -251,13 +258,6 @@ beheerOutputServer <- function(id,
                         plotFunction = "countYearProvinceUI-afschot",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearProvinceUI-afschot" %in% plot())
-                      )),
-                  if ("mapFlandersUI" %in% outputs)
-                    wellPanel(class = "well-white", mapFlandersUI(
-                        id = ns("plot"), showRegion = FALSE,
-                        type = "beheer", plotDetails = "region", uiText = uiText, 
-                        specie = specie(),
-                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI" %in% plot())
                       )),
                   if ("yearlyShotAnimalsUI" %in% outputs)
                     wellPanel(class = "well-white", yearlyShotAnimalsUI(
@@ -335,13 +335,6 @@ beheerOutputServer <- function(id,
             },
             "beheer-regio" = {
               c(
-                if ("countYearProvinceUI-afschot" %in% outputs)
-                  countYearProvinceServer(
-                    id = "plot",
-                    data = results$ecoData,
-                    allRegionsSelected = TRUE,
-                    preSelected = beheerSelection
-                  ),
                 if ("mapFlandersUI" %in% outputs)
                   mapFlandersServer(
                     id = "plot",
@@ -352,6 +345,13 @@ beheerOutputServer <- function(id,
                     geoData = results$geoData,
                     biotoopData = biotoopData,
                     allSpatialData = spatialData,
+                    preSelected = beheerSelection
+                  ),
+                if ("countYearProvinceUI-afschot" %in% outputs)
+                  countYearProvinceServer(
+                    id = "plot",
+                    data = results$ecoData,
+                    allRegionsSelected = TRUE,
                     preSelected = beheerSelection
                   ),
                 if ("yearlyShotAnimalsUI" %in% outputs)

@@ -330,17 +330,7 @@ populatieOutputServer <- function(id,
                 if ("countAgeGroupUI" %in% outputs)
                   countAgeGroupServer(
                     id = "plot",
-                    data = reactive({
-                        plotData <- results$ecoData()[
-                          results$ecoData()$geslacht_comp == "Vrouwelijk", 
-                        ]
-                        validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
-                        plotData$reproductiestatus <- ifelse(
-                          is.na(plotData$aantal_embryos), "Onbekend",
-                          ifelse(plotData$aantal_embryos != 0, "Drachtig", "Niet drachtig")
-                        )
-                        plotData
-                      }),
+                    data = results$ecoData,
                     groupVariable = "reproductiestatus",
                     preSelected = populatieSelection
                   )

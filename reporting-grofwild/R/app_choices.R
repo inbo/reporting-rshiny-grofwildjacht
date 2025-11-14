@@ -47,7 +47,7 @@ getSubcategoryTitle <- function(subcategory, uiText){
 #' @author lcougnaud
 #' @export
 getOutputTitle <- function(output, 
-  uiText, specie = NULL, type = NULL, n = integer()){
+  uiText, specie = NULL, type = NULL, n = integer(), regioSchaal = NULL){
 
   # check if output name formatted as 'output-[type]'
   outputInfo <- strsplit(output, split = "-")[[1]]
@@ -82,6 +82,11 @@ getOutputTitle <- function(output,
     regex <- paste0(regex, " \\{wildsoort(en)*\\},*")
     title <- sub(regex, "", title)
   }
+  
+  
+  # Replace regio-schaal
+  if (!is.null(regioSchaal))
+    title <- gsub("{regio-schaal}", regioSchaal, title, fixed = TRUE)
   
   if(!is.null(type) && !is.na(type)){
     if (type == "schade")	type <- "wildschade"

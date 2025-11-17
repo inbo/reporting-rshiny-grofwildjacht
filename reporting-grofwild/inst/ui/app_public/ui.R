@@ -227,7 +227,7 @@ shinyUI(
       ),
       bslib::nav_item(selectizeInput(inputId = "search", label = NULL, choices = NULL, width = "100%")), 
       bslib::nav_spacer(), # right align next items
-      bslib::nav_item(uiOutput("mailLink")),
+      bslib::nav_item(contactUI(id = "publicContact")),
       bslib::nav_item(
         tags$a(
           id = "WBE", 

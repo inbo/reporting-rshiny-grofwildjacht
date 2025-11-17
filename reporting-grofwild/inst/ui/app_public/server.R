@@ -588,18 +588,8 @@ observeEvent(subcategory(), {
   }, priority = 0)
 
 
+  contactServer(id = "publicContact", uiText = uiText, currentURL = session$clientData$url_search)
   versionServer(id = "public")
-  
-  output$mailLink <- renderUI({
-      
-      tags$a(
-          id = "contact", 
-          href = paste("mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer web applicatie&body=Link:", 
-            paste0("faunabeheer.inbo.be/", createQueryString(selection(), page = input$navbarID, defaults = defaultTabs))), 
-          target="_blank", "Contact"
-        )
-      
-    })
   
   # List all choices in search navigation field
   observe({

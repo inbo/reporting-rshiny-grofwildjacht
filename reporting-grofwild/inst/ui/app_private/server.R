@@ -30,7 +30,12 @@ shinyServer(function(input, output, session) {
               )
           })
       
-      
+        # Contact
+        # -------
+        
+        contactServer(id = "privateContact", uiText = uiText, subject = 'Faunabeheer WBE web applicatie') 
+        
+        
       # Version
       # -------
     

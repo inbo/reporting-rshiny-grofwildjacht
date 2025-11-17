@@ -369,7 +369,7 @@ getOutputInfo <- function(species, ...){
   
   if (nrow(blacklist) > 0 ) {
     blacklist <- do.call(rbind, lapply(1:nrow(blacklist), function(i) {
-          if (is.na(blacklist$specie[i]))
+          if (is.na(blacklist$specie[i]) | !nchar(blacklist$specie[i]))
             data.frame(specie = unique(info$specie), output = blacklist$output[i]) else
             data.frame(specie = blacklist$specie[i], output = blacklist$output[i])
         }))

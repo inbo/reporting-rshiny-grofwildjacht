@@ -23,7 +23,7 @@
 #' @importFrom INBOtheme inbo_palette
 #' @export
 countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
-  sourceIndicator = NULL, regio = "", 
+  sourceIndicator = c("inbo", "meldingsformulier", "both"), regio = "", 
   sourceIndicator_leeftijd = NULL, sourceIndicator_geslacht = NULL,
   width = NULL, height = NULL) {
   
@@ -39,6 +39,14 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
     sourceIndicator_embryos = sourceIndicator,
     sourceIndicator_leeftijd = sourceIndicator_leeftijd,
     sourceIndicator_geslacht = sourceIndicator_geslacht)
+  
+  plotData <- plotData[plotData$geslacht_comp == "Vrouwelijk",]
+  validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
+  
+  plotData$reproductiestatus <- ifelse(
+    is.na(plotData$embryos), "Onbekend",
+    ifelse(plotData$embryos != 0, "Drachtig", "Niet drachtig")
+  )
   
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, c(groupVariable, "leeftijd_comp")]
   names(plotData)[names(plotData) == "leeftijd_comp"] <- "leeftijd"

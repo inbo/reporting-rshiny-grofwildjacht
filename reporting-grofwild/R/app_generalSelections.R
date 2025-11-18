@@ -21,10 +21,13 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
       div(class = "collapsible-well",
         wellPanel(class = "well-white", 
           div(class = "well-header",
-            tags$button("—", 
-              id = ns("toggleBtn1"), 
-              class = "collapse-btn",
-              `data-target` = ns("content"))
+            tagList(
+              tags$h3("Algemene filters", style = "margin-top: 0px;"),
+              tags$button("—", 
+                id = ns("toggleBtn1"), 
+                class = "collapse-btn",
+                `data-target` = ns("content"))
+            )
           ),
           
           div(id = ns("content"), class = "well-content",

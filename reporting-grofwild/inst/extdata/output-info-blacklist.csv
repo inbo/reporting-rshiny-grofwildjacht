@@ -10,6 +10,7 @@ Grauwe gans,exotenportaal
 Kievit,exotenportaal
 Houtduif,exotenportaal
 Vos,exotenportaal
+<<<<<<< HEAD
 Bever,exotenportaal
 Wolf,exotenportaal
 Wolf,tableSchadeSummaryUI
@@ -24,3 +25,21 @@ Wolf,mapFlandersUI-schade
 Wolf,mapSchadeUI
 Wolf,barCostUI
 ,mapSchadeUI
+=======
+Wild zwijn,mapSchadeUI
+Edelhert,mapSchadeUI
+Damhert,mapSchadeUI
+Ree,mapSchadeUI
+Haas,mapSchadeUI
+Konijn,mapSchadeUI
+Patrijs,mapSchadeUI
+Wilde Eend,mapSchadeUI
+Smient,mapSchadeUI
+Grauwe Gans,mapSchadeUI
+Kievit,mapSchadeUI
+Bever,mapSchadeUI
+Wolf,mapSchadeUI
+Houtduif,mapSchadeUI
+Vos,mapSchadeUI
+Verwilderde Kat,mapSchadeUI
+>>>>>>> refs/remotes/origin/uat

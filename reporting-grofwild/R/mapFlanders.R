@@ -58,6 +58,7 @@ getCenterView <- function(sf_object) {
 #' the legend shows different types of regions for WBE
 #' @param countVariable character, column name in \code{data} that contains counts;
 #' if NULL then each row in the data contains 1 count
+#' @param groupVariable character, column name of frequency to calculate
 #' @inheritParams filterDataSource
 #' @inheritParams createShapeData
 #' @inheritParams reportingGrofwild-common-args
@@ -69,7 +70,7 @@ getCenterView <- function(sf_object) {
 createSpaceData <- function(data, allSpatialData, biotoopData, 
   year, species, regionLevel,
   unit = c("absolute", "relative", "absoluteCases", "relativeDekking", "region"), 
-  sourceIndicator = NULL, countVariable = NULL) {
+  sourceIndicator = NULL, countVariable = NULL, groupVariable = NULL) {
   
   
   # To prevent warnings with R CMD check
@@ -81,6 +82,9 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   # Select correct spatial data
   spatialData <- filterSpatial(allSpatialData = allSpatialData, 
     species = species, regionLevel = regionLevel, year = year)
+  
+  if (is.null(groupVariable))
+    groupVariable <- "dataSource"
   
   if (is.null(spatialData))
     return(NULL) else
@@ -169,7 +173,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     # Exclude data with missing locatie
     plotData <- subset(plotData, !is.na(plotData$afschotjaar) &
         !is.na(plotData$locatie) & !plotData$locatie %in% c("", "Onbekend"),
-      c("afschotjaar", "locatie", countVariable, if (!is.null(sourceIndicator)) "dataSource")
+      c("afschotjaar", "locatie", countVariable, if (!is.null(sourceIndicator) & !is.null(groupVariable)) groupVariable)
     )
     
     # Summarize data over afschotjaar/locaties/dataSource
@@ -183,7 +187,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     }
     
     if (!is.null(sourceIndicator)) {
-      summaryData <- dcast(summaryData, afschotjaar + locatie ~ dataSource, value.var = "freq", fun.aggregate = sum)
+      summaryData <- dcast(summaryData, as.formula(paste("afschotjaar + locatie ~", groupVariable)), value.var = "freq", fun.aggregate = sum)
       summaryData$freq <- apply(summaryData[, -(1:2), drop = FALSE], 1, sum, na.rm = TRUE)      
     }
     
@@ -783,7 +787,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             regionLevel = regionLevelLocal(),
             unit = if (type == "wbe") "region" else if (type != "empty") unit(),
             sourceIndicator = bronMap(),
-            countVariable = countVariable
+            countVariable = countVariable,
+            groupVariable = input$groupVariable
           )
           
         })
@@ -799,18 +804,49 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           regionNames <- summarySpaceData()$data$locatie
           titleText <- paste(if (type != "dash") "Gerapporteerd", 
-            unitText(), "in", year()[1])
+            paste0(
+              if (type == "schade") 
+                  "aantal schadegevallen" else if (!is.null(countVariable)) 
+                  countVariable else 
+                  "afschot",
+              if (!is.null(unit()) && type %in% c("beheer")) 
+                switch(unit(),
+                  absolute = "",
+                  relative = "/100ha",
+                  relativeDekking = "/100ha bos & natuur"
+                )  
+            ), "in", year()[1])
+          
+          tmpData <- summarySpaceData()$data
+          tmpData[is.na(tmpData)] <- 0
           
           contentText <- if (!is.null(bronMap())) {
-              availableBron <- bronMap()[bronMap() %in% colnames(summarySpaceData()$data)]
-              names(availableBron) <- sapply(availableBron, function(x) strsplit(x, split = "\\.")[[1]][1])
+              if (is.null(input$groupVariable)) {
+                availableGroups <- bronMap()[bronMap() %in% colnames(summarySpaceData()$data)]
+                names(availableGroups) <- sapply(availableGroups, function(x) strsplit(x, split = "\\.")[[1]][1])
+              } else {
+                availableGroups <- unique(geoData()[[input$groupVariable]])
+                availableGroups <- as.character(availableGroups[availableGroups %in% colnames(summarySpaceData()$data)])
+                if (input$groupVariable == "dataSource") {
+                  availableGroups <- availableGroups[availableGroups %in% bronMap()]
+                }
+              }              
               
-              if (length(availableBron) > 1)
-                apply(do.call(cbind, Map(paste, names(availableBron), summarySpaceData()$data[, availableBron, drop = FALSE], sep = ": ")), 1, function(x)
+              if (!is.null(input$groupVariable) && input$groupVariable == "schadeCode") {
+                metaSchade <- unlist(loadMetaSchade()$codes)
+                availableGroups <- metaSchade[metaSchade %in% availableGroups]
+                names(availableGroups) <- sapply(names(availableGroups), function(x) strsplit(x, split = "\\.")[[1]][2])
+              } else {
+                names(availableGroups) <- sapply(availableGroups, function(x) strsplit(x, split = "\\.")[[1]][1])
+              }
+              
+              
+              if (length(availableGroups) > 1)
+                apply(do.call(cbind, Map(paste, names(availableGroups), tmpData[, availableGroups, drop = FALSE], sep = ": ")), 1, function(x)
                     paste("</br>", paste(x, collapse = "</br>"))) else
-                sapply(summarySpaceData()$data[, availableBron], function(x) paste0("</br>", names(availableBron), ": ", x))
+                sapply(tmpData[, availableGroups], function(x) paste0("</br>", names(availableGroups), ": ", x))
             } else
-              round(summarySpaceData()$data$freq, 2)
+              round(tmpData$freq, 2)
           
           textPopup <- paste0("<h4>", regionNames, "</h4>",  
             "<strong>", titleText, "</strong>: ", 
@@ -1408,7 +1444,11 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       c("waarnemingen.be", "afschot") else
       loadMetaSchade()$sources
   
-  
+  variableChoices <- c("Bron" = "dataSource",
+    "Type schade" = "schadeCode",
+    "Seizoen" = "season"
+  )
+    
   outputFunction <- if (type == "dash") 
       "F17_1" else if (type != "schade")
       "mapFlandersUI" else
@@ -1467,7 +1507,9 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
                       selectInput(inputId = ns("legend"), label = "Legende",
                         choices = legendChoices) else if (type %in% c("beheer"))
                       selectInput(inputId = ns("unit"), label = "Eenheid",
-                        choices = unitChoices) else
+                        choices = unitChoices) else if (type %in% c("schade"))
+                      selectInput(inputId = ns("groupVariable"), label = "Variable",
+                        choices = variableChoices) else
                     if (!(type %in% c("schade"))) uiOutput(ns("period")))
               ),
               

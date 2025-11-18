@@ -141,7 +141,7 @@ contactUI <- function(id) {
 
 
 #' Link with contact info - server side
-#' @inherit welcomeSectionServer
+#' @inherit welcomeSectionUI
 #' @param currentURL character, url of current page/graph
 #' @param subject character, subject of the mail
 #' @export

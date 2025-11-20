@@ -271,7 +271,7 @@ beheerOutputServer <- function(id,
                 tagList(
                   if ("countYearShotUI-leeftijd_comp" %in% outputs)
                     wellPanel(class = "well-white", countYearShotUI(
-                        id = ns("plot"), groupVariable = "leeftijd_comp", showInterval = TRUE,
+                        id = ns("plot"), groupVariable = "leeftijd_comp", showInterval = TRUE, showType = TRUE,
                         uiText = uiText, context = "description", specie = specie(), showTime = TRUE,
                         doHide = !(plot() == defaultTabs$plot || "countYearShotUI-leeftijd_comp" %in% plot())
                       )),
@@ -373,6 +373,7 @@ beheerOutputServer <- function(id,
                     data = results$combinedData,
                     timeRange = results$timeRange,
                     groupVariable = "leeftijd_comp",
+                    types = results$jachttypes,
                     preSelected = beheerSelection
                   ),
                 if ("tableProvinceUI" %in% outputs)

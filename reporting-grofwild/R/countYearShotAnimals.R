@@ -22,7 +22,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
   groupVariable,
   sourceIndicator_leeftijd = c("both", "inbo"),
-  type = NULL) {
+  type = NULL, type_jachtmethode = NULL) {
   
   
   wildNaam <- unique(data$wildsoort)
@@ -33,6 +33,11 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
  
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
+  
+  # Filter on chosen jachtmethode in case of leeftijdscategorie graph
+  if (!is.null(type_jachtmethode)) {
+    plotData <- plotData %>% filter(jachtmethode_comp %in% type_jachtmethode)
+  }
   
   # regions get already filtered out in the plotModuleServer 
   
@@ -244,9 +249,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
         timeRange = timeRange,
         intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
         types = types,
-        labelTypes = if (groupVariable == "leeftijd_comp") 
-            "Leeftijdscategorie" else
-            "Jachtmethode",
+        labelTypes = "Jachtmethode",
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 

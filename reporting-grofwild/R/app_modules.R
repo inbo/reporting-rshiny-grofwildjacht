@@ -590,12 +590,21 @@ plotModuleServer <- function(input, output, session, plotFunction,
         year <- coalesce(input$year, preSelected()$year(), NA)
         time <- coalesce(input$time, preSelected()$time(), NA)
         interval <- coalesce(input$interval, preSelected()$interval(), NA)
-        if (!is.null(input$type) && !is.null(preSelected()$type())) {   # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
+        # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
+        if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "plotBioindicator") {   
           typeReact <- input$type
           typeLeeftijd <- preSelected()$type()
         } else {
-          typeReact <- coalesce(input$type, preSelected()$type(), NA)
+          typeReact <- if (!is.null(input$type)) input$type else if (!is.null(preSelected()$type())) preSelected()$type() else NA
           typeLeeftijd <- NULL
+        }
+        # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector
+        if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "countYearShotAnimals") {   
+          typeReact <- preSelected()$type()
+          typeJacht <- input$type
+        } else {
+          typeReact <- if (!is.null(input$type)) input$type else if (!is.null(preSelected()$type())) preSelected()$type() else NA
+          typeJacht <- NULL
         }
         regionLevel <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
         region <- coalesce(input$region, preSelected()$region(), NA)
@@ -620,6 +629,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = type),
             if (!is.null(typeLeeftijd))  # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
               list(type_leeftijd = typeLeeftijd),
+            if (!is.null(typeJacht))  # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector
+              list(type_jachtmethode = typeJacht),
             if (!is.null(openingstijdenData) && !all(is.na(typeReact)) & !is.na(year) & all(is.na(dataSource_schade)))
               list(openingstijdenData = openingstijdenData()),
             if (!is.null(subToekenningsData()))

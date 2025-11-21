@@ -35,12 +35,14 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	if (is.null(jaar))
 		stop("Gelieve jaartal te selecteren")
 	
-  
-  
   if (categorie == "leeftijd") {
     data <- filterGrofwild(plotData = data, 
       sourceIndicator_leeftijd = sourceIndicator_leeftijd)
-    data <- subset(data, leeftijd_comp_inbo %in% type)
+    
+    # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
+    if (sourceIndicator_leeftijd == "inbo")
+      data <- subset(data, leeftijd_comp_inbo %in% type)
+    else data <- subset(data, leeftijd_comp %in% type)
   }
   
 	## General Modification of Data

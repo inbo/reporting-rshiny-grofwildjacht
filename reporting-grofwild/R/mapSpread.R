@@ -186,14 +186,15 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 mapBevers <- function(beverData, 
   addGlobe = FALSE, legend = "none") {
   
-  myMap <- leaflet() 
+  myMap <- leaflet() %>% 
+    addProviderTiles("OpenStreetMap.HOT") %>%
+    setView(lng = 4, lat = 51, zoom = 8)
   
-  factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), beverData$Vestigingskans)
+  factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), beverData$Vstgngs)
 
   myMap <- myMap %>%
-    clearShapes() %>%
     addPolygons(data = beverData,
-      color = ~factpal(beverData$Vestigingskans),
+      color = ~factpal(beverData$Vstgngs),
       opacity=0,
       fillOpacity=0.75,
       popup = ~label)
@@ -204,7 +205,7 @@ mapBevers <- function(beverData,
       map = myMap, 
       position = legend,
       pal = factpal, 
-      values = beverData$Vestigingskans,
+      values = beverData$Vstgngs,
       title = "Kans op vestiging",
       opacity = 0.75,
       layerId = "legend")
@@ -213,6 +214,8 @@ mapBevers <- function(beverData,
   # Add background map
   if (addGlobe)
     myMap <- myMap %>% addProviderTiles("OpenStreetMap.HOT")
+  else 
+    myMap <- myMap %>% clearTiles()
   
   # For compliance with mapSpread()
   attr(myMap, "modelColors") <- NULL
@@ -572,9 +575,28 @@ mapSpreadServer <- function(id,
       
       ## Application for Bever
       
+      output$beverYearsFiltersUI <- renderUI({
+          
+          availableYears <- loadBeverAvailableYears()
+          
+          tagList(
+            fluidRow(
+              column(4, selectizeInput(inputId = ns("versprYear"), label = "Jaar van verspreiding:",
+                  choices = c("None", availableYears$verspreiding), selected = "None")),
+              column(4, selectizeInput(inputId = ns("predYear"), label = "Jaar van predictie:",
+                  choices = availableYears$prediction, selected = min(availableYears$prediction))),
+              column(4, checkboxGroupInput(inputId = ns("rb"), label = "Kans op vestiging in jaar van predictie:",
+                  choices = c("Laag", "Gemiddeld", "Hoog"), selected = character(0)))
+            )
+          )
+        })
+      
       beverData <- reactive({
           req(species == "Bever")
-          loadBeverData()
+          
+          req(input$predYear)
+          
+          loadBeverData(year = input$predYear, type = "predictie")
           
         })
       
@@ -582,53 +604,55 @@ mapSpreadServer <- function(id,
           req(beverData())
           
           tagList(
-            checkboxGroupInput(ns("rb"), "Kans op vestiging in 2026:",
-              levels(beverData()$Vestigingskans),
-              selected = character(0)),
             fluidRow(
               column(4, sliderInput(ns("overst"), "Percentage overstromingsgevoelig gebied:",
-                  min(beverData()$Overstromingsrisico), max(beverData()$Overstromingsrisico),
+                  min(beverData()$Ovrstrm), max(beverData()$Ovrstrm),
                   value = range(beverData()$Ovrstrm), step = 5)),
               column(4, sliderInput(ns("rust"), "Percentage potentieel rustgebied:",
-                  min(beverData()$Rustzones), max(ceiling(beverData()$Rustzones)),
-                  value = range(beverData()$Rustzones), step = 1)),
+                  min(beverData()$Rustzns), max(ceiling(beverData()$Rustzns)),
+                  value = range(beverData()$Rustzns), step = 1)),
               column(4, sliderInput(ns("habitat"), "Percentage kwestbaar habitat:",
-                  min(beverData()$Habitats), max(ceiling(beverData()$Habitats)),
-                  value = range(beverData()$Habitats), step = 5))
+                  min(beverData()$Habitts), max(ceiling(beverData()$Habitts)),
+                  value = range(beverData()$Habitts), step = 5))
             ),
             fluidRow(
               column(4, sliderInput(ns("soorten"), "Aantal soorten met mogelijk positief effect:",
-                  min(beverData()$HRLsoorten), max(beverData()$HRLsoorten),
-                  value = range(beverData()$HRLsoorten), step = 1)),
+                  min(beverData()$HRLsrtn), max(beverData()$HRLsrtn),
+                  value = range(beverData()$HRLsrtn), step = 1)),
               column(4, sliderInput(ns("vissen"), "Aantal vissen met mogelijk negatief effect:",
-                  min(beverData()$HRLvissen), max(beverData()$HRLvissen),
-                  value = range(beverData()$HRLvissen), step = 1))
+                  min(beverData()$HRLvssn), max(beverData()$HRLvssn),
+                  value = range(beverData()$HRLvssn), step = 1))
             )
           )
         })
       
       filteredBeverData <- reactive({
           req(beverData())
-          req(input$rb)
           req(input$overst)
           req(input$rust)
           req(input$habitat)
           req(input$soorten)
           req(input$vissen)
           
+          if (is.null(input$rb)) {
+            rb <- c()
+          } else {
+            rb <- input$rb
+          }
+          
           beverData() %>% filter(
-            !is.na(Vestigingskans),
-            Vestigingskans %in% input$rb,
-            Overstromingsrisico >= input$overst[1], Overstromingsrisico <= input$overst[2],
-            Rustzones >= input$rust[1], Rustzones <= input$rust[2],
-            Habitats >= input$habitat[1], Habitats <= input$habitat[2],
-            HRLsoorten >= input$soorten[1], HRLsoorten <= input$soorten[2],
-            HRLvissen >= input$vissen[1], HRLvissen <= input$vissen[2]
+            !is.na(Vstgngs),
+            Vstgngs %in% rb,
+            Ovrstrm >= input$overst[1], Ovrstrm <= input$overst[2],
+            Rustzns >= input$rust[1], Rustzns <= input$rust[2],
+            Habitts >= input$habitat[1], Habitts <= input$habitat[2],
+            HRLsrtn >= input$soorten[1], HRLsrtn <= input$soorten[2],
+            HRLvssn >= input$vissen[1], HRLvssn <= input$vissen[2]
           )
         })
       
         spreadPlotBever <- reactive({
-            validate(need(length(input$rb) > 0, "Gelieve een kans op vestiging te selecteren"))
+#            validate(need(length(input$rb) > 0, "Gelieve een kans op vestiging te selecteren"))
             mapBevers(
               filteredBeverData(), 
               addGlobe = isolate(input$globeBever) %% 2 == 0, 
@@ -697,18 +721,37 @@ mapSpreadServer <- function(id,
           
           if (input$legendBever != "none") {
             
-            factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), filteredBeverData()$Vestigingskans)
+            factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), filteredBeverData()$Vstgngs)
             
             proxy %>% addLegend(
               position = input$legendBever,
               pal = factpal, 
-              values = filteredBeverData()$Vestigingskans,
+              values = filteredBeverData()$Vstgngs,
               title = "Kans op vestiging",
               opacity = 0.75,
               layerId = "legend")
             
           }
           
+        })
+      
+      # Add huidige verspreiding
+      observeEvent(input$versprYear, {
+          proxy <- leafletProxy("spreadPlotBever") %>%
+            clearMarkers()
+          req(!is.null(proxy))
+          
+          if (input$versprYear != "None") {
+            
+            territoriaData <- loadBeverData(year = input$versprYear, type = "verspreiding")
+            
+            proxy %>%
+              addCircleMarkers(data = territoriaData,
+                color = 'black',
+                radius = 1,
+                fillOpacity = 0.5,
+                opacity = 0.5)
+          }
         })
       
       finalMapBever <- reactive({
@@ -809,6 +852,7 @@ mapSpreadUI <- function(id,
       if (specie == "Bever") {   # Custom app for Toekomstig verspreidingsgebied Bever
           tagList(
             wellPanel(
+              uiOutput(ns("beverYearsFiltersUI")),
               uiOutput(ns("beverFiltersUI")),
               fluidRow(
                 column(4, selectInput(inputId = ns("legendBever"), label = "Legende",

@@ -509,36 +509,65 @@ loadDraagvlakData <- function(
   
 }
 
+#' Fetch available years for bever data
+#' @inheritParams loadRawData
+#' @export
+loadBeverAvailableYears <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
+  path = Sys.getenv("reportingGrofwild-data-path")) {
+  
+  objs <- get_bucket(bucket, max = Inf)
+  keys <- vapply(objs, function(x) x$Key, character(1))
+  
+  predFiles <- grep("^bever_predictie_([0-9]{4})\\.geojson$", basename(keys), value = TRUE)
+  predYears <- sort( sub("^bever_predictie_([0-9]{4})\\.geojson$", "\\1", predFiles) )
+  predYears <- as.numeric(predYears)
+  predYears <- predYears[predYears >= as.numeric(format(Sys.Date(), "%Y"))]
+  
+  versprFiles <- grep("^bever_verspreiding_([0-9]{4})\\.geojson$", basename(keys), value = TRUE)
+  versprYears <- sort( sub("^bever_verspreiding_([0-9]{4})\\.geojson$", "\\1", versprFiles) )
+  
+  return(list(
+      verspreiding = versprYears, 
+      prediction = predYears)
+  )
+  
+}
 
-#' Load Bever data
+
+#' Load prediction Bever data
+#' @param year character, year of interest
 #' @inheritParams loadRawData
 #' @export
 loadBeverData <- function(
+  year, type = "predictie",
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
   path = Sys.getenv("reportingGrofwild-data-path")) {
   
   # For R CMD check
   beverData <- NULL
   
-  pathFile <- "Beverkaart.geojson"
-  
-  if(!identical(path, "")){
+  pathFile <- paste0("bever_", type, "_", year, ".geojson")
+
+  if (!identical(path, "")) {
     beverData <- sf::read_sf(file.path(path, pathFile))
-  }else{
+  } else {
     obj <- aws.s3::get_object(pathFile, bucket = bucket)
     geojson_text <- rawToChar(obj)
     
     beverData <- geojsonsf::geojson_sf(geojson_text)
   }
   
-  beverData$Vestigingskans <- factor(beverData$Vestigingskans, levels = c("Laag", "Gemiddeld", "Hoog"))
-  beverData$label <- with(beverData, paste(
-      "<p>", "% overstroming:", round(beverData$Overstromingsrisico,0), "</br>",
-      "% rust:", round(beverData$Rustzones,0),"</br>",
-      "# HRL-soorten:", round(beverData$HRLsoorten,0),"</br>",
-      "# vissen:", round(beverData$HRLvissen,0),"</br>",
-      "% habitat:", round(beverData$Habitats,0),"</br>",
-      "</p>"))
+  if (type == "predictie") {
+    beverData$Vstgngs <- factor(beverData$Vstgngs, levels = c("Laag", "Gemiddeld", "Hoog"))
+    beverData$label <- with(beverData, paste(
+        "<p>", "% overstroming:", round(beverData$Ovrstrm,0), "</br>",
+        "% rust:", round(beverData$Rustzns,0),"</br>",
+        "# HRL-soorten:", round(beverData$HRLsrtn,0),"</br>",
+        "# vissen:", round(beverData$HRLvssn,0),"</br>",
+        "% habitat:", round(beverData$Habitts,0),"</br>",
+        "</p>"))
+  }
   
   return(beverData)
   

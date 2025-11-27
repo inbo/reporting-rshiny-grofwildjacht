@@ -98,7 +98,7 @@ countYearProvince <- function(data, jaartallen = NULL,
   
   if (interval == "Per jaar") {
     
-    newLevels <- sort(unique(plotData$afschotjaar))
+    newLevels <- levels(plotData$afschotjaar)
     
   } else if (interval == "Per maand") {
     
@@ -260,7 +260,7 @@ countYearProvince <- function(data, jaartallen = NULL,
     add_annotations(text = percentCollected(
         nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, "locatie"] != "Onbekend"), 
         nTotal = nRecords,
-        text = paste("gekende afschotdatum en", strsplit("locatie", split = "_")[[1]][1])),
+        text = paste("gekende datum en", strsplit("locatie", split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = if (interval == "Per jaar") -0.25 else -0.3, yanchor = "bottom", showarrow = FALSE)
   

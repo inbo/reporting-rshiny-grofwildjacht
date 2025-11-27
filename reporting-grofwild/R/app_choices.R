@@ -286,7 +286,7 @@ getOutputSpecie <- function(specie,
     },
     if(!all(is.na(schadeDataSpecie$schadeBedrag)))
       "barCostUI",
-    if(nrow(geoDataSpecie) > 0 & nrow(schadeDataSpecie) > 0)
+    if(nrow(schadeDataSpecie) > 0)
       c("mapFlandersUI-schade", "mapSchadeUI"),
     if(specie == "Ree" & any(combinedDataSpecie$afschotjaar >= 2014)  ||
       nrow(combinedDataSpecie) > 0)

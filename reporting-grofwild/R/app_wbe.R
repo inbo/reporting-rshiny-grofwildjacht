@@ -366,7 +366,8 @@ plotBioindicatorServer(id = "wbe_gewicht",
   types = results$wbe_typesGender,
   typesDefault = results$wbe_typesDefaultGender,
   bioindicator = "ontweid_gewicht",
-  preSelected = results$preSelected)
+  preSelected = results$preSelected,
+  isWBE = TRUE)
 
 
 ## Bio indicatoren ##

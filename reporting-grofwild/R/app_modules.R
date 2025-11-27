@@ -504,7 +504,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     variable = NULL, combinatie = NULL, title = NULL,
     fullNames = NULL, type = NULL,
     typeMelding = NULL, preSelected = reactive(NULL), filterDataOnRegion = TRUE,
-    height = "600px",
+    height = "600px", isWBE = FALSE,
     exportPlotWidth = 6, exportPlotHeight = 6) {
   
   subData <- reactive({
@@ -627,6 +627,8 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = typeReact),
             if (!is.null(type))
               list(type = type),
+            if (plotFunction == "plotBioindicator") 
+              list(isWBE = isWBE),
             if (!is.null(typeLeeftijd))  # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
               list(type_leeftijd = typeLeeftijd),
             if (!is.null(typeJacht))  # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector

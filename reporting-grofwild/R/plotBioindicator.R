@@ -34,7 +34,7 @@ plotBioindicator <- function(data,
 		bioindicator = c("onderkaaklengte", "ontweid_gewicht"),
 		sourceIndicator = c("inbo", "meldingsformulier", "both"),
     sourceIndicator_leeftijd = NULL,
-    sourceIndicator_geslacht = NULL,
+    sourceIndicator_geslacht = NULL, isWBE = FALSE,
 		width = NULL, height = NULL){
 	  
 	wildNaam <- unique(data$wildsoort)
@@ -60,8 +60,7 @@ plotBioindicator <- function(data,
           "leeftijd_comp_inbo", "leeftijd_comp", "geslacht_comp",
           "type_comp")]
       
-      
-  if (bioindicator == "ontweid_gewicht") {
+  if (bioindicator == "ontweid_gewicht" && !isWBE) {
     if (!is.null(type) && !all(type == "all")) {
       plotData <- plotData[plotData$geslacht_comp %in% c(type, "Onbekend"), ]  # to calculate nRecords
     }
@@ -92,7 +91,7 @@ plotBioindicator <- function(data,
     
   }
   plotData <- plotData[!is.na(plotData[, bioindicator]), ]
-  if (bioindicator == "ontweid_gewicht") {
+  if (bioindicator == "ontweid_gewicht" && !isWBE) {
     if (!is.null(type) && !all(type == "all")) {
       plotData <- plotData[plotData$geslacht_comp %in% c(type), ]
     }
@@ -191,7 +190,7 @@ plotBioindicator <- function(data,
 #' @import shiny
 #' @export
 plotBioindicatorServer <- function(id, data, timeRange = reactive(NULL), types, typesDefault = types,
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht"), preSelected = reactive(NULL)) {
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht"), preSelected = reactive(NULL), isWBE = FALSE) {
   
   bioindicator <- match.arg(bioindicator)
   
@@ -215,7 +214,8 @@ plotBioindicatorServer <- function(id, data, timeRange = reactive(NULL), types, 
         plotFunction = "plotBioindicator", 
         bioindicator = bioindicator,
         data = data,
-        preSelected = preSelected)
+        preSelected = preSelected,
+        isWBE = isWBE)
       
     })
   

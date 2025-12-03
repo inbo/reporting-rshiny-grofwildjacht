@@ -23,7 +23,9 @@ beheerOutputServer <- function(id,
       ns <- session$ns
       
       ## input
-      results <- reactiveValues()
+      results <- reactiveValues(
+        serverOutput = NULL
+      )
       
       results$ecoData <- reactive(
         ecoData[which(ecoData$wildsoort == specie()), ]
@@ -318,10 +320,10 @@ beheerOutputServer <- function(id,
           
           req(beheerSelection())
           
-          switch(as.character(outputServer()), 
+          results$serverOutput <- switch(as.character(outputServer()), 
             "beheer-vlaanderen" = {
-              c(
-                if ("trendYearFlandersUI" %in% outputs)
+              list(
+                plot1 = if ("trendYearFlandersUI" %in% outputs)
                   trendYearFlandersServer(
                     id = "plot", 
                     geoData = results$geoData,
@@ -334,8 +336,8 @@ beheerOutputServer <- function(id,
               )
             },
             "beheer-regio" = {
-              c(
-                if ("mapFlandersUI" %in% outputs)
+              list(
+                plot1 = if ("mapFlandersUI" %in% outputs)
                   mapFlandersServer(
                     id = "plot",
                     uiText = uiText,
@@ -347,14 +349,14 @@ beheerOutputServer <- function(id,
                     allSpatialData = spatialData,
                     preSelected = beheerSelection
                   ),
-                if ("countYearProvinceUI-afschot" %in% outputs)
+                plot2 = if ("countYearProvinceUI-afschot" %in% outputs)
                   countYearProvinceServer(
                     id = "plot",
                     data = results$ecoData,
                     allRegionsSelected = TRUE,
                     preSelected = beheerSelection
                   ),
-                if ("yearlyShotAnimalsUI" %in% outputs)
+                plot3 = if ("yearlyShotAnimalsUI" %in% outputs)
                   yearlyShotAnimalsServer(
                     id = "plot", 
                     data = results$ecoData, 
@@ -366,8 +368,8 @@ beheerOutputServer <- function(id,
               )
             },
             "beheer-leeftijdcategorie" = {
-              c(
-                if ("countYearShotUI-leeftijd_comp" %in% outputs)
+              list(
+                plot1 = if ("countYearShotUI-leeftijd_comp" %in% outputs)
                   countYearShotServer(
                     id = "plot",
                     data = results$combinedData,
@@ -376,7 +378,7 @@ beheerOutputServer <- function(id,
                     types = results$jachttypes,
                     preSelected = beheerSelection
                   ),
-                if ("tableProvinceUI" %in% outputs)
+                plot2 = if ("tableProvinceUI" %in% outputs)
                   tableProvinceServer(
                     id = "plot",
                     data = results$ecoData,
@@ -387,8 +389,8 @@ beheerOutputServer <- function(id,
               )
             },
             "beheer-jachtmethode" = {
-              c(
-                if ("countYearShotUI-jachtmethode_comp" %in% outputs)
+              list(
+                plot1 = if ("countYearShotUI-jachtmethode_comp" %in% outputs)
                   countYearShotServer(
                     id = "plot",
                     data = results$combinedData,
@@ -396,7 +398,7 @@ beheerOutputServer <- function(id,
                     types = results$jachttypes,
                     preSelected = beheerSelection
                   ),
-                if ("F04_3" %in% outputs)
+                plot2 = if ("F04_3" %in% outputs)
                   countYearProvinceServer(
                     id = "plot", 
                     data = results$drukjachtData,
@@ -409,6 +411,21 @@ beheerOutputServer <- function(id,
           # re-set in case plot selected via tab after/before category card
           outputServer(NULL)
         })
+        
+      observe({
+          req(as.character(subcategory()) == "beheer-regio")
+          req(results$serverOutput$plot1)
+          p <- results$serverOutput$plot1()
+          req(p)
+          req(p$selectedRegions)
+          req(p$selectedRegions())
+          
+          updateSelectInput(session,
+            inputId = "beheer_topbar-region",
+            selected = p$selectedRegions()
+          )
+        })
+
       
       return(list(
           specie = specie

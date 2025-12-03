@@ -962,21 +962,21 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           event <- input$spacePlot_shape_click
           
           if (!is.null(event) && !is.null(event$id)) {
-            
-            currentSelected <- isolate(input$region)
+            currentSelected <- isolate(results$region_value)
             
             if (event$id %in% currentSelected) {
               # Remove from list
-              
               updateSelectInput(session, inputId = "region", 
                 selected = currentSelected[- which(currentSelected == event$id)])
               
+              results$selectedRegions <- currentSelected[- which(currentSelected == event$id)]
               
             } else {
               # Add to list
-              
               updateSelectInput(session, inputId = "region", 
                 selected = c(currentSelected, event$id))
+              
+              results$selectedRegions <- c(currentSelected, event$id)
               
             }
             
@@ -1032,7 +1032,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       
       # Plot thick border for selected regions
-      observeEvent(selectedPolygons(), {
+      observeEvent(c(selectedPolygons(), spacePlot()), {
           
           if (length(selectedPolygons()) > 0) {
             
@@ -1386,14 +1386,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       return(reactive({
             # Update when any of these change
-            finalMap()
-            input
-            statsMap()
+            results$selectedRegions
             # Return the static values
             c(
-              list(plot = isolate(finalMap())),
-              statsMap = isolate(statsMap()),
-              isolate(reactiveValuesToList(input))
+              selectedRegions = reactive(na.omit(results$selectedRegions))
             )
           }))
       

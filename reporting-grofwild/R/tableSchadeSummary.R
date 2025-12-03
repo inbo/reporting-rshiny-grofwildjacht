@@ -89,6 +89,15 @@ tableSchadeSummaryServer <- function(id, data, schadeTypes, schadeCodes,
         data = filteredData, variable = "schadeCode", fullNames = schadeCodes
       )
       
+      return(reactive({
+            # Update when any of these change
+            filteredData()
+            # Return the static values
+            c(
+              data = reactive(filteredData())
+            )
+          }))
+      
   })
   
 } 

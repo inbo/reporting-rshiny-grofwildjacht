@@ -578,6 +578,7 @@ mapSpreadServer <- function(id,
       output$beverYearsFiltersUI <- renderUI({
           
           availableYears <- loadBeverAvailableYears()
+          choices <- c("Laag", "Gemiddeld", "Hoog")
           
           tagList(
             fluidRow(
@@ -586,7 +587,7 @@ mapSpreadServer <- function(id,
               column(4, selectizeInput(inputId = ns("predYear"), label = "Jaar van predictie:",
                   choices = availableYears$prediction, selected = min(availableYears$prediction))),
               column(4, checkboxGroupInput(inputId = ns("rb"), label = "Kans op vestiging in jaar van predictie:",
-                  choices = c("Laag", "Gemiddeld", "Hoog"), selected = character(0)))
+                  choices = choices, selected = choices))
             )
           )
         })
@@ -673,7 +674,7 @@ mapSpreadServer <- function(id,
       
       output$spreadPlotBeverUI <- renderUI({
           tryCatch({
-              leafletOutput(ns("spreadPlotBever"))
+              withSpinner(leafletOutput(ns("spreadPlotBever")))
             },
             error = function(e) {
               return(NULL) 

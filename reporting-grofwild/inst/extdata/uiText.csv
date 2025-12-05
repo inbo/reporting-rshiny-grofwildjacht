@@ -25,19 +25,17 @@
 "mapSpreadUI_Bever";"Toekomstig verspreidingsgebied {wildsoort}";"Een landkaart met de voorspelde verspreiding van {wildsoort} in Vlaanderen.";"<p>Deze interactieve kaart visualiseert de vestigingskans van bevers in Vlaamse kilometerhokken voor het jaar 2027, rekening houdend met risicofactoren.</p>
 <h><b>Kernfuncties</b></h>
 <ul>
-<li> <b>Vestigingskans:</b> Standaard toont de kaart de kans in drie niveaus: laag, gemiddeld, en hoog. </li>
-<li> <b>Historische Verspreiding:</b> U kunt deze informatie combineren met de meest recente, gekende beverterritoria (situatie 2024). </li>
+<li> <b>Kans op vestiging in jaar van predictie:</b> Standaard toont de kaart de kans dat bevers zich vestigen in drie niveaus: laag, gemiddeld, en hoog. </li>
+<li> <b>Jaar van verspreiding:</b> Hiermee kunt u de verspreiding van bevers in een specifiek jaar (bijv. 2024) op de kaart weergeven. Kies 'Geen' als u geen verspreidingsgegevens wilt tonen. </li>
 </ul>
-<h><b>Filteren op Variabelen en Risico's</b></h3>
-<p>U kunt de getoonde kilometerhokken verfijnen met behulp van schuifbalken voor verschillende achterliggende variabelen en risicofactoren. Dit maakt het mogelijk om combinaties te visualiseren met de achterliggend gekozen niveaus van vestigingskans.</p>
+<h><b>Filteren op variabelen en risico's</b></h3>
+<p>U kunt de getoonde kilometerhokken verfijnen met behulp van schuifbalken voor verschillende variabelen en risicofactoren. Zo kunt u de combinaties van deze variabelen samen met de vestigingskans visualiseren.</p>
 <ul>
-<li><b>Overstromingsgevoelig Gebied:</b> Het percentage van het oppervlak dat uit overstromingsgevoelig gebied bestaat. </li>
-<li><b>Rustgebied/Stilstaand Water:</b> Het percentage van het oppervlak dat uit rustgebied bestaat. </li>
-<li><b>Kwetsbare Habitattypes:</b> Het percentage van het oppervlak met habitattypes die kwetsbaar zijn voor overstroming. </li>
-<li> <b>Effect op Soorten:</b>
-<ul>
-<li>Het aantal mogelijks positief beïnvloede soorten waarvoor leefgebied met de kilometerhokken overlappen.</li>
-<li>Het aantal mogelijks negatief beïnvloede vissoorten waarvoor leefgebied met de kilometerhokken overlappen.</li>
+<li><b>Percentage overstromingsgevoelig gebied:</b> Filter hokken op basis van het percentage van het oppervlak dat uit overstromingsgevoelig gebied bestaat. </li>
+<li><b>Percentage potentieel rustgebied:</b> Filter hokken op basis van het percentage van het oppervlak dat uit rustgebied/stilstaand water bestaat. </li>
+<li><b>Percentage kwetsbaar habitat:</b> Filter hokken op basis van het percentage van het oppervlak met habitattypes die kwetsbaar zijn voor overstroming. </li>
+<li> <b>Aantal soorten met mogelijk positief effect:</b> Filter hokken op basis van het aantal soorten dat mogelijk positief beïnvloed wordt door de aanwezigheid van bevers.</li>
+<li> <b>Aantal vissen met mogelijk negatief effect:</b> Filter hokken op basis van het aantal vissoorten dat mogelijk negatief beïnvloed wordt door de aanwezigheid van bevers.</li>
 </ul> </li> </ul>";""
 "percentageRealisedShotUI";"Gerealiseerd afschot per jaar";"";"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree. Het percentage bovenaan de staven geeft de graad van verwezenlijking weer. Binnen een regio wordt best gestreefd naar een afschot van 100% van de toegekende labels.";"Vergelijking tussen het verwezenlijkt en het toegekend afschot van ree.Binnen een wbe wordt best gestreefd naar een afschot van 100% van de toegekende labels."
 "plotBioindicatorUI-onderkaaklengte";"Onderkaaklengte per jaar (INBO of Meldingsformulier)";"Boxplots van de onderkaaklengte van {wildsoort} per jaar.";"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).</br>Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.";"Verdeling van de onderkaaklengte voor alle gegevens uit de geselecteerde periode, regio('s) en type(s).</br>Indien de leeftijdscategorie van INBO o.b.v. ingezamelde onderkaak gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt."

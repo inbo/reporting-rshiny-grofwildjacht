@@ -30,11 +30,9 @@ wbeServer <- function(id, currentKbo, ecoData, geoData, schadeData,
 
 results$wbe_currentKbo <- reactive({
     
-    req(input$wbe_kboChoice)
-    
-    if (length(currentKbo) > 1)
-      req(input$wbe_kboChoice) else
-      currentKbo
+      req(input$wbe_kboChoice)
+      
+      input$wbe_kboChoice
     
   })
 
@@ -474,15 +472,19 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
   
   ns <- NS(id)
   
+  selected <- NULL
+  if (length(currentKbo) == 1) {
+    selected <- currentKbo
+  }
+  
   tagList(
     
     tags$div(class = "container",
       
       tags$br(),
       
-      if (length(currentKbo) != 1)
-        selectizeInput(inputId = ns("wbe_kboChoice"), label = "WBE Naam", 
-          choices = currentKbo, width = "100%", multiple = TRUE, options = list(maxItems = 1)),
+      selectizeInput(inputId = ns("wbe_kboChoice"), label = "WBE Naam", 
+        choices = currentKbo, selected = selected, width = "100%", multiple = TRUE, options = list(maxItems = 1)),
       
       tags$div(align = "center",
         uiOutput(ns("wbe_title"))

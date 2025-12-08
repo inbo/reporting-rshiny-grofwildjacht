@@ -1264,11 +1264,11 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       output$timeTitle <- renderUI({
           
           h3(
-            "Jaarlijks",
-            if (type == "schade") "schadegevallen" else "gerapporteerd afschot", 
-            "van", species(), "per geselecteerde",
+            paste0("Jaarlijks",
+            if (type == "schade") "e schadegevallen door " else " gerapporteerd afschot van ", 
+            species(), " per geselecteerde ",
             tolower(regionLevelName())
-          )
+          ))
           
         })
       
@@ -1504,7 +1504,7 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
                         choices = legendChoices) else if (type %in% c("beheer"))
                       selectInput(inputId = ns("unit"), label = "Eenheid",
                         choices = unitChoices) else if (type %in% c("schade"))
-                      selectInput(inputId = ns("groupVariable"), label = "Variable",
+                      selectInput(inputId = ns("groupVariable"), label = "Variabele",
                         choices = variableChoices) else
                     if (!(type %in% c("schade"))) uiOutput(ns("period")))
               ),

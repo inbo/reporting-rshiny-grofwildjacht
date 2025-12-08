@@ -583,7 +583,7 @@ mapSpreadServer <- function(id,
           tagList(
             fluidRow(
               column(4, selectizeInput(inputId = ns("versprYear"), label = "Jaar van verspreiding:",
-                  choices = c("None", availableYears$verspreiding), selected = "None")),
+                  choices = c("Geen", availableYears$verspreiding), selected = "Geen")),
               column(4, selectizeInput(inputId = ns("predYear"), label = "Jaar van predictie:",
                   choices = availableYears$prediction, selected = min(availableYears$prediction))),
               column(4, checkboxGroupInput(inputId = ns("rb"), label = "Kans op vestiging in jaar van predictie:",
@@ -612,7 +612,7 @@ mapSpreadServer <- function(id,
               column(4, sliderInput(ns("rust"), "Percentage potentieel rustgebied:",
                   min(beverData()$Rustzns), max(ceiling(beverData()$Rustzns)),
                   value = range(beverData()$Rustzns), step = 1)),
-              column(4, sliderInput(ns("habitat"), "Percentage kwestbaar habitat:",
+              column(4, sliderInput(ns("habitat"), "Percentage kwetsbaar habitat:",
                   min(beverData()$Habitts), max(ceiling(beverData()$Habitts)),
                   value = range(beverData()$Habitts), step = 5))
             ),
@@ -742,7 +742,7 @@ mapSpreadServer <- function(id,
             clearMarkers()
           req(!is.null(proxy))
           
-          if (input$versprYear != "None") {
+          if (input$versprYear != "Geen") {
             
             territoriaData <- loadBeverData(year = input$versprYear, type = "verspreiding")
             

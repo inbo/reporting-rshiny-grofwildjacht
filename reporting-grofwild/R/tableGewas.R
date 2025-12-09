@@ -184,7 +184,7 @@ tableGewasUI <- function(id,
       ),
       tableModuleUI(id = ns("tableGewas")),
       tags$br(),
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       tags$hr()
     )
   )

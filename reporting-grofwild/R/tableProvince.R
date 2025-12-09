@@ -344,7 +344,7 @@ tableProvinceUI <- function(id, doHide = TRUE,
         showYear = TRUE, exportData = TRUE, regionLevels = regionLevels,
         showType = showType, showDataSource = showDataSource),
       tableModuleUI(id = ns("tableProvince")),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

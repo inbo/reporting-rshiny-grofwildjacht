@@ -30,7 +30,7 @@ externalLinksServer <- function(id, specie, portal = c("biodiversiteitsportaal",
             "exotenportaal" = paste0("https://alienspecies.inbo.be/app/01_exotenportaal/?tab=species_observations&language=nl&page=species_information&taxonkey=", gbifkey)
             )
           
-          tagList(tags$em("URL link:", a(title, href=url, target="_blank")))
+          tagList(tags$div(class = "larger-description", tags$em("URL link:", a(title, href=url, target="_blank"))))
         
         })
     })
@@ -61,7 +61,7 @@ externalLinksUI <- function(id, uiText, portal, doHide = TRUE) {
       condition = paste("input.linkPortal % 2 ==", as.numeric(doHide)),
       ns = ns,
       
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       uiOutput(ns("link"))
     
     )

@@ -506,3 +506,13 @@ body > .tabbable {
 .well-content.collapsed {
   display: none;
 }
+
+.larger-description {
+  font-size: 17px !important;
+  line-height: 1.4;
+}
+
+.larger-description * {
+  font-size: 17px !important;
+  line-height: 1.4;
+}

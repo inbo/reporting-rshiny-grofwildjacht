@@ -302,7 +302,7 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
         )
         
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   
   ) 

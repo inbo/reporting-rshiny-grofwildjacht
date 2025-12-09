@@ -533,7 +533,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             uiText = uiText, 
             context = if (type == "wbe") "wbe" else "description") 
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
           
         })
       
@@ -1319,7 +1319,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           description <- getOutputDescription(output = "barBiotoop", 
             uiText = uiText, context = context)
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
         })
       
 
@@ -1328,7 +1328,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           description <- getOutputDescription(output = "tableBackground", 
             uiText = uiText, context = strsplit(id, "_")[[1]][1])
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
           
         })
 

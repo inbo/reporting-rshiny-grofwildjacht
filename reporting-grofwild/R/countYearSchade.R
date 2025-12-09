@@ -261,7 +261,7 @@ countYearSchadeUI <- function(id,
           )
         )
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
 }

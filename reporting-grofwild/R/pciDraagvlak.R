@@ -184,7 +184,7 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
         )
       ),
       
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       
       plotModuleUI(id = ns("pciDraagvlak")),
       optionsModuleUI(id = ns("pciDraagvlak"), 

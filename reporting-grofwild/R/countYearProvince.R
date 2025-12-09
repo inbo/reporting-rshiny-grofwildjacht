@@ -379,7 +379,7 @@ countYearProvinceUI <- function(
           )
         )
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

@@ -40,6 +40,14 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
     sourceIndicator_leeftijd = sourceIndicator_leeftijd,
     sourceIndicator_geslacht = sourceIndicator_geslacht)
   
+  plotData <- plotData[plotData$geslacht_comp == "Vrouwelijk",]
+  validate(need(nrow(plotData) > 0, "Geen data beschikbaar"))
+  
+  plotData$reproductiestatus <- ifelse(
+    is.na(plotData$embryos), "Onbekend",
+    ifelse(plotData$embryos != 0, "Drachtig", "Niet drachtig")
+  )
+  
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, c(groupVariable, "leeftijd_comp")]
   names(plotData)[names(plotData) == "leeftijd_comp"] <- "leeftijd"
 
@@ -127,20 +135,12 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
 #' @import shiny
 #' @export
 countAgeGroupServer <- function(id, data, timeRange, groupVariable, 
-  title = reactive(NULL)) {
+  title = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
-     
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkAgeGroup",
-            label = paste("FIGUUR:", title()))
-          
-        })
       
       output$disclaimerAgeGroup <- renderUI({
           
@@ -158,7 +158,8 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
       toReturn <- callModule(module = plotModuleServer, id = "ageGroup",
         plotFunction = "countAgeGroup", 
         data = data,
-        groupVariable = groupVariable
+        groupVariable = groupVariable,
+        preSelected = preSelected
       )
       
       return(reactive(toReturn()))
@@ -173,8 +174,8 @@ countAgeGroupServer <- function(id, data, timeRange, groupVariable,
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeGroupUI <- function(id, regionLevels,
-  uiText, context = id, specie = NULL,
+countAgeGroupUI <- function(id, regionLevels = NULL,
+  uiText, context = id, specie = NULL, showTime = FALSE, showDataSource = c(),
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -187,8 +188,7 @@ countAgeGroupUI <- function(id, regionLevels,
   tagList(
     
     actionLink(inputId = ns("linkAgeGroup"),
-      label = h3(HTML(title)),
-      class = "action-h3"),
+      label = tags$h3(HTML(title))),
     conditionalPanel(
       condition = paste("input.linkAgeGroup % 2 ==", as.numeric(doHide)), 
       ns = ns,
@@ -199,9 +199,9 @@ countAgeGroupUI <- function(id, regionLevels,
         column(8, plotModuleUI(id = ns("ageGroup"))),
         column(4,
           optionsModuleUI(id = ns("ageGroup"), 
-            showTime = TRUE,
+            showTime = showTime,
             regionLevels = regionLevels, exportData = TRUE,
-            showDataSource = c("embryos", "leeftijd", "geslacht"))
+            showDataSource = showDataSource)
         )
       ),
       tags$p(HTML(description))

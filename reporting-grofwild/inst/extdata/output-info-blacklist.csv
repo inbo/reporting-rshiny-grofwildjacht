@@ -1,28 +1,43 @@
 specie,output
 Wild zwijn,exotenportaal
-Edelhert,exotenportaal
-Ree,exotenportaal
-Haas,exotenportaal
-Patrijs,exotenportaal
-Wilde eend,exotenportaal
-Smient,exotenportaal
-Grauwe gans,exotenportaal
-Kievit,exotenportaal
-Houtduif,exotenportaal
-Vos,exotenportaal
 Wild zwijn,mapSchadeUI
+Edelhert,exotenportaal
 Edelhert,mapSchadeUI
-Damhert,mapSchadeUI
+Ree,exotenportaal
 Ree,mapSchadeUI
+Damhert,mapSchadeUI
+Haas,exotenportaal
 Haas,mapSchadeUI
+Fazant,mapSchadeUI
 Konijn,mapSchadeUI
+Patrijs,exotenportaal
 Patrijs,mapSchadeUI
-Wilde Eend,mapSchadeUI
+Wilde eend,exotenportaal
+Wilde eend,mapSchadeUI
+Smient,exotenportaal
 Smient,mapSchadeUI
-Grauwe Gans,mapSchadeUI
+Grauwe gans,exotenportaal
+Grauwe gans,mapSchadeUI
+Canadese gans,mapSchadeUI
+Kievit,exotenportaal
 Kievit,mapSchadeUI
-Bever,mapSchadeUI
-Wolf,mapSchadeUI
+Houtduif,exotenportaal
 Houtduif,mapSchadeUI
+Vos,exotenportaal
 Vos,mapSchadeUI
-Verwilderde Kat,mapSchadeUI
+Verwilderde kat,exotenportaal
+Verwilderde kat,mapSchadeUI
+Bever,exotenportaal
+Bever,mapSchadeUI
+Wolf,exotenportaal
+Wolf,tableSchadeSummaryUI
+Wolf,trendYearFlandersUI-schade
+Wolf,countYearProvinceUI-schade
+Wolf,countYearSchadeUI-wildschade
+Wolf,tableSchadeUI
+Wolf,countYearSchadeUI-seizoen
+Wolf,tableGewasUI
+Wolf,countYearSchadeUI-gewas
+Wolf,mapFlandersUI-schade
+Wolf,mapSchadeUI
+Wolf,barCostUI

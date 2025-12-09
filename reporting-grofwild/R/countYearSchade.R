@@ -183,7 +183,7 @@ countYearSchade <- function(data, jaartallen = NULL, type = NULL,
 countYearSchadeServer <- function(
   id, data, 
   types = NULL, labelTypes = "Type", typesDefault = types, type = NULL,
-  timeRange, fullNames = NULL) {
+  timeRange, fullNames = NULL, allRegionsSelected = FALSE, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -195,6 +195,7 @@ countYearSchadeServer <- function(
         types = types,
         labelTypes = labelTypes,
         typesDefault = typesDefault,
+        allRegionsSelected = allRegionsSelected,
         timeRange = timeRange
       )
       callModule(
@@ -202,7 +203,8 @@ countYearSchadeServer <- function(
         plotFunction = "countYearSchade", 
         data = data,
         fullNames = fullNames,
-        type = type
+        type = type,
+        preSelected = preSelected
       )
       
     })
@@ -219,7 +221,7 @@ countYearSchadeServer <- function(
 #' @export
 countYearSchadeUI <- function(id, 
   uiText, context = id, specie = NULL, type = NULL, doHide = TRUE,
-  regionLevels = NULL) {
+  regionLevels = NULL, showTime = FALSE, showDataSource = c(), summarizeBy = NULL) {
   
   showType <- (is.null(type))
   
@@ -236,7 +238,7 @@ countYearSchadeUI <- function(id,
   
   tagList(
     
-    actionLink(inputId = ns("linkYearSchade"), label = h3(HTML(title))),
+    actionLink(inputId = ns("linkYearSchade"), label = tags$h3(HTML(title))),
     conditionalPanel(
       condition = 
         paste("input.linkYearSchade % 2 ==", as.numeric(doHide)), 
@@ -250,10 +252,10 @@ countYearSchadeUI <- function(id,
         column(4,
           optionsModuleUI(
             id = ns("yearSchade"), 
-            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
-            showTime = TRUE, 
+            summarizeBy = summarizeBy,
+            showTime = showTime, 
             showType = showType, 
-            showDataSource = "schade",
+            showDataSource = showDataSource,
             regionLevels = regionLevels,
             exportData = TRUE
           )

@@ -259,7 +259,7 @@ if (summarizeBy == "count") {
 #' @import shiny
 #' @export
 countEmbryosServer <- function(id, data, timeRange, types, 
-  uiText, wildsoort = reactive(), context = id) {
+  uiText, wildsoort = reactive(), context = id, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -295,7 +295,8 @@ countEmbryosServer <- function(id, data, timeRange, types,
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countEmbryos",
         plotFunction = "countEmbryos",
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   
@@ -308,9 +309,9 @@ countEmbryosServer <- function(id, data, timeRange, types,
 #' @inheritParams reportingGrofwild-common-args
 #' @author mvarewyck
 #' @export
-countEmbryosUI <- function(id, regionLevels,
-  uiText, context = id, specie = NULL,
-  doHide = TRUE) {
+countEmbryosUI <- function(id, regionLevels = NULL,
+  uiText, context = id, specie = NULL, showTime = FALSE, showType = FALSE,
+  showDataSource = c(), doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -339,10 +340,10 @@ countEmbryosUI <- function(id, regionLevels,
         column(8, plotModuleUI(id = ns("countEmbryos"))),
         column(4,
           optionsModuleUI(id = ns("countEmbryos"), 
-            showTime = TRUE, showType = TRUE,
+            showTime = showTime, showType = showType,
             summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
             regionLevels = regionLevels, exportData = TRUE,
-            showDataSource = c("embryos", "leeftijd", "geslacht")),
+            showDataSource = showDataSource),
           if(is.null(specie))  uiOutput(ns("descriptionEmbryos"))
         )
       ),

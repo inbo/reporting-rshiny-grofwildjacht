@@ -38,7 +38,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   
   if (all(regio == "Vlaams Gewest")) {
     allData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% levels(allData$provincie))) {
+  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
     allData$locatie <- factor(allData$provincie)
   } else {
     allData$locatie <- allData$FaunabeheerZone
@@ -118,7 +118,7 @@ tableGewas <- function(data, jaartallen = NULL, variable,
 #' @import shiny
 #' @export
 tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
-  variable, allRegionsSelected = FALSE) {
+  variable, allRegionsSelected = FALSE, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -137,7 +137,8 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
       callModule(plotModuleServer, id = "tableGewas",
         plotFunction = "tableGewas",
         data = data,
-        variable = variable)
+        variable = variable,
+        preSelected = preSelected)
       
     })
   
@@ -152,7 +153,7 @@ tableGewasServer <- function(id, data, types, labelTypes, typesDefault, timeRang
 #' @export
 tableGewasUI <- function(id, 
   uiText, context = id, specie = NULL, regionLevels = NULL, regionLevelSelected = NULL,
-  doHide = TRUE) {
+  doHide = TRUE, showTime = FALSE, showDataSource = c(), summarizeBy = NULL) {
   
   ns <- NS(id)
   
@@ -168,21 +169,21 @@ tableGewasUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkTableGewas"), 
-      label = h3(HTML(title))),
+      label =  tags$h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkTableGewas % 2",
-        as.numeric(doHide)),
+      condition = paste("input.linkTableGewas % 2 ==", as.numeric(doHide)),
       ns = ns,
       optionsModuleUI(
         id = ns("tableGewas"), 
-        showTime = TRUE, 
+        showTime = showTime, 
         regionLevels = regionLevels, 
         regionLevelSelected = regionLevelSelected,
-        summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
-        showDataSource = "schade",
+        summarizeBy = summarizeBy,
+        showDataSource = showDataSource,
         exportData = TRUE
       ),
       tableModuleUI(id = ns("tableGewas")),
+      tags$br(),
       tags$p(HTML(description)),
       tags$hr()
     )

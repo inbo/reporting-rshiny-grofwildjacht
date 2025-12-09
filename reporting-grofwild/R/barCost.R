@@ -178,20 +178,13 @@ barCost <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-barCostServer <- function(id, yVar, data, timeRange, title = reactive(NULL)) {
+barCostServer <- function(id, yVar, data, timeRange, allRegionsSelected = FALSE, 
+  title = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
-      
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkBarCost",
-            label = paste("FIGUUR:", title()))
-          
-        })
       
       output$disclaimerBarCost <- renderUI({
           
@@ -220,6 +213,7 @@ barCostServer <- function(id, yVar, data, timeRange, title = reactive(NULL)) {
       # Afschot per jaar en per leeftijdscategorie
       callModule(module = optionsModuleServer, id = "barCost", 
         data = subData,
+        allRegionsSelected = allRegionsSelected,
         timeRange = timeRange,
         intervals = c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")
       )
@@ -228,7 +222,8 @@ barCostServer <- function(id, yVar, data, timeRange, title = reactive(NULL)) {
         plotFunction = "barCost", 
         data = subData,
         yVar = yVar,
-        typeMelding = reactive(input$typeMelding)
+        typeMelding = reactive(input$typeMelding),
+        preSelected = preSelected
       )
       
       
@@ -271,7 +266,7 @@ barCostUI <- function(id,
   tagList(
     
     actionLink(inputId = ns("linkBarCost"), 
-      label = title, class = "action-h3"),
+      label = tags$h3(title)),
     conditionalPanel(
       condition = 
         paste("input.linkBarCost % 2 ==", as.numeric(doHide)), 

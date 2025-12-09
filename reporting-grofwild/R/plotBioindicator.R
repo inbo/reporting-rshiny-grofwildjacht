@@ -29,15 +29,14 @@
 #' @importFrom INBOtheme inbo_lichtblauw
 #' @export
 plotBioindicator <- function(data, 
-		type = NULL,
+		type = NULL, type_leeftijd = NULL,
 		jaartallen = NULL, regio = "",
 		bioindicator = c("onderkaaklengte", "ontweid_gewicht"),
 		sourceIndicator = c("inbo", "meldingsformulier", "both"),
     sourceIndicator_leeftijd = NULL,
-    sourceIndicator_geslacht = NULL,
+    sourceIndicator_geslacht = NULL, isWBE = FALSE,
 		width = NULL, height = NULL){
 	  
-	
 	wildNaam <- unique(data$wildsoort)
 	
 	bioindicator <- match.arg(bioindicator)
@@ -57,11 +56,24 @@ plotBioindicator <- function(data,
   # Select data of specified years
 	plotData <- data[data$afschotjaar %in% jaartallen,
 			c("afschotjaar", grep(bioindicator, colnames(data), value = TRUE), 
-					"type_comp", "provincie", "leeftijd_comp_bron", "geslacht_comp_bron")]
-  if (!is.null(type) && !all(type == "all"))
-    plotData <- plotData[plotData$type_comp %in% c(type, "Onbekend"), ] #include onbekend for nRecords
-  nRecords <- nrow(plotData)
-  
+					"provincie", "leeftijd_comp_bron", "geslacht_comp_bron", 
+          "leeftijd_comp_inbo", "leeftijd_comp", "geslacht_comp",
+          "type_comp")]
+      
+  if (bioindicator == "ontweid_gewicht" && !isWBE) {
+    if (!is.null(type) && !all(type == "all")) {
+      plotData <- plotData[plotData$geslacht_comp %in% c(type, "Onbekend"), ]  # to calculate nRecords
+    }
+    if (!is.null(type_leeftijd) && !all(type_leeftijd == "all")) {
+      leeftijdVar <- if (sourceIndicator_leeftijd == "inbo") "leeftijd_comp_inbo" else "leeftijd_comp" 
+      plotData <- plotData[plotData[[leeftijdVar]] %in% c(type_leeftijd, "Onbekend"), ]  # to calculate nRecords
+    }
+  } else {
+    if (!is.null(type) && !all(type == "all"))
+      plotData <- plotData[plotData$type_comp %in% c(type, "Onbekend"), ]
+  }
+  nRecords <- nrow(plotData)  #include onbekend for nRecords
+      
   # Clean data
   ## Filter on bron
   if (bioindicator == "onderkaaklengte") {
@@ -79,8 +91,18 @@ plotBioindicator <- function(data,
     
   }
   plotData <- plotData[!is.na(plotData[, bioindicator]), ]
-  if (!is.null(type) && !all(type == "all"))
-    plotData <- plotData[plotData$type_comp %in% type, ]
+  if (bioindicator == "ontweid_gewicht" && !isWBE) {
+    if (!is.null(type) && !all(type == "all")) {
+      plotData <- plotData[plotData$geslacht_comp %in% c(type), ]
+    }
+    if (!is.null(type_leeftijd) && !all(type_leeftijd == "all")) {
+      leeftijdVar <- if (sourceIndicator_leeftijd == "inbo") "leeftijd_comp_inbo" else "leeftijd_comp" 
+      plotData <- plotData[plotData[[leeftijdVar]] %in% c(type_leeftijd), ]
+    }
+  } else {
+    if (!is.null(type) && !all(type == "all"))
+      plotData <- plotData[plotData$type_comp %in% c(type), ]
+  }
   
 	colnames(plotData)[colnames(plotData) == bioindicator] <- "variable"
 	
@@ -118,7 +140,7 @@ plotBioindicator <- function(data,
           both = "INBO en meldingsformulier"),
         ")\n"),
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), jaartallen), 
-    if (!all(regio == "")) paste0(" (", toString(regio), ")"))
+    if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
   
   colorList <- NULL
   
@@ -167,8 +189,8 @@ plotBioindicator <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
-  bioindicator = c("onderkaaklengte", "ontweid_gewicht")) {
+plotBioindicatorServer <- function(id, data, timeRange = reactive(NULL), types, typesDefault = types,
+  bioindicator = c("onderkaaklengte", "ontweid_gewicht"), preSelected = reactive(NULL), isWBE = FALSE) {
   
   bioindicator <- match.arg(bioindicator)
   
@@ -185,12 +207,15 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
         typesDefault = typesDefault,
         labelTypes = switch(bioindicator,
           'onderkaaklengte' = "Type", 
-          "ontweid_gewicht" = "Leeftijdscategorie"),
+          "ontweid_gewicht" = "Geslacht"),
         multipleTypes = TRUE)
+      
       callModule(module = plotModuleServer, id = "plotBioindicator",
         plotFunction = "plotBioindicator", 
         bioindicator = bioindicator,
-        data = data)
+        data = data,
+        preSelected = preSelected,
+        isWBE = isWBE)
       
     })
   
@@ -205,7 +230,8 @@ plotBioindicatorServer <- function(id, data, timeRange, types, typesDefault,
 #' 
 #' @export
 plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_gewicht"), 
-  regionLevels, showAccuracy = FALSE, uiText, doHide = TRUE,
+  regionLevels = NULL, showType = FALSE, showTime = FALSE,
+  showAccuracy = FALSE, uiText, doHide = TRUE, showDataSource = c(),
   context = strsplit(id, split = "_")[[1]][1]) {
   
   # For R CMD check
@@ -236,12 +262,10 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
         ),
         column(4,
           optionsModuleUI(id = ns("plotBioindicator"),
-            showTime = TRUE, showType = TRUE,
+            showTime = showTime, showType = showType,
             regionLevels = regionLevels, exportData = TRUE,
-            showDataSource = switch(bioindicator,
-              ontweid_gewicht = c("leeftijd", "geslacht"),
-              onderkaaklengte = c("onderkaak", "leeftijd", "geslacht")
-            )),
+            showDataSource = showDataSource
+          ),
           if (showAccuracy)
             accuracyModuleUI(id = ns("plotBioindicator"), 
               title = "Accuraatheid onderkaaklengte"),

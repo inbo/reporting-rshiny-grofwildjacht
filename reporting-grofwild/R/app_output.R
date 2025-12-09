@@ -34,8 +34,7 @@ outputUI <- function(id, category, schadeSelection = FALSE, whiteWell = FALSE, u
         mainPanel = mainPanel(
           width = 9, 
           style = "overflow-y: hidden", # avoid 2 scrolling bar
-          if (schadeSelection)
-            schadeSelectionUI(ns("topbar")),
+          uiOutput(outputId = ns("topbar_filtering")),        #generalSelectionUI(ns("topbar")),
           if (whiteWell)
               wellPanel(class = "well-white", uiOutput(outputId = ns("output"))) else
               uiOutput(outputId = ns("output")),

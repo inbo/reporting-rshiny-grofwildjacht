@@ -148,7 +148,7 @@ percentageRealisedShot <- function(data, regio, type = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-percentageRealisedShotServer <- function(id, data, timeRange, types) {
+percentageRealisedShotServer <- function(id, data, timeRange, types, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -164,7 +164,8 @@ percentageRealisedShotServer <- function(id, data, timeRange, types) {
       callModule(module = plotModuleServer, id = "percentageRealisedShot",
         plotFunction = "percentageRealisedShot",
         data = data,
-        unit = reactive(input$percentageRealisedUnit)
+        unit = reactive(input$percentageRealisedUnit),
+        preSelected = preSelected
       )
       
     })

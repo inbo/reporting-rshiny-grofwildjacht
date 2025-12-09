@@ -22,7 +22,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
   groupVariable,
   sourceIndicator_leeftijd = c("both", "inbo"),
-  type = NULL) {
+  type = NULL, type_jachtmethode = NULL) {
   
   
   wildNaam <- unique(data$wildsoort)
@@ -33,6 +33,11 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
  
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
+  
+  # Filter on chosen jachtmethode in case of leeftijdscategorie graph
+  if (!is.null(type_jachtmethode)) {
+    plotData <- plotData %>% filter(jachtmethode_comp %in% type_jachtmethode)
+  }
   
   # regions get already filtered out in the plotModuleServer 
   
@@ -230,7 +235,8 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
+countYearShotServer <- function(id, data, timeRange, types, groupVariable,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -243,14 +249,13 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
         timeRange = timeRange,
         intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
         types = types,
-        labelTypes = if (groupVariable == "leeftijd_comp") 
-            "Leeftijdscategorie" else
-            "Jachtmethode",
+        labelTypes = "Jachtmethode",
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
         groupVariable = groupVariable,
-        data = data)
+        data = data,
+        preSelected = preSelected)
            
     })
   
@@ -266,7 +271,8 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable) {
 #' @export
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
   uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
-  doHide = TRUE) {
+  doHide = TRUE, showDataSource = FALSE, showType = FALSE, showInterval = FALSE,
+  showTime = FALSE) {
   
   ns <- NS(id)
   
@@ -289,10 +295,10 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
         
         column(8, plotModuleUI(id = ns("countYearShot"))),
         column(4,
-          optionsModuleUI(id = ns("countYearShot"), showTime = TRUE, 
+          optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
             regionLevels = regionLevels, exportData = TRUE,
-            showType = TRUE, showInterval = TRUE,
-            showDataSource = if (groupVariable == "leeftijd_comp") "leeftijd")
+            showType = showType, showInterval = showInterval,
+            showDataSource = showDataSource)
         )
         
       ),

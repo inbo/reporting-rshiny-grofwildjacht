@@ -9,7 +9,7 @@
 #' @importFrom sf st_drop_geometry
 #' @export
 createTrendData <- function(data, allSpatialData, biotoopData = NULL,
-  timeRange, species, regionLevel, 
+  timeRange, species, regionLevel,
   unit = c("absolute", "relative", "relativeDekking"),
   sourceIndicator = NULL) {
   
@@ -161,6 +161,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
 #' @export
 trendYearRegion <- function(data, locaties = NULL, combinatie = FALSE, 
   timeRange = NULL, unit = c("absolute", "relative", "relativeDekking"), 
+  jaartallen = NULL, regio = "", sourceIndicator = NULL,
   isFlanders = FALSE, isSchade = FALSE, width = NULL, height = NULL) {
   
   
@@ -270,7 +271,7 @@ trendYearRegionServer <- function(
   data, timeRange = reactive(NULL), 
   species, regionLevel = reactive("WBE_buitengrenzen"), locaties,
   geoData, allSpatialData, biotoopData = reactive(NULL), title = reactive(NULL),
-  type = "wbe") {
+  type = "wbe", preSelected = reactive(NULL)) {
   
   type <- match.arg(type)
   
@@ -324,14 +325,6 @@ trendYearRegionServer <- function(
           
         })
       
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkYearRegion",
-            label = paste("FIGUUR:", title()))
-          
-        })
-      
       output$disclaimerTrendRegion <- renderUI({
           
           req(title())
@@ -351,7 +344,8 @@ trendYearRegionServer <- function(
         combinatie = reactive(if (is.null(input$combinatie)) FALSE else input$combinatie),
         timeRange = reactive(input$trendPeriod),
         unit = reactive(input$trendUnit),
-        isSchade = (type == "wildschade")
+        isSchade = (type == "wildschade"),
+        preSelected = preSelected
       )
       
       return(reactive(c(
@@ -419,7 +413,7 @@ trendYearRegionUI <- function(
       toShow
     ) else
     tagList(
-      actionLink(inputId = ns("linkYearRegion"), label = title, class = "action-h3"),
+      actionLink(inputId = ns("linkYearRegion"), label = tags$h3(title)),
       conditionalPanel(paste("input.linkYearRegion % 2 ==", as.numeric(doHide)), ns = ns,
         toShow
       )

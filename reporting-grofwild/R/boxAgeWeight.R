@@ -90,7 +90,7 @@ boxAgeWeight <- function(data,
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
 					paste("in", jaartallen)),
 			if (!all(regio == "")) 
-				paste0(" (", toString(regio), ")"))
+				paste0("\n (", toString(regio), ")"))
 	
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
 	plotData$leeftijd <- droplevels(plotData$leeftijd)
@@ -137,7 +137,7 @@ boxAgeWeight <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-boxAgeWeightServer <- function(id, data, type, timeRange) {
+boxAgeWeightServer <- function(id, data, type, timeRange, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -153,7 +153,8 @@ boxAgeWeightServer <- function(id, data, type, timeRange) {
       )
       callModule(module = plotModuleServer, id = "boxAgeWeight",
         plotFunction = "boxAgeWeight", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   
@@ -167,8 +168,8 @@ boxAgeWeightServer <- function(id, data, type, timeRange) {
 #' @inheritParams reportingGrofwild-common-args
 #' @export
 boxAgeWeightUI <- function(id, 
-  uiText, context = id, specie = NULL,
-  doHide = TRUE) {
+  uiText, context = id, specie = NULL, showType = FALSE, showTime = FALSE,
+  regionLevels = NULL, showDataSource = c(), doHide = TRUE) {
   
   ns <- NS(id)
   
@@ -192,8 +193,8 @@ boxAgeWeightUI <- function(id,
         ),   
         column(4,
           optionsModuleUI(id = ns("boxAgeWeight"), 
-            showTime = TRUE, showType = TRUE, regionLevels = c(1:2, 4), 
-            exportData = TRUE, showDataSource = c("leeftijd", "geslacht")) 
+            showTime = showTime, showType = showType, regionLevels = regionLevels, 
+            exportData = TRUE, showDataSource = showDataSource) 
         )
       ),
       tags$p(HTML(description))

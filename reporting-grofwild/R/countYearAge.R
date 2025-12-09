@@ -97,7 +97,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 	if (summarizeBy == "count") {
 		
 		summaryData$text <- paste0("<b>", summaryData$kaak, " in ", summaryData$jaar, "</b>",
-				"<br>Aantal: ", summaryData$freq, 
+				"<br>Aantal: ", summaryData$freq, " (", round(summaryData$freq/summaryData$totaal * 100), "%)", 
 				"<br>Totaal: ", summaryData$totaal)
 		
 	} else {
@@ -136,13 +136,7 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
                 ticktext = unique(summaryData$jaar)), 
 							yaxis = list(title = "Aantal"),
 							barmode = if (singleYear) "group" else "stack",
-							margin = list(b = 120, t = 100),
-							annotations = list(x = totalCount$jaar, 
-									y = if (singleYear) max(summaryData$freq) else totalCount$totaal, 
-									text = paste(if (singleYear) "totaal:" else "", 
-											totalCount$totaal),
-									xanchor = 'center', yanchor = 'bottom',
-									showarrow = FALSE)),
+							margin = list(b = 120, t = 100)),
 			percent = plot_ly(data = summaryData, x = ~jaar, 
 							y = ~percent, color = ~kaak, text = ~text,
               textposition = "none", hoverinfo = "text+name",
@@ -185,20 +179,13 @@ countYearAge <- function(data, jaartallen = NULL, regio = "",
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
+countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL),
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
-      
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkYearAge",
-            label = paste("FIGUUR:", title()))
-          
-        })
       
       output$disclaimerYearAge <- renderUI({
           
@@ -217,7 +204,8 @@ countYearAgeServer <- function(id, data, timeRange, title = reactive(NULL)) {
       )
       toReturn <- callModule(module = plotModuleServer, id = "yearAge",
         plotFunction = "countYearAge", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
       return(reactive(toReturn()))
       
@@ -244,8 +232,7 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
   
   tagList(
     
-    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(title)),
-      class = "action-h3"),
+    actionLink(inputId = ns("linkYearAge"), label = h3(HTML(title))),
     conditionalPanel(paste("input.linkYearAge % 2 ==", as.numeric(doHide)), ns = ns,
       
       uiOutput(ns("disclaimerYearAge")),

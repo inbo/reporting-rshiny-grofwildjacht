@@ -17,8 +17,12 @@
 <li>Wanneer je als periode meerdere jaren kiest, worden de verschillende deelgebieden per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden de verschillende geografische deelgebieden naast elkaar weergegeven.
 </ul>
 ";""
-"countYearSchadeUI";"Jaarlijks aantal schadegevallen voor {wildsoort} per type {type}";"Een staafdiagram van het jaarlijks aantal schadegevallen door {wildsoort} in Vlaanderen per type {type}.";"<p>Deze figuur geeft op basis van de filterkeuzes uit algemene filters bovenaan de pagina, het aantal schadegevallen weer in functie van type {type}. Je kan een keuze maken tussen het absoluut aantal schadegevallen per categorie en het relatief aantal schadegevallen. Wanneer je als periode meerdere jaren kiest, worden de verschillende subcategorieën per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden ze naast elkaar weergegeven.</p>
+"countYearSchadeUI";"Jaarlijks aantal schadegevallen voor {wildsoort} per type {type}";"Een staafdiagram van het jaarlijks aantal schadegevallen door {wildsoort} in Vlaanderen per type {type}.";"<p>Deze figuur geeft op basis van de filterkeuzes uit de algemene filters, het aantal schadegevallen weer voor de gekozen regio's, schadetypes en periode.</p>
 <p><b>&#10071;Let op:</b> Trends in het aantal schadegevallen kunnen (ook) het gevolg zijn van veranderingen in de meldings- of registratiesinspanning, en duiden niet per definitie op een werkelijke trend in de schade.</p>
+<p><b><u>Gebruiksinfo:</u></b> </br><ul>
+<li>Je kan regio's selecteren via het regio selectie-veld in de algemene filters of een regio te selecteren op de landkaart onderaan deze pagina. 
+<li>Wanneer je als periode meerdere jaren kiest, worden de verschillende deelgebieden per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden de verschillende geografische deelgebieden naast elkaar weergegeven.
+</ul>
 ";""
 "countYearShotUI-jachtmethode_comp";"Jaarlijks gerapporteerd afschot op {wildsoort} per jachtmethode";"Een staafdiagram met het gerapporteerd afschot per jachtmethode.";"Aandeel van afschot per jachtmethode over de jaren heen.";"Aandeel van afschot per jachtmethode over de jaren heen."
 "countYearShotUI-leeftijd_comp";"Evolutie gerapporteerd afschot van {wildsoort} per leeftijdscategorie";"Een staafdiagram met het jaarlijks gerapporteerd afschot per leeftijdscategorie.";"Verdeling van afschot over de jaren heen opgesplitst per interval.";"Verdeling van afschot over de jaren heen opgesplitst per interval."

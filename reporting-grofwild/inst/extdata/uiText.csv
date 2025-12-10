@@ -57,9 +57,9 @@
 "trendYearFlandersUI";"Jaarlijks gerapporteerd afschot van {wildsoort} in Vlaanderen";"Een lijngrafiek van het jaarlijks afschot van {wildsoort} in Vlaanderen.";"";""
 "yearlyShotAnimalsUI";"Percentage afschot van {wildsoort} t.o.v. een referentieperiode";"De procentuele verdeling van het afschot van {wildsoort} gedurende het geselecteerde jaar t.o.v de verdeling tijdens een referentieperiode.";"Procentuele verdeling van het afschot (voor ree per labeltype) doorheen het openingsseizoen van het geselecteerde jaar in verhouding tot de verdeling over alle jaren gedurende de geselecteerde referentieperiode. Indien de leeftijdscategorie van INBO (o.b.v. onderkaak) gekend is, wordt deze gebruikt, anders wordt de leeftijdscategorie volgens het meldingsformulier gebruikt.";""
 "informatie-schade";"";"";"<p><b><u>Informatie raadplegen en downloaden:</u></b></p>
-  <b>Keuzemenu</b>
+  <b>Algemene filters</b>
     <ul>
-      <li>Met het keuzemenu maakt u een keuze uit de types schade die een diersoort kan veroorzaken, zoals schade aan voertuigen, gewassen en/of andere types.</li>
+      <li>Met de algemene filters maakt u een keuze uit de types schade die een diersoort kan veroorzaken, zoals schade aan voertuigen, gewassen en/of andere types.</li>
       <li>Binnen elk type schade kunt u verder kiezen uit enkele subcategorieën.</li>
       <li><u>Opgelet:</u> de filterkeuzes hebben een impact op alle figuren en tabellen die u vervolgens te zien krijgt.</li>
     </ul>

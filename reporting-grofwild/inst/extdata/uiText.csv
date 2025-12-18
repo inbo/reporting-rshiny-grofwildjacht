@@ -20,7 +20,7 @@
 "countYearSchadeUI";"Jaarlijks aantal schadegevallen voor {wildsoort} per type {type}";"Een staafdiagram van het jaarlijks aantal schadegevallen door {wildsoort} in Vlaanderen per type {type}.";"<p>Deze figuur geeft op basis van de filterkeuzes uit de algemene filters, het aantal schadegevallen weer voor de gekozen regio's, schadetypes en periode.</p>
 <p><b>&#10071;Let op:</b> Trends in het aantal schadegevallen kunnen (ook) het gevolg zijn van veranderingen in de meldings- of registratiesinspanning, en duiden niet per definitie op een werkelijke trend in de schade.</p>
 <p><b><u>Gebruiksinfo:</u></b> </br><ul>
-<li>Je kan regio's selecteren via het regio selectie-veld in de algemene filters of een regio te selecteren op de landkaart onderaan deze pagina. 
+<li>Je kan regio's selecteren via het regio selectie-veld in de algemene filters. 
 <li>Wanneer je als periode meerdere jaren kiest, worden de verschillende deelgebieden per jaar in een balk boven elkaar weergegeven. Wanneer je slechts 1 jaar kiest, worden de verschillende geografische deelgebieden naast elkaar weergegeven.
 </ul>
 ";""

@@ -152,7 +152,7 @@ getOutputDescription <- function(output,
     for (i in seq_along(keys)) {
       text <- gsub(
         pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
-        replacement = paste0("<b>", stringr::str_to_title(gsub("hover_", "", keys[i])), "</b>: ", uiText[which(uiText$plotFunction == keys[i]), context]), 
+        replacement = paste0("<b>", stringr::str_to_title(gsub("_", " ", gsub("hover_", "", keys[i]))), "</b>: ", uiText[which(uiText$plotFunction == keys[i]), context]), 
         x = text
       )
     }
@@ -262,7 +262,7 @@ getOutputSpecie <- function(specie,
     if(nrow(combinedDataSpecie) > 0)
       c("countYearShotUI-leeftijd_comp"),
     if(any(combinedDataSpecie$afschotjaar >= 2014))
-      c("countYearShotUI-jachtmethode_comp"),
+      c("countYearShotUI-jachtmethode_comp", "countYearShotUI-wettelijk_kader", "countYearShotUI-periode"),
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -413,7 +413,7 @@ getSubcategoryOutput <- function(output){
       `beheer-leeftijdcategorie` = 
           c("countYearShotUI-leeftijd_comp", "tableProvinceUI"),
       `beheer-jachtmethode` = 
-          c("countYearShotUI-jachtmethode_comp", "F04_3"),
+          c("countYearShotUI-jachtmethode_comp", "F04_3", "countYearShotUI-wettelijk_kader", "countYearShotUI-periode"),
       
       # schade
       `schade-vlaanderen` = c(

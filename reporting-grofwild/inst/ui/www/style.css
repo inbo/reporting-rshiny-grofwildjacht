@@ -437,6 +437,7 @@ body > .tabbable {
   color: #03a150;
   text-decoration: underline;
   cursor: help;
+	overflow: visible;
 }
 .tooltip-box {
   display: none;   /* hidden by default */
@@ -451,11 +452,24 @@ body > .tabbable {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
   white-space: normal;
-	min-width: max-content;
+	width: max-content;
 	max-width: 700px;
   text-align: left;
-  z-index: 9999;
+  z-index: 2147483647;
+	overflow: visible !important;
+	white-space: normal;
+	overflow-wrap: break-word;
 }
+
+.row {
+    overflow: visible !important;
+}
+
+[class^="col-"],
+[class*=" col-"] {
+    overflow: visible !important;
+}
+
 /* Show tooltip when hovering the wrapper OR the tooltip itself */
 .tooltip-wrapper:hover .tooltip-box,
 .tooltip-box:hover {

@@ -504,7 +504,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     variable = NULL, combinatie = NULL, title = NULL,
     fullNames = NULL, type = NULL,
     typeMelding = NULL, preSelected = reactive(NULL), filterDataOnRegion = TRUE,
-    height = "600px", isWBE = FALSE,
+    height = "600px", isWBE = FALSE, type_MomentOfDay = reactive(NULL),
     exportPlotWidth = 6, exportPlotHeight = 6) {
   
   subData <- reactive({
@@ -599,8 +599,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
           typeLeeftijd <- NULL
         }
         # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector
-        if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "countYearShotAnimals") {   
+        # In case of countYearShot_periode, both dagmoment and jachtmethode come from type-selector
+        if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "countYearShotAnimals") {
           typeReact <- preSelected()$type()
+          typeJacht <- input$type
+        } else if (!is.null(input$type) && !is.null(type_MomentOfDay()) && plotFunction == "countYearShotAnimals") {  
+          typeReact <- type_MomentOfDay()
           typeJacht <- input$type
         } else {
           typeReact <- if (!is.null(input$type)) input$type else if (!is.null(preSelected()$type())) preSelected()$type() else NA
@@ -644,8 +648,13 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(summarizeBy = summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
-            if(!is.null(groupVariable))
-              list(groupVariable = groupVariable),
+            if (plotFunction %in% c("countYearShotAnimals")) {
+              if(!is.null(groupVariable()))
+                list(groupVariable = groupVariable())
+            } else {
+              if(!is.null(groupVariable))
+                list(groupVariable = groupVariable)
+            },
             if(!is.null(yVar))
               list(yVar = yVar),
             if(!is.null(fullNames))

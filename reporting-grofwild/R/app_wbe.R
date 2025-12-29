@@ -287,8 +287,23 @@ countYearShotServer(id = "wbe_jachtmethode",
   types = results$jachttypes,
   preSelected = results$preSelected)
 
+# Plot4: Afschot per moment van de dag
+countYearShotServer(id = "wbe_periode",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange,
+  groupVariable = "periode",
+  types = results$jachttypes,
+  preSelected = results$preSelected)
 
-# Plot4: Schademeldingen
+# Plot5: Afschot per wettelijk kader
+countYearShotServer(id = "wbe_wettelijk_kader",
+  data = results$wbe_combinedData,
+  timeRange = results$wbe_timeRange,
+  groupVariable = "wettelijk_kader",
+  types = results$jachttypes,
+  preSelected = results$preSelected)
+
+# Plot6: Schademeldingen
 mapSchadeServer(id = "wbe",
   schadeData = results$wbe_schadeData, 
   allSpatialData = reactive(
@@ -318,13 +333,13 @@ output$wbe_mapSchade <- renderUI({
   })
 
 
-# Plot 5: Geslachtsverdeling binnen het afschot per leeftijdscategorie
+# Plot 7: Geslachtsverdeling binnen het afschot per leeftijdscategorie
 countAgeGenderServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
   preSelected = results$preSelected)
 
-# Plot 6: Leeftijdscategorie op basis van onderkaak & meldingsformulier
+# Plot 8: Leeftijdscategorie op basis van onderkaak & meldingsformulier
 countAgeCheekServer(id = "wbe",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
@@ -337,7 +352,7 @@ countYearAgeServer(id = "wbe",
   preSelected = results$preSelected)
 
 
-# Plot 7: Onderkaaklengte per jaar
+# Plot 9: Onderkaaklengte per jaar
 results$wbe_typesGender <- reactive({
     
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))
@@ -357,7 +372,7 @@ plotBioindicatorServer(id = "wbe_onderkaak",
   bioindicator = "onderkaaklengte",
   preSelected = results$preSelected)
 
-# Plot 8: Gewicht per jaar
+# Plot 10: Gewicht per jaar
 plotBioindicatorServer(id = "wbe_gewicht",
   data = results$wbe_combinedData,
   timeRange = results$wbe_timeRange,
@@ -376,7 +391,7 @@ bioindicatorSectionServer(
   wildsoort = reactive(input$wbe_species)
 )
 
-# Plot 9: Gerapporteerd aantal embryo's voor vrouwelijke reeen per jaar
+# Plot 11: Gerapporteerd aantal embryo's voor vrouwelijke reeen per jaar
 results$typesFemale <- reactive({
     
     types <- levels(droplevels(results$wbe_combinedData()$type_comp))
@@ -402,7 +417,7 @@ countEmbryosServer(id = "wbe",
   preSelected = results$preSelected
 )
 
-# Plot 10: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
+# Plot 12: Onderkaaklengte per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
 ageGenderLowerJawServer(id = "wbe",
   data = results$wbe_combinedData,
   types = reactive(switch(input$wbe_species,
@@ -416,7 +431,7 @@ ageGenderLowerJawServer(id = "wbe",
 )
 
 
-# Plot 11: Gerealiseerd afschot
+# Plot 13: Gerealiseerd afschot
 percentageRealisedShotServer(id = "wbe",
   data = results$wbe_toekenningsData,
   types = reactive(unique(results$wbe_toekenningsData()$labeltype)),
@@ -425,7 +440,7 @@ percentageRealisedShotServer(id = "wbe",
 )
 
 
-# Plot 12: Afschot locaties
+# Plot 14: Afschot locaties
 mapSchadeServer(id = "wbe_afschot",
   schadeData = results$wbe_combinedData, 
   allSpatialData = reactive(filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())),
@@ -555,6 +570,12 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         ),
         
         countYearShotUI(id = ns("wbe_jachtmethode"), groupVariable = "jachtmethode_comp", uiText = uiText,
+          showInterval = TRUE, showType = TRUE, showTime = TRUE),
+        
+        countYearShotUI(id = ns("wbe_periode"), groupVariable = "periode", uiText = uiText,
+          showInterval = TRUE, showType = TRUE, showTime = TRUE, showSchemeringType = TRUE),
+    
+        countYearShotUI(id = ns("wbe_wettelijk_kader"), groupVariable = "wettelijk_kader", uiText = uiText,
           showInterval = TRUE, showType = TRUE, showTime = TRUE)
       ),
       

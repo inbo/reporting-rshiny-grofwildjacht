@@ -293,6 +293,19 @@ beheerOutputServer <- function(id,
                         uiText = uiText, context = "description", specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearShotUI-jachtmethode_comp" %in% plot())
                       )),
+                  if ("countYearShotUI-periode" %in% outputs)
+                    wellPanel(class = "well-white", countYearShotUI(
+                        id = ns("plot2"), groupVariable = "periode", showType = TRUE,
+                        uiText = uiText, context = "description", specie = specie(), 
+                        showSchemeringType = TRUE,
+                        doHide = !(plot() == defaultTabs$plot || "countYearShotUI-ymoment_dag" %in% plot())
+                      )),
+                  if ("countYearShotUI-wettelijk_kader" %in% outputs)
+                    wellPanel(class = "well-white", countYearShotUI(
+                        id = ns("plot3"), groupVariable = "wettelijk_kader", showType = TRUE,
+                        uiText = uiText, context = "description", specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "countYearShotUI-wettelijk_kader" %in% plot())
+                      )),
                   if ("F04_3" %in% outputs)
                     wellPanel(class = "well-white", countYearProvinceUI(
                         id = ns("plot"), 
@@ -398,7 +411,23 @@ beheerOutputServer <- function(id,
                     types = results$jachttypes,
                     preSelected = beheerSelection
                   ),
-                plot2 = if ("F04_3" %in% outputs)
+                plot2 = if ("countYearShotUI-periode" %in% outputs)
+                  countYearShotServer(
+                    id = "plot2",
+                    data = results$combinedData,
+                    groupVariable = "periode",
+                    types = results$jachttypes,
+                    preSelected = beheerSelection
+                  ),
+                plot3 = if ("countYearShotUI-wettelijk_kader" %in% outputs)
+                  countYearShotServer(
+                    id = "plot3",
+                    data = results$combinedData,
+                    groupVariable = "wettelijk_kader",
+                    types = results$jachttypes,
+                    preSelected = beheerSelection
+                  ),
+                plot4 = if ("F04_3" %in% outputs)
                   countYearProvinceServer(
                     id = "plot", 
                     data = results$drukjachtData,

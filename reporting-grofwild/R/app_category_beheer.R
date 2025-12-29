@@ -30,6 +30,7 @@ beheerOutputServer <- function(id,
       results$ecoData <- reactive(
         ecoData[which(ecoData$wildsoort == specie()), ]
       )
+
       results$geoData <- reactive({
           req(geoData)
           geoData[which(geoData$wildsoort == specie()), ]
@@ -112,6 +113,15 @@ beheerOutputServer <- function(id,
           
           validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
           return(drukjachtData)
+        })
+      
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(ecoData$afschot_datum, na.rm = TRUE)))
+            )
+          )
         })
       
       ## Sidebar panel

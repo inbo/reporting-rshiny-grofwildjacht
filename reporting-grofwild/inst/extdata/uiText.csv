@@ -195,3 +195,4 @@
 "hover_wettelijke_schemering";"";"";"De periode 1 uur na zonsondergang en 1 uur voor zonsopgang";"De periode 1 uur na zonsondergang en 1 uur voor zonsopgang"
 "contactApp";"Verstuur een mail naar";"";"";""
 "regioSchaal_warningMessage";"Het is nog niet mogelijk deze data te visualiseren op {regio-schaal}-level. Gelieve een andere Regio-schaal te selecteren.";"";"";""
+"maxDate_highlight";"";"";"Onderstaande figuren en tabellen zijn gebaseerd op de beschikbare gegevens op datum van <b>{{maxDate}}</b>.";""

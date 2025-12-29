@@ -56,6 +56,15 @@ schadeOutputServer <- function(id,
         range(results$schade_data()$afschotjaar)
       ) 
       
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(schadeData$afschot_datum, na.rm = TRUE)))
+            )
+          )
+        })
+      
       ## Selection species
       
       specieSidebarServer(id = "sidebar", specie = specie)

@@ -30,6 +30,7 @@ Imports:
     mgcv, 
     plotly,
     plyr, 
+    reactable,
     RColorBrewer,
     remotes, 
     reshape2, 

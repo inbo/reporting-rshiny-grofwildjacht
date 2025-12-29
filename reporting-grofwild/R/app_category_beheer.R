@@ -158,6 +158,9 @@ beheerOutputServer <- function(id,
                   showTime = TRUE, 
                   showRegion = TRUE,
                   showInterval = TRUE
+                ),
+                "beheer-afschotplan" = list(
+                  hideGeneralFilters = TRUE
                 )
               )
             )
@@ -215,7 +218,8 @@ beheerOutputServer <- function(id,
                         c(min(2014, min(results$drukjachtData()$afschotjaar)), max(results$timeRange()[2], max(results$drukjachtData()$afschotjaar))) else 
                         c(2014, results$timeRange()[2])
                   )
-                )
+                ),
+                "beheer-afschotplan" = list()
               )
             )
             
@@ -323,6 +327,14 @@ beheerOutputServer <- function(id,
                         plotFunction = "F04_3", showCombinatie = TRUE,
                         doHide = !(plot() == defaultTabs$plot || "F04_3" %in% plot())
                       ))
+                )
+              },
+              "beheer-afschotplan" = {
+                tagList(
+                  if ("afschotAanvraagReewild" %in% outputs)
+                    wellPanel(class = "well-white", 
+                      requestAfschotReewildUI(id = ns("afschotAanvraagReewild"), uiText = uiText, context = "description",
+                      doHide = !(plot() == defaultTabs$plot || "afschotAanvraagReewild" %in% plot())))
                 )
               }
             
@@ -443,6 +455,13 @@ beheerOutputServer <- function(id,
                     data = results$drukjachtData,
                     preSelected = beheerSelection
                   )
+              )
+            },
+            "beheer-afschotplan" = {
+              list(
+                plot1 = if ("afschotAanvraagReewild" %in% outputs)
+                  requestAfschotReewildServer(id = "afschotAanvraagReewild", 
+                    data = results$combinedData)
               )
             }
           )

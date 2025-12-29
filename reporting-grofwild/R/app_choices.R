@@ -263,6 +263,8 @@ getOutputSpecie <- function(specie,
       c("countYearShotUI-leeftijd_comp"),
     if(any(combinedDataSpecie$afschotjaar >= 2014))
       c("countYearShotUI-jachtmethode_comp", "countYearShotUI-wettelijk_kader", "countYearShotUI-periode"),
+    if (specie == "Ree")
+      "afschotAanvraagReewild",
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -414,6 +416,8 @@ getSubcategoryOutput <- function(output){
           c("countYearShotUI-leeftijd_comp", "tableProvinceUI"),
       `beheer-jachtmethode` = 
           c("countYearShotUI-jachtmethode_comp", "F04_3", "countYearShotUI-wettelijk_kader", "countYearShotUI-periode"),
+      `beheer-afschotplan` = 
+        c("afschotAanvraagReewild"),
       
       # schade
       `schade-vlaanderen` = c(
@@ -513,7 +517,7 @@ getInfo <- function(
   if(select(var = output, name = "output"))
     infoOutput <- infoOutput[which(infoOutput$output == output), ]
   
-  results <- unique(as.character(infoOutput[, variable]))
+  results <- unique(as.character(infoOutput[order(infoOutput$category), variable]))
   
   return(results)
   

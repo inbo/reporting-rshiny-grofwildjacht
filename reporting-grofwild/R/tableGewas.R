@@ -40,10 +40,12 @@ tableGewas <- function(data, jaartallen = NULL, variable,
     allData$locatie <- as.factor("Vlaams Gewest")
   } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
     allData$locatie <- factor(allData$provincie)
-  } else {
+  } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
     allData$locatie <- allData$FaunabeheerZone
     allData$locatie <- factor(allData$locatie, levels = levels(droplevels(factor(unique(allData$locatie), 
             levels = c(1:10)))))
+  } else {
+    allData$locatie <- factor(allData$gemeente_afschot_locatie)
   }
     
   # select relevant columns

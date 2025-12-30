@@ -65,7 +65,7 @@ beheerOutputServer <- function(id,
       results$combinedData <- reactive(
         merge(
           x = results$ecoData(), 
-          y = results$geoData()[, c("ID", "FaunabeheerZone")], 
+          y = results$geoData()[, c("ID", "FaunabeheerZone", "gemeente_afschot_locatie")], 
           by = "ID"
         )
       )
@@ -203,11 +203,12 @@ beheerOutputServer <- function(id,
                       c(min(results$openingstijd()[1], results$timeRange()[1]), max(results$openingstijd()[2], results$timeRange()[2])))
                 ),
                 "beheer-leeftijdcategorie" = list(
-                  regionLevels = c(1:2, 4),
+                  regionLevels = c(1:4),
                   allRegionsSelected = TRUE,
                   types = results$leeftijdtypes,
                   labelTypes = "Leeftijdscategorie",
-                  multipleTypes = TRUE
+                  multipleTypes = TRUE,
+                  data = results$combinedData
                  ),
                 "beheer-jachtmethode" = list(
                   regionLevels = c(1:2, 4),
@@ -387,14 +388,14 @@ beheerOutputServer <- function(id,
                 plot2 = if ("countYearProvinceUI-afschot" %in% outputs)
                   countYearProvinceServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     allRegionsSelected = TRUE,
                     preSelected = beheerSelection
                   ),
                 plot3 = if ("yearlyShotAnimalsUI" %in% outputs)
                   yearlyShotAnimalsServer(
                     id = "plot", 
-                    data = results$ecoData, 
+                    data = results$combinedData, 
                     timeRange = results$openingstijd, 
                     type = results$labeltypes, 
                     openingstijdenData = results$openingstijdenData,
@@ -416,7 +417,7 @@ beheerOutputServer <- function(id,
                 plot2 = if ("tableProvinceUI" %in% outputs)
                   tableProvinceServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     categorie = "leeftijd",
                     timeRange = results$timeRange,
                     preSelected = beheerSelection

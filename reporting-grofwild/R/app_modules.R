@@ -58,7 +58,7 @@ optionsModuleUI <- function(id,
               choices = c(
                 "Vlaanderen" = "flanders", 
                 "Provincie" = "provinces", 
-                "Fusiegemeenten" = "communes", 
+                "Gemeente" = "communes", 
                 "Faunabeheerzones" = "faunabeheerzones")[regionLevels],
               selected = regionLevelSelected)),
             column(11, offset = 1, uiOutput(ns("region")))

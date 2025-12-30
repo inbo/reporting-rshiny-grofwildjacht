@@ -235,17 +235,25 @@ requestAfschotReewildServer <- function(
           
           req(input$importAanvraag)
           
-          df <- read.csv(
-            input$importAanvraag$datapath,
-            stringsAsFactors = FALSE,
-            check.names = FALSE,
-            fileEncoding = "UTF-8"
+          tryCatch({
+              df <- read.csv(
+                input$importAanvraag$datapath,
+                stringsAsFactors = FALSE,
+                check.names = FALSE,
+                fileEncoding = "UTF-8"
+              )
+            },
+            error = function(e) {
+              showNotification("Het is niet mogelijk om dit bestand correct te laden. Gelieve een ander bestand te selecteren.", type = "error", duration = 5)
+              return()
+            }
           )
+          
           
           # Basic validation
           required_cols <- colnames(table_data())
           
-          if (!all(required_cols %in% colnames(df)))
+          if (!all(required_cols %in% colnames(df)) | nrow(df) != 4)
             showNotification("Het format van de ge\u00EFmporteerde bestand is niet correct. Gelieve het format over te nemen van het ge\u00EBxporteerde bestand. ", type = "error", duration = 5)
           else 
             table_data(df)

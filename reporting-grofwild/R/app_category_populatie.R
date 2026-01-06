@@ -128,6 +128,9 @@ populatieOutputServer <- function(id,
                   showTime = TRUE, 
                   showRegion = TRUE,
                   showDataSource = c("embryos", "leeftijd", "geslacht")
+                ),
+                "populatie-genetica" = list(
+                  hideGeneralFilters = TRUE
                 )
               )
             )
@@ -176,7 +179,8 @@ populatieOutputServer <- function(id,
                     data = results$combinedData,
                     allRegionsSelected = TRUE,
                     timeRange = results$timeRange
-                  )
+                  ),
+                  "populatie-genetica" = list()
                 )
               )
               
@@ -274,6 +278,16 @@ populatieOutputServer <- function(id,
                         doHide = !(plot() == defaultTabs$plot || "tableWolfReproductionUI" %in% plot())
                       ))
                 )
+              },
+              "populatie-genetica" = {
+                tagList(
+                  if ("countGeneticWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countGeneticWolvesUI(
+                        id = ns("plot"), plotFunction = "countGeneticWolvesUI",
+                        uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "countGeneticWolvesUI" %in% plot())
+                      ))
+                )
               }
             )
             
@@ -362,6 +376,17 @@ populatieOutputServer <- function(id,
                   tableWolfReproductionServer(
                     id = "plot", 
                     data = wolfTerritoriaData,
+                    preSelected = populatieSelection
+                  )
+              )
+            },
+            "populatie-genetica" = {
+              c(
+                if ("countGeneticWolvesUI" %in% outputs)
+                  countGeneticWolvesServer(
+                    id = "plot",
+                    data = reactive(wolfOverzichtData),
+                    timeRange = reactive(range(wolfOverzichtData$Year)),
                     preSelected = populatieSelection
                   )
               )

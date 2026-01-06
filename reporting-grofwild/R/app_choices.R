@@ -321,7 +321,7 @@ getOutputSpecie <- function(specie,
     "exotenportaal",
     if (specie == "Wolf")
       c(
-        "tableWolfReproductionUI"
+        "tableWolfReproductionUI", "countGeneticWolvesUI"
       )
   )
     
@@ -439,6 +439,7 @@ getSubcategoryOutput <- function(output){
       `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
       `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI", "tableWolfReproductionUI"),
+      `populatie-genetica` = "countGeneticWolvesUI",
       
       # verspreiding
       `verspreiding-huidig` = c("F17_1", "kencijferUI"),

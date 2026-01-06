@@ -585,7 +585,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
   argList <- reactive({
       
         validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
-#        if (plotFunction == "plotBioindicator") browser()
         
         year <- coalesce(input$year, preSelected()$year(), NA)
         time <- coalesce(input$time, preSelected()$time(), NA)

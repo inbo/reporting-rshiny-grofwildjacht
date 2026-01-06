@@ -318,7 +318,11 @@ getOutputSpecie <- function(specie,
     if (!all(is.na(combinedDataSpecie$ontweid_gewicht)))
       "plotBioindicatorUI-ontweid_gewicht",
     "biodiversiteitsportaal",
-    "exotenportaal"
+    "exotenportaal",
+    if (specie == "Wolf")
+      c(
+        "tableWolfReproductionUI"
+      )
   )
     
   return(outputs)
@@ -434,7 +438,7 @@ getSubcategoryOutput <- function(output){
       `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),
       `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
-      `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI"),
+      `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI", "tableWolfReproductionUI"),
       
       # verspreiding
       `verspreiding-huidig` = c("F17_1", "kencijferUI"),

@@ -39,7 +39,11 @@ populatieOutputServer <- function(id,
       )
       
       results$timeRange <- reactive(
-        range(results$ecoData()$afschotjaar)
+        if (specie() == "Wolf") {
+            range(wolfTerritoriaData$Jaar)
+          } else {
+            range(results$ecoData()$afschotjaar)
+          }
       ) 
       
       # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
@@ -80,6 +84,8 @@ populatieOutputServer <- function(id,
       
       # Max date highlight 
       output$maxDateHighlight <- renderUI({
+          req(specie() != "Wolf")
+          
           wellPanel(class = "well-white", 
             div(style = "text-align: center; font-size: 18px;",
               HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(ecoData$afschot_datum, na.rm = TRUE)))
@@ -260,6 +266,12 @@ populatieOutputServer <- function(id,
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countEmbryosUI" %in% plot())
+                      )),
+                  if ("tableWolfReproductionUI" %in% outputs)
+                    wellPanel(class = "well-white", tableWolfReproductionUI(
+                        id = ns("plot"), 
+                        uiText = uiText, specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "tableWolfReproductionUI" %in% plot())
                       ))
                 )
               }
@@ -344,6 +356,12 @@ populatieOutputServer <- function(id,
                     id = "plot",
                     data = results$combinedData,
                     groupVariable = "reproductiestatus",
+                    preSelected = populatieSelection
+                  ),
+                if ("tableWolfReproductionUI" %in% outputs)
+                  tableWolfReproductionServer(
+                    id = "plot", 
+                    data = wolfTerritoriaData,
                     preSelected = populatieSelection
                   )
               )

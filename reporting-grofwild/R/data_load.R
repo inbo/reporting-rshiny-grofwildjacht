@@ -104,6 +104,41 @@ loadRawData <- function(
 }
 
 
+#' Read all data related to Wolf species
+#' 
+#' @param bucket character, name of the S3 bucket as specified in the config.yml file;
+#' default value is "inbo-wbe-uat-data"
+#' @param type data type, "eco" for ecology data and "geo" for geography data
+#' @inheritParams reportingGrofwild-data-load
+#' @return data.frame, loaded data
+#' @importFrom arrow read_parquet
+#' @importFrom sf st_as_sf st_transform
+#' @author mvarewyck
+#' @export
+loadWolfData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("reportingGrofwild-data-path"),
+  type = c("locaties", "utm", "overzicht", "terr", "schade")
+) {
+  
+  type <- match.arg(type)
+  
+  dataFile <- switch(type,
+    "locaties" = "wolf_monitoring_puntlocaties.csv",
+    "utm" = "wolf_monitoring_UTMhokken.csv",
+    "overzicht" = "wolf_monitoring_jaarlijksoverzicht.csv",
+    "terr" = "wolf_monitoring_territoria.csv",
+    "schade" = "wolf_schade_overzicht.csv"
+  )
+  
+  if (!identical(path, "")){
+    read.csv(file.path(path, dataFile), header = TRUE)
+  } else {
+    readS3(FUN = read.csv, header = TRUE, sep = ";", row.names = NULL, file = dataFile, bucket = bucket)
+  }
+  
+}
+
 
 
 #' Read gemeentes data

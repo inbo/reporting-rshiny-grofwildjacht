@@ -81,6 +81,18 @@ if (!doDebug | !exists("waarnemingenData"))
 if (!doDebug | !exists("draagvlakData"))
   draagvlakData <- loadDraagvlakData()
 
+# Data with observations and geographical information for Wolf
+if (!doDebug | !exists("wolfPuntenData"))
+  wolfPuntenData <- loadWolfData(type = "locaties")
+if (!doDebug | !exists("wolfHokkenData"))
+  wolfHokkenData <- loadWolfData(type = "utm")  
+if (!doDebug | !exists("wolfOverzichtData"))
+  wolfOverzichtData <- loadWolfData(type = "overzicht")
+if (!doDebug | !exists("wolfTerritoriaData"))
+  wolfTerritoriaData <- loadWolfData(type = "terr")  
+if (!doDebug | !exists("wolfSchadeData"))
+  wolfSchadeData <- loadWolfData(type = "schade")
+
 
 # TODO temporary fix
 if (!is.null(attr(ecoData, "excluded")))

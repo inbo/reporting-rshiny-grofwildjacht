@@ -441,8 +441,7 @@ getSubcategoryOutput <- function(output){
       `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
       `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI", "tableWolfReproductionUI"),
-      `populatie-genetica` = "countGeneticWolvesUI",
-      `populatie-herkomst` = "countHerkomstWolvesUI",
+      `populatie-genetica` = c("countGeneticWolvesUI", "countHerkomstWolvesUI"),
       
       # verspreiding
       `verspreiding-huidig` = c("F17_1", "kencijferUI"),

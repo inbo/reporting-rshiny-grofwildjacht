@@ -110,7 +110,7 @@ countHerkomstWolves <- function(data, jaartallen = NULL,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countHerkomstWolvesServer <- function(id, data, timeRange, preSelected = reactive(NULL)) {
+countHerkomstWolvesServer <- function(id, data, timeRange = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -142,7 +142,8 @@ countHerkomstWolvesServer <- function(id, data, timeRange, preSelected = reactiv
 #' @param plotFunction character, for matching file with plot titles
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countHerkomstWolvesUI <- function(id, uiText, plotFunction = "countHerkomstWolvesUI", context = "description",
+countHerkomstWolvesUI <- function(id, uiText, plotFunction = "countHerkomstWolvesUI", 
+  context = "description", showTime = FALSE,
   doHide = TRUE) {
   
   ns <- NS(id)
@@ -163,7 +164,7 @@ countHerkomstWolvesUI <- function(id, uiText, plotFunction = "countHerkomstWolve
         ),
         column(4,
           optionsModuleUI(id = ns("countHerkomstWolves"),
-            showTime = TRUE, exportData = TRUE)
+            showTime = showTime, exportData = TRUE)
         )
       ),
       tags$br(),

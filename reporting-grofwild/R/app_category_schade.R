@@ -58,6 +58,13 @@ schadeOutputServer <- function(id,
       
       # Max date highlight 
       output$maxDateHighlight <- renderUI({
+          
+          maxDate <- if (specie() == "Wolf") {
+              max(wolfOverzichtData$Year, na.rm = TRUE)
+          } else {
+            max(schadeData$afschot_datum, na.rm = TRUE)
+          }
+          
           wellPanel(class = "well-white", 
             div(style = "text-align: center; font-size: 18px;",
               HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(schadeData$afschot_datum, na.rm = TRUE)))
@@ -109,6 +116,9 @@ schadeOutputServer <- function(id,
                 ),
                 "schade-kosten" = list(
                   hideGeneralFilters = FALSE    # General schade filters should be shown
+                ),
+                "schade-doodsoorzaak" = list(
+                  showTime = TRUE
                 )
               )
             )
@@ -131,7 +141,6 @@ schadeOutputServer <- function(id,
               list(
                 id = "schade_topbar",
                 subcategory = subcategory,
-                includeSchadeFilters = TRUE,
                 schade_code = schade_code, 
                 schade_gewas = schade_gewas, 
                 schade_voertuig = schade_voertuig, 
@@ -139,9 +148,11 @@ schadeOutputServer <- function(id,
               ),
               switch(as.character(subcategory()), 
                 "schade-vlaanderen" = list(
+                  includeSchadeFilters = TRUE,
                   timeRange = results$schade_timeRange
                 ),
                 "schade-regio" = list(
+                  includeSchadeFilters = TRUE,
                   regionLevels = c(
                     "Vlaanderen" = "flanders",
                     "Provincie" = "provinces", 
@@ -156,6 +167,7 @@ schadeOutputServer <- function(id,
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-gewas" = list(
+                  includeSchadeFilters = TRUE,
                   regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
@@ -164,6 +176,7 @@ schadeOutputServer <- function(id,
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-schade" = list(
+                  includeSchadeFilters = TRUE,
                   regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
@@ -171,8 +184,10 @@ schadeOutputServer <- function(id,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
-                "schade-seizoen" = list(),
-                "schade-kosten" = list()
+                "schade-seizoen" = list(includeSchadeFilters = TRUE,),
+                "schade-kosten" = list(includeSchadeFilters = TRUE,),
+                "schade-doodsoorzaak" = list(
+                  timeRange = reactive(range(wolfOverzichtData$Year)))
               )
             )
             
@@ -309,6 +324,22 @@ schadeOutputServer <- function(id,
                         typeMelding = c("Landbouw" = "landbouw"),
                         regionLevels = c(1:4),
                         doHide = !(plot() == defaultTabs$plot || "barCostUI" %in% plot())
+                      ))
+                )
+              },
+              "schade-doodsoorzaak" = {
+                tagList(
+                  if ("countDeathWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countDeathWolvesUI(
+                        id = ns("plot12"), 
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "countDeathWolvesUI" %in% plot())
+                      )),
+                  if ("mapAccidentsWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapAccidentsWolvesUI(
+                        id = ns("plot13"), 
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesUI" %in% plot())
                       ))
                 )
               }
@@ -463,7 +494,23 @@ schadeOutputServer <- function(id,
                     preSelected = schadeSelection
                   )  
               )
-            }
+            },
+            "schade-doodsoorzaak" = {
+              list(
+                plot1 = if ("countDeathWolvesUI" %in% outputs)
+                  countDeathWolvesServer(
+                    id = "plot12",
+                    data = reactive(wolfOverzichtData),
+                    preSelected = schadeSelection
+                  ),
+                plot2 = if ("mapAccidentsWolvesUI" %in% outputs)
+                  mapAccidentsWolvesServer(
+                    id = "plot13",  
+                    data = reactive(wolfOverzichtData),
+                    preSelected = schadeSelection
+                  )
+              )
+            },
           )
           
           # re-set in case plot selected via tab after/before category card

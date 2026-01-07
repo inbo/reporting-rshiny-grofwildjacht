@@ -131,6 +131,9 @@ populatieOutputServer <- function(id,
                 ),
                 "populatie-genetica" = list(
                   hideGeneralFilters = TRUE
+                ),
+                "populatie-herkomst" = list(
+                  hideGeneralFilters = TRUE
                 )
               )
             )
@@ -180,7 +183,8 @@ populatieOutputServer <- function(id,
                     allRegionsSelected = TRUE,
                     timeRange = results$timeRange
                   ),
-                  "populatie-genetica" = list()
+                  "populatie-genetica" = list(),
+                  "populatie-herkomst" = list()
                 )
               )
               
@@ -288,6 +292,16 @@ populatieOutputServer <- function(id,
                         doHide = !(plot() == defaultTabs$plot || "countGeneticWolvesUI" %in% plot())
                       ))
                 )
+              },
+              "populatie-herkomst" = {
+                tagList(
+                  if ("countHerkomstWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countHerkomstWolvesUI(
+                        id = ns("plot"), plotFunction = "countHerkomstWolvesUI",
+                        uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "countHerkomstWolvesUI" %in% plot())
+                      ))
+                )
               }
             )
             
@@ -384,6 +398,17 @@ populatieOutputServer <- function(id,
               c(
                 if ("countGeneticWolvesUI" %in% outputs)
                   countGeneticWolvesServer(
+                    id = "plot",
+                    data = reactive(wolfOverzichtData),
+                    timeRange = reactive(range(wolfOverzichtData$Year)),
+                    preSelected = populatieSelection
+                  )
+              )
+            },
+            "populatie-herkomst" = {
+              c(
+                if ("countHerkomstWolvesUI" %in% outputs)
+                  countHerkomstWolvesServer(
                     id = "plot",
                     data = reactive(wolfOverzichtData),
                     timeRange = reactive(range(wolfOverzichtData$Year)),

@@ -55,7 +55,10 @@ countDeathWolves <- function(data, jaartallen = NULL,
 				"<br>Aantal: ", summaryData$freq, " (", summaryData$percent, "%)", 
 				"<br>Totaal: ", summaryData$totaal)
       
-      title <- "Overzicht sterfte wolven"
+      title <- paste0("Overzicht sterfte wolven ",
+        ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+          paste("in", jaartallen)), "\n in Vlaanderen"
+      )
 		
 #	} else {
 #		

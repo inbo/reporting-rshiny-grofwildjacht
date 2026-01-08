@@ -126,8 +126,8 @@ populatieOutputServer <- function(id,
                   ),
                 "populatie-voortplanting" = list(
                   showTime = TRUE, 
-                  showRegion = TRUE,
-                  showDataSource = c("embryos", "leeftijd", "geslacht")
+                  showRegion = if (specie() == "Wolf") FALSE else TRUE,
+                  showDataSource = if (specie() == "Wolf") c() else c("embryos", "leeftijd", "geslacht")
                 ),
                 "populatie-genetica" = list(
                   showTime = TRUE

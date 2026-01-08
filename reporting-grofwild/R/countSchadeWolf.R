@@ -1,4 +1,4 @@
-#' Create interactive plot for counts per genetic wolves per category and year
+#' Create interactive plot for counts of schade by wolves per category and year
 #' 
 #' @inheritParams countYearProvince
 #' @inheritParams reportingGrofwild-common-args
@@ -20,18 +20,29 @@
 #' @import plotly
 #' @importFrom plyr count ddply
 #' @export
-countGeneticWolves <- function(data, jaartallen = NULL,
-		summarizeBy = c("count", "percent"), groupVariable = "Status",
-		width = NULL, height = NULL) {
+countSchadeWolves <- function(data, jaartallen = NULL,
+		summarizeBy = c("count", "percent"), groupVariable = c("Schade", "wolfproof", "Prooidier"),
+		width = NULL, height = NULL, sourceIndicator = NULL) {
 	
 	summarizeBy <- match.arg(summarizeBy)
+  groupVariable <- match.arg(groupVariable)
+  
+  if (groupVariable == "Prooidier") {
+    data <- data[data$Schade == "Wolf", ]
+    ylabel <- "bevestiged schadegevallen"
+  } else if (groupVariable == "wolfproof") {
+    data <- data[data$Preventie != "", ]
+    ylabel <- "gemelde schadegevallen"
+  } else {
+    ylabel <- "gemelde schadegevallen"
+  }
 	
 	if (is.null(jaartallen))
-		jaartallen <- unique(data$Year)
-	
+		jaartallen <- unique(data$Jaar)
+  
 	# Select data
-	plotData <- data[data$Year %in% jaartallen, 
-			c("Year", groupVariable)]
+	plotData <- data[!is.na(data$Jaar) & data$Jaar %in% jaartallen, 
+			c("Jaar", groupVariable)]
   names(plotData) <- c("year", "group")
 	
 	# Remove some categories
@@ -58,21 +69,11 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
 				"<br>Aantal: ", summaryData$freq, " (", summaryData$percent, "%)", 
 				"<br>Totaal: ", summaryData$totaal)
-      
-      title <- paste0("Aantal genetisch geïdentificeerde wolven ",
-        ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-          paste("in", jaartallen)), "\n in Vlaanderen"
-      )
 		
 	} else {
 		
 		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
 				"<br>", round(summaryData$percent), "%")
-      
-      title <- paste0("Percentage genetisch geïdentificeerde wolven ",
-        ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-          paste("in", jaartallen)), "\n in Vlaanderen"
-      )
 		
 	}
 	
@@ -80,6 +81,17 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 	
   singleYear <- length(unique(summaryData$year)) == 1
 	
+  title <- switch(groupVariable,
+    Schade = paste0("Identificatie gemelde schadegevallen ", 
+      ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+        paste("in", jaartallen)), "\n in Vlaanderen"),
+    wolfproof = paste0("Wolfwerende omheiningen per schadegeval ", 
+      ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+        paste("in", jaartallen)), "\n in Vlaanderen"),
+    Prooidier = paste0("Schadegevallen per veesoort ", 
+      ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+        paste("in", jaartallen)), "\n in Vlaanderen"))
+  
 	
 	# Create plot
 	toPlot <- switch(summarizeBy,
@@ -93,7 +105,7 @@ countGeneticWolves <- function(data, jaartallen = NULL,
                 title = "Jaar", 
                 tickvals = unique(summaryData$year), 
                 ticktext = unique(summaryData$year)), 
-							yaxis = list(title = "Aantal wolven"),
+							yaxis = list(title = paste("Aantal", ylabel)),
 							barmode = if (singleYear) "group" else "stack",
 							margin = list(b = 120, t = 100)),
 			percent = plot_ly(data = summaryData, x = ~year, 
@@ -105,7 +117,7 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 							xaxis = list(title = "Jaar", 
                 tickvals = unique(summaryData$year), 
                 ticktext = unique(summaryData$year)), 
-							yaxis = list(title = "Percentage wolven", range = c(0, 100)),
+							yaxis = list(title = paste("Percentage", ylabel), range = c(0, 100)),
               barmode = if (singleYear) "group" else "stack",
 							margin = list(b = 120, t = 100))
 	)
@@ -128,14 +140,14 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 
 
 
-#' Shiny module for creating the plot \code{\link{countGeneticWolves}} - server side
+#' Shiny module for creating the plot \code{\link{countSchadeWolves}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countGeneticWolvesServer <- function(id, data, timeRange = reactive(NULL), preSelected = reactive(NULL)) {
+countSchadeWolvesServer <- function(id, data, groupVariable = NULL, timeRange = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -143,14 +155,15 @@ countGeneticWolvesServer <- function(id, data, timeRange = reactive(NULL), preSe
       ns <- session$ns
      
       # Afschot per jaar en per leeftijdscategorie
-      callModule(module = optionsModuleServer, id = "countGeneticWolves", 
+      callModule(module = optionsModuleServer, id = "countSchadeWolves", 
         data = data,
         timeRange = timeRange
       )
-      toReturn <- callModule(module = plotModuleServer, id = "countGeneticWolves",
-        plotFunction = "countGeneticWolves", 
+      toReturn <- callModule(module = plotModuleServer, id = "countSchadeWolves",
+        plotFunction = "countSchadeWolves", 
         data = data,
         filterDataOnRegion = FALSE,
+        groupVariable = groupVariable,
         preSelected = preSelected)
       
       return(reactive(toReturn()))
@@ -161,13 +174,13 @@ countGeneticWolvesServer <- function(id, data, timeRange = reactive(NULL), preSe
 
 
 
-#' Shiny module for creating the plot \code{\link{countGeneticWolves}} - UI side
+#' Shiny module for creating the plot \code{\link{countSchadeWolves}} - UI side
 #' @inherit welcomeSectionUI
 #' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countGeneticWolvesUI <- function(id, uiText, plotFunction = "countGeneticWolvesUI", 
+countSchadeWolvesUI <- function(id, uiText, plotFunction = "countSchadeWolvesUI", 
   context = "description", showTime = FALSE,
   doHide = TRUE) {
   
@@ -179,16 +192,16 @@ countGeneticWolvesUI <- function(id, uiText, plotFunction = "countGeneticWolvesU
   
   tagList(
     
-    actionLink(inputId = ns("linkCountGeneticWolves"), label = h3(HTML(title))),
-    conditionalPanel(paste("input.linkCountGeneticWolves % 2 ==", as.numeric(doHide)), ns = ns,
+    actionLink(inputId = ns("linkCountSchadeWolves"), label = h3(HTML(title))),
+    conditionalPanel(paste("input.linkCountSchadeWolves % 2 ==", as.numeric(doHide)), ns = ns,
       
       fixedRow(
         
         column(8, 
-          plotModuleUI(id = ns("countGeneticWolves"))
+          plotModuleUI(id = ns("countSchadeWolves"))
         ),
         column(4,
-          optionsModuleUI(id = ns("countGeneticWolves"), 
+          optionsModuleUI(id = ns("countSchadeWolves"), 
             summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
             showTime = showTime, exportData = TRUE)
         )

@@ -56,12 +56,15 @@ countHerkomstWolves <- function(data, jaartallen = NULL,
   
 #	if (summarizeBy == "count") {
 		
-		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
-				"<br>Aantal: ", summaryData$freq, " (", summaryData$percent, "%)", 
-				"<br>Totaal: ", summaryData$totaal)
-      
-      title <- "Herkomst wolven in Vlaanderen"
-		
+  summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
+    "<br>Aantal: ", summaryData$freq, " (", summaryData$percent, "%)", 
+    "<br>Totaal: ", summaryData$totaal)
+  
+  title <- paste0("Herkomst wolven in Vlaanderen ",
+    ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+      paste("in", jaartallen)), "\n in Vlaanderen"
+  )
+  
 #	} else {
 #		
 #		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",

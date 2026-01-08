@@ -322,7 +322,9 @@ getOutputSpecie <- function(specie,
     if (specie == "Wolf")
       c(
         "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",
-        "countDeathWolvesUI", "mapAccidentsWolvesUI"
+        "countDeathWolvesUI", "mapAccidentsWolvesUI",
+        "trendWolfFlandersUI", "countSchadeWolfUI-gemeldeSchade", 
+        "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort"
       )
   )
     
@@ -426,7 +428,9 @@ getSubcategoryOutput <- function(output){
       
       # schade
       `schade-vlaanderen` = c(
-          "tableSchadeSummaryUI", "trendYearFlandersUI-schade"
+          "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
+          "trendWolfFlandersUI", "countSchadeWolfUI-gemeldeSchade",
+          "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
         "mapSchadeUI"),

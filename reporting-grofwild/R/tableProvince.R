@@ -40,7 +40,7 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
       sourceIndicator_leeftijd = sourceIndicator_leeftijd)
     
     # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
-    if (sourceIndicator_leeftijd == "inbo")
+    if (!is.null(sourceIndicator_leeftijd) && sourceIndicator_leeftijd == "inbo")
       data <- subset(data, leeftijd_comp_inbo %in% type)
     else data <- subset(data, leeftijd_comp %in% type)
   }

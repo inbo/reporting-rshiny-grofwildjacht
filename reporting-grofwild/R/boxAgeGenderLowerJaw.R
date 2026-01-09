@@ -120,6 +120,7 @@ boxAgeGenderLowerJaw <- function(data,
 #' Shiny module for creating the plot \code{\link{boxAgeGenderLowerJaw}} - server side
 #' @inheritParams countAgeGenderServer
 #' @inheritParams optionsModuleServer
+#' @inheritParams reportingGrofwild-common-args
 #' @return no return value
 #' 
 #' @author mvarewyck

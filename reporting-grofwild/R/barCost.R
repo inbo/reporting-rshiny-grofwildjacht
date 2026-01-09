@@ -7,6 +7,7 @@
 #' Function to generate stacked bar plot for kost landbouwschade (F09_2)
 #' 
 #' @param data data.frame with schadeData
+#' @param jaartallen character vector, choices for filtering on year
 #' @param typeMelding character vector, choices for filtering on `typeMelding` in data
 #' should be one of \code{c("Per jaar", "Per seizoen", "Per kwartaal", "Per twee weken")}
 #' @param unit character, data shown in unit
@@ -172,6 +173,9 @@ barCost <- function(data,
 #' Shiny module for creating the plot \code{\link{barCost}} - server side
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams barDraagkracht
+#' @inheritParams optionsModuleServer
+#' @inheritParams reportingGrofwild-common-args
+#' 
 #' @param title reactive, title to be printed above plot
 #' @return no return value
 #' 

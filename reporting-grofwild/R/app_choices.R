@@ -42,6 +42,7 @@ getSubcategoryTitle <- function(subcategory, uiText){
 #' @param type (optional) character vector of length 1 with type
 #' @param n (optional) integer vector of length 1 with maximum 
 #' number of characters to include
+#' @param regioSchaal character selected region level
 #' @inheritParams reportingGrofwild-common-args
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
@@ -327,9 +328,10 @@ getOutputSpecie <- function(specie,
     if (specie == "Wolf")
       c(
         "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",
-        "countDeathWolvesUI", "mapAccidentsWolvesUI", "mapSchadeWolvesUI",
-        "trendWolfFlandersUI", "countSchadeWolfUI-gemeldeSchade", 
-        "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort",
+        "countDeathWolvesUI", "mapAccidentsWolvesUI", 
+        "trendWolfFlandersUI", "countSchadeWolvesUI-gemeldeSchade", 
+        "countSchadeWolvesUI-omheining", "countSchadeWolvesUI-soort",
+        "mapSchadeWolvesUI",
         "mapLocationWolvesUI", "mapUTMWolvesUI", "mapDispersersWolvesUI"
       )
   )
@@ -394,9 +396,9 @@ getOutputInfo <- function(species, ...){
             data.frame(specie = blacklist$specie[i], output = blacklist$output[i])
         }))
     blacklist$blacklist <- TRUE
-    info <- merge(
+    info <- left_join(
       x = info, y = blacklist,
-      all.x = TRUE, by = c("specie", "output"), sort = FALSE
+      by = c("specie", "output")
     )
   } else {
     info$blacklist <- NA
@@ -435,8 +437,8 @@ getSubcategoryOutput <- function(output){
       # schade
       `schade-vlaanderen` = c(
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
-          "trendWolfFlandersUI", "countSchadeWolfUI-gemeldeSchade",
-          "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort",
+          "trendWolfFlandersUI", "countSchadeWolvesUI-gemeldeSchade",
+          "countSchadeWolvesUI-omheining", "countSchadeWolvesUI-soort",
           "mapSchadeWolvesUI"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 

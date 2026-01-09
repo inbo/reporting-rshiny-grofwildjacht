@@ -4,10 +4,12 @@
 ###############################################################################
 
 #' Create map for UTM hokken involving wolves
+#' 
+#' @param data data.frame main data
 #' @inheritParams mapFlanders 
 #' @return leaflet map
 #' @author sjunius
-#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds
+#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds setView
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_palette
 #' @export
@@ -71,18 +73,17 @@ mapUTMWolves <- function(
 
 
 #' Shiny module for creating map for UTM-hokken for wolves - server side
-#' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
-#' @param allSpatialData reactive with sf objects with spatial data 
-#' for selected region (and year for WBE)
+#' 
+#' @param data data.frame main data
+#' @param definedYear numeric, single numeric value specifying the year value 
 #' @inheritParams getOutputTitle
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' @author mvarewyck
+#' @author sjunius
 #' @import shiny
-#' @importFrom webshot2 webshot
-#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
-#' @importFrom dplyr coalesce right_join
+#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
+#' @importFrom dplyr right_join
 #' @export
 mapUTMWolvesServer <- function(
   id, data, preSelected = reactive(NULL),
@@ -289,17 +290,12 @@ mapUTMWolvesServer <- function(
 
 
 #' Shiny module for creating map for UTM-hokken for wolves - UI side
-#' @param filterCode boolean whether to include the option to filter on schade code;
-#' default value is FALSE
-#' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
-#' default value is FALSE
-#' @param filterSource boolean, whether to show filter option for source
-#' @param filterAccuracy boolean, whether to show filter option for accuracy
-#' @param variableChoices named character vector, choices for coloring 
+#' 
 #' @inherit welcomeSectionUI
 #' @inheritParams reportingGrofwild-common-args
-#' @author mvarewyck
+#' @author sjunius
 #' @importFrom leaflet leafletOutput
+#' @importFrom shinyjs hide
 #' @export
 mapUTMWolvesUI <- function(
   id, uiText, plotFunction = "mapUTMWolvesUI", context = "description", showYear = FALSE,

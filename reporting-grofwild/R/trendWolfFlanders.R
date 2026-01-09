@@ -72,9 +72,8 @@ trendWolfFlanders <- function(data, jaartallen = NULL,
 
 #' Shiny module for creating the plot \code{\link{trendWolfFlanders}} - server side
 #' @inheritParams countAgeGenderServer 
-#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
-#' @author mvarewyck
+#' @author sjuniu
 #' @import shiny
 #' @export
 trendWolfFlandersServer <- function(id, data, timeRange = reactive(NULL), preSelected = reactive(NULL)) {
@@ -105,7 +104,6 @@ trendWolfFlandersServer <- function(id, data, timeRange = reactive(NULL), preSel
 
 #' Shiny module for creating the plot \code{\link{trendWolfFlanders}} - UI side
 #' @inherit welcomeSectionUI
-#' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
 #' @inheritParams reportingGrofwild-common-args
 #' @export

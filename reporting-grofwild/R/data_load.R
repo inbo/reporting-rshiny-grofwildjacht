@@ -64,8 +64,7 @@ loadShapeData <- function(
 }
 
 #' Load spatial data for wolves
-#' @param WBE_NR integer, if not NULL select only relevant data for given WBE;
-#' default value is NULL 
+#' @param type character data type to load
 #' @inheritParams readS3
 #' @inheritParams reportingGrofwild-data-load
 #' @return list of sf objects
@@ -152,7 +151,7 @@ loadRawData <- function(
 #' 
 #' @param bucket character, name of the S3 bucket as specified in the config.yml file;
 #' default value is "inbo-wbe-uat-data"
-#' @param type data type, "eco" for ecology data and "geo" for geography data
+#' @param type character data type to load
 #' @inheritParams reportingGrofwild-data-load
 #' @return data.frame, loaded data
 #' @importFrom arrow read_parquet
@@ -165,6 +164,9 @@ loadWolfData <- function(
   path = Sys.getenv("reportingGrofwild-data-path"),
   type = c("locaties", "utm", "overzicht", "terr", "schade")
 ) {
+  
+  # For R CMD check
+  X_coord <- Y_coord <- NULL
   
   type <- match.arg(type)
   
@@ -184,9 +186,9 @@ loadWolfData <- function(
   
   if (type == "locaties") {
     data <- data %>%
-      st_as_sf(coords = c("x", "y"), crs = st_crs("+init=epsg:31370") )
+      st_as_sf(coords = c("x", "y"), crs = 31370 )
     
-    data <- sf::st_transform(data, st_crs("+init=epsg:4326"))
+    data <- sf::st_transform(data, crs = 4326)
     
     colnames(data)[colnames(data) == "monitoringsjaar"] <- "year"
   } else if (type == "overzicht") {

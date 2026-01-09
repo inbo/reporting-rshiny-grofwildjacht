@@ -18,7 +18,8 @@
 #' }
 #' }
 #' @import plotly
-#' @importFrom plyr count ddply
+#' @importFrom plyr count ddply 
+#' @importFrom dplyr across all_of
 #' @export
 countHerkomstWolves <- function(data, jaartallen = NULL,
 		groupVariable = "Herkomst",
@@ -108,7 +109,6 @@ countHerkomstWolves <- function(data, jaartallen = NULL,
 
 #' Shiny module for creating the plot \code{\link{countHerkomstWolves}} - server side
 #' @inheritParams countAgeGenderServer 
-#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
@@ -141,7 +141,6 @@ countHerkomstWolvesServer <- function(id, data, timeRange = reactive(NULL), preS
 
 #' Shiny module for creating the plot \code{\link{countHerkomstWolves}} - UI side
 #' @inherit welcomeSectionUI
-#' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
 #' @inheritParams reportingGrofwild-common-args
 #' @export

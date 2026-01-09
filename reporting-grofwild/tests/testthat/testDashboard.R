@@ -188,7 +188,8 @@ test_that("F09_2", {
     
     myResult <- barCost(
       data = sf::st_drop_geometry(schadeData), 
-      unit = c("SoortNaam", "season")[2]
+      unit = c("SoortNaam", "season")[2],
+      jaartallen = 2018:2023
     )
     
     expect_type(myResult, "list")
@@ -251,7 +252,8 @@ test_that("F07_1, F09_1, F11_1", {
       data = subset(subData, typeMelding %in% sources[4]), 
       yVar = "schadeBedrag",
       interval = "Per jaar",
-      regio = "Vlaams gewest"
+      regio = "Vlaams gewest",
+      jaartallen = 2018:2023
     )
     
     expect_type(myResult, "list")

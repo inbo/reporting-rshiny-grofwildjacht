@@ -5,7 +5,10 @@
 
 
 #' UI function for the topbar of the different Category pages
+#' @param hideGeneralFilters boolean whether to hide all filters
+#' @inheritParams optionsModuleServer
 #' @inheritParams reportingGrofwild-common-args
+#' @importFrom shinyjs useShinyjs
 #' @author sjunius
 generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear = FALSE,
   showRegion = FALSE, showInterval = FALSE, showDataSource = c(), showUnit = FALSE,
@@ -142,6 +145,10 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
 }
 
 #' Server function for the topbar of the different Category pages
+#' @param includeSchadeFilters boolean, whether to show the filters on schade
+#' @param schadeSources character vector with schade sources
+#' @param units character vector with possible units
+#' @inheritParams optionsModuleServer
 #' @inheritParams reportingGrofwild-common-args
 #' @return Shiny module function
 #' @import shiny

@@ -59,7 +59,7 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 				"<br>Aantal: ", summaryData$freq, " (", summaryData$percent, "%)", 
 				"<br>Totaal: ", summaryData$totaal)
       
-      title <- paste0("Aantal genetisch geïdentificeerde wolven ",
+      title <- paste0("Aantal genetisch ge\u00EFdentificeerde wolven ",
         ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
           paste("in", jaartallen)), "\n in Vlaanderen"
       )
@@ -69,7 +69,7 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
 				"<br>", round(summaryData$percent), "%")
       
-      title <- paste0("Percentage genetisch geïdentificeerde wolven ",
+      title <- paste0("Percentage genetisch ge\u00EFdentificeerde wolven ",
         ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
           paste("in", jaartallen)), "\n in Vlaanderen"
       )
@@ -130,7 +130,6 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 
 #' Shiny module for creating the plot \code{\link{countGeneticWolves}} - server side
 #' @inheritParams countAgeGenderServer 
-#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
 #' @author mvarewyck
 #' @import shiny
@@ -163,7 +162,6 @@ countGeneticWolvesServer <- function(id, data, timeRange = reactive(NULL), preSe
 
 #' Shiny module for creating the plot \code{\link{countGeneticWolves}} - UI side
 #' @inherit welcomeSectionUI
-#' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
 #' @inheritParams reportingGrofwild-common-args
 #' @export

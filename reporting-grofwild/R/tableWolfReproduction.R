@@ -50,6 +50,7 @@ tableWolfReproductionUI <- function(id, uiText, specie = NULL, doHide = TRUE, co
 #' 
 #' @return no return value
 #' @import shiny
+#' @importFrom dplyr filter mutate group_by group_split
 #' @export
 tableWolfReproductionServer <- function(id, data,
   preSelected = reactive(NULL)) {
@@ -68,7 +69,7 @@ tableWolfReproductionServer <- function(id, data,
               male_change = as.logical(male_change)
             ) %>%
             group_by(Territorium) %>%
-            dplyr::group_split()
+            group_split()
           
           table_columns <- lapply(terrData, function(df) {
               

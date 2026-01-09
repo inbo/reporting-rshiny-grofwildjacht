@@ -1,8 +1,10 @@
-#' Create map for raffic accidents involving wolves
+#' Create map for disperser wolves
+#' @param data data.frame main data
+#' @param spatialData data.frame spatial data
 #' @inheritParams mapFlanders 
 #' @return leaflet map
-#' @author sjui
-#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds
+#' @author sjunius
+#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles addPolygons setView addLegend
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_palette
 #' @export
@@ -86,19 +88,17 @@ mapDispersersWolves <- function(
 }
 
 
-#' Shiny module for creating map on traffic accidents involving wolves - server side
-#' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
-#' @param allSpatialData reactive with sf objects with spatial data 
-#' for selected region (and year for WBE)
+#' Shiny module for creating map on disperser wolves - server side
+#' 
+#' @param data data.frame main data
+#' @param variable character with column name of interest
 #' @inheritParams getOutputTitle
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' @author mvarewyck
+#' @author sjunius
 #' @import shiny
-#' @importFrom webshot2 webshot
-#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
-#' @importFrom dplyr coalesce
+#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
 #' @export
 mapDispersersWolvesServer <- function(
   id, data, variable = "Lot", preSelected = reactive(NULL)) {
@@ -322,18 +322,12 @@ mapDispersersWolvesServer <- function(
 
 
 
-#' Shiny module for creating map on traffic accidents involving wolves - UI side
-#' @param filterCode boolean whether to include the option to filter on schade code;
-#' default value is FALSE
-#' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
-#' default value is FALSE
-#' @param filterSource boolean, whether to show filter option for source
-#' @param filterAccuracy boolean, whether to show filter option for accuracy
-#' @param variableChoices named character vector, choices for coloring 
+#' Shiny module for creating map on disperser wolves - UI side
+#' 
 #' @inherit welcomeSectionUI
 #' @inheritParams reportingGrofwild-common-args
-#' @author mvarewyck
-#' @importFrom leaflet leafletOutput
+#' @author sjunius
+#' @import shiny
 #' @export
 mapDispersersWolvesUI <- function(
   id, uiText, plotFunction = "mapDispersersWolvesUI", context = "description",

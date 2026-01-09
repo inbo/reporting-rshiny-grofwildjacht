@@ -241,20 +241,20 @@ schadeOutputServer <- function(id,
                         id = ns("plot14"), uiText = uiText, plotFunction = "trendWolfFlandersUI",
                         doHide = !(plot() == defaultTabs$plot || "trendWolfFlandersUI" %in% plot())
                       )),
-                  if ("countSchadeWolfUI-gemeldeSchade" %in% outputs)
+                  if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot15"), uiText = uiText, plotFunction = "countSchadeWolvesUI-gemeldeSchade",
-                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolfUI-gemeldeSchade" %in% plot())
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-gemeldeSchade" %in% plot())
                       )),
-                  if ("countSchadeWolfUI-omheining" %in% outputs)
+                  if ("countSchadeWolvesUI-omheining" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot16"), uiText = uiText, plotFunction = "countSchadeWolvesUI-omheining",
-                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolfUI-omheining" %in% plot())
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-omheining" %in% plot())
                       )),
-                  if ("countSchadeWolfUI-soort" %in% outputs)
+                  if ("countSchadeWolvesUI-soort" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot17"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
-                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolfUI-soort" %in% plot())
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-soort" %in% plot())
                       )),
                   if ("mapSchadeWolvesUI" %in% outputs)
                     wellPanel(class = "well-white", mapSchadeWolvesUI(
@@ -417,21 +417,21 @@ schadeOutputServer <- function(id,
                     data = reactive(wolfSchadeData), 
                     preSelected = schadeSelection
                   ),
-                plot4 = if ("countSchadeWolfUI-gemeldeSchade" %in% outputs)
+                plot4 = if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot15", 
                     data = reactive(wolfSchadeData), 
                     groupVariable = "Schade",
                     preSelected = schadeSelection
                   ),
-                plot5 = if ("countSchadeWolfUI-omheining" %in% outputs)
+                plot5 = if ("countSchadeWolvesUI-omheining" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot16", 
                     data = reactive(wolfSchadeData), 
                     groupVariable = "wolfproof",
                     preSelected = schadeSelection
                   ),
-                plot6 = if ("countSchadeWolfUI-soort" %in% outputs)
+                plot6 = if ("countSchadeWolvesUI-soort" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot17", 
                     data = reactive(wolfSchadeData), 

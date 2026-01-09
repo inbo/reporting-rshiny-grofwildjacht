@@ -475,6 +475,9 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
 #' @param typeMelding reactive with type of notification ('melding')
+#' @param filterDataOnRegion boolean whether to filter on region level
+#' @param isWBE boolean whether it is a plot on the WBE page
+#' @param type_MomentOfDay reactive with type of moment of day
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData

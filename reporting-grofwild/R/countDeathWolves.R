@@ -103,9 +103,8 @@ countDeathWolves <- function(data, jaartallen = NULL,
 
 #' Shiny module for creating the plot \code{\link{countDeathWolves}} - server side
 #' @inheritParams countAgeGenderServer 
-#' @param title reactive character, title with asterisk to show in the \code{actionLink}
 #' @return no return value
-#' @author mvarewyck
+#' @author sjunius
 #' @import shiny
 #' @export
 countDeathWolvesServer <- function(id, data, timeRange, preSelected = reactive(NULL)) {

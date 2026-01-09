@@ -1,13 +1,16 @@
-# Map(s) for traffic accidents involving wolves
+# Map(s) for location of wolves
 # 
 # Author: sjunius
 ###############################################################################
 
-#' Create map for raffic accidents involving wolves
+#' Create map for location wolves
+#' 
+#' @param data data.frame main data
+#' @param variable character with column name of interest
 #' @inheritParams mapFlanders 
 #' @return leaflet map
-#' @author sjui
-#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds
+#' @author sjunius
+#' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds addLegend
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom INBOtheme inbo_palette
 #' @export
@@ -77,19 +80,18 @@ mapLocationWolves <- function(
 }
 
 
-#' Shiny module for creating map on traffic accidents involving wolves - server side
-#' @param schadeData reacive object as returned by \code{loadRawData(type = "wildschade")}
-#' @param allSpatialData reactive with sf objects with spatial data 
-#' for selected region (and year for WBE)
+#' Shiny module for creating map on location of wolves - server side
+#' 
+#' @param data data.frame main data
+#' @param variable character with column name of interest
+#' @param definedYear numeric, single numeric value specifying the year value 
 #' @inheritParams getOutputTitle
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @return no return value
-#' @author mvarewyck
+#' @author sjunius
 #' @import shiny
-#' @importFrom webshot2 webshot
-#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles
-#' @importFrom dplyr coalesce
+#' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
 #' @export
 mapLocationWolvesServer <- function(
   id, data, variable = "Status", preSelected = reactive(NULL),
@@ -311,18 +313,12 @@ mapLocationWolvesServer <- function(
 
 
 
-#' Shiny module for creating map on traffic accidents involving wolves - UI side
-#' @param filterCode boolean whether to include the option to filter on schade code;
-#' default value is FALSE
-#' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
-#' default value is FALSE
-#' @param filterSource boolean, whether to show filter option for source
-#' @param filterAccuracy boolean, whether to show filter option for accuracy
-#' @param variableChoices named character vector, choices for coloring 
+#' Shiny module for creating map on location of wolves - UI side
+#' 
 #' @inherit welcomeSectionUI
 #' @inheritParams reportingGrofwild-common-args
-#' @author mvarewyck
-#' @importFrom leaflet leafletOutput
+#' @author sjunius
+#' @import shiny
 #' @export
 mapLocationWolvesUI <- function(
   id, uiText, plotFunction = "mapLocationWolvesUI", context = "description", showYear = FALSE,

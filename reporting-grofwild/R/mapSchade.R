@@ -733,6 +733,7 @@ mapSchadeServer <- function(
 #' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
 #' default value is FALSE
 #' @param filterSource boolean, whether to show filter option for source
+#' @param filterTime boolean, whether to show filter option for time
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
 #' @param variableChoices named character vector, choices for coloring 
 #' @inherit welcomeSectionUI

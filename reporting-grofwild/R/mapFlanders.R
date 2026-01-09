@@ -66,6 +66,7 @@ getCenterView <- function(sf_object) {
 #' @author mvarewyck
 #' @importFrom reshape2 dcast
 #' @importFrom sf st_drop_geometry
+#' @importFrom stats as.formula
 #' @export
 createSpaceData <- function(data, allSpatialData, biotoopData, 
   year, species, regionLevel,

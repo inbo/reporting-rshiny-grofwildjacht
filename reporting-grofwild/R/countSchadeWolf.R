@@ -141,13 +141,14 @@ countSchadeWolves <- function(data, jaartallen = NULL,
 
 
 #' Shiny module for creating the plot \code{\link{countSchadeWolves}} - server side
-#' @inheritParams countAgeGenderServer 
-#' @param title reactive character, title with asterisk to show in the \code{actionLink}
+#' @inheritParams reportingGrofwild-common-args
+#' @inheritParams optionsModuleServer 
 #' @return no return value
-#' @author mvarewyck
+#' @author sjunius
 #' @import shiny
 #' @export
-countSchadeWolvesServer <- function(id, data, groupVariable = NULL, timeRange = reactive(NULL), preSelected = reactive(NULL)) {
+countSchadeWolvesServer <- function(id, data, groupVariable = NULL, 
+  timeRange = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -176,7 +177,6 @@ countSchadeWolvesServer <- function(id, data, groupVariable = NULL, timeRange = 
 
 #' Shiny module for creating the plot \code{\link{countSchadeWolves}} - UI side
 #' @inherit welcomeSectionUI
-#' @param showRegion boolean, whether to show the region filter; default is TRUE
 #' @param plotFunction character, for matching file with plot titles
 #' @inheritParams reportingGrofwild-common-args
 #' @export

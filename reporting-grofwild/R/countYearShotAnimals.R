@@ -14,6 +14,7 @@
 #' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @param type character, used to filter the data
+#' @param type_jachtmethode character, used to filter the data on jachtmethode
 #' 
 #' @importFrom stats setNames
 #' @author dbemelmans
@@ -278,6 +279,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
+#' @param showSchemeringType boolean whether to show a radio button with schemering type
 #' @inheritParams optionsModuleUI
 #' @inheritParams countYearShotAnimals
 #' @inheritParams getOutputDescription

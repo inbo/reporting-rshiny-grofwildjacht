@@ -63,6 +63,50 @@ loadShapeData <- function(
 
 }
 
+#' Load spatial data for wolves
+#' @param WBE_NR integer, if not NULL select only relevant data for given WBE;
+#' default value is NULL 
+#' @inheritParams readS3
+#' @inheritParams reportingGrofwild-data-load
+#' @return list of sf objects
+#' 
+#' @author mvarewyck
+#' @importFrom sf st_transform read_sf
+#' @export
+loadWolfShapeData <- function(
+  type = c("territory", "utm", "gemeenten"),
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("reportingGrofwild-data-path")
+) {
+  
+  type <- match.arg(type)
+  
+  dataFile <- switch(type,
+    "utm" = "utm10_vl.geojson",
+    "territory" = "wolf_territories_Flanders.geojson",
+    "gemeenten" = "wolf_gemeenten.geojson"
+  )
+  
+  if (!identical(path, "")) {
+    data <- sf::read_sf(file.path(path, dataFile))
+  } else {
+    obj <- aws.s3::get_object(dataFile, bucket = bucket)
+    geojson_text <- rawToChar(obj)
+    
+    data <- geojsonsf::geojson_sf(geojson_text)
+    if (type == "gemeenten")   {
+      sf::st_crs(data) <- NA
+      sf::st_crs(data) <- 31370
+    } ## TODO ask if crs correctly converted?
+    if (st_crs(data)$epsg != 4326) {
+      data <- st_transform(data, crs = 4326)
+    }
+  }
+  
+  data
+  
+}
+
 #' Read ecology, geography, wildschade, kbo_wbe or waarnemingen data
 #' 
 #' Data is preprocessed by createRawData() at INBO
@@ -112,7 +156,8 @@ loadRawData <- function(
 #' @inheritParams reportingGrofwild-data-load
 #' @return data.frame, loaded data
 #' @importFrom arrow read_parquet
-#' @importFrom sf st_as_sf st_transform
+#' @importFrom sf st_as_sf st_transform st_point st_sfc
+#' @importFrom dplyr n
 #' @author mvarewyck
 #' @export
 loadWolfData <- function(
@@ -131,11 +176,41 @@ loadWolfData <- function(
     "schade" = "wolf_schade_overzicht.csv"
   )
   
-  if (!identical(path, "")){
-    read.csv(file.path(path, dataFile), header = TRUE)
-  } else {
-    readS3(FUN = read.csv, header = TRUE, sep = ";", row.names = NULL, file = dataFile, bucket = bucket)
+  data <- if (!identical(path, "")){
+      read.csv(file.path(path, dataFile), header = TRUE)
+    } else {
+      readS3(FUN = read.csv, header = TRUE, sep = ";", row.names = NULL, file = dataFile, bucket = bucket)
+    }
+  
+  if (type == "locaties") {
+    data <- data %>%
+      st_as_sf(coords = c("x", "y"), crs = st_crs("+init=epsg:31370") )
+    
+    data <- sf::st_transform(data, st_crs("+init=epsg:4326"))
+    
+    colnames(data)[colnames(data) == "monitoringsjaar"] <- "year"
+  } else if (type == "overzicht") {
+    colnames(data)[colnames(data) == "Year"] <- "year"
+    data$X_Coord <- as.numeric(as.character(data$X_Coord))
+    data$Y_Coord <- as.numeric(as.character(data$Y_Coord))
+
+    sf_with_geom <- data %>% filter(!is.na(X_Coord), !is.na(Y_Coord)) %>%
+      st_as_sf(coords = c("X_Coord", "Y_Coord"), crs = 4326, remove = FALSE)
+    sf_no_geom <- data %>% filter(is.na(X_Coord) | is.na(Y_Coord)) %>%
+      mutate(geometry = st_sfc(
+          lapply(seq_len(n()), function(i) st_point()),
+          crs = 4326
+        )) %>% st_as_sf()
+    
+    data <- rbind(sf_with_geom, sf_no_geom)
+  } else if (type == "utm") {
+    colnames(data)[colnames(data) == "monitoringsjaar"] <- "year"
+  } else if (type == "schade") {
+    data$Datum <- as.Date(data$Datum)
+    colnames(data)[colnames(data) == "Jaar"] <- "year"
   }
+  
+  data
   
 }
 

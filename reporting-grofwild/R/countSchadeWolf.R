@@ -38,11 +38,11 @@ countSchadeWolves <- function(data, jaartallen = NULL,
   }
 	
 	if (is.null(jaartallen))
-		jaartallen <- unique(data$Jaar)
+		jaartallen <- unique(data$year)
   
 	# Select data
-	plotData <- data[!is.na(data$Jaar) & data$Jaar %in% jaartallen, 
-			c("Jaar", groupVariable)]
+	plotData <- data[!is.na(data$year) & data$year %in% jaartallen, 
+			c("year", groupVariable)]
   names(plotData) <- c("year", "group")
 	
 	# Remove some categories

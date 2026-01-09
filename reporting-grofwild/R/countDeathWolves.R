@@ -28,11 +28,11 @@ countDeathWolves <- function(data, jaartallen = NULL,
   data <- data[data[[groupVariable]] != "AANVULLEN" & data$Levend == 0, ]
   
 	if (is.null(jaartallen))
-		jaartallen <- unique(data$Year)
+		jaartallen <- unique(data$year)
 	
 	# Select data
-	plotData <- data[data$Year %in% jaartallen, 
-			c("Year", groupVariable)]
+	plotData <- data[data$year %in% jaartallen, 
+			c("year", groupVariable)]
   names(plotData) <- c("year", "group")
   
 	# Summarize data per year and age category

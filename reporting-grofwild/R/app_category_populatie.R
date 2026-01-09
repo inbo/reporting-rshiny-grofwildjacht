@@ -181,7 +181,7 @@ populatieOutputServer <- function(id,
                     timeRange = results$timeRange
                   ),
                   "populatie-genetica" = list(
-                    timeRange = reactive(range(wolfOverzichtData$Year))
+                    timeRange = reactive(range(wolfOverzichtData$year))
                   )
                 )
               )
@@ -393,13 +393,13 @@ populatieOutputServer <- function(id,
                 if ("countGeneticWolvesUI" %in% outputs)
                   countGeneticWolvesServer(
                     id = "plot",
-                    data = reactive(wolfOverzichtData),
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
                     preSelected = populatieSelection
                   ),
                 if ("countHerkomstWolvesUI" %in% outputs)
                   countHerkomstWolvesServer(
                     id = "plot",
-                    data = reactive(wolfOverzichtData),
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
                     preSelected = populatieSelection
                   )
               )

@@ -29,15 +29,15 @@ countHerkomstWolves <- function(data, jaartallen = NULL,
   
   plotData <- data %>%
     group_by(across(all_of(c("WolfID", groupVariable)))) %>%
-    summarise(Year = min(Year)) %>%
+    summarise(year = min(year)) %>%
     ungroup()
   
 	if (is.null(jaartallen))
-		jaartallen <- unique(data$Year)
+		jaartallen <- unique(data$year)
 	
 	# Select data
-	plotData <- plotData[plotData$Year %in% jaartallen, 
-			c("Year", groupVariable)]
+	plotData <- plotData[plotData$year %in% jaartallen, 
+			c("year", groupVariable)]
   names(plotData) <- c("year", "group")
   
 	# Summarize data per year and age category

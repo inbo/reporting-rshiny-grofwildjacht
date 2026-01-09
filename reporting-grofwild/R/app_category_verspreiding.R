@@ -67,6 +67,7 @@ verspreidingOutputServer <- function(id,
       
       # Max date highlight 
       output$maxDateHighlight <- renderUI({
+          req(specie() != "Wolf")
           wellPanel(class = "well-white", 
             div(style = "text-align: center; font-size: 18px;",
               HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(ecoData$afschot_datum, na.rm = TRUE)))
@@ -96,7 +97,8 @@ verspreidingOutputServer <- function(id,
                   showYear = TRUE,
                   showRegion = TRUE,
                   showType = TRUE,
-                  showUnit = TRUE
+                  showUnit = TRUE,
+                  hideGeneralFilters = if (specie() == "Wolf") TRUE else FALSE
                 ),
                 "verspreiding-toekomstig" = list(
                   hideGeneralFilters = TRUE
@@ -182,6 +184,24 @@ verspreidingOutputServer <- function(id,
                         id = ns("plot2"), 
                         uiText = uiText,
                         doHide = !(plot() == defaultTabs$plot || "kencijferUI" %in% plot())
+                      )),
+                  if ("mapLocationWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot3"), showYear = TRUE,
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapLocationWolvesUI" %in% plot())
+                      )),
+                  if ("mapUTMWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapUTMWolvesUI(
+                        id = ns("plot4"), showYear = TRUE,
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapUTMWolvesUI" %in% plot())
+                      )),
+                  if ("mapDispersersWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapDispersersWolvesUI(
+                        id = ns("plot5"), 
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapDispersersWolvesUI" %in% plot())
                       ))
                 )
               },
@@ -189,7 +209,7 @@ verspreidingOutputServer <- function(id,
                 tagList(
                   if ("mapSpreadUI" %in% outputs)
                     wellPanel(class = "well-white", mapSpreadUI(
-                        id = ns("plot3"), 
+                        id = ns("plot6"), 
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "mapSpreadUI" %in% plot())
@@ -239,6 +259,25 @@ verspreidingOutputServer <- function(id,
                     spatialData = spatialData,
                     species = specie,
                     preSelected = verspreidingSelection
+                  ),
+                if ("mapLocationWolvesUI" %in% outputs)
+                  mapLocationWolvesServer(
+                    id = "plot3",  
+                    data = reactive(wolfPuntenData),
+                    variable = "Status",
+                    preSelected = verspreidingSelection
+                  ),
+                if ("mapUTMWolvesUI" %in% outputs)
+                  mapUTMWolvesServer(
+                    id = "plot4",  
+                    data = reactive(wolfHokkenData),
+                    preSelected = verspreidingSelection
+                  ),
+                if ("mapDispersersWolvesUI" %in% outputs)
+                  mapDispersersWolvesServer(
+                    id = "plot5",  
+                    data = reactive(wolfOverzichtData),
+                    preSelected = verspreidingSelection
                   )
               )
             },
@@ -246,7 +285,7 @@ verspreidingOutputServer <- function(id,
               c(
                 if ("mapSpreadUI" %in% outputs)
                   mapSpreadUI = mapSpreadServer(
-                    id = "plot3",
+                    id = "plot6",
                     allSpatialData = spatialData,
                     species = specie(),
                     type = "F17_4",

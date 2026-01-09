@@ -54,7 +54,7 @@ schadeOutputServer <- function(id,
       
       results$schade_timeRange <- reactive({
           if (specie() == "Wolf") {
-            range(wolfSchadeData$Jaar)
+            range(wolfSchadeData$year)
           } else {
             range(results$schade_data()$afschotjaar)
           }
@@ -65,14 +65,14 @@ schadeOutputServer <- function(id,
       output$maxDateHighlight <- renderUI({
           
           maxDate <- if (specie() == "Wolf") {
-              max(wolfOverzichtData$Year, na.rm = TRUE)
-          } else {
-            max(schadeData$afschot_datum, na.rm = TRUE)
-          }
+              max(wolfSchadeData$Datum, na.rm = TRUE)
+            } else {
+              max(schadeData$afschot_datum, na.rm = TRUE)
+            }
           
           wellPanel(class = "well-white", 
             div(style = "text-align: center; font-size: 18px;",
-              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(schadeData$afschot_datum, na.rm = TRUE)))
+              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = maxDate))
             )
           )
         })
@@ -192,7 +192,7 @@ schadeOutputServer <- function(id,
                 "schade-seizoen" = list(includeSchadeFilters = TRUE,),
                 "schade-kosten" = list(includeSchadeFilters = TRUE,),
                 "schade-doodsoorzaak" = list(
-                  timeRange = reactive(range(wolfOverzichtData$Year)))
+                  timeRange = reactive(range(wolfOverzichtData$year)))
               )
             )
             
@@ -255,6 +255,11 @@ schadeOutputServer <- function(id,
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot17"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolfUI-soort" %in% plot())
+                      )),
+                  if ("mapSchadeWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapSchadeWolvesUI(
+                        id = ns("plot18"), uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "mapSchadeWolvesUI" %in% plot())
                       ))
                 )
               }, 
@@ -361,8 +366,8 @@ schadeOutputServer <- function(id,
                         doHide = !(plot() == defaultTabs$plot || "countDeathWolvesUI" %in% plot())
                       )),
                   if ("mapAccidentsWolvesUI" %in% outputs)
-                    wellPanel(class = "well-white", mapAccidentsWolvesUI(
-                        id = ns("plot13"), 
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot13"), plotFunction = "mapAccidentsWolvesUI",
                         uiText = uiText, context = "description",
                         doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesUI" %in% plot())
                       ))
@@ -431,6 +436,12 @@ schadeOutputServer <- function(id,
                     id = "plot17", 
                     data = reactive(wolfSchadeData), 
                     groupVariable = "Prooidier",
+                    preSelected = schadeSelection
+                  ),
+                plot7 = if ("mapSchadeWolvesUI" %in% outputs)
+                  mapSchadeWolvesServer(
+                    id = "plot18", 
+                    data = reactive(wolfSchadeData), 
                     preSelected = schadeSelection
                   )
               )
@@ -552,12 +563,13 @@ schadeOutputServer <- function(id,
                 plot1 = if ("countDeathWolvesUI" %in% outputs)
                   countDeathWolvesServer(
                     id = "plot12",
-                    data = reactive(wolfOverzichtData),
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
                     preSelected = schadeSelection
                   ),
                 plot2 = if ("mapAccidentsWolvesUI" %in% outputs)
-                  mapAccidentsWolvesServer(
+                  mapLocationWolvesServer(
                     id = "plot13",  
+                    variable = "Lot",
                     data = reactive(wolfOverzichtData),
                     preSelected = schadeSelection
                   )

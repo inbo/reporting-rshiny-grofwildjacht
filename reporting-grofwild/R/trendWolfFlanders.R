@@ -24,12 +24,12 @@ trendWolfFlanders <- function(data, jaartallen = NULL,
   width = NULL, height = NULL, sourceIndicator = NULL) {
   
   if (is.null(jaartallen))
-    jaartallen <- unique(data$Jaar)
+    jaartallen <- unique(data$year)
   
   # Select data
   data$group <- "Vlaams Gewest"
-  plotData <- data[!is.na(data$Jaar) & data$Jaar %in% jaartallen & data$Schade == "Wolf", 
-    c("Jaar", "group")]
+  plotData <- data[!is.na(data$year) & data$year %in% jaartallen & data$Schade == "Wolf", 
+    c("year", "group")]
   names(plotData) <- c("year", "group") 
   
   

@@ -27,11 +27,11 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 	summarizeBy <- match.arg(summarizeBy)
 	
 	if (is.null(jaartallen))
-		jaartallen <- unique(data$Year)
+		jaartallen <- unique(data$year)
 	
 	# Select data
-	plotData <- data[data$Year %in% jaartallen, 
-			c("Year", groupVariable)]
+	plotData <- data[data$year %in% jaartallen, 
+			c("year", groupVariable)]
   names(plotData) <- c("year", "group")
 	
 	# Remove some categories

@@ -160,8 +160,13 @@ getOutputDescription <- function(output,
   
   # Replace last date
   if (!is.null(maxDate))
-    text <- gsub("\\{\\{maxDate\\}\\}", 
-      format(maxDate, "%d/%m/%Y"), text)
+    if (is.character(maxDate)) {
+      text <- gsub("\\{\\{maxDate\\}\\}", 
+        gsub("-", "/", maxDate), text)
+    } else {
+      text <- gsub("\\{\\{maxDate\\}\\}", 
+        format(maxDate, "%d/%m/%Y"), text)
+    }
   
   if(!is.null(specie)){
     splitText <- strsplit(text, split = "\\{")[[1]]
@@ -322,9 +327,10 @@ getOutputSpecie <- function(specie,
     if (specie == "Wolf")
       c(
         "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",
-        "countDeathWolvesUI", "mapAccidentsWolvesUI",
+        "countDeathWolvesUI", "mapAccidentsWolvesUI", "mapSchadeWolvesUI",
         "trendWolfFlandersUI", "countSchadeWolfUI-gemeldeSchade", 
-        "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort"
+        "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort",
+        "mapLocationWolvesUI", "mapUTMWolvesUI", "mapDispersersWolvesUI"
       )
   )
     
@@ -430,7 +436,8 @@ getSubcategoryOutput <- function(output){
       `schade-vlaanderen` = c(
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
           "trendWolfFlandersUI", "countSchadeWolfUI-gemeldeSchade",
-          "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort"
+          "countSchadeWolfUI-omheining", "countSchadeWolfUI-soort",
+          "mapSchadeWolvesUI"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
         "mapSchadeUI"),
@@ -448,7 +455,8 @@ getSubcategoryOutput <- function(output){
       `populatie-genetica` = c("countGeneticWolvesUI", "countHerkomstWolvesUI"),
       
       # verspreiding
-      `verspreiding-huidig` = c("F17_1", "kencijferUI"),
+      `verspreiding-huidig` = c("F17_1", "kencijferUI", 
+        "mapLocationWolvesUI", "mapUTMWolvesUI", "mapDispersersWolvesUI"),
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak

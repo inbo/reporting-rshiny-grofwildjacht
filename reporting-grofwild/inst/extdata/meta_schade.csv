@@ -17,6 +17,8 @@ wildsoort;Waterwild;;Meerkoet;
 wildsoort;Waterwild;;Rietgans;
 wildsoort;Waterwild;;Waterhoen;
 wildsoort;Waterwild;;Wintertaling;
+wildsoort;Waterwild;;Kolgans;
+wildsoort;Waterwild;;Smient;
 wildsoort;Overig wild;;Houtduif;
 wildsoort;Overig wild;;Steenmarter;
 wildsoort;Overig wild;;Vos;
@@ -31,6 +33,7 @@ wildsoort;Beschermde soort;;Kleine zwaan;
 wildsoort;Beschermde soort;;Knobbelzwaan;
 wildsoort;Beschermde soort;;Koolmees;
 wildsoort;Beschermde soort;;Pimpelmees;
+wildsoort;Beschermde soort;;Roek;
 wildsoort;Beschermde soort;;Turkse tortel;
 wildsoort;Beschermde soort;;Zwarte kraai;
 type;GEWAS;Gewas;WLSCHD;Woelschade

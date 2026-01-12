@@ -49,6 +49,7 @@ subcategoryTabs <- unlist(lapply(categories, function(category) {
           category = category,
           uiText = uiText,
           speciesList = speciesList,
+          schadeSelection = category == "schade",
           select = TRUE
         )
         
@@ -126,7 +127,29 @@ outputTabs <- unlist(lapply(subcategories, function(subcategory) {
 shinyUI(
         
   bootstrapPage(
-      
+    tags$head(
+      tags$script(HTML("
+            $(document).on('shiny:connected', function() {
+            // Function to update all leaflet attribution links
+            function updateLeafletLinks() {
+            $('.leaflet-control-attribution a').attr('target', '_blank');
+            }
+            
+            setTimeout(updateLeafletLinks, 100);
+            
+            // Create observer for all future leaflet maps
+            var observer = new MutationObserver(function(mutations) {
+            updateLeafletLinks();
+            });
+            
+            // Observe the entire body for new leaflet maps
+            observer.observe(document.body, { 
+            childList: true, 
+            subtree: true 
+            });
+            });
+            "))
+    ),
     shinyjs::useShinyjs(),
     shinyjs::extendShinyjs(text = js_code, functions = 'browseURL'),
                 
@@ -204,7 +227,7 @@ shinyUI(
       ),
       bslib::nav_item(selectizeInput(inputId = "search", label = NULL, choices = NULL, width = "100%")), 
       bslib::nav_spacer(), # right align next items
-      bslib::nav_item(uiOutput("mailLink")),
+      bslib::nav_item(contactUI(id = "publicContact")),
       bslib::nav_item(
         tags$a(
           id = "WBE", 

@@ -94,11 +94,12 @@ bioindicatorSectionServer <- function(id, uiText, wildsoort) {
   moduleServer(id,
     function(input, output, session) {
       
-      oldText <- uiText[uiText$plotFunction == "bioindicatorSection", id]
-      
       output$textBioindicator <- renderUI({
           
-          HTML(decodeText(text = oldText, species = wildsoort()))
+          description <- getOutputDescription(output = "bioindicatorSection", 
+            specie = wildsoort(), uiText = uiText, context = id)
+          
+          HTML(description)
           
         })
       
@@ -114,15 +115,65 @@ bioindicatorSection <- function(id, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1],
+    uiText = uiText)
+  
   
   tagList(
-    h2(HTML(uiText$title)),
+    h2(HTML(title)),
     tags$p(uiOutput(ns("textBioindicator")))
   )
 
 }
 
+
+#' Link with contact info - UI side
+#' 
+#' @inherit welcomeSectionUI
+#' @export
+contactUI <- function(id) {
+  
+  actionLink(inputId = NS(id, "contact"), 
+    label = "Contact",
+    class = "version")
+  
+}
+
+
+#' Link with contact info - server side
+#' @inherit welcomeSectionUI
+#' @param currentURL character, url of current page/graph
+#' @param subject character, subject of the mail
+#' @export
+contactServer <- function(id, uiText, currentURL = NULL, subject = "Faunabeheer web applicatie") {
+  
+  moduleServer(id,
+    function(input, output, session) {
+      
+      observeEvent(input$contact, {
+          
+          mailto_link <- if (is.null(currentURL)) {
+              paste0("mailto:faunabeheer@inbo.be?SUBJECT=", subject)
+          } else {
+            paste0("mailto:faunabeheer@inbo.be?SUBJECT=", subject, "&body=**Link**:%20faunabeheer.inbo.be/", 
+              URLencode(currentURL, reserved = TRUE))
+          }
+          
+          showModal(
+            modalDialog(
+              title = "Contact",
+              footer = modalButton(label = NULL, icon = icon("xmark")),
+              easyClose = TRUE,
+              
+              paste0(getOutputTitle(output = "contactApp", uiText = uiText), ":"),
+              tags$a(href=mailto_link, target="_blank", "faunabeheer@inbo.be")              
+            )
+          )
+          
+        })
+      
+    })
+}
 
 
 #' Link with version info - UI side

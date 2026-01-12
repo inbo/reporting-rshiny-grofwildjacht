@@ -77,7 +77,7 @@ boxAgeGenderLowerJaw <- function(data,
 			ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)), 
 					paste("in", jaartallen)), 
 			if (!all(regio == "")) 
-				paste0(" (", toString(regio), ")")) 
+				paste0("\n (", toString(regio), ")")) 
 			
   # factors moet gelijk zijn aan de geselecteerde leeftijden (voor het correct labelen van de box plots)
   plotData$leeftijd <- droplevels(plotData$leeftijd)
@@ -125,7 +125,7 @@ boxAgeGenderLowerJaw <- function(data,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-ageGenderLowerJawServer <- function(id, data, types, timeRange) {
+ageGenderLowerJawServer <- function(id, data, types, timeRange, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -142,7 +142,8 @@ ageGenderLowerJawServer <- function(id, data, types, timeRange) {
       )
       callModule(module = plotModuleServer, id = "ageGenderLowerJaw",
         plotFunction = "boxAgeGenderLowerJaw", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
       
     })
   
@@ -157,11 +158,13 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1], uiText = uiText)
+  description <- getOutputDescription(output = as.character(match.call())[1], 
+    uiText = uiText, context = id)
   
   tagList(
     actionLink(inputId = ns("linkAgeGenderLowerJaw"),
-      label = h3(HTML(uiText$title))),
+      label = h3(HTML(title))),
     conditionalPanel("input.linkAgeGenderLowerJaw % 2 == 1", ns = ns,
       
       fixedRow(
@@ -173,7 +176,7 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
           optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(uiText[, id]))
+          tags$p(HTML(description))
         )     
       ),
       tags$hr()

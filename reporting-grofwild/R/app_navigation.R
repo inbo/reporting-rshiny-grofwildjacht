@@ -16,6 +16,11 @@ createQueryString <- function(selection, page, defaults) {
   if (is.na(iLevel))
     iLevel <- which.max(sapply(names(selection), function(iName) selection[[iName]] != defaults[[iName]]))
   
+  # If specific plot on subcategory page is selected, the plot should be included in the url
+  if (iLevel == 3 & selection[["plot"]] != defaults[["plot"]]) { 
+    iLevel <- 4
+  }
+  
   stringElements <- selection[seq_len(iLevel)]
   
   # Add gbifkey of species

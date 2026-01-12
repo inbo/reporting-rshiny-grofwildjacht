@@ -35,12 +35,14 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	if (is.null(jaar))
 		stop("Gelieve jaartal te selecteren")
 	
-  
-  
   if (categorie == "leeftijd") {
     data <- filterGrofwild(plotData = data, 
       sourceIndicator_leeftijd = sourceIndicator_leeftijd)
-    data <- subset(data, leeftijd_comp_inbo %in% type)
+    
+    # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
+    if (sourceIndicator_leeftijd == "inbo")
+      data <- subset(data, leeftijd_comp_inbo %in% type)
+    else data <- subset(data, leeftijd_comp %in% type)
   }
   
 	## General Modification of Data
@@ -286,7 +288,8 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, labelTypes = "Type", typesDefault = types) {
+tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, labelTypes = "Type", typesDefault = types,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -305,7 +308,8 @@ tableProvinceServer <- function(id, data, categorie, timeRange, types = NULL, la
       callModule(module = plotModuleServer, id = "tableProvince",
         plotFunction = "tableProvince", 
         data = data, 
-        categorie = categorie)
+        categorie = categorie,
+        preSelected = preSelected)
       
     })
   

@@ -34,10 +34,10 @@
 #' @importFrom stats setNames
 #' @export
 countYearProvince <- function(data, jaartallen = NULL, 
-        type = c("provinces", "flanders", "faunabeheerzones"),
+        type = c("provinces", "flanders", "faunabeheerzones", "communes"),
         interval = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"), 
         sourceIndicator = NULL, title = NULL, width = NULL, height = NULL,
-        regio = "") {
+        regio = "", combinatie = FALSE) {
   
   # For R CMD check
   value <- NULL
@@ -55,15 +55,18 @@ countYearProvince <- function(data, jaartallen = NULL,
   plotData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
     returnStop = "message")
   
+  isFbz <- FALSE
   if (all(regio == "Vlaams Gewest")) {
     plotData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% levels(plotData$provincie))) {
+  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
     plotData$locatie <- plotData$provincie
-  } else {
+  } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
     plotData$locatie <- plotData$FaunabeheerZone
+    isFbz <- TRUE
+  } else {
+    plotData$locatie <- plotData$gemeente_afschot_locatie
   }
   
-  fbz_s <- unique(plotData$FaunabeheerZone)
   if(nrow(plotData) == 0) {
     stop(paste0("Geen data beschikbaar voor de geselecteerde locatie: ", paste(regio, collapse = ", "), ". "))
   }
@@ -95,7 +98,7 @@ countYearProvince <- function(data, jaartallen = NULL,
   
   if (interval == "Per jaar") {
     
-    newLevels <- sort(unique(plotData$afschotjaar))
+    newLevels <- levels(plotData$afschotjaar)
     
   } else if (interval == "Per maand") {
     
@@ -177,15 +180,23 @@ countYearProvince <- function(data, jaartallen = NULL,
     summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
   
   # sort numerically again for fbz's (numeric and string combination is not well ordered by default)
-  if (all(regio %in% fbz_s)) {
+  if (isFbz) {
     summaryData$locatie <- factor(summaryData$locatie, 
       levels = levels(droplevels(factor(unique(summaryData$locatie), 
             levels = c(as.character(1:10), "Onbekend")))))
+  } else {
+    newLevels <- levels(summaryData$locatie)
+    summaryData$locatie <- factor(summaryData$locatie, 
+      levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
   }
-  newLevels <- levels(summaryData$locatie)
-  summaryData$locatie <- factor(summaryData$locatie, 
-    levels = c(newLevels[newLevels != "Onbekend"], newLevels[newLevels == "Onbekend"]))
-  
+ 
+  ### ADD Combination of regions
+  if (combinatie) {
+    summaryData <- summaryData[, c("timeChar", "afschotjaar", "value")]
+    summaryData <- aggregate(value ~ timeChar + afschotjaar, summaryData, sum)
+    summaryData$locatie <- factor("Totaal", levels = c("Totaal"))
+  }
+
   # Hover text
   totalCount <- setNames(totalCount$value, totalCount$year)
   summaryData$text <- paste0(
@@ -249,7 +260,7 @@ countYearProvince <- function(data, jaartallen = NULL,
     add_annotations(text = percentCollected(
         nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, "locatie"] != "Onbekend"), 
         nTotal = nRecords,
-        text = paste("gekende afschotdatum en", strsplit("locatie", split = "_")[[1]][1])),
+        text = paste("gekende datum en", strsplit("locatie", split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = if (interval == "Per jaar") -0.25 else -0.3, yanchor = "bottom", showarrow = FALSE)
   
@@ -278,20 +289,14 @@ countYearProvince <- function(data, jaartallen = NULL,
 #' @import shiny
 #' @export
 countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type", 
-  typesDefault = types, timeRange, title = reactive(NULL), allRegionsSelected = FALSE) {
+  typesDefault = types, timeRange, title = reactive(NULL), allRegionsSelected = FALSE,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
       
       ns <- session$ns
-      
-      observe({
-          
-          req(title())
-          updateActionLink(session = session, inputId = "linkYearProvince", label = title())
-          
-        })
-      
+    
       output$disclaimerYearProvince <- renderUI({
           
           req(title())
@@ -315,7 +320,9 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
       callModule(module = plotModuleServer, id = "yearProvince",
         plotFunction = "countYearProvince", 
         title = if (id == "dash") "Aantal drukjachten" else NULL,
-        data = data)
+        data = data,
+        combinatie = reactive(if (is.null(input$combinatie)) FALSE else input$combinatie),
+        preSelected = preSelected)
       
     })
   
@@ -331,8 +338,8 @@ countYearProvinceServer <- function(id, data, types = NULL, labelTypes = "Type",
 #' @export
 countYearProvinceUI <- function(
   id, uiText, specie = NULL, plotFunction = "countYearProvinceUI",
-  showType = FALSE, showDataSource = NULL, showInterval = FALSE, regionLevels = NULL,
-  regionLevelSelected = NULL, doHide = TRUE) {
+  showType = FALSE, showTime = FALSE, showDataSource = NULL, showInterval = FALSE, 
+  regionLevels = NULL, regionLevelSelected = NULL, doHide = TRUE, showCombinatie = FALSE) {
   
   ns <- NS(id)
   
@@ -344,11 +351,9 @@ countYearProvinceUI <- function(
   
   tagList(
     
-    actionLink(inputId = ns("linkYearProvince"), label = h3(HTML(title)), 
-      class = "action-h3"),
+    actionLink(inputId = ns("linkYearProvince"), label = tags$h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkYearProvince % 2 ==", 
-        as.numeric(doHide)), 
+      condition = paste("input.linkYearProvince % 2 ==", as.numeric(doHide)), 
       ns = ns,
       
       uiOutput(ns("disclaimerYearProvince")),
@@ -359,13 +364,18 @@ countYearProvinceUI <- function(
           plotModuleUI(id = ns("yearProvince"))
         ),
         column(4,
-          optionsModuleUI(
-            id = ns("yearProvince"), 
-            regionLevels = regionLevels, 
-            regionLevelSelected = regionLevelSelected,
-            showTime = TRUE, exportData = TRUE,
-            showType = showType, showInterval = showInterval,
-            showDataSource = showDataSource
+          wellPanel(
+            if (showCombinatie)
+              checkboxInput(inputId = ns("combinatie"), 
+                label = "Combineer alle geselecteerde regio's"),
+            optionsModuleUI(
+              id = ns("yearProvince"), 
+              regionLevels = regionLevels, 
+              regionLevelSelected = regionLevelSelected,
+              showTime = showTime, exportData = TRUE,
+              showType = showType, showInterval = showInterval,
+              showDataSource = showDataSource, doWellPanel = FALSE
+            )
           )
         )
       ),

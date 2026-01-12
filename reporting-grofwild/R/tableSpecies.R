@@ -136,7 +136,8 @@ tableSpecies <- function(data, jaar = NULL, categorie = "leeftijd_comp",
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
+tableSpeciesServer <- function(id, data, timeRange, species, uiText,
+  preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -145,7 +146,10 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
       
       output$tableSpeciesText <- renderUI({
           
-          tags$p(HTML(decodeText(uiText[uiText$plotFunction == "tableSpeciesUI", id], species = species())))
+          description <- getOutputDescription(output = "tableSpeciesUI", 
+            uiText = uiText, specie = species(), context = id)
+          
+          tags$p(HTML(description))
         
         })
       
@@ -163,7 +167,8 @@ tableSpeciesServer <- function(id, data, timeRange, species, uiText) {
       )
       callModule(module = plotModuleServer, id = "tableSpecies",
         plotFunction = "tableSpecies", 
-        data = data)
+        data = data,
+        preSelected = preSelected)
            
     })
   
@@ -178,11 +183,11 @@ tableSpeciesUI <- function(id, uiText) {
   
   ns <- NS(id)
   
-  uiText <- uiText[uiText$plotFunction == as.character(match.call())[1], ]
+  title <- getOutputTitle(output = as.character(match.call())[1], uiText = uiText)
   
   tagList(
     
-    h3(HTML(uiText$title)),
+    h3(HTML(title)),
     
     fixedRow(
       

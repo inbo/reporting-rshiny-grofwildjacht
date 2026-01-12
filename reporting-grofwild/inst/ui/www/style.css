@@ -395,7 +395,11 @@ body > .tabbable {
 }
 
 .well-white {
-  background-color: white;    
+  background-color: white;  
+	padding-top: 10px;  
+	padding-bottom: 10px;
+	margin-bottom: 8px;
+	margin-top: 8px;
 }
 
 /*Custom search bar in navbar*/
@@ -447,6 +451,7 @@ body > .tabbable {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
   white-space: normal;
+	min-width: max-content;
 	max-width: 700px;
   text-align: left;
   z-index: 9999;
@@ -455,4 +460,49 @@ body > .tabbable {
 .tooltip-wrapper:hover .tooltip-box,
 .tooltip-box:hover {
   display: block;
+}
+
+/*Collapsable general selection parts*/
+.collapsible-well {
+  position: relative;
+}
+    
+.collapse-btn {
+  position: absolute;
+  top: 0px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 40px;
+  color: #356196;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+    
+.collapse-btn:hover {
+  color: #23527c;
+}
+    
+.well-header {
+  min-height: 35px;
+  background-color: #ffffff;
+  color: #356196;
+  margin: 10px -15px 0px -15px;
+  padding: 1px 10px;
+  font-weight: bold;
+  position: relative;
+}
+    
+.well-content {
+  margin-top: 0px;
+  transition: all 0.3s ease;
+}
+    
+.well-content.collapsed {
+  display: none;
 }

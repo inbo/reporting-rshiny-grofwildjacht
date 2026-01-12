@@ -93,10 +93,7 @@ loadWolfShapeData <- function(
     geojson_text <- rawToChar(obj)
     
     data <- geojsonsf::geojson_sf(geojson_text)
-    if (type == "gemeenten")   {
-      sf::st_crs(data) <- NA
-      sf::st_crs(data) <- 31370
-    } ## TODO ask if crs correctly converted?
+    
     if (st_crs(data)$epsg != 4326) {
       data <- st_transform(data, crs = 4326)
     }

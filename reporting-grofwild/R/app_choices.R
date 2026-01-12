@@ -437,9 +437,9 @@ getSubcategoryOutput <- function(output){
       # schade
       `schade-vlaanderen` = c(
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
-          "trendWolfFlandersUI", "countSchadeWolvesUI-gemeldeSchade",
-          "countSchadeWolvesUI-omheining", "countSchadeWolvesUI-soort",
-          "mapSchadeWolvesUI"
+          "trendWolfFlandersUI", "mapAccidentsWolvesUI", 
+          "countSchadeWolvesUI-gemeldeSchade", "countSchadeWolvesUI-omheining", 
+          "countSchadeWolvesUI-soort", "mapSchadeWolvesUI"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
         "mapSchadeUI"),
@@ -447,7 +447,7 @@ getSubcategoryOutput <- function(output){
       `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
       `schade-seizoen` = c("countYearSchadeUI-seizoen"),
       `schade-kosten` = "barCostUI",
-      "schade-doodsoorzaak" = c("countDeathWolvesUI", "mapAccidentsWolvesUI"),
+      "schade-doodsoorzaak" = c("countDeathWolvesUI"),
       
       # populatie
       `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),

@@ -21,9 +21,11 @@
 #' @importFrom plyr count ddply
 #' @export
 countDeathWolves <- function(data, jaartallen = NULL,
-		groupVariable = "Lot",
+  summarizeBy = c("count", "percent"), groupVariable = "Lot",
 		width = NULL, height = NULL) {
 	
+    summarizeBy <- match.arg(summarizeBy)
+    
   # Remove some categories
   data <- data[data[[groupVariable]] != "AANVULLEN" & data$Levend == 0, ]
   
@@ -49,25 +51,23 @@ countDeathWolves <- function(data, jaartallen = NULL,
 	summaryData$group <- as.factor(summaryData$group)
 	summaryData$percent <- round(summaryData$freq/summaryData$totaal * 100)
   
-#	if (summarizeBy == "count") {
+	if (summarizeBy == "count") {
 		
 		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
 				"<br>Aantal: ", summaryData$freq, " (", summaryData$percent, "%)", 
 				"<br>Totaal: ", summaryData$totaal)
-      
-      title <- paste0("Overzicht sterfte wolven ",
-        ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-          paste("in", jaartallen)), "\n in Vlaanderen"
-      )
 		
-#	} else {
-#		
-#		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
-#				"<br>", round(summaryData$percent), "%")
-#      
-#      title <- "Percentage genetisch geïdentificeerde wolven per jaar in Vlaanderen"
-#		
-#	}
+	} else {
+		
+		summaryData$text <- paste0("<b>", summaryData$group, " in ", summaryData$year, "</b>",
+				"<br>", round(summaryData$percent), "%")
+		
+	}
+  
+  title <- paste0("Overzicht sterfte wolven ",
+    ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
+      paste("in", jaartallen)), "\n in Vlaanderen"
+  )
 	
 	colors <- replicateColors(values = levels(summaryData$group))$colors
 	
@@ -75,21 +75,39 @@ countDeathWolves <- function(data, jaartallen = NULL,
 	
 	
 	# Create plot
-	toPlot <- plot_ly(data = summaryData, x = ~year, 
-							y = ~freq, color = ~group, text = ~text,
-              textposition = "none", hoverinfo = "text+name",
-							colors = colors, type = "bar",
-							width = width, height = height) %>%
-            plotly::layout(title = title,
-							xaxis = list(
-                title = "Jaar", 
-                tickvals = unique(summaryData$year), 
-                ticktext = unique(summaryData$year)), 
-							yaxis = list(title = "Aantal wolven"),
-							barmode = if (singleYear) "group" else "stack",
-							margin = list(b = 120, t = 100))
+  toPlot <- switch(summarizeBy,
+    count = plot_ly(data = summaryData, x = ~year, 
+        y = ~freq, color = ~group, text = ~text,
+        textposition = "none", hoverinfo = "text+name",
+        colors = colors, type = "bar",
+        width = width, height = height) %>%
+      plotly::layout(title = title,
+        xaxis = list(
+          title = "Jaar", 
+          tickvals = unique(summaryData$year), 
+          ticktext = unique(summaryData$year)), 
+        yaxis = list(title = "Aantal wolven"),
+        barmode = if (singleYear) "group" else "stack",
+        margin = list(b = 120, t = 100)),
+    percent = plot_ly(data = summaryData, x = ~year, 
+        y = ~percent, color = ~group, text = ~text,
+        textposition = "none", hoverinfo = "text+name",
+        colors = colors, type = "bar",
+        width = width, height = height) %>%
+      plotly::layout(title = title,
+        xaxis = list(title = "Jaar", 
+          tickvals = unique(summaryData$year), 
+          ticktext = unique(summaryData$year)), 
+        yaxis = list(title = "Percentage wolven", range = c(0, 100)),
+        barmode = if (singleYear) "group" else "stack",
+        margin = list(b = 120, t = 100))
+  )
 	
-	colsFinal <- colnames(summaryData)[!colnames(summaryData) %in% c("text", "percent")]
+	colsFinal <- colnames(summaryData)[
+    !colnames(summaryData) %in% c("text", 
+      if(summarizeBy == "count")	"percent"	else	c("freq", "totaal")
+    )
+  ]
 	
 	# To prevent warnings in UI
 	toPlot$elementId <- NULL
@@ -159,6 +177,7 @@ countDeathWolvesUI <- function(id, uiText, plotFunction = "countDeathWolvesUI",
         ),
         column(4,
           optionsModuleUI(id = ns("countDeathWolves"),
+            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
             showTime = showTime, exportData = TRUE)
         )
       ),

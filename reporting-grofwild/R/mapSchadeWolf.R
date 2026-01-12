@@ -44,7 +44,7 @@ mapSchadeWolves <- function(
       position = legend,
       pal = colors,
       values = ~aantal_schade,
-      title = "Aantal schadegevallen Wolf",
+      title = "Aantal schadegevallen",
       opacity = 1,
       layerId = "legend")
   }

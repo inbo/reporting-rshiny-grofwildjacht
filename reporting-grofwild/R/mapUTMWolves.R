@@ -48,22 +48,22 @@ mapUTMWolves <- function(
         
     }
     
-    # Add legend
-    if (legend != "none") {
-        
-        myMap <- addLegend(
-                map = myMap,
-                position = legend,
-                pal = palette, 
-                values = ~variable,
-                opacity = 1,
-                na.label = "onbekend",
-                title = "Legende",
-                layerId = "legend"
-        )
-        
-        
-    }
+#    # Add legend
+#    if (legend != "none") {
+#        
+#        myMap <- addLegend(
+#                map = myMap,
+#                position = legend,
+#                pal = palette, 
+#                values = ~Soort,
+#                opacity = 1,
+#                na.label = "onbekend",
+#                title = "Legende",
+#                layerId = "legend"
+#        )
+#        
+#        
+#    }
     
     
     myMap

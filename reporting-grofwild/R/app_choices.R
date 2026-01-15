@@ -330,7 +330,10 @@ getOutputSpecie <- function(specie,
         "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",
         "countDeathWolvesUI", "mapAccidentsWolvesUI", 
         "trendWolfFlandersUI", "countSchadeWolvesUI-gemeldeSchade", 
-        "countSchadeWolvesUI-omheining", "countSchadeWolvesUI-soort",
+        "mapAccidentsWolvesRegionUI", "countSchadeWolvesUI-omheining", 
+        "countSchadeWolvesUI-soort", "trendWolfRegionUI", 
+        "countSchadeWolvesRegionUI-gemeldeSchade", 
+        "countSchadeWolvesRegionUI-omheining", "countSchadeWolvesRegionUI-soort",
         "mapSchadeWolvesUI",
         "mapLocationWolvesUI", "mapUTMWolvesUI", "mapDispersersWolvesUI"
       )
@@ -439,10 +442,12 @@ getSubcategoryOutput <- function(output){
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
           "trendWolfFlandersUI", "mapAccidentsWolvesUI", 
           "countSchadeWolvesUI-gemeldeSchade", "countSchadeWolvesUI-omheining", 
-          "countSchadeWolvesUI-soort", "mapSchadeWolvesUI"
+          "countSchadeWolvesUI-soort"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
-        "mapSchadeUI"),
+        "mapSchadeUI", "trendWolfRegionUI", "mapAccidentsWolvesRegionUI", 
+        "countSchadeWolvesRegionUI-gemeldeSchade", "countSchadeWolvesRegionUI-omheining", 
+        "countSchadeWolvesRegionUI-soort", "mapSchadeWolvesUI"),
       `schade-type-gewas` = c("countYearSchadeUI-gewas", "tableGewasUI"),
       `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
       `schade-seizoen` = c("countYearSchadeUI-seizoen"),

@@ -207,6 +207,8 @@ loadWolfData <- function(
   } else if (type == "schade") {
     data$Datum <- as.Date(data$Datum)
     colnames(data)[colnames(data) == "Jaar"] <- "year"
+    colnames(data)[colnames(data) == "Gemeente"] <- "gemeente_afschot_locatie"
+    colnames(data)[colnames(data) == "Provincie"] <- "provincie"
   }
   
   data

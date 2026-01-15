@@ -33,7 +33,7 @@ mapDispersersWolves <- function(
   
   myMap <- leaflet(data,
       options = leafletOptions(maxZoom = 12)) %>%
-    
+    addMapPane("polylines", zIndex = 200) %>%
     addPolygons(data = spatialData,
       fillColor = ~territory_palette(Territory),
       color = "grey40", weight = 0.8,
@@ -102,7 +102,7 @@ mapDispersersWolves <- function(
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
 #' @export
 mapDispersersWolvesServer <- function(
-  id, data, variable = "Lot", preSelected = reactive(NULL)) {
+  id, data, variable = "Lot", allSpatialData = NULL, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -123,6 +123,29 @@ mapDispersersWolvesServer <- function(
           
         })
       
+      # Selected regions of interest
+      spatialData <- reactive({
+          
+          req(allSpatialData)
+          
+          filterSpatial(
+            allSpatialData = allSpatialData, 
+            species = "Wolf", 
+            regionLevel = preSelected()$regionLevel(), 
+            year = NULL
+          )
+          
+        })
+      
+      selectedPolygons <- reactive({
+          
+          validate(need(spatialData(), "Geen data beschikbaar"))
+#          validate(need(preSelected()$region(), "Gelieve regio('s) te selecteren"))
+          
+          subset(spatialData(), spatialData()$NAAM %in% preSelected()$region())
+          
+        })
+      
       subData <- reactive({
           
           req(data())
@@ -140,7 +163,7 @@ mapDispersersWolvesServer <- function(
           
         })
       
-      spatialData <- reactive({
+      spatialSpecificData <- reactive({
           loadWolfShapeData(type = "territory")
         })
       
@@ -148,7 +171,18 @@ mapDispersersWolvesServer <- function(
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
           
-          mapDispersersWolves(data = subData(), spatialData = spatialData(), addGlobe = TRUE)
+          myMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), addGlobe = TRUE)
+          
+          if (!is.null(allSpatialData))
+            myMap <- myMap %>%
+              addPolylines(data = spatialData(), color = "gray", weight = 3,
+                group = "regionLinesAll",
+                options = pathOptions(pane = "polylines")) %>%
+              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+                group = "regionLines",
+                options = pathOptions(pane = "polylines"))
+          
+          myMap
           
         })
       
@@ -223,7 +257,7 @@ mapDispersersWolvesServer <- function(
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
           
-          req(spatialData())
+          req(spatialSpecificData())
           
           proxy <- leafletProxy("spacePlot", data = subData())
           req(!is.null(proxy))
@@ -242,7 +276,7 @@ mapDispersersWolvesServer <- function(
             year_colors <- colorFactor(colors, sort(unique(subData()$year)))
             
             # Color palette for territories
-            territory_names <- sort(unique(spatialData()$Territory))
+            territory_names <- sort(unique(spatialSpecificData()$Territory))
             territory_palette <- colorFactor(palette = brewer.pal(length(territory_names), "Set2"), domain = territory_names)
             
             proxy %>% addLegend(
@@ -257,7 +291,7 @@ mapDispersersWolvesServer <- function(
               addLegend(
                 position = input$legend,
                 pal = territory_palette,
-                values = spatialData()$Territory,
+                values = spatialSpecificData()$Territory,
                 title = "Territoria",
                 opacity = 1,
                 labFormat = labelFormat(),
@@ -272,7 +306,7 @@ mapDispersersWolvesServer <- function(
       # Create final map (for download)
       finalMap <- reactive({
           
-          newMap <- mapDispersersWolves(data = subData(), spatialData = spatialData(), 
+          newMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), 
             addGlobe = input$globe %% 2 == 0, legend = input$legend)
           
           # save the zoom level and centering to the map object
@@ -281,6 +315,15 @@ mapDispersersWolvesServer <- function(
             lat = input$spacePlot_center$lat,
             zoom = input$spacePlot_zoom
           )
+          
+          if (!is.null(allSpatialData))
+            newMap <- newMap %>%
+              addPolylines(data = spatialData(), color = "gray", weight = 3,
+                group = "regionLinesAll",
+                options = pathOptions(pane = "polylines")) %>%
+              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+                group = "regionLines",
+                options = pathOptions(pane = "polylines"))
           
           return(newMap)
           

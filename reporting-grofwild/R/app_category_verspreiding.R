@@ -94,11 +94,10 @@ verspreidingOutputServer <- function(id,
               ),
               switch(as.character(subcategory()), 
                 "verspreiding-huidig" = list(
-                  showYear = TRUE,
+                  showYear = if (specie() == "Wolf") FALSE else TRUE,
                   showRegion = TRUE,
-                  showType = TRUE,
-                  showUnit = TRUE,
-                  hideGeneralFilters = if (specie() == "Wolf") TRUE else FALSE
+                  showType = if (specie() == "Wolf") FALSE else TRUE,
+                  showUnit = if (specie() == "Wolf") FALSE else TRUE
                 ),
                 "verspreiding-toekomstig" = list(
                   hideGeneralFilters = TRUE
@@ -126,7 +125,11 @@ verspreidingOutputServer <- function(id,
               ),
               switch(as.character(subcategory()), 
                 "verspreiding-huidig" = list(
-                  regionLevels = c(1:4),
+                  regionLevels = if (specie() == "Wolf") c(
+                        "Vlaanderen" = "flanders",
+                        "Provincie" = "provinces", 
+                        "Gemeente" = "communes"
+                      ) else c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
                   types = isolate(results$databronnen),
@@ -135,7 +138,7 @@ verspreidingOutputServer <- function(id,
                   units = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
                     "Aantal/100ha bos & natuur" = "relativeDekking"),
                   timeRange = isolate(results$timeRange),
-                  data = reactive(isolate(results$geoDataAll()[wildsoort == specie()]))),
+                  data = if (specie() == "Wolf") reactive(spatialData) else reactive(isolate(results$geoDataAll()[wildsoort == specie()]))),
                 "verspreiding-toekomstig" = list()
               )
             )
@@ -264,6 +267,7 @@ verspreidingOutputServer <- function(id,
                   mapLocationWolvesServer(
                     id = "plot3",  
                     data = reactive(wolfPuntenData),
+                    allSpatialData = spatialData,
                     variable = "Status",
                     preSelected = verspreidingSelection
                   ),
@@ -271,12 +275,14 @@ verspreidingOutputServer <- function(id,
                   mapUTMWolvesServer(
                     id = "plot4",  
                     data = reactive(wolfHokkenData),
+                    allSpatialData = spatialData,
                     preSelected = verspreidingSelection
                   ),
                 if ("mapDispersersWolvesUI" %in% outputs)
                   mapDispersersWolvesServer(
                     id = "plot5",  
                     data = reactive(wolfOverzichtData),
+                    allSpatialData = spatialData,
                     preSelected = verspreidingSelection
                   )
               )

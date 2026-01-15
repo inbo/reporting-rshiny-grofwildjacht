@@ -35,7 +35,7 @@ mapLocationWolves <- function(
   
     myMap <- leaflet(data,
         options = leafletOptions(maxZoom = 12)) %>%
-            
+      addMapPane("polylines", zIndex = 200) %>%
       addCircleMarkers(
         radius = 6,
         fillColor = ~palette(variable),
@@ -95,7 +95,7 @@ mapLocationWolves <- function(
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
 #' @export
 mapLocationWolvesServer <- function(
-  id, data, variable = "Status", preSelected = reactive(NULL),
+  id, data, variable = "Status", preSelected = reactive(NULL), allSpatialData = NULL,
   definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   moduleServer(id,
@@ -119,10 +119,33 @@ mapLocationWolvesServer <- function(
           )
         })
       
+      
+      # Selected regions of interest
+      spatialData <- reactive({
+          
+          req(allSpatialData)
+          
+          filterSpatial(
+            allSpatialData = allSpatialData, 
+            species = "Wolf", 
+            regionLevel = preSelected()$regionLevel(), 
+            year = NULL
+          )
+          
+        })
+      
+      selectedPolygons <- reactive({
+          
+          validate(need(spatialData(), "Geen data beschikbaar"))
+#          validate(need(preSelected()$region(), "Gelieve regio('s) te selecteren"))
+          
+          subset(spatialData(), spatialData()$NAAM %in% preSelected()$region())
+          
+        })
+      
       subData <- reactive({
           
           req(data())
-          
           
           if (variable == "Status") {
             req(input$year)
@@ -151,7 +174,18 @@ mapLocationWolvesServer <- function(
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
           
-          mapLocationWolves(data = subData(), variable = variable, addGlobe = TRUE)
+          myMap <- mapLocationWolves(data = subData(), variable = variable, addGlobe = TRUE) 
+          
+          if (!is.null(allSpatialData))
+            myMap <- myMap %>%
+            addPolylines(data = spatialData(), color = "gray", weight = 3,
+              group = "regionLinesAll",
+              options = pathOptions(pane = "polylines")) %>%
+            addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+              group = "regionLines",
+              options = pathOptions(pane = "polylines"))
+        
+        myMap
           
         })
       
@@ -271,7 +305,16 @@ mapLocationWolvesServer <- function(
             lng = input$spacePlot_center$lng,
             lat = input$spacePlot_center$lat,
             zoom = input$spacePlot_zoom
-          )
+          ) 
+          
+          if (!is.null(allSpatialData))
+            newMap <- newMap %>%
+              addPolylines(data = spatialData(), color = "gray", weight = 3,
+                group = "regionLinesAll",
+                options = pathOptions(pane = "polylines")) %>%
+              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+                group = "regionLines",
+                options = pathOptions(pane = "polylines"))
           
           return(newMap)
           

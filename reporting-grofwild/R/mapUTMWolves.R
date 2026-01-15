@@ -32,6 +32,7 @@ mapUTMWolves <- function(
 #  palette <- colorFactor(colors, levels(data$variable))
   
     myMap <- leaflet(data) %>%
+      addMapPane("polylines", zIndex = 200) %>%
             
       addPolygons(fillColor = "#fee391",
         stroke = TRUE,
@@ -86,7 +87,7 @@ mapUTMWolves <- function(
 #' @importFrom dplyr right_join
 #' @export
 mapUTMWolvesServer <- function(
-  id, data, preSelected = reactive(NULL),
+  id, data, preSelected = reactive(NULL), allSpatialData = NULL,
   definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   moduleServer(id,
@@ -110,6 +111,29 @@ mapUTMWolvesServer <- function(
           )
         })
       
+      # Selected regions of interest
+      spatialData <- reactive({
+          
+          req(allSpatialData)
+          
+          filterSpatial(
+            allSpatialData = allSpatialData, 
+            species = "Wolf", 
+            regionLevel = preSelected()$regionLevel(), 
+            year = NULL
+          )
+          
+        })
+      
+      selectedPolygons <- reactive({
+          
+          validate(need(spatialData(), "Geen data beschikbaar"))
+#          validate(need(preSelected()$region(), "Gelieve regio('s) te selecteren"))
+          
+          subset(spatialData(), spatialData()$NAAM %in% preSelected()$region())
+          
+        })
+      
       subData <- reactive({
           
           req(data())
@@ -126,7 +150,18 @@ mapUTMWolvesServer <- function(
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
           
-          mapUTMWolves(data = subData(), addGlobe = TRUE)
+          myMap <- mapUTMWolves(data = subData(), addGlobe = TRUE)
+          
+          if (!is.null(allSpatialData))
+            myMap <- myMap %>%
+              addPolylines(data = spatialData(), color = "gray", weight = 3,
+                group = "regionLinesAll",
+                options = pathOptions(pane = "polylines")) %>%
+              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+                group = "regionLines",
+                options = pathOptions(pane = "polylines"))
+          
+          myMap
           
         })
       
@@ -247,6 +282,16 @@ mapUTMWolvesServer <- function(
             lat = input$spacePlot_center$lat,
             zoom = input$spacePlot_zoom
           )
+          
+          if (!is.null(allSpatialData))
+            newMap <- newMap %>%
+              addPolylines(data = spatialData(), color = "gray", weight = 3,
+                group = "regionLinesAll",
+                options = pathOptions(pane = "polylines")) %>%
+              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+                group = "regionLines",
+                options = pathOptions(pane = "polylines"))
+          
           
           return(newMap)
           

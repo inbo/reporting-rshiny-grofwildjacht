@@ -22,7 +22,7 @@
 #' @export
 countSchadeWolves <- function(data, jaartallen = NULL,
 		summarizeBy = c("count", "percent"), groupVariable = c("Schade", "wolfproof", "Prooidier"),
-		width = NULL, height = NULL, sourceIndicator = NULL) {
+    regio = "", width = NULL, height = NULL, sourceIndicator = NULL) {
 	
 	summarizeBy <- match.arg(summarizeBy)
   groupVariable <- match.arg(groupVariable)
@@ -84,13 +84,17 @@ countSchadeWolves <- function(data, jaartallen = NULL,
   title <- switch(groupVariable,
     Schade = paste0("Identificatie gemelde schadegevallen ", 
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-        paste("in", jaartallen)), "\n in Vlaanderen"),
+        paste("in", jaartallen)), 
+      if (!all(regio == "")) paste0("\n(", toString(regio), ")") else ("\n in Vlaanderen")),
     wolfproof = paste0("Wolfwerende omheiningen per schadegeval ", 
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-        paste("in", jaartallen)), "\n in Vlaanderen"),
+        paste("in", jaartallen)), 
+      if (!all(regio == "")) paste0("\n(", toString(regio), ")") else ("\n in Vlaanderen")),
     Prooidier = paste0("Schadegevallen per veesoort ", 
       ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-        paste("in", jaartallen)), "\n in Vlaanderen"))
+        paste("in", jaartallen)), 
+      if (!all(regio == "")) paste0("\n(", toString(regio), ")") else ("\n in Vlaanderen"))
+  )
   
 	
 	# Create plot
@@ -147,7 +151,7 @@ countSchadeWolves <- function(data, jaartallen = NULL,
 #' @author sjunius
 #' @import shiny
 #' @export
-countSchadeWolvesServer <- function(id, data, groupVariable = NULL, 
+countSchadeWolvesServer <- function(id, data, groupVariable = NULL, filterDataOnRegion = FALSE,
   timeRange = reactive(NULL), preSelected = reactive(NULL)) {
   
   moduleServer(id,
@@ -163,7 +167,7 @@ countSchadeWolvesServer <- function(id, data, groupVariable = NULL,
       toReturn <- callModule(module = plotModuleServer, id = "countSchadeWolves",
         plotFunction = "countSchadeWolves", 
         data = data,
-        filterDataOnRegion = FALSE,
+        filterDataOnRegion = filterDataOnRegion,
         groupVariable = groupVariable,
         preSelected = preSelected)
       

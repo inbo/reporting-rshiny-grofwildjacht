@@ -20,7 +20,7 @@
 #' @import plotly
 #' @importFrom plyr count ddply
 #' @export
-trendWolfFlanders <- function(data, jaartallen = NULL,
+trendWolfFlanders <- function(data, jaartallen = NULL, regio = "",
   width = NULL, height = NULL, sourceIndicator = NULL) {
   
   if (is.null(jaartallen))
@@ -39,7 +39,8 @@ trendWolfFlanders <- function(data, jaartallen = NULL,
   colors <- replicateColors(values = "Vlaams Gewest")$colors
   title <- paste0("Bevestigde schadegevallen door wolven ",
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-      paste("in", jaartallen)), "\n in Vlaanderen"
+      paste("in", jaartallen)), 
+    if (!all(regio == "")) paste0("\n(", toString(regio), ")") else ("\n in Vlaanderen")
   )
   
   # Create plot
@@ -76,7 +77,8 @@ trendWolfFlanders <- function(data, jaartallen = NULL,
 #' @author sjuniu
 #' @import shiny
 #' @export
-trendWolfFlandersServer <- function(id, data, timeRange = reactive(NULL), preSelected = reactive(NULL)) {
+trendWolfFlandersServer <- function(id, data, timeRange = reactive(NULL), 
+  filterDataOnRegion = FALSE, preSelected = reactive(NULL)) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -91,7 +93,7 @@ trendWolfFlandersServer <- function(id, data, timeRange = reactive(NULL), preSel
       toReturn <- callModule(module = plotModuleServer, id = "trendWolfFlanders",
         plotFunction = "trendWolfFlanders", 
         data = data,
-        filterDataOnRegion = FALSE,
+        filterDataOnRegion = filterDataOnRegion,
         preSelected = preSelected)
       
       return(reactive(toReturn()))

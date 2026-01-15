@@ -22,7 +22,7 @@
 #' @export
 countDeathWolves <- function(data, jaartallen = NULL,
   summarizeBy = c("count", "percent"), groupVariable = "Lot",
-		width = NULL, height = NULL) {
+  regio = "",	width = NULL, height = NULL) {
 	
     summarizeBy <- match.arg(summarizeBy)
     
@@ -66,7 +66,8 @@ countDeathWolves <- function(data, jaartallen = NULL,
   
   title <- paste0("Overzicht sterfte wolven ",
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
-      paste("in", jaartallen)), "\n in Vlaanderen"
+      paste("in", jaartallen)), 
+    if (!all(regio == "")) paste0("\n(", toString(regio), ")") else ("\n in Vlaanderen")
   )
 	
 	colors <- replicateColors(values = levels(summaryData$group))$colors
@@ -140,7 +141,6 @@ countDeathWolvesServer <- function(id, data, timeRange, preSelected = reactive(N
       toReturn <- callModule(module = plotModuleServer, id = "countDeathWolves",
         plotFunction = "countDeathWolves", 
         data = data,
-        filterDataOnRegion = FALSE,
         preSelected = preSelected)
       
       return(reactive(toReturn()))

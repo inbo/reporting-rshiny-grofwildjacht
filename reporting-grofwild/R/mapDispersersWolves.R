@@ -31,7 +31,8 @@ mapDispersersWolves <- function(
   territory_palette <- colorFactor(palette = brewer.pal(length(territory_names), "Set2"), domain = territory_names)
   
   
-  myMap <- leaflet(data) %>%
+  myMap <- leaflet(data,
+      options = leafletOptions(maxZoom = 12)) %>%
     
     addPolygons(data = spatialData,
       fillColor = ~territory_palette(Territory),

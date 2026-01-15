@@ -33,7 +33,8 @@ mapLocationWolves <- function(
   
   palette <- colorFactor(colors, levels(data$variable))
   
-    myMap <- leaflet(data) %>%
+    myMap <- leaflet(data,
+        options = leafletOptions(maxZoom = 12)) %>%
             
       addCircleMarkers(
         radius = 6,

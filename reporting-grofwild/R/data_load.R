@@ -317,7 +317,10 @@ loadMetaEco <- function(species = NA) {
       "Damhert",
       "Edelhert"        
     ),
-    provincie = list("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren")
+    provincie = list("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren"),
+    wettelijk_kader = c("reguliere jacht", "bijzondere jacht", "bestrijding", "bestrijding veldwachter"),
+    periode = c("dag", "nacht", "schemer"),
+    periode_wettelijk = c("dag", "nacht", "schemer")
   )
   
   toReturn$Leeftijdscategorie_onderkaak <- c(toReturn$leeftijd_comp, "Niet ingezameld")

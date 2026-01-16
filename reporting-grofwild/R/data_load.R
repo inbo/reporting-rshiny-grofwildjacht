@@ -289,7 +289,7 @@ loadMetaEco <- function(species = NA) {
     geslacht_comp = c("Vrouwelijk", "Mannelijk"),
     leeftijd_comp_inbo = list(
       # Young to old
-      c("Frisling (<6m)", NA, NA),
+      c("Frisling (<6m)", NA, NA, NA),
       c("Frisling (>6m)", "Kits", rep("Kalf", 2)),
       c(NA, NA, "Jaarling", "Jaarling"),  
       c("Overloper", rep("Jongvolwassen", 3)),

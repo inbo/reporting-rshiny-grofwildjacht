@@ -874,7 +874,7 @@ mapSpreadUI <- function(id,
                 actionButton(ns("downloadBever"), label = "Download figuur", class = "downloadButton")
               )
             ),
-            tags$p(HTML(description)),
+            tags$div(class = "larger-description", HTML(description)),
             
             tags$hr()
           )
@@ -949,7 +949,7 @@ mapSpreadUI <- function(id,
             )
           ),
           
-          tags$p(HTML(description)),
+          tags$div(class = "larger-description", HTML(description)),
           
           tags$hr()
         )

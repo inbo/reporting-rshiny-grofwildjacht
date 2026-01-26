@@ -358,8 +358,7 @@ createRawData <- function(
     
     # Drop unused columns
     rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
-          c("aantal_embryos_onbekend", "doodsoorzaak", "leeftijd_maanden", "tijdstip_comp", 
-            "wettelijk_kader", "periode", "periode_wettelijk")]]
+          c("aantal_embryos_onbekend", "doodsoorzaak", "leeftijd_maanden", "tijdstip_comp")]]
   
     
   } else if (type == "geo") {

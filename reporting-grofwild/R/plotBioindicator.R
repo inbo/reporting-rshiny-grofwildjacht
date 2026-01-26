@@ -271,7 +271,7 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
               title = "Accuraatheid onderkaaklengte"),
         )
       ),
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       tags$hr()
     )
   )

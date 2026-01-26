@@ -11,6 +11,14 @@ frontUI <- function(speciesList, uiText){
     pattern = "carousel", full.names = TRUE)
   
   bootstrapPage(
+    tags$head(
+      tags$style(HTML("
+            #specie + .selectize-control .selectize-dropdown .optgroup-header {
+            font-size: 20px;
+            line-height: 1.428571429;
+            }
+            "))
+    ),
     slickR::slickR(
         obj = img, slideId = "carousel", 
         slideType = 'img',

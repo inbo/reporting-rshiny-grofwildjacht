@@ -176,7 +176,7 @@ ageGenderLowerJawUI <- function(id, regionLevels, uiText) {
           optionsModuleUI(id = ns("ageGenderLowerJaw"), showTime = TRUE, showType = TRUE,
             regionLevels = regionLevels, exportData = TRUE,
             showDataSource = c("leeftijd", "geslacht")),
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
         )     
       ),
       tags$hr()

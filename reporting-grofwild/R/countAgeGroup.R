@@ -204,7 +204,7 @@ countAgeGroupUI <- function(id, regionLevels = NULL,
             showDataSource = showDataSource)
         )
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

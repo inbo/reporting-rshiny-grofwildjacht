@@ -204,7 +204,7 @@ countAgeGenderUI <- function(id,
             exportData = TRUE)
         )
       ),
-      tags$p(description)
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

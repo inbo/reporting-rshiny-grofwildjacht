@@ -411,7 +411,7 @@ mapSchadeServer <- function(
             type = descrType
           )
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
           
         })
       

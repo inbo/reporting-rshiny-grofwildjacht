@@ -243,6 +243,20 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
       
       ns <- session$ns
       
+      groupVariableFinal <- reactive({          
+          if (groupVariable == "periode" && !is.null(input$schemeringType) && input$schemeringType == "wettelijk") {
+            "periode_wettelijk"
+          } else {
+            groupVariable
+          }
+          
+        })
+      
+      observeEvent(input$schemeringType, {
+          col <- ifelse(input$schemeringType == "wettelijk", "periode_wettelijk", "periode")
+          updateSelectInput(session, "type", choices = unique(data()[[col]]), selected = unique(data()[[col]]))
+        })
+      
       # Verdeling afschot over de jaren
       callModule(module = optionsModuleServer, id = "countYearShot", 
         data = data,
@@ -253,9 +267,10 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
-        groupVariable = groupVariable,
+        groupVariable = groupVariableFinal,
         data = data,
-        preSelected = preSelected)
+        preSelected = preSelected,
+        type_MomentOfDay = reactive(input$type))
            
     })
   
@@ -272,7 +287,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
   uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
   doHide = TRUE, showDataSource = FALSE, showType = FALSE, showInterval = FALSE,
-  showTime = FALSE) {
+  showTime = FALSE, showSchemeringType = FALSE) {
   
   ns <- NS(id)
   
@@ -295,14 +310,22 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
         
         column(8, plotModuleUI(id = ns("countYearShot"))),
         column(4,
-          optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
-            regionLevels = regionLevels, exportData = TRUE,
-            showType = showType, showInterval = showInterval,
-            showDataSource = showDataSource)
+          wellPanel(
+            if (showSchemeringType)
+              tagList(
+                radioButtons(inputId = ns("schemeringType"), label = "Schemering type",
+                  choices = c("Wettelijk" = "wettelijk", "Burgerlijk" = "burgerlijk")),
+                selectInput(inputId = ns("type"), label = "Moment van de dag",
+                  choices = c(), selected = c(), multiple = TRUE)),
+            optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
+              regionLevels = regionLevels, exportData = TRUE,
+              showType = showType, showInterval = showInterval,
+              showDataSource = showDataSource, doWellPanel = FALSE)
+          )
         )
-        
+      
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   
   ) 

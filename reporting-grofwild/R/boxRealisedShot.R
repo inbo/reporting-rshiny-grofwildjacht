@@ -134,7 +134,7 @@ boxRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NULL, uiT
           optionsModuleUI(id = ns("boxRealisedShot"),
             showTime = TRUE, showType = TRUE, regionLevels = regionLevels,
             exportData = TRUE),
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
         ),
         tags$hr()
       )

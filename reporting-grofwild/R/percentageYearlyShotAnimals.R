@@ -383,7 +383,7 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
         )
       
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

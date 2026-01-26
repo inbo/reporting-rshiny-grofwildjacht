@@ -45,27 +45,42 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
     else data <- subset(data, leeftijd_comp %in% type)
   }
   
+  if (all(regio == "Vlaams Gewest")) {
+    data$locatie <- factor(data$provincie)
+    locatieName <- "Provincie"
+  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
+    data$locatie <- factor(data$provincie)
+    locatieName <- "Provincie"
+  } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
+    data$locatie <- data$FaunabeheerZone
+    data$locatie <- factor(data$locatie, levels = levels(droplevels(factor(unique(data$locatie), 
+            levels = c(1:10)))))
+    locatieName <- "Faunabeheerzone"
+  } else {
+    data$locatie <- factor(data$gemeente_afschot_locatie)
+    locatieName <- "Gemeente"
+  }
+  
 	## General Modification of Data
-	
 	if (categorie == "leeftijd") {
 		
-		allData <- data[, c("provincie", "leeftijd_comp", "afschotjaar")]
-		names(allData) <- c("provincie", "categorie", "jaar")
+		allData <- data[, c("locatie", "leeftijd_comp", "afschotjaar")]
+		names(allData) <- c("locatie", "categorie", "jaar")
 		
 	} else if (categorie == "typeAantal") {
 		
-		allData <- data[, c("provincie", "labeltype", "afschotjaar")]
-		names(allData) <- c("provincie", "categorie", "jaar")
+		allData <- data[, c("locatie", "labeltype", "afschotjaar")]
+		names(allData) <- c("locatie", "categorie", "jaar")
 		
 	} else {
 		
-		allData <- data[, c("provincie", "labeltype", "afschotjaar")]
-		names(allData) <- c("provincie", "categorie", "jaar")
+		allData <- data[, c("locatie", "labeltype", "afschotjaar")]
+		names(allData) <- c("locatie", "categorie", "jaar")
     
 		assignedData <- assignedData[, c("provincie_toek", "labeltype", "labeljaar", "toegekend")]
-		names(assignedData) <- c("provincie", "categorie", "jaar", "totaal")
+		names(assignedData) <- c("locatie", "categorie", "jaar", "totaal")
     # summarize per province
-    assignedData <- aggregate(totaal ~ jaar + provincie + categorie, data = assignedData, sum)
+    assignedData <- aggregate(totaal ~ jaar + locatie + categorie, data = assignedData, sum)
 		
 	}
 	  
@@ -79,10 +94,10 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	allData$categorie[is.na(allData$categorie) | allData$categorie == ""] <- "Onbekend"
 	
   # Rename provincie NA to "Onbekend"
-  allData$provincie <- factor(allData$provincie, levels = levels(addNA(allData$provincie)), 
-      labels = c(levels(allData$provincie), "Onbekend"), exclude = NULL)
+  allData$locatie <- factor(allData$locatie, levels = levels(addNA(allData$locatie)), 
+      labels = c(levels(allData$locatie), "Onbekend"), exclude = NULL)
   
-  levelsProvincie <- levels(allData$provincie)
+  levelsLocatie <- levels(allData$locatie)
      
   
 	
@@ -135,7 +150,7 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	
 	# Add province/categorie with 0 observations
 	fullData <- expand.grid(
-			provincie = unique(allData$provincie),
+    locatie = unique(allData$locatie),
 			categorie = levelsCategorie,
 			jaar = jaar)
 	summaryData <- merge(summaryData, fullData, all = TRUE)
@@ -148,16 +163,16 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	summaryTables <- lapply(summaryVariables, function(iVariable) {
 				
 				# Long to wide table
-				summaryTable <- dcast(summaryData, provincie ~ categorie, value.var = iVariable)
+				summaryTable <- dcast(summaryData, locatie ~ categorie, value.var = iVariable)
 				
 				# Optimal displaying of the table
 				summaryTable[is.na(summaryTable)] <- 0
-				summaryTable <- summaryTable[, c("provincie", levelsCategorie)]
+				summaryTable <- summaryTable[, c("locatie", levelsCategorie)]
 				
 				# Add row and column sum
-				levels(summaryTable$provincie) <- c(levels(summaryTable$provincie), "Vlaanderen")
+				levels(summaryTable$locatie) <- c(levels(summaryTable$locatie), "Vlaanderen")
 				summaryTable <- rbind(summaryTable, 
-						c(provincie = "Vlaanderen", as.list(apply(summaryTable[, levelsCategorie], 2, sum))))
+						c(locatie = "Vlaanderen", as.list(apply(summaryTable[, levelsCategorie], 2, sum))))
 				summaryTable <- cbind(summaryTable, 
 						Totaal = apply(summaryTable[, levelsCategorie], 1, sum))
 				
@@ -170,7 +185,7 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	if (categorie == "typePercent") {
 		
 		percentages <- summaryTables[[1]][, -1]/summaryTables[[2]][, -1]
-		summaryTable <- cbind(provincie = summaryTables[[1]][, 1], percentages)
+		summaryTable <- cbind(locatie = summaryTables[[1]][, 1], percentages)
 		
 	} else {
 		
@@ -188,13 +203,13 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	for (yearsBack in c(1, 5, 10)) {
 		
 		freqBack <- count(allData[allData$jaar == (jaar - yearsBack), ], 
-				vars = "provincie")
+				vars = "locatie")
 		
 		# Only calculate trend if relevant
 		if (nrow(freqBack) > 0) {
 			
 			# Add provinces with 0 observations
-			freqBack <- merge(x = data.frame(provincie = unique(allData$provincie)),
+			freqBack <- merge(x = data.frame(locatie = unique(allData$locatie)),
 					y = freqBack, all = TRUE)
 			freqBack$freq[is.na(freqBack$freq)] <- 0
 			
@@ -202,7 +217,7 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 			if (categorie == "typePercent") {
 				
 				freqBackAssigned <- count(assignedData[assignedData$jaar == (jaar - yearsBack), ],
-						vars = "provincie", wt_var = "totaal")
+						vars = "locatie", wt_var = "totaal")
 				freqBackAssigned$totaal <- freqBackAssigned$freq
 				freqBackAssigned$freq <- NULL
 				
@@ -212,20 +227,20 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 			}
 			
 			# Add row for Vlaanderen
-			levels(freqBack$provincie) <- c(levels(freqBack$provincie), "Vlaanderen")
+			levels(freqBack$locatie) <- c(levels(freqBack$locatie), "Vlaanderen")
 			if (categorie == "typePercent")
-				freqBack <- rbind(freqBack, list(provincie = "Vlaanderen", 
+				freqBack <- rbind(freqBack, list(locatie = "Vlaanderen", 
 								freq = sum(freqBack$freq, na.rm = TRUE), 
 								totaal = sum(freqBack$totaal, na.rm = TRUE), 
 								percent = sum(freqBack$freq, na.rm = TRUE)/sum(freqBack$totaal, na.rm = TRUE))) else 
-				freqBack <- rbind(freqBack, list(provincie = "Vlaanderen", 
+				freqBack <- rbind(freqBack, list(locatie = "Vlaanderen", 
 								freq = sum(freqBack$freq, na.rm = TRUE)))
 			
 			freqBack$totaal <- NULL
 			
 			
 			# Calculate trend
-			finalTable <- join(x = finalTable, y = freqBack, by = "provincie")
+			finalTable <- join(x = finalTable, y = freqBack, by = "locatie")
       finalTable[, paste("Warning", yearsBack, "jaar")] <- c("zwart", "oranje", "rood")[
         ifelse(
         summaryTables[[1]]$Totaal != 0 & finalTable$freq != 0,
@@ -250,8 +265,8 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
 	}
 	
 	
-	rowOrder <- match(c(levelsProvincie, "Vlaanderen"), finalTable$provincie)
-	toReturn <- finalTable[rowOrder[!is.na(rowOrder)], c("provincie", levelsCategorie, "Totaal",
+	rowOrder <- match(c(levelsLocatie, "Vlaanderen"), finalTable$locatie)
+	toReturn <- finalTable[rowOrder[!is.na(rowOrder)], c("locatie", levelsCategorie, "Totaal",
 					names(finalTable)[grep(pattern = "Verandering", x = names(finalTable))],
           names(finalTable)[grep(pattern = "Warning", x = names(finalTable))])]
 	
@@ -266,11 +281,11 @@ tableProvince <- function(data, assignedData, jaar = NULL, type,
           paste0(round(as.numeric(x)*100), "%"))
     
     
-    toReturn <- toReturn[toReturn$provincie != "Onbekend", ]
+    toReturn <- toReturn[toReturn$locatie != "Onbekend", ]
       }
 	
 	# Rename provincie
-	names(toReturn)[names(toReturn) == "provincie"] <- "Provincie"
+	names(toReturn)[names(toReturn) == "locatie"] <- locatieName
 	
 	
 	return(list(data = toReturn))
@@ -344,7 +359,7 @@ tableProvinceUI <- function(id, doHide = TRUE,
         showYear = TRUE, exportData = TRUE, regionLevels = regionLevels,
         showType = showType, showDataSource = showDataSource),
       tableModuleUI(id = ns("tableProvince")),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

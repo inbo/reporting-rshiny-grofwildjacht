@@ -56,6 +56,15 @@ schadeOutputServer <- function(id,
         range(results$schade_data()$afschotjaar)
       ) 
       
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(schadeData$afschot_datum, na.rm = TRUE)))
+            )
+          )
+        })
+      
       ## Selection species
       
       specieSidebarServer(id = "sidebar", specie = specie)
@@ -147,16 +156,18 @@ schadeOutputServer <- function(id,
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-gewas" = list(
-                  regionLevels = c(1:2, 4),
+                  regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
+                  data = results$schade_data,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-schade" = list(
-                  regionLevels = c(1:2, 4),
+                  regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
+                  data = results$schade_data,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
@@ -283,7 +294,7 @@ schadeOutputServer <- function(id,
                         type = "seizoen", specie = specie(),
                         summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                         showTime = TRUE, showDataSource = "schade",
-                        regionLevels = c(1:2, 4),
+                        regionLevels = c(1:4),
                         doHide = !(plot() == defaultTabs$plot || "countYearSchadeUI-seizoen" %in% plot())
                       ))
                 )
@@ -296,7 +307,7 @@ schadeOutputServer <- function(id,
                         uiText = uiText, context = "description",
                         specie = specie(), showTime = TRUE,
                         typeMelding = c("Landbouw" = "landbouw"),
-                        regionLevels = c(1:2, 4),
+                        regionLevels = c(1:4),
                         doHide = !(plot() == defaultTabs$plot || "barCostUI" %in% plot())
                       ))
                 )

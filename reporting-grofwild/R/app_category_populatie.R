@@ -33,7 +33,7 @@ populatieOutputServer <- function(id,
       results$combinedData <- reactive(
         merge(
           x = results$ecoData(), 
-          y = results$geoData()[, c("ID", "FaunabeheerZone")], 
+          y = results$geoData()[, c("ID", "FaunabeheerZone", "gemeente_afschot_locatie")], 
           by = "ID"
         )
       )
@@ -75,6 +75,15 @@ populatieOutputServer <- function(id,
           getFemaleTypes(
             ecoData = results$ecoData(), 
             specie = specie()
+          )
+        })
+      
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(ecoData$afschot_datum, na.rm = TRUE)))
+            )
           )
         })
       
@@ -137,8 +146,9 @@ populatieOutputServer <- function(id,
                 ),
                 switch(as.character(subcategory()), 
                   "populatie-leeggewicht" = list(
-                    regionLevels = c(1:2, 4),
+                    regionLevels = c(1:4),
                     allRegionsSelected = TRUE,
+                    data = results$combinedData,
                     timeRange = reactive(if (specie() == "Ree")
                           c(2014, max(results$timeRange())) else 
                           results$timeRange()),
@@ -147,15 +157,17 @@ populatieOutputServer <- function(id,
                     multipleTypes = TRUE
                   ),
                   "populatie-onderkaak" = list(
-                    regionLevels = c(1:2, 4),
+                    regionLevels = c(1:4),
                     allRegionsSelected = TRUE,
+                    data = results$combinedData,
                     timeRange = reactive(if (specie() == "Ree")
                           c(2005, max(results$timeRange())) else 
                           results$timeRange())
                   ),
                   "populatie-geslacht" = list(),
                   "populatie-voortplanting" = list(
-                    regionLevels = c(1:2, 4),
+                    regionLevels = c(1:4),
+                    data = results$combinedData,
                     allRegionsSelected = TRUE,
                     timeRange = results$timeRange
                   )
@@ -292,7 +304,7 @@ populatieOutputServer <- function(id,
                 if ("countAgeCheekUI" %in% outputs)
                   countAgeCheekServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     preSelected = populatieSelection
                   ),
                 if ("plotBioindicatorUI-onderkaaklengte" %in% outputs)
@@ -330,7 +342,7 @@ populatieOutputServer <- function(id,
                 if ("countAgeGroupUI" %in% outputs)
                   countAgeGroupServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     groupVariable = "reproductiestatus",
                     preSelected = populatieSelection
                   )

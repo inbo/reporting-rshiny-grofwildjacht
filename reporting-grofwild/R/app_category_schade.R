@@ -70,9 +70,23 @@ schadeOutputServer <- function(id,
               max(schadeData$afschot_datum, na.rm = TRUE)
             }
           
+          text <- getOutputDescription(
+            output = paste0(gsub(" ", "-", tolower(specie())), "_", subcategory(), "_maxDateHighlight"), 
+            uiText = uiText, context = "description", maxDate = maxDate)
+          
+          if (is.null(text)) {
+            text <- getOutputDescription(
+              output = paste0(gsub(" ", "-", tolower(specie())), "_", strsplit(subcategory(), "-")[[1]][[1]], "_maxDateHighlight"), 
+              uiText = uiText, context = "description", maxDate = maxDate)
+            
+            if (is.null(text)) {
+              text <- getOutputDescription(output = "maxDateHighlight", uiText = uiText, context = "description", maxDate = maxDate)
+            }
+          }
+          
           wellPanel(class = "well-white", 
             div(style = "text-align: center; font-size: 18px;",
-              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = maxDate))
+              HTML(text)
             )
           )
         })

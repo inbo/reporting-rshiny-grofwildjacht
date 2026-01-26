@@ -27,7 +27,7 @@ trendWolfFlanders <- function(data, jaartallen = NULL, regio = "",
     jaartallen <- unique(data$year)
   
   # Select data
-  data$group <- "Vlaams Gewest"
+  data$group <- "Totaal"
   plotData <- data[!is.na(data$year) & data$year %in% jaartallen & data$Schade == "Wolf", 
     c("year", "group")]
   names(plotData) <- c("year", "group") 
@@ -36,7 +36,7 @@ trendWolfFlanders <- function(data, jaartallen = NULL, regio = "",
   # Summarize data per year
   summaryData <- count(df = plotData, vars = names(plotData))
 
-  colors <- replicateColors(values = "Vlaams Gewest")$colors
+  colors <- replicateColors(values = "Totaal")$colors
   title <- paste0("Bevestigde schadegevallen door wolven ",
     ifelse(length(jaartallen) > 1, paste("van", min(jaartallen), "tot", max(jaartallen)),
       paste("in", jaartallen)), 

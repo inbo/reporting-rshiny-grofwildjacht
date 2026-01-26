@@ -127,6 +127,8 @@ mapDispersersWolvesServer <- function(
       spatialData <- reactive({
           
           req(allSpatialData)
+          req(preSelected())
+          req(preSelected()$regionLevel())
           
           filterSpatial(
             allSpatialData = allSpatialData, 
@@ -173,12 +175,12 @@ mapDispersersWolvesServer <- function(
           
           myMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), addGlobe = TRUE)
           
-          if (!is.null(allSpatialData))
+          if (!is.null(spatialData()))
             myMap <- myMap %>%
-              addPolylines(data = spatialData(), color = "gray", weight = 3,
-                group = "regionLinesAll",
+              addPolygons(data = spatialData(), color = "gray", weight = 2,
+                group = "regionLinesAll", fillOpacity = 0, layerId = spatialData()$NAAM,
                 options = pathOptions(pane = "polylines")) %>%
-              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+              addPolylines(data = selectedPolygons(), color = "black", weight = 2,
                 group = "regionLines",
                 options = pathOptions(pane = "polylines"))
           
@@ -316,12 +318,12 @@ mapDispersersWolvesServer <- function(
             zoom = input$spacePlot_zoom
           )
           
-          if (!is.null(allSpatialData))
+          if (!is.null(spatialData()))
             newMap <- newMap %>%
-              addPolylines(data = spatialData(), color = "gray", weight = 3,
-                group = "regionLinesAll",
+              addPolygons(data = spatialData(), color = "gray", weight = 2,
+                group = "regionLinesAll", fillOpacity = 0, layerId = spatialData()$NAAM,
                 options = pathOptions(pane = "polylines")) %>%
-              addPolylines(data = selectedPolygons(), color = "black", weight = 3,
+              addPolylines(data = selectedPolygons(), color = "black", weight = 2,
                 group = "regionLines",
                 options = pathOptions(pane = "polylines"))
           
@@ -358,7 +360,42 @@ mapDispersersWolvesServer <- function(
           
         })
       
+      # Which region(s) are selected?
+      observe({
+          
+          event <- input$spacePlot_shape_click
+          
+          if (!is.null(event) && !is.null(event$id)) {
+            currentSelected <- isolate(preSelected()$region())
+            
+            if (event$id %in% currentSelected) {
+              # Remove from list
+              updateSelectInput(session, inputId = "region", 
+                selected = currentSelected[- which(currentSelected == event$id)])
+              
+              results$selectedRegions <- currentSelected[- which(currentSelected == event$id)]
+              
+            } else {
+              # Add to list
+              updateSelectInput(session, inputId = "region", 
+                selected = c(currentSelected, event$id))
+              
+              results$selectedRegions <- c(currentSelected, event$id)
+              
+            }
+            
+          }
+          
+        })
       
+      return(reactive({
+            # Update when any of these change
+            results$selectedRegions
+            # Return the static values
+            c(
+              selectedRegions = reactive(na.omit(results$selectedRegions))
+            )
+          }))
       
     })
   

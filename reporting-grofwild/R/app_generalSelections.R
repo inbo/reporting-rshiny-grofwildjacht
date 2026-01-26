@@ -68,10 +68,16 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
                     column(6, uiOutput(ns("type"))),
                   if(showInterval)
                     column(6, uiOutput(ns("interval"))),
+                  if (!is.null(summarizeBy))
+                    column(6, 
+                      uiOutput(ns("summarizeBy"))),
+                  if (showUnit)
+                    column(6, 
+                      uiOutput(ns("unit")))
                 ),
                 fluidRow(
-                  column(6, 
-                    if(showRegion)
+                  if(showRegion)
+                    column(6, 
                       tagList(
                         fluidRow(
                           column(12, uiOutput(ns("regionLevels")))
@@ -79,13 +85,7 @@ generalSelectionUI <- function(id, showTime = FALSE, showType = FALSE, showYear 
                         fluidRow(
                           column(11, offset = 1, uiOutput(ns("region")))
                         ))
-                  ),
-                  column(6, 
-                    if (!is.null(summarizeBy))
-                      uiOutput(ns("summarizeBy"))),
-                  column(6, 
-                    if (showUnit)
-                      uiOutput(ns("unit")))
+                    )
                 ),
                 fluidRow(
                   if ("schade" %in% showDataSource)

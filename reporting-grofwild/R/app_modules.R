@@ -528,7 +528,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
           } else if (regionLevel == "faunabeheerzones") {  
             validate(need("FaunabeheerZone" %in% colnames(subData), getOutputTitle(output ="regioSchaal_warningMessage", uiText = uiText, regioSchaal = "faunabeheerzone")))
             subData <- subData[as.character(subData$FaunabeheerZone) %in% region, ]
-          } else if(regionLevel == "communes") { 
+          } else if(regionLevel %in% c("communes", "communes_wolf")) { 
             validate(need("gemeente_afschot_locatie" %in% colnames(subData), getOutputTitle(output ="regioSchaal_warningMessage", uiText = uiText, regioSchaal = "gemeente")))
             subData <- subData[subData$gemeente_afschot_locatie %in% region, ]
           } else if(regionLevel == "fbz_gemeentes") {   

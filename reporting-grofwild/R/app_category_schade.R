@@ -52,9 +52,14 @@ schadeOutputServer <- function(id,
           return(schadeData[toRetain, ])
         })
       
+      results$wolfSchadeData <- reactive({
+          wolfSchadeData %>% mutate(afschotjaar = year) 
+        })
+      
+      
       results$schade_timeRange <- reactive({
           if (specie() == "Wolf") {
-            range(wolfSchadeData$year)
+            range(results$wolfSchadeData()$year)
           } else {
             range(results$schade_data()$afschotjaar)
           }
@@ -123,8 +128,7 @@ schadeOutputServer <- function(id,
                   hideGeneralFilters = FALSE    # General schade filters should be shown
                 ),
                 "schade-doodsoorzaak" = list(
-                  showTime = TRUE,
-                  showRegion = TRUE
+                  showTime = TRUE
                 )
               )
             )
@@ -162,7 +166,7 @@ schadeOutputServer <- function(id,
                   regionLevels = if (specie() == "Wolf") c(
                         "Vlaanderen" = "flanders",
                         "Provincie" = "provinces", 
-                        "Gemeente" = "communes"
+                        "Gemeente" = "communes_wolf"
                       ) else c(
                         "Vlaanderen" = "flanders",
                         "Provincie" = "provinces", 
@@ -171,7 +175,7 @@ schadeOutputServer <- function(id,
                         "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
                         "5x5 UTM" = "utm5"
                       ), 
-                  regionLevelSelected = if (specie() == "Wolf") "flanders" else "provinces",
+                  regionLevelSelected = if (specie() == "Wolf") "flanders" else "provinces",   # TODO always provinces once mismatch in geodata is resolved
                   allRegionsSelected = TRUE,
                   data = reactive(spatialData),
                   timeRange = results$schade_timeRange
@@ -197,14 +201,7 @@ schadeOutputServer <- function(id,
                 "schade-seizoen" = list(includeSchadeFilters = TRUE,),
                 "schade-kosten" = list(includeSchadeFilters = TRUE,),
                 "schade-doodsoorzaak" = list(
-                  timeRange = reactive(range(wolfOverzichtData$year)),
-                  regionLevels = c(
-                    "Vlaanderen" = "flanders",
-                    "Provincie" = "provinces", 
-                    "Gemeente" = "communes"
-                  ),
-                  regionLevelSelected = "flanders",
-                  allRegionsSelected = TRUE)
+                  timeRange = reactive(range(wolfOverzichtData$year)))
               )
             )
             
@@ -332,8 +329,11 @@ schadeOutputServer <- function(id,
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesRegionUI-soort" %in% plot())
                       )),
                   if ("mapSchadeWolvesUI" %in% outputs)
-                    wellPanel(class = "well-white", mapSchadeWolvesUI(
-                        id = ns("plot24"), uiText = uiText,
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot24"), showRegion = FALSE,
+                        type = "schade", plotDetails = "region",
+                        uiText = uiText,
+                        variableChoices = c("Schade" = "Schade"),
                         doHide = !(plot() == defaultTabs$plot || "mapSchadeWolvesUI" %in% plot())
                       ))
                 )
@@ -452,7 +452,7 @@ schadeOutputServer <- function(id,
                 plot3 = if ("trendWolfFlandersUI" %in% outputs)
                   trendWolfFlandersServer(
                     id = "plot13", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     preSelected = schadeSelection
                   ),
                 plot4 = if ("mapAccidentsWolvesUI" %in% outputs)
@@ -465,21 +465,21 @@ schadeOutputServer <- function(id,
                 plot5 = if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot15", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     groupVariable = "Schade",
                     preSelected = schadeSelection
                   ),
                 plot6 = if ("countSchadeWolvesUI-omheining" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot16", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     groupVariable = "wolfproof",
                     preSelected = schadeSelection
                   ),
                 plot7 = if ("countSchadeWolvesUI-soort" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot17", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     groupVariable = "Prooidier",
                     preSelected = schadeSelection
                   )
@@ -524,7 +524,7 @@ schadeOutputServer <- function(id,
                 plot4 = if ("trendWolfRegionUI" %in% outputs)
                   trendWolfFlandersServer(
                     id = "plot19", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     filterDataOnRegion = TRUE,
                     preSelected = schadeSelection
                   ),
@@ -539,7 +539,7 @@ schadeOutputServer <- function(id,
                 plot6 = if ("countSchadeWolvesRegionUI-gemeldeSchade" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot21", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     groupVariable = "Schade",
                     filterDataOnRegion = TRUE,
                     preSelected = schadeSelection
@@ -547,7 +547,7 @@ schadeOutputServer <- function(id,
                 plot7 = if ("countSchadeWolvesRegionUI-omheining" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot22", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     groupVariable = "wolfproof",
                     filterDataOnRegion = TRUE,
                     preSelected = schadeSelection
@@ -555,15 +555,21 @@ schadeOutputServer <- function(id,
                 plot8 = if ("countSchadeWolvesRegionUI-soort" %in% outputs)
                   countSchadeWolvesServer(
                     id = "plot23", 
-                    data = reactive(wolfSchadeData), 
+                    data = results$wolfSchadeData, 
                     groupVariable = "Prooidier",
                     filterDataOnRegion = TRUE,
                     preSelected = schadeSelection
                   ),
                 plot9 = if ("mapSchadeWolvesUI" %in% outputs)
-                  mapSchadeWolvesServer(
+                  mapFlandersServer(
                     id = "plot24", 
-                    data = reactive(wolfSchadeData), 
+                    uiText = uiText,
+                    defaultYear = defaultYear,
+                    species = specie,
+                    type = "schade",
+                    geoData = results$wolfSchadeData,
+                    biotoopData = biotoopData,
+                    allSpatialData = spatialData,
                     preSelected = schadeSelection
                   )
               )
@@ -670,6 +676,25 @@ schadeOutputServer <- function(id,
               inputId = "schade_topbar-region",
               selected = p$selectedRegions()
             )
+          })
+        
+        observe({
+            
+            req(as.character(subcategory()) == "schade-regio" && specie() == "Wolf")
+            req(results$serverOutput$plot5)
+            
+            p <- results$serverOutput$plot5()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(schadeSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "schade_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
           })
       
       return(list(

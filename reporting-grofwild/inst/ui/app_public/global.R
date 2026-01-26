@@ -66,6 +66,10 @@ if (!doDebug | !exists("spatialData")){
   }
 }
 
+if (exists("spatialData") && !("communes_wolf" %in% names(spatialData))) {
+  spatialData$communes_wolf <- loadWolfShapeData(type = "gemeenten")
+}
+
 # Data with observations and geographical information
 if (!doDebug | !exists("ecoData"))
   ecoData <- loadRawData(type = "eco")

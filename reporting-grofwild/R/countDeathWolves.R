@@ -177,7 +177,7 @@ countDeathWolvesUI <- function(id, uiText, plotFunction = "countDeathWolvesUI",
         ),
         column(4,
           optionsModuleUI(id = ns("countDeathWolves"),
-            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
+#            summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
             showTime = showTime, exportData = TRUE)
         )
       ),

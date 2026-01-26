@@ -97,6 +97,10 @@ loadWolfShapeData <- function(
     if (st_crs(data)$epsg != 4326) {
       data <- st_transform(data, crs = 4326)
     }
+    
+    if (type == "gemeenten") {
+      colnames(data)[colnames(data) == "OPPERVL"] <- "AREA"
+    }
   }
   
   data
@@ -209,6 +213,7 @@ loadWolfData <- function(
     colnames(data)[colnames(data) == "Jaar"] <- "year"
     colnames(data)[colnames(data) == "Gemeente"] <- "gemeente_afschot_locatie"
     colnames(data)[colnames(data) == "Provincie"] <- "provincie"
+    colnames(data)[colnames(data) == "Soort"] <- "wildsoort"
   }
   
   data

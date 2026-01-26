@@ -152,7 +152,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @param allSpatialData list with sf objects as loaded by 
 #' \code{readS3(file = "spatialData.RData")}
 #' @param regionLevel character, region level. Should be one of 
-#' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen")}
+#' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen", "communes_wolf")}
 #' @param year integer, year of interest. Only relevant when \code{regionLevel}
 #' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
 #' @param locaties character vector, only relevant when \code{regionLevel} is 
@@ -164,7 +164,7 @@ filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL,
 #' @export
 filterSpatial <- function(allSpatialData, species, 
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
-    "fbz_gemeentes", "utm5", "utm1", "WBE", "WBE_buitengrenzen"), 
+    "fbz_gemeentes", "utm5", "utm1", "WBE", "WBE_buitengrenzen", "communes_wolf"), 
   year, locaties = NULL) {
   
   

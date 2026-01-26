@@ -130,7 +130,8 @@ populatieOutputServer <- function(id,
                   showDataSource = if (specie() == "Wolf") c() else c("embryos", "leeftijd", "geslacht")
                 ),
                 "populatie-genetica" = list(
-                  showTime = TRUE
+                  showTime = TRUE,
+                  summarizeBy = TRUE
                 )
               )
             )
@@ -181,7 +182,8 @@ populatieOutputServer <- function(id,
                     timeRange = results$timeRange
                   ),
                   "populatie-genetica" = list(
-                    timeRange = reactive(range(wolfOverzichtData$year))
+                    timeRange = reactive(range(wolfOverzichtData$year)),
+                    summarizeBy = c("Aantal" = "count", "Percentage" = "percent")
                   )
                 )
               )

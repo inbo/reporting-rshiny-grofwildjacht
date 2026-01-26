@@ -12,10 +12,29 @@ wildsoort;Waterwild;;Smient;
 wildsoort;Waterwild;;Grauwe gans;
 wildsoort;Waterwild;;Canadese gans;
 wildsoort;Waterwild;;Kievit;
+wildsoort;Waterwild;;Kleine rietgans;
+wildsoort;Waterwild;;Meerkoet;
+wildsoort;Waterwild;;Rietgans;
+wildsoort;Waterwild;;Waterhoen;
+wildsoort;Waterwild;;Wintertaling;
+wildsoort;Waterwild;;Kolgans;
+wildsoort;Overig wild;;Houtduif;
+wildsoort;Overig wild;;Steenmarter;
+wildsoort;Overig wild;;Vos;
+wildsoort;Overig wild;;Verwilderde kat;
 wildsoort;Beschermde soort;;Bever;
-wildsoort;Overig;;Houtduif;
-wildsoort;Overig;;Vos;
-wildsoort;Overig;;Verwilderde kat;
+wildsoort;Beschermde soort;;Brandgans;
+wildsoort;Beschermde soort;;Das;
+wildsoort;Beschermde soort;;Ekster;
+wildsoort;Beschermde soort;;Gaai;
+wildsoort;Beschermde soort;;Kauw;
+wildsoort;Beschermde soort;;Kleine zwaan;
+wildsoort;Beschermde soort;;Knobbelzwaan;
+wildsoort;Beschermde soort;;Koolmees;
+wildsoort;Beschermde soort;;Pimpelmees;
+wildsoort;Beschermde soort;;Roek;
+wildsoort;Beschermde soort;;Turkse tortel;
+wildsoort;Beschermde soort;;Zwarte kraai;
 type;GEWAS;Gewas;WLSCHD;Woelschade
 type;GEWAS;Gewas;VRTSCHD;Vraatschade
 type;GEWAS;Gewas;GEWASANDR;Gewas - andere

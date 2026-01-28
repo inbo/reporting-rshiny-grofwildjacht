@@ -31,8 +31,8 @@ countSchadeWolves <- function(data, jaartallen = NULL,
     data <- data[data$Schade == "Wolf", ]
     ylabel <- "bevestiged schadegevallen"
   } else if (groupVariable == "wolfproof") {
-    data <- data[data$Preventie != "", ]
-    ylabel <- "gemelde schadegevallen"
+    data <- data[data$Preventie != "" & data$Schade == "Wolf", ]
+    ylabel <- "bevestigde schadegevallen"
   } else {
     ylabel <- "gemelde schadegevallen"
   }

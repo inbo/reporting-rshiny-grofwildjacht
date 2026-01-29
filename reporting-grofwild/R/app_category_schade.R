@@ -284,6 +284,11 @@ schadeOutputServer <- function(id,
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot17"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-soort" %in% plot())
+                      )),
+                  if ("downloadSchadeWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", downloadSchadeWolvesUI(
+                        id = ns("plot18"), uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "downloadSchadeWolvesUI" %in% plot())
                       ))
                 )
               }, 
@@ -495,6 +500,12 @@ schadeOutputServer <- function(id,
                     id = "plot17", 
                     data = results$wolfSchadeData, 
                     groupVariable = "Prooidier",
+                    preSelected = schadeSelection
+                  ),
+                plot8 = if ("downloadSchadeWolvesUI" %in% outputs)
+                  downloadSchadeWolvesServer(
+                    id = "plot18", 
+                    data = results$wolfSchadeData,
                     preSelected = schadeSelection
                   )
               )

@@ -85,7 +85,8 @@ tableWolfReproductionServer <- function(id, data,
                   tags$tr(
                     tags$th("Jaar"),
                     tags$th("Vrouwtje"),
-                    tags$th("Mannetje")
+                    tags$th("Mannetje"),
+                    tags$th("Aantal welpen")
                   )
                 ),
                 tags$tbody(
@@ -99,13 +100,16 @@ tableWolfReproductionServer <- function(id, data,
                         tags$td(
                           class = if (df$male_change[i]) "highlight" else NULL,
                           df$Mannetje[i]
+                        ),
+                        tags$td(
+                          df$Welpen[i]
                         )
                       )
                     })
                 )
               )
               
-              column(width = 4, table_html)
+              column(width = 6, table_html)
             })
           
           fluidRow(table_columns)

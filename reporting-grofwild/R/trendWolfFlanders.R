@@ -54,7 +54,9 @@ trendWolfFlanders <- function(data, jaartallen = NULL, regio = "",
           title = "Jaar", 
           tickvals = unique(summaryData$year), 
           ticktext = unique(summaryData$year)), 
-        yaxis = list(title = "Aantal bevestigde schadegevallen"),
+        yaxis = list(title = "Aantal bevestigde schadegevallen", 
+          range = c(0, ~max(freq)*1.05),
+          rangemode = "nonnegative"),
         margin = list(b = 120, t = 100))
   
   

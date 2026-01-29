@@ -12,6 +12,7 @@ mapDispersersWolves <- function(
   data, 
   spatialData,
   addGlobe = FALSE,
+  showTerritoria = TRUE,
   legend = "topright"
 ) {
   
@@ -33,17 +34,23 @@ mapDispersersWolves <- function(
   
   myMap <- leaflet(data,
       options = leafletOptions(maxZoom = 12)) %>%
-    addMapPane("polylines", zIndex = 200) %>%
-    addPolygons(data = spatialData,
-      fillColor = ~territory_palette(Territory),
-      color = "grey40", weight = 0.8,
-      fillOpacity = 0.8,
-      smoothFactor = 0.5,
-      label = ~Territory,
-      highlightOptions = highlightOptions(
-        weight = 1.5, 
-        color = "black"),
-      group = "Territoria") %>%
+    addMapPane("polylines", zIndex = 200) 
+  
+  if (showTerritoria)
+    myMap <- myMap %>%
+      addPolygons(data = spatialData,
+        fillColor = ~territory_palette(Territory),
+        color = "grey40", weight = 0.8,
+        fillOpacity = 0.8,
+        smoothFactor = 0.5,
+        label = ~Territory,
+        highlightOptions = highlightOptions(
+          weight = 1.5, 
+          color = "black"),
+        group = "Territoria") 
+  
+  
+  myMap <- myMap %>%
     addCircleMarkers(
       radius = 6,
       fillColor = ~year_colors(year),
@@ -51,8 +58,8 @@ mapDispersersWolves <- function(
       fillOpacity = 1,
       popup = paste0("<li><strong> Jaar </strong>: ", data$year),
       group = "Zwervers"
-  ) %>%
-  setView(lng = 4, lat = 51, zoom = 8)
+    ) %>%
+    setView(lng = 4, lat = 51, zoom = 8)
   
   # Add world map
   if (addGlobe) {
@@ -71,15 +78,18 @@ mapDispersersWolves <- function(
         opacity = 1,
         labFormat = labelFormat(),
         group = "Zwervers",
-        layerId = "legend1") %>%
-      addLegend(legend,
-        pal = territory_palette,
-        values = spatialData$Territory,
-        title = "Territoria",
-        opacity = 1,
-        labFormat = labelFormat(),
-        group = "Territoria",
-        layerId = "legend2")
+        layerId = "legend1") 
+      
+      if (showTerritoria)
+        myMap <- myMap %>%
+          addLegend(legend,
+            pal = territory_palette,
+            values = spatialData$Territory,
+            title = "Territoria",
+            opacity = 1,
+            labFormat = labelFormat(),
+            group = "Territoria",
+            layerId = "legend2")
   }
   
   
@@ -173,7 +183,8 @@ mapDispersersWolvesServer <- function(
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
           
-          myMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), addGlobe = TRUE)
+          myMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), addGlobe = TRUE,
+            legend = isolate(input$legend), showTerritoria = input$showTerritoria)
           
           if (!is.null(spatialData()))
             myMap <- myMap %>%
@@ -289,27 +300,79 @@ mapDispersersWolvesServer <- function(
                 opacity = 1,
                 labFormat = labelFormat(),
                 group = "Zwervers",
-                layerId = "legend1") %>%
-              addLegend(
-                position = input$legend,
-                pal = territory_palette,
-                values = spatialSpecificData()$Territory,
-                title = "Territoria",
-                opacity = 1,
-                labFormat = labelFormat(),
-                group = "Territoria",
-                layerId = "legend2")
-            
-          }
+                layerId = "legend1") 
+              
+              if (isolate(input$showTerritoria))
+                proxy %>% addLegend(
+                  position = input$legend,
+                  pal = territory_palette,
+                  values = spatialSpecificData()$Territory,
+                  title = "Territoria",
+                  opacity = 1,
+                  labFormat = labelFormat(),
+                  group = "Territoria",
+                  layerId = "legend2")
+              
+            }
           
         })
+        
+        
+#        # Show territoria
+#        observe({
+#            
+#            req(input$showTerritoria)
+#            req(subData())
+#            validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
+#            
+#            req(spatialSpecificData())
+#            
+#            proxy <- leafletProxy("spacePlot", data = subData())
+#            req(!is.null(proxy))
+#            
+#            proxy %>% removeControl(layerId = "Territoria") %>% removeControl(layerId = "legend2")
+#            
+#            if (input$showTerritoria) {
+#              # Color palette for territories
+#              territory_names <- sort(unique(spatialSpecificData()$Territory))
+#              territory_palette <- colorFactor(palette = brewer.pal(length(territory_names), "Set2"), domain = territory_names)
+#              
+#              proxy %>%
+#                addPolygons(
+#                  data = spatialSpecificData(),
+#                  fillColor = ~territory_palette(Territory),
+#                  color = "grey40", weight = 0.8,
+#                  fillOpacity = 0.8,
+#                  smoothFactor = 0.5,
+#                  label = ~Territory,
+#                  highlightOptions = highlightOptions(
+#                    weight = 1.5, 
+#                    color = "black"),
+#                  group = "Territoria",
+#                  layerId = "Territoria") 
+#              
+#              if (isolate(input$legend) != "none")
+#                proxy %>% 
+#                addLegend(
+#                  position = isolate(input$legend),
+#                  pal = territory_palette,
+#                  values = spatialSpecificData()$Territory,
+#                  title = "Territoria",
+#                  opacity = 1,
+#                  labFormat = labelFormat(),
+#                  group = "Territoria",
+#                  layerId = "legend2")
+#              
+#            }
+#            
+#          })
       
       
       # Create final map (for download)
       finalMap <- reactive({
           
           newMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), 
-            addGlobe = input$globe %% 2 == 0, legend = input$legend)
+            addGlobe = input$globe %% 2 == 0, legend = input$legend, showTerritoria = input$showTerritoria)
           
           # save the zoom level and centering to the map object
           newMap <- newMap %>% setView(
@@ -435,8 +498,9 @@ mapDispersersWolvesUI <- function(
                 "Onderaan rechts" = "bottomright",
                 "Bovenaan links" = "topleft",
                 "Onderaan links" = "bottomleft",
-                "<geen>" = "none"))
-          )
+                "<geen>" = "none"))           
+          ),
+          column(4, checkboxInput(inputId = ns("showTerritoria"), label = "Toon huidige territoria", value = TRUE))
         ),
         actionLink(inputId = ns("globe"), label = "Verberg landkaart",
           icon = icon("globe"))

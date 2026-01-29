@@ -331,7 +331,7 @@ getOutputSpecie <- function(specie,
         "countDeathWolvesUI", "mapAccidentsWolvesUI", 
         "trendWolfFlandersUI", "countSchadeWolvesUI-gemeldeSchade", 
         "mapAccidentsWolvesRegionUI", "countSchadeWolvesUI-omheining", 
-        "countSchadeWolvesUI-soort", "trendWolfRegionUI", 
+        "countSchadeWolvesUI-soort", "downloadSchadeWolvesUI", "trendWolfRegionUI", 
         "countSchadeWolvesRegionUI-gemeldeSchade", 
         "countSchadeWolvesRegionUI-omheining", "countSchadeWolvesRegionUI-soort",
         "mapSchadeWolvesUI",
@@ -442,7 +442,7 @@ getSubcategoryOutput <- function(output){
           "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
           "trendWolfFlandersUI", "mapAccidentsWolvesUI", 
           "countSchadeWolvesUI-gemeldeSchade", "countSchadeWolvesUI-omheining", 
-          "countSchadeWolvesUI-soort"
+          "countSchadeWolvesUI-soort", "downloadSchadeWolvesUI"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
         "mapSchadeUI", "trendWolfRegionUI", "mapAccidentsWolvesRegionUI", 

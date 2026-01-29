@@ -84,11 +84,28 @@ populatieOutputServer <- function(id,
       
       # Max date highlight 
       output$maxDateHighlight <- renderUI({
-          req(specie() != "Wolf")
+          
+          maxDate <- max(ecoData$afschot_datum, na.rm = TRUE)
+          
+          text <- getOutputDescription(
+            output = paste0(gsub(" ", "-", tolower(specie())), "_", subcategory(), "_maxDateHighlight"), 
+            uiText = uiText, context = "description", maxDate = maxDate)
+          
+          if (is.null(text)) {
+            text <- getOutputDescription(
+              output = paste0(gsub(" ", "-", tolower(specie())), "_", strsplit(subcategory(), "-")[[1]][[1]], "_maxDateHighlight"), 
+              uiText = uiText, context = "description", maxDate = maxDate)
+            
+            if (is.null(text)) {
+              text <- getOutputDescription(output = "maxDateHighlight", uiText = uiText, context = "description", maxDate = maxDate)
+            }
+          }
+          
+          req(nchar(text) > 0)
           
           wellPanel(class = "well-white", 
             div(style = "text-align: center; font-size: 18px;",
-              HTML(getOutputDescription(output = "maxDate_highlight", uiText = uiText, context = "description", maxDate = max(ecoData$afschot_datum, na.rm = TRUE)))
+              HTML(text)
             )
           )
         })

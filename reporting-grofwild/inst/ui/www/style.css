@@ -315,12 +315,12 @@ p, li, label {
 
 .dropdown-menu {
   background-color: #456394; 
-	max-height: 800px;
+	max-height: 600px;
 	overflow-y: auto;
 }
 .dropdown-menu > li > a {
   color: #ffffff;
-	max-height: 800px;
+	max-height: 600px;
 	overflow-y: auto;
 }
 .dropdown-menu > li.active > a, .dropdown-menu > li.hover > a {

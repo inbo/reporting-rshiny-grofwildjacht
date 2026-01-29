@@ -331,6 +331,7 @@ beheerOutputServer <- function(id,
                     wellPanel(class = "well-white", countYearShotUI(
                         id = ns("plot2"), groupVariable = "wettelijk_kader", showType = TRUE,
                         uiText = uiText, context = "description", specie = specie(),
+                        showWettelijkKader = TRUE,
                         doHide = !(plot() == defaultTabs$plot || "countYearShotUI-wettelijk_kader" %in% plot())
                       )),
                   if ("countYearShotUI-periode" %in% outputs)

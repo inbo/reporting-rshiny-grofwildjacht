@@ -50,9 +50,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
     c("afschotjaar", "afschot_datum", groupVariable, "jachtmethode_comp", "leeftijd_comp_bron")]
   
-  if (groupVariable == "wettelijk_kader") {
-    plotData <- plotData[plotData[, "jachtmethode_comp"] %in% c(type, "Onbekend"), ] #include onbekend for nRecords
-  } else if (!is.null(type) && !all(type == "all"))
+  if (!is.null(type) && !all(type == "all"))
     plotData <- plotData[plotData[, groupVariable] %in% c(type, "Onbekend"), ] #include onbekend for nRecords
   nRecords <- nrow(plotData)
   
@@ -65,9 +63,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
     plotData <- filterGrofwild(plotData = plotData, 
       sourceIndicator_leeftijd = sourceIndicator_leeftijd)
   
-  if (groupVariable == "wettelijk_kader") {
-    plotData <- plotData[plotData[, "jachtmethode_comp"] %in% type, ] ## only retains animals of specified type
-  } else if (!is.null(type) && !all(type == "all"))
+  if (!is.null(type) && !all(type == "all"))
     plotData <- plotData[plotData[, groupVariable] %in% type, ] ## only retains animals of specified type
   plotData$leeftijd_comp_bron <- NULL
   
@@ -265,6 +261,13 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
           updateSelectInput(session, "type", choices = options, selected = options)
         })
       
+      observe({
+          req(groupVariable == "wettelijk_kader")
+          
+          options <- sort(na.omit(unique(data()[[groupVariable]])))
+          updateSelectInput(session, "type", choices = options, selected = options)
+        })
+      
       # Verdeling afschot over de jaren
       callModule(module = optionsModuleServer, id = "countYearShot", 
         data = data,
@@ -296,7 +299,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
   uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
   doHide = TRUE, showDataSource = FALSE, showType = FALSE, showInterval = FALSE,
-  showTime = FALSE, showSchemeringType = FALSE) {
+  showTime = FALSE, showSchemeringType = FALSE, showWettelijkKader = FALSE) {
   
   ns <- NS(id)
   
@@ -325,6 +328,10 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
                 radioButtons(inputId = ns("schemeringType"), label = "Schemering type",
                   choices = c("Wettelijk" = "wettelijk", "Burgerlijk" = "burgerlijk")),
                 selectInput(inputId = ns("type"), label = "Moment van de dag",
+                  choices = c(), selected = c(), multiple = TRUE)),
+            if (showWettelijkKader)
+              tagList(
+                selectInput(inputId = ns("type"), label = "Wettelijk kader",
                   choices = c(), selected = c(), multiple = TRUE)),
             optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
               regionLevels = regionLevels, exportData = TRUE,

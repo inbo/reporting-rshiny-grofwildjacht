@@ -1271,7 +1271,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           h3(
             paste0("Jaarlijks",
             if (type == "schade") "e schadegevallen door " else " gerapporteerd afschot van ", 
-            species(), if (regionLevelName() != "Vlaanderen") paste0(" per geselecteerde ", tolower(regionLevelName())) else (" in Vlaanderen") 
+            tolower(species()), if (regionLevelName() != "Vlaanderen") paste0(" per geselecteerde ", tolower(regionLevelName())) else (" in Vlaanderen") 
           ))
           
         })

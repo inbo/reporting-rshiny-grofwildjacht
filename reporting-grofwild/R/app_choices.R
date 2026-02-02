@@ -353,6 +353,8 @@ getOutputSpecie <- function(specie,
 #' @inheritDotParams getOutputSpecie
 #' @return data.frame with specie, category, subcategory and output,
 #' ordered as shown in the UI
+#' 
+#' @importFrom dplyr left_join
 #' @author lcougnaud
 #' @export
 getOutputInfo <- function(species, ...){

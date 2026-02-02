@@ -721,6 +721,26 @@ schadeOutputServer <- function(id,
               )
             }
           })
+        
+        
+        observe({
+            
+            req(as.character(subcategory()) == "schade-regio" && specie() == "Wolf")
+            req(results$serverOutput$plot9)
+            
+            p <- results$serverOutput$plot9()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(schadeSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "schade_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
+          })
       
       return(list(
           specie = reactive(specie()),

@@ -17,7 +17,8 @@
 #' @importFrom sf st_drop_geometry
 #' @export
 tableGewas <- function(data, jaartallen = NULL, variable, 
-  sourceIndicator = NULL, summarizeBy = c("count", "percent"), regio = "") {
+  sourceIndicator = NULL, summarizeBy = c("count", "percent"), regio = "",
+  regionLevel = c("provinces", "flanders", "faunabeheerzones")) {
   
   # For R CMD check
   varOfInterest <- leeftijd_comp_inbo <- NULL
@@ -36,9 +37,9 @@ tableGewas <- function(data, jaartallen = NULL, variable,
   if (inherits(allData, "sf"))
     allData <- sf::st_drop_geometry(allData)  
   
-  if (all(regio == "Vlaams Gewest")) {
+  if (regionLevel == "flanders") {
     allData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
+  } else if (regionLevel == "provinces") {
     allData$locatie <- factor(allData$provincie)
   } else {
     allData$locatie <- allData$FaunabeheerZone

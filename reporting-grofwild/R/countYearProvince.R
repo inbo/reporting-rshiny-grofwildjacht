@@ -56,11 +56,11 @@ countYearProvince <- function(data, jaartallen = NULL,
     returnStop = "message")
   
   isFbz <- FALSE
-  if (all(regio == "Vlaams Gewest")) {
+  if (type == "flanders") {
     plotData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
+  } else if (type == "provinces") {
     plotData$locatie <- plotData$provincie
-  } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
+  } else if (type == "faunabeheerzones") {
     plotData$locatie <- plotData$FaunabeheerZone
     isFbz <- TRUE
   } else {

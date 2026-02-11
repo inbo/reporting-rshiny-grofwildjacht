@@ -409,9 +409,6 @@ createRawData <- function(
       match(rawData$NISCODE, gemeenteData$NIS.code)] 
     rawData$postcode <- gemeenteData$Postcode[match(rawData$NISCODE, gemeenteData$NIS.code)]
     
-    # Remove Voeren as province
-    rawData$provincie[rawData$provincie %in% "Voeren"] <- "Limburg"
-    
     # Redefine dataSource
     sourcesSchade <- loadMetaSchade()$sources  
     isPresent <- grepl(paste(sourcesSchade, collapse = "|"), rawData$dataSource)

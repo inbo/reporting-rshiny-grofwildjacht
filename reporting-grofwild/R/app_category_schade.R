@@ -189,7 +189,7 @@ schadeOutputServer <- function(id,
                         "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
                         "5x5 UTM" = "utm5"
                       ), 
-                  regionLevelSelected = if (specie() == "Wolf") "flanders" else "provinces",   # TODO always provinces once mismatch in geodata is resolved
+                  regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
                   data = reactive(spatialData),
                   timeRange = results$schade_timeRange

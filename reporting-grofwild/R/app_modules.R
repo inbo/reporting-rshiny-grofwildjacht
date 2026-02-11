@@ -633,6 +633,10 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(type = typeReact),
             if (!is.null(type))
               list(type = type),
+            if (plotFunction %in% c("countYearProvince")) 
+              list(type = regionLevel),
+            if (plotFunction %in% c("tableGewas", "tableSchadeCode")) 
+              list(regionLevel = regionLevel),
             if (plotFunction == "plotBioindicator") 
               list(isWBE = isWBE),
             if (!is.null(typeLeeftijd))  # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector

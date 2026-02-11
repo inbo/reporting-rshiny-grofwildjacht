@@ -29,7 +29,8 @@
 tableSchadeCode <- function(data, jaartallen = NULL,
         sourceIndicator = NULL, 
         schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL,
-        fullNames = NULL, summarizeBy = c("count", "percent"), regio = "") {
+        fullNames = NULL, summarizeBy = c("count", "percent"), regio = "",
+        regionLevel = c("provinces", "flanders", "faunabeheerzones")) {
   
   # For R CMD check
   locatie <- NULL
@@ -59,9 +60,9 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     allData <- sf::st_drop_geometry(allData)  
   
   # Force all fbz's in the summary table even if never occured  
-  if (all(regio == "Vlaams Gewest")) {
+  if (regionLevel == "flanders") {
     allData$locatie <- as.factor("Vlaams Gewest")
-  } else if (all(regio %in% c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend"))) {
+  } else if (regionLevel == "provinces") {
     allData$locatie <- factor(allData$provincie)
   } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
     allData$locatie <- allData$FaunabeheerZone

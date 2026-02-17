@@ -711,7 +711,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           paste0(
             if (type == "schade") 
-                "aantal schadegevallen" else if (!is.null(countVariable)) 
+                ifelse(species() == "Wolf", "aantal gemelde schadegevallen", "aantal schadegevallen") else if (!is.null(countVariable)) 
                 countVariable else 
                 "afschot",
             if (!is.null(unit()) && !type %in% c("wbe", "empty")) 

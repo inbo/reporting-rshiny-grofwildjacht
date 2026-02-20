@@ -42,8 +42,7 @@ getProvince <- function(NISCODE, allSpatialData) {
 #' save to \code{bucket} list with spatial list for WBE and non-WBE level.
 #' Each contain a list with for each spatial level an object of class 'sf', 
 #' with polygons and data as provided in the \code{jsonDir}; spatial levels are 
-#' (1) flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5, utm1
-#' and provincesVoeren (Voeren as separate province)
+#' (1) flanders, provinces, communes, faunabeheerzones, fbz_gemeentes, utm5 and utm1
 #' (2) WBE_buitengrenzen and WBE
 #' @importFrom methods slot
 #' @importFrom shiny incProgress
@@ -143,31 +142,33 @@ createShapeData <- function(
    
   names(spatialData) <- allLevels
   
-  
+  ## --------------------------------------------------------------------------
+  ### Consensus 20-02-2026: https://github.com/inbo/reporting-rshiny-grofwildjacht/issues/638#issuecomment-3927606745 - Voeren always part of Limburg
   ## Create "province" Voeren
   
-  # Define provinces based on NIS codes
-  provinceIds <- substr(spatialData$communes$NISCODE, start = 1, stop = 1)
-  # Give Voeren unique code, different from any other province
-  voerenId <- which(spatialData$communes$NAAM == "Voeren")
-  provinceIds[voerenId] <- 100
-  isLimburgProvince <- spatialData$provinces$NAAM == "Limburg"
-  
-  # Create new polygon for Limburg (Including voeren)
-  ## sf_use_s2(FALSE)
-  limburgPolygon <- spatialData$provinces[isLimburgProvince, ]
-  limburgPolygon$geometry <- sf::st_union(spatialData$communes[provinceIds %in% 7, ])
-  
-  voerenPolygon <- spatialData$provinces[isLimburgProvince, ]
-  voerenPolygon$NAAM <- "Voeren"
-  voerenPolygon$NISCODE <- spatialData$communes$NISCODE[voerenId]
-  voerenPolygon$OPPERVL <- spatialData$communes$OPPERVL[voerenId]
-  voerenPolygon$geometry <- spatialData$communes$geometry[provinceIds %in% 100]
-  
-  # Bind all province polygons and data
-  spatialData$provincesVoeren <- rbind(spatialData$provinces[!isLimburgProvince, ],
-    limburgPolygon, voerenPolygon)
-  
+#  # Define provinces based on NIS codes
+#  provinceIds <- substr(spatialData$communes$NISCODE, start = 1, stop = 1)
+#  # Give Voeren unique code, different from any other province
+#  voerenId <- which(spatialData$communes$NAAM == "Voeren")
+#  provinceIds[voerenId] <- 100
+#  isLimburgProvince <- spatialData$provinces$NAAM == "Limburg"
+#  
+#  # Create new polygon for Limburg (Including voeren)
+#  ## sf_use_s2(FALSE)
+#  limburgPolygon <- spatialData$provinces[isLimburgProvince, ]
+#  limburgPolygon$geometry <- sf::st_union(spatialData$communes[provinceIds %in% 7, ])
+#  
+#  voerenPolygon <- spatialData$provinces[isLimburgProvince, ]
+#  voerenPolygon$NAAM <- "Voeren"
+#  voerenPolygon$NISCODE <- spatialData$communes$NISCODE[voerenId]
+#  voerenPolygon$OPPERVL <- spatialData$communes$OPPERVL[voerenId]
+#  voerenPolygon$geometry <- spatialData$communes$geometry[provinceIds %in% 100]
+#  
+#  # Bind all province polygons and data
+#  spatialData$provincesVoeren <- rbind(spatialData$provinces[!isLimburgProvince, ],
+#    limburgPolygon, voerenPolygon)
+
+  ## --------------------------------------------------------------------------
   
 #  newNames <- names(spatialData)
 #  
@@ -292,12 +293,9 @@ createRawData <- function(
     ## Mismatch names with spatial (shape) data for "Vlaams Brabant"
     rawData$provincie[rawData$provincie == "Vlaams-Brabant"] <- "Vlaams Brabant"
     
-    ## Only for "Wild zwijn" separate province "Voeren" is considered, otherwise part of "Limburg"
-    ## Re-order factor levels for plots
-    if ("wildsoort" %in% names(rawData))
-      rawData$provincie[rawData$wildsoort != "Wild zwijn" & rawData$provincie == "Voeren"] <-  
-        "Limburg" 
-    
+    ## "Voeren" is considered as a part of "Limburg"
+    rawData$provincie[rawData$provincie == "Voeren"] <- "Limburg" 
+
   }
   
   
@@ -724,10 +722,6 @@ createHabitatData <- function(
         
       } else { 
         
-        # Special case
-        if (iRegion == "provinces")
-          iRegion <- "provincesVoeren"
-        
         tmpData <- read.csv(file.path(dataDir, allFiles)) 
         
         if ("NISCODE" %in% colnames(tmpData)) {
@@ -768,10 +762,6 @@ createHabitatData <- function(
       )
       if (is.null(iData))
         return(habitatData[[iLevel]])
-      # Special case
-      if (iLevel == "provinces")
-        iData <- rbind(iData, 
-          densiteitData[densiteitData$Niveau == "Gemeente" & densiteitData$NAAM == "Voeren", ])
       
       iData$Niveau <- NULL
       colnames(iData) <- paste0("weg_", colnames(iData))

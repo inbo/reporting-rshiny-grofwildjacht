@@ -420,7 +420,7 @@ generalSelectionServer <- function(id, subcategory, includeSchadeFilters = FALSE
               } else if (input$regionLevel == "provinces") {
                 
                 choices <- c("West-Vlaanderen", "Oost-Vlaanderen", 
-                  "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend")
+                  "Vlaams Brabant", "Antwerpen", "Limburg", "Onbekend")
                 
                 
               } else if (input$regionLevel == "faunabeheerzones") {

@@ -170,13 +170,8 @@ filterSpatial <- function(allSpatialData, species,
   
   regionLevel <- match.arg(regionLevel)
   
-  
   # Select correct spatial data
-  if ("Wild zwijn" %in% species & regionLevel == "provinces") {
-    
-    spatialData <- allSpatialData[["provincesVoeren"]]
-    
-  } else if (grepl("WBE", regionLevel)) {
+  if (grepl("WBE", regionLevel)) {
     
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
     

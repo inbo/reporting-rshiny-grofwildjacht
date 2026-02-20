@@ -268,7 +268,7 @@ optionsModuleServer <- function(input, output, session,
           
           choices <- levels(droplevels(factor(unique(data()$provincie), 
                 levels = c("West-Vlaanderen", "Oost-Vlaanderen", 
-                  "Vlaams Brabant", "Antwerpen", "Limburg", "Voeren", "Onbekend")))) 
+                  "Vlaams Brabant", "Antwerpen", "Limburg", "Onbekend")))) 
           
           
         } else if (input$regionLevel == "faunabeheerzones") {

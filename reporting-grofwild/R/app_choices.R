@@ -649,16 +649,15 @@ resetNavbarChoices <- function(allChoices, currentChoices) {
 }
 
 #' Get text about maximum date used for observations, to highlight in app.
-#' Either find information under {specie}_{subcategory}_maxDateHighlight
-#' Or under {specie}_{subcategory}_maxDateHighlight with only the first
-#' part (before "-") of subcategory considered.
-#' If neither can be found, use the provided maxDate.
-#' 
+#' Either find information for the given specie and subcategory or category.
+#' If neither can be found, use the default text provided for the maxDate.
+#'
 #' @param specie Species for which to get this information
 #' @param subcategory Subcategory for which to get this information
 #' @param uiText uiText to look this up
 #' @param maxData The calculated maximum date
 getMaxDateHighlight <- function(specie, subcategory, uiText, maxDate) {
+  # Get text based on subcategory
   text <- getOutputDescription(
     output = paste0(gsub(" ", "-", tolower(specie)), "_", subcategory, "_maxDateHighlight"),
     uiText = uiText,
@@ -667,6 +666,7 @@ getMaxDateHighlight <- function(specie, subcategory, uiText, maxDate) {
   )
 
   if (is.null(text)) {
+    # If not provided, get text based on category
     text <- getOutputDescription(
       output = paste0(gsub(" ", "-", tolower(specie)), "_", strsplit(subcategory, "-")[[1]][[1]], "_maxDateHighlight"),
       uiText = uiText,
@@ -674,6 +674,7 @@ getMaxDateHighlight <- function(specie, subcategory, uiText, maxDate) {
       maxDate = maxDate
     )
 
+    # If not provided, get default text
     if (is.null(text)) {
       text <- getOutputDescription(
         output = "maxDateHighlight",

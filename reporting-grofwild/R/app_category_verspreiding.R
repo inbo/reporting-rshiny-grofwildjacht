@@ -67,22 +67,9 @@ verspreidingOutputServer <- function(id,
       
       # Max date highlight 
       output$maxDateHighlight <- renderUI({
+        
           maxDate <- max(ecoData$afschot_datum, na.rm = TRUE)
-          
-          text <- getOutputDescription(
-            output = paste0(gsub(" ", "-", tolower(specie())), "_", subcategory(), "_maxDateHighlight"), 
-            uiText = uiText, context = "description", maxDate = maxDate)
-          
-          if (is.null(text)) {
-            text <- getOutputDescription(
-              output = paste0(gsub(" ", "-", tolower(specie())), "_", strsplit(subcategory(), "-")[[1]][[1]], "_maxDateHighlight"), 
-              uiText = uiText, context = "description", maxDate = maxDate)
-            
-            if (is.null(text)) {
-              text <- getOutputDescription(output = "maxDateHighlight", uiText = uiText, context = "description", maxDate = maxDate)
-            }
-          }
-          
+          text <- getMaxDateHighlight(specie(), subcategory(), uiText, maxDate)
           req(nchar(text) > 0)
           
           wellPanel(class = "well-white", 

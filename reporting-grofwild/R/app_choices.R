@@ -647,3 +647,42 @@ resetNavbarChoices <- function(allChoices, currentChoices) {
       bslib::nav_hide(id = "navbarID", target = iChoice)
   
 }
+
+#' Get text about maximum date used for observations, to highlight in app.
+#' Either find information under {specie}_{subcategory}_maxDateHighlight
+#' Or under {specie}_{subcategory}_maxDateHighlight with only the first
+#' part (before "-") of subcategory considered.
+#' If neither can be found, use the provided maxDate.
+#' 
+#' @param specie Species for which to get this information
+#' @param subcategory Subcategory for which to get this information
+#' @param uiText uiText to look this up
+#' @param maxData The calculated maximum date
+getMaxDateHighlight <- function(specie, subcategory, uiText, maxDate) {
+  text <- getOutputDescription(
+    output = paste0(gsub(" ", "-", tolower(specie)), "_", subcategory, "_maxDateHighlight"),
+    uiText = uiText,
+    context = "description",
+    maxDate = maxDate
+  )
+
+  if (is.null(text)) {
+    text <- getOutputDescription(
+      output = paste0(gsub(" ", "-", tolower(specie)), "_", strsplit(subcategory, "-")[[1]][[1]], "_maxDateHighlight"),
+      uiText = uiText,
+      context = "description",
+      maxDate = maxDate
+    )
+
+    if (is.null(text)) {
+      text <- getOutputDescription(
+        output = "maxDateHighlight",
+        uiText = uiText,
+        context = "description",
+        maxDate = maxDate
+      )
+    }
+  }
+
+  return(text)
+}

@@ -16,21 +16,19 @@ specieTabs <- unlist(lapply(unique(allWildsoorten$group), function(group) {
             )
           )
         })
-      
+
       specie_panels <- append(
-        list(bslib::nav_panel(
-            title = tags$span(
-              class = "custom-tab-title",
-              tools::toTitleCase(group)
-            ),
-            value = group,
-            NULL
-          )),
+        list(bslib::nav_item(
+          tags$span(
+            class = "tab-title-no-link",
+            tools::toTitleCase(group)
+          )
+        )),
         specie_panels
       )
-      
+
       specie_panels
-      
+
     }), recursive = FALSE)
 
 

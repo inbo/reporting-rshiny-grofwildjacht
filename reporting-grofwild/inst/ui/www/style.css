@@ -302,6 +302,14 @@ p, li, label {
 	color: inherit !important;
 }
 
+.tab-title-no-link {
+  font-weight: bold;
+  text-decoration: underline;
+	font-size: 18px;
+	color: #ffffff !important;
+  padding: 3px 0px 3px 10px;
+}
+
 #navbarID {
   position: sticky !important;
   top: 0 !important;

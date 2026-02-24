@@ -323,7 +323,7 @@ p, li, label {
 
 .dropdown-menu {
   background-color: #456394; 
-	max-height: 600px;
+	max-height: 75vh; /* 75% of current viewport height */
 	overflow-y: auto;
 }
 .dropdown-menu > li > a {

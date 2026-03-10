@@ -346,7 +346,10 @@ mapLocationWolvesServer <- function(
         content = function(file) {
 
           # Coordinate information may not be downloaded
-          columns_to_remove <- c("geometry")
+          columns_to_remove <- intersect(
+            c("geometry", "X_Coord", "Y_Coord"),
+            colnames(subData())
+          )
           data_to_download <- subData() |>
             as.data.frame() |>
             dplyr::select(!columns_to_remove)

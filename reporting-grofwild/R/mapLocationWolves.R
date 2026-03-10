@@ -354,9 +354,18 @@ mapLocationWolvesServer <- function(
           nameFile(species = "Wolf",
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
+
+          # Coordinate information may not be downloaded
+          columns_to_remove <- intersect(
+            c("geometry", "X_Coord", "Y_Coord"),
+            colnames(subData())
+          )
+          data_to_download <- subData() |>
+            as.data.frame() |>
+            dplyr::select(!columns_to_remove)
           
           ## write data to exported file
-          write.table(x = subData(), file = file, quote = FALSE, row.names = FALSE,
+          write.table(x = data_to_download, file = file, quote = FALSE, row.names = FALSE,
             sep = ";", dec = ".")
           
         })

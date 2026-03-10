@@ -283,6 +283,13 @@ schadeOutputServer <- function(id,
               }, 
               "schade-regio" = {
                 tagList(
+                  if ("mapFlandersUI-schade" %in% outputs)
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot4"), showRegion = FALSE,
+                        type = "schade", plotDetails = "region",
+                        uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI-schade" %in% plot())
+                      )),
                   if ("countYearProvinceUI-schade" %in% outputs)
                     wellPanel(class = "well-white", countYearProvinceUI(
                         id = ns("plot3"), 
@@ -290,13 +297,6 @@ schadeOutputServer <- function(id,
                         plotFunction = "countYearProvinceUI-schade",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearProvinceUI-schade" %in% plot())
-                      )),
-                  if ("mapFlandersUI-schade" %in% outputs)
-                    wellPanel(class = "well-white", mapFlandersUI(
-                        id = ns("plot4"), showRegion = FALSE,
-                        type = "schade", plotDetails = "region",
-                        uiText = uiText,
-                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI-schade" %in% plot())
                       )),
                   if ("mapSchadeUI" %in% outputs)
                     wellPanel(class = "well-white", mapSchadeUI(

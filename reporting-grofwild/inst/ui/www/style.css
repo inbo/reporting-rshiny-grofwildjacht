@@ -538,3 +538,9 @@ body > .tabbable {
   font-size: 17px !important;
   line-height: 1.4;
 }
+
+.leaflet-control-easyPrint {
+  visibility: hidden;
+  width: 0px;
+  height: 0px;
+}

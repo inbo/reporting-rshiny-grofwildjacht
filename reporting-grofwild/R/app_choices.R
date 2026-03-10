@@ -454,7 +454,6 @@ getSubcategoryOutput <- function(output){
       `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
       `schade-seizoen` = c("countYearSchadeUI-seizoen"),
       `schade-kosten` = "barCostUI",
-      "schade-doodsoorzaak" = c("countDeathWolvesUI"),
       
       # populatie
       `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),
@@ -462,6 +461,7 @@ getSubcategoryOutput <- function(output){
       `populatie-geslacht` = "countAgeGenderUI",
       `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI", "tableWolfReproductionUI"),
       `populatie-genetica` = c("countGeneticWolvesUI", "countHerkomstWolvesUI"),
+      `populatie-doodsoorzaak` = c("countDeathWolvesUI"),
       
       # verspreiding
       `verspreiding-huidig` = c("F17_1", "kencijferUI", 

@@ -135,6 +135,9 @@ populatieOutputServer <- function(id,
                 "populatie-genetica" = list(
                   showTime = TRUE,
                   summarizeBy = TRUE
+                ),
+                "populatie-doodsoorzaak" = list(
+                  showTime = TRUE
                 )
               )
             )
@@ -187,6 +190,9 @@ populatieOutputServer <- function(id,
                   "populatie-genetica" = list(
                     timeRange = reactive(range(wolfOverzichtData$year)),
                     summarizeBy = c("Aantal" = "count", "Percentage" = "percent")
+                  ),
+                  "populatie-doodsoorzaak" = list(
+                  timeRange = reactive(range(wolfOverzichtData$year))
                   )
                 )
               )
@@ -301,6 +307,16 @@ populatieOutputServer <- function(id,
                         doHide = !(plot() == defaultTabs$plot || "countHerkomstWolvesUI" %in% plot())
                       ))
                 )
+              },
+              "populatie-doodsoorzaak" = {
+                tagList(
+                  if ("countDeathWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countDeathWolvesUI(
+                        id = ns("plot"), 
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "countDeathWolvesUI" %in% plot())
+                      ))
+                )
               }
             )
             
@@ -403,6 +419,16 @@ populatieOutputServer <- function(id,
                   ),
                 if ("countHerkomstWolvesUI" %in% outputs)
                   countHerkomstWolvesServer(
+                    id = "plot",
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
+                    preSelected = populatieSelection
+                  )
+              )
+            },
+            "populatie-doodsoorzaak" = {
+              list(
+                plot1 = if ("countDeathWolvesUI" %in% outputs)
+                  countDeathWolvesServer(
                     id = "plot",
                     data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
                     preSelected = populatieSelection

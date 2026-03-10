@@ -252,31 +252,31 @@ schadeOutputServer <- function(id,
                         id = ns("plot13"), uiText = uiText, plotFunction = "trendWolfFlandersUI",
                         doHide = !(plot() == defaultTabs$plot || "trendWolfFlandersUI" %in% plot())
                       )),
-                  if ("mapAccidentsWolvesUI" %in% outputs)
-                    wellPanel(class = "well-white", mapLocationWolvesUI(
-                        id = ns("plot14"), plotFunction = "mapAccidentsWolvesUI",
-                        uiText = uiText, context = "description",
-                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesUI" %in% plot())
-                      )),
                   if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot15"), uiText = uiText, plotFunction = "countSchadeWolvesUI-gemeldeSchade",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-gemeldeSchade" %in% plot())
+                      )),
+                  if ("downloadSchadeWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", downloadSchadeWolvesUI(
+                        id = ns("plot18"), uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "downloadSchadeWolvesUI" %in% plot())
                       )),
                   if ("countSchadeWolvesUI-omheining" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot16"), uiText = uiText, plotFunction = "countSchadeWolvesUI-omheining",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-omheining" %in% plot())
                       )),
+                  if ("mapAccidentsWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot14"), plotFunction = "mapAccidentsWolvesUI",
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesUI" %in% plot())
+                      )),
                   if ("countSchadeWolvesUI-soort" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot17"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-soort" %in% plot())
-                      )),
-                  if ("downloadSchadeWolvesUI" %in% outputs)
-                    wellPanel(class = "well-white", downloadSchadeWolvesUI(
-                        id = ns("plot18"), uiText = uiText,
-                        doHide = !(plot() == defaultTabs$plot || "downloadSchadeWolvesUI" %in% plot())
                       ))
                 )
               }, 
@@ -309,16 +309,13 @@ schadeOutputServer <- function(id,
                           ),
                         doHide = !(plot() == defaultTabs$plot || "mapSchadeUI" %in% plot())
                       )),
-                  if ("trendWolfRegionUI" %in% outputs)
-                    wellPanel(class = "well-white", trendWolfFlandersUI(
-                        id = ns("plot19"), uiText = uiText, plotFunction = "trendWolfFlandersUI",
-                        doHide = !(plot() == defaultTabs$plot || "trendWolfRegionUI" %in% plot())
-                      )),
-                  if ("mapAccidentsWolvesRegionUI" %in% outputs)
-                    wellPanel(class = "well-white", mapLocationWolvesUI(
-                        id = ns("plot20"), plotFunction = "mapAccidentsWolvesUI",
-                        uiText = uiText, context = "description",
-                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesRegionUI" %in% plot())
+                  if ("mapSchadeWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot24"), showRegion = FALSE,
+                        type = "schade", plotDetails = "region",
+                        uiText = uiText,
+                        variableChoices = c("Schade" = "Schade"),
+                        doHide = !(plot() == defaultTabs$plot || "mapSchadeWolvesUI" %in% plot())
                       )),
                   if ("countSchadeWolvesRegionUI-gemeldeSchade" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
@@ -330,18 +327,16 @@ schadeOutputServer <- function(id,
                         id = ns("plot22"), uiText = uiText, plotFunction = "countSchadeWolvesUI-omheining",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesRegionUI-omheining" %in% plot())
                       )),
+                  if ("mapAccidentsWolvesRegionUI" %in% outputs)
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot20"), plotFunction = "mapAccidentsWolvesUI",
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesRegionUI" %in% plot())
+                      )),
                   if ("countSchadeWolvesRegionUI-soort" %in% outputs)
                     wellPanel(class = "well-white", countSchadeWolvesUI(
                         id = ns("plot23"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
                         doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesRegionUI-soort" %in% plot())
-                      )),
-                  if ("mapSchadeWolvesUI" %in% outputs)
-                    wellPanel(class = "well-white", mapFlandersUI(
-                        id = ns("plot24"), showRegion = FALSE,
-                        type = "schade", plotDetails = "region",
-                        uiText = uiText,
-                        variableChoices = c("Schade" = "Schade"),
-                        doHide = !(plot() == defaultTabs$plot || "mapSchadeWolvesUI" %in% plot())
                       ))
                 )
               },

@@ -175,7 +175,6 @@ mapUTMWolvesServer <- function(
               options = leaflet.extras2::easyprintOptions(
                 exportOnly = TRUE,
                 hideControlContainer = FALSE,  # Keep controls visible
-                hideClasses = c("leaflet-control-zoom", "leaflet-control-easyPrint")
               )
             )
           

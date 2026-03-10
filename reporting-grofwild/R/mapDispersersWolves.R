@@ -316,57 +316,6 @@ mapDispersersWolvesServer <- function(
             }
           
         })
-        
-        
-#        # Show territoria
-#        observe({
-#            
-#            req(input$showTerritoria)
-#            req(subData())
-#            validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
-#            
-#            req(spatialSpecificData())
-#            
-#            proxy <- leafletProxy("spacePlot", data = subData())
-#            req(!is.null(proxy))
-#            
-#            proxy %>% removeControl(layerId = "Territoria") %>% removeControl(layerId = "legend2")
-#            
-#            if (input$showTerritoria) {
-#              # Color palette for territories
-#              territory_names <- sort(unique(spatialSpecificData()$Territory))
-#              territory_palette <- colorFactor(palette = brewer.pal(length(territory_names), "Set2"), domain = territory_names)
-#              
-#              proxy %>%
-#                addPolygons(
-#                  data = spatialSpecificData(),
-#                  fillColor = ~territory_palette(Territory),
-#                  color = "grey40", weight = 0.8,
-#                  fillOpacity = 0.8,
-#                  smoothFactor = 0.5,
-#                  label = ~Territory,
-#                  highlightOptions = highlightOptions(
-#                    weight = 1.5, 
-#                    color = "black"),
-#                  group = "Territoria",
-#                  layerId = "Territoria") 
-#              
-#              if (isolate(input$legend) != "none")
-#                proxy %>% 
-#                addLegend(
-#                  position = isolate(input$legend),
-#                  pal = territory_palette,
-#                  values = spatialSpecificData()$Territory,
-#                  title = "Territoria",
-#                  opacity = 1,
-#                  labFormat = labelFormat(),
-#                  group = "Territoria",
-#                  layerId = "legend2")
-#              
-#            }
-#            
-#          })
-      
       
       # Create final map (for download)
       finalMap <- reactive({
@@ -416,6 +365,12 @@ mapDispersersWolvesServer <- function(
           nameFile(species = "Wolf",
             content = "kaartData", fileExt = "csv"),
         content = function(file) {
+
+          # Coordinate information may not be downloaded
+          columns_to_remove <- c("Y_Coord", "X_Coord", "geometry")
+          data_to_download <- subData() |>
+            as.data.frame() |>
+            dplyr::select(!columns_to_remove)
           
           ## write data to exported file
           write.table(x = data_to_download, file = file, quote = FALSE, row.names = FALSE,

@@ -1,7 +1,7 @@
 #' Create map for disperser wolves
 #' @param data data.frame main data
 #' @param spatialData data.frame spatial data
-#' @inheritParams mapFlanders 
+#' @inheritParams mapFlanders
 #' @return leaflet map
 #' @author sjunius
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles addPolygons setView addLegend
@@ -9,93 +9,110 @@
 #' @importFrom INBOtheme inbo_palette
 #' @export
 mapDispersersWolves <- function(
-  data, 
+  data,
+  popup_vars,
   spatialData,
   addGlobe = FALSE,
   showTerritoria = TRUE,
   legend = "topright"
 ) {
-  
   # Color palette for Years
   nColors <- length(unique(data$year))
   colors <- if (nColors < 10) {
-      inbo_palette(n = nColors) 
-    } else {
-      paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
-      unlist(sapply(paletteNames, function(x)
-            suppressWarnings(brewer.pal(n = 12, name = x))))[1:nColors]
-    }
+    inbo_palette(n = nColors)
+  } else {
+    paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
+    unlist(
+      sapply(
+        paletteNames,
+        function(x) {
+          suppressWarnings(brewer.pal(n = 12, name = x))
+        }
+      )
+    )[1:nColors]
+  }
   year_colors <- colorFactor(colors, sort(unique(data$year)))
-  
+
   # Color palette for territories
   territory_names <- sort(unique(spatialData$Territory))
-  territory_palette <- colorFactor(palette = brewer.pal(length(territory_names), "Set2"), domain = territory_names)
-  
-  
-  myMap <- leaflet(data,
-      options = leafletOptions(maxZoom = 12)) %>%
-    addMapPane("polylines", zIndex = 200) 
-  
-  if (showTerritoria)
-    myMap <- myMap %>%
-      addPolygons(data = spatialData,
-        fillColor = ~territory_palette(Territory),
-        color = "grey40", weight = 0.8,
+  territory_palette <- colorFactor(
+    palette = brewer.pal(length(territory_names), "Set2"),
+    domain = territory_names
+  )
+
+  myMap <- leaflet(
+    data,
+    options = leafletOptions(maxZoom = 12)
+  ) |>
+    addMapPane("polylines", zIndex = 200)
+
+  if (showTerritoria) {
+    myMap <- myMap |>
+      addPolygons(
+        data = spatialData,
+        fillColor = ~ territory_palette(Territory),
+        color = "grey40",
+        weight = 0.8,
         fillOpacity = 0.8,
         smoothFactor = 0.5,
         label = ~Territory,
         highlightOptions = highlightOptions(
-          weight = 1.5, 
-          color = "black"),
-        group = "Territoria") 
-  
-  
-  myMap <- myMap %>%
+          weight = 1.5,
+          color = "black"
+        ),
+        group = "Territoria"
+      )
+  }
+
+  myMap <- myMap |>
     addCircleMarkers(
       radius = 6,
-      fillColor = ~year_colors(year),
-      stroke = TRUE, color = "black", weight = 0.5, 
+      fillColor = ~ year_colors(year),
+      stroke = TRUE,
+      color = "black",
+      weight = 0.5,
       fillOpacity = 1,
-      popup = paste0("<li><strong> Jaar </strong>: ", data$year),
+      popup = construct_popup(data, popup_vars),
       group = "Zwervers"
-    ) %>%
+    ) |>
     setView(lng = 4, lat = 51, zoom = 8)
-  
+
   # Add world map
   if (addGlobe) {
-    
-    myMap <- myMap %>%
+    myMap <- myMap |>
       addProviderTiles("OpenStreetMap.HOT")
-    
   }
-  
+
   # Add legend
   if (legend != "none") {
-    myMap <- myMap %>% addLegend(legend,
+    myMap <- myMap |>
+      addLegend(
+        legend,
         pal = year_colors,
         values = ~year,
         title = "Zwervers",
         opacity = 1,
         labFormat = labelFormat(),
         group = "Zwervers",
-        layerId = "legend1") 
-      
-      if (showTerritoria)
-        myMap <- myMap %>%
-          addLegend(legend,
-            pal = territory_palette,
-            values = spatialData$Territory,
-            title = "Territoria",
-            opacity = 1,
-            labFormat = labelFormat(),
-            group = "Territoria",
-            layerId = "legend2")
+        layerId = "legend1"
+      )
+
+    if (showTerritoria) {
+      myMap <- myMap |>
+        addLegend(
+          legend,
+          pal = territory_palette,
+          values = spatialData$Territory,
+          title = "Territoria",
+          opacity = 1,
+          labFormat = labelFormat(),
+          group = "Territoria",
+          layerId = "legend2"
+        )
+    }
   }
-  
-  
+
   myMap
-  
-  
 }
 
 
@@ -112,7 +129,13 @@ mapDispersersWolves <- function(
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
 #' @export
 mapDispersersWolvesServer <- function(
-  id, data, variable = "Lot", allSpatialData = NULL, preSelected = reactive(NULL)) {
+  id,
+  data,
+  variable = "Lot",
+  popup_variables = NULL,
+  allSpatialData = NULL,
+  preSelected = reactive(NULL)
+) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -182,8 +205,12 @@ mapDispersersWolvesServer <- function(
       spacePlot <- reactive({
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
-          
-          myMap <- mapDispersersWolves(data = subData(), spatialData = spatialSpecificData(), addGlobe = TRUE,
+
+          if(is.null(popup_variables)){
+            popup_variables <- c(variable)
+          }
+
+          myMap <- mapDispersersWolves(data = subData(), popup_vars = popup_variables, spatialData = spatialSpecificData(), addGlobe = TRUE,
             legend = isolate(input$legend), showTerritoria = input$showTerritoria)
           
           if (!is.null(spatialData()))

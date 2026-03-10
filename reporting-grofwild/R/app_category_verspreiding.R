@@ -286,6 +286,7 @@ verspreidingOutputServer <- function(id,
                   mapDispersersWolvesServer(
                     id = "plot5",  
                     data = reactive(wolfOverzichtData),
+                    popup_variables = c("WolfID", "Herkomst"),
                     allSpatialData = spatialData,
                     preSelected = verspreidingSelection
                   )

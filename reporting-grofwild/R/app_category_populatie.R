@@ -312,7 +312,7 @@ populatieOutputServer <- function(id,
                 tagList(
                   if ("countDeathWolvesUI" %in% outputs)
                     wellPanel(class = "well-white", countDeathWolvesUI(
-                        id = ns("plot12"), 
+                        id = ns("plot"), 
                         uiText = uiText, context = "description",
                         doHide = !(plot() == defaultTabs$plot || "countDeathWolvesUI" %in% plot())
                       ))
@@ -429,7 +429,7 @@ populatieOutputServer <- function(id,
               list(
                 plot1 = if ("countDeathWolvesUI" %in% outputs)
                   countDeathWolvesServer(
-                    id = "plot12",
+                    id = "plot",
                     data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
                     preSelected = populatieSelection
                   )

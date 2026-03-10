@@ -129,9 +129,6 @@ schadeOutputServer <- function(id,
                 ),
                 "schade-kosten" = list(
                   hideGeneralFilters = FALSE    # General schade filters should be shown
-                ),
-                "schade-doodsoorzaak" = list(
-                  showTime = TRUE
                 )
               )
             )
@@ -202,9 +199,7 @@ schadeOutputServer <- function(id,
                   timeRange = results$schade_timeRange
                 ),
                 "schade-seizoen" = list(includeSchadeFilters = TRUE,),
-                "schade-kosten" = list(includeSchadeFilters = TRUE,),
-                "schade-doodsoorzaak" = list(
-                  timeRange = reactive(range(wolfOverzichtData$year)))
+                "schade-kosten" = list(includeSchadeFilters = TRUE,)
               )
             )
             
@@ -406,16 +401,6 @@ schadeOutputServer <- function(id,
                         typeMelding = c("Landbouw" = "landbouw"),
                         regionLevels = c(1:4),
                         doHide = !(plot() == defaultTabs$plot || "barCostUI" %in% plot())
-                      ))
-                )
-              },
-              "schade-doodsoorzaak" = {
-                tagList(
-                  if ("countDeathWolvesUI" %in% outputs)
-                    wellPanel(class = "well-white", countDeathWolvesUI(
-                        id = ns("plot12"), 
-                        uiText = uiText, context = "description",
-                        doHide = !(plot() == defaultTabs$plot || "countDeathWolvesUI" %in% plot())
                       ))
                 )
               }
@@ -661,17 +646,8 @@ schadeOutputServer <- function(id,
                     preSelected = schadeSelection
                   )  
               )
-            },
-            "schade-doodsoorzaak" = {
-              list(
-                plot1 = if ("countDeathWolvesUI" %in% outputs)
-                  countDeathWolvesServer(
-                    id = "plot12",
-                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
-                    preSelected = schadeSelection
-                  )
-              )
-            },
+            }
+            
           )
           
           # re-set in case plot selected via tab after/before category card

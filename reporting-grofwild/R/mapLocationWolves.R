@@ -7,6 +7,7 @@
 #'
 #' @param data data.frame main data
 #' @param variable character with column name of interest
+#' @param popup_vars variables to be shown in circle popup
 #' @inheritParams mapFlanders
 #' @return leaflet map
 #' @author sjunius

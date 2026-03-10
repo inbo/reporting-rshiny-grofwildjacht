@@ -1,5 +1,6 @@
 #' Create map for disperser wolves
 #' @param data data.frame main data
+#' @param popup_vars variables to be shown in circle popup
 #' @param spatialData data.frame spatial data
 #' @inheritParams mapFlanders
 #' @return leaflet map

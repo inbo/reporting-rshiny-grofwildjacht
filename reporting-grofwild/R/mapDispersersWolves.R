@@ -418,7 +418,7 @@ mapDispersersWolvesServer <- function(
         content = function(file) {
           
           ## write data to exported file
-          write.table(x = subData(), file = file, quote = FALSE, row.names = FALSE,
+          write.table(x = data_to_download, file = file, quote = FALSE, row.names = FALSE,
             sep = ";", dec = ".")
           
         })

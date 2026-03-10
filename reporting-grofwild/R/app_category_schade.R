@@ -1,4 +1,3 @@
-
 #' Server function for an output (plot/table) of the 'schade' Category page
 #' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
@@ -465,9 +464,10 @@ schadeOutputServer <- function(id,
                   ),
                 plot4 = if ("mapAccidentsWolvesUI" %in% outputs)
                   mapLocationWolvesServer(
-                    id = "plot14",  
+                    id = "plot14",
                     variable = "Lot",
                     data = reactive(wolfOverzichtData),
+                    popup_variables = c("WolfID", "Status", "Leeftijdsklasse"),
                     preSelected = schadeSelection
                   ),
                 plot5 = if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
@@ -546,6 +546,7 @@ schadeOutputServer <- function(id,
                   mapLocationWolvesServer(
                     id = "plot20",  
                     variable = "Lot",
+                    popup_variables = c("WolfID", "Status", "Leeftijdsklasse"),
                     data = reactive(wolfOverzichtData),
                     allSpatialData = spatialData,
                     preSelected = schadeSelection

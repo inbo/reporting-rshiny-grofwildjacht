@@ -1,13 +1,14 @@
 # Map(s) for location of wolves
-# 
+#
 # Author: sjunius
 ###############################################################################
 
 #' Create map for location wolves
-#' 
+#'
 #' @param data data.frame main data
 #' @param variable character with column name of interest
-#' @inheritParams mapFlanders 
+#' @param popup_vars variables to be shown in circle popup
+#' @inheritParams mapFlanders
 #' @return leaflet map
 #' @author sjunius
 #' @importFrom leaflet leaflet addCircleMarkers addProviderTiles fitBounds addLegend
@@ -15,69 +16,67 @@
 #' @importFrom INBOtheme inbo_palette
 #' @export
 mapLocationWolves <- function(
-        data, 
-        variable,
-        addGlobe = FALSE,
-        legend = "topright"
+  data,
+  variable,
+  popup_vars,
+  addGlobe = FALSE,
+  legend = "topright"
 ) {
-  
   # Color palette
   nColors <- length(levels(data$variable))
   colors <- if (nColors < 10) {
-      inbo_palette(n = nColors) 
-    } else {
-      paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
-      unlist(sapply(paletteNames, function(x)
-            suppressWarnings(brewer.pal(n = 12, name = x))))[1:nColors]
-    }
-  
+    inbo_palette(n = nColors)
+  } else {
+    paletteNames <- c("Set3", "Paired", "Dark2", "Pastel2")
+    unlist(
+      sapply(
+        paletteNames,
+        function(x) {
+          suppressWarnings(brewer.pal(n = 12, name = x))
+        }
+      )
+    )[1:nColors]
+  }
+
   palette <- colorFactor(colors, levels(data$variable))
-  
-    myMap <- leaflet(data,
-        options = leafletOptions(maxZoom = 12)) %>%
-      addMapPane("polylines", zIndex = 200) %>%
-      addCircleMarkers(
-        radius = 6,
-        fillColor = ~palette(variable),
-        stroke = TRUE, color = "black", weight = 1, 
-        fillOpacity = 1,
-        popup = paste0("<h4>Info</h4>",  
-          "<ul>", 
-          "<li><strong> Jaar </strong>: ", data$year,
-          "<li><strong> ", variable, " </strong>: ", data$variable,
-          "</ul>"
-        )) %>%
-      setView(lng = 4, lat = 51, zoom = 8)
-    
-    # Add world map
-    if (addGlobe) {
-        
-        myMap <- myMap %>%
-                    addProviderTiles("OpenStreetMap.HOT")
-        
-    }
-    
-    # Add legend
-    if (legend != "none") {
-        
-        myMap <- addLegend(
-                map = myMap,
-                position = legend,
-                pal = palette, 
-                values = ~variable,
-                opacity = 1,
-                na.label = "onbekend",
-                title = ifelse(variable == "Lot", "Legende", "C1 en C2 waarnemingen"),
-                layerId = "legend"
-        )
-        
-        
-    }
-    
-    
-    myMap
-    
-    
+
+  myMap <- leaflet(
+    data,
+    options = leafletOptions(maxZoom = 12)
+  ) |>
+    addMapPane("polylines", zIndex = 200) |>
+    addCircleMarkers(
+      radius = 6,
+      fillColor = ~ palette(variable),
+      stroke = TRUE,
+      color = "black",
+      weight = 1,
+      fillOpacity = 1,
+      popup = construct_popup(data, popup_vars)
+    ) |>
+    setView(lng = 4, lat = 51, zoom = 8)
+
+  # Add world map
+  if (addGlobe) {
+    myMap <- myMap |>
+      addProviderTiles("OpenStreetMap.HOT")
+  }
+
+  # Add legend
+  if (legend != "none") {
+    myMap <- addLegend(
+      map = myMap,
+      position = legend,
+      pal = palette,
+      values = ~variable,
+      opacity = 1,
+      na.label = "onbekend",
+      title = ifelse(variable == "Lot", "Legende", "C1 en C2 waarnemingen"),
+      layerId = "legend"
+    )
+  }
+
+  myMap
 }
 
 
@@ -95,8 +94,14 @@ mapLocationWolves <- function(
 #' @importFrom leaflet renderLeaflet setView leafletProxy clearTiles leafletOutput
 #' @export
 mapLocationWolvesServer <- function(
-  id, data, variable = "Status", preSelected = reactive(NULL), allSpatialData = NULL,
-  definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild"))) {
+  id,
+  data,
+  variable = "Status",
+  popup_variables = NULL,
+  preSelected = reactive(NULL),
+  allSpatialData = NULL,
+  definedYear = config::get("defaultYear",file = system.file("config.yml", package = "reportingGrofwild"))
+) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -176,7 +181,12 @@ mapLocationWolvesServer <- function(
           req(subData())
           validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
           
-          myMap <- mapLocationWolves(data = subData(), variable = variable, addGlobe = TRUE) 
+          # If no popup variable is specified, revert to default variable
+          if(is.null(popup_variables)){
+            popup_variables <- c(variable)
+          }
+
+          myMap <- mapLocationWolves(data = subData(), variable = variable, popup_vars = popup_variables, addGlobe = TRUE) 
           
           if (!is.null(allSpatialData))
             myMap <- myMap %>%
@@ -299,7 +309,8 @@ mapLocationWolvesServer <- function(
       # Create final map (for download)
       finalMap <- reactive({
           
-          newMap <- mapLocationWolves(data = subData(), variable = variable, 
+          popup_info <- c("WolfID", "Status", "Leeftijdsklasse")
+          newMap <- mapLocationWolves(data = subData(), variable = variable, popup_vars = popup_info,
             addGlobe = input$globe %% 2 == 0, legend = input$legend)
           
           # save the zoom level and centering to the map object

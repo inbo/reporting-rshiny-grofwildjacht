@@ -45,7 +45,17 @@ getCenterView <- function(sf_object) {
   
 }
 
-
+outputFunction <- function(type, specie = NULL) {
+  if (type == "dash") {
+    "F17"
+  } else if ( type != "schade") {
+    "mapFlandersUI"
+  } else if ( ! is.null(specie) && specie == "Wolf" && type == "schade" ) {
+    "mapSchadeWolvesUI"
+  } else {
+    paste0("mapFlandersUI-", type)
+  }
+}
 
 #' Create summary data of geographical data for selected year, species and region level
 #' @param data data.frame, geographical data
@@ -520,25 +530,14 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             min(geoData()$afschotjaar)
         })
       
-      outputFunction <- reactive({
-          
-          if (type == "dash") 
-            "F17_1" else if (type != "schade")
-            "mapFlandersUI" else
-            paste0("mapFlandersUI-", type)
-          
-        })
-      
       output$description <- renderUI({
-          
-          description <- getOutputDescription(
-            output = outputFunction(), 
-            uiText = uiText, 
-            context = if (type == "wbe") "wbe" else "description") 
-          
-          tags$div(class = "larger-description", HTML(description))
-          
-        })
+        description <- getOutputDescription(
+          output = outputFunction(type, species()), 
+          uiText = uiText, 
+          context = if (type == "wbe") "wbe" else "description"
+        )
+        tags$div(class = "larger-description", HTML(description))
+      })
       
       
       # Data dependent input #
@@ -711,7 +710,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           paste0(
             if (type == "schade") 
-                ifelse(species() == "Wolf", "aantal gemelde schadegevallen", "aantal schadegevallen") else if (!is.null(countVariable)) 
+                ifelse(species() == "Wolf", "aantal bevestigde schadegevallen", "aantal schadegevallen") else if (!is.null(countVariable)) 
                 countVariable else 
                 "afschot",
             if (!is.null(unit()) && !type %in% c("wbe", "empty")) 
@@ -1448,15 +1447,12 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       c("waarnemingen.be", "afschot") else
       loadMetaSchade()$sources
   
-  outputFunction <- if (type == "dash") 
-      "F17_1" else if (type != "schade")
-      "mapFlandersUI" else
-      paste0("mapFlandersUI-", type)
+
   
   mainTitle <- if (type == "wbe") 
       "Landkaart" else
       getOutputTitle(
-        output = outputFunction, 
+        output = outputFunction(type, specie), 
         uiText = uiText, specie = specie, type = type
       )
   

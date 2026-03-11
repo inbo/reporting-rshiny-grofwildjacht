@@ -115,7 +115,7 @@ mapLocationWolvesServer <- function(
           timeRange <- range(data()$year)
           
           div(class = "sliderBlank", 
-            sliderInput(inputId = ns("year"), label = "Jaar", 
+            sliderInput(inputId = ns("year"), label = "Monitoringsjaar",
               value = definedYear,
               min = timeRange[1],
               max = timeRange[2],

@@ -312,7 +312,7 @@ schadeOutputServer <- function(id,
                     wellPanel(class = "well-white", mapFlandersUI(
                         id = ns("plot24"), showRegion = FALSE,
                         type = "schade", plotDetails = "region",
-                        uiText = uiText,
+                        uiText = uiText, specie = "Wolf",
                         variableChoices = c("Schade" = "Schade"),
                         doHide = !(plot() == defaultTabs$plot || "mapSchadeWolvesUI" %in% plot())
                       )),
@@ -522,7 +522,7 @@ schadeOutputServer <- function(id,
                 plot4 = if ("trendWolfRegionUI" %in% outputs)
                   trendWolfFlandersServer(
                     id = "plot19", 
-                    data = results$wolfSchadeData, 
+                    data = results$wolfSchadeData,
                     filterDataOnRegion = TRUE,
                     preSelected = schadeSelection
                   ),

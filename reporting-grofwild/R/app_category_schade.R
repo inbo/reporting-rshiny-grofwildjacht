@@ -54,8 +54,12 @@ schadeOutputServer <- function(id,
       results$wolfSchadeData <- reactive({
           wolfSchadeData %>% mutate(afschotjaar = year) 
         })
-      
-      
+
+      results$wolfSchadeDataBevestigd <- reactive({
+        results$wolfSchadeData() |>
+          filter(.data$Schade == "Wolf")
+      })
+
       results$schade_timeRange <- reactive({
           if (specie() == "Wolf") {
             range(results$wolfSchadeData()$year)
@@ -562,7 +566,7 @@ schadeOutputServer <- function(id,
                     defaultYear = defaultYear,
                     species = specie,
                     type = "schade",
-                    geoData = results$wolfSchadeData,
+                    geoData = results$wolfSchadeDataBevestigd,
                     biotoopData = biotoopData,
                     allSpatialData = spatialData,
                     preSelected = schadeSelection

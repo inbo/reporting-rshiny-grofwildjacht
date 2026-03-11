@@ -805,12 +805,20 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           validate(need(summarySpaceData()$data, "Geen data beschikbaar"))
           
           regionNames <- summarySpaceData()$data$locatie
-          titleText <- paste(if (type != "dash") "Gerapporteerd", 
+          titleText <- paste(
+            if (type != "dash" && species() != "Wolf"){
+              "Gerapporteerd"
+            } else if (species() == "Wolf") {
+              "Bevestigd"
+            }, 
             paste0(
-              if (type == "schade") 
-                  "aantal schadegevallen" else if (!is.null(countVariable)) 
-                  countVariable else 
-                  "afschot",
+              if (type == "schade") {
+                "aantal schadegevallen"
+              } else if (!is.null(countVariable)) {
+                countVariable
+              } else {
+                "afschot"
+              },
               if (!is.null(unit()) && type %in% c("beheer")) 
                 switch(unit(),
                   absolute = "",

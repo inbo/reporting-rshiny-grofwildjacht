@@ -201,8 +201,11 @@ schadeOutputServer <- function(id,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
-                "schade-seizoen" = list(includeSchadeFilters = TRUE,),
-                "schade-kosten" = list(includeSchadeFilters = TRUE,)
+                "schade-seizoen" = list(includeSchadeFilters = TRUE),
+                "schade-kosten" = list(includeSchadeFilters = TRUE),
+                "schade-doodsoorzaak" = list(
+                  timeRange = reactive(range(wolfOverzichtData$year))
+                )
               )
             )
             

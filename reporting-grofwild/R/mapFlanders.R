@@ -238,7 +238,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   if (unit == "region") {
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, 
-      species = species, regionLevel = "WBE", year = year)
+      species = species, regionLevel = "WBE", year = selectedYear)
     
     if (is.null(jachtData)) {
       

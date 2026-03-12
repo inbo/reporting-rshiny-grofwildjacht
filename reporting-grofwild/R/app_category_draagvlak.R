@@ -57,7 +57,7 @@ draagvlakOutputServer <- function(id,
                 id = "draagvlak_topbar"
               ),
               switch(as.character(subcategory()), 
-                "draagvlak-surveys" = list(),
+                "draagvlak-surveys" = list()
               )
             )
             

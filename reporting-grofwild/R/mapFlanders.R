@@ -47,7 +47,7 @@ getCenterView <- function(sf_object) {
 
 outputFunction <- function(type, specie = NULL) {
   if (type == "dash") {
-    "F17"
+    "F17_1"
   } else if ( type != "schade") {
     "mapFlandersUI"
   } else if ( ! is.null(specie) && specie == "Wolf" && type == "schade" ) {
@@ -238,7 +238,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   if (unit == "region") {
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, 
-      species = species, regionLevel = "WBE", year = year)
+      species = species, regionLevel = "WBE", year = selectedYear)
     
     if (is.null(jachtData)) {
       

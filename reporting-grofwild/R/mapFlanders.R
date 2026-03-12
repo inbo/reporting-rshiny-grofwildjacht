@@ -47,7 +47,7 @@ getCenterView <- function(sf_object) {
 
 outputFunction <- function(type, specie = NULL) {
   if (type == "dash") {
-    "F17"
+    "F17_1"
   } else if ( type != "schade") {
     "mapFlandersUI"
   } else if ( ! is.null(specie) && specie == "Wolf" && type == "schade" ) {

@@ -58,7 +58,7 @@ if (!doDebug | !exists("toekenningsData"))
 
 # Load object called spatialData
 if (!doDebug | !exists("spatialData")){
-  dataPath <- Sys.getenv("reportingGrofwild-data-path")
+  dataPath <- Sys.getenv("DATA_PATH")
   if(!identical(dataPath, "")){
     load(file = file.path(dataPath, "spatialData_sf.RData"))
   }else{

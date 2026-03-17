@@ -70,20 +70,22 @@ if (grepl("WBE_ADMIN", Sys.getenv("SHINYPROXY_USERGROUPS"))) {
 
 
 # Data with observations and geographical information
-if (!doDebug | !exists("ecoData"))
+if (!doDebug | !exists("ecoData")){
   ecoData <- loadRawData(type = "eco")
-if (!doDebug | !exists("geoData"))
-  geoData <- loadRawData(type = "geo")  
+}
+if (!doDebug | !exists("geoData")) {
+  geoData <- loadRawData(type = "geo")
+}
 if (!doDebug | !exists("schadeData")) {
   schadeData <- loadRawData(type = "wildschade")
   schadeData <- schadeData[schadeData$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
 }
-if (!doDebug | !exists("biotoopData"))
+if (!doDebug | !exists("biotoopData")){
   biotoopData <- loadHabitats(regionLevels = "wbe")[["wbe"]]
-if (!doDebug | !exists("toekenningsData"))
+}
+if (!doDebug | !exists("toekenningsData")){
   toekenningsData <- loadToekenningen()
-
-
+}
 
 ### Determine KBO
 ### -------------

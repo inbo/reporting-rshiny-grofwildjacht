@@ -1,7 +1,7 @@
 #' Common arguments for the functions that load data
 #' @param path (optional) string, path to local folder 
 #' containing the data, by default value of the environment
-#' variable: '\emph{reportingGrofwild-data-path} '
+#' variable: '\emph{DATA_PATH} '
 #' - for development purpose only
 #' @name reportingGrofwild-data-load
 NULL
@@ -19,7 +19,7 @@ NULL
 loadShapeData <- function(
   WBE_NR = NULL,
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")
+  path = Sys.getenv("DATA_PATH")
 ) {
 	
   if (all(is.na(WBE_NR)))
@@ -75,7 +75,7 @@ loadShapeData <- function(
 loadWolfShapeData <- function(
   type = c("territory", "utm", "gemeenten"),
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")
+  path = Sys.getenv("DATA_PATH")
 ) {
   
   type <- match.arg(type)
@@ -121,7 +121,7 @@ loadWolfShapeData <- function(
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path"),
+  path = Sys.getenv("DATA_PATH"),
   type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")
 ) {
   
@@ -162,7 +162,7 @@ loadRawData <- function(
 #' @export
 loadWolfData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path"),
+  path = Sys.getenv("DATA_PATH"),
   type = c("locaties", "utm", "overzicht", "terr", "schade")
 ) {
   
@@ -180,7 +180,7 @@ loadWolfData <- function(
   )
   
   data <- if (!identical(path, "")){
-      read.csv(file.path(path, dataFile), header = TRUE)
+      read.csv(file.path(path, dataFile), header = TRUE,  sep = ";", row.names = NULL, )
     } else {
       readS3(FUN = read.csv, header = TRUE, sep = ";", row.names = NULL, file = dataFile, bucket = bucket)
     }
@@ -230,7 +230,7 @@ loadWolfData <- function(
 #' @export
 loadGemeentes <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   pathFile <- "gemeentecodes.csv"
 
@@ -259,7 +259,7 @@ loadGemeentes <- function(
 #' @export
 loadOpeningstijdenData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")){
+  path = Sys.getenv("DATA_PATH")){
   
   pathFile <- "Openingstijden_grofwild.csv"
   
@@ -307,7 +307,7 @@ loadOpeningstijdenData <- function(
 #' @export
 loadToekenningen <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   pathFile <- "Verwezenlijkt_categorie_per_afschotplan.csv"
   
@@ -364,7 +364,7 @@ loadToekenningen <- function(
 loadHabitats <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
   regionLevels = NULL,
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   habitatData <- NULL
@@ -535,7 +535,7 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
 #' @export
 loadSpreadData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   spreadData <- NULL
@@ -557,7 +557,7 @@ loadSpreadData <- function(
 #' @export
 loadTrafficData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   trafficData <- NULL
@@ -584,7 +584,7 @@ loadTrafficData <- function(
 #' @export
 loadDraagvlakData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   dataFiles <- c(
     "PCI_impacts_stakeholders.csv",
@@ -633,7 +633,7 @@ loadDraagvlakData <- function(
 #' @export
 loadBeverAvailableYears <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   objs <- get_bucket(bucket, max = Inf)
   keys <- vapply(objs, function(x) x$Key, character(1))
@@ -661,7 +661,7 @@ loadBeverAvailableYears <- function(
 loadBeverData <- function(
   year, type = "predictie",
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   beverData <- NULL

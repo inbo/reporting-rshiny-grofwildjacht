@@ -547,8 +547,10 @@ mapSpreadServer <- function(id,
           
           leafletProxy("spreadPlot") %>% leaflet.extras2::easyprintMap(
             sizeModes = "CurrentSize",
-            filename = nameFile(species = species,
-              content = "kaart", fileExt = "png")
+            filename = nameFile(
+              species = species,
+              content = "kaart"
+            )
           )
           
           removeNotification(id = idNote)
@@ -779,8 +781,10 @@ mapSpreadServer <- function(id,
           
           leafletProxy("spreadPlotBever") %>% leaflet.extras2::easyprintMap(
             sizeModes = "CurrentSize",
-            filename = nameFile(species = species,
-              content = "kaart", fileExt = "png")
+            filename = nameFile(
+              species = species,
+              content = "kaart"
+            )
           )
           
           removeNotification(id = idNote)

@@ -1025,9 +1025,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
       
       # Pre-selected polygons to highlight
       selectedPolygons <- reactive({
+          if (type %in% "dash") {
+            return(NULL)
+          }
           
-          req(!type %in% c("dash"))
-
           tmpSpatial <- filterSpatial(
             allSpatialData = allSpatialData, 
             species = req(species()), 
@@ -1190,18 +1191,21 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               zoom = input$spacePlot_zoom
             )
           
-          if (isTruthy(selectedPolygons))
+          if (isTruthy(selectedPolygons())) {
             # Selected regions
-            newMap <- newMap %>%
-              addPolylines(data = selectedPolygons(), color = "gray", weight = 5,
-                group = "regionLines") 
-          
+            newMap <- newMap |>
+              leaflet::addPolylines(
+                data = selectedPolygons(),
+                color = "gray",
+                weight = 5,
+                group = "regionLines"
+              ) 
+          }
+
           newMap
-          
+
         }) 
-      
-      
-      # Download the map
+
       output$download <- downloadHandler(
         filename = function()
           nameFile(species = species(),

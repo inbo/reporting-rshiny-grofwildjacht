@@ -306,8 +306,10 @@ mapUTMWolvesServer <- function(
           
           leafletProxy("spacePlot") %>% leaflet.extras2::easyprintMap(
             sizeModes = "CurrentSize",
-            filename = nameFile(species = "Wolf",
-              content = "kaart", fileExt = "png")
+            filename = nameFile(
+              species = "Wolf_UTM",
+              content = "kaart"
+            )
           )
           
           removeNotification(id = idNote)

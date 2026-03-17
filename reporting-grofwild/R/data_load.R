@@ -180,7 +180,7 @@ loadWolfData <- function(
   )
   
   data <- if (!identical(path, "")){
-      read.csv(file.path(path, dataFile), header = TRUE)
+      read.csv(file.path(path, dataFile), header = TRUE,  sep = ";", row.names = NULL, )
     } else {
       readS3(FUN = read.csv, header = TRUE, sep = ";", row.names = NULL, file = dataFile, bucket = bucket)
     }

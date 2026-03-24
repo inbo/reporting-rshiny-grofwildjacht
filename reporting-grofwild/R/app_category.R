@@ -125,7 +125,7 @@ categoryCard <- function(id,
     title <- getSubcategoryTitle(subcategory, uiText = uiText)
     description <- NULL
     filename <- subcategory
-    idCard <- subcategory; btnLabel <- "Lijst grafieken"
+    idCard <- subcategory; btnLabel <- "Toon visualisaties"
     
   }else if(!missing(output)){
     

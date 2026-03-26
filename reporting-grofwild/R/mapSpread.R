@@ -55,7 +55,13 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
   modelColors <- paletteMap(variable = unit, groupNames = levels(spreadShape$outcome))
   pal_model <- colorFactor(palette = modelColors$colors, levels = modelColors$levels, ordered = FALSE)
   
-  finalMap <- leaflet(spreadShape)
+  finalMap <- leaflet(
+    spreadShape,
+    options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25   # controls zoom increment
+    )
+  )
   
   finalMap <- finalMap %>%
     
@@ -143,7 +149,12 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
 mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"), 
   addGlobe = FALSE) {
   
-  myMap <- leaflet() 
+  myMap <- leaflet(
+    options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25   # controls zoom increment
+    )
+  ) 
   
   if ("oversteek" %in% layers)
     myMap <- myMap %>%
@@ -186,7 +197,12 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 mapBevers <- function(beverData, 
   addGlobe = FALSE, legend = "none") {
   
-  myMap <- leaflet() %>% 
+  myMap <- leaflet(
+      options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25   # controls zoom increment
+    )
+  ) %>% 
     addProviderTiles("OpenStreetMap.HOT") %>%
     setView(lng = 4, lat = 51, zoom = 8)
   

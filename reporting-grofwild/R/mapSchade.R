@@ -186,7 +186,12 @@ mapSchade <- function(
     }
     
     
-    myMap <- leaflet(schadeData) %>%
+    myMap <- leaflet(schadeData,
+        options = leafletOptions(
+          zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+          zoomDelta = 0.25   # controls zoom increment
+        )
+    ) %>%
             
             addCircleMarkers(
                     fillColor = ~palette(variable),

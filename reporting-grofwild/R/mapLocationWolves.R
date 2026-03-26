@@ -42,7 +42,11 @@ mapLocationWolves <- function(
 
   myMap <- leaflet(
     data,
-    options = leafletOptions(maxZoom = 12)
+    options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25,   # controls zoom increment
+      maxZoom = 12
+    )
   ) |>
     addMapPane("polylines", zIndex = 200) |>
     addCircleMarkers(

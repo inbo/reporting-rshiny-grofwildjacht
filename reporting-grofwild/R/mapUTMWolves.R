@@ -31,7 +31,13 @@ mapUTMWolves <- function(
 #  
 #  palette <- colorFactor(colors, levels(data$variable))
   
-    myMap <- leaflet(data) %>%
+    myMap <- leaflet(
+      data,
+      options = leafletOptions(
+        zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+        zoomDelta = 0.25   # controls zoom increment
+      )
+    ) %>%
       addMapPane("polylines", zIndex = 200) %>%
             
       addPolygons(fillColor = "#fee391",

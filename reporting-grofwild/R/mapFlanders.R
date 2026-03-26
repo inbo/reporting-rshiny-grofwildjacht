@@ -389,7 +389,13 @@ mapFlanders <- function(
     
   }
   
-  myMap <- leaflet(spatialData) %>%
+  myMap <- leaflet(
+      spatialData,
+      options = leafletOptions(
+        zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+        zoomDelta = 0.25   # controls zoom increment
+      )
+    ) %>%
     
     addPolygons(
       weight = 1, 

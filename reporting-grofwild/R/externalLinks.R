@@ -12,7 +12,7 @@
 #' @author mvarewyck
 #' @import shiny
 #' @export
-externalLinksServer <- function(id, specie, portal = c("biodiversiteitsportaal", "exotenportaal"), uiText) {
+externalLinksServer <- function(id, specie, portal = c("biodiversiteitsportaal", "exotenportaal", "wolf_info"), uiText) {
   
   moduleServer(id,
     function(input, output, session) {
@@ -27,8 +27,9 @@ externalLinksServer <- function(id, specie, portal = c("biodiversiteitsportaal",
           gbifkey <- speciesInfo[match(specie(), speciesInfo$species.name), "gbifkey"]
           url <- switch(portal,
             "biodiversiteitsportaal" = paste0("https://natuurdata.inbo.be/bie-hub/species/", gbifkey),
-            "exotenportaal" = paste0("https://alienspecies.inbo.be/app/01_exotenportaal/?tab=species_observations&language=nl&page=species_information&taxonkey=", gbifkey)
-            )
+            "exotenportaal" = paste0("https://alienspecies.inbo.be/app/01_exotenportaal/?tab=species_observations&language=nl&page=species_information&taxonkey=", gbifkey),
+            "wolf_info" = "https://en.wikipedia.org/wiki/Wolf"
+          )
           
           tagList(tags$div(class = "larger-description", tags$em("URL link:", a(title, href=url, target="_blank"))))
         

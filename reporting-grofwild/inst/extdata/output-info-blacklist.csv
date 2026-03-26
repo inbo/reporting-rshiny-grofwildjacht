@@ -1,56 +1,84 @@
 specie,output
 Wild zwijn,exotenportaal
 Wild zwijn,mapSchadeUI
+Wild zwijn,wolf_info
 Edelhert,exotenportaal
 Edelhert,mapSchadeUI
+Edelhert,wolf_info
 Ree,exotenportaal
 Ree,mapSchadeUI
+Ree,wolf_info
 Damhert,mapSchadeUI
+Damhert,wolf_info
 Haas,exotenportaal
 Haas,mapSchadeUI
+Haas,wolf_info
 Fazant,mapSchadeUI
+Fazant,wolf_info
 Konijn,mapSchadeUI
+Konijn,wolf_info
 Patrijs,exotenportaal
 Patrijs,mapSchadeUI
+Patrijs,wolf_info
 Wilde eend,exotenportaal
 Wilde eend,mapSchadeUI
+Wilde eend,wolf_info
 Smient,exotenportaal
 Smient,mapSchadeUI
+Smient,wolf_info
 Grauwe gans,exotenportaal
 Grauwe gans,mapSchadeUI
+Grauwe gans,wolf_info
 Canadese gans,mapSchadeUI
+Canadese gans,wolf_info
 Kievit,exotenportaal
 Kievit,mapSchadeUI
+Kievit,wolf_info
 Houtduif,exotenportaal
 Houtduif,mapSchadeUI
+Houtduif,wolf_info
 Vos,exotenportaal
 Vos,mapSchadeUI
+Vos,wolf_info
 Brandgans,exotenportaal
 Brandgans,mapSchadeUI
+Brandgans,wolf_info
 Das,exotenportaal
 Das,mapSchadeUI
+Das,wolf_info
 Ekster,exotenportaal
 Ekster,mapSchadeUI
+Ekster,wolf_info
 Gaai,exotenportaal
 Gaai,mapSchadeUI
+Gaai,wolf_info
 Kauw,exotenportaal
 Kauw,mapSchadeUI
+Kauw,wolf_info
 Kleine zwaan,exotenportaal
 Kleine zwaan,mapSchadeUI
+Kleine zwaan,wolf_info
 Knobbelzwaan,exotenportaal
 Knobbelzwaan,mapSchadeUI
+Knobbelzwaan,wolf_info
 Koolmees,exotenportaal
 Koolmees,mapSchadeUI
+Koolmees,wolf_info
 Pimpelmees,exotenportaal
 Pimpelmees,mapSchadeUI
+Pimpelmees,wolf_info
 Turkse tortel,exotenportaal,
 Turkse tortel,mapSchadeUI
+Turkse tortel,wolf_info
 Zwarte kraai,exotenportaal
-Zwarte kraai,mapSchadeUI
+Zwarte kraai,mapSchadeUI7
+Zwarte kraai,wolf_info
 Verwilderde kat,exotenportaal
 Verwilderde kat,mapSchadeUI
+Verwilderde kat,wolf_info
 Bever,exotenportaal
 Bever,mapSchadeUI
+Bever,wolf_info
 Wolf,exotenportaal
 Wolf,tableSchadeSummaryUI
 Wolf,trendYearFlandersUI-schade
@@ -65,17 +93,25 @@ Wolf,mapSchadeUI
 Wolf,barCostUI
 Steenmarter,exotenportaal
 Steenmarter,mapSchadeUI
+Steenmarter,wolf_info
 Kleine rietgans,exotenportaal
 Kleine rietgans,mapSchadeUI
+Kleine rietgans,wolf_info
 Meerkoet,exotenportaal
 Meerkoet,mapSchadeUI
+Meerkoet,wolf_info
 Rietgans,exotenportaal
 Rietgans,mapSchadeUI
+Rietgans,wolf_info
 Waterhoen,exotenportaal
 Waterhoen,mapSchadeUI
+Waterhoen,wolf_info
 Wintertaling,exotenportaal
 Wintertaling,mapSchadeUI
+Wintertaling,wolf_info
 Kolgans,exotenportaal
 Kolgans,mapSchadeUI
+Kolgans,wolf_info
 Roek,exotenportaal
 Roek,mapSchadeUI
+Roek,wolf_info

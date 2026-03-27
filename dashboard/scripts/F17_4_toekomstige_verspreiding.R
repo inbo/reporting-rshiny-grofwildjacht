@@ -63,7 +63,7 @@ server <- function(input, output) {
       domain = Pixelsmap$Hbtt_ct)
     
     Output_finalyear <-leaflet(Pixelsmap) %>%
-      setView(lng = 4.403268, lat  = 51.094453, zoom = 8) %>%
+      setView(lng = 4.403268, lat  = 51.094453, zoom = 7.75) %>%
       addProviderTiles(providers$CartoDB.Positron) %>%
       addPolygons(stroke = FALSE,
                   smoothFactor = 1,

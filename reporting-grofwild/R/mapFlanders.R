@@ -393,7 +393,8 @@ mapFlanders <- function(
       spatialData,
       options = leafletOptions(
         zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
-        zoomDelta = 0.25   # controls zoom increment
+        zoomDelta = 0.25,   # controls zoom increment
+        wheelPxPerZoomLevel = 240
       )
     ) %>%
     
@@ -449,8 +450,7 @@ mapFlanders <- function(
   if (!is.null(statsMap)) {
     myMap <- addControl(myMap, statsMap, position = "bottomleft")
   }
-  
-  
+  myMap <- leaflet_bound_flanders(myMap)
   
   myMap
   
@@ -925,7 +925,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             legend = "topright",
             legendText = isolate(simpleCap(unitText(), keepNames = FALSE)),
             statsMap = statsMap()
-          )  
+          ) |> leaflet_bound_flanders()
         })
       
       output$spacePlot <- renderLeaflet({
@@ -1021,10 +1021,8 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           centerValues <- getCenterView(sf_object = selectedPolygons)
           
-          leafletProxy("spacePlot", data = spatialData()) %>%
-            
-            fitBounds(lng1 = centerValues[1], lng2 = centerValues[2],
-              lat1 = centerValues[3], lat2 = centerValues[4])
+          leafletProxy("spacePlot", data = spatialData()) |>
+            leaflet_bound_flanders()
           
         })
       

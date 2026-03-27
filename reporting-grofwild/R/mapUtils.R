@@ -26,8 +26,8 @@ construct_popup <- function(data, popup_vars) {
 #' Bound a leaflet map to the flanders region, with padding
 #'
 #' @param map The leaflet map to fit bounds to
-#' @param padding Padding to use, by default 20 on each side. Provide a vector
-#' with four values: top, left, bottom, right
+#' @param padding Padding to use, by default 20 on the right side. Provide a
+#' vector with four values: top, left, bottom, right
 leaflet_bound_flanders <- function(map, padding = NULL) {
   if (is.null(padding)) {
     # padding: top, left, bottom, right

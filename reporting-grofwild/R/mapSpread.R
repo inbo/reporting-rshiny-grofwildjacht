@@ -204,7 +204,7 @@ mapBevers <- function(beverData,
     )
   ) %>% 
     addProviderTiles("OpenStreetMap.HOT") %>%
-    setView(lng = 4, lat = 51, zoom = 8)
+    setView(lng = 4, lat = 51, zoom = 7.75)
   
   factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), beverData$Vstgngs)
 

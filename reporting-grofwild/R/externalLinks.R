@@ -28,7 +28,7 @@ externalLinksServer <- function(id, specie, portal = c("biodiversiteitsportaal",
           url <- switch(portal,
             "biodiversiteitsportaal" = paste0("https://natuurdata.inbo.be/bie-hub/species/", gbifkey),
             "exotenportaal" = paste0("https://alienspecies.inbo.be/app/01_exotenportaal/?tab=species_observations&language=nl&page=species_information&taxonkey=", gbifkey),
-            "wolf_info" = "https://en.wikipedia.org/wiki/Wolf"
+            "wolf_info" = "https://natuurenbos.be/dossiers/de-wolf-vlaanderen"
           )
           
           tagList(tags$div(class = "larger-description", tags$em("URL link:", a(title, href=url, target="_blank"))))

@@ -3,6 +3,9 @@ FROM rocker/r-ver:4.3.2
 LABEL maintainer="Machteld Varewyck machteld.varewyck@openanalytics.eu"
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
+    cmake \
+    make \
+    g++ \
     libgdal-dev \
     libproj22 \
     libgeos3.10.2 libgeos-c1v5  \

@@ -45,7 +45,8 @@ mapLocationWolves <- function(
     options = leafletOptions(
       zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
       zoomDelta = 0.25,   # controls zoom increment
-      maxZoom = 12
+      maxZoom = 12,
+      wheelPxPerZoomLevel = 240
     )
   ) |>
     addMapPane("polylines", zIndex = 200) |>

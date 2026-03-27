@@ -35,7 +35,8 @@ mapUTMWolves <- function(
       data,
       options = leafletOptions(
         zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
-        zoomDelta = 0.25   # controls zoom increment
+        zoomDelta = 0.25,   # controls zoom increment
+        wheelPxPerZoomLevel = 240
       )
     ) %>%
       addMapPane("polylines", zIndex = 200) %>%

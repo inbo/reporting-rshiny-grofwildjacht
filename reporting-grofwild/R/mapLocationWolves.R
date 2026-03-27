@@ -57,8 +57,7 @@ mapLocationWolves <- function(
       weight = 1,
       fillOpacity = 1,
       popup = construct_popup(data, popup_vars)
-    ) |>
-    setView(lng = 4, lat = 51, zoom = 8)
+    )
 
   # Add world map
   if (addGlobe) {
@@ -79,6 +78,7 @@ mapLocationWolves <- function(
       layerId = "legend"
     )
   }
+  myMap <- leaflet_bound_flanders(myMap)
 
   myMap
 }
@@ -228,19 +228,7 @@ mapLocationWolvesServer <- function(
             })
           
         })
-      
-      
-      # Center view
-      observe({
-          
-          # Update after plot
-          req(spacePlot())
-          
-          leafletProxy("spacePlot", data = subData())  %>%
-            setView(lng = 4, lat = 51, zoom = 8)
-          
-        })
-      
+
       # Add world map
       observe({
           req(subData())

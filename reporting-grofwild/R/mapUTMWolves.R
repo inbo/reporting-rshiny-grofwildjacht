@@ -44,8 +44,7 @@ mapUTMWolves <- function(
         stroke = TRUE,
         smoothFactor = 1,
         color = "black", weight = 0.5,
-        fillOpacity = 0.7) %>%
-      setView(lng = 4, lat = 51, zoom = 8)
+        fillOpacity = 0.7)
     
     # Add world map
     if (addGlobe) {
@@ -54,24 +53,9 @@ mapUTMWolves <- function(
                     addProviderTiles("OpenStreetMap.HOT")
         
     }
-    
-#    # Add legend
-#    if (legend != "none") {
-#        
-#        myMap <- addLegend(
-#                map = myMap,
-#                position = legend,
-#                pal = palette, 
-#                values = ~Soort,
-#                opacity = 1,
-#                na.label = "onbekend",
-#                title = "Legende",
-#                layerId = "legend"
-#        )
-#        
-#        
-#    }
-    
+
+
+    myMap <- leaflet_bound_flanders(myMap)
     
     myMap
     
@@ -196,19 +180,7 @@ mapUTMWolvesServer <- function(
             })
           
         })
-      
-      
-      # Center view
-      observe({
-          
-          # Update after plot
-          req(spacePlot())
-          
-          leafletProxy("spacePlot", data = subData())  %>%
-            setView(lng = 4, lat = 51, zoom = 8)
-          
-        })
-      
+
       # Add world map
       observe({
           req(subData())

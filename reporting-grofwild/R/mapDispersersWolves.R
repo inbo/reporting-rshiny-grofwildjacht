@@ -79,9 +79,7 @@ mapDispersersWolves <- function(
       fillOpacity = 1,
       popup = construct_popup(data, popup_vars),
       group = "Zwervers"
-    ) |>
-    setView(lng = 4, lat = 51, zoom = 8)
-
+    )
   # Add world map
   if (addGlobe) {
     myMap <- myMap |>
@@ -116,6 +114,8 @@ mapDispersersWolves <- function(
         )
     }
   }
+
+  myMap <- leaflet_bound_flanders(myMap)
 
   myMap
 }
@@ -252,18 +252,6 @@ mapDispersersWolvesServer <- function(
             error = function(e) {
               return(NULL) 
             })
-          
-        })
-      
-      
-      # Center view
-      observe({
-          
-          # Update after plot
-          req(spacePlot())
-          
-          leafletProxy("spacePlot", data = subData()) %>%
-            setView(lng = 4, lat = 51, zoom = 8)
           
         })
       

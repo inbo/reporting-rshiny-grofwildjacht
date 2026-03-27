@@ -130,6 +130,8 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
   }
   
   attr(finalMap, "modelColors") <- modelColors
+
+  finalMap <- leaflet_bound_flanders(finalMap)
   
   finalMap
   
@@ -203,8 +205,7 @@ mapBevers <- function(beverData,
       zoomDelta = 0.25   # controls zoom increment
     )
   ) %>% 
-    addProviderTiles("OpenStreetMap.HOT") %>%
-    setView(lng = 4, lat = 51, zoom = 7.75)
+    addProviderTiles("OpenStreetMap.HOT")
   
   factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), beverData$Vstgngs)
 
@@ -235,7 +236,8 @@ mapBevers <- function(beverData,
   
   # For compliance with mapSpread()
   attr(myMap, "modelColors") <- NULL
-  
+
+  myMap <- leaflet_bound_flanders(myMap)
   
   myMap
   
@@ -399,19 +401,17 @@ mapSpreadServer <- function(id,
       
       
       # Center view
-      observe({
+      # observe({
           
-          # Update after plot
-          req(spreadPlot())
+      #     # Update after plot
+      #     req(spreadPlot())
           
-          centerValues <- getCenterView(sf_object = selectedPolygons())
-          
-          leafletProxy("spreadPlot", data = spatialData()) %>%
+      #     centerValues <- getCenterView(sf_object = selectedPolygons())
+      #     leafletProxy("spreadPlot", data = spatialData()) %>%
             
-            fitBounds(lng1 = centerValues[1], lng2 = centerValues[2],
-              lat1 = centerValues[3], lat2 = centerValues[4])
+      #       leaflet_bound_flanders()
           
-        })
+      #   })
      
       
       output$disclaimerMapSpread <- renderUI({

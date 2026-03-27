@@ -210,11 +210,7 @@ mapSchade <- function(
                               paste0("<li><strong> Seizoen </strong>: ", schadeData$season),
                             "</ul>"
                     )
-            ) %>%
-            
-            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-              lat1 = centerView[3], lat2 = centerView[4])
-    
+            )
     # Add black borders
     if (!is.null(regionLevel) & !is.null(allSpatialData[[regionLevel]])) {
         
@@ -255,6 +251,7 @@ mapSchade <- function(
         
     }
     
+    myMap <- leaflet_bound_flanders(myMap)
     
     myMap
     
@@ -602,7 +599,7 @@ mapSchadeServer <- function(
             lat = input$perceelPlot_center$lat,
             zoom = input$perceelPlot_zoom
           )
-                    
+
         })
       
       # Add world map

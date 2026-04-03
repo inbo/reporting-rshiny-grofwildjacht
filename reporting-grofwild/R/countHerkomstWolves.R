@@ -20,6 +20,7 @@
 #' @import plotly
 #' @importFrom plyr count ddply 
 #' @importFrom dplyr across all_of
+#' @importFrom lubridate year
 #' @export
 countHerkomstWolves <- function(data, jaartallen = NULL,
   summarizeBy = c("count", "percent"), groupVariable = "Herkomst",
@@ -29,10 +30,13 @@ countHerkomstWolves <- function(data, jaartallen = NULL,
     
   # Remove some categories
   data <- data[data[[groupVariable]] != "AANVULLEN", ]
+
+  browser()
   
-  plotData <- data %>%
-    group_by(across(all_of(c("WolfID", groupVariable)))) %>%
-    summarise(year = min(year)) %>%
+  plotData <- data |>
+    dplyr::filter(.data$year < lubridate::year(Sys.Date())) |>
+    group_by(across(all_of(c("WolfID", groupVariable)))) |>
+    summarise(year = min(year)) |>
     ungroup()
   
 	if (is.null(jaartallen))

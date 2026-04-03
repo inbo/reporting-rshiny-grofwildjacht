@@ -66,6 +66,7 @@
         leaflet
         leaflet_extras
         leaflet_extras2
+        lubridate
         INBOtheme
         plotly
         plyr

@@ -19,6 +19,7 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
+#' @importFrom lubridate year
 #' @export
 countGeneticWolves <- function(data, jaartallen = NULL,
 		summarizeBy = c("count", "percent"), groupVariable = "Status",
@@ -32,6 +33,8 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 	# Select data
 	plotData <- data[data$year %in% jaartallen, 
 			c("year", groupVariable)]
+  plotData <- plotData |>
+    dplyr::filter(.data$year < lubridate::year(Sys.Date()))
   names(plotData) <- c("year", "group")
 	
 	# Remove some categories

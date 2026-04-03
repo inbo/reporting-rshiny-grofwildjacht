@@ -25,10 +25,16 @@ countDeathWolves <- function(data, jaartallen = NULL,
   regio = "",	width = NULL, height = NULL) {
 	
     summarizeBy <- match.arg(summarizeBy)
-    
-  # Remove some categories
-  data <- data[data[[groupVariable]] != "AANVULLEN" & data$Levend == 0, ]
   
+  # Remove some categories
+  # TODO: this might be a superfluous filter
+  data <- data[data[[groupVariable]] != "AANVULLEN" & data$Levend == 0, ]
+
+  # Additional filtering
+  data <- data |>
+    dplyr::filter(.data$Lot != "Onbekend") |>
+    dplyr::filter(.data$Levend == 0)
+
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$year)
 	

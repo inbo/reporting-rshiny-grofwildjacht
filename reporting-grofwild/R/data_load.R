@@ -193,6 +193,7 @@ loadWolfData <- function(
     
     colnames(data)[colnames(data) == "monitoringsjaar"] <- "year"
   } else if (type == "overzicht") {
+    data$wildsoort <- "Wolf"
     colnames(data)[colnames(data) == "Year"] <- "year"
     data$X_Coord <- as.numeric(as.character(data$X_Coord))
     data$Y_Coord <- as.numeric(as.character(data$Y_Coord))

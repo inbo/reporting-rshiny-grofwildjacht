@@ -44,7 +44,7 @@ setupS3 <- function(awsFile = "~/.aws/credentials", inboUserName = NULL) {
 #' @importFrom aws.s3 get_bucket_df save_object
 #' @export
 downloadS3 <- function(
-  dataDir = file.path("~/git/reporting-rshiny-grofwildjacht/dataS3"),
+  dataDir = Sys.getenv("DATA_PATH"),
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild"))) {
   
   # List all available files on the S3 bucket

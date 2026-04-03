@@ -22,7 +22,7 @@
 #' @importFrom lubridate year
 #' @export
 countGeneticWolves <- function(data, jaartallen = NULL,
-		summarizeBy = c("count", "percent"), groupVariable = "Status",
+		summarizeBy = c("count", "percent"), groupVariable = "Plot_Status",
 		width = NULL, height = NULL) {
 	
 	summarizeBy <- match.arg(summarizeBy)
@@ -31,11 +31,13 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 		jaartallen <- unique(data$year)
 	
 	# Select data
-	plotData <- data[data$year %in% jaartallen, 
-			c("year", groupVariable)]
-  plotData <- plotData |>
+  data <- data |>
+    dplyr::filter(!(.data$Leeftijdsklasse == "Pup/jaarling" & .data$Status == "Roedel")) |>
     dplyr::filter(.data$year < lubridate::year(Sys.Date()))
-  names(plotData) <- c("year", "group")
+
+	plotData <- data[data$year %in% jaartallen, 
+			c("year", groupVariable, "Leeftijdsklasse_roedel")]
+  names(plotData) <- c("year", "group", "leeftijdsklasse")
 	
 	# Remove some categories
 	plotData <- plotData[plotData$group != "AANVULLEN", ]
@@ -78,9 +80,17 @@ countGeneticWolves <- function(data, jaartallen = NULL,
       )
 		
 	}
-	
-	colors <- replicateColors(values = levels(summaryData$group))$colors
-	
+
+  group_levels <- levels(summaryData$group)
+
+  color_levels <- ifelse(grepl("^Roedel", group_levels), "Roedel", group_levels) |> unique()
+
+	colors <- replicateColors(values = color_levels)$colors
+  gradient_colors <- make_gradient(colors[["Roedel"]], 3, light_factor = 1.3, dark_factor = 0.7)
+  names(gradient_colors) <- c("Roedel (Voortplantend paar)", "Roedel (Jaarlingen)", "Roedel (Welpen)")
+
+  colors <- c(colors, gradient_colors)
+
   singleYear <- length(unique(summaryData$year)) == 1
 	
 	

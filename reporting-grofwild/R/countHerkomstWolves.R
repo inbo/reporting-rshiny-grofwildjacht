@@ -30,8 +30,6 @@ countHerkomstWolves <- function(data, jaartallen = NULL,
     
   # Remove some categories
   data <- data[data[[groupVariable]] != "AANVULLEN", ]
-
-  browser()
   
   plotData <- data |>
     dplyr::filter(.data$year < lubridate::year(Sys.Date())) |>

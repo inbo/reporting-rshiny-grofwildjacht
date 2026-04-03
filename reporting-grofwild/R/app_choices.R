@@ -326,7 +326,7 @@ getOutputSpecie <- function(specie,
     "biodiversiteitsportaal",
     "exotenportaal",
     "wolf_info",
-    "roofdiernieuws_link"
+    "roofdiernieuws_link",
     if (specie == "Wolf")
       c(
         "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",

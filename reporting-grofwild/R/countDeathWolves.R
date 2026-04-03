@@ -28,7 +28,11 @@ countDeathWolves <- function(data, jaartallen = NULL,
     
   # Remove some categories
   data <- data[data[[groupVariable]] != "AANVULLEN" & data$Levend == 0, ]
-  
+
+  # Additional filtering
+  data <- data |>
+    dplyr::filter(.data$Lot != "Onbekend")
+
 	if (is.null(jaartallen))
 		jaartallen <- unique(data$year)
 	

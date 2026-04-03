@@ -326,6 +326,7 @@ getOutputSpecie <- function(specie,
     "biodiversiteitsportaal",
     "exotenportaal",
     "wolf_info",
+    "roofdiernieuws_link"
     if (specie == "Wolf")
       c(
         "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",
@@ -473,7 +474,7 @@ getSubcategoryOutput <- function(output){
       `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5"),
       
       #interne links
-      `links-internelinks` = c("biodiversiteitsportaal", "exotenportaal", "wolf_info")
+      `links-internelinks` = c("biodiversiteitsportaal", "exotenportaal", "wolf_info", "roofdiernieuws_link")
   
 #      # woordenlijst
 #      `woordenlijst-placeholder` = "woordenlijstPlaceholder"

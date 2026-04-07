@@ -19,9 +19,10 @@
 #' }
 #' @import plotly
 #' @importFrom plyr count ddply
+#' @importFrom lubridate year
 #' @export
 countGeneticWolves <- function(data, jaartallen = NULL,
-		summarizeBy = c("count", "percent"), groupVariable = "Status",
+		summarizeBy = c("count", "percent"), groupVariable = "Plot_Status",
 		width = NULL, height = NULL) {
 	
 	summarizeBy <- match.arg(summarizeBy)
@@ -30,9 +31,13 @@ countGeneticWolves <- function(data, jaartallen = NULL,
 		jaartallen <- unique(data$year)
 	
 	# Select data
+  data <- data |>
+    dplyr::filter(!(.data$Leeftijdsklasse == "Pup/jaarling" & .data$Status == "Roedel")) |>
+    dplyr::filter(.data$year < lubridate::year(Sys.Date()))
+
 	plotData <- data[data$year %in% jaartallen, 
-			c("year", groupVariable)]
-  names(plotData) <- c("year", "group")
+			c("year", groupVariable, "Leeftijdsklasse_roedel")]
+  names(plotData) <- c("year", "group", "leeftijdsklasse")
 	
 	# Remove some categories
 	plotData <- plotData[plotData$group != "AANVULLEN", ]
@@ -75,12 +80,33 @@ countGeneticWolves <- function(data, jaartallen = NULL,
       )
 		
 	}
-	
-	colors <- replicateColors(values = levels(summaryData$group))$colors
-	
+
+  # Group all starting with "Roedel"
+  # Get colors for all levels, and create gradient color for the Roedel level,
+  # so that the three new Roedel levels are semantically linked through their color
+  group_levels <- levels(summaryData$group)
+  color_levels <- ifelse(grepl("^Roedel", group_levels), "Roedel", group_levels) |> unique()
+
+	colors <- replicateColors(values = color_levels)$colors
+  gradient_colors <- make_gradient(colors[["Roedel"]], 3, light_factor = 1.3, dark_factor = 0.7)
+
+  # Ensure this specific required ordering of the Roedel labels
+  desired_order <- c(
+    "Roedel (Voortplantend paar)",
+    "Roedel (Welpen)",
+    "Roedel (Jaarlingen)"
+  )
+  names(gradient_colors) <- desired_order
+  colors <- c(colors, gradient_colors)
+
+  summaryData$group <- factor(summaryData$group, levels = c(
+    desired_order,
+    setdiff(levels(summaryData$group), desired_order)
+  ))
+
   singleYear <- length(unique(summaryData$year)) == 1
-	
-	
+
+
 	# Create plot
 	toPlot <- switch(summarizeBy,
 			count = plot_ly(data = summaryData, x = ~year, 

@@ -390,7 +390,9 @@ mapDispersersWolvesServer <- function(
 
           # Coordinate information may not be downloaded
           columns_to_remove <- intersect(
-            c("geometry", "X_Coord", "Y_Coord"),
+            c("geometry", "X_Coord", "Y_Coord", "Status_Eng", "Location_TA",
+            "Reproductie", "Levend", "Soort", "Leeftijdsklasse_roedel",
+            "Plot_Status", "wildsoort"),
             colnames(subData())
           )
           data_to_download <- subData() |>

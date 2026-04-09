@@ -158,7 +158,7 @@ mapLocationWolvesServer <- function(
       subData <- reactive({
           
           req(data())
-          
+
           if (variable == "Status") {
             req(input$year)
             data <- data() %>%
@@ -171,9 +171,10 @@ mapLocationWolvesServer <- function(
             
             data <- data() %>%
               filter(Levend == 0) %>%
-              filter(!(Lot %in% c("Niet geweten", "Verdronken"))) %>%
+              filter(!(Lot %in% c("Niet geweten", "Verdronken", "Onbekend"))) %>%
               filter(year %in% years)
           }
+
           
           data$variable <- data[[variable]]
           data$variable <- as.factor(data$variable)
@@ -352,9 +353,14 @@ mapLocationWolvesServer <- function(
 
           # Coordinate information may not be downloaded
           columns_to_remove <- intersect(
-            c("geometry", "X_Coord", "Y_Coord"),
+            c(
+              "geometry", "X_Coord", "Y_Coord", "Haplotype", "Status_Eng",
+              "Last_known_location", "Reproductie", "Levend", "Soort",
+              "Leeftijdsklasse_roedel", "Plot_Status", "wildsoort", "variable"
+            ),
             colnames(subData())
           )
+
           data_to_download <- subData() |>
             as.data.frame() |>
             dplyr::select(!columns_to_remove)

@@ -69,7 +69,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   
   
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
-        min(jaartallen):max(jaartallen)))
+        min(jaartallen, na.rm = TRUE):max(jaartallen, na.rm = TRUE)))
   
   colors <- replicateColors(values = c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend"))$colors
   

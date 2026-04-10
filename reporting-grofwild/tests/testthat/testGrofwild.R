@@ -593,3 +593,146 @@ test_that("Trend plots according with the interactive map", {
             subset(biotoopData[[ names(spatialData)[2] ]], regio %in% "Vlaanderen")))
       
     })
+  
+  
+# WOLF specific plots
+
+wolfPuntenData <- loadWolfData(type = "locaties")
+wolfHokkenData <- loadWolfData(type = "utm")  
+wolfOverzichtData <- loadWolfData(type = "overzicht")
+wolfTerritoriaData <- loadWolfData(type = "terr")  
+wolfSchadeData <- loadWolfData(type = "schade")
+
+test_that("test countDeathWolves function", {
+    
+    myResult <- countDeathWolves(
+      data = sf::st_drop_geometry(wolfOverzichtData),
+      jaartallen = 2020:2025, summarizeBy = "count")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+  })
+
+test_that("test countGeneticWolves function", {
+    
+    myResult <- countGeneticWolves(
+      data = sf::st_drop_geometry(wolfOverzichtData),
+      jaartallen = 2020:2025, summarizeBy = "percent")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+  })
+
+test_that("test countHerkomstWolves function", {
+    
+    myResult <- countHerkomstWolves(
+      data = sf::st_drop_geometry(wolfOverzichtData),
+      jaartallen = 2020:2025, summarizeBy = "count")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+  })
+
+test_that("test countSchadeWolves function", {
+    
+    myResult <- countSchadeWolves(
+      data = wolfSchadeData,
+      jaartallen = 2020:2025, summarizeBy = "count",
+      groupVariable = "wolfproof")
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+  })
+
+test_that("test trendWolfFlanders function", {
+    
+    myResult <- trendWolfFlanders(
+      data = wolfSchadeData,
+      jaartallen = 2020:2025)
+    
+    expect_type(myResult, "list")
+    expect_s3_class(myResult$plot, "plotly")
+    expect_s3_class(myResult$data, "data.frame")
+    
+  })
+
+test_that("test mapDispersersWolves function", {
+    
+    spatialData <- loadWolfShapeData(type = "territory")
+    data <- wolfOverzichtData %>%
+      filter(!is.na(Y_Coord))
+      
+    myPlot <- mapDispersersWolves(
+      data = data,
+      spatialData = spatialData, 
+      addGlobe = TRUE,
+      legend = "topright"
+    )
+    
+    expect_is(myPlot, "leaflet")
+    
+  })
+
+test_that("test mapLocationWolves function", {
+    
+    variable <- "Lot"
+    data <- wolfOverzichtData  %>%
+      filter(!is.na(Y_Coord))
+    data$variable <- data[[variable]]
+    data$variable <- as.factor(data$variable)
+    
+    myPlot <- mapLocationWolves(
+      data = data,
+      variable = variable,
+      addGlobe = TRUE,
+      legend = "topright"
+    )
+    
+    expect_is(myPlot, "leaflet")
+    
+  })
+
+test_that("test mapSchadeWolves function", {
+    
+    spatialData <- loadWolfShapeData(type = "gemeenten")
+    data <- spatialData %>%
+      left_join(
+        wolfSchadeData %>%            
+          group_by(Gemeente) %>%
+          summarise(aantal_schade = n(), .groups = "drop"),
+        by = c("NAAM" = "Gemeente"))
+    
+    myPlot <- mapSchadeWolves(
+      data = data,
+      addGlobe = TRUE,
+      legend = "topright"
+    )
+    
+    expect_is(myPlot, "leaflet")
+    
+  })
+
+test_that("test mapUTMWolves function", {
+    
+    spatialData <- loadWolfShapeData(type = "utm")
+    data <- spatialData %>%
+      right_join(wolfHokkenData, by = "TAG", copy = TRUE)
+    
+    myPlot <- mapUTMWolves(
+      data = data,
+      addGlobe = TRUE,
+      legend = "topright"
+    )
+    
+    expect_is(myPlot, "leaflet")
+    
+  })
+

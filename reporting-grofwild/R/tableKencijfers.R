@@ -262,7 +262,7 @@ kencijferModuleUI <- function(id, uiText, doHide = TRUE) {
     conditionalPanel(
       condition = paste("input.linkKencijferTabel % 2 ==", as.numeric(doHide)), ns = ns,
       tagList(
-        tags$p(HTML(description)),
+        tags$div(class = "larger-description", HTML(description)),
         fixedRow(
           column(8,
             tags$div(

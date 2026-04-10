@@ -48,6 +48,7 @@ createTrendData <- function(data, allSpatialData, biotoopData = NULL,
       flanders = "Vlaams Gewest",
       provinces = plotData$provincie,
       communes = plotData$gemeente_afschot_locatie,
+      communes_wolf = plotData$gemeente_afschot_locatie,
       faunabeheerzones = plotData$FaunabeheerZone,
       fbz_gemeentes = plotData$fbz_gemeente,
       utm5 = plotData$UTM5,
@@ -404,7 +405,7 @@ trendYearRegionUI <- function(
       ),
       
     ),
-    tags$p(HTML(description))
+    tags$div(class = "larger-description", HTML(description))
   )
   
   if (plotFunction == "trendYearRegionUI")

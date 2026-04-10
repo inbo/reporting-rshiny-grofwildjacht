@@ -67,8 +67,13 @@ countAgeGroup <- function(data, groupVariable, jaartallen = NULL,
     percent = freq / sum(freq) * 100)
   
   # For optimal displaying in the plot
+  leeftijdCol <- if (!is.null(sourceIndicator_leeftijd) && sourceIndicator_leeftijd == "inbo") {
+    "leeftijd_comp_inbo"
+  } else {
+    "leeftijd_comp"
+  }
   summaryData$leeftijd <- factor(summaryData$leeftijd, 
-    levels = c(loadMetaEco(species = wildNaam)$leeftijd_comp, "Onbekend"))
+    levels = c(loadMetaEco(species = wildNaam)[[leeftijdCol]], "Onbekend"))
   
   summaryData$text <- paste0(round(summaryData$percent), "%",
     " (", summaryData$freq, ")")
@@ -204,7 +209,7 @@ countAgeGroupUI <- function(id, regionLevels = NULL,
             showDataSource = showDataSource)
         )
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

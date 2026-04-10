@@ -3,6 +3,9 @@ FROM rocker/r-ver:4.3.2
 LABEL maintainer="Machteld Varewyck machteld.varewyck@openanalytics.eu"
 
 RUN apt-get update && apt-get install --no-install-recommends -y \
+    cmake \
+    make \
+    g++ \
     libgdal-dev \
     libproj22 \
     libgeos3.10.2 libgeos-c1v5  \
@@ -30,7 +33,7 @@ RUN R -q -e "install.packages('remotes')"
 
 RUN R -q -e "options(warn = 2); remotes::install_version('shiny', version = '1.8.1.1', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 RUN R -q -e "options(warn = 2); remotes::install_version('glue', version = '1.7.0', repos = 'https://cloud.r-project.org', upgrade = 'never')"
-RUN R -q -e "options(warn = 2); remotes::install_cran(c('sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'leaflet.extras', 'leaflet.extras2', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'tidyselect', 'kableExtra', 'webshot2', 'slickR', 'ggplot2', 'ggforce', 'geojsonsf'))"
+RUN R -q -e "options(warn = 2); remotes::install_cran(c('sf', 'dplyr', 'plyr', 'reshape2', 'mgcv', 'stringr', 'leaflet', 'leaflet.extras', 'leaflet.extras2', 'flexdashboard', 'testthat', 'shinyjs', 'data.table', 'tinytex', 'tidyr', 'tidyselect', 'kableExtra', 'webshot2', 'slickR', 'ggplot2', 'ggforce', 'geojsonsf', 'reactable', 'lubridate'))"
 RUN R -q -e "remotes::install_version('DT', version = '0.23', repos = 'https://cloud.r-project.org', upgrade = 'never')"
 # NOTE: Need at least these versions of plotly, rmarkdown and magick for dashboard rmarkdown to work
 RUN R -q -e "remotes::install_version('plotly', version = '4.10.1', repos = 'https://cloud.r-project.org', upgrade = 'never')" 

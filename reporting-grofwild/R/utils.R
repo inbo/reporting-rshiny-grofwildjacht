@@ -144,17 +144,17 @@ setMonthsInDutch <- function(x) {
 #' \code{year}, \code{content}, \code{fileExt}
 #' @author mvarewyck
 #' @export
-nameFile <- function(species, year = NULL, extraInfo = NULL, content, fileExt) {
-  
+nameFile <- function(species, year = NULL, extraInfo = NULL, content, fileExt = NULL) {
+
   paste0(
     if (length(species) > 0)
       paste(gsub(pattern = " ", replacement = "_", x = species), collapse = "-"),
     if (!is.null(year)) paste0("_", if (length(year) > 1) paste(year, collapse = "-") else year),
     if (!is.null(extraInfo)) {paste0("_", paste(extraInfo, collapse = "-"))}, 
-    "_", content, 
-    ".", fileExt
+    "_", content,
+    if (! is.null(fileExt)) ".", fileExt
   )
-  
+
 }
 
 
@@ -271,6 +271,26 @@ replicateColors <- function(values) {
   
 }
 
+#' Make a gradient from a single base color
+#' 
+#' @param base_color The base color, in RGB hex value
+#' @param n The number of other colors to generate
+#' @param light_factor How light should the gradient start?
+#' @param dark_factor How dark should the gradient end?
+make_gradient <- function(base_color, n = 3, light_factor = 1.3, dark_factor = 0.7) {
+  # Convert to RGB (matrix with 3 rows: R, G, B)
+  rgb_col <- col2rgb(base_color)
+
+  light_rgb <- pmin(255, rgb_col * light_factor)
+  dark_rgb  <- rgb_col * dark_factor
+
+  # Convert back to hex colors
+  light_col <- rgb(light_rgb[1], light_rgb[2], light_rgb[3], maxColorValue = 255)
+  dark_col  <- rgb(dark_rgb[1],  dark_rgb[2],  dark_rgb[3],  maxColorValue = 255)
+
+  # Generate palette
+  colorRampPalette(c(dark_col, base_color, light_col))(n)
+}
 
 #' Generate text with percentage collected as annotation for plots
 #' @param nAvailable integer, number of subjects for which data is available (non-missing)

@@ -55,7 +55,14 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
   modelColors <- paletteMap(variable = unit, groupNames = levels(spreadShape$outcome))
   pal_model <- colorFactor(palette = modelColors$colors, levels = modelColors$levels, ordered = FALSE)
   
-  finalMap <- leaflet(spreadShape)
+  finalMap <- leaflet(
+    spreadShape,
+    options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25,   # controls zoom increment
+      wheelPxPerZoomLevel = 240
+    )
+  )
   
   finalMap <- finalMap %>%
     
@@ -124,6 +131,8 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
   }
   
   attr(finalMap, "modelColors") <- modelColors
+
+  finalMap <- leaflet_bound_flanders(finalMap)
   
   finalMap
   
@@ -143,7 +152,13 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
 mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"), 
   addGlobe = FALSE) {
   
-  myMap <- leaflet() 
+  myMap <- leaflet(
+    options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25,   # controls zoom increment
+      wheelPxPerZoomLevel = 240
+    )
+  ) 
   
   if ("oversteek" %in% layers)
     myMap <- myMap %>%
@@ -186,9 +201,14 @@ mapVerkeer <- function(trafficData, layers = c("oversteek", "ecorasters"),
 mapBevers <- function(beverData, 
   addGlobe = FALSE, legend = "none") {
   
-  myMap <- leaflet() %>% 
-    addProviderTiles("OpenStreetMap.HOT") %>%
-    setView(lng = 4, lat = 51, zoom = 8)
+  myMap <- leaflet(
+      options = leafletOptions(
+      zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+      zoomDelta = 0.25,   # controls zoom increment
+      wheelPxPerZoomLevel = 240
+    )
+  ) %>% 
+    addProviderTiles("OpenStreetMap.HOT")
   
   factpal <- colorFactor(palette =c('#99ccff', '#6699ff','#3366ff'), beverData$Vstgngs)
 
@@ -219,7 +239,8 @@ mapBevers <- function(beverData,
   
   # For compliance with mapSpread()
   attr(myMap, "modelColors") <- NULL
-  
+
+  myMap <- leaflet_bound_flanders(myMap)
   
   myMap
   
@@ -365,7 +386,6 @@ mapSpreadServer <- function(id,
               options = leaflet.extras2::easyprintOptions(
                 exportOnly = TRUE,
                 hideControlContainer = FALSE,  # Keep controls visible
-                hideClasses = c("leaflet-control-zoom", "leaflet-control-easyPrint")
               )
             )
           
@@ -384,19 +404,17 @@ mapSpreadServer <- function(id,
       
       
       # Center view
-      observe({
+      # observe({
           
-          # Update after plot
-          req(spreadPlot())
+      #     # Update after plot
+      #     req(spreadPlot())
           
-          centerValues <- getCenterView(sf_object = selectedPolygons())
-          
-          leafletProxy("spreadPlot", data = spatialData()) %>%
+      #     centerValues <- getCenterView(sf_object = selectedPolygons())
+      #     leafletProxy("spreadPlot", data = spatialData()) %>%
             
-            fitBounds(lng1 = centerValues[1], lng2 = centerValues[2],
-              lat1 = centerValues[3], lat2 = centerValues[4])
+      #       leaflet_bound_flanders()
           
-        })
+      #   })
      
       
       output$disclaimerMapSpread <- renderUI({
@@ -548,8 +566,10 @@ mapSpreadServer <- function(id,
           
           leafletProxy("spreadPlot") %>% leaflet.extras2::easyprintMap(
             sizeModes = "CurrentSize",
-            filename = nameFile(species = species,
-              content = "kaart", fileExt = "png")
+            filename = nameFile(
+              species = species,
+              content = "kaart"
+            )
           )
           
           removeNotification(id = idNote)
@@ -667,7 +687,6 @@ mapSpreadServer <- function(id,
                 options = leaflet.extras2::easyprintOptions(
                   exportOnly = TRUE,
                   hideControlContainer = FALSE,  # Keep controls visible
-                  hideClasses = c("leaflet-control-zoom", "leaflet-control-easyPrint")
                 )
               )
           })
@@ -781,8 +800,10 @@ mapSpreadServer <- function(id,
           
           leafletProxy("spreadPlotBever") %>% leaflet.extras2::easyprintMap(
             sizeModes = "CurrentSize",
-            filename = nameFile(species = species,
-              content = "kaart", fileExt = "png")
+            filename = nameFile(
+              species = species,
+              content = "kaart"
+            )
           )
           
           removeNotification(id = idNote)
@@ -874,7 +895,7 @@ mapSpreadUI <- function(id,
                 actionButton(ns("downloadBever"), label = "Download figuur", class = "downloadButton")
               )
             ),
-            tags$p(HTML(description)),
+            tags$div(class = "larger-description", HTML(description)),
             
             tags$hr()
           )
@@ -949,7 +970,7 @@ mapSpreadUI <- function(id,
             )
           ),
           
-          tags$p(HTML(description)),
+          tags$div(class = "larger-description", HTML(description)),
           
           tags$hr()
         )

@@ -14,6 +14,7 @@
 #' should be one of \code{c("inbo", "both")}, where \code{"both"} refers to both inbo and meldingsformulier, 
 #' i.e. no filtering. Defaults to \code{"both"}
 #' @param type character, used to filter the data
+#' @param type_jachtmethode character, used to filter the data on jachtmethode
 #' 
 #' @importFrom stats setNames
 #' @author dbemelmans
@@ -30,7 +31,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   sourceIndicator_leeftijd <- match.arg(sourceIndicator_leeftijd)
   
   plotData <- data
- 
+  
   if (is.null(jaartallen))
     jaartallen <- unique(data$afschotjaar)
   
@@ -47,22 +48,24 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   
   # Select on years & type
   plotData <- plotData[plotData$afschotjaar %in% jaartallen, 
-      c("afschotjaar", "afschot_datum", groupVariable, "leeftijd_comp_bron")]
+    c("afschotjaar", "afschot_datum", groupVariable, "jachtmethode_comp", "leeftijd_comp_bron")]
+  
   if (!is.null(type) && !all(type == "all"))
     plotData <- plotData[plotData[, groupVariable] %in% c(type, "Onbekend"), ] #include onbekend for nRecords
   nRecords <- nrow(plotData)
-    
+  
   # Clean data for groupVariable
-  plotData[, groupVariable] <- droplevels(plotData[, groupVariable])
+  if (is.factor(plotData[[groupVariable]])) {
+    plotData[, groupVariable] <- droplevels(plotData[, groupVariable])
+  }
   plotData[is.na(plotData[, groupVariable]), groupVariable] <- "Onbekend"
   if (groupVariable == "leeftijd_comp_inbo")
     plotData <- filterGrofwild(plotData = plotData, 
       sourceIndicator_leeftijd = sourceIndicator_leeftijd)
-  if (!is.null(type) && !all(type == "all")) ## only retains animals of specified type
-    plotData <- plotData[plotData[, groupVariable] %in% type, ]
-  plotData$leeftijd_comp_bron <- NULL
   
-#  plotData <- plotData[!is.na(plotData$afschot_datum), ]
+  if (!is.null(type) && !all(type == "all"))
+    plotData <- plotData[plotData[, groupVariable] %in% type, ] ## only retains animals of specified type
+  plotData$leeftijd_comp_bron <- NULL
   
   
   plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = 
@@ -82,7 +85,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   # Extract month/day
   plotData$maand <- as.numeric(format(plotData$afschot_datum, "%m"))
   plotData$dag <- as.numeric(format(plotData$afschot_datum, "%d"))
-   
+  
   
   if (interval == "Per jaar") {
     
@@ -105,45 +108,45 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
       "december")
     
     plotData$timeGroup <- plotData$maand
-        
-       
+    
+    
   } else if (interval == "Per kwartaal") {
     
     newLevels <- c("Kwartaal 1 (jan-mrt)", "Kwartaal 2 (apr-jun)", "Kwartaal 3 (jul-sept)", "Kwartaal 4 (okt-dec)")
     
     plotData$timeGroup <- ceiling(plotData$maand/3)
     
-        
+    
   } else if(interval == "Per twee weken") {
     
-     plotData$timeGroup <- (plotData$maand-1)*2 + (plotData$dag > 15) + 1 
-         
-     newLevels <- c(
-        "01/01-15/01",
-        "16/01-31/01",
-        "01/02-15/02",
-        "16/02-28/02 of 29/02",
-        "01/03-15/03",
-        "16/03-31/03",
-        "01/04-15/04",
-        "16/04-30/04",
-        "01/05-15/05",
-        "16/05-31/05",
-        "01/06-15/06",
-        "16/06-30/06",
-        "01/07-15/07",
-        "16/07-31/07",
-        "01/08-15/08",
-        "16/08-31/08",
-        "01/09-15/09",
-        "16/09-30/09",
-        "01/10-15/10",
-        "16/10-31/10",
-        "01/11-15/11",
-        "16/11-30/11",
-        "01/12-15/12",
-        "16/12-31/12")
-            
+    plotData$timeGroup <- (plotData$maand-1)*2 + (plotData$dag > 15) + 1 
+    
+    newLevels <- c(
+      "01/01-15/01",
+      "16/01-31/01",
+      "01/02-15/02",
+      "16/02-28/02 of 29/02",
+      "01/03-15/03",
+      "16/03-31/03",
+      "01/04-15/04",
+      "16/04-30/04",
+      "01/05-15/05",
+      "16/05-31/05",
+      "01/06-15/06",
+      "16/06-30/06",
+      "01/07-15/07",
+      "16/07-31/07",
+      "01/08-15/08",
+      "16/08-31/08",
+      "01/09-15/09",
+      "16/09-30/09",
+      "01/10-15/10",
+      "16/10-31/10",
+      "01/11-15/11",
+      "16/11-30/11",
+      "01/12-15/12",
+      "16/12-31/12")
+    
   }
   
   if (interval == "Per jaar") {
@@ -158,7 +161,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
   if (interval == "Per jaar")
     summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
-
+  
   # Hover text
   totalCount <- setNames(totalCount$value, totalCount$year)
   summaryData$text <- paste0(
@@ -172,15 +175,15 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
   # Create plot per year
   if (interval == "Per jaar") {
     allPlots <- plot_ly(data = summaryData,
-            x = ~timeChar, y = ~value, type = "bar", 
-            text = ~text, textposition = "none",
-            hoverinfo = "x+text+name",
-            color = ~base::get(groupVariable), colors = colors,
-            width = width, height = height) %>%
-          plotly::layout(
-            xaxis = list(title = '',
-              tickvals = unique(summaryData$timeChar),
-              ticktext = unique(summaryData$timeChar)))
+        x = ~timeChar, y = ~value, type = "bar", 
+        text = ~text, textposition = "none",
+        hoverinfo = "x+text+name",
+        color = ~base::get(groupVariable), colors = colors,
+        width = width, height = height) %>%
+      plotly::layout(
+        xaxis = list(title = '',
+          tickvals = unique(summaryData$timeChar),
+          ticktext = unique(summaryData$timeChar)))
   } else {
     allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
         iYear <- levels(summaryData$afschotjaar)[i]
@@ -212,7 +215,7 @@ countYearShotAnimals <- function(data, regio = "", jaartallen = NULL, width = NU
         text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])),
       xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
       y = if (interval == "Per jaar") -0.25 else -0.3, yanchor = "bottom", showarrow = FALSE)
- 
+  
   colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval) 
   summaryData$group <- NULL
   
@@ -243,6 +246,28 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
       
       ns <- session$ns
       
+      groupVariableFinal <- reactive({          
+          if (groupVariable == "periode" && !is.null(input$schemeringType) && input$schemeringType == "wettelijk") {
+            "periode_wettelijk"
+          } else {
+            groupVariable
+          }
+          
+        })
+      
+      observeEvent(input$schemeringType, {
+          col <- ifelse(input$schemeringType == "wettelijk", "periode_wettelijk", "periode")
+          options <- sort(na.omit(unique(data()[[col]])))
+          updateSelectInput(session, "type", choices = options, selected = options)
+        })
+      
+      observe({
+          req(groupVariable == "wettelijk_kader")
+          
+          options <- sort(na.omit(unique(data()[[groupVariable]])))
+          updateSelectInput(session, "type", choices = options, selected = options)
+        })
+      
       # Verdeling afschot over de jaren
       callModule(module = optionsModuleServer, id = "countYearShot", 
         data = data,
@@ -253,9 +278,10 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
         multipleTypes = TRUE)
       callModule(module = plotModuleServer, id = "countYearShot",
         plotFunction = "countYearShotAnimals", 
-        groupVariable = groupVariable,
+        groupVariable = groupVariableFinal,
         data = data,
-        preSelected = preSelected)
+        preSelected = preSelected,
+        type_MomentOfDay = reactive(input$type))
            
     })
   
@@ -263,6 +289,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
 
 
 #' Shiny module for creating the plot \code{\link{countYearShotAnimals}} - UI side
+#' @param showSchemeringType boolean whether to show a radio button with schemering type
 #' @inheritParams optionsModuleUI
 #' @inheritParams countYearShotAnimals
 #' @inheritParams getOutputDescription
@@ -272,7 +299,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable,
 countYearShotUI <- function(id, groupVariable, regionLevels = NULL, 
   uiText, context = strsplit(id, split = "_")[[1]][1], specie = NULL,
   doHide = TRUE, showDataSource = FALSE, showType = FALSE, showInterval = FALSE,
-  showTime = FALSE) {
+  showTime = FALSE, showSchemeringType = FALSE, showWettelijkKader = FALSE) {
   
   ns <- NS(id)
   
@@ -295,14 +322,26 @@ countYearShotUI <- function(id, groupVariable, regionLevels = NULL,
         
         column(8, plotModuleUI(id = ns("countYearShot"))),
         column(4,
-          optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
-            regionLevels = regionLevels, exportData = TRUE,
-            showType = showType, showInterval = showInterval,
-            showDataSource = showDataSource)
+          wellPanel(
+            if (showSchemeringType)
+              tagList(
+                radioButtons(inputId = ns("schemeringType"), label = "Schemering type",
+                  choices = c("Wettelijk" = "wettelijk", "Burgerlijk" = "burgerlijk")),
+                selectInput(inputId = ns("type"), label = "Moment van de dag",
+                  choices = c(), selected = c(), multiple = TRUE)),
+            if (showWettelijkKader)
+              tagList(
+                selectInput(inputId = ns("type"), label = "Wettelijk kader",
+                  choices = c(), selected = c(), multiple = TRUE)),
+            optionsModuleUI(id = ns("countYearShot"), showTime = showTime, 
+              regionLevels = regionLevels, exportData = TRUE,
+              showType = showType, showInterval = showInterval,
+              showDataSource = showDataSource, doWellPanel = FALSE)
+          )
         )
-        
+      
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   
   ) 

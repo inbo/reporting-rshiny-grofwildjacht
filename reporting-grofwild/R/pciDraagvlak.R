@@ -138,6 +138,7 @@ pciDraagvlakServer <- function(id, data, yVar = NULL, plotFunction, preSelected 
 #' Shiny module for creating the plot \code{\link{pciDraagvlak}} or
 #' \code{\link{barDraagkracht}} - UI side
 #' @inherit welcomeSectionUI
+#' @inheritParams reportingGrofwild-common-args
 #' @param yearChoices character vector, choices for variable 'year'
 #' @param sectorChoices list with character vectors, choices for variable 'sector'
 #' @param groupChoices character vector, choices for variable 'group'; 
@@ -184,7 +185,7 @@ pciDraagvlakUI <- function(id, uiText, yearChoices, sectorChoices,
         )
       ),
       
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       
       plotModuleUI(id = ns("pciDraagvlak")),
       optionsModuleUI(id = ns("pciDraagvlak"), 

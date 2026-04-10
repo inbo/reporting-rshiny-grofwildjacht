@@ -250,7 +250,8 @@ percentageYearlyShotAnimals <- function(
       marker = list(color = colorErrorbar,
         line = list(color = colorErrorbarLine,
           width = 1.5)),
-      name = paste0("Huidig geobserveerd (", as.character(jaar), ")")
+      name = paste0("Huidig geobserveerd (", as.character(jaar), ")"),
+      yaxis = "y2"
     ) %>%
     
     # median
@@ -283,13 +284,10 @@ percentageYearlyShotAnimals <- function(
         titlefont = list(size = 18),
         range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05),
         overlaying = "y2"),
-      yaxis2 = list(title = "",
-        range = c(0, max(dataPlot[, c("obsYear", "maxRange")])*1.05)),
       margin = list(b = 70, t = 120),
       legend = list(orientation = "h", y = 100, x = 0.1),
       showlegend = TRUE
     )
-  
   
   colsOfInterest <- c("dateHalfMonth", "obsYear", "medianRange", "minRange", "maxRange")
   newColNames <-    c("Datum (half-maand resolutie)", 
@@ -383,7 +381,7 @@ yearlyShotAnimalsUI <- function(id, uiText, specie = NULL,
         )
       
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

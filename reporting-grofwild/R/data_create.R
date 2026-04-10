@@ -356,8 +356,7 @@ createRawData <- function(
     
     # Drop unused columns
     rawData <- rawData[, colnames(rawData)[!colnames(rawData) %in% 
-          c("aantal_embryos_onbekend", "doodsoorzaak", "leeftijd_maanden", "tijdstip_comp", 
-            "wettelijk_kader", "periode", "periode_wettelijk")]]
+          c("aantal_embryos_onbekend", "doodsoorzaak", "leeftijd_maanden", "tijdstip_comp")]]
   
     
   } else if (type == "geo") {
@@ -698,7 +697,8 @@ createHabitatData <- function(
     "faunabeheerzones" = "Faunabeheerzones_habitats", 
     "fbz_gemeentes" = "fbz_gemeentes_habitats",
     "utm5" = "utm5_vlgrens_habitats", 
-    "wbe" = "WBE_habitats"
+    "wbe" = "WBE_habitats",
+    "communes_wolf" = "communes_wolf_habitats"
   ) 
   
   habitatData <- sapply(names(allLevels), function(iRegion) {
@@ -757,6 +757,7 @@ createHabitatData <- function(
         flanders = densiteitData[densiteitData$Niveau == "Vlaanderen", ],
         provinces = densiteitData[densiteitData$Niveau == "Provincie", ],
         communes = densiteitData[densiteitData$Niveau == "Gemeente", ],
+        communes_wolf = densiteitData[densiteitData$Niveau == "Gemeente", ],
         faunabeheerzones = densiteitData[densiteitData$Niveau == "Faunabeheerzone", ],
         NULL
       )

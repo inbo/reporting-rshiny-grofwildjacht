@@ -1,7 +1,7 @@
 #' Common arguments for the functions that load data
 #' @param path (optional) string, path to local folder 
 #' containing the data, by default value of the environment
-#' variable: '\emph{reportingGrofwild-data-path} '
+#' variable: '\emph{DATA_PATH} '
 #' - for development purpose only
 #' @name reportingGrofwild-data-load
 NULL
@@ -19,7 +19,7 @@ NULL
 loadShapeData <- function(
   WBE_NR = NULL,
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")
+  path = Sys.getenv("DATA_PATH")
 ) {
 	
   if (all(is.na(WBE_NR)))
@@ -63,6 +63,50 @@ loadShapeData <- function(
 
 }
 
+#' Load spatial data for wolves
+#' @param type character data type to load
+#' @inheritParams readS3
+#' @inheritParams reportingGrofwild-data-load
+#' @return list of sf objects
+#' 
+#' @author mvarewyck
+#' @importFrom sf st_transform read_sf
+#' @export
+loadWolfShapeData <- function(
+  type = c("territory", "utm", "gemeenten"),
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("DATA_PATH")
+) {
+  
+  type <- match.arg(type)
+  
+  dataFile <- switch(type,
+    "utm" = "utm10_vl.geojson",
+    "territory" = "wolf_territories_Flanders.geojson",
+    "gemeenten" = "wolf_gemeenten.geojson"
+  )
+  
+  if (!identical(path, "")) {
+    data <- sf::read_sf(file.path(path, dataFile))
+  } else {
+    obj <- aws.s3::get_object(dataFile, bucket = bucket)
+    geojson_text <- rawToChar(obj)
+    
+    data <- geojsonsf::geojson_sf(geojson_text)
+    
+    if (st_crs(data)$epsg != 4326) {
+      data <- st_transform(data, crs = 4326)
+    }
+    
+    if (type == "gemeenten") {
+      colnames(data)[colnames(data) == "OPPERVL"] <- "AREA"
+    }
+  }
+  
+  data
+  
+}
+
 #' Read ecology, geography, wildschade, kbo_wbe or waarnemingen data
 #' 
 #' Data is preprocessed by createRawData() at INBO
@@ -77,7 +121,7 @@ loadShapeData <- function(
 #' @export
 loadRawData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path"),
+  path = Sys.getenv("DATA_PATH"),
   type = c("eco", "geo", "wildschade", "kbo_wbe", "waarnemingen")
 ) {
   
@@ -104,6 +148,79 @@ loadRawData <- function(
 }
 
 
+#' Read all data related to Wolf species
+#' 
+#' @param bucket character, name of the S3 bucket as specified in the config.yml file;
+#' default value is "inbo-wbe-uat-data"
+#' @param type character data type to load
+#' @inheritParams reportingGrofwild-data-load
+#' @return data.frame, loaded data
+#' @importFrom arrow read_parquet
+#' @importFrom sf st_as_sf st_transform st_point st_sfc
+#' @importFrom dplyr n
+#' @author mvarewyck
+#' @export
+loadWolfData <- function(
+  bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
+  path = Sys.getenv("DATA_PATH"),
+  type = c("locaties", "utm", "overzicht", "terr", "schade")
+) {
+  
+  # For R CMD check
+  X_coord <- Y_coord <- NULL
+  
+  type <- match.arg(type)
+  
+  dataFile <- switch(type,
+    "locaties" = "wolf_monitoring_puntlocaties.csv",
+    "utm" = "wolf_monitoring_UTMhokken.csv",
+    "overzicht" = "wolf_monitoring_jaarlijksoverzicht.csv",
+    "terr" = "wolf_monitoring_territoria.csv",
+    "schade" = "wolf_schade_overzicht.csv"
+  )
+  
+  data <- if (!identical(path, "")){
+      read.csv(file.path(path, dataFile), header = TRUE,  sep = ";", row.names = NULL, )
+    } else {
+      readS3(FUN = read.csv, header = TRUE, sep = ";", row.names = NULL, file = dataFile, bucket = bucket)
+    }
+  
+  if (type == "locaties") {
+    data <- data %>%
+      st_as_sf(coords = c("x", "y"), crs = 31370 )
+    
+    data <- sf::st_transform(data, crs = 4326)
+    
+    colnames(data)[colnames(data) == "monitoringsjaar"] <- "year"
+  } else if (type == "overzicht") {
+    data$wildsoort <- "Wolf"
+    colnames(data)[colnames(data) == "Year"] <- "year"
+    data$X_Coord <- as.numeric(as.character(data$X_Coord))
+    data$Y_Coord <- as.numeric(as.character(data$Y_Coord))
+
+    sf_with_geom <- data %>% filter(!is.na(X_Coord), !is.na(Y_Coord)) %>%
+      st_as_sf(coords = c("X_Coord", "Y_Coord"), crs = 4326, remove = FALSE)
+    sf_no_geom <- data %>% filter(is.na(X_Coord) | is.na(Y_Coord)) %>%
+      mutate(geometry = st_sfc(
+          lapply(seq_len(n()), function(i) st_point()),
+          crs = 4326
+        )) %>% st_as_sf()
+    
+    data <- rbind(sf_with_geom, sf_no_geom)
+  } else if (type == "utm") {
+    colnames(data)[colnames(data) == "monitoringsjaar"] <- "year"
+  } else if (type == "schade") {
+    data$Datum <- as.Date(data$Datum)
+    colnames(data)[colnames(data) == "Jaar"] <- "year"
+    colnames(data)[colnames(data) == "Gemeente"] <- "gemeente_afschot_locatie"
+    colnames(data)[colnames(data) == "Provincie"] <- "provincie"
+    colnames(data)[colnames(data) == "Soort"] <- "wildsoort"
+  }
+  
+  data
+  
+}
+
 
 
 #' Read gemeentes data
@@ -114,7 +231,7 @@ loadRawData <- function(
 #' @export
 loadGemeentes <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   pathFile <- "gemeentecodes.csv"
 
@@ -143,7 +260,7 @@ loadGemeentes <- function(
 #' @export
 loadOpeningstijdenData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")){
+  path = Sys.getenv("DATA_PATH")){
   
   pathFile <- "Openingstijden_grofwild.csv"
   
@@ -191,7 +308,7 @@ loadOpeningstijdenData <- function(
 #' @export
 loadToekenningen <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")),
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   pathFile <- "Verwezenlijkt_categorie_per_afschotplan.csv"
   
@@ -248,7 +365,7 @@ loadToekenningen <- function(
 loadHabitats <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
   regionLevels = NULL,
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   habitatData <- NULL
@@ -289,7 +406,7 @@ loadMetaEco <- function(species = NA) {
     geslacht_comp = c("Vrouwelijk", "Mannelijk"),
     leeftijd_comp_inbo = list(
       # Young to old
-      c("Frisling (<6m)", NA, NA),
+      c("Frisling (<6m)", NA, NA, NA),
       c("Frisling (>6m)", "Kits", rep("Kalf", 2)),
       c(NA, NA, "Jaarling", "Jaarling"),  
       c("Overloper", rep("Jongvolwassen", 3)),
@@ -317,7 +434,10 @@ loadMetaEco <- function(species = NA) {
       "Damhert",
       "Edelhert"        
     ),
-    provincie = list("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg")
+    provincie = list("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg"),
+    wettelijk_kader = c("reguliere jacht", "bijzondere jacht", "bestrijding", "bestrijding veldwachter"),
+    periode = c("dag", "nacht", "schemer"),
+    periode_wettelijk = c("dag", "nacht", "schemer")
   )
   
   toReturn$Leeftijdscategorie_onderkaak <- c(toReturn$leeftijd_comp, "Niet ingezameld")
@@ -416,7 +536,7 @@ loadMetaSchade <- function(dataDir = system.file("extdata", package = "reporting
 #' @export
 loadSpreadData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   spreadData <- NULL
@@ -438,7 +558,7 @@ loadSpreadData <- function(
 #' @export
 loadTrafficData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   trafficData <- NULL
@@ -465,7 +585,7 @@ loadTrafficData <- function(
 #' @export
 loadDraagvlakData <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   dataFiles <- c(
     "PCI_impacts_stakeholders.csv",
@@ -514,7 +634,7 @@ loadDraagvlakData <- function(
 #' @export
 loadBeverAvailableYears <- function(
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   objs <- get_bucket(bucket, max = Inf)
   keys <- vapply(objs, function(x) x$Key, character(1))
@@ -542,7 +662,7 @@ loadBeverAvailableYears <- function(
 loadBeverData <- function(
   year, type = "predictie",
   bucket = config::get("bucket", file = system.file("config.yml", package = "reportingGrofwild")), 
-  path = Sys.getenv("reportingGrofwild-data-path")) {
+  path = Sys.getenv("DATA_PATH")) {
   
   # For R CMD check
   beverData <- NULL

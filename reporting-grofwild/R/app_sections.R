@@ -144,6 +144,7 @@ contactUI <- function(id) {
 #' @inherit welcomeSectionUI
 #' @param currentURL character, url of current page/graph
 #' @param subject character, subject of the mail
+#' @importFrom utils URLencode
 #' @export
 contactServer <- function(id, uiText, currentURL = NULL, subject = "Faunabeheer web applicatie") {
   

@@ -4,6 +4,8 @@
 #' @param sourceIndicator character, defines the data source to be used for
 #' bioindicator 'onderkaak_comp_bron'
 #' @param type animal type, used to filter \code{data} ('type_comp' column)
+#' @param type_leeftijd leeftijd type, used to filter \code{data} ('leeftijd_comp' column)
+#' @param isWBE boolean whether it is a plot on the WBE page
 #' @inheritParams countYearAge
 #' @inheritParams filterGrofwild
 #' @import plotly
@@ -181,6 +183,7 @@ plotBioindicator <- function(data,
 
 
 #' Shiny module for creating the plot \code{\link{plotBioindicator}} - UI side
+#' @param isWBE boolean whether it is a plot on the WBE page
 #' @inheritParams countAgeGenderServer 
 #' @inheritParams optionsModuleServer 
 #' @inheritParams plotBioindicator
@@ -271,7 +274,7 @@ plotBioindicatorUI <- function(id, bioindicator = c("onderkaaklengte", "ontweid_
               title = "Accuraatheid onderkaaklengte"),
         )
       ),
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       tags$hr()
     )
   )

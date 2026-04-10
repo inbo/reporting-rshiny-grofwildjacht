@@ -58,7 +58,7 @@ optionsModuleUI <- function(id,
               choices = c(
                 "Vlaanderen" = "flanders", 
                 "Provincie" = "provinces", 
-                "Fusiegemeenten" = "communes", 
+                "Gemeente" = "communes", 
                 "Faunabeheerzones" = "faunabeheerzones")[regionLevels],
               selected = regionLevelSelected)),
             column(11, offset = 1, uiOutput(ns("region")))
@@ -475,6 +475,9 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param variable character, defines which variable is of interest for the table
 #' @param combinatie logical, summarised view of selected regions
 #' @param typeMelding reactive with type of notification ('melding')
+#' @param filterDataOnRegion boolean whether to filter on region level
+#' @param isWBE boolean whether it is a plot on the WBE page
+#' @param type_MomentOfDay reactive with type of moment of day
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
@@ -504,7 +507,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
     variable = NULL, combinatie = NULL, title = NULL,
     fullNames = NULL, type = NULL,
     typeMelding = NULL, preSelected = reactive(NULL), filterDataOnRegion = TRUE,
-    height = "600px", isWBE = FALSE,
+    height = "600px", isWBE = FALSE, type_MomentOfDay = reactive(NULL),
     exportPlotWidth = 6, exportPlotHeight = 6) {
   
   subData <- reactive({
@@ -525,7 +528,7 @@ plotModuleServer <- function(input, output, session, plotFunction,
           } else if (regionLevel == "faunabeheerzones") {  
             validate(need("FaunabeheerZone" %in% colnames(subData), getOutputTitle(output ="regioSchaal_warningMessage", uiText = uiText, regioSchaal = "faunabeheerzone")))
             subData <- subData[as.character(subData$FaunabeheerZone) %in% region, ]
-          } else if(regionLevel == "communes") { 
+          } else if(regionLevel %in% c("communes", "communes_wolf")) { 
             validate(need("gemeente_afschot_locatie" %in% colnames(subData), getOutputTitle(output ="regioSchaal_warningMessage", uiText = uiText, regioSchaal = "gemeente")))
             subData <- subData[subData$gemeente_afschot_locatie %in% region, ]
           } else if(regionLevel == "fbz_gemeentes") {   
@@ -585,7 +588,6 @@ plotModuleServer <- function(input, output, session, plotFunction,
   argList <- reactive({
       
         validate(need(nrow(subData()) > 0, "Er is geen data aanwezig voor de geselecteerde filters. Gelieve een andere selectie te maken."))
-#        if (plotFunction == "plotBioindicator") browser()
         
         year <- coalesce(input$year, preSelected()$year(), NA)
         time <- coalesce(input$time, preSelected()$time(), NA)
@@ -599,8 +601,12 @@ plotModuleServer <- function(input, output, session, plotFunction,
           typeLeeftijd <- NULL
         }
         # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector
-        if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "countYearShotAnimals") {   
+        # In case of countYearShot_periode, both dagmoment and jachtmethode come from type-selector
+        if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "countYearShotAnimals") {
           typeReact <- preSelected()$type()
+          typeJacht <- input$type
+        } else if (!is.null(input$type) && !is.null(type_MomentOfDay()) && plotFunction == "countYearShotAnimals") {  
+          typeReact <- type_MomentOfDay()
           typeJacht <- input$type
         } else {
           typeReact <- if (!is.null(input$type)) input$type else if (!is.null(preSelected()$type())) preSelected()$type() else NA
@@ -648,8 +654,13 @@ plotModuleServer <- function(input, output, session, plotFunction,
               list(summarizeBy = summarizeBy),
             if(!is.null(bioindicator))
               list(bioindicator = bioindicator),
-            if(!is.null(groupVariable))
-              list(groupVariable = groupVariable),
+            if (plotFunction %in% c("countYearShotAnimals")) {
+              if(!is.null(groupVariable()))
+                list(groupVariable = groupVariable())
+            } else {
+              if(!is.null(groupVariable))
+                list(groupVariable = groupVariable)
+            },
             if(!is.null(yVar))
               list(yVar = yVar),
             if(!is.null(fullNames))

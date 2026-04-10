@@ -57,3 +57,11 @@ reporting-grofwild/inst/extdata/spatialData*.RData
 
 # local AWS connection
 /scripts/*.sh
+
+# direnv
+.rlibs
+.direnv
+.envrc
+
+# vscode project files
+.vscode

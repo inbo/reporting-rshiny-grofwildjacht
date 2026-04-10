@@ -25,6 +25,9 @@ outputUI <- function(id, category, schadeSelection = FALSE, whiteWell = FALSE, u
           
     # image
     img(src = imgFile, width = "100%"),
+    
+    # max Data disclaimer
+    uiOutput(outputId = ns("maxDateHighlight")),
            
     # Specie and options
     tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
@@ -34,7 +37,7 @@ outputUI <- function(id, category, schadeSelection = FALSE, whiteWell = FALSE, u
         mainPanel = mainPanel(
           width = 9, 
           style = "overflow-y: hidden", # avoid 2 scrolling bar
-          uiOutput(outputId = ns("topbar_filtering")),        #generalSelectionUI(ns("topbar")),
+          uiOutput(outputId = ns("topbar_filtering")),
           if (whiteWell)
               wellPanel(class = "well-white", uiOutput(outputId = ns("output"))) else
               uiOutput(outputId = ns("output")),

@@ -11,6 +11,8 @@
 #' 
 #' @author sjunius
 #' @import shiny
+#' @importFrom shinyjs runjs
+#' @importFrom reactable renderReactable reactable reactableOutput colDef
 #' @importFrom tidyselect where
 #' @export
 requestAfschotReewildServer <- function(
@@ -38,8 +40,13 @@ requestAfschotReewildServer <- function(
         nextYears <- c(currentYear + 1, currentYear + 2, currentYear + 3)
       }
       
-      aanvraagTable <- reactive({
-          
+      # Initialize reactive data from your aanvraagTable
+      table_data <- reactiveVal(NULL)
+      updateTable <- reactiveVal(0)
+      isClearing <- reactiveVal(FALSE)
+      
+      observe({
+         
           data <- data()
           data <- data %>% mutate(
             type = dplyr::case_when(
@@ -54,6 +61,12 @@ requestAfschotReewildServer <- function(
             group_by(type, afschotjaar) %>% 
             summarise(n = dplyr::n()) 
           
+          req(nrow(df) > 0)
+          
+          if (!startsWith(id, "wbe")) {  # Leave input values empty for public page
+            df$n <- 0
+          }
+          
           df_totals <- df %>% 
             group_by(afschotjaar) %>%
             summarise(n = sum(n), .groups = "drop") %>%
@@ -63,7 +76,7 @@ requestAfschotReewildServer <- function(
           
           df <- rbind(df, df_totals)
           
-          table_data <- df %>%
+          fullTable <- df %>%
             tidyr::pivot_wider(
               names_from = afschotjaar,
               values_from = n,
@@ -73,30 +86,195 @@ requestAfschotReewildServer <- function(
               gemiddeld = rowMeans(dplyr::across(where(is.numeric)), na.rm = TRUE),
               percentage = paste0(round((gemiddeld / gemiddeldTotaal) * 100, 2), "%")
             )
+          
+          table_data(fullTable)
         })
-  
-      output$aanvraagAfschot <- renderUI({
+      
+      
+      # Create editable table
+      output$aanvraagAfschotTable <- renderReactable({
+          data <- table_data()
+          if (is.null(data)) return(NULL)
           
-          req(aanvraagTable())
-          req(nrow(aanvraagTable()) > 0)
+          year_cols <- as.character(pastYears)
           
-          df <- aanvraagTable()
+          col_defs <- list(
+            type = colDef(name = "JAAR")
+          )
           
-          colnames(df) <- c("JAAR", pastYears, "GEMIDDELD GEREALISEERD", "PERCENTAGE")
+          # Add year columns as editable for first 3 rows
+          for (col in year_cols) {
+            col_defs[[col]] <- colDef(
+              name = col,
+              cell = function(value, index, col = col) {
+                if (!startsWith(id, "wbe") && index <= 3) {  # Only first 3 rows on public page are editable
+                  tags$input(
+                    type = "number",
+                    value = value,
+                    id = ns(paste0("cell_", index, "_", col)),
+                    onblur = sprintf(
+                      "Shiny.onInputChange('%s', this.value); Shiny.onInputChange('%s', Math.random());",
+                      ns(paste0("cell_", index, "_", col)),
+                      ns("updateTable")
+                    ),
+                    style = "width: 100%; padding: 5px;"
+                  )
+                } else {
+                  value
+                }
+              }
+            )
+          }
           
+          col_defs$gemiddeld <- colDef(
+            name = "GEMIDDELD GEREALISEERD",
+            cell = function(value) round(value, 2)
+          )
+          col_defs$percentage <- colDef(name = "PERCENTAGE")
+          
+          reactable(
+            data,
+            columns = col_defs,
+            striped = FALSE,
+            highlight = TRUE
+          )
+        })
+      
+        
+        # Update calculated values whenever inputs change
+        observeEvent(input$updateTable, {
+            data <- table_data()
+            year_cols <- as.character(pastYears)
+            
+            for (row in 1:3) {
+              for (col in year_cols) {
+                input_id <- paste0("cell_", row, "_", col)
+                
+                if (!is.null(input[[input_id]])) {
+                  new_value <- suppressWarnings(as.numeric(input[[input_id]]))
+                  if (!is.na(new_value)) {
+                    data[[col]][row] <- new_value
+                  }
+                }
+              }
+            }
+            
+            for (i in 1:3) {
+              values <- as.numeric(data[i, year_cols])
+              data$gemiddeld[i] <- round(mean(values, na.rm = TRUE), 2)
+            }
+            
+            if (nrow(data) == 4) {
+              for (col in year_cols) {
+                data[[col]][4] <- sum(as.numeric(data[[col]][1:3]), na.rm = TRUE)
+              }
+              data$gemiddeld[4] <- round(mean(as.numeric(data[4, year_cols]), na.rm = TRUE), 2)
+            }
+            
+            # Calculate percentages (using total average as base = 100%)
+            totaal_average <- data$gemiddeld[data$type == "Totaal"]
+            if (length(totaal_average) > 0 && totaal_average > 0) {
+              for (i in 1:nrow(data)) {
+                data$percentage[i] <- paste0(round((data$gemiddeld[i] / totaal_average) * 100, 2), "%")
+              }
+            }
+            
+            table_data(data)
+          })
+        
+          
+          # Clear the input fields
+          observeEvent(input$clearInput, {              
+              data <- table_data()
+              year_cols <- as.character(pastYears)
+              
+              for (row in 1:4) {
+                for (col in year_cols) {
+                  data[[col]][row] <- 0
+                  
+                  shinyjs::runjs(paste0("Shiny.onInputChange('", ns(paste0("cell_", row, "_", col)),"', '0');"))
+                }
+              }
+              
+              data[, "gemiddeld"] <- 0
+              data[, "percentage"] <- "0%"
+              
+              table_data(data)
+              
+            })
+        
+      
+      output$aanvraagAfschot <- renderUI({          
           tagList(
             h3(paste0("Aanvraag ", nextYears[1], "-", nextYears[3])),
-            renderTable({df}, width = "95%", sanitize.text.function = function(x) x)
+            reactableOutput(ns("aanvraagAfschotTable"))
             )
         })
       
+      output$export <- downloadHandler(
+        
+        filename = function() {
+          paste0(
+            "aanvraag_afschot_",
+            Sys.Date(),
+            ".csv"
+          )
+        },
+        
+        content = function(file) {
+          write.csv(
+            table_data(),
+            file,
+            row.names = FALSE,
+            fileEncoding = "UTF-8"
+          )
+        }
+      )
+      
+      observeEvent(input$importAanvraag, {
+          
+          req(input$importAanvraag)
+          
+          tryCatch({
+              df <- read.csv(
+                input$importAanvraag$datapath,
+                stringsAsFactors = FALSE,
+                check.names = FALSE,
+                fileEncoding = "UTF-8"
+              )
+            },
+            error = function(e) {
+              showNotification("Het is niet mogelijk om dit bestand correct te laden. Gelieve een ander bestand te selecteren.", type = "error", duration = 5)
+              return()
+            }
+          )
+          
+          
+          # Basic validation
+          required_cols <- colnames(table_data())
+          
+          if (!all(required_cols %in% colnames(df)) | nrow(df) != 4)
+            showNotification("Het format van de ge\u00EFmporteerde bestand is niet correct. Gelieve het format over te nemen van het ge\u00EBxporteerde bestand. ", type = "error", duration = 5)
+          else 
+            table_data(df)
+        })
+      
+      
+      startCalculations <- reactiveVal(0)
+      
+      observeEvent(table_data(), {
+          req(startsWith(id, "wbe"))
+          startCalculations(startCalculations() + 1)
+        })
+      observeEvent(input$calculate, startCalculations(startCalculations() + 1))
       
       maxNbLabels <- reactive({
+          startCalculations()
           req(input$toekenningsFactor)
-          req(aanvraagTable())
-          req(nrow(aanvraagTable()) > 0)
+          req(isolate(table_data()))
+          req(nrow(isolate(table_data())) > 0)
           
-          round(aanvraagTable()$gemiddeld[aanvraagTable()$type == "Totaal"][[1]] * (input$toekenningsFactor), 0)
+          isolate(round(table_data()$gemiddeld[table_data()$type == "Totaal"][[1]] * (input$toekenningsFactor), 0))
           
         })
       
@@ -222,10 +400,11 @@ requestAfschotReewildServer <- function(
         })
       
       output$resultaatAanvraag <- renderUI({
-          req(aanvraagTable())
-          req(nrow(aanvraagTable()) > 0)
+          startCalculations()
+          req(isolate(table_data()))
+          req(nrow(isolate(table_data())) > 0)
           
-          totalRee <- aanvraagTable()$gemiddeld[aanvraagTable()$type == "Totaal"][[1]]
+          totalRee <- isolate(table_data()$gemiddeld[table_data()$type == "Totaal"][[1]])
           calcFactor <- if (totalRee > 100) {
             1.15
           } else if (totalRee <= 100 & totalRee > 50) {
@@ -308,6 +487,13 @@ requestAfschotReewildUI <- function(id,
         fixedRow(
           column(12, uiOutput(ns("aanvraagAfschot")))
         ),
+        if (!startsWith(id, "wbe"))
+          fixedRow(
+            column(2, actionButton(ns("calculate"), "Berekenen", width = "100%", style = "color: #fff; background-color: steelblue; margin-top: 25px;")),
+            column(2, actionButton(ns("clearInput"), "Leegmaken", width = "100%", icon = tags$i(class = "fa fa-trash", style = "color:#fff;"), style = "color: #fff; background-color: brown; margin-top: 25px;")),
+            column(2, offset = 3, downloadButton(ns("export"), "Exporteer aanvraag", width = "100%", icon = tags$i(class = "fa fa-download", style = "color:white;"), style = "color: #fff; background-color: steelblue; margin-top: 25px;")),
+            column(3, fileInput(ns("importAanvraag"),"Importeer aanvraag", accept = c(".csv"), width = "100%", buttonLabel = "Bladeren", placeholder = "Kies een CSV-bestand"))
+          ),
         fixedRow(
           column(12, uiOutput(ns("resultaatAanvraag")))
         )

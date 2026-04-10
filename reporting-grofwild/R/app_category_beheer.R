@@ -30,6 +30,7 @@ beheerOutputServer <- function(id,
       results$ecoData <- reactive(
         ecoData[which(ecoData$wildsoort == specie()), ]
       )
+
       results$geoData <- reactive({
           req(geoData)
           geoData[which(geoData$wildsoort == specie()), ]
@@ -64,7 +65,7 @@ beheerOutputServer <- function(id,
       results$combinedData <- reactive(
         merge(
           x = results$ecoData(), 
-          y = results$geoData()[, c("ID", "FaunabeheerZone")], 
+          y = results$geoData()[, c("ID", "FaunabeheerZone", "gemeente_afschot_locatie")], 
           by = "ID"
         )
       )
@@ -114,6 +115,20 @@ beheerOutputServer <- function(id,
           return(drukjachtData)
         })
       
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          
+          maxDate <- max(ecoData$afschot_datum, na.rm = TRUE)
+          text <- getMaxDateHighlight(specie(), subcategory(), uiText, maxDate)          
+          req(nchar(text) > 0)
+          
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(text)
+            )
+          )
+        })
+      
       ## Sidebar panel
       
       specieSidebarServer(id = "sidebar", specie = specie)
@@ -148,6 +163,9 @@ beheerOutputServer <- function(id,
                   showTime = TRUE, 
                   showRegion = TRUE,
                   showInterval = TRUE
+                ),
+                "beheer-afschotplan" = list(
+                  hideGeneralFilters = TRUE
                 )
               )
             )
@@ -190,11 +208,12 @@ beheerOutputServer <- function(id,
                       c(min(results$openingstijd()[1], results$timeRange()[1]), max(results$openingstijd()[2], results$timeRange()[2])))
                 ),
                 "beheer-leeftijdcategorie" = list(
-                  regionLevels = c(1:2, 4),
+                  regionLevels = c(1:4),
                   allRegionsSelected = TRUE,
                   types = results$leeftijdtypes,
                   labelTypes = "Leeftijdscategorie",
-                  multipleTypes = TRUE
+                  multipleTypes = TRUE,
+                  data = results$combinedData
                  ),
                 "beheer-jachtmethode" = list(
                   regionLevels = c(1:2, 4),
@@ -205,7 +224,8 @@ beheerOutputServer <- function(id,
                         c(min(2014, min(results$drukjachtData()$afschotjaar)), max(results$timeRange()[2], max(results$drukjachtData()$afschotjaar))) else 
                         c(2014, results$timeRange()[2])
                   )
-                )
+                ),
+                "beheer-afschotplan" = list()
               )
             )
             
@@ -293,6 +313,20 @@ beheerOutputServer <- function(id,
                         uiText = uiText, context = "description", specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearShotUI-jachtmethode_comp" %in% plot())
                       )),
+                  if ("countYearShotUI-wettelijk_kader" %in% outputs)
+                    wellPanel(class = "well-white", countYearShotUI(
+                        id = ns("plot2"), groupVariable = "wettelijk_kader", showType = TRUE,
+                        uiText = uiText, context = "description", specie = specie(),
+                        showWettelijkKader = TRUE,
+                        doHide = !(plot() == defaultTabs$plot || "countYearShotUI-wettelijk_kader" %in% plot())
+                      )),
+                  if ("countYearShotUI-periode" %in% outputs)
+                    wellPanel(class = "well-white", countYearShotUI(
+                        id = ns("plot3"), groupVariable = "periode", showType = TRUE,
+                        uiText = uiText, context = "description", specie = specie(), 
+                        showSchemeringType = TRUE,
+                        doHide = !(plot() == defaultTabs$plot || "countYearShotUI-ymoment_dag" %in% plot())
+                      )),
                   if ("F04_3" %in% outputs)
                     wellPanel(class = "well-white", countYearProvinceUI(
                         id = ns("plot"), 
@@ -300,6 +334,14 @@ beheerOutputServer <- function(id,
                         plotFunction = "F04_3", showCombinatie = TRUE,
                         doHide = !(plot() == defaultTabs$plot || "F04_3" %in% plot())
                       ))
+                )
+              },
+              "beheer-afschotplan" = {
+                tagList(
+                  if ("afschotAanvraagReewild" %in% outputs)
+                    wellPanel(class = "well-white", 
+                      requestAfschotReewildUI(id = ns("afschotAanvraagReewild"), uiText = uiText, context = "description",
+                      doHide = !(plot() == defaultTabs$plot || "afschotAanvraagReewild" %in% plot())))
                 )
               }
             
@@ -352,14 +394,14 @@ beheerOutputServer <- function(id,
                 plot2 = if ("countYearProvinceUI-afschot" %in% outputs)
                   countYearProvinceServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     allRegionsSelected = TRUE,
                     preSelected = beheerSelection
                   ),
                 plot3 = if ("yearlyShotAnimalsUI" %in% outputs)
                   yearlyShotAnimalsServer(
                     id = "plot", 
-                    data = results$ecoData, 
+                    data = results$combinedData, 
                     timeRange = results$openingstijd, 
                     type = results$labeltypes, 
                     openingstijdenData = results$openingstijdenData,
@@ -381,7 +423,7 @@ beheerOutputServer <- function(id,
                 plot2 = if ("tableProvinceUI" %in% outputs)
                   tableProvinceServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     categorie = "leeftijd",
                     timeRange = results$timeRange,
                     preSelected = beheerSelection
@@ -398,12 +440,35 @@ beheerOutputServer <- function(id,
                     types = results$jachttypes,
                     preSelected = beheerSelection
                   ),
-                plot2 = if ("F04_3" %in% outputs)
+                plot2 = if ("countYearShotUI-wettelijk_kader" %in% outputs)
+                  countYearShotServer(
+                    id = "plot2",
+                    data = results$combinedData,
+                    groupVariable = "wettelijk_kader",
+                    types = results$jachttypes,
+                    preSelected = beheerSelection
+                  ),
+                plot3 = if ("countYearShotUI-periode" %in% outputs)
+                  countYearShotServer(
+                    id = "plot3",
+                    data = results$combinedData,
+                    groupVariable = "periode",
+                    types = results$jachttypes,
+                    preSelected = beheerSelection
+                  ),
+                plot4 = if ("F04_3" %in% outputs)
                   countYearProvinceServer(
                     id = "plot", 
                     data = results$drukjachtData,
                     preSelected = beheerSelection
                   )
+              )
+            },
+            "beheer-afschotplan" = {
+              list(
+                plot1 = if ("afschotAanvraagReewild" %in% outputs)
+                  requestAfschotReewildServer(id = "afschotAanvraagReewild", 
+                    data = results$combinedData)
               )
             }
           )

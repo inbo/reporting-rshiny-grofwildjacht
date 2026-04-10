@@ -42,6 +42,7 @@ getSubcategoryTitle <- function(subcategory, uiText){
 #' @param type (optional) character vector of length 1 with type
 #' @param n (optional) integer vector of length 1 with maximum 
 #' number of characters to include
+#' @param regioSchaal character selected region level
 #' @inheritParams reportingGrofwild-common-args
 #' @return character vector of length 1 with plot title
 #' @author lcougnaud
@@ -152,7 +153,7 @@ getOutputDescription <- function(output,
     for (i in seq_along(keys)) {
       text <- gsub(
         pattern = paste0("\\{\\{\\{", keys[i], "\\}\\}\\}"), 
-        replacement = paste0("<b>", stringr::str_to_title(gsub("hover_", "", keys[i])), "</b>: ", uiText[which(uiText$plotFunction == keys[i]), context]), 
+        replacement = paste0("<b>", stringr::str_to_title(gsub("_", " ", gsub("hover_", "", keys[i]))), "</b>: ", uiText[which(uiText$plotFunction == keys[i]), context]), 
         x = text
       )
     }
@@ -160,8 +161,13 @@ getOutputDescription <- function(output,
   
   # Replace last date
   if (!is.null(maxDate))
-    text <- gsub("\\{\\{maxDate\\}\\}", 
-      format(maxDate, "%d/%m/%Y"), text)
+    if (is.character(maxDate)) {
+      text <- gsub("\\{\\{maxDate\\}\\}", 
+        gsub("-", "/", maxDate), text)
+    } else {
+      text <- gsub("\\{\\{maxDate\\}\\}", 
+        format(maxDate, "%d/%m/%Y"), text)
+    }
   
   if(!is.null(specie)){
     splitText <- strsplit(text, split = "\\{")[[1]]
@@ -262,7 +268,9 @@ getOutputSpecie <- function(specie,
     if(nrow(combinedDataSpecie) > 0)
       c("countYearShotUI-leeftijd_comp"),
     if(any(combinedDataSpecie$afschotjaar >= 2014))
-      c("countYearShotUI-jachtmethode_comp"),
+      c("countYearShotUI-jachtmethode_comp", "countYearShotUI-wettelijk_kader", "countYearShotUI-periode"),
+    if (specie == "Ree")
+      "afschotAanvraagReewild",
     if(nrow(ecoDataSpecie) > 0)
       c(
         # beheer
@@ -316,7 +324,21 @@ getOutputSpecie <- function(specie,
     if (!all(is.na(combinedDataSpecie$ontweid_gewicht)))
       "plotBioindicatorUI-ontweid_gewicht",
     "biodiversiteitsportaal",
-    "exotenportaal"
+    "exotenportaal",
+    "wolf_info",
+    "roofdiernieuws_link",
+    if (specie == "Wolf")
+      c(
+        "tableWolfReproductionUI", "countGeneticWolvesUI", "countHerkomstWolvesUI",
+        "countDeathWolvesUI", "mapAccidentsWolvesUI", 
+        "trendWolfFlandersUI", "countSchadeWolvesUI-gemeldeSchade", 
+        "mapAccidentsWolvesRegionUI", "countSchadeWolvesUI-omheining", 
+        "countSchadeWolvesUI-soort", "downloadSchadeWolvesUI", "trendWolfRegionUI", 
+        "countSchadeWolvesRegionUI-gemeldeSchade", 
+        "countSchadeWolvesRegionUI-omheining", "countSchadeWolvesRegionUI-soort",
+        "mapSchadeWolvesUI",
+        "mapLocationWolvesUI", "mapUTMWolvesUI", "mapDispersersWolvesUI"
+      )
   )
     
   return(outputs)
@@ -333,6 +355,8 @@ getOutputSpecie <- function(specie,
 #' @inheritDotParams getOutputSpecie
 #' @return data.frame with specie, category, subcategory and output,
 #' ordered as shown in the UI
+#' 
+#' @importFrom dplyr left_join
 #' @author lcougnaud
 #' @export
 getOutputInfo <- function(species, ...){
@@ -379,9 +403,9 @@ getOutputInfo <- function(species, ...){
             data.frame(specie = blacklist$specie[i], output = blacklist$output[i])
         }))
     blacklist$blacklist <- TRUE
-    info <- merge(
+    info <- left_join(
       x = info, y = blacklist,
-      all.x = TRUE, by = c("specie", "output"), sort = FALSE
+      by = c("specie", "output")
     )
   } else {
     info$blacklist <- NA
@@ -413,14 +437,21 @@ getSubcategoryOutput <- function(output){
       `beheer-leeftijdcategorie` = 
           c("countYearShotUI-leeftijd_comp", "tableProvinceUI"),
       `beheer-jachtmethode` = 
-          c("countYearShotUI-jachtmethode_comp", "F04_3"),
+          c("countYearShotUI-jachtmethode_comp", "F04_3", "countYearShotUI-wettelijk_kader", "countYearShotUI-periode"),
+      `beheer-afschotplan` = 
+        c("afschotAanvraagReewild"),
       
       # schade
       `schade-vlaanderen` = c(
-          "tableSchadeSummaryUI", "trendYearFlandersUI-schade"
+          "tableSchadeSummaryUI", "trendYearFlandersUI-schade",
+          "trendWolfFlandersUI", "mapAccidentsWolvesUI", 
+          "countSchadeWolvesUI-gemeldeSchade", "countSchadeWolvesUI-omheining", 
+          "countSchadeWolvesUI-soort", "downloadSchadeWolvesUI"
       ),
       `schade-regio` =  c("countYearProvinceUI-schade", "mapFlandersUI-schade", 
-        "mapSchadeUI"),
+        "mapSchadeUI", "trendWolfRegionUI", "mapAccidentsWolvesRegionUI", 
+        "countSchadeWolvesRegionUI-gemeldeSchade", "countSchadeWolvesRegionUI-omheining", 
+        "countSchadeWolvesRegionUI-soort", "mapSchadeWolvesUI"),
       `schade-type-gewas` = c("countYearSchadeUI-gewas", "tableGewasUI"),
       `schade-type-schade` = c("countYearSchadeUI-wildschade", "tableSchadeUI"),
       `schade-seizoen` = c("countYearSchadeUI-seizoen"),
@@ -430,17 +461,20 @@ getSubcategoryOutput <- function(output){
       `populatie-leeggewicht` = c("boxAgeWeightUI", "plotBioindicatorUI-ontweid_gewicht"),
       `populatie-onderkaak` = c("countAgeCheekUI", "plotBioindicatorUI-onderkaaklengte"),
       `populatie-geslacht` = "countAgeGenderUI",
-      `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI"),
+      `populatie-voortplanting` = c("countAgeGroupUI", "countEmbryosUI", "tableWolfReproductionUI"),
+      `populatie-genetica` = c("countGeneticWolvesUI", "countHerkomstWolvesUI"),
+      `populatie-doodsoorzaak` = c("countDeathWolvesUI"),
       
       # verspreiding
-      `verspreiding-huidig` = c("F17_1", "kencijferUI"),
+      `verspreiding-huidig` = c("F17_1", "kencijferUI", 
+        "mapLocationWolvesUI", "mapUTMWolvesUI", "mapDispersersWolvesUI"),
       `verspreiding-toekomstig` = "mapSpreadUI",
       
       # draagvlak
       `draagvlak-surveys` = c("F14_1", "F14_2", "F14_3", "F14_4", "F14_5"),
       
       #interne links
-      `links-internelinks` = c("biodiversiteitsportaal", "exotenportaal")
+      `links-internelinks` = c("biodiversiteitsportaal", "exotenportaal", "wolf_info", "roofdiernieuws_link")
   
 #      # woordenlijst
 #      `woordenlijst-placeholder` = "woordenlijstPlaceholder"
@@ -513,7 +547,7 @@ getInfo <- function(
   if(select(var = output, name = "output"))
     infoOutput <- infoOutput[which(infoOutput$output == output), ]
   
-  results <- unique(as.character(infoOutput[, variable]))
+  results <- unique(as.character(infoOutput[order(infoOutput$category), variable]))
   
   return(results)
   
@@ -614,4 +648,44 @@ resetNavbarChoices <- function(allChoices, currentChoices) {
       # Hide
       bslib::nav_hide(id = "navbarID", target = iChoice)
   
+}
+
+#' Get text about maximum date used for observations, to highlight in app.
+#' Either find information for the given specie and subcategory or category.
+#' If neither can be found, use the default text provided for the maxDate.
+#'
+#' @param specie Species for which to get this information
+#' @param subcategory Subcategory for which to get this information
+#' @param uiText uiText to look this up
+#' @param maxData The calculated maximum date
+getMaxDateHighlight <- function(specie, subcategory, uiText, maxDate) {
+  # Get text based on subcategory
+  text <- getOutputDescription(
+    output = paste0(gsub(" ", "-", tolower(specie)), "_", subcategory, "_maxDateHighlight"),
+    uiText = uiText,
+    context = "description",
+    maxDate = maxDate
+  )
+
+  if (is.null(text)) {
+    # If not provided, get text based on category
+    text <- getOutputDescription(
+      output = paste0(gsub(" ", "-", tolower(specie)), "_", strsplit(subcategory, "-")[[1]][[1]], "_maxDateHighlight"),
+      uiText = uiText,
+      context = "description",
+      maxDate = maxDate
+    )
+
+    # If not provided, get default text
+    if (is.null(text)) {
+      text <- getOutputDescription(
+        output = "maxDateHighlight",
+        uiText = uiText,
+        context = "description",
+        maxDate = maxDate
+      )
+    }
+  }
+
+  return(text)
 }

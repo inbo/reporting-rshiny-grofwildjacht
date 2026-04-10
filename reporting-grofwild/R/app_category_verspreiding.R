@@ -65,6 +65,20 @@ verspreidingOutputServer <- function(id,
           
         })
       
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+        
+          maxDate <- max(ecoData$afschot_datum, na.rm = TRUE)
+          text <- getMaxDateHighlight(specie(), subcategory(), uiText, maxDate)
+          req(nchar(text) > 0)
+          
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(text)
+            )
+          )
+        })
+      
       ## Sidebar panel
       
       specieSidebarServer(id = "sidebar", specie = specie)
@@ -84,10 +98,10 @@ verspreidingOutputServer <- function(id,
               ),
               switch(as.character(subcategory()), 
                 "verspreiding-huidig" = list(
-                  showYear = TRUE,
+                  showYear = if (specie() == "Wolf") FALSE else TRUE,
                   showRegion = TRUE,
-                  showType = TRUE,
-                  showUnit = TRUE
+                  showType = if (specie() == "Wolf") FALSE else TRUE,
+                  showUnit = if (specie() == "Wolf") FALSE else TRUE
                 ),
                 "verspreiding-toekomstig" = list(
                   hideGeneralFilters = TRUE
@@ -115,7 +129,11 @@ verspreidingOutputServer <- function(id,
               ),
               switch(as.character(subcategory()), 
                 "verspreiding-huidig" = list(
-                  regionLevels = c(1:4),
+                  regionLevels = if (specie() == "Wolf") c(
+                        "Vlaanderen" = "flanders",
+                        "Provincie" = "provinces", 
+                        "Gemeente" = "communes_wolf"
+                      ) else c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
                   types = isolate(results$databronnen),
@@ -124,7 +142,7 @@ verspreidingOutputServer <- function(id,
                   units = c("Aantal" = "absolute", "Aantal/100ha" = "relative", 
                     "Aantal/100ha bos & natuur" = "relativeDekking"),
                   timeRange = isolate(results$timeRange),
-                  data = reactive(isolate(results$geoDataAll()[wildsoort == specie()]))),
+                  data = if (specie() == "Wolf") reactive(spatialData) else reactive(isolate(results$geoDataAll()[wildsoort == specie()]))),
                 "verspreiding-toekomstig" = list()
               )
             )
@@ -173,6 +191,24 @@ verspreidingOutputServer <- function(id,
                         id = ns("plot2"), 
                         uiText = uiText,
                         doHide = !(plot() == defaultTabs$plot || "kencijferUI" %in% plot())
+                      )),
+                  if ("mapLocationWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot3"), showYear = TRUE,
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapLocationWolvesUI" %in% plot())
+                      )),
+                  if ("mapUTMWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapUTMWolvesUI(
+                        id = ns("plot4"), showYear = TRUE,
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapUTMWolvesUI" %in% plot())
+                      )),
+                  if ("mapDispersersWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapDispersersWolvesUI(
+                        id = ns("plot5"), 
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapDispersersWolvesUI" %in% plot())
                       ))
                 )
               },
@@ -180,7 +216,7 @@ verspreidingOutputServer <- function(id,
                 tagList(
                   if ("mapSpreadUI" %in% outputs)
                     wellPanel(class = "well-white", mapSpreadUI(
-                        id = ns("plot3"), 
+                        id = ns("plot6"), 
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "mapSpreadUI" %in% plot())
@@ -204,10 +240,10 @@ verspreidingOutputServer <- function(id,
           
           req(verspreidingSelection())
           
-          switch(as.character(outputServer()), 
+          results$serverOutput <- switch(as.character(outputServer()), 
             "verspreiding-huidig" = {
               c(
-                if ("F17_1" %in% outputs)
+                plot1 = if ("F17_1" %in% outputs)
                   mapFlandersServer(
                     id = "plot1",
                     defaultYear = defaultYear,
@@ -222,7 +258,7 @@ verspreidingOutputServer <- function(id,
                     uiText = uiText,
                     preSelected = verspreidingSelection
                   ),
-                if ("kencijferUI" %in% outputs)
+                plot2 = if ("kencijferUI" %in% outputs)
                   kencijferModuleServer(
                     id = "plot2",
                     kencijfersData = reactive(results$geoDataAll()[wildsoort == specie()]),
@@ -230,14 +266,37 @@ verspreidingOutputServer <- function(id,
                     spatialData = spatialData,
                     species = specie,
                     preSelected = verspreidingSelection
+                  ),
+                plot3 = if ("mapLocationWolvesUI" %in% outputs)
+                  mapLocationWolvesServer(
+                    id = "plot3",  
+                    data = reactive(wolfPuntenData),
+                    allSpatialData = spatialData,
+                    variable = "Status",
+                    preSelected = verspreidingSelection
+                  ),
+                plot4 = if ("mapUTMWolvesUI" %in% outputs)
+                  mapUTMWolvesServer(
+                    id = "plot4",  
+                    data = reactive(wolfHokkenData),
+                    allSpatialData = spatialData,
+                    preSelected = verspreidingSelection
+                  ),
+                plot5 = if ("mapDispersersWolvesUI" %in% outputs)
+                  mapDispersersWolvesServer(
+                    id = "plot5",  
+                    data = reactive(wolfOverzichtData),
+                    popup_variables = c("WolfID", "Herkomst"),
+                    allSpatialData = spatialData,
+                    preSelected = verspreidingSelection
                   )
               )
             },
             "verspreiding-toekomstig" = {
               c(
-                if ("mapSpreadUI" %in% outputs)
+                plot1 = if ("mapSpreadUI" %in% outputs)
                   mapSpreadUI = mapSpreadServer(
-                    id = "plot3",
+                    id = "plot6",
                     allSpatialData = spatialData,
                     species = specie(),
                     type = "F17_4",
@@ -250,6 +309,64 @@ verspreidingOutputServer <- function(id,
           # re-set in case plot selected via tab after/before category card
           outputServer(NULL)
         })
+        
+        observe({
+           
+            req(as.character(subcategory()) == "verspreiding-huidig" && specie() == "Wolf")
+            req(results$serverOutput$plot3)
+            
+            p <- results$serverOutput$plot3()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(verspreidingSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "verspreiding_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
+          })
+          
+          
+        observe({
+            
+            req(as.character(subcategory()) == "verspreiding-huidig" && specie() == "Wolf")
+            req(results$serverOutput$plot4)
+            
+            p <- results$serverOutput$plot4()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(verspreidingSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "verspreiding_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
+          })
+        
+        observe({
+            
+            req(as.character(subcategory()) == "verspreiding-huidig" && specie() == "Wolf")
+            req(results$serverOutput$plot5)
+            
+            p <- results$serverOutput$plot5()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(verspreidingSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "verspreiding_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
+          })
       
       return(list(
           specie = specie

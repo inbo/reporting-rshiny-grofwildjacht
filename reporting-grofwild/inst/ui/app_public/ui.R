@@ -1,14 +1,36 @@
 # build all specie tabs
-specieTabs <- lapply(species, function(specie){
-  bslib::nav_panel(
-    title = tools::toTitleCase(specie), 
-    value = specie,
-    specieUI(
-      id = specie, 
-      speciesList = groupSpecies(allSpecies = allWildsoorten)
-    )
-  )
-})
+specieTabs <- unlist(lapply(unique(allWildsoorten$group), function(group) {
+      
+      speciesTmp <- allWildsoorten[allWildsoorten$group == group, "name"]
+      
+      # Create nav_panels for each subcategory in this category
+      specie_panels <- lapply(speciesTmp, function(specie) {
+          
+          
+          bslib::nav_panel(
+            title = HTML(paste0("&nbsp;&nbsp;", tools::toTitleCase(specie))),
+            value = specie,
+            specieUI(
+              id = specie, 
+              speciesList = groupSpecies(allSpecies = allWildsoorten)
+            )
+          )
+        })
+
+      specie_panels <- append(
+        list(bslib::nav_item(
+          tags$span(
+            class = "tab-title-no-link",
+            tools::toTitleCase(group)
+          )
+        )),
+        specie_panels
+      )
+
+      specie_panels
+
+    }), recursive = FALSE)
+
 
 # build all category tabs
 categoryTabs <- lapply(categories, function(category){

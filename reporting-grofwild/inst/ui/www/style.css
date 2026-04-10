@@ -302,6 +302,14 @@ p, li, label {
 	color: inherit !important;
 }
 
+.tab-title-no-link {
+  font-weight: bold;
+  text-decoration: underline;
+	font-size: 18px;
+	color: #ffffff !important;
+  padding: 3px 0px 3px 10px;
+}
+
 #navbarID {
   position: sticky !important;
   top: 0 !important;
@@ -315,12 +323,12 @@ p, li, label {
 
 .dropdown-menu {
   background-color: #456394; 
-	max-height: 800px;
+	max-height: 75vh; /* 75% of current viewport height */
 	overflow-y: auto;
 }
 .dropdown-menu > li > a {
   color: #ffffff;
-	max-height: 800px;
+	max-height: 600px;
 	overflow-y: auto;
 }
 .dropdown-menu > li.active > a, .dropdown-menu > li.hover > a {
@@ -437,6 +445,7 @@ body > .tabbable {
   color: #03a150;
   text-decoration: underline;
   cursor: help;
+	overflow: visible;
 }
 .tooltip-box {
   display: none;   /* hidden by default */
@@ -451,11 +460,24 @@ body > .tabbable {
   border-radius: 5px;
   box-shadow: 0 0 5px rgba(0,0,0,0.3);
   white-space: normal;
-	min-width: max-content;
+	width: max-content;
 	max-width: 700px;
   text-align: left;
-  z-index: 9999;
+  z-index: 2147483647;
+	overflow: visible !important;
+	white-space: normal;
+	overflow-wrap: break-word;
 }
+
+.row {
+    overflow: visible !important;
+}
+
+[class^="col-"],
+[class*=" col-"] {
+    overflow: visible !important;
+}
+
 /* Show tooltip when hovering the wrapper OR the tooltip itself */
 .tooltip-wrapper:hover .tooltip-box,
 .tooltip-box:hover {
@@ -505,4 +527,20 @@ body > .tabbable {
     
 .well-content.collapsed {
   display: none;
+}
+
+.larger-description {
+  font-size: 17px !important;
+  line-height: 1.4;
+}
+
+.larger-description * {
+  font-size: 17px !important;
+  line-height: 1.4;
+}
+
+.leaflet-control-easyPrint {
+  visibility: hidden;
+  width: 0px;
+  height: 0px;
 }

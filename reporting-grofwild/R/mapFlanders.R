@@ -19,6 +19,7 @@ getRegionLevel <- function(level) {
     "provinces" = "Provincie",
     "faunabeheerzones" = "Faunabeheerzones",
     "communes" = "Gemeente",
+    "communes_wolf" = "Gemeente",
     "municipalities" = "Gemeente",
     "fbz_gemeentes" = "Gemeente per faunabeheerzone",
     "utm5" = "5x5 UTM",
@@ -44,13 +45,23 @@ getCenterView <- function(sf_object) {
   
 }
 
-
+outputFunction <- function(type, specie = NULL) {
+  if (type == "dash") {
+    "F17_1"
+  } else if ( type != "schade") {
+    "mapFlandersUI"
+  } else if ( ! is.null(specie) && specie == "Wolf" && type == "schade" ) {
+    "mapSchadeWolvesUI"
+  } else {
+    paste0("mapFlandersUI-", type)
+  }
+}
 
 #' Create summary data of geographical data for selected year, species and region level
 #' @param data data.frame, geographical data
 #' @param allSpatialData list of sp, spatial data for all spatial levels
 #' @param biotoopData data.frame, background data for the WBE, as read from \code{loadHabitats}
-#' @param year integer, year of interest
+#' @param selectedYear integer, year of interest
 #' @param regionLevel character, regional level of interest should be one of 
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5" )}
 #' @param unit character, whether absolute frequencies, relative frequencies (aantal/100ha),
@@ -66,9 +77,10 @@ getCenterView <- function(sf_object) {
 #' @author mvarewyck
 #' @importFrom reshape2 dcast
 #' @importFrom sf st_drop_geometry
+#' @importFrom stats as.formula
 #' @export
 createSpaceData <- function(data, allSpatialData, biotoopData, 
-  year, species, regionLevel,
+  selectedYear, species, regionLevel,
   unit = c("absolute", "relative", "absoluteCases", "relativeDekking", "region"), 
   sourceIndicator = NULL, countVariable = NULL, groupVariable = NULL) {
   
@@ -81,7 +93,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   # Select correct spatial data
   spatialData <- filterSpatial(allSpatialData = allSpatialData, 
-    species = species, regionLevel = regionLevel, year = year)
+    species = species, regionLevel = regionLevel, year = selectedYear)
   
   if (is.null(groupVariable))
     groupVariable <- "dataSource"
@@ -91,9 +103,9 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
     spatialData <- sf::st_drop_geometry(spatialData)
   
   # Framework for summary data
-  fullData <- if (regionLevel %in% "communes") {
-      
-      spatialData[, c("NAAM", "AREA", "NISCODE", "provincie", "postcode")]
+  fullData <- if (regionLevel %in% c("communes", "communes_wolf")) {
+
+      spatialData[, c("NAAM", "AREA", "NISCODE")]
       
     } else if (regionLevel %in% "fbz_gemeentes") {
       
@@ -116,7 +128,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
         "Area_km2" else
         "Area_hab_km2_bos"
     if (regionLevel == "WBE_buitengrenzen")
-      tmpData <- biotoopData[biotoopData$year %in% year, c("regio", areaVariable)] else 
+      tmpData <- biotoopData[biotoopData$year %in% selectedYear, c("regio", areaVariable)] else 
       tmpData <- biotoopData[, c("regio", areaVariable)]
     
     colnames(tmpData) <- c("NAAM", "AREA")
@@ -138,8 +150,8 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   
   # Select subset for time & species
   if (length(species) > 1 || species != "")
-    plotData <- subset(data, subset = afschotjaar %in% year & wildsoort %in% species) else if (!is.null(year))
-    plotData <- subset(data, subset = afschotjaar %in% year) else 
+    plotData <- subset(data, subset = afschotjaar %in% selectedYear & wildsoort %in% species) else if (!is.null(selectedYear))
+    plotData <- subset(data, subset = afschotjaar %in% selectedYear) else 
     plotData <- data
   
   
@@ -164,6 +176,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
       flanders = "Vlaams Gewest",
       provinces = plotData$provincie, 
       communes = plotData$gemeente_afschot_locatie,
+      communes_wolf = plotData$gemeente_afschot_locatie,
       faunabeheerzones = plotData$FaunabeheerZone,
       fbz_gemeentes = plotData$fbz_gemeente,
       utm5 = plotData$UTM5,
@@ -225,7 +238,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   if (unit == "region") {
     
     jachtData <- filterSpatial(allSpatialData = allSpatialData, 
-      species = species, regionLevel = "WBE", year = year)
+      species = species, regionLevel = "WBE", year = selectedYear)
     
     if (is.null(jachtData)) {
       
@@ -291,10 +304,10 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
   summaryData2$wildsoort <- paste(species, collapse = ", ")
   
   # Re-arrange colums
-  if (regionLevel == "communes") {
+  if (regionLevel %in% c("communes", "communes_wolf")) {
     
-    summaryData2 <- summaryData2[c(c("locatie", "NISCODE", "postcode"), 
-        setdiff(names(summaryData2), c("locatie", "NISCODE", "postcode")))]
+    summaryData2 <- summaryData2[c(c("locatie", "NISCODE"), 
+        setdiff(names(summaryData2), c("locatie", "NISCODE")))]
     
   }
   
@@ -327,7 +340,7 @@ createSpaceData <- function(data, allSpatialData, biotoopData,
 #' @export
 mapFlanders <- function(
   regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
-    "fbz_gemeentes", "utm5", "WBE_buitengrenzen"),  
+    "fbz_gemeentes", "utm5", "WBE_buitengrenzen", "communes_wolf"),  
   borderRegion = NULL, borderLocaties = NULL,
   species, year = NA,
   allSpatialData, summaryData, colorScheme = NULL,
@@ -376,7 +389,14 @@ mapFlanders <- function(
     
   }
   
-  myMap <- leaflet(spatialData) %>%
+  myMap <- leaflet(
+      spatialData,
+      options = leafletOptions(
+        zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+        zoomDelta = 0.25,   # controls zoom increment
+        wheelPxPerZoomLevel = 240
+      )
+    ) %>%
     
     addPolygons(
       weight = 1, 
@@ -430,8 +450,7 @@ mapFlanders <- function(
   if (!is.null(statsMap)) {
     myMap <- addControl(myMap, statsMap, position = "bottomleft")
   }
-  
-  
+  myMap <- leaflet_bound_flanders(myMap)
   
   myMap
   
@@ -517,25 +536,14 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             min(geoData()$afschotjaar)
         })
       
-      outputFunction <- reactive({
-          
-          if (type == "dash") 
-            "F17_1" else if (type != "schade")
-            "mapFlandersUI" else
-            paste0("mapFlandersUI-", type)
-          
-        })
-      
       output$description <- renderUI({
-          
-          description <- getOutputDescription(
-            output = outputFunction(), 
-            uiText = uiText, 
-            context = if (type == "wbe") "wbe" else "description") 
-          
-          tags$p(HTML(description))
-          
-        })
+        description <- getOutputDescription(
+          output = outputFunction(type, species()), 
+          uiText = uiText, 
+          context = if (type == "wbe") "wbe" else "description"
+        )
+        tags$div(class = "larger-description", HTML(description))
+      })
       
       
       # Data dependent input #
@@ -708,7 +716,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           paste0(
             if (type == "schade") 
-                "aantal schadegevallen" else if (!is.null(countVariable)) 
+                ifelse(species() == "Wolf", "aantal bevestigde schadegevallen", "aantal schadegevallen") else if (!is.null(countVariable)) 
                 countVariable else 
                 "afschot",
             if (!is.null(unit()) && !type %in% c("wbe", "empty")) 
@@ -782,7 +790,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             biotoopData = if (is.list(biotoopData))
                 biotoopData[[regionLevelLocal()]] else
                 biotoopData,
-            year = year(),
+            selectedYear = year(),
             species = species(),
             regionLevel = regionLevelLocal(),
             unit = if (type == "wbe") "region" else if (type != "empty") unit(),
@@ -803,12 +811,20 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           validate(need(summarySpaceData()$data, "Geen data beschikbaar"))
           
           regionNames <- summarySpaceData()$data$locatie
-          titleText <- paste(if (type != "dash") "Gerapporteerd", 
+          titleText <- paste(
+            if (type != "dash" && species() != "Wolf"){
+              "Gerapporteerd"
+            } else if (species() == "Wolf") {
+              "Bevestigd"
+            }, 
             paste0(
-              if (type == "schade") 
-                  "aantal schadegevallen" else if (!is.null(countVariable)) 
-                  countVariable else 
-                  "afschot",
+              if (type == "schade") {
+                "aantal schadegevallen"
+              } else if (!is.null(countVariable)) {
+                countVariable
+              } else {
+                "afschot"
+              },
               if (!is.null(unit()) && type %in% c("beheer")) 
                 switch(unit(),
                   absolute = "",
@@ -898,9 +914,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             colorScheme = colorScheme(),
             addGlobe = !hideGlobeDefault,
             borderRegion = if (!is.null(locaties()))
-                regionLevel() else if (regionLevelLocal() %in% c("communes", "fbz_gemeentes", "utm5"))
+                regionLevel() else if (regionLevelLocal() %in% c("communes", "communes_wolf", "fbz_gemeentes", "utm5"))
                 switch(regionLevelLocal(),
                   "communes" = "provinces",
+                  "communes_wolf" = "provinces",
                   "fbz_gemeentes" = "faunabeheerzones",
                   "utm5" = "provinces"
                 ),
@@ -908,7 +925,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             legend = "topright",
             legendText = isolate(simpleCap(unitText(), keepNames = FALSE)),
             statsMap = statsMap()
-          )  
+          ) |> leaflet_bound_flanders()
         })
       
       output$spacePlot <- renderLeaflet({
@@ -1004,19 +1021,18 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           
           centerValues <- getCenterView(sf_object = selectedPolygons)
           
-          leafletProxy("spacePlot", data = spatialData()) %>%
-            
-            fitBounds(lng1 = centerValues[1], lng2 = centerValues[2],
-              lat1 = centerValues[3], lat2 = centerValues[4])
+          leafletProxy("spacePlot", data = spatialData()) |>
+            leaflet_bound_flanders()
           
         })
       
       
       # Pre-selected polygons to highlight
       selectedPolygons <- reactive({
+          if (type %in% "dash") {
+            return(NULL)
+          }
           
-          req(!type %in% c("dash"))
-
           tmpSpatial <- filterSpatial(
             allSpatialData = allSpatialData, 
             species = req(species()), 
@@ -1163,9 +1179,10 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               legendText = simpleCap(unitText(), keepNames = FALSE),
               addGlobe = input$globe %% 2 == as.numeric(hideGlobeDefault),
               borderRegion = if (!is.null(locaties()))
-                  regionLevel() else if (regionLevelLocal() %in% c("communes", "fbz_gemeentes", "utm5"))
+                  regionLevel() else if (regionLevelLocal() %in% c("communes", "communes_wolf", "fbz_gemeentes", "utm5"))
                   switch(regionLevelLocal(),
                     "communes" = "provinces",
+                    "communes_wolf" = "provinces",
                     "fbz_gemeentes" = "faunabeheerzones",
                     "utm5" = "provinces"
                   ),
@@ -1178,18 +1195,21 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
               zoom = input$spacePlot_zoom
             )
           
-          if (isTruthy(selectedPolygons))
+          if (isTruthy(selectedPolygons())) {
             # Selected regions
-            newMap <- newMap %>%
-              addPolylines(data = selectedPolygons(), color = "gray", weight = 5,
-                group = "regionLines") 
-          
+            newMap <- newMap |>
+              leaflet::addPolylines(
+                data = selectedPolygons(),
+                color = "gray",
+                weight = 5,
+                group = "regionLines"
+              ) 
+          }
+
           newMap
-          
+
         }) 
-      
-      
-      # Download the map
+
       output$download <- downloadHandler(
         filename = function()
           nameFile(species = species(),
@@ -1266,8 +1286,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           h3(
             paste0("Jaarlijks",
             if (type == "schade") "e schadegevallen door " else " gerapporteerd afschot van ", 
-            species(), " per geselecteerde ",
-            tolower(regionLevelName())
+            tolower(species()), if (regionLevelName() != "Vlaanderen") paste0(" per geselecteerde ", tolower(regionLevelName())) else (" in Vlaanderen") 
           ))
           
         })
@@ -1319,7 +1338,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           description <- getOutputDescription(output = "barBiotoop", 
             uiText = uiText, context = context)
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
         })
       
 
@@ -1328,7 +1347,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           description <- getOutputDescription(output = "tableBackground", 
             uiText = uiText, context = strsplit(id, "_")[[1]][1])
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
           
         })
 
@@ -1425,6 +1444,10 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
   mapScaleChoices = regionChoices,
   unitChoices = c("Aantal" = "absolute", "Aantal/100ha" = "relative", "Aantal/100ha bos & natuur" = "relativeDekking"),
   plotDetails = c("region", "biotoop"),
+  variableChoices = c("Bron" = "dataSource",
+    "Type schade" = "schadeCode",
+    "Seizoen" = "season"
+  ),
   showTitle = TRUE) {
   
   ns <- NS(id)
@@ -1440,20 +1463,12 @@ mapFlandersUI <- function(id, showRegion = (type != "dash"),
       c("waarnemingen.be", "afschot") else
       loadMetaSchade()$sources
   
-  variableChoices <- c("Bron" = "dataSource",
-    "Type schade" = "schadeCode",
-    "Seizoen" = "season"
-  )
-    
-  outputFunction <- if (type == "dash") 
-      "F17_1" else if (type != "schade")
-      "mapFlandersUI" else
-      paste0("mapFlandersUI-", type)
+
   
   mainTitle <- if (type == "wbe") 
       "Landkaart" else
       getOutputTitle(
-        output = outputFunction, 
+        output = outputFunction(type, specie), 
         uiText = uiText, specie = specie, type = type
       )
   

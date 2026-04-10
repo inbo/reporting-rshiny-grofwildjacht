@@ -207,7 +207,7 @@ percentageRealisedShotUI <- function(id, showAccuracy = FALSE, regionLevels = NU
               exportData = TRUE,
               doWellPanel = FALSE)
           ),
-          tags$p(HTML(description)),
+          tags$div(class = "larger-description", HTML(description)),
           if (showAccuracy)
             accuracyModuleUI(id = ns("percentageRealisedShot"), title = "Realisatie geselecteerde periode"),
         ),

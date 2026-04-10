@@ -186,7 +186,13 @@ mapSchade <- function(
     }
     
     
-    myMap <- leaflet(schadeData) %>%
+    myMap <- leaflet(schadeData,
+        options = leafletOptions(
+          zoomSnap = 0.25,   # allows zoom steps of 0.25 instead of 1
+          zoomDelta = 0.25,   # controls zoom increment
+          wheelPxPerZoomLevel = 240
+        )
+    ) %>%
             
             addCircleMarkers(
                     fillColor = ~palette(variable),
@@ -205,11 +211,7 @@ mapSchade <- function(
                               paste0("<li><strong> Seizoen </strong>: ", schadeData$season),
                             "</ul>"
                     )
-            ) %>%
-            
-            fitBounds(lng1 = centerView[1], lng2 = centerView[2],
-              lat1 = centerView[3], lat2 = centerView[4])
-    
+            )
     # Add black borders
     if (!is.null(regionLevel) & !is.null(allSpatialData[[regionLevel]])) {
         
@@ -250,6 +252,7 @@ mapSchade <- function(
         
     }
     
+    myMap <- leaflet_bound_flanders(myMap)
     
     myMap
     
@@ -411,7 +414,7 @@ mapSchadeServer <- function(
             type = descrType
           )
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
           
         })
       
@@ -597,7 +600,7 @@ mapSchadeServer <- function(
             lat = input$perceelPlot_center$lat,
             zoom = input$perceelPlot_zoom
           )
-                    
+
         })
       
       # Add world map
@@ -733,6 +736,7 @@ mapSchadeServer <- function(
 #' @param filterSubcode boolean, whether to include the option to filter on schade subcode;
 #' default value is FALSE
 #' @param filterSource boolean, whether to show filter option for source
+#' @param filterTime boolean, whether to show filter option for time
 #' @param filterAccuracy boolean, whether to show filter option for accuracy
 #' @param variableChoices named character vector, choices for coloring 
 #' @inherit welcomeSectionUI

@@ -64,10 +64,12 @@ tableSchadeCode <- function(data, jaartallen = NULL,
     allData$locatie <- as.factor("Vlaams Gewest")
   } else if (regionLevel == "provinces") {
     allData$locatie <- factor(allData$provincie)
-  } else {
+  } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
     allData$locatie <- allData$FaunabeheerZone
     allData$locatie <- factor(allData$locatie, levels = levels(droplevels(factor(unique(allData$locatie), 
             levels = c(1:10)))))
+  } else {
+    allData$locatie <- factor(allData$gemeente_afschot_locatie)
   }
      
   # Select data
@@ -274,7 +276,7 @@ tableSchadeUI <- function(id,
       ),
       tableModuleUI(id = ns("tableSchade")),
       tags$br(),
-      tags$p(HTML(description)),
+      tags$div(class = "larger-description", HTML(description)),
       tags$hr()
     ) 
   )

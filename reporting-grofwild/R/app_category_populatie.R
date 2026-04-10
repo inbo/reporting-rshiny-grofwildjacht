@@ -33,13 +33,17 @@ populatieOutputServer <- function(id,
       results$combinedData <- reactive(
         merge(
           x = results$ecoData(), 
-          y = results$geoData()[, c("ID", "FaunabeheerZone")], 
+          y = results$geoData()[, c("ID", "FaunabeheerZone", "gemeente_afschot_locatie")], 
           by = "ID"
         )
       )
       
       results$timeRange <- reactive(
-        range(results$ecoData()$afschotjaar)
+        if (specie() == "Wolf") {
+            range(wolfTerritoriaData$Jaar)
+          } else {
+            range(results$ecoData()$afschotjaar)
+          }
       ) 
       
       # Plot 6: Leeggewicht per leeftijdscategorie (INBO of Meldingsformulier) en geslacht
@@ -78,6 +82,20 @@ populatieOutputServer <- function(id,
           )
         })
       
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          
+          maxDate <- max(ecoData$afschot_datum, na.rm = TRUE)
+          text <- getMaxDateHighlight(specie(), subcategory(), uiText, maxDate)
+          req(nchar(text) > 0)
+          
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(text)
+            )
+          )
+        })
+      
       ## Sidebar panel
       
       specieSidebarServer(id = "sidebar", specie = specie)
@@ -111,8 +129,15 @@ populatieOutputServer <- function(id,
                   ),
                 "populatie-voortplanting" = list(
                   showTime = TRUE, 
-                  showRegion = TRUE,
-                  showDataSource = c("embryos", "leeftijd", "geslacht")
+                  showRegion = if (specie() == "Wolf") FALSE else TRUE,
+                  showDataSource = if (specie() == "Wolf") c() else c("embryos", "leeftijd", "geslacht")
+                ),
+                "populatie-genetica" = list(
+                  showTime = TRUE,
+                  summarizeBy = TRUE
+                ),
+                "populatie-doodsoorzaak" = list(
+                  showTime = TRUE
                 )
               )
             )
@@ -137,8 +162,9 @@ populatieOutputServer <- function(id,
                 ),
                 switch(as.character(subcategory()), 
                   "populatie-leeggewicht" = list(
-                    regionLevels = c(1:2, 4),
+                    regionLevels = c(1:4),
                     allRegionsSelected = TRUE,
+                    data = results$combinedData,
                     timeRange = reactive(if (specie() == "Ree")
                           c(2014, max(results$timeRange())) else 
                           results$timeRange()),
@@ -147,17 +173,26 @@ populatieOutputServer <- function(id,
                     multipleTypes = TRUE
                   ),
                   "populatie-onderkaak" = list(
-                    regionLevels = c(1:2, 4),
+                    regionLevels = c(1:4),
                     allRegionsSelected = TRUE,
+                    data = results$combinedData,
                     timeRange = reactive(if (specie() == "Ree")
                           c(2005, max(results$timeRange())) else 
                           results$timeRange())
                   ),
                   "populatie-geslacht" = list(),
                   "populatie-voortplanting" = list(
-                    regionLevels = c(1:2, 4),
+                    regionLevels = c(1:4),
+                    data = results$combinedData,
                     allRegionsSelected = TRUE,
                     timeRange = results$timeRange
+                  ),
+                  "populatie-genetica" = list(
+                    timeRange = reactive(range(wolfOverzichtData$year)),
+                    summarizeBy = c("Aantal" = "count", "Percentage" = "percent")
+                  ),
+                  "populatie-doodsoorzaak" = list(
+                  timeRange = reactive(range(wolfOverzichtData$year))
                   )
                 )
               )
@@ -248,6 +283,38 @@ populatieOutputServer <- function(id,
                         uiText = uiText, context = "description",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countEmbryosUI" %in% plot())
+                      )),
+                  if ("tableWolfReproductionUI" %in% outputs)
+                    wellPanel(class = "well-white", tableWolfReproductionUI(
+                        id = ns("plot"), 
+                        uiText = uiText, specie = specie(),
+                        doHide = !(plot() == defaultTabs$plot || "tableWolfReproductionUI" %in% plot())
+                      ))
+                )
+              },
+              "populatie-genetica" = {
+                tagList(
+                  if ("countGeneticWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countGeneticWolvesUI(
+                        id = ns("plot"), plotFunction = "countGeneticWolvesUI",
+                        uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "countGeneticWolvesUI" %in% plot())
+                      )),
+                  if ("countHerkomstWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countHerkomstWolvesUI(
+                        id = ns("plot"), plotFunction = "countHerkomstWolvesUI",
+                        uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "countHerkomstWolvesUI" %in% plot())
+                      ))
+                )
+              },
+              "populatie-doodsoorzaak" = {
+                tagList(
+                  if ("countDeathWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", countDeathWolvesUI(
+                        id = ns("plot"), 
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "countDeathWolvesUI" %in% plot())
                       ))
                 )
               }
@@ -292,7 +359,7 @@ populatieOutputServer <- function(id,
                 if ("countAgeCheekUI" %in% outputs)
                   countAgeCheekServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     preSelected = populatieSelection
                   ),
                 if ("plotBioindicatorUI-onderkaaklengte" %in% outputs)
@@ -330,8 +397,40 @@ populatieOutputServer <- function(id,
                 if ("countAgeGroupUI" %in% outputs)
                   countAgeGroupServer(
                     id = "plot",
-                    data = results$ecoData,
+                    data = results$combinedData,
                     groupVariable = "reproductiestatus",
+                    preSelected = populatieSelection
+                  ),
+                if ("tableWolfReproductionUI" %in% outputs)
+                  tableWolfReproductionServer(
+                    id = "plot", 
+                    data = wolfTerritoriaData,
+                    preSelected = populatieSelection
+                  )
+              )
+            },
+            "populatie-genetica" = {
+              c(
+                if ("countGeneticWolvesUI" %in% outputs)
+                  countGeneticWolvesServer(
+                    id = "plot",
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
+                    preSelected = populatieSelection
+                  ),
+                if ("countHerkomstWolvesUI" %in% outputs)
+                  countHerkomstWolvesServer(
+                    id = "plot",
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
+                    preSelected = populatieSelection
+                  )
+              )
+            },
+            "populatie-doodsoorzaak" = {
+              list(
+                plot1 = if ("countDeathWolvesUI" %in% outputs)
+                  countDeathWolvesServer(
+                    id = "plot",
+                    data = reactive(sf::st_drop_geometry(wolfOverzichtData)),
                     preSelected = populatieSelection
                   )
               )

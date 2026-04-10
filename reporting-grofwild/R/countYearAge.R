@@ -247,7 +247,7 @@ countYearAgeUI <- function(id, uiText, plotFunction = "countYearAgeUI",
             summarizeBy = c("Aantal (alle data)" = "count",
               "Percentage (enkel ingezamelde onderkaken)" = "percent"),
             showTime = TRUE, regionLevels = if (showRegion) c(1:2, 4), exportData = TRUE),
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
         )
       ),
       tags$hr()

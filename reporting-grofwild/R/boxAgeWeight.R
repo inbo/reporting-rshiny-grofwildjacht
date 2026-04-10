@@ -197,7 +197,7 @@ boxAgeWeightUI <- function(id,
             exportData = TRUE, showDataSource = showDataSource) 
         )
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
 

@@ -1,34 +1,112 @@
 specie,output
 Wild zwijn,exotenportaal
 Wild zwijn,mapSchadeUI
+Wild zwijn,wolf_info
+Wild zwijn,roofdiernieuws_link
 Edelhert,exotenportaal
 Edelhert,mapSchadeUI
+Edelhert,wolf_info
+Edelhert,roofdiernieuws_link
 Ree,exotenportaal
 Ree,mapSchadeUI
+Ree,wolf_info
+Ree,roofdiernieuws_link
 Damhert,mapSchadeUI
+Damhert,wolf_info
+Damhert,roofdiernieuws_link
 Haas,exotenportaal
 Haas,mapSchadeUI
+Haas,wolf_info
+Haas,roofdiernieuws_link
 Fazant,mapSchadeUI
+Fazant,wolf_info
+Fazant,roofdiernieuws_link
 Konijn,mapSchadeUI
+Konijn,wolf_info
+Konijn,roofdiernieuws_link
 Patrijs,exotenportaal
 Patrijs,mapSchadeUI
+Patrijs,wolf_info
+Patrijs,roofdiernieuws_link
 Wilde eend,exotenportaal
 Wilde eend,mapSchadeUI
+Wilde eend,wolf_info
+Wilde eend,roofdiernieuws_link
 Smient,exotenportaal
 Smient,mapSchadeUI
+Smient,wolf_info
+Smient,roofdiernieuws_link
 Grauwe gans,exotenportaal
 Grauwe gans,mapSchadeUI
+Grauwe gans,wolf_info
+Grauwe gans,roofdiernieuws_link
 Canadese gans,mapSchadeUI
+Canadese gans,wolf_info
+Canadese gans,roofdiernieuws_link
 Kievit,exotenportaal
 Kievit,mapSchadeUI
+Kievit,wolf_info
+Kievit,roofdiernieuws_link
 Houtduif,exotenportaal
 Houtduif,mapSchadeUI
+Houtduif,wolf_info
+Houtduif,roofdiernieuws_link
 Vos,exotenportaal
 Vos,mapSchadeUI
+Vos,wolf_info
+Vos,roofdiernieuws_link
+Brandgans,exotenportaal
+Brandgans,mapSchadeUI
+Brandgans,wolf_info
+Brandgans,roofdiernieuws_link
+Das,exotenportaal
+Das,mapSchadeUI
+Das,wolf_info
+Das,roofdiernieuws_link
+Ekster,exotenportaal
+Ekster,mapSchadeUI
+Ekster,wolf_info
+Ekster,roofdiernieuws_link
+Gaai,exotenportaal
+Gaai,mapSchadeUI
+Gaai,wolf_info
+Gaai,roofdiernieuws_link
+Kauw,exotenportaal
+Kauw,mapSchadeUI
+Kauw,wolf_info
+Kauw,roofdiernieuws_link
+Kleine zwaan,exotenportaal
+Kleine zwaan,mapSchadeUI
+Kleine zwaan,wolf_info
+Kleine zwaan,roofdiernieuws_link
+Knobbelzwaan,exotenportaal
+Knobbelzwaan,mapSchadeUI
+Knobbelzwaan,wolf_info
+Knobbelzwaan,roofdiernieuws_link
+Koolmees,exotenportaal
+Koolmees,mapSchadeUI
+Koolmees,wolf_info
+Koolmees,roofdiernieuws_link
+Pimpelmees,exotenportaal
+Pimpelmees,mapSchadeUI
+Pimpelmees,wolf_info
+Pimpelmees,roofdiernieuws_link
+Turkse tortel,exotenportaal,
+Turkse tortel,mapSchadeUI
+Turkse tortel,wolf_info
+Turkse tortel,roofdiernieuws_link
+Zwarte kraai,exotenportaal
+Zwarte kraai,mapSchadeUI7
+Zwarte kraai,wolf_info
+Zwarte kraai,roofdiernieuws_link
 Verwilderde kat,exotenportaal
 Verwilderde kat,mapSchadeUI
+Verwilderde kat,wolf_info
+Verwilderde kat,roofdiernieuws_link
 Bever,exotenportaal
 Bever,mapSchadeUI
+Bever,wolf_info
+Bever,roofdiernieuws_link
 Wolf,exotenportaal
 Wolf,tableSchadeSummaryUI
 Wolf,trendYearFlandersUI-schade
@@ -41,3 +119,34 @@ Wolf,countYearSchadeUI-gewas
 Wolf,mapFlandersUI-schade
 Wolf,mapSchadeUI
 Wolf,barCostUI
+Steenmarter,exotenportaal
+Steenmarter,mapSchadeUI
+Steenmarter,wolf_info
+Kleine rietgans,exotenportaal
+Kleine rietgans,mapSchadeUI
+Kleine rietgans,wolf_info
+Kleine rietgans,roofdiernieuws_link
+Meerkoet,exotenportaal
+Meerkoet,mapSchadeUI
+Meerkoet,wolf_info
+Meerkoet,roofdiernieuws_link
+Rietgans,exotenportaal
+Rietgans,mapSchadeUI
+Rietgans,wolf_info
+Rietgans,roofdiernieuws_link
+Waterhoen,exotenportaal
+Waterhoen,mapSchadeUI
+Waterhoen,wolf_info
+Waterhoen,roofdiernieuws_link
+Wintertaling,exotenportaal
+Wintertaling,mapSchadeUI
+Wintertaling,wolf_info
+Wintertaling,roofdiernieuws_link
+Kolgans,exotenportaal
+Kolgans,mapSchadeUI
+Kolgans,wolf_info
+Kolgans,roofdiernieuws_link
+Roek,exotenportaal
+Roek,mapSchadeUI
+Roek,wolf_info
+Roek,roofdiernieuws_link

@@ -58,12 +58,16 @@ if (!doDebug | !exists("toekenningsData"))
 
 # Load object called spatialData
 if (!doDebug | !exists("spatialData")){
-  dataPath <- Sys.getenv("reportingGrofwild-data-path")
+  dataPath <- Sys.getenv("DATA_PATH")
   if(!identical(dataPath, "")){
     load(file = file.path(dataPath, "spatialData_sf.RData"))
   }else{
     readS3(file = "spatialData_sf.RData")
   }
+}
+
+if (exists("spatialData") && !("communes_wolf" %in% names(spatialData))) {
+  spatialData$communes_wolf <- loadWolfShapeData(type = "gemeenten")
 }
 
 # Data with observations and geographical information
@@ -80,6 +84,18 @@ if (!doDebug | !exists("waarnemingenData"))
   waarnemingenData <- loadRawData(type = "waarnemingen")
 if (!doDebug | !exists("draagvlakData"))
   draagvlakData <- loadDraagvlakData()
+
+# Data with observations and geographical information for Wolf
+if (!doDebug | !exists("wolfPuntenData"))
+  wolfPuntenData <- loadWolfData(type = "locaties")
+if (!doDebug | !exists("wolfHokkenData"))
+  wolfHokkenData <- loadWolfData(type = "utm")  
+if (!doDebug | !exists("wolfOverzichtData"))
+  wolfOverzichtData <- loadWolfData(type = "overzicht")
+if (!doDebug | !exists("wolfTerritoriaData"))
+  wolfTerritoriaData <- loadWolfData(type = "terr")  
+if (!doDebug | !exists("wolfSchadeData"))
+  wolfSchadeData <- loadWolfData(type = "schade")
 
 
 # TODO temporary fix

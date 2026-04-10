@@ -12,6 +12,7 @@
 #' in the plot; if NULL no selection on year(s) is made
 #' @param type character, regional level of interest should be one of 
 #' \code{c("provinces", "flanders", "faunabeheerzones")}
+#' @param combinatie logical, summarised view of selected regions
 #' @inheritParams filterDataSource
 #' @inheritParams reportingGrofwild-common-args
 #' @param title character, title prefix; default is NULL
@@ -379,7 +380,7 @@ countYearProvinceUI <- function(
           )
         )
       ),
-      tags$p(HTML(description))
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

@@ -1,4 +1,3 @@
-
 #' Server function for an output (plot/table) of the 'schade' Category page
 #' @inheritParams reportingGrofwild-common-args
 #' @return reactive value with name of selected specie
@@ -52,9 +51,42 @@ schadeOutputServer <- function(id,
           return(schadeData[toRetain, ])
         })
       
-      results$schade_timeRange <- reactive(
-        range(results$schade_data()$afschotjaar)
-      ) 
+      results$wolfSchadeData <- reactive({
+          wolfSchadeData %>% mutate(afschotjaar = year) 
+        })
+
+      results$wolfSchadeDataBevestigd <- reactive({
+        results$wolfSchadeData() |>
+          filter(.data$Schade == "Wolf")
+      })
+
+      results$schade_timeRange <- reactive({
+          if (specie() == "Wolf") {
+            range(results$wolfSchadeData()$year)
+          } else {
+            range(results$schade_data()$afschotjaar)
+          }
+          
+        }) 
+      
+      # Max date highlight 
+      output$maxDateHighlight <- renderUI({
+          
+          maxDate <- if (specie() == "Wolf") {
+              max(wolfSchadeData$Datum, na.rm = TRUE)
+            } else {
+              max(schadeData$afschot_datum, na.rm = TRUE)
+            }
+
+          text <- getMaxDateHighlight(specie(), subcategory(), uiText, maxDate)
+          req(nchar(text) > 0)
+          
+          wellPanel(class = "well-white", 
+            div(style = "text-align: center; font-size: 18px;",
+              HTML(text)
+            )
+          )
+        })
       
       ## Selection species
       
@@ -76,18 +108,18 @@ schadeOutputServer <- function(id,
               switch(as.character(subcategory()), 
                 "schade-vlaanderen" = list(
                   showTime = TRUE,
-                  showDataSource = c("schade")
+                  showDataSource = if (specie() == "Wolf") c() else c("schade")
                 ),
                 "schade-regio" = list(
                   showTime = TRUE,
                   showRegion = TRUE,
-                  showDataSource = c("schade")
+                  showDataSource = if (specie() == "Wolf") c() else c("schade")
                 ),
                 "schade-type-gewas" = list(
                   showTime = TRUE,
                   showRegion = TRUE,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
-                  showDataSource = c("schade") # Include rapporteer
+                  showDataSource = c("schade")
                 ),
                 "schade-type-schade" = list(
                   showTime = TRUE,
@@ -122,7 +154,6 @@ schadeOutputServer <- function(id,
               list(
                 id = "schade_topbar",
                 subcategory = subcategory,
-                includeSchadeFilters = TRUE,
                 schade_code = schade_code, 
                 schade_gewas = schade_gewas, 
                 schade_voertuig = schade_voertuig, 
@@ -130,38 +161,51 @@ schadeOutputServer <- function(id,
               ),
               switch(as.character(subcategory()), 
                 "schade-vlaanderen" = list(
+                  includeSchadeFilters = specie() != "Wolf",
                   timeRange = results$schade_timeRange
                 ),
                 "schade-regio" = list(
-                  regionLevels = c(
-                    "Vlaanderen" = "flanders",
-                    "Provincie" = "provinces", 
-                    "Faunabeheerzones" = "faunabeheerzones",
-                    "Gemeente" = "communes",
-                    "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
-                    "5x5 UTM" = "utm5"
-                  ), 
+                  includeSchadeFilters = specie() != "Wolf",
+                  regionLevels = if (specie() == "Wolf") c(
+                        "Vlaanderen" = "flanders",
+                        "Provincie" = "provinces", 
+                        "Gemeente" = "communes_wolf"
+                      ) else c(
+                        "Vlaanderen" = "flanders",
+                        "Provincie" = "provinces", 
+                        "Faunabeheerzones" = "faunabeheerzones",
+                        "Gemeente" = "communes",
+                        "Gemeente per Faunabeheerzone" = "fbz_gemeentes",
+                        "5x5 UTM" = "utm5"
+                      ), 
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
                   data = reactive(spatialData),
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-gewas" = list(
-                  regionLevels = c(1:2, 4),
+                  includeSchadeFilters = TRUE,
+                  regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
+                  data = results$schade_data,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
                 "schade-type-schade" = list(
-                  regionLevels = c(1:2, 4),
+                  includeSchadeFilters = TRUE,
+                  regionLevels = c(1:4),
                   regionLevelSelected = "provinces",
                   allRegionsSelected = TRUE,
+                  data = results$schade_data,
                   summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                   timeRange = results$schade_timeRange
                 ),
-                "schade-seizoen" = list(),
-                "schade-kosten" = list()
+                "schade-seizoen" = list(includeSchadeFilters = TRUE),
+                "schade-kosten" = list(includeSchadeFilters = TRUE),
+                "schade-doodsoorzaak" = list(
+                  timeRange = reactive(range(wolfOverzichtData$year))
+                )
               )
             )
             
@@ -205,10 +249,48 @@ schadeOutputServer <- function(id,
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "trendYearFlandersUI-schade" %in% plot())
                       )),
+                  if ("trendWolfFlandersUI" %in% outputs)
+                    wellPanel(class = "well-white", trendWolfFlandersUI(
+                        id = ns("plot13"), uiText = uiText, plotFunction = "trendWolfFlandersUI",
+                        doHide = !(plot() == defaultTabs$plot || "trendWolfFlandersUI" %in% plot())
+                      )),
+                  if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
+                    wellPanel(class = "well-white", countSchadeWolvesUI(
+                        id = ns("plot15"), uiText = uiText, plotFunction = "countSchadeWolvesUI-gemeldeSchade",
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-gemeldeSchade" %in% plot())
+                      )),
+                  if ("downloadSchadeWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", downloadSchadeWolvesUI(
+                        id = ns("plot18"), uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "downloadSchadeWolvesUI" %in% plot())
+                      )),
+                  if ("countSchadeWolvesUI-omheining" %in% outputs)
+                    wellPanel(class = "well-white", countSchadeWolvesUI(
+                        id = ns("plot16"), uiText = uiText, plotFunction = "countSchadeWolvesUI-omheining",
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-omheining" %in% plot())
+                      )),
+                  if ("mapAccidentsWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot14"), plotFunction = "mapAccidentsWolvesUI",
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesUI" %in% plot())
+                      )),
+                  if ("countSchadeWolvesUI-soort" %in% outputs)
+                    wellPanel(class = "well-white", countSchadeWolvesUI(
+                        id = ns("plot17"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesUI-soort" %in% plot())
+                      ))
                 )
               }, 
               "schade-regio" = {
                 tagList(
+                  if ("mapFlandersUI-schade" %in% outputs)
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot4"), showRegion = FALSE,
+                        type = "schade", plotDetails = "region",
+                        uiText = uiText,
+                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI-schade" %in% plot())
+                      )),
                   if ("countYearProvinceUI-schade" %in% outputs)
                     wellPanel(class = "well-white", countYearProvinceUI(
                         id = ns("plot3"), 
@@ -216,13 +298,6 @@ schadeOutputServer <- function(id,
                         plotFunction = "countYearProvinceUI-schade",
                         specie = specie(),
                         doHide = !(plot() == defaultTabs$plot || "countYearProvinceUI-schade" %in% plot())
-                      )),
-                  if ("mapFlandersUI-schade" %in% outputs)
-                    wellPanel(class = "well-white", mapFlandersUI(
-                        id = ns("plot4"), showRegion = FALSE,
-                        type = "schade", plotDetails = "region",
-                        uiText = uiText,
-                        doHide = !(plot() == defaultTabs$plot || "mapFlandersUI-schade" %in% plot())
                       )),
                   if ("mapSchadeUI" %in% outputs)
                     wellPanel(class = "well-white", mapSchadeUI(
@@ -235,6 +310,35 @@ schadeOutputServer <- function(id,
                             "Jaar" = "afschotjaar"
                           ),
                         doHide = !(plot() == defaultTabs$plot || "mapSchadeUI" %in% plot())
+                      )),
+                  if ("mapSchadeWolvesUI" %in% outputs)
+                    wellPanel(class = "well-white", mapFlandersUI(
+                        id = ns("plot24"), showRegion = FALSE,
+                        type = "schade", plotDetails = "region",
+                        uiText = uiText, specie = "Wolf",
+                        variableChoices = c("Schade" = "Schade"),
+                        doHide = !(plot() == defaultTabs$plot || "mapSchadeWolvesUI" %in% plot())
+                      )),
+                  if ("countSchadeWolvesRegionUI-gemeldeSchade" %in% outputs)
+                    wellPanel(class = "well-white", countSchadeWolvesUI(
+                        id = ns("plot21"), uiText = uiText, plotFunction = "countSchadeWolvesUI-gemeldeSchade",
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesRegionUI-gemeldeSchade" %in% plot())
+                      )),
+                  if ("countSchadeWolvesRegionUI-omheining" %in% outputs)
+                    wellPanel(class = "well-white", countSchadeWolvesUI(
+                        id = ns("plot22"), uiText = uiText, plotFunction = "countSchadeWolvesUI-omheining",
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesRegionUI-omheining" %in% plot())
+                      )),
+                  if ("mapAccidentsWolvesRegionUI" %in% outputs)
+                    wellPanel(class = "well-white", mapLocationWolvesUI(
+                        id = ns("plot20"), plotFunction = "mapAccidentsWolvesUI",
+                        uiText = uiText, context = "description",
+                        doHide = !(plot() == defaultTabs$plot || "mapAccidentsWolvesRegionUI" %in% plot())
+                      )),
+                  if ("countSchadeWolvesRegionUI-soort" %in% outputs)
+                    wellPanel(class = "well-white", countSchadeWolvesUI(
+                        id = ns("plot23"), uiText = uiText, plotFunction = "countSchadeWolvesUI-soort",
+                        doHide = !(plot() == defaultTabs$plot || "countSchadeWolvesRegionUI-soort" %in% plot())
                       ))
                 )
               },
@@ -283,7 +387,7 @@ schadeOutputServer <- function(id,
                         type = "seizoen", specie = specie(),
                         summarizeBy = c("Aantal" = "count", "Percentage" = "percent"),
                         showTime = TRUE, showDataSource = "schade",
-                        regionLevels = c(1:2, 4),
+                        regionLevels = c(1:4),
                         doHide = !(plot() == defaultTabs$plot || "countYearSchadeUI-seizoen" %in% plot())
                       ))
                 )
@@ -296,7 +400,7 @@ schadeOutputServer <- function(id,
                         uiText = uiText, context = "description",
                         specie = specie(), showTime = TRUE,
                         typeMelding = c("Landbouw" = "landbouw"),
-                        regionLevels = c(1:2, 4),
+                        regionLevels = c(1:4),
                         doHide = !(plot() == defaultTabs$plot || "barCostUI" %in% plot())
                       ))
                 )
@@ -338,6 +442,47 @@ schadeOutputServer <- function(id,
                     type = "wildschade",
                     uiText = uiText,
                     preSelected = schadeSelection
+                  ),
+                plot3 = if ("trendWolfFlandersUI" %in% outputs)
+                  trendWolfFlandersServer(
+                    id = "plot13", 
+                    data = results$wolfSchadeData, 
+                    preSelected = schadeSelection
+                  ),
+                plot4 = if ("mapAccidentsWolvesUI" %in% outputs)
+                  mapLocationWolvesServer(
+                    id = "plot14",
+                    variable = "Lot",
+                    data = reactive(wolfOverzichtData),
+                    popup_variables = c("WolfID", "Status", "Leeftijdsklasse"),
+                    preSelected = schadeSelection
+                  ),
+                plot5 = if ("countSchadeWolvesUI-gemeldeSchade" %in% outputs)
+                  countSchadeWolvesServer(
+                    id = "plot15", 
+                    data = results$wolfSchadeData, 
+                    groupVariable = "Schade",
+                    preSelected = schadeSelection
+                  ),
+                plot6 = if ("countSchadeWolvesUI-omheining" %in% outputs)
+                  countSchadeWolvesServer(
+                    id = "plot16", 
+                    data = results$wolfSchadeData, 
+                    groupVariable = "wolfproof",
+                    preSelected = schadeSelection
+                  ),
+                plot7 = if ("countSchadeWolvesUI-soort" %in% outputs)
+                  countSchadeWolvesServer(
+                    id = "plot17", 
+                    data = results$wolfSchadeData, 
+                    groupVariable = "Prooidier",
+                    preSelected = schadeSelection
+                  ),
+                plot8 = if ("downloadSchadeWolvesUI" %in% outputs)
+                  downloadSchadeWolvesServer(
+                    id = "plot18", 
+                    data = results$wolfSchadeData,
+                    preSelected = schadeSelection
                   )
               )
             },
@@ -375,6 +520,58 @@ schadeOutputServer <- function(id,
                     borderRegion = "provinces",
                     uiText = uiText,
                     type = "schade",
+                    preSelected = schadeSelection
+                  ),
+                plot4 = if ("trendWolfRegionUI" %in% outputs)
+                  trendWolfFlandersServer(
+                    id = "plot19", 
+                    data = results$wolfSchadeData,
+                    filterDataOnRegion = TRUE,
+                    preSelected = schadeSelection
+                  ),
+                plot5 = if ("mapAccidentsWolvesRegionUI" %in% outputs)
+                  mapLocationWolvesServer(
+                    id = "plot20",  
+                    variable = "Lot",
+                    popup_variables = c("WolfID", "Status", "Leeftijdsklasse"),
+                    data = reactive(wolfOverzichtData),
+                    allSpatialData = spatialData,
+                    preSelected = schadeSelection
+                  ),
+                plot6 = if ("countSchadeWolvesRegionUI-gemeldeSchade" %in% outputs)
+                  countSchadeWolvesServer(
+                    id = "plot21", 
+                    data = results$wolfSchadeData, 
+                    groupVariable = "Schade",
+                    filterDataOnRegion = TRUE,
+                    preSelected = schadeSelection
+                  ),
+                plot7 = if ("countSchadeWolvesRegionUI-omheining" %in% outputs)
+                  countSchadeWolvesServer(
+                    id = "plot22", 
+                    data = results$wolfSchadeData, 
+                    groupVariable = "wolfproof",
+                    filterDataOnRegion = TRUE,
+                    preSelected = schadeSelection
+                  ),
+                plot8 = if ("countSchadeWolvesRegionUI-soort" %in% outputs)
+                  countSchadeWolvesServer(
+                    id = "plot23", 
+                    data = results$wolfSchadeData, 
+                    groupVariable = "Prooidier",
+                    filterDataOnRegion = TRUE,
+                    preSelected = schadeSelection
+                  ),
+                plot9 = if ("mapSchadeWolvesUI" %in% outputs)
+                  mapFlandersServer(
+                    id = "plot24", 
+                    uiText = uiText,
+                    defaultYear = defaultYear,
+                    species = specie,
+                    type = "schade",
+                    geoData = results$wolfSchadeDataBevestigd,
+                    biotoopData = biotoopData,
+                    allSpatialData = spatialData,
                     preSelected = schadeSelection
                   )
               )
@@ -453,6 +650,7 @@ schadeOutputServer <- function(id,
                   )  
               )
             }
+            
           )
           
           # re-set in case plot selected via tab after/before category card
@@ -471,6 +669,45 @@ schadeOutputServer <- function(id,
               inputId = "schade_topbar-region",
               selected = p$selectedRegions()
             )
+          })
+        
+        observe({
+            
+            req(as.character(subcategory()) == "schade-regio" && specie() == "Wolf")
+            req(results$serverOutput$plot5)
+            
+            p <- results$serverOutput$plot5()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(schadeSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "schade_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
+          })
+        
+        
+        observe({
+            
+            req(as.character(subcategory()) == "schade-regio" && specie() == "Wolf")
+            req(results$serverOutput$plot9)
+            
+            p <- results$serverOutput$plot9()
+            
+            req(p)
+            req(p$selectedRegions)
+            req(p$selectedRegions())
+            
+            if (!identical(sort(p$selectedRegions()), sort(isolate(schadeSelection()$region())))) {
+              updateSelectInput(session,
+                inputId = "schade_topbar-region",
+                selected = p$selectedRegions()
+              )
+            }
           })
       
       return(list(

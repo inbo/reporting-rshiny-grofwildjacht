@@ -283,7 +283,7 @@ countEmbryosServer <- function(id, data, timeRange, types,
           if (wildsoort() != "Ree")
             description <- strsplit(description, split = "Opmerking")[[1]][1]
           
-          tags$p(HTML(description))
+          tags$div(class = "larger-description", HTML(description))
           
         })
       
@@ -323,7 +323,6 @@ countEmbryosUI <- function(id, regionLevels = NULL,
       specie = specie, uiText = uiText, context = context)
     if (specie != "Ree")
       description <- strsplit(description, split = "Opmerking")[[1]][1]
-    description <- tags$p(HTML(description))
   }else{
      title <- uiOutput(ns("titleEmbryos"))
      description <- NULL
@@ -347,7 +346,7 @@ countEmbryosUI <- function(id, regionLevels = NULL,
           if(is.null(specie))  uiOutput(ns("descriptionEmbryos"))
         )
       ),
-      description
+      tags$div(class = "larger-description", HTML(description))
     )
   )
   

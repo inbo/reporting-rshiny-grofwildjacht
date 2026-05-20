@@ -3,6 +3,7 @@ library(dplyr)
 library(readr)
 library(htmltools)
 library(shinyWidgets)
+conflicted::conflicts_prefer(dplyr::filter)
 
 load_data <- function() {
   read_csv2("../reporting-grofwild/inst/extdata/uiText.csv", show_col_types = FALSE)

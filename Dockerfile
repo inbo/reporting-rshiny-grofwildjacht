@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     make \
     g++ \
     libgdal-dev \
+    libuv1-dev \
     libproj22 \
     libgeos3.10.2 libgeos-c1v5  \
     libcurl4-openssl-dev \

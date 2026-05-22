@@ -65,3 +65,4 @@ reporting-grofwild/inst/extdata/spatialData*.RData
 
 # vscode project files
 .vscode
+.positai

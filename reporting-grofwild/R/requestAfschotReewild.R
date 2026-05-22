@@ -430,7 +430,13 @@ requestAfschotReewildServer <- function(
                   door het totaal afschot van de voorbije 3 jaar maar kan worden 
                   aangepast naar keuze tussen 0,1 en 2. Deze toekenningsfactor bedraagt 
                   standaard 1,15 voor afschot van >100 ree\u00EBn, 1,20 voor afschot tussen 
-                  50 en 100 ree\u00EBn en 1,25 voor afschot tussen 12 en 50 ree\u00EBn."))
+                  50 en 100 ree\u00EBn en 1,25 voor afschot tussen 12 en 50 ree\u00EBn."),
+            if (totalRee < 12) {
+              tags$p(
+              style = "font-size: 0.9em; color: orange; margin-top: 8px;",
+              "Het totaal gemiddeld afschot van de laatste 3 jaar is lager dan 12. Het is niet mogelijk om een toekenningsfactor toe te kennen."
+              )
+            })
           ),
           tags$br(),
           uiOutput(ns("NbLabelsPerType")),

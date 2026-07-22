@@ -605,7 +605,7 @@ mapSpreadServer <- function(id,
               column(4, selectizeInput(inputId = ns("versprYear"), label = "Jaar van verspreiding:",
                   choices = c("Geen", availableYears$verspreiding), selected = "Geen")),
               column(4, selectizeInput(inputId = ns("predYear"), label = "Jaar van predictie:",
-                  choices = availableYears$prediction, selected = min(availableYears$prediction))),
+                  choices = availableYears$prediction, selected = max(availableYears$prediction))),
               column(4, checkboxGroupInput(inputId = ns("rb"), label = "Kans op vestiging in jaar van predictie:",
                   choices = choices, selected = choices))
             )

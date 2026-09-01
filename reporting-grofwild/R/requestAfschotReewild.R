@@ -28,7 +28,7 @@ requestAfschotReewildServer <- function(
       
  
       today <- Sys.Date()
-      cutoff_date <- as.Date(paste0(format(today, "%Y"), "-10-15"))
+      cutoff_date <- as.Date(paste0(format(today, "%Y"), "-06-01"))
       
       # If today is after this year's cutoff, make aanvraag for other period
       currentYear <- year(Sys.Date())

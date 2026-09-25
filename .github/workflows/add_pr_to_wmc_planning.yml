@@ -1,0 +1,487 @@
+name: Add PR to WMC-planning
+
+on:
+  pull_request:
+    # Added review_requested so it triggers when reviewers are assigned
+    types: [opened, reopened, review_requested, edited, ready_for_review]
+
+jobs:
+  add_to_project:
+    name: Add PR and Sync Dates
+    runs-on: ubuntu-latest
+    steps:
+      # Step 1: Check if the required team or a team member is requested for review
+      - name: Check for faunabeheer review
+        id: check-reviewer
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        with:
+          github-token: ${{ secrets.AUTOMATISATION }}
+          script: |
+            const org = 'inbo';
+            const teamSlug = 'faunabeheer';
+            const pr = context.payload.pull_request;
+            
+            // 1. Check if the team itself was requested
+            const requestedTeams = pr.requested_teams || [];
+            if (requestedTeams.some(team => team.slug === teamSlug)) {
+              console.log(`Team ${teamSlug} was explicitly requested.`);
+              core.setOutput('match', 'true');
+              return;
+            }
+            
+            // 2. Check if any individually requested reviewer is a member of the team
+            const requestedReviewers = pr.requested_reviewers || [];
+            for (const user of requestedReviewers) {
+              try {
+                const response = await github.rest.teams.getMembershipForUserInOrg({
+                  org: org,
+                  team_slug: teamSlug,
+                  username: user.login
+                });
+                
+                if (response.data.state === 'active') {
+                  console.log(`Requested user ${user.login} is a member of ${teamSlug}.`);
+                  core.setOutput('match', 'true');
+                  return;
+                }
+              } catch (error) {
+                // A 404 error means the user is not in the team; safely ignore and continue checking
+                if (error.status !== 404) {
+                  console.error(`Error checking membership for ${user.login}: ${error.message}`);
+                }
+              }
+            }
+            
+            console.log(`No review requested from team ${teamSlug} or its members.`);
+            core.setOutput('match', 'false');
+
+      # Step 2: Add to project ONLY if the previous step found a match
+      - name: Add to Project
+        if: steps.check-reviewer.outputs.match == 'true'
+        id: add-project
+        uses: actions/add-to-project@5afcf98fcd03f1c2f92c3c83f58ae24323cc57fd
+        with:
+          project-url: https://github.com/orgs/inbo/projects/25
+          github-token: ${{ secrets.AUTOMATISATION }}
+
+      # Step 3: Extract End Date, Deliverables, and Update Project Fields (PR + Issues)
+      - name: Extract Data and Update Project Fields
+        if: steps.check-reviewer.outputs.match == 'true'
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3
+        env:
+          PROJECT_NUMBER: "25"
+          DATE_FIELD_NAME: "End date"
+          STATUS_FIELD_NAME: "Status"
+          DELIVERABLE_FIELD_NAME: "INBOPRJ - Deliverable"
+          DELIVERY_FIELD_NAME: "Delivery"
+          TARGET_STATUS: "Pending approval"
+          PROJECT_ITEM_ID: ${{ steps.add-project.outputs.itemId }}
+        with:
+          github-token: ${{ secrets.AUTOMATISATION }}
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const prNumber = context.payload.pull_request.number;
+
+            const projectNumber = Number(process.env.PROJECT_NUMBER);
+            const dateFieldName = process.env.DATE_FIELD_NAME;
+            const statusFieldName = process.env.STATUS_FIELD_NAME;
+            const deliverableFieldName = process.env.DELIVERABLE_FIELD_NAME;
+            const deliveryFieldName = process.env.DELIVERY_FIELD_NAME;
+            const targetStatusName = process.env.TARGET_STATUS;
+            const projectItemId = process.env.PROJECT_ITEM_ID;
+
+            if (!projectItemId) {
+              core.setFailed(
+                `The add-to-project step did not return an item ID for ${owner}/${repo}#${prNumber}.`
+              );
+              return;
+            }
+
+            /*
+             * 1. Find linked issues and extract the maximum End date and multi-select deliverable IDs.
+             */
+            const linkedIssuesQuery = `
+              query($owner: String!, $repo: String!, $prNumber: Int!) {
+                repository(owner: $owner, name: $repo) {
+                  pullRequest(number: $prNumber) {
+                    closingIssuesReferences(first: 10) {
+                      nodes {
+                        number
+                        projectItems(first: 50) {
+                          nodes {
+                            id
+                            project {
+                              id
+                            }
+                            fieldValues(first: 50) {
+                              nodes {
+                                ... on ProjectV2ItemFieldDateValue {
+                                  date
+                                  field {
+                                    ... on ProjectV2Field {
+                                      name
+                                    }
+                                  }
+                                }
+                                ... on ProjectV2ItemFieldMultiSelectValue {
+                                  options {
+                                    id
+                                    name
+                                  }
+                                  field {
+                                    ... on ProjectV2MultiSelectField {
+                                      name
+                                    }
+                                  }
+                                }
+                                ... on ProjectV2ItemFieldSingleSelectValue {
+                                  optionId
+                                  field {
+                                    ... on ProjectV2SingleSelectField {
+                                      name
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const linkedIssuesResult = await github.graphql(
+              linkedIssuesQuery,
+              {
+                owner,
+                repo,
+                prNumber
+              }
+            );
+
+            const linkedIssues =
+              linkedIssuesResult.repository.pullRequest
+                .closingIssuesReferences.nodes || [];
+
+            let extractedDate = null;
+            let deliverableOptionIds = new Set(); // Use a Set to prevent duplicates
+            let deliveryOptionId = null; // Always a single value
+
+            for (const issue of linkedIssues) {
+              const projectItems = issue.projectItems?.nodes || [];
+
+              for (const item of projectItems) {
+                const fieldValues = item.fieldValues?.nodes || [];
+
+                for (const fieldValue of fieldValues) {
+                  // Check for Date field
+                  if (
+                    fieldValue.field?.name === dateFieldName &&
+                    fieldValue.date
+                  ) {
+                    const currentDate = new Date(fieldValue.date);
+
+                    if (
+                      !extractedDate ||
+                      currentDate > new Date(extractedDate)
+                    ) {
+                      extractedDate = fieldValue.date;
+                    }
+                  }
+
+                  // Check for Multi-Select Deliverable field
+                  if (
+                    fieldValue.field?.name === deliverableFieldName &&
+                    fieldValue.options
+                  ) {
+                    for (const option of fieldValue.options) {
+                      deliverableOptionIds.add(option.id);
+                    }
+                  }
+                  // Check for Single-Select Delivery field
+                  if (
+                    fieldValue.field?.name === deliveryFieldName &&
+                    fieldValue.optionId
+                  ) {
+                    deliveryOptionId = fieldValue.optionId;
+                  }
+                }
+              }
+            }
+
+            const combinedDeliverableIds = Array.from(deliverableOptionIds);
+
+            if (extractedDate) {
+              console.log(`Found Maximum End Date: ${extractedDate}`);
+            } else if (linkedIssues.length === 0) {
+              console.log("No related issues found. Skipping extraction.");
+            }
+            
+            if (combinedDeliverableIds.length > 0) {
+              console.log(`Found ${combinedDeliverableIds.length} deliverable option(s).`);
+            }
+
+            if (deliveryOptionId) {
+              console.log(`Found delivery option ${deliveryOptionId}.`);
+            }
+
+            /*
+             * 2. Resolve the destination project ID.
+             */
+            const projectQuery = `
+              query($organization: String!, $projectNumber: Int!) {
+                organization(login: $organization) {
+                  projectV2(number: $projectNumber) {
+                    id
+                  }
+                }
+              }
+            `;
+
+            const projectResult = await github.graphql(projectQuery, {
+              organization: owner,
+              projectNumber
+            });
+
+            const project = projectResult.organization?.projectV2;
+
+            if (!project) {
+              core.setFailed(
+                `Could not find organization project ${owner}/${projectNumber}.`
+              );
+              return;
+            }
+
+            const projectId = project.id;
+
+            /*
+             * 3. Find the required project fields.
+             * IMPORTANT: ProjectV2MultiSelectField does NOT support 'options' at the field definition level.
+             */
+            const fieldQuery = `
+              query($project: ID!) {
+                node(id: $project) {
+                  ... on ProjectV2 {
+                    fields(first: 50) {
+                      nodes {
+                        __typename
+                        ... on ProjectV2Field {
+                          id
+                          name
+                        }
+                        ... on ProjectV2SingleSelectField {
+                          id
+                          name
+                          options {
+                            id
+                            name
+                          }
+                        }
+                        ... on ProjectV2MultiSelectField {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const fieldResult = await github.graphql(fieldQuery, {
+              project: projectId
+            });
+
+            const fields = fieldResult.node?.fields?.nodes || [];
+
+            const dateField = fields.find(field => field.name === dateFieldName);
+            const statusField = fields.find(
+              field => field.name === statusFieldName && field.__typename === 'ProjectV2SingleSelectField'
+            );
+            const deliverableField = fields.find(
+              field => field.name === deliverableFieldName && field.__typename === 'ProjectV2MultiSelectField'
+            );
+            const deliveryField = fields.find(
+              field => field.name === deliveryFieldName && field.__typename === 'ProjectV2SingleSelectField'
+            );
+             
+
+            /*
+             * 4. Update the PR End date.
+             */
+            if (extractedDate && dateField) {
+              const dateMutation = `
+                mutation(
+                  $project: ID!
+                  $item: ID!
+                  $field: ID!
+                  $value: Date!
+                ) {
+                  updateProjectV2ItemFieldValue(
+                    input: {
+                      projectId: $project
+                      itemId: $item
+                      fieldId: $field
+                      value: { date: $value }
+                    }
+                  ) {
+                    projectV2Item { id }
+                  }
+                }
+              `;
+
+              await github.graphql(dateMutation, {
+                project: projectId,
+                item: projectItemId,
+                field: dateField.id,
+                value: extractedDate
+              });
+
+              console.log(
+                `Successfully updated PR project item with Max End Date: ${extractedDate}`
+              );
+            }
+
+            /*
+             * 5. Update the PR Deliverables (Multi-Select).
+             * The Deliverable field is multi-select, so we use multiSelectOptionIds.
+             */
+            if (combinedDeliverableIds.length > 0 && deliverableField) {
+              const deliverableMutation = `
+                mutation(
+                  $project: ID!
+                  $item: ID!
+                  $field: ID!
+                  $values: [String!]!
+                ) {
+                  updateProjectV2ItemFieldValue(
+                    input: {
+                      projectId: $project
+                      itemId: $item
+                      fieldId: $field
+                      value: { multiSelectOptionIds: $values }
+                    }
+                  ) {
+                    projectV2Item { id }
+                  }
+                }
+              `;
+              
+              await github.graphql(deliverableMutation, {
+                project: projectId,
+                item: projectItemId,
+                field: deliverableField.id,
+                values: combinedDeliverableIds
+              });
+              console.log(`Successfully combined and updated PR Deliverables.`);
+            }
+            
+              /*
+             * 6. Update the PR Delivery (Single-Select).
+             * The Delivery field is single-select, so we use singleSelectOptionIds.
+             */
+            if (deliveryOptionId && deliveryField) {
+              const deliveryMutation = `
+                mutation(
+                  $project: ID!
+                  $item: ID!
+                  $field: ID!
+                  $value: String!
+                ) {
+                  updateProjectV2ItemFieldValue(
+                    input: {
+                      projectId: $project
+                      itemId: $item
+                      fieldId: $field
+                      value: { singleSelectOptionId: $value }
+                    }
+                  ) {
+                    projectV2Item { id }
+                  }
+                }
+              `;
+              
+              await github.graphql(deliveryMutation, {
+                project: projectId,
+                item: projectItemId,
+                field: deliveryField.id,
+                value: deliveryOptionId
+              });
+              console.log(`Successfully updated PR Delivery.`);
+            }
+            /*
+             * 7. Update the PR and linked issue statuses.
+             */
+            if (!statusField) {
+              console.log(
+                `Destination project is missing the field: "${statusFieldName}".`
+              );
+            } else {
+              const statusOption = statusField.options?.find(
+                option => option.name === targetStatusName
+              );
+
+              if (!statusOption) {
+                console.log(
+                  `Could not find the option "${targetStatusName}" in the "${statusFieldName}" field.`
+                );
+              } else {
+                const statusMutation = `
+                  mutation(
+                    $project: ID!
+                    $item: ID!
+                    $field: ID!
+                    $option: String!
+                  ) {
+                    updateProjectV2ItemFieldValue(
+                      input: {
+                        projectId: $project
+                        itemId: $item
+                        fieldId: $field
+                        value: { singleSelectOptionId: $option }
+                      }
+                    ) {
+                      projectV2Item { id }
+                    }
+                  }
+                `;
+
+                // Update PR status.
+                await github.graphql(statusMutation, {
+                  project: projectId,
+                  item: projectItemId,
+                  field: statusField.id,
+                  option: statusOption.id
+                });
+
+                console.log(
+                  `Successfully updated PR project item Status to: ${targetStatusName}`
+                );
+
+                // Update linked issue statuses.
+                for (const issue of linkedIssues) {
+                  const issueItems = issue.projectItems?.nodes || [];
+
+                  for (const item of issueItems) {
+                    if (item.project?.id !== projectId) {
+                      continue;
+                    }
+
+                    await github.graphql(statusMutation, {
+                      project: projectId,
+                      item: item.id,
+                      field: statusField.id,
+                      option: statusOption.id
+                    });
+
+                    console.log(
+                      `Successfully updated linked Issue #${issue.number} Status to: ${targetStatusName}`
+                    );
+                  }
+                }
+              }
+            }

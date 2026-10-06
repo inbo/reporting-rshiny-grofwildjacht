@@ -132,7 +132,7 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
   
   attr(finalMap, "modelColors") <- modelColors
 
-  finalMap <- leaflet_bound_flanders(finalMap)
+  finalMap <- leaflet_pad_bounds(finalMap)
   
   finalMap
   
@@ -240,7 +240,7 @@ mapBevers <- function(beverData,
   # For compliance with mapSpread()
   attr(myMap, "modelColors") <- NULL
 
-  myMap <- leaflet_bound_flanders(myMap)
+  myMap <- leaflet_pad_bounds(myMap)
   
   myMap
   

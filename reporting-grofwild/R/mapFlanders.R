@@ -450,7 +450,7 @@ mapFlanders <- function(
   if (!is.null(statsMap)) {
     myMap <- addControl(myMap, statsMap, position = "bottomleft")
   }
-  myMap <- leaflet_bound_flanders(myMap)
+  myMap <- leaflet_pad_bounds(myMap)
   
   myMap
   
@@ -925,7 +925,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
             legend = "topright",
             legendText = isolate(simpleCap(unitText(), keepNames = FALSE)),
             statsMap = statsMap()
-          ) |> leaflet_bound_flanders()
+          ) |> leaflet_pad_bounds()
         })
       
       output$spacePlot <- renderLeaflet({
@@ -1022,7 +1022,7 @@ mapFlandersServer <- function(id, defaultYear, species, currentWbe = reactive(NU
           centerValues <- getCenterView(sf_object = selectedPolygons)
           
           leafletProxy("spacePlot", data = spatialData()) |>
-            leaflet_bound_flanders()
+            leaflet_pad_bounds()
           
         })
       

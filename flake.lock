@@ -2,27 +2,24 @@
   "nodes": {
     "nixpkgs": {
       "locked": {
-        "lastModified": 1771419570,
-        "narHash": "sha256-bxAlQgre3pcQcaRUm/8A0v/X8d2nhfraWSFqVmMcBcU=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "6d41bc27aaf7b6a3ba6b169db3bd5d6159cfaa47",
-        "type": "github"
+        "lastModified": 1791254437,
+        "narHash": "sha256-MtUTNbeLCAWGgY7Bt9adNUEkiY5Uv7POO1gP8ClVhQY=",
+        "rev": "b25309931cfda5f0b8805f462a29897eeae50168",
+        "type": "tarball",
+        "url": "https://releases.nixos.org/nixos/26.05/nixos-26.05.11275.b25309931cfd/nixexprs.tar.xz"
       },
       "original": {
-        "owner": "NixOS",
-        "ref": "nixos-25.11",
-        "repo": "nixpkgs",
-        "type": "github"
+        "type": "tarball",
+        "url": "https://channels.nixos.org/nixos-26.05/nixexprs.tar.xz"
       }
     },
     "rUtils": {
       "locked": {
-        "lastModified": 1770391253,
-        "narHash": "sha256-vOt2aMmZKoozdommdFpTjYHW8w6Q9WPWLp9MJ0GiY9s=",
+        "lastModified": 1790260913,
+        "narHash": "sha256-4L5Edn27VAfxKBbaosohjEuYwjVJLmMXXUsfEKrwVF0=",
         "ref": "refs/heads/main",
-        "rev": "1af385c54ae1536c922e642ad71a07e5ed77d5a7",
-        "revCount": 6,
+        "rev": "8c8fe6381ece4d8bf2e2d79b626832ef74fe275f",
+        "revCount": 63,
         "type": "git",
         "url": "https://scm.openanalytics.eu/git/oa-r-utils-nix.git"
       },
@@ -34,41 +31,7 @@
     "root": {
       "inputs": {
         "nixpkgs": "nixpkgs",
-        "rUtils": "rUtils",
-        "utils": "utils"
-      }
-    },
-    "systems": {
-      "locked": {
-        "lastModified": 1681028828,
-        "narHash": "sha256-Vy1rq5AaRuLzOxct8nz4T6wlgyUR7zLU309k9mBC768=",
-        "owner": "nix-systems",
-        "repo": "default",
-        "rev": "da67096a3b9bf56a91d16901293e51ba5b49a27e",
-        "type": "github"
-      },
-      "original": {
-        "owner": "nix-systems",
-        "repo": "default",
-        "type": "github"
-      }
-    },
-    "utils": {
-      "inputs": {
-        "systems": "systems"
-      },
-      "locked": {
-        "lastModified": 1731533236,
-        "narHash": "sha256-l0KFg5HjrsfsO/JpG+r7fRrqm12kzFHyUHqHCVpMMbI=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "11707dc2f618dd54ca8739b309ec4fc024de578b",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
+        "rUtils": "rUtils"
       }
     }
   },

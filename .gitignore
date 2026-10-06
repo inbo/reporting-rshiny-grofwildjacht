@@ -59,10 +59,11 @@ reporting-grofwild/inst/extdata/spatialData*.RData
 /scripts/*.sh
 
 # direnv
-.rlibs
+/.roar
 .direnv
 .envrc
 
 # vscode project files
 .vscode
 .positai
+

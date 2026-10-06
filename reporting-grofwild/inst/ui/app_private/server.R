@@ -59,8 +59,10 @@ shinyServer(function(input, output, session) {
       )
                 
       observeEvent(input$tabs, {
-          if (input$tabs %in% c("Publiek"))
+          if (input$tabs %in% c("Publiek")) {
             js$browseURL(paste0("https://faunabeheer.inbo.be/app/01_faunabeheer/?specie=", species$specie()))
+            updateNavbarPage(session = session, inputId = "tabs", selected = "WBE")
+          }
         })
       
     })

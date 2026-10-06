@@ -252,9 +252,9 @@ shinyUI(
       bslib::nav_item(contactUI(id = "publicContact")),
       bslib::nav_item(
         tags$a(
-          id = "WBE", 
-          href = "https://wbe.inbo.be", 
-          target="_parent", 
+          id = "WBE",
+          href = "https://wbe.inbo.be",
+          target = "_blank",
           "WBE"
         )
       ),

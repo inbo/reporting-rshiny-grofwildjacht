@@ -351,14 +351,24 @@ countYearShotServer <- function(
       }
     })
 
-    observeEvent(input$schemeringType, {
-      col <- ifelse(
-        input$schemeringType == "wettelijk",
-        "periode_wettelijk",
-        "periode"
+    observe({
+      req(groupVariableFinal())
+      req(
+        groupVariableFinal() %in% c("periode", "wettelijk", "periode_wettelijk")
       )
+
+      col <- "periode"
+      if (input$schemeringType == "wettelijk") {
+        col <- "periode_wettelijk"
+      }
+
       options <- sort(na.omit(unique(data()[[col]])))
-      updateSelectInput(session, "type", choices = options, selected = options)
+      updateSelectInput(
+        session,
+        "momentType",
+        choices = options,
+        selected = options
+      )
     })
 
     observe({
@@ -386,7 +396,7 @@ countYearShotServer <- function(
       groupVariable = groupVariableFinal,
       data = data,
       preSelected = preSelected,
-      type_MomentOfDay = reactive(input$type)
+      type_MomentOfDay = reactive(input$momentType)
     )
   })
 }
@@ -452,7 +462,7 @@ countYearShotUI <- function(
                   )
                 ),
                 selectInput(
-                  inputId = ns("type"),
+                  inputId = ns("momentType"),
                   label = "Moment van de dag",
                   choices = c(),
                   selected = c(),

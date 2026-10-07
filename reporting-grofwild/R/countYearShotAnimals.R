@@ -351,6 +351,9 @@ countYearShotServer <- function(
       }
     })
 
+    # Have the extra filters been applied?
+    extraFiltered <- reactiveVal(FALSE)
+
     output$extraFilters <- renderUI({
       req(groupVariableFinal())
 
@@ -365,6 +368,7 @@ countYearShotServer <- function(
         }
 
         options <- sort(na.omit(unique(data()[[col]])))
+        extraFiltered(TRUE)
         selectInput(
           inputId = ns("type"),
           label = "Moment van de dag",
@@ -374,6 +378,7 @@ countYearShotServer <- function(
         )
       } else if (groupVariableFinal() == "wettelijk_kader") {
         options <- sort(na.omit(unique(data()[[groupVariable]])))
+        extraFiltered(TRUE)
         selectInput(
           inputId = ns("type"),
           label = "Wettelijk kader",
@@ -383,6 +388,16 @@ countYearShotServer <- function(
         )
       } else {
         NULL
+      }
+    })
+
+    # When no values are selected in the extra filter, select "all". Analogous
+    # to how the jachtmethode filter is applied.
+    filterValues <- reactive({
+      if (extraFiltered() && is.null(input$type)) {
+        "all"
+      } else {
+        input$type
       }
     })
 
@@ -404,7 +419,7 @@ countYearShotServer <- function(
       groupVariable = groupVariableFinal,
       data = data,
       preSelected = preSelected,
-      type_MomentOfDay = reactive(input$type)
+      type_MomentOfDay = filterValues
     )
   })
 }

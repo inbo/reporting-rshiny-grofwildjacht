@@ -419,7 +419,7 @@ countYearShotServer <- function(
       groupVariable = groupVariableFinal,
       data = data,
       preSelected = preSelected,
-      type_MomentOfDay = filterValues
+      extraFilters_type = filterValues
     )
   })
 }

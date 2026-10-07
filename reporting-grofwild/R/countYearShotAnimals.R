@@ -358,24 +358,33 @@ countYearShotServer <- function(
       )
 
       col <- "periode"
-      if (input$schemeringType == "wettelijk") {
+      if (
+        !is.null(input$schemeringType) && input$schemeringType == "wettelijk"
+      ) {
         col <- "periode_wettelijk"
       }
 
       options <- sort(na.omit(unique(data()[[col]])))
       updateSelectInput(
         session,
-        "momentType",
+        "type",
         choices = options,
         selected = options
       )
     })
 
-    observe({
+    output$type <- renderUI({
       req(groupVariable == "wettelijk_kader")
 
       options <- sort(na.omit(unique(data()[[groupVariable]])))
-      updateSelectInput(session, "type", choices = options, selected = options)
+
+      selectInput(
+        inputId = ns("type"),
+        label = "Wettelijk kader",
+        choices = options,
+        selected = options,
+        multiple = TRUE
+      )
     })
 
     # Verdeling afschot over de jaren
@@ -396,7 +405,7 @@ countYearShotServer <- function(
       groupVariable = groupVariableFinal,
       data = data,
       preSelected = preSelected,
-      type_MomentOfDay = reactive(input$momentType)
+      type_MomentOfDay = reactive(input$type)
     )
   })
 }
@@ -462,7 +471,7 @@ countYearShotUI <- function(
                   )
                 ),
                 selectInput(
-                  inputId = ns("momentType"),
+                  inputId = ns("type"),
                   label = "Moment van de dag",
                   choices = c(),
                   selected = c(),
@@ -472,13 +481,7 @@ countYearShotUI <- function(
             },
             if (showWettelijkKader) {
               tagList(
-                selectInput(
-                  inputId = ns("type"),
-                  label = "Wettelijk kader",
-                  choices = c(),
-                  selected = c(),
-                  multiple = TRUE
-                )
+                uiOutput(outputId = ns("type"))
               )
             },
             optionsModuleUI(

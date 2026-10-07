@@ -707,7 +707,8 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
           uiText = uiText,
           showInterval = TRUE,
           showType = TRUE,
-          showTime = TRUE
+          showTime = TRUE,
+          showWettelijkKader = TRUE
         )
       ),
 

@@ -4,53 +4,58 @@
 #' @author lcougnaud
 #' @export
 categoryUI <- function(
- id, category, 
- ecoData, schadeData,
- uiText, speciesList){
-  
+  id,
+  category,
+  ecoData,
+  schadeData,
+  uiText,
+  speciesList
+) {
   ns <- NS(namespace = id)
-  
-  dataDate <- if(category == "schade"){
+
+  dataDate <- if (category == "schade") {
     schadeData
-  }else{ecoData}
+  } else {
+    ecoData
+  }
   maxDate <- max(dataDate$afschot_datum, na.rm = TRUE)
-  
+
   infoText <- welcomeSectionUI(
-    id = category, uiText = uiText,
+    id = category,
+    uiText = uiText,
     category = category,
     context = "description",
     maxDate = maxDate,
     split = TRUE
   )
-  
+
   imgFile <- file.path("www", paste("category", category, "header.png", sep = "-"))
-  
+
   verticalLayout(
-      
     # image
     img(src = imgFile, width = "100%"),
-    
+
     # Specie
-    tags$div(style = "margin-left: 15px; margin-top: 15px; margin-right: 15px", 
-      sidebarLayout(    
-      position = "left", 
-      sidebarPanel = specieSidebarUI(
-        id = ns("sidebar"), 
-        speciesList = speciesList,
-        select = TRUE
-      ),
-      mainPanel = mainPanel(
-        width = 9, 
-        style = "overflow-y: hidden;", # single scrolling bar
-        infoText[["title"]], infoText[["summary"]],
-        uiOutput(outputId = ns("cards")),
-        tags$div(style = "margin-top: 25px;", infoText[["description"]])
+    tags$div(
+      style = "margin-left: 15px; margin-top: 15px; margin-right: 15px",
+      sidebarLayout(
+        position = "left",
+        sidebarPanel = specieSidebarUI(
+          id = ns("sidebar"),
+          speciesList = speciesList,
+          select = TRUE
+        ),
+        mainPanel = mainPanel(
+          width = 9,
+          style = "overflow-y: hidden;", # single scrolling bar
+          infoText[["title"]],
+          infoText[["summary"]],
+          uiOutput(outputId = ns("cards")),
+          tags$div(style = "margin-top: 25px;", infoText[["description"]])
+        )
       )
     )
   )
-  
-  )
-  
 }
 
 #' Server function for the Category page
@@ -59,47 +64,41 @@ categoryUI <- function(
 #' @import shiny
 #' @author lcougnaud
 #' @export
-categoryServer <- function(id, 
-  specie = reactiveVal(), category = character(),
-  subcategories = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-        
+categoryServer <- function(id, specie = reactiveVal(), category = character(), subcategories = character(), uiText) {
+  moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    
+
     ## Sidebar panel
-    
+
     specieSidebarServer(id = "sidebar", specie = specie)
-    
+
     ## Main panel
-    
+
     # get subcategories
-        
-    cards <- lapply(subcategories, function(subcategory)
+
+    cards <- lapply(subcategories, function(subcategory) {
       categoryCard(
-        id = id, 
+        id = id,
         uiText = uiText,
-        category = category, subcategory = subcategory
+        category = category,
+        subcategory = subcategory
       )
-    )
-    args <- c(list(width = 1/3, gap = "2em"), cards)
+    })
+    args <- c(list(width = 1 / 3, gap = "2em"), cards)
     output$cards <- renderUI(do.call(bslib::layout_column_wrap, args))
-    
+
     # save subcategory if corresponding tile is clicked on
     subcategoryUI <- reactiveVal("Subcategorie")
-    lapply(subcategories, function(subcategory){
+    lapply(subcategories, function(subcategory) {
       observeEvent(
-        input[[paste0(subcategory, "-button")]], 
-        subcategoryUI(subcategory), 
+        input[[paste0(subcategory, "-button")]],
+        subcategoryUI(subcategory),
         ignoreInit = TRUE
       )
     })
-    
+
     return(subcategoryUI)
-    
   })
-  
 }
 
 #' Get category card for a specific output or category
@@ -111,76 +110,75 @@ categoryServer <- function(id,
 #' @author lcougnaud
 #' @importFrom bslib card card_header card_image card_body card_footer
 #' @importFrom shiny actionButton
-categoryCard <- function(id, 
-  uiText, 
-  output, subcategory,
-  outputFunction = output, 
-  category, 
-  specie = NULL, type = category){
-  
+categoryCard <- function(
+  id,
+  uiText,
+  output,
+  subcategory,
+  outputFunction = output,
+  category,
+  specie = NULL,
+  type = category
+) {
   ns <- NS(id)
-  
-  if(!missing(subcategory)){
-    
+
+  if (!missing(subcategory)) {
     title <- getSubcategoryTitle(subcategory, uiText = uiText)
     description <- NULL
     filename <- subcategory
-    idCard <- subcategory; btnLabel <- "Toon visualisaties"
-    
-  }else if(!missing(output)){
-    
+    idCard <- subcategory
+    btnLabel <- "Toon visualisaties"
+  } else if (!missing(output)) {
     title <- getOutputTitle(
-      output = outputFunction, specie = specie, 
-      uiText = uiText, type = type
+      output = outputFunction,
+      specie = specie,
+      uiText = uiText,
+      type = type
     )
     description <- getOutputDescription(
-      output = outputFunction, specie = specie,
-      uiText = uiText, type = type)
+      output = outputFunction,
+      specie = specie,
+      uiText = uiText,
+      type = type
+    )
     filename <- paste0(category, "-", output)
-    idCard <- output; btnLabel <- "Bekijk grafiek"
-    
-  }else stop("'output' or 'subcategory' should be specified.")
-  
-  file <- system.file("ui", "www", 
-    paste0("category-", filename, ".png"),
-    package = "reportingGrofwild"
-  )
-  
+    idCard <- output
+    btnLabel <- "Bekijk grafiek"
+  } else {
+    stop("'output' or 'subcategory' should be specified.")
+  }
+
+  file <- system.file("ui", "www", paste0("category-", filename, ".png"), package = "reportingGrofwild")
+
   if (!file.exists(file)) {
-    
     warning("Missing image file: ", paste0("category-", filename, ".png"))
     file <- system.file("ui", "www", "stripes.png", package = "reportingGrofwild")
-  
   }
-  
+
   card <- bslib::card(
     id = ns(paste0(idCard, "-card")),
     class = "category-card",
-    bslib::card_header(title, class = "category-card-header"), 
+    bslib::card_header(title, class = "category-card-header"),
     br(),
-    bslib::card_image(file = file, 
-      class = "category-card-image"
-    ),
+    bslib::card_image(file = file, class = "category-card-image"),
     br(),
     bslib::card_body(description),
-    br(), 
+    br(),
     bslib::card_footer(
       align = "center",
       tags$div(
-        style = "margin-bottom: 10px;margin-top: 10px", 
-          shiny::actionButton(
-          inputId = ns(paste0(idCard, "-button")), 
-          label = btnLabel, 
+        style = "margin-bottom: 10px;margin-top: 10px",
+        shiny::actionButton(
+          inputId = ns(paste0(idCard, "-button")),
+          label = btnLabel,
           class = "category-card-action-button"
         )
       )
     )
   )
-  
-  return(card)
-  
-}
 
+  return(card)
+}
 
 
 #' Server function for the Subcategory page
@@ -189,70 +187,66 @@ categoryCard <- function(id,
 #' @import shiny
 #' @author lcougnaud
 #' @export
-subcategoryServer <- function(id, 
-  specie, category, subcategory = reactiveVal(),
-  subcategories = character(), outputs = character(),
-  uiText){
-  
-  moduleServer(id, function(input, output, session){  
-      
-      ns <- session$ns
-      
-      ## Sidebar panel
-      
-      specieSidebarServer(id = "sidebar", specie = specie)
-      
-      ## Main panel
-      
-      observe({    
-          
-          if(subcategory() %in% subcategories){
-            
-            categoryCards <- lapply(outputs, function(output){
-                
-                args <- list(
-                  output = output,
-                  id = id, 
-                  uiText = uiText,
-                  specie = specie(), 
-                  category = category()
-                )
-                
-                # Plots that are sharing uiText with some params defined by type
-                if (grepl("countYearSchadeUI", output))
-                  args <- c(args, 
-                    list(outputFunction = strsplit(output, split = "-")[[1]][1],
-                      type = strsplit(output, split = "-")[[1]][2])
-                  )
-                
-                do.call(categoryCard, args)
-                
-              })
-            
-            args <- c(categoryCards, list(width = 1/3, gap = "2em"))
-            cards <- do.call(bslib::layout_column_wrap, args)
-            
-            output[["output"]] <- renderUI(cards)
-            
-          }
-          
-        })
-      
-      # if plot is selected based on the category cards
-      outputUI <- reactiveVal()
-      lapply(outputs, function(output){
-          btn <- paste0(output, "-button")
-          observeEvent(
-            input[[btn]], 
-            outputUI(output), 
-            ignoreInit = TRUE
+subcategoryServer <- function(
+  id,
+  specie,
+  category,
+  subcategory = reactiveVal(),
+  subcategories = character(),
+  outputs = character(),
+  uiText
+) {
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+
+    ## Sidebar panel
+
+    specieSidebarServer(id = "sidebar", specie = specie)
+
+    ## Main panel
+
+    observe({
+      if (subcategory() %in% subcategories) {
+        categoryCards <- lapply(outputs, function(output) {
+          args <- list(
+            output = output,
+            id = id,
+            uiText = uiText,
+            specie = specie(),
+            category = category()
           )
+
+          # Plots that are sharing uiText with some params defined by type
+          if (grepl("countYearSchadeUI", output)) {
+            args <- c(
+              args,
+              list(outputFunction = strsplit(output, split = "-")[[1]][1], type = strsplit(output, split = "-")[[1]][2])
+            )
+          }
+
+          do.call(categoryCard, args)
         })
-      
-      return(list(
-          plot = reactive(outputUI())
-        ))
-      
+
+        args <- c(categoryCards, list(width = 1 / 3, gap = "2em"))
+        cards <- do.call(bslib::layout_column_wrap, args)
+
+        output[["output"]] <- renderUI(cards)
+      }
     })
-  
+
+    # if plot is selected based on the category cards
+    outputUI <- reactiveVal()
+    lapply(outputs, function(output) {
+      btn <- paste0(output, "-button")
+      observeEvent(
+        input[[btn]],
+        outputUI(output),
+        ignoreInit = TRUE
+      )
+    })
+
+    return(list(
+      plot = reactive(outputUI())
+    ))
+  })
 }

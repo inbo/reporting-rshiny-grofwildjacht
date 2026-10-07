@@ -1501,10 +1501,6 @@ mapFlandersUI <- function(
     )
   }
 
-  # if (specie == "Wolf" && type == "schade") {
-  #   browser()
-  # }
-
   # Map with according line plot
 
   tagList(

@@ -1,12 +1,11 @@
 # Project: inbo-grofwildjacht_git
-# Frequency table for type schade 
-# 
+# Frequency table for type schade
+#
 # Author: Eva Adriaensen
 ###############################################################################
 
-
 #' Create summary table for schadeCode by region.
-#' 
+#'
 #' @param schadeChoices character, chosen schade types (basisCode) to filter on
 #' @param schadeChoicesVrtg character, chosen schade types related to "VRTG" to filter on, optional
 #' @param schadeChoicesGewas character, chosen schade types related to "GEWAS" to filter on, optional
@@ -14,11 +13,11 @@
 #' @inheritParams countYearAge
 #' @inheritParams countYearProvince
 #' @inheritParams filterDataSource
-#' @param fullNames named character vector, values for the \code{variable} to be 
+#' @param fullNames named character vector, values for the \code{variable} to be
 #' displayed instead of original data values
-#' 
-#' @return a list containing a data.frame (\code{data}) and an html table header (\code{header}) 
-#' specifying multicolumn column names 
+#'
+#' @return a list containing a data.frame (\code{data}) and an html table header (\code{header})
+#' specifying multicolumn column names
 #' @author Eva Adriaensen
 #' @importFrom reshape2 dcast
 #' @importFrom plyr count
@@ -26,102 +25,118 @@
 #' @importFrom utils tail
 #' @importFrom sf st_drop_geometry
 #' @export
-tableSchadeCode <- function(data, jaartallen = NULL,
-        sourceIndicator = NULL, 
-        schadeChoices = NULL, schadeChoicesVrtg = NULL, schadeChoicesGewas = NULL,
-        fullNames = NULL, summarizeBy = c("count", "percent"), regio = "",
-        regionLevel = c("provinces", "flanders", "faunabeheerzones")) {
-  
+tableSchadeCode <- function(
+  data,
+  jaartallen = NULL,
+  sourceIndicator = NULL,
+  schadeChoices = NULL,
+  schadeChoicesVrtg = NULL,
+  schadeChoicesGewas = NULL,
+  fullNames = NULL,
+  summarizeBy = c("count", "percent"),
+  regio = "",
+  regionLevel = c("provinces", "flanders", "faunabeheerzones")
+) {
   # For R CMD check
   locatie <- NULL
-        
-  if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)){
+
+  if (is.null(schadeChoices) & is.null(schadeChoicesGewas) & is.null(schadeChoicesVrtg)) {
     stop("Niet beschikbaar")
   }
-  
+
   summarizeBy <- match.arg(summarizeBy)
-  
-  if (!"GEWAS" %in% schadeChoices)
+
+  if (!"GEWAS" %in% schadeChoices) {
     schadeChoicesGewas <- NULL
-  
-  if (!"VRTG" %in% schadeChoices)
+  }
+
+  if (!"VRTG" %in% schadeChoices) {
     schadeChoicesVrtg <- NULL
+  }
 
   schadeSubchoices <- c(schadeChoicesVrtg, schadeChoicesGewas)
-  
-  if (is.null(jaartallen))
+
+  if (is.null(jaartallen)) {
     jaartallen <- unique(data$afschotjaar)
-  
+  }
+
   # filter for source
-  allData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator,
-    returnStop = "message")
-  
-  if (inherits(allData, "sf"))
-    allData <- sf::st_drop_geometry(allData)  
-  
-  # Force all fbz's in the summary table even if never occured  
+  allData <- filterDataSource(plotData = data, sourceIndicator = sourceIndicator, returnStop = "message")
+
+  if (inherits(allData, "sf")) {
+    allData <- sf::st_drop_geometry(allData)
+  }
+
+  # Force all fbz's in the summary table even if never occured
   if (regionLevel == "flanders") {
     allData$locatie <- as.factor("Vlaams Gewest")
   } else if (regionLevel == "provinces") {
     allData$locatie <- factor(allData$provincie)
   } else if (all(regio %in% c(as.character(1:10), "Onbekend"))) {
     allData$locatie <- allData$FaunabeheerZone
-    allData$locatie <- factor(allData$locatie, levels = levels(droplevels(factor(unique(allData$locatie), 
-            levels = c(1:10)))))
+    allData$locatie <- factor(
+      allData$locatie,
+      levels = levels(droplevels(factor(unique(allData$locatie), levels = c(1:10))))
+    )
   } else {
     allData$locatie <- factor(allData$gemeente_afschot_locatie)
   }
-     
+
   # Select data
-  tableData <- allData[allData$afschotjaar %in% jaartallen, 
-    c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")]
-    
-  if (nrow(tableData) == 0)
+  tableData <- allData[
+    allData$afschotjaar %in% jaartallen,
+    c("afschotjaar", "locatie", "schadeBasisCode", "schadeCode")
+  ]
+
+  if (nrow(tableData) == 0) {
     stop("Niet beschikbaar: Geen data voor de gekozen periode")
-  
+  }
+
   # Exclude records with afschotjaar = NA
-  if (any(is.na(tableData$locatie)))
+  if (any(is.na(tableData$locatie))) {
     warning("Locatie is missing for some records. Total numbers in the table might differ across chosen region levels.")
+  }
   tableData <- tableData[!is.na(tableData$afschotjaar), ]
-    
+
   # Summary of the data
   summaryData <- count(tableData, vars = setdiff(names(tableData), "afschotjaar"))
-  
+
   # Include all possible locations and selected schadeCodes
   fullData <- expand.grid(
     locatie = levels(allData$locatie),
     schadeCode = if ("ANDERE" %in% schadeChoices) {
-        unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
-        
-      } else {
-        unique(c(schadeSubchoices, as.character(unique(allData$schadeCode))))
-        
-      }
+      unique(c(schadeSubchoices, as.character(unique(allData$schadeCode)), "ANDERE"))
+    } else {
+      unique(c(schadeSubchoices, as.character(unique(allData$schadeCode))))
+    }
   )
-  
+
   summaryData <- merge(summaryData, fullData, all = TRUE)
-  
+
   # Long to wide table
-  summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq",
-    fun.aggregate = sum)
+  summaryTable <- dcast(summaryData, locatie ~ schadeCode, value.var = "freq", fun.aggregate = sum)
   # Optimal displaying of the table
   summaryTable[is.na(summaryTable)] <- 0
-  
+
   # Extract header info and counts
   comb <- data.frame(rbind(
-  if ("VRTG" %in% schadeChoices)
-    expand.grid("VRTG", schadeChoicesVrtg, stringsAsFactors = FALSE),
-  if ("GEWAS" %in% schadeChoices)
-    expand.grid("GEWAS", schadeChoicesGewas, stringsAsFactors = FALSE),
-  if ("ANDERE" %in% schadeChoices) {
-    df2 <- unique(allData[allData$schadeBasisCode == "ANDERE", c("schadeBasisCode", "schadeCode")])
-    if (nrow(df2) == 0L)
-    	df2 <- data.frame(cbind("ANDERE", "ANDERE"), stringsAsFactors=FALSE)
-#    df2 <- unique(allData[c("schadeBasisCode", "schadeCode")])
-#    df2 <- df2[df2$schadeBasisCode == "ANDERE",]
-    names(df2) <- c("Var1", "Var2")
-    df2
-  }))
+    if ("VRTG" %in% schadeChoices) {
+      expand.grid("VRTG", schadeChoicesVrtg, stringsAsFactors = FALSE)
+    },
+    if ("GEWAS" %in% schadeChoices) {
+      expand.grid("GEWAS", schadeChoicesGewas, stringsAsFactors = FALSE)
+    },
+    if ("ANDERE" %in% schadeChoices) {
+      df2 <- unique(allData[allData$schadeBasisCode == "ANDERE", c("schadeBasisCode", "schadeCode")])
+      if (nrow(df2) == 0L) {
+        df2 <- data.frame(cbind("ANDERE", "ANDERE"), stringsAsFactors = FALSE)
+      }
+      #    df2 <- unique(allData[c("schadeBasisCode", "schadeCode")])
+      #    df2 <- df2[df2$schadeBasisCode == "ANDERE",]
+      names(df2) <- c("Var1", "Var2")
+      df2
+    }
+  ))
 
   allSchadeCode <- unique(comb$Var2)
 
@@ -129,116 +144,122 @@ tableSchadeCode <- function(data, jaartallen = NULL,
   codeNames <- unlist(fullNames[match(comb$Var2, fullNames)])
   codeNames <- codeNames[!duplicated(codeNames)] # Note: 'unique' would remove names
   summaryTable <- summaryTable[, c(colnames(summaryTable)[1], codeNames)]
-  
-  
+
   # Add row and column sum
-  levels(summaryTable[,"locatie"]) <- c(levels(summaryTable[,"locatie"]),"Vlaanderen")
-  
+  levels(summaryTable[, "locatie"]) <- c(levels(summaryTable[, "locatie"]), "Vlaanderen")
+
   if (all(regio != "Vlaams Gewest")) {
     newRow <- as.list(apply(as.matrix(summaryTable[, allSchadeCode]), 2, sum)) # causes error
     # assign names manually; needed in case of allSchadeCode
-    if (is.null(names(newRow)) & length(allSchadeCode) == 1L)
+    if (is.null(names(newRow)) & length(allSchadeCode) == 1L) {
       names(newRow) <- allSchadeCode
-    summaryTable <- rbind(summaryTable, 
-      c(locatie = "Vlaanderen", newRow))
+    }
+    summaryTable <- rbind(summaryTable, c(locatie = "Vlaanderen", newRow))
   }
-  
+
   # Remove columns with only 0 values
   summaryTable <- summaryTable[, !sapply(summaryTable, function(x) is.numeric(x) && all(x == 0))]
-  
+
   # Add "Totaal" column
-  summaryTable <- cbind(summaryTable, 
-      Totaal = apply(as.matrix(summaryTable[, setdiff(names(summaryTable), "locatie")]), 1, sum))
-    
+  summaryTable <- cbind(
+    summaryTable,
+    Totaal = apply(as.matrix(summaryTable[, setdiff(names(summaryTable), "locatie")]), 1, sum)
+  )
+
   # number of schadeCodes by schadeBasisCode - correct sorting!
-  relSchadeBasisCode <- comb[comb$Var2 %in% names(summaryTable),]
+  relSchadeBasisCode <- comb[comb$Var2 %in% names(summaryTable), ]
   columsPerSchadeBasisCode <- table(relSchadeBasisCode$Var1)
   columsPerSchadeBasisCode <- columsPerSchadeBasisCode[unique(relSchadeBasisCode$Var1)]
 
   if (summarizeBy == "percent") {
     last_col <- names(summaryTable)[ncol(summaryTable)]
-    
+
     summaryTable <- summaryTable %>%
       mutate(dplyr::across(-locatie, ~ as.numeric(.x))) %>%
       mutate(dplyr::across(
-          -locatie,
-          ~ paste0(round(.x / .data[[last_col]] * 100, 2), "%")
-        ))
+        -locatie,
+        ~ paste0(round(.x / .data[[last_col]] * 100, 2), "%")
+      ))
   }
-  
+
   # Rename locatie
   names(summaryTable)[names(summaryTable) == "locatie"] <- "Locatie"
-  
+
   # Full column names
   columnFullNames <- names(fullNames)[match(colnames(summaryTable), fullNames)]
   colnames(summaryTable)[!is.na(columnFullNames)] <- columnFullNames[!is.na(columnFullNames)]
 
   # Manage table header with multiline
   tableHeader <- tags$table(
-      class  = 'display',
-      tags$thead(
-          tags$tr(
-            tags$th(rowspan = 2, names(summaryTable)[1]) ,
-            lapply(names(columsPerSchadeBasisCode), function(iName) {
-           	  tags$th(colspan = columsPerSchadeBasisCode[iName], names(fullNames)[match(iName, fullNames)])
-            }),
-            tags$th(rowspan = 2, tail(names(summaryTable), n=1))
-          ),
-          tags$tr(
-              lapply(names(summaryTable)[names(summaryTable) %in% names(codeNames)], tags$th)
-          )
+    class = 'display',
+    tags$thead(
+      tags$tr(
+        tags$th(rowspan = 2, names(summaryTable)[1]),
+        lapply(names(columsPerSchadeBasisCode), function(iName) {
+          tags$th(colspan = columsPerSchadeBasisCode[iName], names(fullNames)[match(iName, fullNames)])
+        }),
+        tags$th(rowspan = 2, tail(names(summaryTable), n = 1))
+      ),
+      tags$tr(
+        lapply(names(summaryTable)[names(summaryTable) %in% names(codeNames)], tags$th)
       )
-   )
+    )
+  )
 
   return(list(data = summaryTable, header = tableHeader))
-  
-	
 }
 
 
-
-
 #' Shiny module for creating the plot \code{\link{tableSchadeCode}} - server side
-#' @inheritParams optionsModuleServer 
+#' @inheritParams optionsModuleServer
 #' @inheritParams plotModuleServer
 #' @inheritParams tableSchadeCode
 #' @inheritParams welcomeSectionUI
 #' @return no return value
-#' 
+#'
 #' @author mvarewyck
 #' @import shiny
 #' @export
-tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRange,
-  schadeChoices, schadeChoicesVrtg, schadeChoicesGewas, datatable, fullNames, 
-  allRegionsSelected = FALSE, preSelected = reactive(NULL)) {
-  
-  moduleServer(id,
-    function(input, output, session) {
-      
-      ns <- session$ns
-      
-      callModule(module = optionsModuleServer, id = "tableSchade", 
-        data = data,
-        timeRange = timeRange,
-        allRegionsSelected = allRegionsSelected
-      )
-      
-      callModule(
-        module = plotModuleServer, id = "tableSchade",
-        plotFunction = "tableSchadeCode", 
-        data = data,
-        schadeChoices = schadeChoices,
-        schadeChoicesVrtg = schadeChoicesVrtg,
-        schadeChoicesGewas = schadeChoicesGewas,
-        datatable = datatable,
-        fullNames = fullNames,
-        preSelected = preSelected
-      )
-      
-    })
-  
-} 
+tableSchadeServer <- function(
+  id,
+  data,
+  types,
+  labelTypes,
+  typesDefault,
+  timeRange,
+  schadeChoices,
+  schadeChoicesVrtg,
+  schadeChoicesGewas,
+  datatable,
+  fullNames,
+  allRegionsSelected = FALSE,
+  preSelected = reactive(NULL)
+) {
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
 
+    callModule(
+      module = optionsModuleServer,
+      id = "tableSchade",
+      data = data,
+      timeRange = timeRange,
+      allRegionsSelected = allRegionsSelected
+    )
+
+    callModule(
+      module = plotModuleServer,
+      id = "tableSchade",
+      plotFunction = "tableSchadeCode",
+      data = data,
+      schadeChoices = schadeChoices,
+      schadeChoicesVrtg = schadeChoicesVrtg,
+      schadeChoicesGewas = schadeChoicesGewas,
+      datatable = datatable,
+      fullNames = fullNames,
+      preSelected = preSelected
+    )
+  })
+}
 
 
 #' Shiny module for creating the plot \code{\link{tableSchadeCode}} - UI side
@@ -246,29 +267,40 @@ tableSchadeServer <- function(id, data, types, labelTypes, typesDefault, timeRan
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-tableSchadeUI <- function(id, 
-  uiText, context = id, specie = NULL, 
-  regionLevels = NULL, regionLevelSelected = NULL, showDataSource = c(),
-  showTime = FALSE, doHide = TRUE, summarizeBy = NULL) {
-  
+tableSchadeUI <- function(
+  id,
+  uiText,
+  context = id,
+  specie = NULL,
+  regionLevels = NULL,
+  regionLevelSelected = NULL,
+  showDataSource = c(),
+  showTime = FALSE,
+  doHide = TRUE,
+  summarizeBy = NULL
+) {
   ns <- NS(id)
-  
+
   title <- getOutputTitle(
-    output = "tableSchadeUI", specie = specie, 
+    output = "tableSchadeUI",
+    specie = specie,
     uiText = uiText
   )
   description <- getOutputDescription(
-    output = "tableSchadeUI", 
-    specie = specie, uiText = uiText, context = context
-  )  
+    output = "tableSchadeUI",
+    specie = specie,
+    uiText = uiText,
+    context = context
+  )
   tagList(
     actionLink(inputId = ns("linkTableSchade"), label = tags$h3(HTML(title))),
     conditionalPanel(
-      condition = paste("input.linkTableSchade % 2 ==", as.numeric(doHide)), 
+      condition = paste("input.linkTableSchade % 2 ==", as.numeric(doHide)),
       ns = ns,
-      optionsModuleUI(id = ns("tableSchade"), 
-        showTime = showTime, 
-        regionLevels = regionLevels, 
+      optionsModuleUI(
+        id = ns("tableSchade"),
+        showTime = showTime,
+        regionLevels = regionLevels,
         regionLevelSelected = regionLevelSelected,
         summarizeBy = summarizeBy,
         showDataSource = showDataSource,
@@ -278,8 +310,6 @@ tableSchadeUI <- function(id,
       tags$br(),
       tags$div(class = "larger-description", HTML(description)),
       tags$hr()
-    ) 
+    )
   )
-  
 }
-

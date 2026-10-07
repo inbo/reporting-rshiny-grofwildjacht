@@ -1,41 +1,37 @@
 # Specific app functions for the dashboard page
-# 
+#
 # Author: mvarewyck
 ###############################################################################
 
-
-
-
 #' Create named choices for the dashboard indicators
 #' @inheritParams dashboardChoices
-#' @param regionLevel character, selected regional level; to define whether 
+#' @param regionLevel character, selected regional level; to define whether
 #' info is partially known (* indicator)
-#' 
+#'
 #' @return named character vector
-#' 
+#'
 #' @author mvarewyck
 #' @export
 namedChoices <- function(choices, uiText, regionLevel) {
-  
   matchId <- sapply(choices, function(x) {
-      matchId <- which(uiText$plotFunction == x)
-      if (length(matchId) == 0 || uiText[matchId, regionLevel] == 0)
-        NULL else
-        matchId
-    })
-  
+    matchId <- which(uiText$plotFunction == x)
+    if (length(matchId) == 0 || uiText[matchId, regionLevel] == 0) {
+      NULL
+    } else {
+      matchId
+    }
+  })
+
   choices <- choices[!sapply(matchId, is.null)]
   matchId <- as.integer(matchId[!sapply(matchId, is.null)])
-  names(choices) <- paste(uiText$title[matchId], 
-    ifelse(uiText[matchId, regionLevel] == 1, "*", ""))
-  
+  names(choices) <- paste(uiText$title[matchId], ifelse(uiText[matchId, regionLevel] == 1, "*", ""))
+
   choices
-  
 }
 
 
 #' List choices for indicatoren - UI side
-#' @param choices character vector, plotFunction names in \code{uiText} 
+#' @param choices character vector, plotFunction names in \code{uiText}
 #' for which to create named choices, i.e. F_* codes
 #' @param selected character vector, subset of \code{choices} pre-selected choices
 #' @inheritParams reportingGrofwild-common-args
@@ -44,18 +40,17 @@ namedChoices <- function(choices, uiText, regionLevel) {
 #' @import shiny
 #' @export
 dashboardChoices <- function(id, choices, selected = NULL, uiText) {
-  
   ns <- NS(id)
-  
+
   label <- unique(uiText$Criterium[uiText$plotFunction %in% choices])
-  
-  checkboxGroupInput(inputId = ns("indicators"),
+
+  checkboxGroupInput(
+    inputId = ns("indicators"),
     label = label,
     choices = namedChoices(choices, uiText = uiText, regionLevel = "provinces"),
     selected = selected,
     width = "100%"
   )
-  
 }
 
 
@@ -63,7 +58,7 @@ dashboardChoices <- function(id, choices, selected = NULL, uiText) {
 #' @inheritParams dashboardChoices
 #' @param regionLevel reactive object, selected region level
 #' @return selected choices by user
-#' 
+#'
 #' @author mvarewyck
 #' @import shiny
 #' @export
@@ -72,26 +67,25 @@ dashboardChoicesServer <- function(id, choices, uiText, regionLevel) {
   moduleServer(
     id,
     function(input, output, session) {
-      
       ns <- session$ns
-      
+
       observe({
-          
-          req(regionLevel())
-          
-          previousSelected <- input$indicators
-          
-          ## this is done in "availableData"
-          #choicesUpdate <- if(isolate(regionLevel()) %in% c("flanders", "provinces")) choices else setdiff(choices, "F18_8")
-          
-          updateCheckboxGroupInput(session = session, inputId = "indicators",
-            choices = namedChoices( choices , uiText = uiText, regionLevel = regionLevel()),
-            selected = previousSelected)
-        
-        })
-      
+        req(regionLevel())
+
+        previousSelected <- input$indicators
+
+        ## this is done in "availableData"
+        #choicesUpdate <- if(isolate(regionLevel()) %in% c("flanders", "provinces")) choices else setdiff(choices, "F18_8")
+
+        updateCheckboxGroupInput(
+          session = session,
+          inputId = "indicators",
+          choices = namedChoices(choices, uiText = uiText, regionLevel = regionLevel()),
+          selected = previousSelected
+        )
+      })
+
       return(reactive(input$indicators))
-      
-    })
-  
+    }
+  )
 }

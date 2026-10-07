@@ -45,11 +45,7 @@ wbeServer <- function(
           subset(geoData, KboNummer_Toek %in% results$wbe_currentKbo())
         } else {
           # when no afschot data, still show map & biotoop
-          createEmptyGeo(
-            geoData[1, ],
-            years = 2014:max(geoData$afschotjaar),
-            kbo = results$wbe_currentKbo()
-          )
+          createEmptyGeo(geoData[1, ], years = 2014:max(geoData$afschotjaar), kbo = results$wbe_currentKbo())
         }
       })
 
@@ -98,18 +94,13 @@ wbeServer <- function(
         isPresent <- sapply(
           speciesChoices,
           function(iSpecies) {
-            iSpecies %in%
-              results$wbe_geoDataKbo()$wildsoort |
-              iSpecies %in% results$wbe_schadeData()$wildsoort
+            iSpecies %in% results$wbe_geoDataKbo()$wildsoort | iSpecies %in% results$wbe_schadeData()$wildsoort
           },
           simplify = FALSE
         )
 
         for (iSpecies in speciesChoices) {
-          jsSelector <- sprintf(
-            '[type=radio][name=wbe_species][value="%s"]',
-            iSpecies
-          )
+          jsSelector <- sprintf('[type=radio][name=wbe_species][value="%s"]', iSpecies)
 
           if (!isPresent[[iSpecies]]) {
             if (input$wbe_species == iSpecies) {
@@ -121,18 +112,10 @@ wbeServer <- function(
             }
 
             shinyjs::disable(selector = jsSelector)
-            shinyjs::runjs(paste0(
-              "$('",
-              jsSelector,
-              "').parent().addClass('disabled').css('opacity', 0.4)"
-            ))
+            shinyjs::runjs(paste0("$('", jsSelector, "').parent().addClass('disabled').css('opacity', 0.4)"))
           } else {
             shinyjs::enable(selector = jsSelector)
-            shinyjs::runjs(paste0(
-              "$('",
-              jsSelector,
-              "').parent().removeClass('disabled').css('opacity', 1)"
-            ))
+            shinyjs::runjs(paste0("$('", jsSelector, "').parent().removeClass('disabled').css('opacity', 1)"))
           }
         }
       })
@@ -169,17 +152,9 @@ wbeServer <- function(
             "Momenteel zijn er voor deze WBE geen schadegegevens van de grofwildsoorten beschikbaar.",
             "Hierdoor kunnen er geen figuren/tabellen worden getoond m.b.t. schadegevallen.",
             "Indien u denkt dat dit niet klopt, raden wij u aan gebruik te maken van het",
-            tags$a(
-              href = "https://natuurenbos.vlaanderen.be/e-loketten",
-              target = "_blank",
-              "e-loket"
-            ),
+            tags$a(href = "https://natuurenbos.vlaanderen.be/e-loketten", target = "_blank", "e-loket"),
             "van ANB, de Wilderapp (",
-            tags$a(
-              href = "https://apps.apple.com/be/app/wilder/id1478282738",
-              target = "_blank",
-              "ios"
-            ),
+            tags$a(href = "https://apps.apple.com/be/app/wilder/id1478282738", target = "_blank", "ios"),
             "of",
             tags$a(
               href = "https://play.google.com/store/apps/details?id=com.wilderpg.wilder&hl=en&gl=US&pli=1",
@@ -187,11 +162,7 @@ wbeServer <- function(
               "android"
             ),
             ") van HVV of",
-            tags$a(
-              href = "https://waarnemingen.be/",
-              target = "_blank",
-              "waarnemingen.be"
-            ),
+            tags$a(href = "https://waarnemingen.be/", target = "_blank", "waarnemingen.be"),
             "van Natuurpunt. Bent u zeker dat er toch gegevens bij \u00E9\u00E9n van de partners ingevoerd werden die hier niet worden weergegeven, dan laat u best iets weten op",
             tags$a(
               href = "mailto:faunabeheer@inbo.be?SUBJECT=Faunabeheer WBE web applicatie",
@@ -225,23 +196,14 @@ wbeServer <- function(
         ecoData <- subset(ecoData, wildsoort == req(input$wbe_species))
 
         # Combine data
-        commonNames <- names(ecoData)[
-          names(ecoData) %in% names(results$wbe_geoData())
-        ]
-        combinedData <- merge(
-          results$wbe_geoData(),
-          ecoData,
-          by = commonNames,
-          all.x = TRUE
-        )
+        commonNames <- names(ecoData)[names(ecoData) %in% names(results$wbe_geoData())]
+        combinedData <- merge(results$wbe_geoData(), ecoData, by = commonNames, all.x = TRUE)
 
         combinedData
       })
 
       results$wbe_toekenningsData <- reactive({
-        toekenningsData[
-          toekenningsData$KboNummer_Toek %in% results$wbe_currentKbo(),
-        ]
+        toekenningsData[toekenningsData$KboNummer_Toek %in% results$wbe_currentKbo(), ]
       })
 
       results$wbe_timeRange <- reactive({
@@ -251,10 +213,7 @@ wbeServer <- function(
       })
 
       results$leeftijdtypes <- reactive({
-        c(
-          loadMetaEco(species = input$wbe_species)$leeftijd_comp_inbo,
-          "Onbekend"
-        )
+        c(loadMetaEco(species = input$wbe_species)$leeftijd_comp_inbo, "Onbekend")
       })
 
       results$jachttypes <- reactive({
@@ -354,10 +313,7 @@ wbeServer <- function(
         id = "wbe",
         schadeData = results$wbe_schadeData,
         allSpatialData = reactive(
-          filterSpatialWbe(
-            allSpatialData = spatialData,
-            partijNummer = results$wbe_currentPartij()
-          )
+          filterSpatialWbe(allSpatialData = spatialData, partijNummer = results$wbe_currentPartij())
         ),
         timeRange = reactive({
           schadeRange <- range(results$wbe_schadeData()$afschotjaar)
@@ -374,12 +330,7 @@ wbeServer <- function(
       output$wbe_mapSchade <- renderUI({
         req(input$wbe_species %in% results$wbe_schadeData()$wildsoort)
 
-        mapSchadeUI(
-          id = ns("wbe"),
-          filterCode = TRUE,
-          filterSubcode = TRUE,
-          plotDetails = "region"
-        )
+        mapSchadeUI(id = ns("wbe"), filterCode = TRUE, filterSubcode = TRUE, plotDetails = "region")
       })
 
       # Plot 7: Geslachtsverdeling binnen het afschot per leeftijdscategorie
@@ -478,12 +429,7 @@ wbeServer <- function(
         data = results$wbe_combinedData,
         types = reactive(switch(
           input$wbe_species,
-          "Wild zwijn" = c(
-            "Frisling (<6m)",
-            "Frisling (>6m)",
-            "Overloper",
-            "Volwassen"
-          ),
+          "Wild zwijn" = c("Frisling (<6m)", "Frisling (>6m)", "Overloper", "Volwassen"),
           Ree = c("Kits", "Jongvolwassen", "Volwassen")
         )),
         timeRange = reactive(
@@ -535,10 +481,7 @@ wbeServer <- function(
       })
 
       # Afschot aanvraag Reewild
-      requestAfschotReewildServer(
-        id = "wbe_afschotAanvraag",
-        data = results$wbe_combinedData
-      )
+      requestAfschotReewildServer(id = "wbe_afschotAanvraag", data = results$wbe_combinedData)
 
       return(
         list(specie = reactive(input$wbe_species))
@@ -631,12 +574,8 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
               "<div class='fotoTitel'>Wild zwijn</div><div id='wildZwijnFoto'></div>"
             ),
             HTML("<div class='fotoTitel'>Ree</div><div id='reeFoto'></div>"),
-            HTML(
-              "<div class='fotoTitel'>Damhert</div><div id='damhertFoto'></div>"
-            ),
-            HTML(
-              "<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>"
-            )
+            HTML("<div class='fotoTitel'>Damhert</div><div id='damhertFoto'></div>"),
+            HTML("<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>")
           )
         )
       )
@@ -718,12 +657,7 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         "output.wbe_emptyAfschot == false",
         ns = ns,
         countAgeGenderUI(id = ns("wbe"), uiText = uiText),
-        countAgeCheekUI(
-          id = ns("wbe"),
-          showAccuracy = TRUE,
-          showTime = TRUE,
-          uiText = uiText
-        ),
+        countAgeCheekUI(id = ns("wbe"), showAccuracy = TRUE, showTime = TRUE, uiText = uiText),
 
         conditionalPanel(
           "input.wbe_species == 'Wild zwijn' || input.wbe_species == 'Ree'",
@@ -734,16 +668,8 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         conditionalPanel(
           "input.wbe_species == 'Ree'",
           ns = ns,
-          ageGenderLowerJawUI(
-            id = ns("wbe"),
-            regionLevels = NULL,
-            uiText = uiText
-          ),
-          percentageRealisedShotUI(
-            id = ns("wbe"),
-            showAccuracy = TRUE,
-            uiText = uiText
-          )
+          ageGenderLowerJawUI(id = ns("wbe"), regionLevels = NULL, uiText = uiText),
+          percentageRealisedShotUI(id = ns("wbe"), showAccuracy = TRUE, uiText = uiText)
         ),
 
         bioindicatorSection(id = ns("wbe"), uiText = uiText),
@@ -780,10 +706,7 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
         conditionalPanel(
           "input.wbe_species == 'Ree'",
           ns = ns,
-          requestAfschotReewildUI(
-            id = ns("wbe_afschotAanvraag"),
-            uiText = uiText
-          )
+          requestAfschotReewildUI(id = ns("wbe_afschotAanvraag"), uiText = uiText)
         )
       )
     )

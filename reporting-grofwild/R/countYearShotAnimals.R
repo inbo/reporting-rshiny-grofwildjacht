@@ -56,13 +56,7 @@ countYearShotAnimals <- function(
   # Select on years & type
   plotData <- plotData[
     plotData$afschotjaar %in% jaartallen,
-    c(
-      "afschotjaar",
-      "afschot_datum",
-      groupVariable,
-      "jachtmethode_comp",
-      "leeftijd_comp_bron"
-    )
+    c("afschotjaar", "afschot_datum", groupVariable, "jachtmethode_comp", "leeftijd_comp_bron")
   ]
 
   if (!is.null(type) && !all(type == "all")) {
@@ -76,10 +70,7 @@ countYearShotAnimals <- function(
   }
   plotData[is.na(plotData[, groupVariable]), groupVariable] <- "Onbekend"
   if (groupVariable == "leeftijd_comp_inbo") {
-    plotData <- filterGrofwild(
-      plotData = plotData,
-      sourceIndicator_leeftijd = sourceIndicator_leeftijd
-    )
+    plotData <- filterGrofwild(plotData = plotData, sourceIndicator_leeftijd = sourceIndicator_leeftijd)
   }
 
   if (!is.null(type) && !all(type == "all")) {
@@ -87,22 +78,13 @@ countYearShotAnimals <- function(
   } ## only retains animals of specified type
   plotData$leeftijd_comp_bron <- NULL
 
-  plotData$afschotjaar <- with(
-    plotData,
-    factor(afschotjaar, levels = min(jaartallen):max(jaartallen))
-  )
+  plotData$afschotjaar <- with(plotData, factor(afschotjaar, levels = min(jaartallen):max(jaartallen)))
 
-  colors <- replicateColors(
-    values = c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend")
-  )$colors
+  colors <- replicateColors(values = c(loadMetaEco(species = wildNaam)[[groupVariable]], "Onbekend"))$colors
 
   title <- paste0(
     "Afschot van ",
-    ifelse(
-      length(jaartallen) > 1,
-      paste(min(jaartallen), "tot", max(jaartallen)),
-      jaartallen
-    ),
+    ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)), jaartallen),
     if (!all(regio == "")) paste0("\n(", toString(regio), ")")
   )
 
@@ -135,12 +117,7 @@ countYearShotAnimals <- function(
 
     plotData$timeGroup <- plotData$maand
   } else if (interval == "Per kwartaal") {
-    newLevels <- c(
-      "Kwartaal 1 (jan-mrt)",
-      "Kwartaal 2 (apr-jun)",
-      "Kwartaal 3 (jul-sept)",
-      "Kwartaal 4 (okt-dec)"
-    )
+    newLevels <- c("Kwartaal 1 (jan-mrt)", "Kwartaal 2 (apr-jun)", "Kwartaal 3 (jul-sept)", "Kwartaal 4 (okt-dec)")
 
     plotData$timeGroup <- ceiling(plotData$maand / 3)
   } else if (interval == "Per twee weken") {
@@ -175,10 +152,7 @@ countYearShotAnimals <- function(
   }
 
   if (interval == "Per jaar") {
-    summaryData <- melt(
-      table(plotData[, c("afschotjaar", groupVariable)]),
-      id.vars = c("afschotjaar", groupVariable)
-    )
+    summaryData <- melt(table(plotData[, c("afschotjaar", groupVariable)]), id.vars = c("afschotjaar", groupVariable))
     summaryData$timeGroup <- as.numeric(as.factor(summaryData$afschotjaar))
   } else {
     summaryData <- melt(
@@ -188,10 +162,7 @@ countYearShotAnimals <- function(
   }
 
   # For optimal displaying in the plot
-  summaryData$timeChar <- factor(
-    newLevels[summaryData$timeGroup],
-    levels = newLevels
-  )
+  summaryData$timeChar <- factor(newLevels[summaryData$timeGroup], levels = newLevels)
   if (interval == "Per jaar") {
     summaryData$timeChar <- as.numeric(as.character(summaryData$timeChar))
   }
@@ -201,11 +172,7 @@ countYearShotAnimals <- function(
   summaryData$text <- paste0(
     "n = ",
     summaryData$value,
-    ifelse(
-      is.na(summaryData$percent),
-      "",
-      paste0(" (", round(summaryData$percent), "%)")
-    ),
+    ifelse(is.na(summaryData$percent), "", paste0(" (", round(summaryData$percent), "%)")),
     paste0(
       "<br><em>Totaal in ",
       summaryData$afschotjaar,
@@ -232,11 +199,7 @@ countYearShotAnimals <- function(
       height = height
     ) %>%
       plotly::layout(
-        xaxis = list(
-          title = '',
-          tickvals = unique(summaryData$timeChar),
-          ticktext = unique(summaryData$timeChar)
-        )
+        xaxis = list(title = '', tickvals = unique(summaryData$timeChar), ticktext = unique(summaryData$timeChar))
       )
   } else {
     allPlots <- lapply(seq_along(levels(summaryData$afschotjaar)), function(i) {
@@ -270,12 +233,7 @@ countYearShotAnimals <- function(
   }
 
   # Combine all plots
-  pl <- subplot(
-    allPlots,
-    titleX = TRUE,
-    shareY = TRUE,
-    margin = c(0.01, 0, 0, 0)
-  ) %>%
+  pl <- subplot(allPlots, titleX = TRUE, shareY = TRUE, margin = c(0.01, 0, 0, 0)) %>%
     plotly::layout(
       barmode = 'stack',
       showlegend = TRUE,
@@ -285,15 +243,9 @@ countYearShotAnimals <- function(
     ) %>%
     add_annotations(
       text = percentCollected(
-        nAvailable = sum(
-          !is.na(plotData$afschot_datum) &
-            plotData[, groupVariable] != "Onbekend"
-        ),
+        nAvailable = sum(!is.na(plotData$afschot_datum) & plotData[, groupVariable] != "Onbekend"),
         nTotal = nRecords,
-        text = paste(
-          "gekende afschotdatum en",
-          strsplit(groupVariable, split = "_")[[1]][1]
-        )
+        text = paste("gekende afschotdatum en", strsplit(groupVariable, split = "_")[[1]][1])
       ),
       xref = "paper",
       yref = "paper",
@@ -304,11 +256,7 @@ countYearShotAnimals <- function(
       showarrow = FALSE
     )
 
-  colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub(
-    "Per ",
-    "",
-    interval
-  )
+  colnames(summaryData)[colnames(summaryData) == "timeChar"] <- gsub("Per ", "", interval)
   summaryData$group <- NULL
 
   # To prevent warnings in UI
@@ -328,23 +276,12 @@ countYearShotAnimals <- function(
 #' @author mvarewyck
 #' @import shiny
 #' @export
-countYearShotServer <- function(
-  id,
-  data,
-  timeRange,
-  types,
-  groupVariable,
-  preSelected = reactive(NULL)
-) {
+countYearShotServer <- function(id, data, timeRange, types, groupVariable, preSelected = reactive(NULL)) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
 
     groupVariableFinal <- reactive({
-      if (
-        groupVariable == "periode" &&
-          !is.null(input$schemeringType) &&
-          input$schemeringType == "wettelijk"
-      ) {
+      if (groupVariable == "periode" && !is.null(input$schemeringType) && input$schemeringType == "wettelijk") {
         "periode_wettelijk"
       } else {
         groupVariable
@@ -357,13 +294,9 @@ countYearShotServer <- function(
     output$extraFilters <- renderUI({
       req(groupVariableFinal())
 
-      if (
-        groupVariableFinal() %in% c("periode", "wettelijk", "periode_wettelijk")
-      ) {
+      if (groupVariableFinal() %in% c("periode", "wettelijk", "periode_wettelijk")) {
         col <- "periode"
-        if (
-          !is.null(input$schemeringType) && input$schemeringType == "wettelijk"
-        ) {
+        if (!is.null(input$schemeringType) && input$schemeringType == "wettelijk") {
           col <- "periode_wettelijk"
         }
 

@@ -48,11 +48,7 @@ optionsModuleUI <- function(
 
   toReturn <- tagList(
     if (!is.null(summarizeBy)) {
-      radioButtons(
-        inputId = ns("summarizeBy"),
-        label = "Rapporteer",
-        choices = summarizeBy
-      )
+      radioButtons(inputId = ns("summarizeBy"), label = "Rapporteer", choices = summarizeBy)
     },
     if (showYear) {
       uiOutput(ns("year"))
@@ -89,11 +85,7 @@ optionsModuleUI <- function(
       selectInput(
         inputId = ns("dataSource_onderkaak"),
         label = "Databron(nen) voor onderkaaklengte",
-        choices = c(
-          "INBO" = "inbo",
-          "Meldingsformulier" = "meldingsformulier",
-          "INBO en meldingsformulier" = "both"
-        ),
+        choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", "INBO en meldingsformulier" = "both"),
         selected = "both"
       )
     },
@@ -102,11 +94,7 @@ optionsModuleUI <- function(
         selectInput(
           inputId = ns("dataSource_embryos"),
           label = "Databron(nen) voor aantal embryo's",
-          choices = c(
-            "INBO" = "inbo",
-            "Meldingsformulier" = "meldingsformulier",
-            "INBO en meldingsformulier" = "both"
-          ),
+          choices = c("INBO" = "inbo", "Meldingsformulier" = "meldingsformulier", "INBO en meldingsformulier" = "both"),
           selected = "both"
         ),
         shinyjs::hidden(tags$div(
@@ -143,18 +131,10 @@ optionsModuleUI <- function(
       uiOutput(ns("categorie"))
     },
     if (exportPlot) {
-      downloadButton(
-        ns("plotDownload"),
-        "Download plot",
-        class = "downloadButton"
-      )
+      downloadButton(ns("plotDownload"), "Download plot", class = "downloadButton")
     },
     if (exportData) {
-      downloadButton(
-        ns("dataDownload"),
-        "Download data",
-        class = "downloadButton"
-      )
+      downloadButton(ns("dataDownload"), "Download data", class = "downloadButton")
     }
   )
 
@@ -209,10 +189,7 @@ optionsModuleServer <- function(
   timeLabel = "Periode",
   multipleTypes = FALSE,
   allRegionsSelected = FALSE,
-  definedYear = config::get(
-    "defaultYear",
-    file = system.file("config.yml", package = "reportingGrofwild")
-  ),
+  definedYear = config::get("defaultYear", file = system.file("config.yml", package = "reportingGrofwild")),
   categories = NULL,
   intervals = NULL
 ) {
@@ -272,9 +249,7 @@ optionsModuleServer <- function(
 
     newMin <- min(subData$afschotjaar)
 
-    if (
-      !is.na(newMin) && !is.infinite(newMin) && req(results$minTime) != newMin
-    ) {
+    if (!is.na(newMin) && !is.infinite(newMin) && req(results$minTime) != newMin) {
       results$minTime <- newMin
       currentTime <- req(input$time)
 
@@ -282,12 +257,7 @@ optionsModuleServer <- function(
         currentTime[2] <- newMin
       }
       current$time <- c(max(newMin, currentTime[1]), currentTime[2])
-      updateSliderInput(
-        session,
-        inputId = "time",
-        value = current$time,
-        min = newMin
-      )
+      updateSliderInput(session, inputId = "time", value = current$time, min = newMin)
     }
   })
 
@@ -314,11 +284,7 @@ optionsModuleServer <- function(
       inputId = ns("dataSource_schade"),
       label = "Databron(nen)",
       choices = sourcesSchade,
-      selected = if (is.null(current$sources_schade)) {
-        sourcesSchade
-      } else {
-        current$sources_schade
-      },
+      selected = if (is.null(current$sources_schade)) sourcesSchade else current$sources_schade,
       multiple = TRUE
     )
   })
@@ -332,35 +298,19 @@ optionsModuleServer <- function(
     } else if (input$regionLevel == "provinces") {
       choices <- levels(droplevels(factor(
         unique(data()$provincie),
-        levels = c(
-          "West-Vlaanderen",
-          "Oost-Vlaanderen",
-          "Vlaams Brabant",
-          "Antwerpen",
-          "Limburg",
-          "Onbekend"
-        )
+        levels = c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Onbekend")
       )))
     } else if (input$regionLevel == "faunabeheerzones") {
-      choices <- levels(droplevels(factor(
-        unique(data()$FaunabeheerZone),
-        levels = c(as.character(1:10), "Onbekend")
-      )))
+      choices <- levels(droplevels(factor(unique(data()$FaunabeheerZone), levels = c(as.character(1:10), "Onbekend"))))
     } else {
       choices <- unique(data()$gemeente_afschot_locatie)
       choices <- choices[!is.na(choices)]
       choices <- choices[order(choices)]
     }
 
-    if (
-      !is.null(isolate(current$region)) &
-        all(isolate(current$region) %in% choices)
-    ) {
+    if (!is.null(isolate(current$region)) & all(isolate(current$region) %in% choices)) {
       selected <- isolate(current$region)
-    } else if (
-      allRegionsSelected &&
-        input$regionLevel %in% c("flanders", "provinces", "faunabeheerzones")
-    ) {
+    } else if (allRegionsSelected && input$regionLevel %in% c("flanders", "provinces", "faunabeheerzones")) {
       selected <- choices
     } else if (input$regionLevel == "flanders") {
       selected <- choices[1]
@@ -368,13 +318,7 @@ optionsModuleServer <- function(
       selected <- NULL
     }
 
-    selectInput(
-      inputId = ns("region"),
-      label = "Regio('s)",
-      choices = choices,
-      selected = selected,
-      multiple = TRUE
-    )
+    selectInput(inputId = ns("region"), label = "Regio('s)", choices = choices, selected = selected, multiple = TRUE)
   })
   observe(current$region <- input$region)
 
@@ -393,10 +337,7 @@ optionsModuleServer <- function(
 
     req(updateSwineDatasource())
 
-    if (
-      !is.null(input$dataSource_leeftijd) &&
-        any(grepl("6m", types(), ignore.case = TRUE))
-    ) {
+    if (!is.null(input$dataSource_leeftijd) && any(grepl("6m", types(), ignore.case = TRUE))) {
       updateSwineDatasource(FALSE)
       if (input$dataSource_leeftijd == "both") {
         ## overrule types for Wild Zwijn in case selected source = "both" i.e. inbo en meldingsfomulier
@@ -407,12 +348,7 @@ optionsModuleServer <- function(
           selected = c("Frisling", "Overloper", "Volwassen", "Onbekend")
         )
       } else {
-        updateSelectInput(
-          session,
-          inputId = "type",
-          choices = types(),
-          selected = typesDefault()
-        )
+        updateSelectInput(session, inputId = "type", choices = types(), selected = typesDefault())
       }
     }
   })
@@ -442,29 +378,16 @@ optionsModuleServer <- function(
   observe(current$type <- input$type)
 
   output$categorie <- renderUI({
-    selectInput(
-      inputId = ns("categorie"),
-      label = "Categorie",
-      choices = categories(),
-      selected = current$categorie
-    )
+    selectInput(inputId = ns("categorie"), label = "Categorie", choices = categories(), selected = current$categorie)
   })
   observe(current$categorie <- input$categorie)
 
   observe({
-    shinyjs::toggle(
-      id = "dataSource_warning",
-      condition = input$dataSourceEmbryos %in% c("both", "meldingsformulier")
-    )
+    shinyjs::toggle(id = "dataSource_warning", condition = input$dataSourceEmbryos %in% c("both", "meldingsformulier"))
   })
 
   output$interval <- renderUI({
-    selectInput(
-      inputId = ns("interval"),
-      label = "Interval",
-      choices = intervals,
-      selected = current$interval
-    )
+    selectInput(inputId = ns("interval"), label = "Interval", choices = intervals, selected = current$interval)
   })
   observe(current$interval <- input$interval)
 }
@@ -483,10 +406,7 @@ plotModuleUI <- function(id, filter = FALSE) {
   ns <- NS(id)
 
   tagList(
-    tags$div(
-      align = "center",
-      withSpinner(uiOutput(outputId = ns("plot")), hide.ui = FALSE)
-    ),
+    tags$div(align = "center", withSpinner(uiOutput(outputId = ns("plot")), hide.ui = FALSE)),
     uiOutput(outputId = ns("warning"))
   )
 }
@@ -626,21 +546,13 @@ plotModuleServer <- function(
       } else if (regionLevel == "faunabeheerzones") {
         validate(need(
           "FaunabeheerZone" %in% colnames(subData),
-          getOutputTitle(
-            output = "regioSchaal_warningMessage",
-            uiText = uiText,
-            regioSchaal = "faunabeheerzone"
-          )
+          getOutputTitle(output = "regioSchaal_warningMessage", uiText = uiText, regioSchaal = "faunabeheerzone")
         ))
         subData <- subData[as.character(subData$FaunabeheerZone) %in% region, ]
       } else if (regionLevel %in% c("communes", "communes_wolf")) {
         validate(need(
           "gemeente_afschot_locatie" %in% colnames(subData),
-          getOutputTitle(
-            output = "regioSchaal_warningMessage",
-            uiText = uiText,
-            regioSchaal = "gemeente"
-          )
+          getOutputTitle(output = "regioSchaal_warningMessage", uiText = uiText, regioSchaal = "gemeente")
         ))
         subData <- subData[subData$gemeente_afschot_locatie %in% region, ]
       } else if (regionLevel == "fbz_gemeentes") {
@@ -656,11 +568,7 @@ plotModuleServer <- function(
       } else if (regionLevel == "utm5") {
         validate(need(
           "utm5" %in% colnames(subData),
-          getOutputTitle(
-            output = "regioSchaal_warningMessage",
-            uiText = uiText,
-            regioSchaal = "5x5 UTM"
-          )
+          getOutputTitle(output = "regioSchaal_warningMessage", uiText = uiText, regioSchaal = "5x5 UTM")
         ))
         subData <- subData[subData$utm5 %in% region, ]
       }
@@ -716,11 +624,7 @@ plotModuleServer <- function(
     time <- coalesce(input$time, preSelected()$time(), NA)
     interval <- coalesce(input$interval, preSelected()$interval(), NA)
     # In case of bio-indicator ontweid_gewicht, both leeftijd and geslacht come from type-selector
-    if (
-      !is.null(input$type) &&
-        !is.null(preSelected()$type()) &&
-        plotFunction == "plotBioindicator"
-    ) {
+    if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "plotBioindicator") {
       typeReact <- input$type
       typeLeeftijd <- preSelected()$type()
     } else {
@@ -762,31 +666,11 @@ plotModuleServer <- function(
     regionLevel <- coalesce(input$regionLevel, preSelected()$regionLevel(), NA)
     region <- coalesce(input$region, preSelected()$region(), NA)
     summarizeBy <- coalesce(input$summarizeBy, preSelected()$summarizeBy(), NA)
-    dataSource_schade <- coalesce(
-      input$dataSource_schade,
-      preSelected()$dataSource_schade(),
-      NA
-    )
-    dataSource_onderkaak <- coalesce(
-      input$dataSource_onderkaak,
-      preSelected()$dataSource_onderkaak(),
-      NA
-    )
-    dataSource_embryos <- coalesce(
-      input$dataSource_embryos,
-      preSelected()$dataSource_embryos(),
-      NA
-    )
-    dataSource_leeftijd <- coalesce(
-      input$dataSource_leeftijd,
-      preSelected()$dataSource_leeftijd(),
-      NA
-    )
-    dataSource_geslacht <- coalesce(
-      input$dataSource_geslacht,
-      preSelected()$dataSource_geslacht(),
-      NA
-    )
+    dataSource_schade <- coalesce(input$dataSource_schade, preSelected()$dataSource_schade(), NA)
+    dataSource_onderkaak <- coalesce(input$dataSource_onderkaak, preSelected()$dataSource_onderkaak(), NA)
+    dataSource_embryos <- coalesce(input$dataSource_embryos, preSelected()$dataSource_embryos(), NA)
+    dataSource_leeftijd <- coalesce(input$dataSource_leeftijd, preSelected()$dataSource_leeftijd(), NA)
+    dataSource_geslacht <- coalesce(input$dataSource_geslacht, preSelected()$dataSource_geslacht(), NA)
 
     argList <- c(
       list(data = subData()),
@@ -822,12 +706,7 @@ plotModuleServer <- function(
         # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector
         list(type_jachtmethode = typeJacht)
       },
-      if (
-        !is.null(openingstijdenData) &&
-          !all(is.na(typeReact)) &
-          !is.na(year) &
-          all(is.na(dataSource_schade))
-      ) {
+      if (!is.null(openingstijdenData) && !all(is.na(typeReact)) & !is.na(year) & all(is.na(dataSource_schade))) {
         list(openingstijdenData = openingstijdenData())
       },
       if (!is.null(subToekenningsData())) {
@@ -1016,13 +895,7 @@ plotModuleServer <- function(
         need("ggplot" %in% class(resPlot), "Niet beschikbaar")
       )
 
-      ggsave(
-        file,
-        resPlot,
-        width = exportPlotWidth,
-        height = exportPlotHeight,
-        dpi = 150
-      )
+      ggsave(file, resPlot, width = exportPlotWidth, height = exportPlotHeight, dpi = 150)
     }
   )
 
@@ -1074,14 +947,7 @@ plotModuleServer <- function(
       dataPlot <- if (is.data.frame(resFct)) resFct else resFct$data
 
       ## write data to exported file
-      write.table(
-        x = dataPlot,
-        file = file,
-        quote = FALSE,
-        row.names = FALSE,
-        sep = ";",
-        dec = ","
-      )
+      write.table(x = dataPlot, file = file, quote = FALSE, row.names = FALSE, sep = ";", dec = ",")
     }
   )
 
@@ -1109,10 +975,7 @@ plotModuleServer <- function(
         options = list(
           dom = 't',
           pageLength = -1,
-          columnDefs = list(list(
-            targets = grep("Warning", colnames(tmpTable)) - 1,
-            visible = FALSE
-          ))
+          columnDefs = list(list(targets = grep("Warning", colnames(tmpTable)) - 1, visible = FALSE))
         )
       ) %>%
         formatStyle(
@@ -1147,10 +1010,7 @@ dataModuleServer <- function(id, data, variable, fullNames = NULL) {
       req(data())
       validate(need(nrow(data()) > 0, "Geen data beschikbaar"))
 
-      myTable <- as.data.frame(
-        table(data()[, variable]),
-        stringsAsFactors = FALSE
-      )
+      myTable <- as.data.frame(table(data()[, variable]), stringsAsFactors = FALSE)
       if (nrow(myTable) == 0) {
         return(NULL)
       }
@@ -1170,10 +1030,7 @@ dataModuleServer <- function(id, data, variable, fullNames = NULL) {
 
       colnames(myTable) <- c(variableLabel, "Aantal")
       if (!is.null(fullNames)) {
-        myTable[, variableLabel] <- names(fullNames)[match(
-          myTable[, variableLabel],
-          fullNames
-        )]
+        myTable[, variableLabel] <- names(fullNames)[match(myTable[, variableLabel], fullNames)]
       }
 
       myTable
@@ -1182,11 +1039,7 @@ dataModuleServer <- function(id, data, variable, fullNames = NULL) {
     # Frequency table
     output$table <- DT::renderDT({
       validate(need(freqTable(), "Geen data beschikbaar"))
-      DT::datatable(
-        freqTable(),
-        rownames = FALSE,
-        options = list(dom = 't', pageLength = -1)
-      )
+      DT::datatable(freqTable(), rownames = FALSE, options = list(dom = 't', pageLength = -1))
     })
 
     # Total number of records

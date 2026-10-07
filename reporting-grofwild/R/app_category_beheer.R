@@ -71,11 +71,7 @@ beheerOutputServer <- function(
     results$combinedData <- reactive(
       merge(
         x = results$ecoData(),
-        y = results$geoData()[, c(
-          "ID",
-          "FaunabeheerZone",
-          "gemeente_afschot_locatie"
-        )],
+        y = results$geoData()[, c("ID", "FaunabeheerZone", "gemeente_afschot_locatie")],
         by = "ID"
       )
     )
@@ -104,12 +100,7 @@ beheerOutputServer <- function(
     })
 
     results$drukjachtData <- reactive({
-      colsGeo <- c(
-        "afschotplan_nummer",
-        "postcode_afschot_locatie",
-        "FaunabeheerZone",
-        "gemeente_afschot_locatie"
-      )
+      colsGeo <- c("afschotplan_nummer", "postcode_afschot_locatie", "FaunabeheerZone", "gemeente_afschot_locatie")
       drukjachtData <- as.data.table(merge(
         x = results$ecoData()[
           results$ecoData()$jachtmethode_comp %in% "Drukjacht",
@@ -128,18 +119,8 @@ beheerOutputServer <- function(
         ),
         by = c("afschotplan_nummer", "afschot_datum")
       ]
-      drukjachtData <- unique(
-        drukjachtData,
-        by = c("afschotplan_nummer", "afschot_datum")
-      )
-      drukjachtData[, .(
-        afschotplan_nummer,
-        afschot_datum,
-        provincie,
-        FaunabeheerZone,
-        wildsoort,
-        afschotjaar
-      )]
+      drukjachtData <- unique(drukjachtData, by = c("afschotplan_nummer", "afschot_datum"))
+      drukjachtData[, .(afschotplan_nummer, afschot_datum, provincie, FaunabeheerZone, wildsoort, afschotjaar)]
 
       validate(need(nrow(drukjachtData) > 0, "Geen data beschikbaar"))
       return(drukjachtData)
@@ -151,10 +132,7 @@ beheerOutputServer <- function(
       text <- getMaxDateHighlight(specie(), subcategory(), uiText, maxDate)
       req(nchar(text) > 0)
 
-      wellPanel(
-        class = "well-white",
-        div(style = "text-align: center; font-size: 18px;", HTML(text))
-      )
+      wellPanel(class = "well-white", div(style = "text-align: center; font-size: 18px;", HTML(text)))
     })
 
     ## Sidebar panel
@@ -198,10 +176,7 @@ beheerOutputServer <- function(
         )
 
         # include plot/table in UI
-        output[["topbar_filtering"]] <- renderUI(do.call(
-          generalSelectionUI,
-          args
-        ))
+        output[["topbar_filtering"]] <- renderUI(do.call(generalSelectionUI, args))
       }
     })
 
@@ -253,20 +228,12 @@ beheerOutputServer <- function(
               regionLevels = c(1:2, 4),
               regionLevelSelected = "provinces",
               allRegionsSelected = TRUE,
-              intervals = c(
-                "Per jaar",
-                "Per maand",
-                "Per kwartaal",
-                "Per twee weken"
-              ),
+              intervals = c("Per jaar", "Per maand", "Per kwartaal", "Per twee weken"),
               timeRange = reactive(
                 if (specie() == "Wild zwijn") {
                   c(
                     min(2014, min(results$drukjachtData()$afschotjaar)),
-                    max(
-                      results$timeRange()[2],
-                      max(results$drukjachtData()$afschotjaar)
-                    )
+                    max(results$timeRange()[2], max(results$drukjachtData()$afschotjaar))
                   )
                 } else {
                   c(2014, results$timeRange()[2])
@@ -305,8 +272,7 @@ beheerOutputServer <- function(
                     uiText = uiText,
                     includeOptions = TRUE,
                     specie = specie(),
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "trendYearFlandersUI" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "trendYearFlandersUI" %in% plot())
                   )
                 )
               }
@@ -324,8 +290,7 @@ beheerOutputServer <- function(
                     plotDetails = "region",
                     uiText = uiText,
                     specie = specie(),
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "mapFlandersUI" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "mapFlandersUI" %in% plot())
                   )
                 )
               },
@@ -337,8 +302,7 @@ beheerOutputServer <- function(
                     uiText = uiText,
                     plotFunction = "countYearProvinceUI-afschot",
                     specie = specie(),
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "countYearProvinceUI-afschot" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "countYearProvinceUI-afschot" %in% plot())
                   )
                 )
               },
@@ -351,8 +315,7 @@ beheerOutputServer <- function(
                     showYear = TRUE,
                     uiText = uiText,
                     context = "description",
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "yearlyShotAnimalsUI" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "yearlyShotAnimalsUI" %in% plot())
                   )
                 )
               }
@@ -372,8 +335,7 @@ beheerOutputServer <- function(
                     context = "description",
                     specie = specie(),
                     showTime = TRUE,
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "countYearShotUI-leeftijd_comp" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "countYearShotUI-leeftijd_comp" %in% plot())
                   )
                 )
               },
@@ -385,8 +347,7 @@ beheerOutputServer <- function(
                     uiText = uiText,
                     context = "description",
                     specie = specie(),
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "tableProvinceUI" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "tableProvinceUI" %in% plot())
                   )
                 )
               }
@@ -404,8 +365,7 @@ beheerOutputServer <- function(
                     uiText = uiText,
                     context = "description",
                     specie = specie(),
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "countYearShotUI-jachtmethode_comp" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "countYearShotUI-jachtmethode_comp" %in% plot())
                   )
                 )
               },
@@ -419,8 +379,7 @@ beheerOutputServer <- function(
                     uiText = uiText,
                     context = "description",
                     specie = specie(),
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "countYearShotUI-wettelijk_kader" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "countYearShotUI-wettelijk_kader" %in% plot())
                   )
                 )
               },
@@ -435,8 +394,7 @@ beheerOutputServer <- function(
                     context = "description",
                     specie = specie(),
                     showSchemeringType = TRUE,
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "countYearShotUI-ymoment_dag" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "countYearShotUI-ymoment_dag" %in% plot())
                   )
                 )
               },
@@ -449,8 +407,7 @@ beheerOutputServer <- function(
                     specie = specie(),
                     plotFunction = "F04_3",
                     showCombinatie = TRUE,
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "F04_3" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "F04_3" %in% plot())
                   )
                 )
               }
@@ -465,8 +422,7 @@ beheerOutputServer <- function(
                     id = ns("afschotAanvraagReewild"),
                     uiText = uiText,
                     context = "description",
-                    doHide = !(plot() == defaultTabs$plot ||
-                      "afschotAanvraagReewild" %in% plot())
+                    doHide = !(plot() == defaultTabs$plot || "afschotAanvraagReewild" %in% plot())
                   )
                 )
               }
@@ -602,10 +558,7 @@ beheerOutputServer <- function(
         "beheer-afschotplan" = {
           list(
             plot1 = if ("afschotAanvraagReewild" %in% outputs) {
-              requestAfschotReewildServer(
-                id = "afschotAanvraagReewild",
-                data = results$combinedData
-              )
+              requestAfschotReewildServer(id = "afschotAanvraagReewild", data = results$combinedData)
             }
           )
         }
@@ -623,11 +576,7 @@ beheerOutputServer <- function(
       req(p$selectedRegions)
       req(p$selectedRegions())
 
-      updateSelectInput(
-        session,
-        inputId = "beheer_topbar-region",
-        selected = p$selectedRegions()
-      )
+      updateSelectInput(session, inputId = "beheer_topbar-region", selected = p$selectedRegions())
     })
 
     return(list(

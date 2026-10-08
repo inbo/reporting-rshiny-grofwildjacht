@@ -67,7 +67,8 @@ outputFunction <- function(type, specie = NULL) {
 #' @inheritParams filterDataSource
 #' @inheritParams createShapeData
 #' @inheritParams reportingGrofwild-common-args
-#' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary statistics
+#' @return a list with two items: data - a data.frame with the summary data; stats - a data.frame with the summary
+#' statistics
 #' @author mvarewyck
 #' @importFrom reshape2 dcast
 #' @importFrom sf st_drop_geometry
@@ -1036,7 +1037,14 @@ mapFlandersServer <- function(
       if (!is.null(event) && !is.null(event$id)) {
         currentSelected <- isolate(results$region_value)
 
-        if (event$id %in% currentSelected) {
+        possibleRegions <- region_selection(allSpatialData, regionLevelLocal())
+
+        # if all regions are selected: only select clicked
+        if (setequal(currentSelected, possibleRegions)) {
+          updateSelectInput(session, inputId = "region", selected = c(event$id))
+
+          results$selectedRegions <- c(event$id)
+        } else if (event$id %in% currentSelected) {
           # Remove from list
           updateSelectInput(
             session,

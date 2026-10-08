@@ -460,21 +460,7 @@ generalSelectionServer <- function(
       validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
 
       isolate(
-        if (input$regionLevel == "flanders") {
-          choices <- c("Vlaams Gewest")
-        } else if (input$regionLevel == "provinces") {
-          choices <- c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Onbekend")
-        } else if (input$regionLevel == "faunabeheerzones") {
-          choices <- c(as.character(1:10), "Onbekend")
-        } else {
-          if (all(regionLevels %in% 1:4)) {
-            choices <- unique(data()$gemeente_afschot_locatie)
-            choices <- choices[!is.na(choices)]
-            choices <- choices[order(choices)]
-          } else {
-            choices <- sort(unique(data()[[input$regionLevel]]$NAAM))
-          }
-        }
+        choices <- region_selection(data(), input$regionLevel, regionLevels)
       )
 
       if (!is.null(isolate(current$region)) & all(isolate(current$region) %in% choices)) {
@@ -586,4 +572,31 @@ generalSelectionServer <- function(
       dataSource_geslacht = reactive(input$dataSource_geslacht)
     ))
   })
+}
+
+#' Helper function to select regions based on the selected regionLevel
+#'
+#' @param spatialData a dataframe with region-based information
+#' @param regionLevel the selected region level
+#' @param regionLevels sometimes this gets passed, and is values between 1:4, which somehow indicates that we are
+#' looking for `gemeente_afschot_locatie`
+#'
+#' @return a character vector with all region options for a certain regionLevel
+region_selection <- function(spatialData, regionLevel, regionLevels = NULL) {
+  if (regionLevel == "flanders") {
+    choices <- c("Vlaams Gewest")
+  } else if (regionLevel == "provinces") {
+    choices <- c("West-Vlaanderen", "Oost-Vlaanderen", "Vlaams Brabant", "Antwerpen", "Limburg", "Onbekend")
+  } else if (regionLevel == "faunabeheerzones") {
+    choices <- c(as.character(1:10), "Onbekend")
+  } else {
+    if (!is.null(regionLevels) && all(regionLevels %in% 1:4)) {
+      choices <- unique(spatialData$gemeente_afschot_locatie)
+      choices <- choices[!is.na(choices)]
+      choices <- choices[order(choices)]
+    } else {
+      choices <- sort(unique(spatialData[[regionLevel]]$NAAM))
+    }
+  }
+  choices
 }

@@ -476,7 +476,7 @@ tableModuleUI <- function(id, includeTotal = FALSE) {
 #' @param typeMelding reactive with type of notification ('melding')
 #' @param filterDataOnRegion boolean whether to filter on region level
 #' @param isWBE boolean whether it is a plot on the WBE page
-#' @param type_MomentOfDay reactive with type of moment of day
+#' @param extraFilters_type reactive with extra filter options
 #' @inheritParams plotBioindicator
 #' @inheritParams trendYearRegion
 #' @inheritParams createSpaceData
@@ -526,7 +526,7 @@ plotModuleServer <- function(
   filterDataOnRegion = TRUE,
   height = "600px",
   isWBE = FALSE,
-  type_MomentOfDay = reactive(NULL),
+  extraFilters_type = reactive(NULL),
   exportPlotWidth = 6,
   exportPlotHeight = 6
 ) {
@@ -639,11 +639,19 @@ plotModuleServer <- function(
     }
     # In case of countYearShot_leeftijdscategory, both leeftijd and jachtmethode come from type-selector
     # In case of countYearShot_periode, both dagmoment and jachtmethode come from type-selector
-    if (!is.null(input$type) && !is.null(preSelected()$type()) && plotFunction == "countYearShotAnimals") {
+    if (
+      !is.null(input$type) &&
+        !is.null(preSelected()$type()) &&
+        plotFunction == "countYearShotAnimals"
+    ) {
       typeReact <- preSelected()$type()
       typeJacht <- input$type
-    } else if (!is.null(input$type) && !is.null(type_MomentOfDay()) && plotFunction == "countYearShotAnimals") {
-      typeReact <- type_MomentOfDay()
+    } else if (
+      !is.null(input$type) &&
+        !is.null(extraFilters_type()) &&
+        plotFunction == "countYearShotAnimals"
+    ) {
+      typeReact <- extraFilters_type()
       typeJacht <- input$type
     } else {
       typeReact <- if (!is.null(input$type)) {

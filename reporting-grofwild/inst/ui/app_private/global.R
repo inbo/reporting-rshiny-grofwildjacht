@@ -7,7 +7,7 @@ library(reportingGrofwild)
 # make sure js object is initiated
 library(shinyjs)
 # define js function for opening urls in new tab/window
-js_code <- "shinyjs.browseURL = function(url) {window.open(url, '_parent');}"
+js_code <- "shinyjs.browseURL = function(url) {window.open(url, '_blank');}"
 
 
 # Specify directory with data
@@ -72,7 +72,9 @@ if (!doDebug | !exists("geoData")) {
 }
 if (!doDebug | !exists("schadeData")) {
   schadeData <- loadRawData(type = "wildschade")
-  schadeData <- schadeData[schadeData$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
+  schadeData <- schadeData[
+    schadeData$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"),
+  ]
 }
 if (!doDebug | !exists("biotoopData")) {
   biotoopData <- loadHabitats(regionLevels = "wbe")[["wbe"]]
@@ -111,8 +113,9 @@ if (!doDebug | !exists("spatialData")) {
 }
 
 
-toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
-
+toekenningsData <- toekenningsData[
+  toekenningsData$KboNummer_Toek %in% currentKbo,
+]
 
 ### Labels in uiText
 ### ----------------

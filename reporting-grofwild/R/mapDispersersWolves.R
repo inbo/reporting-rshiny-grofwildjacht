@@ -116,7 +116,7 @@ mapDispersersWolves <- function(
     }
   }
 
-  myMap <- leaflet_bound_flanders(myMap)
+  myMap <- leaflet_pad_bounds(myMap)
 
   myMap
 }

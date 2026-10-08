@@ -570,7 +570,9 @@ wbeUI <- function(id, uiText, currentKbo, ecoData) {
           inline = TRUE,
           choiceValues = list("Wild zwijn", "Ree", "Damhert", "Edelhert"),
           choiceNames = list(
-            HTML("<div class='fotoTitel'>Wild zwijn</div><div id='wildZwijnFoto'></div>"),
+            HTML(
+              "<div class='fotoTitel'>Wild zwijn</div><div id='wildZwijnFoto'></div>"
+            ),
             HTML("<div class='fotoTitel'>Ree</div><div id='reeFoto'></div>"),
             HTML("<div class='fotoTitel'>Damhert</div><div id='damhertFoto'></div>"),
             HTML("<div class='fotoTitel'>Edelhert</div><div id='edelhertFoto'></div>")

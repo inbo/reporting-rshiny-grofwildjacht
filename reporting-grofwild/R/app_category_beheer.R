@@ -379,7 +379,6 @@ beheerOutputServer <- function(
                     uiText = uiText,
                     context = "description",
                     specie = specie(),
-                    showWettelijkKader = TRUE,
                     doHide = !(plot() == defaultTabs$plot || "countYearShotUI-wettelijk_kader" %in% plot())
                   )
                 )

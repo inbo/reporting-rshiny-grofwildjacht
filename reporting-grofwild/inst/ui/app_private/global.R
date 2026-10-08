@@ -72,7 +72,9 @@ if (!doDebug | !exists("geoData")) {
 }
 if (!doDebug | !exists("schadeData")) {
   schadeData <- loadRawData(type = "wildschade")
-  schadeData <- schadeData[schadeData$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"), ]
+  schadeData <- schadeData[
+    schadeData$wildsoort %in% c("Wild zwijn", "Ree", "Damhert", "Edelhert"),
+  ]
 }
 if (!doDebug | !exists("biotoopData")) {
   biotoopData <- loadHabitats(regionLevels = "wbe")[["wbe"]]
@@ -111,8 +113,9 @@ if (!doDebug | !exists("spatialData")) {
 }
 
 
-toekenningsData <- toekenningsData[toekenningsData$KboNummer_Toek %in% currentKbo, ]
-
+toekenningsData <- toekenningsData[
+  toekenningsData$KboNummer_Toek %in% currentKbo,
+]
 
 ### Labels in uiText
 ### ----------------

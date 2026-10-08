@@ -288,17 +288,50 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable, preSe
       }
     })
 
-    observeEvent(input$schemeringType, {
-      col <- ifelse(input$schemeringType == "wettelijk", "periode_wettelijk", "periode")
-      options <- sort(na.omit(unique(data()[[col]])))
-      updateSelectInput(session, "type", choices = options, selected = options)
+    # Have the extra filters been applied?
+    extraFiltered <- reactiveVal(FALSE)
+
+    output$extraFilters <- renderUI({
+      req(groupVariableFinal())
+
+      if (groupVariableFinal() %in% c("periode", "wettelijk", "periode_wettelijk")) {
+        col <- "periode"
+        if (!is.null(input$schemeringType) && input$schemeringType == "wettelijk") {
+          col <- "periode_wettelijk"
+        }
+
+        options <- sort(na.omit(unique(data()[[col]])))
+        extraFiltered(TRUE)
+        selectInput(
+          inputId = ns("type"),
+          label = "Moment van de dag",
+          choices = options,
+          selected = options,
+          multiple = TRUE
+        )
+      } else if (groupVariableFinal() == "wettelijk_kader") {
+        options <- sort(na.omit(unique(data()[[groupVariable]])))
+        extraFiltered(TRUE)
+        selectInput(
+          inputId = ns("type"),
+          label = "Wettelijk kader",
+          choices = options,
+          selected = options,
+          multiple = TRUE
+        )
+      } else {
+        NULL
+      }
     })
 
-    observe({
-      req(groupVariable == "wettelijk_kader")
-
-      options <- sort(na.omit(unique(data()[[groupVariable]])))
-      updateSelectInput(session, "type", choices = options, selected = options)
+    # When no values are selected in the extra filter, select "all". Analogous
+    # to how the jachtmethode filter is applied.
+    filterValues <- reactive({
+      if (extraFiltered() && is.null(input$type)) {
+        "all"
+      } else {
+        input$type
+      }
     })
 
     # Verdeling afschot over de jaren
@@ -319,7 +352,7 @@ countYearShotServer <- function(id, data, timeRange, types, groupVariable, preSe
       groupVariable = groupVariableFinal,
       data = data,
       preSelected = preSelected,
-      type_MomentOfDay = reactive(input$type)
+      extraFilters_type = filterValues
     )
   })
 }
@@ -345,8 +378,7 @@ countYearShotUI <- function(
   showType = FALSE,
   showInterval = FALSE,
   showTime = FALSE,
-  showSchemeringType = FALSE,
-  showWettelijkKader = FALSE
+  showSchemeringType = FALSE
 ) {
   ns <- NS(id)
 
@@ -374,33 +406,19 @@ countYearShotUI <- function(
         column(
           4,
           wellPanel(
-            if (showSchemeringType) {
-              tagList(
+            tagList(
+              if (showSchemeringType) {
                 radioButtons(
                   inputId = ns("schemeringType"),
                   label = "Schemering type",
-                  choices = c("Wettelijk" = "wettelijk", "Burgerlijk" = "burgerlijk")
-                ),
-                selectInput(
-                  inputId = ns("type"),
-                  label = "Moment van de dag",
-                  choices = c(),
-                  selected = c(),
-                  multiple = TRUE
+                  choices = c(
+                    "Wettelijk" = "wettelijk",
+                    "Burgerlijk" = "burgerlijk"
+                  )
                 )
-              )
-            },
-            if (showWettelijkKader) {
-              tagList(
-                selectInput(
-                  inputId = ns("type"),
-                  label = "Wettelijk kader",
-                  choices = c(),
-                  selected = c(),
-                  multiple = TRUE
-                )
-              )
-            },
+              },
+              uiOutput(ns("extraFilters"))
+            ),
             optionsModuleUI(
               id = ns("countYearShot"),
               showTime = showTime,

@@ -133,7 +133,7 @@ mapSpread <- function(spreadShape, legend = "none", addGlobe = FALSE) {
 
   attr(finalMap, "modelColors") <- modelColors
 
-  finalMap <- leaflet_bound_flanders(finalMap)
+  finalMap <- leaflet_pad_bounds(finalMap)
 
   finalMap
 }
@@ -233,7 +233,7 @@ mapBevers <- function(beverData, addGlobe = FALSE, legend = "none") {
   # For compliance with mapSpread()
   attr(myMap, "modelColors") <- NULL
 
-  myMap <- leaflet_bound_flanders(myMap)
+  myMap <- leaflet_pad_bounds(myMap)
 
   myMap
 }
@@ -379,19 +379,6 @@ mapSpreadServer <- function(
         }
       )
     })
-
-    # Center view
-    # observe({
-
-    #     # Update after plot
-    #     req(spreadPlot())
-
-    #     centerValues <- getCenterView(sf_object = selectedPolygons())
-    #     leafletProxy("spreadPlot", data = spatialData()) %>%
-
-    #       leaflet_bound_flanders()
-
-    #   })
 
     output$disclaimerMapSpread <- renderUI({
       req(title())

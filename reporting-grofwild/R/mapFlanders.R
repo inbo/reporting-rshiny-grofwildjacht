@@ -479,7 +479,7 @@ mapFlanders <- function(
   if (!is.null(statsMap)) {
     myMap <- addControl(myMap, statsMap, position = "bottomleft")
   }
-  myMap <- leaflet_bound_flanders(myMap)
+  myMap <- leaflet_pad_bounds(myMap)
 
   myMap
 }
@@ -973,7 +973,7 @@ mapFlandersServer <- function(
         legendText = isolate(simpleCap(unitText(), keepNames = FALSE)),
         statsMap = statsMap()
       ) |>
-        leaflet_bound_flanders()
+        leaflet_pad_bounds()
     })
 
     output$spacePlot <- renderLeaflet({
@@ -1073,7 +1073,7 @@ mapFlandersServer <- function(
       centerValues <- getCenterView(sf_object = selectedPolygons)
 
       leafletProxy("spacePlot", data = spatialData()) |>
-        leaflet_bound_flanders()
+        leaflet_pad_bounds()
     })
 
     # Pre-selected polygons to highlight

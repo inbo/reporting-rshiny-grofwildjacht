@@ -262,7 +262,7 @@ shinyUI(
         tags$a(
           id = "WBE",
           href = "https://wbe.inbo.be",
-          target = "_parent",
+          target = "_blank",
           "WBE"
         )
       ),

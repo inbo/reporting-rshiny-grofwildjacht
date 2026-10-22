@@ -1033,7 +1033,6 @@ mapFlandersServer <- function(
     # Which region(s) are selected?
     observe({
       event <- input$spacePlot_shape_click
-
       if (!is.null(event) && !is.null(event$id)) {
         currentSelected <- isolate(results$region_value)
 

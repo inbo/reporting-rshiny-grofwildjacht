@@ -18,7 +18,8 @@ verspreidingOutputServer <- function(
   waarnemingenData,
   biotoopData,
   defaultYear,
-  uiText
+  uiText,
+  last_click
 ) {
   # For R CMD check
   wildsoort <- NULL
@@ -288,7 +289,8 @@ verspreidingOutputServer <- function(
                 countVariable = "aantal",
                 sourceChoices = c("waarnemingen.be", "afschot"),
                 uiText = uiText,
-                preSelected = verspreidingSelection
+                preSelected = verspreidingSelection,
+                last_spaceplot_click = last_click
               )
             },
             plot2 = if ("kencijferUI" %in% outputs) {

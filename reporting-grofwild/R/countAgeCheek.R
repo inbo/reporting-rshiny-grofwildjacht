@@ -1,11 +1,10 @@
 # Project: inbo-grofwildjacht_git
-# 
+#
 # Author: mvarewyck
 ###############################################################################
 
-
 #' Create interactive plot for comparing age based on cheek or reported by hunter
-#' 
+#'
 #' Figure p. 9 from https://pureportal.inbo.be/portal/files/11785261/Huysentruyt_etal_2015_GrofwildjachtVlaanderen.pdf
 #' @inheritParams countYearAge
 #' @param currentYear numeric, current year to calculate accuracy for
@@ -15,11 +14,11 @@
 #' based on cheek or hunter report in a stacked bar chart}
 #' \item{'data': data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item 'jager': category based on the meldingsformulier 
-#' \item 'kaak': category based on the lower jaw inspection 
-#' \item 'freq': counts of animals 
+#' \item 'jager': category based on the meldingsformulier
+#' \item 'kaak': category based on the lower jaw inspection
+#' \item 'freq': counts of animals
 #' \item 'percent': percentage in the entire category based on
-#' the lower jaw inspection 
+#' the lower jaw inspection
 #' }
 #' }
 #' }
@@ -28,138 +27,176 @@
 #' @importFrom INBOtheme inbo_palette
 #' @author mvarewyck
 #' @export
-countAgeCheek <- function(data, jaartallen = NULL, 
-  currentYear = as.numeric(format(Sys.Date(), "%Y")), regio = "", 
-  width = NULL, height = NULL) {
-	
-	
+countAgeCheek <- function(
+  data,
+  jaartallen = NULL,
+  currentYear = as.numeric(format(Sys.Date(), "%Y")),
+  regio = "",
+  width = NULL,
+  height = NULL
+) {
   # R CMD check notes
   jaar <- NULL
   jager <- NULL
   kaak <- NULL
-  
-	wildNaam <- unique(data$wildsoort)
-	
-	if (is.null(jaartallen))
-		jaartallen <- unique(data$afschotjaar)
-	
-	# Select data
-	plotData <- data[data$afschotjaar %in% jaartallen, 
-			c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak", "afschotjaar")] 
-	names(plotData) <- c("jager", "kaak", "jaar")
 
-	# Percentage collected
-	nRecords <- nrow(plotData)
- 
+  wildNaam <- unique(data$wildsoort)
+
+  if (is.null(jaartallen)) {
+    jaartallen <- unique(data$afschotjaar)
+  }
+
+  # Select data
+  plotData <- data[
+    data$afschotjaar %in% jaartallen,
+    c("leeftijdscategorie_MF", "Leeftijdscategorie_onderkaak", "afschotjaar")
+  ]
+  names(plotData) <- c("jager", "kaak", "jaar")
+
+  # Percentage collected
+  nRecords <- nrow(plotData)
+
   # Remove some categories
-  plotData <- plotData[with(plotData, !is.na(jager) & !jager %in% "Onbekend" &
-        !is.na(kaak) & !kaak %in% "Niet ingezameld"), ]
+  plotData <- plotData[
+    with(plotData, !is.na(jager) & !jager %in% "Onbekend" & !is.na(kaak) & !kaak %in% "Niet ingezameld"),
+  ]
   plotData$jaar <- NULL
-  
-  if (nrow(plotData) == 0)
+
+  if (nrow(plotData) == 0) {
     stop("Geen data beschikbaar")
-  
+  }
+
   # Calculate accuracy
-  accuracy <- round(sum(plotData$jager == plotData$kaak)/nrow(plotData) * 100, 1)
- 
-	# Define names and ordering of factor levels
+  accuracy <- round(sum(plotData$jager == plotData$kaak) / nrow(plotData) * 100, 1)
+
+  # Define names and ordering of factor levels
   newLevels <- loadMetaEco(species = wildNaam)$leeftijd_comp
-	
-  
-  # disable graph only when not all age-groups are present 
+
+  # disable graph only when not all age-groups are present
   if (!all(sapply(newLevels, function(x) x %in% unique(plotData$kaak)))) {
-    if (length(jaartallen) >= 2) 
-      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ", min(jaartallen)," en ", max(jaartallen),"!"))
-    else 
-    stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen in het jaar ", jaartallen,"!"))
-	}
-  
-	# Summarize data per province and year
-	summaryData <- count(df = plotData, vars = names(plotData))
-	freq <- NULL  # to prevent warnings with R CMD check 
-	summaryData <- ddply(summaryData, "kaak", transform, 
-			percent = freq / sum(freq) * 100)
-	
-	
-	
-	# For optimal displaying in the plot
-	summaryData$jager <- factor(summaryData$jager, levels = newLevels)
-	summaryData$kaak <- factor(summaryData$kaak, levels = newLevels)
-	summaryData <- summaryData[order(summaryData$jager, summaryData$kaak), ]
-	
-	summaryData$text <- paste0(round(summaryData$percent), "%",
-			" (", summaryData$freq, ")")
-	
-	totalCount <- count(df = summaryData, vars = "kaak", wt_var = "freq")$freq
-	
-	colors <- rev(inbo_palette(n = nlevels(summaryData$jager)))
-	title <- paste(wildNaam, paste0("(", 
-					ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)),
-							jaartallen), ")"), 
-          if (!all(regio == "")) paste0("\n (", toString(regio), ")"))
-	
-	
-	# Create plot
-	pl <- plot_ly(data = summaryData, x = ~kaak, y = ~percent, color = ~jager,
-					text = ~text, textposition = "none", hoverinfo = "x+text+name",
-					colors = colors, type = "bar",  width = width, height = height) %>%
-        plotly::layout(title = title,
-					xaxis = list(title = "Categorie op basis van onderkaak"), 
-					yaxis = list(title = "Percentage"),
-					legend = list(y = 0.8, yanchor = "top"),
-					margin = list(r = 300, b = 120, t = 100), 
-					barmode = "stack",
-					annotations = list(x = levels(summaryData$kaak), y = -10, 
-							text = totalCount, xanchor = 'center', yanchor = 'bottom', 
-							showarrow = FALSE)) %>%
-			add_annotations(text = "Categorie op basis van meldingsformulier", 
-					xref = "paper", yref = "paper", x = 1.02, xanchor = "left",
-					y = 0.8, yanchor = "bottom",    # Same y as legend below
-					legendtitle = TRUE, showarrow = FALSE) %>%
-			add_annotations(text = percentCollected(nAvailable = nrow(plotData), nTotal = nRecords,
-          text = "ingezamelde onderkaken van totaal"),
-					xref = "paper", yref = "paper", x = 0.5, xanchor = "center",
-					y = -0.3, yanchor = "bottom", showarrow = FALSE)
-	
-	# To prevent warnings in UI
-	pl$elementId <- NULL
-  
- 
-	return(list(plot = pl, data = summaryData[, colnames(summaryData) != "text"], 
-     accuracy = list(value = accuracy, total = nrow(plotData))))
-	
+    if (length(jaartallen) >= 2) {
+      stop(paste0(
+        "Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen tussen ",
+        min(jaartallen),
+        " en ",
+        max(jaartallen),
+        "!"
+      ))
+    } else {
+      stop(paste0("Geen gegevens over de onderkaak voor bepaalde leeftijdsgroepen in het jaar ", jaartallen, "!"))
+    }
+  }
+
+  # Summarize data per province and year
+  summaryData <- count(df = plotData, vars = names(plotData))
+  freq <- NULL # to prevent warnings with R CMD check
+  summaryData <- ddply(summaryData, "kaak", transform, percent = freq / sum(freq) * 100)
+
+  # For optimal displaying in the plot
+  summaryData$jager <- factor(summaryData$jager, levels = newLevels)
+  summaryData$kaak <- factor(summaryData$kaak, levels = newLevels)
+  summaryData <- summaryData[order(summaryData$jager, summaryData$kaak), ]
+
+  summaryData$text <- paste0(round(summaryData$percent), "%", " (", summaryData$freq, ")")
+
+  totalCount <- count(df = summaryData, vars = "kaak", wt_var = "freq")$freq
+
+  colors <- rev(inbo_palette(n = nlevels(summaryData$jager)))
+  title <- paste(
+    wildNaam,
+    paste0("(", ifelse(length(jaartallen) > 1, paste(min(jaartallen), "tot", max(jaartallen)), jaartallen), ")"),
+    if (!all(regio == "")) paste0("\n (", toString(regio), ")")
+  )
+
+  # Create plot
+  pl <- plot_ly(
+    data = summaryData,
+    x = ~kaak,
+    y = ~percent,
+    color = ~jager,
+    text = ~text,
+    textposition = "none",
+    hoverinfo = "x+text+name",
+    colors = colors,
+    type = "bar",
+    width = width,
+    height = height
+  ) %>%
+    plotly::layout(
+      title = title,
+      xaxis = list(title = "Categorie op basis van onderkaak"),
+      yaxis = list(title = "Percentage"),
+      legend = list(y = 0.8, yanchor = "top"),
+      margin = list(r = 300, b = 120, t = 100),
+      barmode = "stack",
+      annotations = list(
+        x = levels(summaryData$kaak),
+        y = -10,
+        text = totalCount,
+        xanchor = 'center',
+        yanchor = 'bottom',
+        showarrow = FALSE
+      )
+    ) %>%
+    add_annotations(
+      text = "Categorie op basis van meldingsformulier",
+      xref = "paper",
+      yref = "paper",
+      x = 1.02,
+      xanchor = "left",
+      y = 0.8,
+      yanchor = "bottom", # Same y as legend below
+      legendtitle = TRUE,
+      showarrow = FALSE
+    ) %>%
+    add_annotations(
+      text = percentCollected(
+        nAvailable = nrow(plotData),
+        nTotal = nRecords,
+        text = "ingezamelde onderkaken van totaal"
+      ),
+      xref = "paper",
+      yref = "paper",
+      x = 0.5,
+      xanchor = "center",
+      y = -0.3,
+      yanchor = "bottom",
+      showarrow = FALSE
+    )
+
+  # To prevent warnings in UI
+  pl$elementId <- NULL
+
+  return(list(
+    plot = pl,
+    data = summaryData[, colnames(summaryData) != "text"],
+    accuracy = list(value = accuracy, total = nrow(plotData))
+  ))
 }
 
 
-
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - server side
-#' @inheritParams countAgeGenderServer 
+#' @inheritParams countAgeGenderServer
 #' @return no return value
-#' 
+#'
 #' @author mvarewyck
 #' @import shiny
 #' @export
 countAgeCheekServer <- function(id, data, timeRange = NULL, preSelected = reactive(NULL)) {
-  
-  moduleServer(id,
-    function(input, output, session) {
-      
-      ns <- session$ns
-      
-      # Leeftijdscategorie op basis van onderkaak & meldingsformulier
-      callModule(module = optionsModuleServer, id = "ageCheek", 
-        data = data,
-        timeRange = timeRange
-      )
-      callModule(module = plotModuleServer, id = "ageCheek",
-        plotFunction = "countAgeCheek", 
-        data = data,
-        preSelected = preSelected)
-      
-    })
-  
-} 
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
 
+    # Leeftijdscategorie op basis van onderkaak & meldingsformulier
+    callModule(module = optionsModuleServer, id = "ageCheek", data = data, timeRange = timeRange)
+    callModule(
+      module = plotModuleServer,
+      id = "ageCheek",
+      plotFunction = "countAgeCheek",
+      data = data,
+      preSelected = preSelected
+    )
+  })
+}
 
 
 #' Shiny module for creating the plot \code{\link{countAgeCheek}} - UI side
@@ -168,40 +205,38 @@ countAgeCheekServer <- function(id, data, timeRange = NULL, preSelected = reacti
 #' @inheritParams getOutputDescription
 #' @inheritParams reportingGrofwild-common-args
 #' @export
-countAgeCheekUI <- function(id, showAccuracy = FALSE, regionLevels = NULL,
-  uiText, context = id, specie = NULL, showTime = FALSE,
-  doHide = TRUE) {
-  
+countAgeCheekUI <- function(
+  id,
+  showAccuracy = FALSE,
+  regionLevels = NULL,
+  uiText,
+  context = id,
+  specie = NULL,
+  showTime = FALSE,
+  doHide = TRUE
+) {
   ns <- NS(id)
 
-  title <- getOutputTitle(output = "countAgeCheekUI", specie = specie, 
-    uiText = uiText)
-  description <- getOutputDescription(output = "countAgeCheekUI", 
-    specie = specie, uiText = uiText, context = context)
-  
+  title <- getOutputTitle(output = "countAgeCheekUI", specie = specie, uiText = uiText)
+  description <- getOutputDescription(output = "countAgeCheekUI", specie = specie, uiText = uiText, context = context)
+
   tagList(
-    
-    actionLink(inputId = ns("linkAgeCheek"), 
-      label = h3(title)),
+    actionLink(inputId = ns("linkAgeCheek"), label = h3(title)),
     conditionalPanel(
-      condition = paste("input.linkAgeCheek % 2 ==", 
-        as.numeric(doHide)),
+      condition = paste("input.linkAgeCheek % 2 ==", as.numeric(doHide)),
       ns = ns,
-      
+
       fixedRow(
-        
-        column(8, 
-          plotModuleUI(id = ns("ageCheek"))
-        ),
-        column(4,
-          optionsModuleUI(id = ns("ageCheek"), regionLevels = regionLevels, exportData = TRUE,
-            showTime = showTime),
-          if (showAccuracy)
+        column(8, plotModuleUI(id = ns("ageCheek"))),
+        column(
+          4,
+          optionsModuleUI(id = ns("ageCheek"), regionLevels = regionLevels, exportData = TRUE, showTime = showTime),
+          if (showAccuracy) {
             accuracyModuleUI(id = ns("ageCheek"), title = "Accuraatheid geselecteerde periode")
+          }
         )
       ),
       tags$div(class = "larger-description", HTML(description))
     )
   )
-  
 }

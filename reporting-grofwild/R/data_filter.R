@@ -1,46 +1,39 @@
 # Filters for subsetting the data in plot functions
-# 
+#
 # Author: mvarewyck
 ###############################################################################
 
-
-
-
-
 #' Filter \code{plotData} based on the \code{dataSource} column if required
 #' @param plotData data.frame, to be filtered
-#' @param sourceIndicator character vector, sources to be kept when 
+#' @param sourceIndicator character vector, sources to be kept when
 #' filtering \code{data} wrt \code{dataSource} column
 #' @param returnStop character, should be one of \code{c("message", "data")}
 #' what needs to be returned if the filtered data has no rows left
 #' @return data.frame, filtered version of \code{plotData}
-#' 
+#'
 #' @author mvarewyck
 #' @export
-filterDataSource <- function(plotData, sourceIndicator = NULL,
-  returnStop = c("message", "data")) {
-  
+filterDataSource <- function(plotData, sourceIndicator = NULL, returnStop = c("message", "data")) {
   returnStop <- match.arg(returnStop)
-  
-  if (!is.null(sourceIndicator)) {
-    
-    sourcesSchade <- unique(plotData$dataSource)
-    
-    plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
-    
-    
-    if (nrow(plotData) == 0)
-      if (returnStop == "message")
-        if (all(sourcesSchade %in% sourceIndicator))
-          stop("Geen data beschikbaar") else
-          stop("Geen data beschikbaar voor de geselecteerde bron(nen): ", paste(sourceIndicator, collapse = ", "), ". ")
-    
-  }
-  
-  return(plotData)
-  
-}  
 
+  if (!is.null(sourceIndicator)) {
+    sourcesSchade <- unique(plotData$dataSource)
+
+    plotData <- plotData[plotData$dataSource %in% sourceIndicator, ]
+
+    if (nrow(plotData) == 0) {
+      if (returnStop == "message") {
+        if (all(sourcesSchade %in% sourceIndicator)) {
+          stop("Geen data beschikbaar")
+        } else {
+          stop("Geen data beschikbaar voor de geselecteerde bron(nen): ", paste(sourceIndicator, collapse = ", "), ". ")
+        }
+      }
+    }
+  }
+
+  return(plotData)
+}
 
 
 #' Filter \code{plotData} based on leeftijd and geslacht bron
@@ -50,162 +43,166 @@ filterDataSource <- function(plotData, sourceIndicator = NULL,
 #' @param sourceIndicator_onderkaak character, levels of \code{onderkaaklengte_comp_bron} to select on
 #' @param sourceIndicator_embryos character, levels of \code{aantal_embryos_bron} to select on
 #' @return data.frame, filtered version of \code{plotData}
-#' 
+#'
 #' @author mvarewyck
 #' @export
-filterGrofwild <- function(plotData, sourceIndicator_leeftijd = NULL, 
-  sourceIndicator_geslacht = NULL, sourceIndicator_onderkaak = NULL,
-  sourceIndicator_embryos = NULL, returnStop = c("message", "data")) {
-  
+filterGrofwild <- function(
+  plotData,
+  sourceIndicator_leeftijd = NULL,
+  sourceIndicator_geslacht = NULL,
+  sourceIndicator_onderkaak = NULL,
+  sourceIndicator_embryos = NULL,
+  returnStop = c("message", "data")
+) {
   returnStop <- match.arg(returnStop)
-  
-  if (!is.null(sourceIndicator_leeftijd) && !"leeftijd_comp_bron" %in% colnames(plotData))
+
+  if (!is.null(sourceIndicator_leeftijd) && !"leeftijd_comp_bron" %in% colnames(plotData)) {
     stop("Bron voor leeftijd niet in data")
-  
-  if (!is.null(sourceIndicator_geslacht) && !"geslacht_comp_bron" %in% colnames(plotData))
+  }
+
+  if (!is.null(sourceIndicator_geslacht) && !"geslacht_comp_bron" %in% colnames(plotData)) {
     stop("Bron voor geslacht niet in data")
-  
-  if (!is.null(sourceIndicator_onderkaak) && !"onderkaaklengte_comp_bron" %in% colnames(plotData))
+  }
+
+  if (!is.null(sourceIndicator_onderkaak) && !"onderkaaklengte_comp_bron" %in% colnames(plotData)) {
     stop("Bron voor onderkaaklengte niet in data")
-  
-  if (!is.null(sourceIndicator_embryos) && !"aantal_embryos_bron" %in% colnames(plotData))
+  }
+
+  if (!is.null(sourceIndicator_embryos) && !"aantal_embryos_bron" %in% colnames(plotData)) {
     stop("Bron voor aantal embryos niet in data")
-  
+  }
+
   # To prevent error with R CMD check
   leeftijd_comp_bron <- NULL
   geslacht_comp_bron <- NULL
-  
+
   if (!is.null(sourceIndicator_leeftijd) && sourceIndicator_leeftijd == "inbo") {
-  
     # Special case: inbo leeftijd_comp distinguishes frisling <6m and >6m
     plotData$leeftijd_comp <- plotData$leeftijd_comp_inbo
-    
+
     # filters out NA and 'meldingsformulier'
     plotData <- subset(plotData, leeftijd_comp_bron == "inbo")
-    
   }
-  
+
   if (!is.null(sourceIndicator_geslacht)) {
     if (sourceIndicator_geslacht == "inbo") {
-      
       # filters out NA and 'meldingsformulier' en 'onbekend'
       plotData <- subset(plotData, geslacht_comp_bron == "inbo")
-      
-    } else if (sourceIndicator_geslacht == "both"){
-      
+    } else if (sourceIndicator_geslacht == "both") {
       # filters out NA and 'onbekend'
       plotData <- subset(plotData, !is.na(geslacht_comp_bron) & geslacht_comp_bron != "onbekend")
-      
     }
   }
-  
+
   if (!is.null(sourceIndicator_onderkaak)) {
-    
     # Bioindicator 'onderkaaklengte' depends on data source
     # bron == "both" -> onderkaaklengte_comp
     # bron == "inbo" -> onderkaaklengte_mm
     # bron == "meldingsformulier" -> mean(onderkaaklengte_links, onderkaaklengte_rechts)
-     if (sourceIndicator_onderkaak == "both") {
-        
-        plotData$onderkaaklengte <- plotData$onderkaaklengte_comp
-        
-        # currently not done bc for some onderkaaklengte_comp values it is unclear at the
-        # moment where they were determined (mf vs inbo)
-        #			data <- subset(data, !is.na(onderkaaklengte_comp_bron)) 
-                
+    if (sourceIndicator_onderkaak == "both") {
+      plotData$onderkaaklengte <- plotData$onderkaaklengte_comp
+
+      # currently not done bc for some onderkaaklengte_comp values it is unclear at the
+      # moment where they were determined (mf vs inbo)
+      #			data <- subset(data, !is.na(onderkaaklengte_comp_bron))
+    } else {
+      plotData$onderkaaklengte_comp_bron <- sourceIndicator_onderkaak
+
+      if (sourceIndicator_onderkaak == "inbo") {
+        plotData$onderkaaklengte <- plotData$onderkaaklengte_mm
       } else {
-        
-        plotData$onderkaaklengte_comp_bron <- sourceIndicator_onderkaak
-        
-        if (sourceIndicator_onderkaak == "inbo") 
-          plotData$onderkaaklengte <- plotData$onderkaaklengte_mm else
-          plotData$onderkaaklengte <- rowMeans(plotData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")], na.rm = TRUE)
+        plotData$onderkaaklengte <- rowMeans(
+          plotData[, c("onderkaaklengte_links", "onderkaaklengte_rechts")],
+          na.rm = TRUE
+        )
       }
-      
     }
-  
-  if (!is.null(sourceIndicator_embryos)) {
-    
-    # Exclude records with missing source - NOT for countEmbryos()
-#    plotData <- plotData[!is.na(plotData$aantal_embryos_bron), ]
-    
-    if (sourceIndicator_embryos == "both")
-      plotData$embryos <- plotData$aantal_embryos else if (sourceIndicator_embryos == "inbo") 
-      plotData$embryos <- plotData$aantal_embryos_labo else
-      plotData$embryos <- plotData$aantal_embryos_MF
-    
   }
-  
-  if (nrow(plotData) == 0)
-    if (returnStop == "message")
+
+  if (!is.null(sourceIndicator_embryos)) {
+    # Exclude records with missing source - NOT for countEmbryos()
+    #    plotData <- plotData[!is.na(plotData$aantal_embryos_bron), ]
+
+    if (sourceIndicator_embryos == "both") {
+      plotData$embryos <- plotData$aantal_embryos
+    } else if (sourceIndicator_embryos == "inbo") {
+      plotData$embryos <- plotData$aantal_embryos_labo
+    } else {
+      plotData$embryos <- plotData$aantal_embryos_MF
+    }
+  }
+
+  if (nrow(plotData) == 0) {
+    if (returnStop == "message") {
       stop("Geen data beschikbaar. ")
-  
+    }
+  }
+
   return(plotData)
-  
 }
 
 
-
-
-
-#' Filter loaded \code{allSpatialData} for selected species, regionLevel and year 
-#' @param allSpatialData list with sf objects as loaded by 
+#' Filter loaded \code{allSpatialData} for selected species, regionLevel and year
+#' @param allSpatialData list with sf objects as loaded by
 #' \code{readS3(file = "spatialData.RData")}
-#' @param regionLevel character, region level. Should be one of 
+#' @param regionLevel character, region level. Should be one of
 #' \code{c("flanders", "provinces", "communes", "faunabeheerzones", "fbz_gemeentes", "utm5", "WBE_binnengrenzen", "communes_wolf")}
 #' @param year integer, year of interest. Only relevant when \code{regionLevel}
 #' is "WBE_binnengrenzen". For all other regionlevels spatial data is fixed over the years
-#' @param locaties character vector, only relevant when \code{regionLevel} is 
+#' @param locaties character vector, only relevant when \code{regionLevel} is
 #' "WBE_binnengrenzen"; it selects the relevant WBE only; default is NULL
 #' @inheritParams reportingGrofwild-common-args
 #' @return single sf object
-#' 
+#'
 #' @author mvarewyck
 #' @export
-filterSpatial <- function(allSpatialData, species, 
-  regionLevel = c("flanders", "provinces", "communes", "faunabeheerzones", 
-    "fbz_gemeentes", "utm5", "utm1", "WBE", "WBE_buitengrenzen", "communes_wolf"), 
-  year, locaties = NULL) {
-  
-  
+filterSpatial <- function(
+  allSpatialData,
+  species,
+  regionLevel = c(
+    "flanders",
+    "provinces",
+    "communes",
+    "faunabeheerzones",
+    "fbz_gemeentes",
+    "utm5",
+    "utm1",
+    "WBE",
+    "WBE_buitengrenzen",
+    "communes_wolf"
+  ),
+  year,
+  locaties = NULL
+) {
   regionLevel <- match.arg(regionLevel)
-  
+
   # Select correct spatial data
   if (grepl("WBE", regionLevel)) {
-    
     spatialData <- allSpatialData[[paste0(regionLevel, "_", year)]]
-    
   } else {
-    
     spatialData <- allSpatialData[[regionLevel]]
-    
   }
-  
-  if (!is.null(locaties))
+
+  if (!is.null(locaties)) {
     spatialData <- spatialData[spatialData$NAAM %in% locaties, ]
-  
+  }
+
   return(spatialData)
-  
 }
 
 
 #' Filter loaded \code{allSpatialData} for selected partijNummer
-#' @inheritParams filterSpatial 
+#' @inheritParams filterSpatial
 #' @param partijNummer numeric, partijnummer of the WBE to filter
 #' @return list with sf objects, each of them filtered on selected WBE
-#' 
+#'
 #' @author mvarewyck
 #' @export
 filterSpatialWbe <- function(allSpatialData, partijNummer) {
-  
   lapply(allSpatialData, function(iData) {
-      
-      iData[iData$NAAM %in% partijNummer, ]
-      
-    })
-  
+    iData[iData$NAAM %in% partijNummer, ]
+  })
 }
-
 
 
 #' Create empty geographical dataset
@@ -213,30 +210,29 @@ filterSpatialWbe <- function(allSpatialData, partijNummer) {
 #' @param years numeric vector, years for which to create empty data (nrow)
 #' @param kbo integer, kbo number of relevant WBE to create empty data for
 #' @return data.frame empty data.frame with for each year the matching WBE and name
-#' 
+#'
 #' @author mvarewyck
 #' @export
 createEmptyGeo <- function(data, years, kbo) {
-  
   matchingData <- loadRawData(type = "kbo_wbe")
-  
+
   data[!is.na(data)] <- NA
   data$KboNummer_Toek <- kbo
   data$WBE_Naam_Toek <- matchingData$WBE.officieel[match(kbo, matchingData$KboNummer_Partij)]
   data$PartijNummer <- matchingData$PartijNummer[match(kbo, matchingData$KboNummer_Partij)]
-  
-  do.call(rbind, lapply(years, function(iYear) {
-      
+
+  do.call(
+    rbind,
+    lapply(years, function(iYear) {
       toReturn <- data
       toReturn$afschotjaar <- iYear
       toReturn
-      
-    }))
-  
+    })
+  )
 }
 
 
-#' File geographical data by province 
+#' File geographical data by province
 #' @param data data.frame, example data of type 'geographical'
 #' @param regionLevel  should be one of \code{c("provinces", "communes", "faunabeheerzones")}
 #' @param  choseByID  boolean indicate whether to retain the data by using \code{ID} variable, true by default. If false, data is retained
@@ -245,21 +241,22 @@ createEmptyGeo <- function(data, years, kbo) {
 #' @return data frame containing subset of the geographical data subject to the given province(s)
 #' @author mvarewyck
 #' @export
-#' 
-filterGeo <- function(data, regionLevel = c("provinces", "faunabeheerzones",  "communes"), locaties, choseByID = TRUE){
-  
+#'
+filterGeo <- function(data, regionLevel = c("provinces", "faunabeheerzones", "communes"), locaties, choseByID = TRUE) {
   regionLevel <- match.arg(regionLevel)
-  
-  filterVariable <- switch(regionLevel,
-                           "provinces" = "provincie", 
-                           "faunabeheerzones" = "FaunabeheerZone",
-                           "communes" = "gemeente_afschot_locatie")
-  
-  if( choseByID ){
-    keepIds <- data$ID[data[[filterVariable]] %in% locaties] 
-  data[data$ID %in% keepIds, ]
-  }else{
-   keepIds <- data[[filterVariable]] %in% locaties
-   data[keepIds]
+
+  filterVariable <- switch(
+    regionLevel,
+    "provinces" = "provincie",
+    "faunabeheerzones" = "FaunabeheerZone",
+    "communes" = "gemeente_afschot_locatie"
+  )
+
+  if (choseByID) {
+    keepIds <- data$ID[data[[filterVariable]] %in% locaties]
+    data[data$ID %in% keepIds, ]
+  } else {
+    keepIds <- data[[filterVariable]] %in% locaties
+    data[keepIds]
   }
 }

@@ -23,31 +23,35 @@ construct_popup <- function(data, popup_vars) {
   )
 }
 
-#' Bound a leaflet map to the flanders region, with padding
+#' Add padding on rendering of a leaflet map
 #'
 #' @param map The leaflet map to fit bounds to
 #' @param padding Padding to use, by default 20 on the right side. Provide a
-#' vector with four values: top, left, bottom, right
-leaflet_bound_flanders <- function(map, padding = NULL) {
+#' vector with four values: left, top, right, bottom
+#' 
+#' @importFrom htmlwidgets onRender
+#' @importFrom glue glue
+leaflet_pad_bounds <- function(map, padding = NULL) {
   if (is.null(padding)) {
-    # padding: top, left, bottom, right
-    padding <- c(0, 0, 0, 20)
+    # padding: left, top, right, bottom
+    padding <- c(20, 20, 20, 20)
   }
-  # This is the bounding box for flanders
-  # Gotten through: getCenterView(spatialdata),
-  # with spatialdata containing flanders shape
-  bounding_flanders <- c(2.541329, 5.911206, 50.687413, 51.505112)
-  map <- map |>
-    leaflet::fitBounds(
-      lng1 = bounding_flanders[1],
-      lng2 = bounding_flanders[2],
-      lat1 = bounding_flanders[3],
-      lat2 = bounding_flanders[4],
-      options = list(
-        paddingTopLeft = padding[1:2],
-        paddingBottomRight = padding[3:4]
-      )
-    )
+
+  # Don't bound to flanders with padding, just add padding on rendering of the map
+  map <- map |> htmlwidgets::onRender(
+    glue::glue("
+      function(el, x) {{
+        var map = this;
+        var bounds = map.getBounds();
+
+        map.fitBounds(bounds, {{
+          paddingTopLeft: [{padding[[1]]}, {padding[[2]]}],
+          paddingBottomRight: [{padding[[3]]}, {padding[[4]]}]
+        }});
+      }}
+    ")
+  )
 
   map
+
 }

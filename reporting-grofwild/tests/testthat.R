@@ -1,9 +1,7 @@
 # Main file for running the tests
-# 
+#
 # Author: mvarewyck
 ###############################################################################
-
-
 
 library(testthat)
 library(reportingGrofwild)

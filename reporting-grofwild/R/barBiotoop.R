@@ -1,12 +1,10 @@
 # Project: inbo-grofwildjacht_git
-# 
+#
 # Author: mvarewyck
 ###############################################################################
 
-
-
 #' Create interactive plot for biotoop description - irrespective of species
-#' 
+#'
 #' @param data data.frame, background data for the WBE, as read from \code{loadHabitats}
 #' @param jaar numeric, year of interest
 #' @inheritParams countAgeGender
@@ -16,50 +14,56 @@
 #' defining the percentage of land, water, forest etc
 #' \item 'data': data displayed in the plot, as data.frame with:
 #' \itemize{
-#' \item 'Naam': characteristic 
-#' \item 'Value': value 
+#' \item 'Naam': characteristic
+#' \item 'Value': value
 #' }
 #' }
 #' @import plotly
 #' @author mvarewyck
 #' @export
-barBiotoop <- function(data, jaar = NULL, 
-  width = NULL, height = NULL) {
-  
-  
+barBiotoop <- function(data, jaar = NULL, width = NULL, height = NULL) {
   # For R CMD check
   year <- NULL
-    
-  if (!is.null(jaar))
-    subData <- subset(data, year == jaar) else
+
+  if (!is.null(jaar)) {
+    subData <- subset(data, year == jaar)
+  } else {
     subData <- data
-  
+  }
+
   percVars <- grep("perc", colnames(subData), value = TRUE)
-  
+
   plotData <- melt(subData[, c("regio", percVars)], id.vars = "regio")
-  
-  if (nrow(plotData) == 0)
+
+  if (nrow(plotData) == 0) {
     stop("Geen data beschikbaar")
-  
+  }
+
   plotData$value <- round(plotData$value * 100, 2)
   plotData$variable <- gsub("perc_", "", plotData$variable)
-    
+
   # For correct display in plot
   plotData$variable[plotData$variable == "bos"] <- "bos & natuur"
-  plotData$variable <- factor(plotData$variable, 
-    levels = c("andere", "bebouwd", "water", "landbouw", "grasland", "bos & natuur"))
-  
+  plotData$variable <- factor(
+    plotData$variable,
+    levels = c("andere", "bebouwd", "water", "landbouw", "grasland", "bos & natuur")
+  )
+
   tmpRegions <- round(tapply(plotData$value, plotData$variable, mean), 2)
   totalRegions <- data.frame(
     variable = names(tmpRegions),
-    value = tmpRegions) 
-  
+    value = tmpRegions
+  )
+
   totalCounts <- melt(subData[, c("Area_ha", "Area_km2", "regio")], id.vars = "regio")
   totalCounts$value <- round(totalCounts$value)
   totalCounts$name <- totalCounts$variable
-  totalCounts$variable <- ifelse(totalCounts$variable == "Area_ha", 
-    "Totale oppervlakte (ha)", "Totale oppervlakte (km2)")
-  
+  totalCounts$variable <- ifelse(
+    totalCounts$variable == "Area_ha",
+    "Totale oppervlakte (ha)",
+    "Totale oppervlakte (km2)"
+  )
+
   # More than 9 regions -> total
   selectedRegions <- unique(plotData$regio)
   colorList <- replicateColors(values = selectedRegions)
@@ -72,44 +76,54 @@ barBiotoop <- function(data, jaar = NULL,
     colors <- colors[1]
   }
   names(colors) <- selectedRegions
-  
+
   # Create plot
-  pl <- plot_ly(data = plotData, x = ~value, y = ~variable, 
-      color = ~as.factor(regio), colors = colors,
-      hovertemplate = paste('%{y} <br>%{x:/100}%'),
-      type = "bar", orientation = 'h', width = width, height = height) %>%
-    
-    plotly::layout(title = paste0("Totale oppervlakte: ", 
-        sum(totalCounts$value[totalCounts$name == "Area_km2"]), " km\U00B2"),
-      xaxis = list(title = "", zeroline = FALSE, showline = FALSE, ticksuffix = "%"), 
-      yaxis = list(title = "", zeroline = FALSE, showline = FALSE),    
+  pl <- plot_ly(
+    data = plotData,
+    x = ~value,
+    y = ~variable,
+    color = ~ as.factor(regio),
+    colors = colors,
+    hovertemplate = paste('%{y} <br>%{x:/100}%'),
+    type = "bar",
+    orientation = 'h',
+    width = width,
+    height = height
+  ) %>%
+
+    plotly::layout(
+      title = paste0("Totale oppervlakte: ", sum(totalCounts$value[totalCounts$name == "Area_km2"]), " km\U00B2"),
+      xaxis = list(title = "", zeroline = FALSE, showline = FALSE, ticksuffix = "%"),
+      yaxis = list(title = "", zeroline = FALSE, showline = FALSE),
       margin = list(l = 100)
     )
-   
-  
+
   # Percentage printed at top of bar
   if (length(unique(plotData$regio)) == 1) {
-      pl <- pl %>% plotly::layout(
-        annotations = list(x = totalRegions$value,  
-        y = totalRegions$variable,
-        text = paste(totalRegions$value, "%"),
-        textposition = "none",
-        xanchor = 'left', yanchor = 'center',
-        showarrow = FALSE))
+    pl <- pl %>%
+      plotly::layout(
+        annotations = list(
+          x = totalRegions$value,
+          y = totalRegions$variable,
+          text = paste(totalRegions$value, "%"),
+          textposition = "none",
+          xanchor = 'left',
+          yanchor = 'center',
+          showarrow = FALSE
+        )
+      )
   }
-    
+
   totalCounts$name <- NULL
   finalData <- rbind(
-    totalCounts,    
+    totalCounts,
     plotData[nrow(plotData):1, ]
   )
   rownames(finalData) <- NULL
   colnames(finalData) <- c("Regio", "Naam", "Waarde")
-  
+
   # To prevent warnings in UI
   pl$elementId <- NULL
-    
-  return(list(plot = pl, data = finalData, warning = warningText))
-  
-}
 
+  return(list(plot = pl, data = finalData, warning = warningText))
+}

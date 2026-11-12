@@ -1,14 +1,13 @@
 library(reportingGrofwild)
 
 
-
 ### General
 ### ------------
 
 # make sure js object is initiated
 library(shinyjs)
 # define js function for opening urls in new tab/window
-js_code <- "shinyjs.browseURL = function(url) {window.open(url, '_parent');}"
+js_code <- "shinyjs.browseURL = function(url) {window.open(url, '_blank');}"
 
 # Specify directory with data
 dataDir <- system.file("extdata", package = "reportingGrofwild")
@@ -19,22 +18,23 @@ addResourcePath("www", system.file("ui/www", package = "reportingGrofwild"))
 # Specify default year to show (and default max to show in time ranges)
 defaultYear <- as.numeric(format(Sys.Date(), "%Y")) - 1
 
-chromote::set_chrome_args(c('--headless','--no-sandbox'))
+chromote::set_chrome_args(c('--headless', '--no-sandbox'))
 
 
 ### Debugging
 ### -----------
 
-if (!exists("doDebug"))
+if (!exists("doDebug")) {
   doDebug <- FALSE
-
+}
 
 
 ### Meta data
 ### ------------
 
-if (!doDebug | !exists("metaSchade"))
+if (!doDebug | !exists("metaSchade")) {
   metaSchade <- loadMetaSchade()
+}
 
 allWildsoorten <- loadWildsoorten()
 
@@ -51,17 +51,19 @@ voertuigChoices <- metaSchade$codes[["VRTG"]]
 ### Load all data
 ### -------------
 
-if (!doDebug | !exists("openingstijdenData"))
+if (!doDebug | !exists("openingstijdenData")) {
   openingstijdenData <- loadOpeningstijdenData()
-if (!doDebug | !exists("toekenningsData"))
+}
+if (!doDebug | !exists("toekenningsData")) {
   toekenningsData <- loadToekenningen()
+}
 
 # Load object called spatialData
-if (!doDebug | !exists("spatialData")){
+if (!doDebug | !exists("spatialData")) {
   dataPath <- Sys.getenv("DATA_PATH")
-  if(!identical(dataPath, "")){
+  if (!identical(dataPath, "")) {
     load(file = file.path(dataPath, "spatialData_sf.RData"))
-  }else{
+  } else {
     readS3(file = "spatialData_sf.RData")
   }
 }
@@ -71,47 +73,62 @@ if (exists("spatialData") && !("communes_wolf" %in% names(spatialData))) {
 }
 
 # Data with observations and geographical information
-if (!doDebug | !exists("ecoData"))
+if (!doDebug | !exists("ecoData")) {
   ecoData <- loadRawData(type = "eco")
-if (!doDebug | !exists("geoData"))
+}
+if (!doDebug | !exists("geoData")) {
   geoData <- loadRawData(type = "geo")
-if (!doDebug | !exists("schadeData"))
+}
+if (!doDebug | !exists("schadeData")) {
   schadeData <- loadRawData(type = "wildschade")
-if (!doDebug | !exists("biotoopData"))
+}
+if (!doDebug | !exists("biotoopData")) {
   biotoopData <- loadHabitats()
+}
 
-if (!doDebug | !exists("waarnemingenData"))
+if (!doDebug | !exists("waarnemingenData")) {
   waarnemingenData <- loadRawData(type = "waarnemingen")
-if (!doDebug | !exists("draagvlakData"))
+}
+if (!doDebug | !exists("draagvlakData")) {
   draagvlakData <- loadDraagvlakData()
+}
 
 # Data with observations and geographical information for Wolf
-if (!doDebug | !exists("wolfPuntenData"))
+if (!doDebug | !exists("wolfPuntenData")) {
   wolfPuntenData <- loadWolfData(type = "locaties")
-if (!doDebug | !exists("wolfHokkenData"))
-  wolfHokkenData <- loadWolfData(type = "utm")  
-if (!doDebug | !exists("wolfOverzichtData"))
+}
+if (!doDebug | !exists("wolfHokkenData")) {
+  wolfHokkenData <- loadWolfData(type = "utm")
+}
+if (!doDebug | !exists("wolfOverzichtData")) {
   wolfOverzichtData <- loadWolfData(type = "overzicht")
-if (!doDebug | !exists("wolfTerritoriaData"))
-  wolfTerritoriaData <- loadWolfData(type = "terr")  
-if (!doDebug | !exists("wolfSchadeData"))
+}
+if (!doDebug | !exists("wolfTerritoriaData")) {
+  wolfTerritoriaData <- loadWolfData(type = "terr")
+}
+if (!doDebug | !exists("wolfSchadeData")) {
   wolfSchadeData <- loadWolfData(type = "schade")
+}
 
 
 # TODO temporary fix
-if (!is.null(attr(ecoData, "excluded")))
-    geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
+if (!is.null(attr(ecoData, "excluded"))) {
+  geoData <- geoData[!geoData$ID %in% attr(ecoData, "excluded"), ]
+}
 
 # UI text for each plot/table
 uiText <- read.table(file = file.path(dataDir, "uiText.csv"), sep = ";", header = TRUE)
 
 if (config::get("datacheck", file = system.file("config.yml", package = "reportingGrofwild"))) {
   uiFunctions <- sapply(strsplit(uiText$plotFunction, split = "-"), function(x) x[1])
-  uiFunctions <- uiFunctions[!is.na(uiFunctions)] 
+  uiFunctions <- uiFunctions[!is.na(uiFunctions)]
   uiCheck <- uiFunctions[!startsWith(uiFunctions, "F")]
-  if (!all(uiCheck %in% ls("package:reportingGrofwild")))
-    warning("Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
-      paste(uiCheck[!uiCheck %in% ls("package:reportingGrofwild")], collapse = ","))
+  if (!all(uiCheck %in% ls("package:reportingGrofwild"))) {
+    warning(
+      "Please update the file 'uiText.csv' as some functions are no longer present in the R package reportingGrofwild.",
+      paste(uiCheck[!uiCheck %in% ls("package:reportingGrofwild")], collapse = ",")
+    )
+  }
   rm(uiFunctions, uiCheck)
 }
 
@@ -120,8 +137,7 @@ availableData <- read.csv(file.path(dataDir, "Data_beschikbaarheid.csv"))
 
 names(availableData)[3:6] <- c("flanders", "provinces", "communes", "faunabeheerzones")
 
-uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code",
-  all.x = TRUE)
+uiText <- merge(uiText, availableData, by.x = "plotFunction", by.y = "Code", all.x = TRUE)
 
 ## UI
 
@@ -130,9 +146,10 @@ species <- unique(allWildsoorten$name)
 # extract available outputs (tables/visualisations) - based on the data
 infoOutput <- getOutputInfo(
   species = species,
-  geoData = geoData, ecoData = ecoData, 
+  geoData = geoData,
+  ecoData = ecoData,
   openingstijdenData = openingstijdenData,
-  schadeData = schadeData, 
+  schadeData = schadeData,
   waarnemingenData = waarnemingenData,
   draagvlakData = draagvlakData
 )
@@ -152,8 +169,6 @@ infoOutputList <- getInfoList(infoOutput = infoOutput, uiText = uiText)
 
 ## Check for missing images and text if in debug mode
 if (doDebug) {
-  
   detectMissingImages(infoOutput = infoOutput)
   detectMissingInfo(infoOutput = infoOutput, uiText = uiText)
-  
 }

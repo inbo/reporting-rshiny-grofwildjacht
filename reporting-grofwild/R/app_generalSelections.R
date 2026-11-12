@@ -100,7 +100,7 @@ generalSelectionUI <- function(
                         column(12, uiOutput(ns("regionLevels")))
                       ),
                       fluidRow(
-                        column(11, offset = 1, uiOutput(ns("region")))
+                        column(11, offset = 1, uiOutput(ns("container_region")))
                       )
                     )
                   )
@@ -340,7 +340,7 @@ generalSelectionServer <- function(
         sep = ""
       )
     })
-    time_released <- debounce(reactive(input$time), 500) # waits 500ms after the last change before updating
+    time_released <- reactive(input$time)
     observe(current$time <- time_released())
 
     output$year <- renderUI({
@@ -455,7 +455,7 @@ generalSelectionServer <- function(
       current$region <- NULL
     })
 
-    output$region <- renderUI({
+    output$container_region <- renderUI({
       req(regionLevels)
       validate(need(input$regionLevel, "Selecteer regio-schaal aub"))
 
@@ -569,7 +569,8 @@ generalSelectionServer <- function(
       dataSource_onderkaak = reactive(input$dataSource_onderkaak),
       dataSource_embryos = reactive(input$dataSource_embryos),
       dataSource_leeftijd = reactive(input$dataSource_leeftijd),
-      dataSource_geslacht = reactive(input$dataSource_geslacht)
+      dataSource_geslacht = reactive(input$dataSource_geslacht),
+      session = session # return session for e.g. mapFlanders, to update the region selection from there
     ))
   })
 }

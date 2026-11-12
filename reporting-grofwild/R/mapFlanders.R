@@ -497,6 +497,7 @@ mapFlanders <- function(
 #' @param biotoopData data.frame, with background biotoop data for selected region level;
 #' default value is NULL
 #' @param allSpatialData list with sf objects
+#' @param last_spaceplot_click Keeps reference to the last spaceplot clickevent, so we can skip a wrongly retriggered one.
 #' @inheritParams mapFlandersUI
 #' @inheritParams createSpaceData
 #' @inheritParams getOutputDescription
@@ -524,7 +525,8 @@ mapFlandersServer <- function(
   countVariable = NULL,
   sourceChoices = NULL,
   uiText = NULL,
-  preSelected = reactive(NULL)
+  preSelected = reactive(NULL),
+  last_spaceplot_click = reactive(NULL)
 ) {
   moduleServer(id, function(input, output, session) {
     # For R CMD check
@@ -1033,31 +1035,51 @@ mapFlandersServer <- function(
     # Which region(s) are selected?
     observe({
       event <- input$spacePlot_shape_click
+      currentMap <- leafletProxy("spacePlot", data = spatialData())
+
+      # If the current event is identical as the last recorded one, drop it.
+      # Necessary, because when switching species in the sidebar, the last event gets retriggered
+      if (identical(event, last_spaceplot_click())) {
+        # This should happen when we switch to a new species: in this case we do want to preserve the
+        # originally selected values
+        if (is.null(results$selectedRegions)) {
+          results$selectedRegions <- isolate(results$region_value)
+          updateSelectizeInput(preSelected()$session, inputId = "region", selected = results$selectedRegions)
+        }
+        return()
+      }
+
+      # Add popup when adding a region to the map, but not when removing it
+      # Helper function for adding a popup to the map
+      add_popup <- function(currentMap, event) {
+        textSelected <- textPopup()[summarySpaceData()$data$locatie == event$id]
+        addPopups(currentMap, event$lng, event$lat, popup = textSelected)
+      }
+
       if (!is.null(event) && !is.null(event$id)) {
         currentSelected <- isolate(results$region_value)
-
         possibleRegions <- region_selection(allSpatialData, regionLevelLocal())
 
         # if all regions are selected: only select clicked
         if (setequal(currentSelected, possibleRegions)) {
-          updateSelectInput(session, inputId = "region", selected = c(event$id))
-
           results$selectedRegions <- c(event$id)
-        } else if (event$id %in% currentSelected) {
-          # Remove from list
-          updateSelectInput(
-            session,
-            inputId = "region",
-            selected = currentSelected[-which(currentSelected == event$id)]
-          )
 
+          add_popup(currentMap, event)
+        } else if (event$id %in% currentSelected) {
           results$selectedRegions <- currentSelected[-which(currentSelected == event$id)]
         } else {
-          # Add to list
-          updateSelectInput(session, inputId = "region", selected = c(currentSelected, event$id))
-
           results$selectedRegions <- c(currentSelected, event$id)
+
+          add_popup(currentMap, event)
         }
+        # We get the session information of the preSelected object, which represents the topbar. Using this, we can update
+        # the region selection. This is not the cleanest way to do this, but it is cleaner than the previous way of
+        # listening to the updates of this module in the parent module, and setting it there. This often caused race conditions
+        # and was not clear in what values were now set.
+        if (type != "dash") { # verspreiding does not need to update on click
+          updateSelectizeInput(preSelected()$session, inputId = "region", selected = results$selectedRegions)
+        }
+        last_spaceplot_click(event)
       }
     })
 
@@ -1172,25 +1194,6 @@ mapFlandersServer <- function(
       },
       ignoreInit = TRUE
     )
-
-    # Add popups
-    observe({
-      currentMap <- leafletProxy("spacePlot", data = spatialData())
-      currentMap %>% clearPopups()
-
-      event <- input$spacePlot_shape_click
-
-      if (!is.null(event) && !is.null(event$id) && event$id %in% summarySpaceData()$data$locatie) {
-        textSelected <- textPopup()[
-          summarySpaceData()$data$locatie == event$id
-        ]
-
-        isolate({
-          currentMap %>%
-            addPopups(event$lng, event$lat, popup = textSelected)
-        })
-      }
-    })
 
     # Create final map (for download)
     finalMap <- reactive({

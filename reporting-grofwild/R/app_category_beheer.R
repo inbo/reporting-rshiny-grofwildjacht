@@ -19,7 +19,8 @@ beheerOutputServer <- function(
   spatialData,
   biotoopData,
   defaultYear,
-  uiText
+  uiText,
+  last_click
 ) {
   # For R CMD check
   afschotplan_nummer <- afschot_datum <- provincie <- FaunabeheerZone <- NULL
@@ -471,7 +472,8 @@ beheerOutputServer <- function(
                 geoData = results$geoData,
                 biotoopData = biotoopData,
                 allSpatialData = spatialData,
-                preSelected = beheerSelection
+                preSelected = beheerSelection,
+                last_spaceplot_click = last_click
               )
             },
             plot2 = if ("countYearProvinceUI-afschot" %in% outputs) {

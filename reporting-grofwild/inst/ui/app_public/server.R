@@ -398,6 +398,12 @@ shinyServer(function(input, output, session) {
     priority = 2
   )
 
+  # For mapFlanders: click events get retriggered for a different species choice
+  # (most likely because the map has the same ID?)
+  # In order to prevent this, we keep the last click event here and pass it to
+  # the "schade" module, so the module can compare it.
+  last_click <- reactiveVal(NULL)
+
   # Update page content
   outputSelection <- reactive({
     specie()
@@ -426,7 +432,8 @@ shinyServer(function(input, output, session) {
               openingstijdenData = openingstijdenData,
               spatialData = spatialData,
               biotoopData = biotoopData,
-              defaultYear = defaultYear
+              defaultYear = defaultYear,
+              last_click = last_click
             ),
             populatie = list(
               ecoData = ecoData,
@@ -443,7 +450,8 @@ shinyServer(function(input, output, session) {
                 # isolate - prevent loop if changed too quickly in plot
                 schade_code = reactive(isolate(schade_code())),
                 schade_gewas = reactive(isolate(schade_gewas())),
-                schade_voertuig = reactive(isolate(schade_voertuig()))
+                schade_voertuig = reactive(isolate(schade_voertuig())),
+                last_click = last_click
               )
             },
             verspreiding = list(
@@ -452,7 +460,8 @@ shinyServer(function(input, output, session) {
               spatialData = spatialData,
               waarnemingenData = waarnemingenData,
               biotoopData = biotoopData,
-              defaultYear = defaultYear
+              defaultYear = defaultYear,
+              last_click = last_click
             ),
             draagvlak = list(
               draagvlakData = draagvlakData

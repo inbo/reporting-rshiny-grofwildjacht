@@ -21,7 +21,8 @@ schadeOutputServer <- function(
   defaultYear,
   schadeTypes,
   schadeCodes,
-  uiText
+  uiText,
+  last_click
 ) {
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -623,7 +624,8 @@ schadeOutputServer <- function(
                 biotoopData = biotoopData,
                 allSpatialData = spatialData,
                 sourceChoices = loadMetaSchade()$sources,
-                preSelected = schadeSelection
+                preSelected = schadeSelection,
+                last_spaceplot_click = last_click
               )
             },
             plot2 = if ("countYearProvinceUI-schade" %in% outputs) {
@@ -704,7 +706,8 @@ schadeOutputServer <- function(
                 geoData = results$wolfSchadeDataBevestigd,
                 biotoopData = biotoopData,
                 allSpatialData = spatialData,
-                preSelected = schadeSelection
+                preSelected = schadeSelection,
+                last_spaceplot_click = last_click
               )
             }
           )
@@ -796,17 +799,6 @@ schadeOutputServer <- function(
 
       # re-set in case plot selected via tab after/before category card
       outputServer(NULL)
-    })
-
-    observe({
-      req(as.character(subcategory()) == "schade-regio")
-      req(results$serverOutput$plot1)
-      p <- results$serverOutput$plot1()
-      req(p)
-      req(p$selectedRegions)
-      req(p$selectedRegions())
-
-      updateSelectInput(session, inputId = "schade_topbar-region", selected = p$selectedRegions())
     })
 
     observe({
